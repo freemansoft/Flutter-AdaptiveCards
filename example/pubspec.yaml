@@ -19,7 +19,8 @@ dependencies:
   dynamic_theme: ^1.0.1
   url_launcher: any
   flutter_adaptive_cards:
-    path: ../
+    git:
+      url: https://github.com/neohelden/Flutter-AdaptiveCards.git
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
