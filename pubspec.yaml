@@ -13,6 +13,7 @@ dependencies:
 
   uuid: ^1.0.3
   #chewie: ^0.9.5
+  # Using the git dependency because the newest version isn't published on pub yet
   chewie:
     git:
       url: https://github.com/brianegan/chewie.git
