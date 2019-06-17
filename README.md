@@ -9,7 +9,7 @@ A Flutter implementation of Adaptive Cards.
 Put this into your `pubspec.yaml`
 ```yml
 dependencies:
-  flutter_adaptivecards:
+  flutter_adaptive_cards:
     git:
       url: https://github.com/neohelden/Flutter-AdaptiveCards
 ```
