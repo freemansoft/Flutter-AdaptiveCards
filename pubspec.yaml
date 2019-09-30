@@ -18,7 +18,7 @@ dependencies:
     git:
       url: https://github.com/brianegan/chewie.git
   http: ^0.11.3+16
-  intl: ^0.16.0
+  intl: any
   tinycolor: ^1.0.2
   provider: ^2.0.1
 
