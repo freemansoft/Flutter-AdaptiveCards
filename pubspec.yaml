@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  uuid: ^1.0.3
+  uuid: ^2.0.2
   #chewie: ^0.9.5
   # Using the git dependency because the newest version isn't published on pub yet
   chewie:
