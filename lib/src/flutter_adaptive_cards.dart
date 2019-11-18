@@ -149,14 +149,18 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
     super.initState();
     widget.adaptiveCardContentProvider.loadHostConfig().then((hostConfigMap) {
       setState(() {
-        hostConfig = hostConfigMap;
+        if(mounted) {
+          hostConfig = hostConfigMap;
+        }
       });
     });
     widget.adaptiveCardContentProvider
         .loadAdaptiveCardContent()
         .then((adaptiveMap) {
       setState(() {
-        map = adaptiveMap;
+        if(mounted) {
+          map = adaptiveMap;
+        }
       });
     });
   }

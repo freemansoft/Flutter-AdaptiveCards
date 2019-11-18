@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
@@ -8,7 +6,6 @@ import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:tinycolor/tinycolor.dart';
 
 import 'additional.dart';
 import 'base.dart';
@@ -396,9 +393,9 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
     precedingSpacing = resolver.resolveSpacing(adaptiveMap["spacing"]);
     separator = adaptiveMap["separator"] ?? false;
 
-    items = List<Map>.from(adaptiveMap["items"]).map((child) {
+    items = adaptiveMap["items"] != null? List<Map>.from(adaptiveMap["items"]).map((child) {
       return widgetState.cardRegistry.getElement(child);
-    }).toList();
+    }).toList() : [];
 
     var toParseWidth = adaptiveMap["width"];
     if(toParseWidth  != null) {
