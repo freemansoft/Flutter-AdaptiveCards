@@ -13,7 +13,7 @@ class BasicMarkdown extends MarkdownWidget {
     MarkdownStyleSheet styleSheet,
     SyntaxHighlighter syntaxHighlighter,
     MarkdownTapLinkCallback onTapLink,
-    Directory imageDirectory,
+    String imageDirectory,
     this.maxLines
   }) : super(
     key: key,
