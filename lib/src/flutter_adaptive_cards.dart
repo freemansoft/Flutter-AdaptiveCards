@@ -215,15 +215,12 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
     if (map == null || hostConfig == null) {
       return widget.placeholder ?? const SizedBox();
     }
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: RawAdaptiveCard.fromMap(map, hostConfig,
-        cardRegistry: cardRegistry,
-        onOpenUrl: onOpenUrl,
-        onSubmit: onSubmit,
-        showDebugJson: widget.showDebugJson,
-        approximateDarkThemeColors: widget.approximateDarkThemeColors,
-      ),
+    return RawAdaptiveCard.fromMap(map, hostConfig,
+      cardRegistry: cardRegistry,
+      onOpenUrl: onOpenUrl,
+      onSubmit: onSubmit,
+      showDebugJson: widget.showDebugJson,
+      approximateDarkThemeColors: widget.approximateDarkThemeColors,
     );
   }
 }
