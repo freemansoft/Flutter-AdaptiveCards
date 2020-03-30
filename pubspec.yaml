@@ -1,6 +1,6 @@
 name: flutter_adaptive_cards
 description: A Flutter implementation of Adaptive Cards.
-version: 0.0.2
+version: 0.0.3
 author: Norbert Kozsir <norbert@neohelden.com>
 homepage: https://github.com/neohelden/Flutter-AdaptiveCards
 
@@ -20,6 +20,7 @@ dependencies:
   intl: any
   tinycolor: ^1.0.2
   provider: ^3.1.0+1
+  http: ^0.12.0+4
 
 
 

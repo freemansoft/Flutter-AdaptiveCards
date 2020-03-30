@@ -13,6 +13,7 @@ class InputTimePage extends StatelessWidget {
       body: ListView(
         children: <Widget>[
           DemoAdaptiveCard("lib/inputs/input_time/example1",),
+          DemoAdaptiveCard("lib/inputs/input_time/example2",),
         ],
       ),
     );

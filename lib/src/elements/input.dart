@@ -222,7 +222,7 @@ class _AdaptiveTimeInputState extends State<AdaptiveTimeInput> with AdaptiveText
 
 
   TimeOfDay parseTime(String time) {
-    if (time == null) return null;
+    if (time == null || time.isEmpty) return null;
     List<String> times = time.split(":");
     assert(times.length == 2, "Invalid TimeOfDay format");
     return TimeOfDay(
