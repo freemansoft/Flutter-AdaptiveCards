@@ -381,6 +381,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
   // Need to do the separator manually for this class
   // because the flexible needs to be applied to the class above
   double precedingSpacing;
+  Widget backgroundImage;
   bool separator;
 
   @override
@@ -392,6 +393,8 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
     }
     precedingSpacing = resolver.resolveSpacing(adaptiveMap["spacing"]);
     separator = adaptiveMap["separator"] ?? false;
+
+    backgroundImage = _getBackgroundImage(adaptiveMap);
 
     items = adaptiveMap["items"] != null? List<Map>.from(adaptiveMap["items"]).map((child) {
       return widgetState.cardRegistry.getElement(child);
@@ -420,19 +423,67 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
     }
   }
 
+  Widget _getBackgroundImage(Map element) {
+    var backgroundImage = adaptiveMap["backgroundImage"];
+    if (backgroundImage != null) {
+      var backgroundImageUrl = backgroundImage["url"];
+      var fillMode = backgroundImage["fillMode"];
+
+      BoxFit fit;
+      switch(fillMode) {
+        case "RepeatVertically":
+        case "RepeatHorizontally":
+        case "Repeat":
+          fit = BoxFit.none;
+          break;
+        default:
+          fit = BoxFit.cover;
+      }
+
+      ImageRepeat repeat;
+      switch(fillMode) {
+        case "RepeatVertically":
+          repeat = ImageRepeat.repeatY;
+          break;
+        case "RepeatHorizontally":
+          repeat = ImageRepeat.repeatX;
+          break;
+        case "Repeat":
+          repeat = ImageRepeat.repeat;
+          break;
+        default:
+          repeat = ImageRepeat.noRepeat;
+      }
+
+      if (backgroundImageUrl != null) {
+        return Image(
+          repeat: repeat,
+          image: NetworkImage(backgroundImageUrl),
+          fit: fit,
+        );
+      }
+    }
+    return SizedBox(width: 0, height: 0,);
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget result = InkWell(
-      onTap: action?.tap,
-      child: Padding(
-        padding: EdgeInsets.only(left: precedingSpacing),
-        child: Column(
-          children: []
-            ..add(separator ? Divider() : SizedBox(),)
-            ..addAll(items.map((it) => it).toList()),
-          crossAxisAlignment: CrossAxisAlignment.center,
+    Widget result = Stack(
+      children: [
+       backgroundImage,
+       InkWell(
+          onTap: action?.tap,
+          child: Padding(
+            padding: EdgeInsets.only(left: precedingSpacing),
+            child: Column(
+              children: []
+                ..add(separator ? Divider() : SizedBox(),)
+                ..addAll(items.map((it) => it).toList()),
+              crossAxisAlignment: CrossAxisAlignment.center,
+            ),
+          ),
         ),
-      ),
+      ],
     );
 
     assert(mode == "auto" || mode == "stretch" || mode == "manual");

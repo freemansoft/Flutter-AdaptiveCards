@@ -15,6 +15,7 @@ class ColumnSetPage extends StatelessWidget {
           DemoAdaptiveCard("lib/column_set/example1",),
           DemoAdaptiveCard("lib/column_set/example2",),
           DemoAdaptiveCard("lib/column_set/example3",),
+          DemoAdaptiveCard("lib/column_set/example4",),
         ],
       ),
     );
