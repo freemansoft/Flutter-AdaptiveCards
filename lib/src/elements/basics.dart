@@ -568,12 +568,9 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin{
-
-
   Alignment horizontalAlignment;
   bool isPerson;
   Tuple<double, double> size;
-
 
   @override
   void initState() {
@@ -581,7 +578,6 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
     horizontalAlignment = loadAlignment();
     isPerson = loadIsPerson();
     size = loadSize();
-
   }
 
 
@@ -597,7 +593,6 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
       );
     }
 
-
     image = Align(
       alignment: horizontalAlignment,
       child: image,
@@ -609,7 +604,8 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
             minWidth: size.a,
             minHeight: size.a,
             maxHeight: size.b,
-            maxWidth: size.b),
+            maxWidth: size.b,
+        ),
         child: image,
       );
     }
@@ -645,9 +641,32 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
   Tuple<double, double> loadSize() {
     String sizeDescription = adaptiveMap["size"] ?? "auto";
     sizeDescription = sizeDescription.toLowerCase();
-    if(sizeDescription == "auto" || sizeDescription == "stretch") return null;
-    int size = resolver.resolve("imageSizes", sizeDescription);
-    return Tuple(size.toDouble(), size.toDouble());
+
+    int size;
+    if(sizeDescription != "auto" && sizeDescription != "stretch") {
+      size = resolver.resolve("imageSizes", sizeDescription);
+    }
+
+    var width = size;
+    var height = size;
+
+    // Overwrite dynamic size if fixed size is given
+    if (adaptiveMap["width"] != null) {
+      var widthString = adaptiveMap["width"].toString();
+      widthString = widthString.substring(0, widthString.length - 2); // remove px
+      width = int.parse(widthString);
+    }
+    if (adaptiveMap["height"] != null) {
+      var heightString = adaptiveMap["height"].toString();
+      heightString = heightString.substring(0, heightString.length - 2); // remove px
+      height = int.parse(heightString);
+    }
+
+    if (height == null || width == null) {
+      return null;
+    }
+
+    return Tuple(width.toDouble(), height.toDouble());
   }
 }
 
