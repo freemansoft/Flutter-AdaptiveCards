@@ -100,10 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: <Widget>[
-                  FlutterLogo(
-                    size: 50.0,
-                  ),
-                  Text("Flutter - Adaptive Cards \nby Neohelden", style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600), textAlign: TextAlign.center,),
+                  Image.asset("assets/banner.jpg",),
+                  Divider(),
+                  Text("Flutter-Adaptive Cards by Neohelden", style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600), textAlign: TextAlign.center,),
                 ],
               ),
             ),
