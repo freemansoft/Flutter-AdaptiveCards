@@ -2,7 +2,7 @@
 
 # Adaptive Cards for Flutter
 
-A Flutter implementation of Adaptive Cards.
+We decided to build a Flutter implementation of Adaptive Cards because we believe in the future of both technologies. With Flutter, we found an exciting framework for ultra-fast and cross-platform UI development. And with Adaptive Cards, we can combine that with an industry standard for exchanging card content in a structured way. At Neohelden, we're building on both of these technologies with our AI-assistant for business – and you can learn more about why we built this in our [blog-post on the release of our Adaptive Cards in Flutter library](https://neohelden.com/blog/tech/using-adaptive-cards-in-flutter/).
 
 ### Installing
 
@@ -70,12 +70,10 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Authors
 
-* **Norbert Kozsir** (@Norbert515) – *Initial work*, Head of Flutter development @Neohelden
+- **Norbert Kozsir** (@Norbert515) – *Initial work*, Former Head of Flutter development at Neohelden GmbH
+- **Pascal Stech** (@Curvel) – *Maintainer*, Flutter Developer at Neohelden GmbH (NeoSEALs team)
 
 See also the list of [contributors](https://github.com/neohelden/flutter_adaptive_cards/contributors) who participated in this project.
-
-## About this project
-We decided to build a Flutter implementation of Adaptive Cards because we believe in the future of both technologies. With Flutter, we found an exciting framework for ultra-fast and cross-platform UI development. And with Adaptive Cards, we can combine that with an industry standard for exchanging card content in a structured way. At Neohelden, we're building on both of these technologies with our AI-assistant for business – and you can learn more about why we built this in our [blog-post on the release of our Adaptive Cards in Flutter library](https://neohelden.com/blog/tech/using-adaptive-cards-in-flutter/).
 
 ## License
 
