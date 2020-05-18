@@ -1,3 +1,4 @@
+import 'package:example/action_set/action_set_page.dart';
 import 'package:example/samples/samples.dart';
 import 'package:example/text_block/text_block_examples_page.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
             "Column": (context) => ColumnPage(),
             "FactSet": (context) => FactSetPage(),
             "ImageSet": (context) => ImageSetPage(),
+            "ActionSet": (context) => ActionSetPage(),
             "Action.OpenUrl": (context) => ActionOpenUrlPage(),
             "Action.Submit": (context) => ActionSubmitPage(),
             "Action.ShowCard": (context) => ActionShowCardPage(),
@@ -111,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
           getButton("Media"),
           Divider(),
           getRow(["Action.OpenUrl", "Action.Submit", "Action.ShowCard"]),
+          getButton("ActionSet"),
           Divider(),
           getButton("Container"),
           getButton("FactSet"),
