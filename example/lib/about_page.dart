@@ -71,12 +71,12 @@ Neo has been using Adaptive Cards for a while now, and we're excited to bring th
                       Expanded(
                         child: Column(
                           children: <Widget>[
-                            Text("Norbert Kozsir - Flutter Developer @Neohelden", style: Theme.of(context).textTheme.title,),
+                            Text("Norbert Kozsir - former Head of Flutter @Neohelden", style: Theme.of(context).textTheme.headline6,),
                             SizedBox(height: 8,),
-                            Text("Norbert is the lead developer of the Flutter division at Neohelden and "
-                                "responsible for this library,"
-                                " he is building the Neo App using Flutter for the upcoming release.",
-                              style: Theme.of(context).textTheme.body1,),
+                            Text("Norbert was the head of Flutter development at Neohelden and "
+                                "brought this library to life. "
+                                "He is still very active in the Flutter community and keeps rocking every day.",
+                              style: Theme.of(context).textTheme.bodyText2,),
                           ],
                         ),
                       ),
@@ -94,6 +94,42 @@ Neo has been using Adaptive Cards for a while now, and we're excited to bring th
                         child: Text("Medium"),
                         onPressed: () {
                           launch("https://medium.com/@norbertkozsir");
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Image.asset("assets/pascal.jpg", width: 100,),
+                      SizedBox(width: 16,),
+                      Expanded(
+                        child: Column(
+                          children: <Widget>[
+                            Text("Pascal Stech - Flutter Developer @Neohelden", style: Theme.of(context).textTheme.headline6,),
+                            SizedBox(height: 8,),
+                            Text("Pascal is part of the NeoSEALs team at Neohelden. He currently maintains the Flutter AdaptiveCards implementation."
+                                " He is also building the Neo Client App using Flutter.",
+                              style: Theme.of(context).textTheme.bodyText2,),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      OutlineButton(
+                        child: Text("GitHub"),
+                        onPressed: () {
+                          launch("https://github.com/Curvel");
                         },
                       ),
                     ],
