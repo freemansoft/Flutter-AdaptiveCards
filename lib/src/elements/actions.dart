@@ -176,7 +176,7 @@ class _AdaptiveActionSubmitState extends State<AdaptiveActionSubmit> with Adapti
     return RaisedButton(
       color: widget.color,
       onPressed: onTapped,
-      child: Text(title),
+      child: Text(title, textAlign: TextAlign.center),
     );
   }
 
