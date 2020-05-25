@@ -1,5 +1,6 @@
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:example/action_set/action_set_page.dart';
+import 'package:example/custom_host_config/custom_host_config.dart';
 import 'package:example/samples/samples.dart';
 import 'package:example/text_block/text_block_examples_page.dart';
 import 'package:flutter/foundation.dart' show debugDefaultTargetPlatformOverride;
@@ -23,6 +24,7 @@ import 'inputs/input_text/input_text.dart';
 import 'inputs/input_time/input_time.dart';
 import 'inputs/input_toggle/input_toggle.dart';
 import 'media/media.dart';
+
 void main() {
   debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
   runApp(new MyApp());
@@ -63,6 +65,7 @@ class MyApp extends StatelessWidget {
             "Input.Toggle": (context) => InputTogglePage(),
             "Input.ChoiceSet": (context) => InputChoiceSetPage(),
             "about": (context) => AboutPage(),
+            "CustomHostConfig": (context) => CustomHostConfigPage()
           },
         );
       },
@@ -129,6 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
           Divider(),
           getRow(["Input.Text", "Input.Number", "Input.Date"]),
           getRow(["Input.Time", "Input.Toggle", "Input.ChoiceSet"]),
+          Divider(),
+          getButton("CustomHostConfig"),
         ],
       ),
     );

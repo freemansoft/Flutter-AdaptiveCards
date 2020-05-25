@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
@@ -27,10 +28,11 @@ abstract class AdaptiveCardContentProvider {
 }
 
 class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  MemoryAdaptiveCardContentProvider({@required this.content, @required String hostConfigPath})
+  MemoryAdaptiveCardContentProvider({@required this.content, @required String hostConfigPath, this.hostConfig})
       : super(hostConfigPath: hostConfigPath);
 
   Map content;
+  HostConfig hostConfig;
 
   @override
   Future<Map> loadAdaptiveCardContent() {
@@ -39,10 +41,11 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 }
 
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  AssetAdaptiveCardContentProvider({@required this.path, @required String hostConfigPath})
+  AssetAdaptiveCardContentProvider({@required this.path, @required String hostConfigPath, this.hostConfig})
       : super(hostConfigPath: hostConfigPath);
 
   String path;
+  HostConfig hostConfig;
 
   @override
   Future<Map> loadAdaptiveCardContent() async {
@@ -51,10 +54,11 @@ class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 }
 
 class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  NetworkAdaptiveCardContentProvider({@required this.url, @required String hostConfigPath})
+  NetworkAdaptiveCardContentProvider({@required this.url, @required String hostConfigPath, this.hostConfig})
       : super(hostConfigPath: hostConfigPath);
 
   String url;
+  HostConfig hostConfig;
 
   @override
   Future<Map> loadAdaptiveCardContent() async {
@@ -70,6 +74,7 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry = const CardRegistry(),
     this.onSubmit,
     this.onOpenUrl,
+    this.hostConfig,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
   }) : super(key: key);
@@ -80,11 +85,13 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     @required String url,
     @required String hostConfigPath,
+    this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
-  }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(url: url, hostConfigPath: hostConfigPath);
+  }) : adaptiveCardContentProvider =
+            NetworkAdaptiveCardContentProvider(url: url, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   AdaptiveCard.asset({
     Key key,
@@ -92,11 +99,13 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     @required String assetPath,
     @required String hostConfigPath,
+    this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
-  }) : adaptiveCardContentProvider = AssetAdaptiveCardContentProvider(path: assetPath, hostConfigPath: hostConfigPath);
+  }) : adaptiveCardContentProvider =
+            AssetAdaptiveCardContentProvider(path: assetPath, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   AdaptiveCard.memory({
     Key key,
@@ -104,18 +113,21 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     @required Map content,
     @required String hostConfigPath,
+    this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
   }) : adaptiveCardContentProvider =
-            MemoryAdaptiveCardContentProvider(content: content, hostConfigPath: hostConfigPath);
+            MemoryAdaptiveCardContentProvider(content: content, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   final AdaptiveCardContentProvider adaptiveCardContentProvider;
 
   final Widget placeholder;
 
   final CardRegistry cardRegistry;
+
+  final HostConfig hostConfig;
 
   final Function(Map map) onSubmit;
   final Function(String url) onOpenUrl;
