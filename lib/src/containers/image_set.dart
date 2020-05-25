@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../additional.dart';
 import '../base.dart';
 import '../elements/image.dart';
+import '../utils.dart';
 
 class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImageSet({Key key, this.adaptiveMap}) : super(key: key);
@@ -18,6 +19,7 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
 
   String imageSize;
   double maybeSize;
+  Color backgroundColor;
 
   @override
   void initState() {
@@ -30,6 +32,17 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
 
   @override
   Widget build(BuildContext context) {
+    if (backgroundColor == null) {
+      setState(() {
+        backgroundColor = getBackgroundColor(
+          resolver: resolver,
+          adaptiveMap: adaptiveMap,
+          approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+          brightness: Theme.of(context).brightness,
+        );
+      });
+    }
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: LayoutBuilder(builder: (context, constraints) {

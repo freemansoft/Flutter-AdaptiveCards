@@ -356,15 +356,27 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       }
       return true;
     }());
+    var backgroundColor = getBackgroundColor();
+
     return Provider<RawAdaptiveCardState>.value(
       value: this,
       child: InheritedReferenceResolver(
         resolver: _resolver,
         child: Card(
+          color: backgroundColor,
           child: child,
         ),
       ),
     );
+  }
+
+  Color getBackgroundColor() {
+    var colorString = _resolver.hostConfig["containerStyles"]["default"]["backgroundColor"];
+    var backgroundColor = parseColor(colorString);
+    if (widget.approximateDarkThemeColors) {
+      backgroundColor = adjustColorToFitDarkTheme(backgroundColor, Theme.of(context).brightness);
+    }
+    return backgroundColor;
   }
 }
 

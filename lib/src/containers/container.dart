@@ -29,14 +29,21 @@ class _AdaptiveContainerState extends State<AdaptiveContainer> with AdaptiveElem
     } else {
       children = [];
     }
-
-    String colorString = resolver.hostConfig["containerStyles"][adaptiveMap["style"] ?? "default"]["backgroundColor"];
-
-    backgroundColor = parseColor(colorString);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (backgroundColor == null) {
+      setState(() {
+        backgroundColor = getBackgroundColor(
+          resolver: resolver,
+          adaptiveMap: adaptiveMap,
+          approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+          brightness: Theme.of(context).brightness,
+        );
+      });
+    }
+
     return ChildStyler(
       adaptiveMap: adaptiveMap,
       child: AdaptiveTappable(

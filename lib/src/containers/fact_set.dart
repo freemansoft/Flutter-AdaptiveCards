@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../additional.dart';
 import '../base.dart';
+import '../utils.dart';
 
 class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveFactSet({Key key, this.adaptiveMap}) : super(key: key);
@@ -15,6 +16,8 @@ class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementMixin {
   List<Map> facts;
 
+  Color backgroundColor;
+
   @override
   void initState() {
     super.initState();
@@ -23,6 +26,17 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementM
 
   @override
   Widget build(BuildContext context) {
+    if (backgroundColor == null) {
+      setState(() {
+        backgroundColor = getBackgroundColor(
+          resolver: resolver,
+          adaptiveMap: adaptiveMap,
+          approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+          brightness: Theme.of(context).brightness,
+        );
+      });
+    }
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: Row(
