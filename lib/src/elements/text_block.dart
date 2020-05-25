@@ -107,7 +107,13 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
     Color color = getColor(Theme.of(context).brightness);
 
     if  (color == null) {
-      color = Theme.of(context).textTheme.bodyText1.color;
+      var isEmphasis = (adaptiveMap["color"] ?? "default") == "emphasis";
+
+      if (isEmphasis) {
+        color = Theme.of(context).textTheme.bodyText2.color;
+      } else {
+        color = Theme.of(context).textTheme.bodyText1.color;
+      }
     }
 
     TextStyle style = TextStyle(fontWeight: fontWeight, fontSize: fontSize, color: color);
