@@ -1,7 +1,7 @@
-
-
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
+
+import '../brightness_switch.dart';
 
 class TesterPage extends StatelessWidget {
   @override
@@ -9,10 +9,13 @@ class TesterPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Test"),
+        actions: [
+          BrightnessSwitch(),
+        ],
       ),
       body: ListView(
         children: <Widget>[
-          DemoAdaptiveCard("lib/samples/example1",),
+          DemoAdaptiveCard("lib/samples/example1"),
         ],
       ),
     );

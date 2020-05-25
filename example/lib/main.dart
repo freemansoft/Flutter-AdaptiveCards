@@ -1,15 +1,15 @@
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:example/action_set/action_set_page.dart';
 import 'package:example/samples/samples.dart';
 import 'package:example/text_block/text_block_examples_page.dart';
+import 'package:flutter/foundation.dart' show debugDefaultTargetPlatformOverride;
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'
-    show debugDefaultTargetPlatformOverride;
-import 'package:dynamic_theme/dynamic_theme.dart';
 
 import 'about_page.dart';
 import 'action_open_url/action_open_url_examples_page.dart';
 import 'action_show_card/action_show_card_examples_page.dart';
 import 'action_submit/action_submit_examples_page.dart';
+import 'brightness_switch.dart';
 import 'column/column_examples_page.dart';
 import 'column_set/column_set_examples_page.dart';
 import 'container/container_examples_page.dart';
@@ -71,24 +71,26 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Flutter Adaptive Cards"),
-        actions: <Widget>[
+        actions: [
+          BrightnessSwitch(),
           MaterialButton(
             onPressed: () {
               Navigator.of(context).pushNamed("about");
             },
-            child: Text("About"),
+            child: Text(
+              "About",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -100,9 +102,15 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: <Widget>[
-                  Image.asset("assets/banner.jpg",),
+                  Image.asset(
+                    "assets/banner.jpg",
+                  ),
                   Divider(),
-                  Text("Flutter-Adaptive Cards by Neohelden", style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600), textAlign: TextAlign.center,),
+                  Text(
+                    "Flutter-Adaptive Cards by Neohelden",
+                    style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),
@@ -126,22 +134,24 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
   Widget getRow(List<String> element) {
     return Row(
-      children: element.map((it) => Expanded(child: getButton(it)),).toList(),
+      children: element
+          .map(
+            (it) => Expanded(child: getButton(it)),
+          )
+          .toList(),
     );
   }
 
   Widget getButton(String element) {
     return Card(
       child: InkWell(
-        onTap: () => pushNamed(element),
-        child: SizedBox(
-          height: 64.0,
-          child: Center(child: Text(element)),
-        )
-      ),
+          onTap: () => pushNamed(element),
+          child: SizedBox(
+            height: 64.0,
+            child: Center(child: Text(element)),
+          )),
     );
   }
 
