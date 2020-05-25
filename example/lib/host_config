@@ -63,8 +63,7 @@
 					"default": "#FF0000",
 					"subtle": "#DDFF0000"
 				}
-			},
-			"backgroundColor": "#EDEFF0"
+			}
 		},
 		"emphasis": {
 			"foregroundColors": {

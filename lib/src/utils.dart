@@ -80,6 +80,7 @@ class FullCircleClipper extends CustomClipper<Rect> {
 }
 
 Color parseColor(String colorValue) {
+  if (colorValue == null) return null;
   // No alpha
   if (colorValue.length == 7) {
     return Color(int.parse(colorValue.substring(1, 7), radix: 16) + 0xFF000000);
@@ -108,6 +109,8 @@ String getDayOfMonthSuffix(final int n) {
 }
 
 Color adjustColorToFitDarkTheme(Color color, Brightness brightness) {
+  if (color == null) return null;
+
   if (brightness == Brightness.light) {
     return color;
   } else {

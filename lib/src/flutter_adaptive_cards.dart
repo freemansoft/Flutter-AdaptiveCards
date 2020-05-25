@@ -372,6 +372,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
   Color getBackgroundColor() {
     var colorString = _resolver.hostConfig["containerStyles"]["default"]["backgroundColor"];
+
     var backgroundColor = parseColor(colorString);
     if (widget.approximateDarkThemeColors) {
       backgroundColor = adjustColorToFitDarkTheme(backgroundColor, Theme.of(context).brightness);
