@@ -45,13 +45,16 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: LayoutBuilder(builder: (context, constraints) {
-        return Wrap(
-          //maxCrossAxisExtent: 200.0,
-          children: images.map((img) => SizedBox(width: calculateSize(constraints), child: img)).toList(),
-          //shrinkWrap: true,
-        );
-      }),
+      child: Container(
+        color: backgroundColor,
+        child: LayoutBuilder(builder: (context, constraints) {
+          return Wrap(
+            //maxCrossAxisExtent: 200.0,
+            children: images.map((img) => SizedBox(width: calculateSize(constraints), child: img)).toList(),
+            //shrinkWrap: true,
+          );
+        }),
+      ),
     );
   }
 

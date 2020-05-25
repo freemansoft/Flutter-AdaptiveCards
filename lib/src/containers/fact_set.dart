@@ -39,26 +39,29 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementM
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: Row(
-        children: [
-          Column(
-            children: facts
-                .map((fact) => Text(
-                      fact["title"],
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ))
-                .toList(),
-            crossAxisAlignment: CrossAxisAlignment.start,
-          ),
-          SizedBox(
-            width: 8.0,
-          ),
-          Column(
-            children: facts.map((fact) => Text(fact["value"])).toList(),
-            crossAxisAlignment: CrossAxisAlignment.start,
-          ),
-        ],
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Container(
+        color: backgroundColor,
+        child: Row(
+          children: [
+            Column(
+              children: facts
+                  .map((fact) => Text(
+                        fact["title"],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ))
+                  .toList(),
+              crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            SizedBox(
+              width: 8.0,
+            ),
+            Column(
+              children: facts.map((fact) => Text(fact["value"])).toList(),
+              crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+        ),
       ),
     );
   }

@@ -36,7 +36,6 @@
 		"default": {
 			"foregroundColors": {
 				"default": {
-					"default": "#333333",
 					"subtle": "#EE333333"
 				},
 				"dark": {

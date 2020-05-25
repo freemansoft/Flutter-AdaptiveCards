@@ -128,6 +128,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
         );
       });
     }
+
     Widget result = Stack(
       children: [
         backgroundImage,
@@ -135,13 +136,12 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
           onTap: action?.tap,
           child: Padding(
             padding: EdgeInsets.only(left: precedingSpacing),
-            child: Column(
-              children: []
-                ..add(
-                  separator ? Divider() : SizedBox(),
-                )
-                ..addAll(items.map((it) => it).toList()),
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: SeparatorElement(
+              adaptiveMap: adaptiveMap,
+              child: Column(
+                children: []..addAll(items.map((it) => it).toList()),
+                crossAxisAlignment: CrossAxisAlignment.center,
+              ),
             ),
           ),
         ),

@@ -41,11 +41,14 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
       adaptiveMap: adaptiveMap,
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
-        child: Row(
-          children: columns.toList(),
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        child: Container(
+          color: backgroundColor,
+          child: Row(
+            children: columns.toList(),
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+          ),
         ),
       ),
     );

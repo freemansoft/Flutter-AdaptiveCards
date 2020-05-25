@@ -51,9 +51,7 @@ class _AdaptiveContainerState extends State<AdaptiveContainer> with AdaptiveElem
         child: SeparatorElement(
           adaptiveMap: adaptiveMap,
           child: Container(
-            color: Theme.of(context).brightness == Brightness.dark && adaptiveMap["style"] == null
-                ? null
-                : backgroundColor,
+            color: backgroundColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Column(

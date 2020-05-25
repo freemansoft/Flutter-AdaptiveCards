@@ -542,8 +542,8 @@ class ReferenceResolver {
   /// - good
   /// - warning
   /// - attention
-  Color resolveColor(String color, bool isSubtle) {
-    String myColor = color ?? "default";
+  Color resolveColor(String colorType, bool isSubtle) {
+    String myColor = colorType ?? "default";
     String subtleOrDefault = isSubtle ?? false ? "subtle" : "default";
     final style = currentStyle ?? "default";
     // Make it case insensitive
