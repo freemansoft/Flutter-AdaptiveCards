@@ -101,8 +101,6 @@ mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin> on State<T
   }
 }
 
-
-
 abstract class GenericAction {
 
   GenericAction(this.adaptiveMap, this.rawAdaptiveCardState);
