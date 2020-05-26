@@ -104,17 +104,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
 
   /// TODO Markdown still has some problems
   MarkdownStyleSheet loadMarkdownStyleSheet() {
-    Color color = getColor(Theme.of(context).brightness);
-
-    if  (color == null) {
-      var isEmphasis = (adaptiveMap["color"] ?? "default") == "emphasis";
-
-      if (isEmphasis) {
-        color = Theme.of(context).textTheme.bodyText2.color;
-      } else {
-        color = Theme.of(context).textTheme.bodyText1.color;
-      }
-    }
+    var color = getColor(Theme.of(context).brightness);
 
     TextStyle style = TextStyle(fontWeight: fontWeight, fontSize: fontSize, color: color);
     return MarkdownStyleSheet(

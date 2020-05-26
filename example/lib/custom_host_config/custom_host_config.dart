@@ -1,11 +1,10 @@
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 
 import '../brightness_switch.dart';
 
 class DynamicHostConfigPage extends StatelessWidget {
-  var hostConfig = '''
+  final hostConfig = '''
   {
     "choiceSetInputValueSeparator": ",",
     "supportsInteractivity": true,
@@ -44,7 +43,7 @@ class DynamicHostConfigPage extends StatelessWidget {
       "default": {
         "foregroundColors": {
           "default": {
-            "default": "#333333",
+            "default": "#FF0000",
             "subtle": "#EE333333"
           },
           "dark": {
