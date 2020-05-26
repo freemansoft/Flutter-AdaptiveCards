@@ -3,6 +3,7 @@ library flutter_adaptive_cards;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
@@ -149,6 +150,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
   Function(Map map) onSubmit;
   Function(String url) onOpenUrl;
 
+  bool hostConfigChanged = false;
+
   @override
   void initState() {
     super.initState();
@@ -166,6 +169,19 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
         }
       });
     });
+  }
+
+  @override
+  void didUpdateWidget(AdaptiveCard oldWidget) {
+    widget.adaptiveCardContentProvider.loadHostConfig().then((hostConfigMap) {
+      setState(() {
+        if (mounted) {
+          hostConfig = hostConfigMap;
+        }
+      });
+    });
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -272,13 +288,23 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void initState() {
     super.initState();
+
     _resolver = ReferenceResolver(
       hostConfig: widget.hostConfig,
     );
+
     idGenerator = UUIDGenerator();
     cardRegistry = widget.cardRegistry;
 
     _adaptiveElement = widget.cardRegistry.getElement(widget.map);
+  }
+
+  void didUpdateWidget(RawAdaptiveCard oldWidget) {
+    _resolver = ReferenceResolver(
+      hostConfig: widget.hostConfig,
+    );
+    _adaptiveElement = widget.cardRegistry.getElement(widget.map);
+    super.didUpdateWidget(oldWidget);
   }
 
   /// Every widget can access method of this class, meaning setting the state

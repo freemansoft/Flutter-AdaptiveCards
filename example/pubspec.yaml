@@ -32,9 +32,6 @@ flutter:
     - assets/norbert.jpg
     - assets/pascal.jpg
     - assets/banner.jpg
-    - lib/neo/example1
-    - lib/neo/example2
-    - lib/neo/example3
     - lib/easy_card
     - lib/adaptive_card_string
     - lib/host_config

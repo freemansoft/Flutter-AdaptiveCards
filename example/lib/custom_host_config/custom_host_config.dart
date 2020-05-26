@@ -4,13 +4,18 @@ import 'package:flutter/material.dart';
 import '../brightness_switch.dart';
 
 class DynamicHostConfigPage extends StatelessWidget {
-  final hostConfig = '''
+  @override
+  Widget build(BuildContext context) {
+    var isLight = Theme.of(context).brightness == Brightness.light;
+    var defaultForegroundColor = isLight ? "FF0000" : "00FF00";
+
+    var hostConfig = '''
   {
     "choiceSetInputValueSeparator": ",",
     "supportsInteractivity": true,
     "fontFamily": "Segoe UI",
     "spacing": {
-        "none": 0,
+      "none": 0,
       "small": 3,
       "default": 8,
       "medium": 20,
@@ -43,7 +48,7 @@ class DynamicHostConfigPage extends StatelessWidget {
       "default": {
         "foregroundColors": {
           "default": {
-            "default": "#FF0000",
+            "default": "#$defaultForegroundColor",
             "subtle": "#EEFF0000"
           },
           "dark": {
@@ -147,8 +152,6 @@ class DynamicHostConfigPage extends StatelessWidget {
   }
   ''';
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Custom Host Config"),
@@ -161,7 +164,11 @@ class DynamicHostConfigPage extends StatelessWidget {
         itemBuilder: (context, index) {
           return Theme(
             data: ThemeData(buttonColor: Colors.green),
-            child: DemoAdaptiveCard("lib/samples/example${index + 1}", hostConfig: hostConfig),
+            child: DemoAdaptiveCard(
+              "lib/samples/example${index + 1}",
+              hostConfig: hostConfig,
+              approximateDarkThemeColors: false,
+            ),
           );
         },
       ),

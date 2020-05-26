@@ -18,14 +18,13 @@ class LabAdaptiveCard extends StatelessWidget {
   }
 }
 
-
-
 class DemoAdaptiveCard extends StatefulWidget {
 
-  const DemoAdaptiveCard(this.assetPath, {Key key, this.hostConfig}) : super(key: key);
+  const DemoAdaptiveCard(this.assetPath, {Key key, this.hostConfig, this.approximateDarkThemeColors = true}) : super(key: key);
 
   final String assetPath;
   final String hostConfig;
+  final bool approximateDarkThemeColors;
 
   @override
   _DemoAdaptiveCardState createState() => new _DemoAdaptiveCardState();
@@ -54,6 +53,7 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard> with AutomaticKeepA
             hostConfigPath: "lib/host_config",
             showDebugJson: false,
             hostConfig: widget.hostConfig,
+            approximateDarkThemeColors: widget.approximateDarkThemeColors,
           ),
           FlatButton(
             textColor: Colors.indigo,
