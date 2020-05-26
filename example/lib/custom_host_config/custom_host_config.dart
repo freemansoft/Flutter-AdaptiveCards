@@ -44,7 +44,7 @@ class DynamicHostConfigPage extends StatelessWidget {
         "foregroundColors": {
           "default": {
             "default": "#FF0000",
-            "subtle": "#EE333333"
+            "subtle": "#EEFF0000"
           },
           "dark": {
             "default": "#000000",

@@ -73,7 +73,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
 
   // Probably want to pass context down the tree, until now -> this
   Color getColor(Brightness brightness) {
-    Color color = resolver.resolveColor(adaptiveMap["color"], adaptiveMap["isSubtle"]);
+    Color color = resolver.resolveForegroundColor(adaptiveMap["color"], adaptiveMap["isSubtle"]);
     if (color != null && widgetState.widget.approximateDarkThemeColors) {
       color = adjustColorToFitDarkTheme(color, brightness);
     }
@@ -105,8 +105,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   /// TODO Markdown still has some problems
   MarkdownStyleSheet loadMarkdownStyleSheet() {
     var color = getColor(Theme.of(context).brightness);
-
     TextStyle style = TextStyle(fontWeight: fontWeight, fontSize: fontSize, color: color);
+
     return MarkdownStyleSheet(
       a: style,
       blockquote: style,

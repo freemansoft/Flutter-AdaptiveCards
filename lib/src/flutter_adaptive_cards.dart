@@ -556,7 +556,7 @@ class ReferenceResolver {
   /// - good
   /// - warning
   /// - attention
-  Color resolveColor(String colorType, bool isSubtle) {
+  Color resolveForegroundColor(String colorType, bool isSubtle) {
     String myColor = colorType ?? "default";
     String subtleOrDefault = isSubtle ?? false ? "subtle" : "default";
     final style = currentStyle ?? "default";

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -31,6 +32,8 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementM
       brightness: Theme.of(context).brightness,
     );
 
+    var color = getColor(Theme.of(context).brightness);
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: Container(
@@ -41,7 +44,7 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementM
               children: facts
                   .map((fact) => Text(
                         fact["title"],
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: color),
                       ))
                   .toList(),
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +53,12 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementM
               width: 8.0,
             ),
             Column(
-              children: facts.map((fact) => Text(fact["value"])).toList(),
+              children: facts
+                  .map((fact) => MarkdownBody(
+                        data: fact["value"],
+                        styleSheet: loadMarkdownStyleSheet(color),
+                      ))
+                  .toList(),
               crossAxisAlignment: CrossAxisAlignment.start,
             ),
           ],
@@ -58,5 +66,27 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementM
         ),
       ),
     );
+  }
+
+  MarkdownStyleSheet loadMarkdownStyleSheet(Color color) {
+    TextStyle style = TextStyle(color: color);
+
+    return MarkdownStyleSheet(
+      a: style,
+      blockquote: style,
+      code: style,
+      em: style,
+      strong: style.copyWith(fontWeight: FontWeight.bold),
+      p: style,
+    );
+  }
+
+  Color getColor(Brightness brightness) {
+    var color = resolver.resolveForegroundColor(adaptiveMap["style"], adaptiveMap["isSubtle"]);
+
+    if (color != null && widgetState.widget.approximateDarkThemeColors) {
+      color = adjustColorToFitDarkTheme(color, brightness);
+    }
+    return color;
   }
 }
