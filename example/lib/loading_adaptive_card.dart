@@ -21,11 +21,11 @@ class LabAdaptiveCard extends StatelessWidget {
 
 
 class DemoAdaptiveCard extends StatefulWidget {
-  final String assetPath;
 
   const DemoAdaptiveCard(this.assetPath, {Key key, this.hostConfig}) : super(key: key);
 
-  final HostConfig hostConfig;
+  final String assetPath;
+  final String hostConfig;
 
   @override
   _DemoAdaptiveCardState createState() => new _DemoAdaptiveCardState();

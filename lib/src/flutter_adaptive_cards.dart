@@ -5,7 +5,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
@@ -15,11 +14,17 @@ import 'package:provider/provider.dart';
 import 'base.dart';
 
 abstract class AdaptiveCardContentProvider {
-  AdaptiveCardContentProvider({@required this.hostConfigPath});
+  AdaptiveCardContentProvider({this.hostConfigPath, this.hostConfig});
 
   final String hostConfigPath;
+  final String hostConfig;
 
   Future<Map> loadHostConfig() async {
+    if (hostConfig != null) {
+      var cleanedHostConfig = hostConfig.replaceAll(new RegExp(r'\n'), '');
+      return json.decode(cleanedHostConfig);
+    }
+
     String hostConfigString = await rootBundle.loadString(hostConfigPath);
     return json.decode(hostConfigString);
   }
@@ -28,11 +33,10 @@ abstract class AdaptiveCardContentProvider {
 }
 
 class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  MemoryAdaptiveCardContentProvider({@required this.content, @required String hostConfigPath, this.hostConfig})
-      : super(hostConfigPath: hostConfigPath);
+  MemoryAdaptiveCardContentProvider({@required this.content, String hostConfigPath, String hostConfig})
+      : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   Map content;
-  HostConfig hostConfig;
 
   @override
   Future<Map> loadAdaptiveCardContent() {
@@ -41,11 +45,10 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 }
 
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  AssetAdaptiveCardContentProvider({@required this.path, @required String hostConfigPath, this.hostConfig})
-      : super(hostConfigPath: hostConfigPath);
+  AssetAdaptiveCardContentProvider({@required this.path, String hostConfigPath, String hostConfig})
+      : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String path;
-  HostConfig hostConfig;
 
   @override
   Future<Map> loadAdaptiveCardContent() async {
@@ -54,11 +57,10 @@ class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 }
 
 class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  NetworkAdaptiveCardContentProvider({@required this.url, @required String hostConfigPath, this.hostConfig})
-      : super(hostConfigPath: hostConfigPath);
+  NetworkAdaptiveCardContentProvider({@required this.url, String hostConfigPath, String hostConfig})
+      : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String url;
-  HostConfig hostConfig;
 
   @override
   Future<Map> loadAdaptiveCardContent() async {
@@ -127,7 +129,7 @@ class AdaptiveCard extends StatefulWidget {
 
   final CardRegistry cardRegistry;
 
-  final HostConfig hostConfig;
+  final String hostConfig;
 
   final Function(Map map) onSubmit;
   final Function(String url) onOpenUrl;

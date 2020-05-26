@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
           home: new MyHomePage(),
           routes: {
             "Samples": (context) => SamplesPage(),
+            "Samples with dynamic HostConfig": (context) => DynamicHostConfigPage(),
             "TextBlock": (context) => TextBlockPage(),
             "Image": (context) => ImagePage(),
             "Container": (context) => ContainerPage(),
@@ -64,8 +65,7 @@ class MyApp extends StatelessWidget {
             "Input.Time": (context) => InputTimePage(),
             "Input.Toggle": (context) => InputTogglePage(),
             "Input.ChoiceSet": (context) => InputChoiceSetPage(),
-            "about": (context) => AboutPage(),
-            "CustomHostConfig": (context) => CustomHostConfigPage()
+            "about": (context) => AboutPage()
           },
         );
       },
@@ -119,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           getButton("Samples"),
+          getButton("Samples with dynamic HostConfig"),
           getRow(["Image", "ImageSet"]),
           getButton("Media"),
           Divider(),
@@ -131,9 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
           getRow(["Column", "ColumnSet"]),
           Divider(),
           getRow(["Input.Text", "Input.Number", "Input.Date"]),
-          getRow(["Input.Time", "Input.Toggle", "Input.ChoiceSet"]),
-          Divider(),
-          getButton("CustomHostConfig"),
+          getRow(["Input.Time", "Input.Toggle", "Input.ChoiceSet"])
         ],
       ),
     );
