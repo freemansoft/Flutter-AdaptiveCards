@@ -150,8 +150,6 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
   Function(Map map) onSubmit;
   Function(String url) onOpenUrl;
 
-  bool hostConfigChanged = false;
-
   @override
   void initState() {
     super.initState();
