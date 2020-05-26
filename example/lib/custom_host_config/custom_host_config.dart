@@ -159,7 +159,10 @@ class DynamicHostConfigPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: 15,
         itemBuilder: (context, index) {
-          return DemoAdaptiveCard("lib/samples/example${index + 1}", hostConfig: hostConfig);
+          return Theme(
+            data: ThemeData(buttonColor: Colors.green),
+            child: DemoAdaptiveCard("lib/samples/example${index + 1}", hostConfig: hostConfig),
+          );
         },
       ),
     );

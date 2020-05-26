@@ -48,14 +48,6 @@ AdaptiveCard.network(
   approximateDarkThemeColors: true,
 );
 ```
-### Colors
-
-The colors of the adaptive card can be configured in the **host_config**.
-
-If your app supports a light and dark theme you can set the parameter **approximateDarkThemeColors** to **true**, when creating an adaptive card.
-
-If you want to use your already defined app theme, you can remove following parameters from the host config which will then use following AppTheme parameters:
-
 
 ## Running the tests
 
