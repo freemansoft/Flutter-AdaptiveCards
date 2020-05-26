@@ -72,7 +72,7 @@ class DynamicHostConfigPage extends StatelessWidget {
             "subtle": "#DDFF0000"
           }
         },
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#AAAAAA"
       },
       "emphasis": {
         "foregroundColors": {

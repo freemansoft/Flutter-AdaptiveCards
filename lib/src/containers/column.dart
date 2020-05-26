@@ -133,9 +133,12 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
             padding: EdgeInsets.only(left: precedingSpacing),
             child: SeparatorElement(
               adaptiveMap: adaptiveMap,
-              child: Column(
-                children: []..addAll(items.map((it) => it).toList()),
-                crossAxisAlignment: CrossAxisAlignment.center,
+              child: Container(
+                color: backgroundColor,
+                child: Column(
+                  children: []..addAll(items.map((it) => it).toList()),
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                ),
               ),
             ),
           ),
