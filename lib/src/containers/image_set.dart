@@ -19,7 +19,6 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
 
   String imageSize;
   double maybeSize;
-  Color backgroundColor;
 
   @override
   void initState() {
@@ -32,16 +31,12 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
 
   @override
   Widget build(BuildContext context) {
-    if (backgroundColor == null) {
-      setState(() {
-        backgroundColor = getBackgroundColor(
-          resolver: resolver,
-          adaptiveMap: adaptiveMap,
-          approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
-          brightness: Theme.of(context).brightness,
-        );
-      });
-    }
+    var backgroundColor = getBackgroundColor(
+      resolver: resolver,
+      adaptiveMap: adaptiveMap,
+      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+      brightness: Theme.of(context).brightness,
+    );
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,

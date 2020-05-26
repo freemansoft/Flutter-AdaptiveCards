@@ -125,6 +125,7 @@ Color adjustColorToFitDarkTheme(Color color, Brightness brightness) {
 Color getBackgroundColor(
     {ReferenceResolver resolver, Map adaptiveMap, bool approximateDarkThemeColors, Brightness brightness}) {
   var colorString = resolver.hostConfig["containerStyles"][adaptiveMap["style"] ?? "default"]["backgroundColor"];
+
   var backgroundColor = parseColor(colorString);
   if (backgroundColor != null && approximateDarkThemeColors) {
     backgroundColor = adjustColorToFitDarkTheme(backgroundColor, brightness);

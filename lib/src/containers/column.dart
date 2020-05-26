@@ -27,7 +27,6 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
   double precedingSpacing;
   Widget backgroundImage;
   bool separator;
-  Color backgroundColor;
 
   @override
   void initState() {
@@ -118,16 +117,12 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
 
   @override
   Widget build(BuildContext context) {
-    if (backgroundColor == null) {
-      setState(() {
-        backgroundColor = getBackgroundColor(
-          resolver: resolver,
-          adaptiveMap: adaptiveMap,
-          approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
-          brightness: Theme.of(context).brightness,
-        );
-      });
-    }
+    var backgroundColor = getBackgroundColor(
+      resolver: resolver,
+      adaptiveMap: adaptiveMap,
+      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+      brightness: Theme.of(context).brightness,
+    );
 
     Widget result = Stack(
       children: [

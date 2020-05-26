@@ -16,7 +16,6 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElementMixin {
   List<AdaptiveColumn> columns;
-  Color backgroundColor;
 
   @override
   void initState() {
@@ -26,16 +25,12 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
 
   @override
   Widget build(BuildContext context) {
-    if (backgroundColor == null) {
-      setState(() {
-        backgroundColor = getBackgroundColor(
-          resolver: resolver,
-          adaptiveMap: adaptiveMap,
-          approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
-          brightness: Theme.of(context).brightness,
-        );
-      });
-    }
+    var backgroundColor = getBackgroundColor(
+      resolver: resolver,
+      adaptiveMap: adaptiveMap,
+      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+      brightness: Theme.of(context).brightness,
+    );
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,

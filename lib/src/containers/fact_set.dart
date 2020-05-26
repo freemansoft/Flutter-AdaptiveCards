@@ -16,8 +16,6 @@ class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementMixin {
   List<Map> facts;
 
-  Color backgroundColor;
-
   @override
   void initState() {
     super.initState();
@@ -26,16 +24,12 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementM
 
   @override
   Widget build(BuildContext context) {
-    if (backgroundColor == null) {
-      setState(() {
-        backgroundColor = getBackgroundColor(
-          resolver: resolver,
-          adaptiveMap: adaptiveMap,
-          approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
-          brightness: Theme.of(context).brightness,
-        );
-      });
-    }
+    var backgroundColor = getBackgroundColor(
+      resolver: resolver,
+      adaptiveMap: adaptiveMap,
+      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+      brightness: Theme.of(context).brightness,
+    );
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,

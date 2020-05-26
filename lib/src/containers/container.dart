@@ -17,8 +17,6 @@ class _AdaptiveContainerState extends State<AdaptiveContainer> with AdaptiveElem
 // TODO implement verticalContentAlignment
   List<Widget> children;
 
-  Color backgroundColor;
-
   @override
   void initState() {
     super.initState();
@@ -33,16 +31,12 @@ class _AdaptiveContainerState extends State<AdaptiveContainer> with AdaptiveElem
 
   @override
   Widget build(BuildContext context) {
-    if (backgroundColor == null) {
-      setState(() {
-        backgroundColor = getBackgroundColor(
-          resolver: resolver,
-          adaptiveMap: adaptiveMap,
-          approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
-          brightness: Theme.of(context).brightness,
-        );
-      });
-    }
+    var backgroundColor = getBackgroundColor(
+      resolver: resolver,
+      adaptiveMap: adaptiveMap,
+      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+      brightness: Theme.of(context).brightness,
+    );
 
     return ChildStyler(
       adaptiveMap: adaptiveMap,
