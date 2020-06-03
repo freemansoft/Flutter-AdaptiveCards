@@ -117,7 +117,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = getBackgroundColor(
+    var backgroundColor = getBackgroundColorIfNotDefault(
       resolver: resolver,
       adaptiveMap: adaptiveMap,
       approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,

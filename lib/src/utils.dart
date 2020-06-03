@@ -122,9 +122,13 @@ Color adjustColorToFitDarkTheme(Color color, Brightness brightness) {
   }
 }
 
-Color getBackgroundColor(
+Color getBackgroundColorIfNotDefault(
     {ReferenceResolver resolver, Map adaptiveMap, bool approximateDarkThemeColors, Brightness brightness}) {
-  var colorString = resolver.hostConfig["containerStyles"][adaptiveMap["style"] ?? "default"]["backgroundColor"];
+
+  var style = adaptiveMap["style"] ?? "default";
+  if (style == "default") return null;
+
+  var colorString = resolver.hostConfig["containerStyles"][style]["backgroundColor"];
 
   var backgroundColor = parseColor(colorString);
   if (backgroundColor != null && approximateDarkThemeColors) {

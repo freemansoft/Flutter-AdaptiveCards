@@ -31,7 +31,7 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = getBackgroundColor(
+    var backgroundColor = getBackgroundColorIfNotDefault(
       resolver: resolver,
       adaptiveMap: adaptiveMap,
       approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
