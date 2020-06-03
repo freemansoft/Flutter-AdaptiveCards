@@ -122,8 +122,10 @@ Color adjustColorToFitDarkTheme(Color color, Brightness brightness) {
   }
 }
 
-Color getBackgroundColorIfNotDefault(
+Color getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
     {ReferenceResolver resolver, Map adaptiveMap, bool approximateDarkThemeColors, Brightness brightness}) {
+
+  if (adaptiveMap["backgroundImage"] != null) return null;
 
   var style = adaptiveMap["style"] ?? "default";
   if (style == "default") return null;

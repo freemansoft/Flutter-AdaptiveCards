@@ -36,6 +36,7 @@
                 {
                     "width": "stretch",
                     "type": "Column",
+                    "style": "emphasis",
                     "backgroundImage": {
                         "url": "https://messagecardplayground.azurewebsites.net/assets/TxP_Background.png"
                     },

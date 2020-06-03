@@ -25,7 +25,7 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet> with AdaptiveElementM
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = getBackgroundColorIfNotDefault(
+    var backgroundColor = getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
       resolver: resolver,
       adaptiveMap: adaptiveMap,
       approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
