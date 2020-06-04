@@ -57,7 +57,7 @@ AdaptiveCard.network(
 );
 ```
 ## Example App
-We try to show every possible configuration parameter supported by the AC compentes in the example app of this repository. If we missed any, please fill free to open an issue.
+We try to show every possible configuration parameter supported by the AdaptiveCards components in the example app of this repository. If we missed any, please feel free to open an issue.
 
 ## Running the tests
 
