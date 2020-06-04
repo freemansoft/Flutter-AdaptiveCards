@@ -18,13 +18,21 @@ dependencies:
 
 Using Adaptive Cards in Flutter coudn't be simpler: All you need is the `AdaptiveCard` widget.
 
-There are several constructors which handle data loading from different sources.
-
+### Loading an AdaptiveCard
+There are several constructors which handle loading of the AC from different sources.
 `AdaptiveCard.network` takes a url to download the payload and display it.
 `AdaptiveCard.asset` takes an asset path to load the payload from the local data.
 `AdaptiveCard.memory` takes a map (which can be obtained but decoding a string using the json class) and displays it.
 
-An example:
+### HostConfig
+The `HostConfig` can be configured via two parameters of every constructor:
+  1. The parameter `hostConfigPath` takes a static HostConfig which can be stored as a local asset. In this case, the [HostConfig has to be added to the pubspec.yaml](https://flutter.dev/docs/development/ui/assets-and-images) of the project.
+  2. The parameter `hostConfig` takes a dynamic HostConfig as a String. This can easily be programmaticly and can e.g. be used for switching between a light and a dark theme.
+  
+If both parameters are set the `hostConfig`parameter will be used.
+  
+
+### Example
 
 ```dart
 AdaptiveCard.network(
@@ -48,7 +56,8 @@ AdaptiveCard.network(
   approximateDarkThemeColors: true,
 );
 ```
-
+## Example App
+We try to show every possible configuration parameter supported by the AdaptiveCards components in the example app of this repository. If we missed any, please feel free to open an issue.
 
 ## Running the tests
 

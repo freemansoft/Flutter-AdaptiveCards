@@ -1,7 +1,7 @@
-
-
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
+
+import '../../brightness_switch.dart';
 
 class InputDatePage extends StatelessWidget {
   @override
@@ -9,10 +9,13 @@ class InputDatePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Input.Date"),
+        actions: [
+          BrightnessSwitch(),
+        ],
       ),
       body: ListView(
         children: <Widget>[
-          DemoAdaptiveCard("lib/inputs/input_date/example1",),
+          DemoAdaptiveCard("lib/inputs/input_date/example1"),
         ],
       ),
     );

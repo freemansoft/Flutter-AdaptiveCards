@@ -37,35 +37,6 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "Default container again, using ShowCard",
-          "wrap": true
-        }
-      ],
-      "selectAction": {
-        "type": "Action.ShowCard",
-        "title": "Show card action",
-        "card": {
-          "type": "AdaptiveCard",
-          "body": [
-            {
-              "type": "TextBlock",
-              "text": "What do you think?"
-            }
-          ],
-          "actions": [
-            {
-              "type": "Action.Submit",
-              "title": "Neat!"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "type": "Container",
-      "items": [
-        {
-          "type": "TextBlock",
           "text": "Submit action"
         }
       ],

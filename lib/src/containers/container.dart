@@ -17,8 +17,6 @@ class _AdaptiveContainerState extends State<AdaptiveContainer> with AdaptiveElem
 // TODO implement verticalContentAlignment
   List<Widget> children;
 
-  Color backgroundColor;
-
   @override
   void initState() {
     super.initState();
@@ -29,14 +27,17 @@ class _AdaptiveContainerState extends State<AdaptiveContainer> with AdaptiveElem
     } else {
       children = [];
     }
-
-    String colorString = resolver.hostConfig["containerStyles"][adaptiveMap["style"] ?? "default"]["backgroundColor"];
-
-    backgroundColor = parseColor(colorString);
   }
 
   @override
   Widget build(BuildContext context) {
+    var backgroundColor = getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+      resolver: resolver,
+      adaptiveMap: adaptiveMap,
+      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+      brightness: Theme.of(context).brightness,
+    );
+
     return ChildStyler(
       adaptiveMap: adaptiveMap,
       child: AdaptiveTappable(
@@ -44,9 +45,7 @@ class _AdaptiveContainerState extends State<AdaptiveContainer> with AdaptiveElem
         child: SeparatorElement(
           adaptiveMap: adaptiveMap,
           child: Container(
-            color: Theme.of(context).brightness == Brightness.dark && adaptiveMap["style"] == null
-                ? null
-                : backgroundColor,
+            color: backgroundColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Column(

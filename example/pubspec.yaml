@@ -5,7 +5,7 @@ homepage: https://neohelden.com
 version: 0.1.0
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -41,7 +41,7 @@ flutter:
     - lib/text_block/example3
     - lib/text_block/example4
     - lib/text_block/example5
-    - lib/text_block/example6
+    - lib/text_block/example5
     - lib/text_block/example7
     - lib/text_block/example8
     - lib/text_block/example9
@@ -51,7 +51,7 @@ flutter:
     - lib/image/example3
     - lib/image/example4
     - lib/image/example5
-    - lib/image/example6
+    - lib/image/example5
     - lib/container/example1
     - lib/container/example2
     - lib/container/example3

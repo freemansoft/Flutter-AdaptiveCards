@@ -1,7 +1,7 @@
-
-
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
+
+import '../../brightness_switch.dart';
 
 class InputChoiceSetPage extends StatelessWidget {
   @override
@@ -9,10 +9,13 @@ class InputChoiceSetPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Input.ChoiceSet"),
+        actions: [
+          BrightnessSwitch(),
+        ],
       ),
       body: ListView(
         children: <Widget>[
-          DemoAdaptiveCard("lib/inputs/input_choice_set/example1",),
+          DemoAdaptiveCard("lib/inputs/input_choice_set/example1"),
         ],
       ),
     );

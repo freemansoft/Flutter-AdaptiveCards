@@ -45,9 +45,9 @@ class _AdaptiveMediaState extends State<AdaptiveMedia> with AdaptiveElementMixin
 
   @override
   void dispose() {
-    super.dispose();
-    controller.pause();
+    videoPlayerController.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   @override

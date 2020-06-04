@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_adaptive_cards/src/flutter_adaptive_cards.dart';
+import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 
 class LabAdaptiveCard extends StatelessWidget {
   const LabAdaptiveCard({Key key, this.payload}) : super(key: key);
@@ -18,12 +18,13 @@ class LabAdaptiveCard extends StatelessWidget {
   }
 }
 
-
-
 class DemoAdaptiveCard extends StatefulWidget {
-  final String assetPath;
 
-  const DemoAdaptiveCard(this.assetPath, {Key key}) : super(key: key);
+  const DemoAdaptiveCard(this.assetPath, {Key key, this.hostConfig, this.approximateDarkThemeColors = true}) : super(key: key);
+
+  final String assetPath;
+  final String hostConfig;
+  final bool approximateDarkThemeColors;
 
   @override
   _DemoAdaptiveCardState createState() => new _DemoAdaptiveCardState();
@@ -51,6 +52,8 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard> with AutomaticKeepA
             assetPath: widget.assetPath,
             hostConfigPath: "lib/host_config",
             showDebugJson: false,
+            hostConfig: widget.hostConfig,
+            approximateDarkThemeColors: widget.approximateDarkThemeColors,
           ),
           FlatButton(
             textColor: Colors.indigo,

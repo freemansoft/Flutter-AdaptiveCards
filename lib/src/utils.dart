@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:intl/intl.dart';
 import 'package:tinycolor/tinycolor.dart';
 import 'package:uuid/uuid.dart';
 
 class FadeAnimation extends StatefulWidget {
-  FadeAnimation(
-      {this.child, this.duration = const Duration(milliseconds: 500)});
+  FadeAnimation({this.child, this.duration = const Duration(milliseconds: 500)});
 
   final Widget child;
   final Duration duration;
@@ -14,15 +14,13 @@ class FadeAnimation extends StatefulWidget {
   _FadeAnimationState createState() => _FadeAnimationState();
 }
 
-class _FadeAnimationState extends State<FadeAnimation>
-    with SingleTickerProviderStateMixin {
+class _FadeAnimationState extends State<FadeAnimation> with SingleTickerProviderStateMixin {
   AnimationController animationController;
 
   @override
   void initState() {
     super.initState();
-    animationController =
-        AnimationController(duration: widget.duration, vsync: this);
+    animationController = AnimationController(duration: widget.duration, vsync: this);
     animationController.addListener(() {
       if (mounted) {
         setState(() {});
@@ -55,15 +53,14 @@ class _FadeAnimationState extends State<FadeAnimation>
   Widget build(BuildContext context) {
     return animationController.isAnimating
         ? Opacity(
-      opacity: 1.0 - animationController.value,
-      child: widget.child,
-    )
+            opacity: 1.0 - animationController.value,
+            child: widget.child,
+          )
         : Container();
   }
 }
 
-String firstCharacterToLowerCase(String s) => s.isNotEmpty? s[0].toLowerCase() + s.substring(1): "";
-
+String firstCharacterToLowerCase(String s) => s.isNotEmpty ? s[0].toLowerCase() + s.substring(1) : "";
 
 class Tuple<A, B> {
   final A a;
@@ -83,6 +80,7 @@ class FullCircleClipper extends CustomClipper<Rect> {
 }
 
 Color parseColor(String colorValue) {
+  if (colorValue == null) return null;
   // No alpha
   if (colorValue.length == 7) {
     return Color(int.parse(colorValue.substring(1, 7), radix: 16) + 0xFF000000);
@@ -93,34 +91,52 @@ Color parseColor(String colorValue) {
   }
 }
 
-
-
 String getDayOfMonthSuffix(final int n) {
   assert(n >= 1 && n <= 31, "illegal day of month: " + n.toString());
   if (n >= 11 && n <= 13) {
     return "th";
   }
   switch (n % 10) {
-    case 1:  return "st";
-    case 2:  return "nd";
-    case 3:  return "rd";
-    default: return "th";
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
   }
 }
 
-
 Color adjustColorToFitDarkTheme(Color color, Brightness brightness) {
-  if(brightness == Brightness.light) {
+  if (color == null) return null;
+
+  if (brightness == Brightness.light) {
     return color;
   } else {
     TinyColor tinyColor = TinyColor(color);
-    if(tinyColor.isDark()) {
-      double luminance = tinyColor.getLuminance();
-      // TODO turns red colors to red which it is not supposed to do
-      return tinyColor.lighten(((1-luminance) * 100).round()).color;
-    }
+    double luminance = tinyColor.getLuminance();
+    if (tinyColor.isDark()) return tinyColor.lighten(((1 - luminance) * 100).round()).color;
+    if (tinyColor.isLight()) return tinyColor.darken(((0 + luminance) * 100).round()).color;
     return color;
   }
+}
+
+Color getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+    {ReferenceResolver resolver, Map adaptiveMap, bool approximateDarkThemeColors, Brightness brightness}) {
+
+  if (adaptiveMap["backgroundImage"] != null) return null;
+
+  var style = adaptiveMap["style"] ?? "default";
+  if (style == "default") return null;
+
+  var colorString = resolver.hostConfig["containerStyles"][style]["backgroundColor"];
+
+  var backgroundColor = parseColor(colorString);
+  if (backgroundColor != null && approximateDarkThemeColors) {
+    backgroundColor = adjustColorToFitDarkTheme(backgroundColor, brightness);
+  }
+  return backgroundColor;
 }
 
 /// Parses a given text string to property handle DATE() and TIME()
@@ -128,66 +144,61 @@ Color adjustColorToFitDarkTheme(Color color, Brightness brightness) {
 String parseTextString(String text) {
   return text.replaceAllMapped(RegExp(r'{{.*}}'), (match) {
     String res = match.group(0);
-    String input = res.substring(2, res.length -2);
+    String input = res.substring(2, res.length - 2);
     input = input.replaceAll(" ", "");
 
     String type = input.substring(0, 4);
-    if(type == "DATE") {
+    if (type == "DATE") {
       String dateFunction = input.substring(5, input.length - 1);
       List<String> items = dateFunction.split(",");
-      if(items.length == 1) {
+      if (items.length == 1) {
         items.add("COMPACT");
       }
       //if(items.length != 2) throw StateError("$dateFunction is not valid");
       // Wrong format
-      if(items.length != 2) return res;
+      if (items.length != 2) return res;
 
       DateTime dateTime = DateTime.tryParse(items[0]);
 
       // TODO use locale
       DateFormat dateFormat;
 
-      if(dateTime == null) return res;
-      if(items[1] == "COMPACT") {
+      if (dateTime == null) return res;
+      if (items[1] == "COMPACT") {
         dateFormat = DateFormat.yMd();
         return dateFormat.format(dateTime);
-      } else if(items[1] == "SHORT") {
+      } else if (items[1] == "SHORT") {
         dateFormat = DateFormat("E, MMM d{n}, y");
         return dateFormat.format(dateTime).replaceFirst('{n}', getDayOfMonthSuffix(dateTime.day));
-      } else if(items[1] == "LONG") {
+      } else if (items[1] == "LONG") {
         dateFormat = DateFormat("EEEE, MMMM d{n}, y");
         return dateFormat.format(dateTime).replaceFirst('{n}', getDayOfMonthSuffix(dateTime.day));
       } else {
         // Wrong format
         return res;
       }
-
-
-    } else if(type == "TIME") {
+    } else if (type == "TIME") {
       String time = input.substring(5, input.length - 1);
       DateTime dateTime = DateTime.tryParse(time);
-      if(dateTime == null) return res;
+      if (dateTime == null) return res;
 
       DateFormat dateFormat = DateFormat("jm");
 
       return dateFormat.format(dateTime);
-
     } else {
       // Wrong format
       return res;
       //throw StateError("Function $type not found");
     }
   });
-
 }
 
 class UUIDGenerator {
-
-  UUIDGenerator(): uuid = Uuid();
+  UUIDGenerator() : uuid = Uuid();
 
   final Uuid uuid;
 
   String getId() {
-   return uuid.v1();
+    return uuid.v1();
   }
 }

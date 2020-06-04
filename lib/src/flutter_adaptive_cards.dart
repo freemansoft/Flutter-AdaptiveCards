@@ -3,6 +3,7 @@ library flutter_adaptive_cards;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
@@ -14,11 +15,17 @@ import 'package:provider/provider.dart';
 import 'base.dart';
 
 abstract class AdaptiveCardContentProvider {
-  AdaptiveCardContentProvider({@required this.hostConfigPath});
+  AdaptiveCardContentProvider({this.hostConfigPath, this.hostConfig});
 
   final String hostConfigPath;
+  final String hostConfig;
 
   Future<Map> loadHostConfig() async {
+    if (hostConfig != null) {
+      var cleanedHostConfig = hostConfig.replaceAll(new RegExp(r'\n'), '');
+      return json.decode(cleanedHostConfig);
+    }
+
     String hostConfigString = await rootBundle.loadString(hostConfigPath);
     return json.decode(hostConfigString);
   }
@@ -27,8 +34,8 @@ abstract class AdaptiveCardContentProvider {
 }
 
 class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  MemoryAdaptiveCardContentProvider({@required this.content, @required String hostConfigPath})
-      : super(hostConfigPath: hostConfigPath);
+  MemoryAdaptiveCardContentProvider({@required this.content, String hostConfigPath, String hostConfig})
+      : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   Map content;
 
@@ -39,8 +46,8 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 }
 
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  AssetAdaptiveCardContentProvider({@required this.path, @required String hostConfigPath})
-      : super(hostConfigPath: hostConfigPath);
+  AssetAdaptiveCardContentProvider({@required this.path, String hostConfigPath, String hostConfig})
+      : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String path;
 
@@ -51,8 +58,8 @@ class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 }
 
 class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  NetworkAdaptiveCardContentProvider({@required this.url, @required String hostConfigPath})
-      : super(hostConfigPath: hostConfigPath);
+  NetworkAdaptiveCardContentProvider({@required this.url, String hostConfigPath, String hostConfig})
+      : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String url;
 
@@ -70,6 +77,7 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry = const CardRegistry(),
     this.onSubmit,
     this.onOpenUrl,
+    this.hostConfig,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
   }) : super(key: key);
@@ -80,11 +88,13 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     @required String url,
     @required String hostConfigPath,
+    this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
-  }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(url: url, hostConfigPath: hostConfigPath);
+  }) : adaptiveCardContentProvider =
+            NetworkAdaptiveCardContentProvider(url: url, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   AdaptiveCard.asset({
     Key key,
@@ -92,11 +102,13 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     @required String assetPath,
     @required String hostConfigPath,
+    this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
-  }) : adaptiveCardContentProvider = AssetAdaptiveCardContentProvider(path: assetPath, hostConfigPath: hostConfigPath);
+  }) : adaptiveCardContentProvider =
+            AssetAdaptiveCardContentProvider(path: assetPath, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   AdaptiveCard.memory({
     Key key,
@@ -104,18 +116,21 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     @required Map content,
     @required String hostConfigPath,
+    this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
   }) : adaptiveCardContentProvider =
-            MemoryAdaptiveCardContentProvider(content: content, hostConfigPath: hostConfigPath);
+            MemoryAdaptiveCardContentProvider(content: content, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   final AdaptiveCardContentProvider adaptiveCardContentProvider;
 
   final Widget placeholder;
 
   final CardRegistry cardRegistry;
+
+  final String hostConfig;
 
   final Function(Map map) onSubmit;
   final Function(String url) onOpenUrl;
@@ -152,6 +167,19 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
         }
       });
     });
+  }
+
+  @override
+  void didUpdateWidget(AdaptiveCard oldWidget) {
+    widget.adaptiveCardContentProvider.loadHostConfig().then((hostConfigMap) {
+      setState(() {
+        if (mounted) {
+          hostConfig = hostConfigMap;
+        }
+      });
+    });
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -258,13 +286,23 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void initState() {
     super.initState();
+
     _resolver = ReferenceResolver(
       hostConfig: widget.hostConfig,
     );
+
     idGenerator = UUIDGenerator();
     cardRegistry = widget.cardRegistry;
 
     _adaptiveElement = widget.cardRegistry.getElement(widget.map);
+  }
+
+  void didUpdateWidget(RawAdaptiveCard oldWidget) {
+    _resolver = ReferenceResolver(
+      hostConfig: widget.hostConfig,
+    );
+    _adaptiveElement = widget.cardRegistry.getElement(widget.map);
+    super.didUpdateWidget(oldWidget);
   }
 
   /// Every widget can access method of this class, meaning setting the state
@@ -356,15 +394,28 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       }
       return true;
     }());
+    var backgroundColor = getBackgroundColor();
+
     return Provider<RawAdaptiveCardState>.value(
       value: this,
       child: InheritedReferenceResolver(
         resolver: _resolver,
         child: Card(
+          color: backgroundColor,
           child: child,
         ),
       ),
     );
+  }
+
+  Color getBackgroundColor() {
+    var colorString = _resolver.hostConfig["containerStyles"]["default"]["backgroundColor"];
+
+    var backgroundColor = parseColor(colorString);
+    if (widget.approximateDarkThemeColors) {
+      backgroundColor = adjustColorToFitDarkTheme(backgroundColor, Theme.of(context).brightness);
+    }
+    return backgroundColor;
   }
 }
 
@@ -529,8 +580,8 @@ class ReferenceResolver {
   /// - good
   /// - warning
   /// - attention
-  Color resolveColor(String color, bool isSubtle) {
-    String myColor = color ?? "default";
+  Color resolveForegroundColor(String colorType, bool isSubtle) {
+    String myColor = colorType ?? "default";
     String subtleOrDefault = isSubtle ?? false ? "subtle" : "default";
     final style = currentStyle ?? "default";
     // Make it case insensitive

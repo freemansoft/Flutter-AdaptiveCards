@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../additional.dart';
 import '../base.dart';
+import '../utils.dart';
 
 class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveColumn({Key key, this.adaptiveMap}) : super(key: key);
@@ -116,6 +117,13 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
 
   @override
   Widget build(BuildContext context) {
+    var backgroundColor = getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+      resolver: resolver,
+      adaptiveMap: adaptiveMap,
+      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
+      brightness: Theme.of(context).brightness,
+    );
+
     Widget result = Stack(
       children: [
         backgroundImage,
@@ -123,13 +131,15 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
           onTap: action?.tap,
           child: Padding(
             padding: EdgeInsets.only(left: precedingSpacing),
-            child: Column(
-              children: []
-                ..add(
-                  separator ? Divider() : SizedBox(),
-                )
-                ..addAll(items.map((it) => it).toList()),
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: SeparatorElement(
+              adaptiveMap: adaptiveMap,
+              child: Container(
+                color: backgroundColor,
+                child: Column(
+                  children: []..addAll(items.map((it) => it).toList()),
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                ),
+              ),
             ),
           ),
         ),
