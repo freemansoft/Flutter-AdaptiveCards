@@ -39,7 +39,11 @@ typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 /// Delete an element even if you have provided it yourself via the [addedElements]
 ///
 class CardRegistry {
-  const CardRegistry({this.removedElements = const [], this.addedElements = const {}, this.addedActions = const {}});
+  const CardRegistry(
+      {this.removedElements = const [],
+      this.addedElements = const {},
+      this.addedActions = const {},
+      this.supportMarkdown = true});
 
   /// Provide custom elements to use.
   /// When providing an element which is already defined, it is overwritten
@@ -49,6 +53,10 @@ class CardRegistry {
 
   /// Remove specific elements from the list
   final List<String> removedElements;
+
+  // Due to https://github.com/flutter/flutter_markdown/issues/171,
+  // markdown support doesn't work at the same time as content alignment in a column set
+  final bool supportMarkdown;
 
   Widget getElement(Map<String, dynamic> map, {String parentMode = "stretch"}) {
     String stringType = map["type"];
@@ -62,7 +70,7 @@ class CardRegistry {
     if (addedElements.containsKey(stringType)) {
       return addedElements[stringType](map);
     } else {
-      return _getBaseElement(map, parentMode: parentMode);
+      return _getBaseElement(map, parentMode: parentMode, supportMarkdown: supportMarkdown);
     }
   }
 
@@ -101,7 +109,7 @@ class CardRegistry {
   /// This returns an [AdaptiveElement] with the correct type.
   ///
   /// It looks at the [type] property and decides which object to construct
-  Widget _getBaseElement(Map<String, dynamic> map, {String parentMode = "stretch"}) {
+  Widget _getBaseElement(Map<String, dynamic> map, {String parentMode = "stretch", bool supportMarkdown}) {
     String stringType = map["type"];
 
     switch (stringType) {
@@ -114,6 +122,7 @@ class CardRegistry {
       case "TextBlock":
         return AdaptiveTextBlock(
           adaptiveMap: map,
+          supportMarkdown: supportMarkdown,
         );
       case "ActionSet":
         return ActionSet(adaptiveMap: map);
@@ -124,18 +133,20 @@ class CardRegistry {
       case "ColumnSet":
         return AdaptiveColumnSet(
           adaptiveMap: map,
+          supportMarkdown: supportMarkdown,
         );
       case "Image":
         return AdaptiveImage(
           adaptiveMap: map,
           parentMode: parentMode,
+          supportMarkdown: supportMarkdown,
         );
       case "FactSet":
         return AdaptiveFactSet(
           adaptiveMap: map,
         );
       case "ImageSet":
-        return AdaptiveImageSet(adaptiveMap: map);
+        return AdaptiveImageSet(adaptiveMap: map, supportMarkdown: supportMarkdown);
       case "Input.Text":
         return AdaptiveTextInput(adaptiveMap: map);
       case "Input.Number":

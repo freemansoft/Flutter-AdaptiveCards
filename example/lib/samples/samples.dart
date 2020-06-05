@@ -16,6 +16,7 @@ class SamplesPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: 15,
         itemBuilder: (context, index) {
+          if (index == 0) return DemoAdaptiveCard("lib/samples/example${index + 1}", supportMarkdown: false);
           return DemoAdaptiveCard("lib/samples/example${index + 1}");
         },
       ),

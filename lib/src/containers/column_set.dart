@@ -6,9 +6,10 @@ import '../utils.dart';
 import 'column.dart';
 
 class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveColumnSet({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveColumnSet({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
 
   final Map adaptiveMap;
+  final bool supportMarkdown;
 
   @override
   _AdaptiveColumnSetState createState() => _AdaptiveColumnSetState();
@@ -20,7 +21,9 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
   @override
   void initState() {
     super.initState();
-    columns = List<Map>.from(adaptiveMap["columns"] ?? []).map((child) => AdaptiveColumn(adaptiveMap: child)).toList();
+    columns = List<Map>.from(adaptiveMap["columns"] ?? [])
+        .map((child) => AdaptiveColumn(adaptiveMap: child, supportMarkdown: widget.supportMarkdown))
+        .toList();
   }
 
   @override
@@ -32,18 +35,22 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
       brightness: Theme.of(context).brightness,
     );
 
+    Widget child = Row(
+      children: columns.toList(),
+      crossAxisAlignment: CrossAxisAlignment.start,
+    );
+
+    if (!widget.supportMarkdown) {
+      child = IntrinsicHeight(child: child);
+    }
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
         child: Container(
           color: backgroundColor,
-          child: IntrinsicHeight(
-            child: Row(
-              children: columns.toList(),
-              crossAxisAlignment: CrossAxisAlignment.start,
-            ),
-          ),
+          child: child,
         ),
       ),
     );

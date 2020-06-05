@@ -5,9 +5,10 @@ import '../base.dart';
 import '../utils.dart';
 
 class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveColumn({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveColumn({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
 
   final Map adaptiveMap;
+  final bool supportMarkdown;
 
   @override
   _AdaptiveColumnState createState() => _AdaptiveColumnState();
@@ -161,6 +162,19 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
       brightness: Theme.of(context).brightness,
     );
 
+    Widget child = Container(
+      color: backgroundColor,
+      child: Column(
+        children: []..addAll(items.map((it) => it).toList()),
+        crossAxisAlignment: crossAxisAlignment,
+        mainAxisAlignment: mainAxisAlignment,
+      ),
+    );
+
+    if (!widget.supportMarkdown) {
+      child = Expanded(child: child);
+    }
+
     Widget result = Stack(
       children: [
         backgroundImage,
@@ -170,16 +184,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
             padding: EdgeInsets.only(left: precedingSpacing),
             child: SeparatorElement(
               adaptiveMap: adaptiveMap,
-              child: Expanded(
-                child: Container(
-                  color: backgroundColor,
-                  child: Column(
-                    children: []..addAll(items.map((it) => it).toList()),
-                    crossAxisAlignment: crossAxisAlignment,
-                    mainAxisAlignment: mainAxisAlignment,
-                  ),
-                ),
-              ),
+              child: child,
             ),
           ),
         ),

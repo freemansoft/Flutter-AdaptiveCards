@@ -7,9 +7,10 @@ import '../base.dart';
 import '../utils.dart';
 
 class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTextBlock({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveTextBlock({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
 
   final Map adaptiveMap;
+  final bool supportMarkdown;
 
   @override
   _AdaptiveTextBlockState createState() => _AdaptiveTextBlockState();
@@ -38,7 +39,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   // TODO create own widget that parses _basic_ markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
   Widget build(BuildContext context) {
-    var textBody = getText();
+    var textBody = widget.supportMarkdown ? getMarkdownText() : getText();
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
