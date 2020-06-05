@@ -54,6 +54,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   Widget getText() {
     return Text(
       text,
+      textAlign: TextAlign.center,
       style: TextStyle(
         fontWeight: fontWeight,
         fontSize: fontSize,
