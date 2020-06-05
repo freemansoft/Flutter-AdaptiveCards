@@ -20,6 +20,9 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
   String mode;
   int width;
 
+  MainAxisAlignment mainAxisAlignment;
+  CrossAxisAlignment crossAxisAlignment;
+
   GenericAction action;
 
   // Need to do the separator manually for this class
@@ -66,6 +69,39 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
       }
     } else {
       mode = "auto";
+    }
+
+    mainAxisAlignment = loadMainAxisAlignment();
+    crossAxisAlignment = loadCrossAxisAlignment();
+  }
+
+  MainAxisAlignment loadMainAxisAlignment() {
+    String verticalAlignment = adaptiveMap["verticalContentAlignment"]?.toLowerCase() ?? "top";
+
+    switch (verticalAlignment) {
+      case "top":
+        return MainAxisAlignment.start;
+      case "center":
+        return MainAxisAlignment.center;
+      case "bottom":
+        return MainAxisAlignment.end;
+      default:
+        return MainAxisAlignment.start;
+    }
+  }
+
+  CrossAxisAlignment loadCrossAxisAlignment() {
+    String horizontalAlignment = adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+
+    switch (horizontalAlignment) {
+      case "left":
+        return CrossAxisAlignment.start;
+      case "center":
+        return CrossAxisAlignment.center;
+      case "right":
+        return CrossAxisAlignment.end;
+      default:
+        return CrossAxisAlignment.start;
     }
   }
 
@@ -133,11 +169,14 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
             padding: EdgeInsets.only(left: precedingSpacing),
             child: SeparatorElement(
               adaptiveMap: adaptiveMap,
-              child: Container(
-                color: backgroundColor,
-                child: Column(
-                  children: []..addAll(items.map((it) => it).toList()),
-                  crossAxisAlignment: CrossAxisAlignment.center,
+              child: Expanded(
+                child: Container(
+                  color: backgroundColor,
+                  child: Column(
+                    children: []..addAll(items.map((it) => it).toList()),
+                    crossAxisAlignment: crossAxisAlignment,
+                    mainAxisAlignment: mainAxisAlignment,
+                  ),
                 ),
               ),
             ),
@@ -148,13 +187,13 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
 
     assert(mode == "auto" || mode == "stretch" || mode == "manual");
     if (mode == "auto") {
-      result = Flexible(child: result);
+      return Flexible(child: result);
     } else if (mode == "stretch") {
-      result = Expanded(
+      return Expanded(
         child: result,
       );
     } else if (mode == "manual") {
-      result = Flexible(
+      return Flexible(
         flex: width,
         child: result,
       );

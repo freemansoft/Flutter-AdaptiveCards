@@ -33,36 +33,46 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
     text = parseTextString(adaptiveMap['text']);
   }
 
-  /*child: Text(
-            text,
-            style: TextStyle(
-              fontWeight: fontWeight,
-              fontSize: fontSize,
-              color: getColor(Theme.of(context).brightness),
-            ),
-            maxLines: maxLines,
-          )*/
+  /*child: */
 
   // TODO create own widget that parses _basic_ markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
   Widget build(BuildContext context) {
+    var textBody = getMarkdownText();
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: Align(
         // TODO IntrinsicWidth finxed a few things, but breaks more
         alignment: horizontalAlignment,
-        child: MarkdownBody(
-          // TODO the markdown library does currently not support max lines
-          // As markdown support is more important than maxLines right now
-          // this is in here.
-          //maxLines: maxLines,
-          data: text,
-          styleSheet: loadMarkdownStyleSheet(),
-          onTapLink: (href) {
-            RawAdaptiveCardState.of(context).openUrl(href);
-          },
-        ),
+        child: textBody,
       ),
+    );
+  }
+
+  Widget getText() {
+    return Text(
+      text,
+      style: TextStyle(
+        fontWeight: fontWeight,
+        fontSize: fontSize,
+        color: getColor(Theme.of(context).brightness),
+      ),
+      maxLines: maxLines,
+    );
+  }
+
+  Widget getMarkdownText() {
+    return MarkdownBody(
+      // TODO the markdown library does currently not support max lines
+      // As markdown support is more important than maxLines right now
+      // this is in here.
+      //maxLines: maxLines,
+      data: text,
+      styleSheet: loadMarkdownStyleSheet(),
+      onTapLink: (href) {
+        RawAdaptiveCardState.of(context).openUrl(href);
+      },
     );
   }
 
@@ -81,7 +91,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   }
 
   Alignment loadAlignment() {
-    String alignmentString = widget.adaptiveMap["horizontalAlignment"] ?? "left";
+    String alignmentString = widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+
     switch (alignmentString) {
       case "left":
         return Alignment.centerLeft;

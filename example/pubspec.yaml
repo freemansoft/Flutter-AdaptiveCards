@@ -61,6 +61,8 @@ flutter:
     - lib/column_set/example2
     - lib/column_set/example3
     - lib/column_set/example4
+    - lib/column_set/example5
+    - lib/column_set/example6
     - lib/column/example1
     - lib/column/example2
     - lib/column/example3
