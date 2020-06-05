@@ -38,7 +38,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   // TODO create own widget that parses _basic_ markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
   Widget build(BuildContext context) {
-    var textBody = getMarkdownText();
+    var textBody = getText();
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,

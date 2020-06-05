@@ -42,6 +42,7 @@ flutter:
     - lib/text_block/example4
     - lib/text_block/example5
     - lib/text_block/example5
+    - lib/text_block/example6
     - lib/text_block/example7
     - lib/text_block/example8
     - lib/text_block/example9
