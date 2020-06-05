@@ -28,9 +28,12 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
   @override
   Widget build(BuildContext context) {
     //TODO alt text
-    Widget image = Image(
-      image: NetworkImage(url),
-      fit: BoxFit.contain,
+    Widget image = AdaptiveTappable(
+      adaptiveMap: adaptiveMap,
+      child: Image(
+        image: NetworkImage(url),
+        fit: BoxFit.contain,
+      ),
     );
 
     if (isPerson) {
