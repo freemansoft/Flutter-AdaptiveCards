@@ -21,6 +21,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   double fontSize;
   Alignment horizontalAlignment;
   int maxLines;
+  TextAlign textAlign;
   String text;
 
   @override
@@ -29,6 +30,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
     fontSize = resolver.resolveFontSize(adaptiveMap["size"]);
     fontWeight = resolver.resolveFontWeight(adaptiveMap["weight"]);
     horizontalAlignment = loadAlignment();
+    textAlign = loadTextAlign();
     maxLines = loadMaxLines();
 
     text = parseTextString(adaptiveMap['text']);
@@ -54,7 +56,9 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   Widget getText() {
     return Text(
       text,
-      textAlign: TextAlign.center,
+      textAlign: textAlign,
+      softWrap: true,
+      overflow: maxLines == 1 ? TextOverflow.ellipsis: null,
       style: TextStyle(
         fontWeight: fontWeight,
         fontSize: fontSize,
@@ -104,6 +108,21 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
         return Alignment.centerRight;
       default:
         return Alignment.centerLeft;
+    }
+  }
+
+  TextAlign loadTextAlign() {
+    String alignmentString = widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+
+    switch (alignmentString) {
+      case "left":
+        return TextAlign.start;
+      case "center":
+        return TextAlign.center;
+      case "right":
+        return TextAlign.right;
+      default:
+        return TextAlign.start;
     }
   }
 

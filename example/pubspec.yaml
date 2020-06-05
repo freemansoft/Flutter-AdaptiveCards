@@ -47,6 +47,7 @@ flutter:
     - lib/text_block/example8
     - lib/text_block/example9
     - lib/text_block/example10
+    - lib/text_block/example11
     - lib/image/example1
     - lib/image/example2
     - lib/image/example3
