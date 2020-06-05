@@ -52,6 +52,7 @@ flutter:
     - lib/image/example4
     - lib/image/example5
     - lib/image/example5
+    - lib/image/example6
     - lib/container/example1
     - lib/container/example2
     - lib/container/example3

@@ -28,14 +28,8 @@ class _SeparatorElementState extends State<SeparatorElement> with AdaptiveElemen
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        separator
-            ? Divider(
-                height: topSpacing,
-              )
-            : SizedBox(
-                height: topSpacing,
-              ),
-        widget.child
+        separator ? Divider(height: topSpacing) : SizedBox(height: topSpacing),
+        widget.child,
       ],
     );
   }

@@ -41,9 +41,7 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
           child: IntrinsicHeight(
             child: Row(
               children: columns.toList(),
-              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
             ),
           ),
         ),

@@ -43,11 +43,6 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
 
     backgroundImage = _getBackgroundImage(adaptiveMap);
 
-    items = adaptiveMap["items"] != null
-        ? List<Map>.from(adaptiveMap["items"]).map((child) {
-            return widgetState.cardRegistry.getElement(child);
-          }).toList()
-        : [];
 
     var toParseWidth = adaptiveMap["width"];
     if (toParseWidth != null) {
@@ -70,6 +65,12 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
     } else {
       mode = "auto";
     }
+
+    items = adaptiveMap["items"] != null
+        ? List<Map>.from(adaptiveMap["items"]).map((child) {
+            return widgetState.cardRegistry.getElement(child, parentMode: mode);
+          }).toList()
+        : [];
 
     mainAxisAlignment = loadMainAxisAlignment();
     crossAxisAlignment = loadCrossAxisAlignment();

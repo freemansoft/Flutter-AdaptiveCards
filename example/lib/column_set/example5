@@ -14,39 +14,42 @@
             "columns": [
                 {
                     "type": "Column",
+                    "width": "stretch",
                     "items": [
                         {
                             "type": "Image",
                             "url": "http://adaptivecards.io/content/cats/1.png",
-                            "size": "Small"
+                            "size": "Small",
+                            "horizontalAlignment": "Left"
                         }
                     ],
-                    "width": "stretch",
                     "horizontalAlignment": "Left"
                 },
                 {
                     "type": "Column",
+                    "width": "stretch",
                     "items": [
                         {
                             "type": "Image",
                             "url": "http://adaptivecards.io/content/cats/1.png",
-                            "size": "Small"
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
                         }
                     ],
-                    "width": "stretch",
                     "verticalContentAlignment": "Center",
                     "horizontalAlignment": "Center"
                 },
                 {
                     "type": "Column",
+                    "width": "stretch",
                     "items": [
                         {
                             "type": "Image",
                             "url": "http://adaptivecards.io/content/cats/1.png",
-                            "size": "Small"
+                            "size": "Small",
+                            "horizontalAlignment": "Right"
                         }
                     ],
-                    "width": "stretch",
                     "verticalContentAlignment": "Bottom",
                     "horizontalAlignment": "Right"
                 },

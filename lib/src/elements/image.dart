@@ -4,9 +4,10 @@ import 'package:flutter_adaptive_cards/src/base.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 
 class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveImage({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveImage({Key key, this.adaptiveMap, this.parentMode = "stretch"}) : super(key: key);
 
   final Map adaptiveMap;
+  final String parentMode;
 
   @override
   _AdaptiveImageState createState() => _AdaptiveImageState();
@@ -40,11 +41,6 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
       );
     }
 
-    image = Align(
-      alignment: horizontalAlignment,
-      child: image,
-    );
-
     if (size != null) {
       image = ConstrainedBox(
         constraints: BoxConstraints(
@@ -58,12 +54,19 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
     }
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: image,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          (widget.parentMode == "auto")
+              ? Flexible(child: image)
+              : Expanded(child: Align(alignment: horizontalAlignment, child: image))
+        ],
+      ),
     );
   }
 
   Alignment loadAlignment() {
-    String alignmentString = adaptiveMap["horizontalAlignment"] ?? "left";
+    String alignmentString = adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
     switch (alignmentString) {
       case "left":
         return Alignment.centerLeft;

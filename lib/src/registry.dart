@@ -50,7 +50,7 @@ class CardRegistry {
   /// Remove specific elements from the list
   final List<String> removedElements;
 
-  Widget getElement(Map<String, dynamic> map) {
+  Widget getElement(Map<String, dynamic> map, {String parentMode = "stretch"}) {
     String stringType = map["type"];
 
     if (removedElements.contains(stringType))
@@ -62,7 +62,7 @@ class CardRegistry {
     if (addedElements.containsKey(stringType)) {
       return addedElements[stringType](map);
     } else {
-      return _getBaseElement(map);
+      return _getBaseElement(map, parentMode: parentMode);
     }
   }
 
@@ -101,7 +101,7 @@ class CardRegistry {
   /// This returns an [AdaptiveElement] with the correct type.
   ///
   /// It looks at the [type] property and decides which object to construct
-  Widget _getBaseElement(Map<String, dynamic> map) {
+  Widget _getBaseElement(Map<String, dynamic> map, {String parentMode = "stretch"}) {
     String stringType = map["type"];
 
     switch (stringType) {
@@ -128,6 +128,7 @@ class CardRegistry {
       case "Image":
         return AdaptiveImage(
           adaptiveMap: map,
+          parentMode: parentMode,
         );
       case "FactSet":
         return AdaptiveFactSet(
