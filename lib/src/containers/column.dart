@@ -5,9 +5,10 @@ import '../base.dart';
 import '../utils.dart';
 
 class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveColumn({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveColumn({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
 
   final Map adaptiveMap;
+  final bool supportMarkdown;
 
   @override
   _AdaptiveColumnState createState() => _AdaptiveColumnState();
@@ -19,6 +20,9 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
   /// Can be "auto", "stretch" or "manual"
   String mode;
   int width;
+
+  MainAxisAlignment mainAxisAlignment;
+  CrossAxisAlignment crossAxisAlignment;
 
   GenericAction action;
 
@@ -40,11 +44,6 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
 
     backgroundImage = _getBackgroundImage(adaptiveMap);
 
-    items = adaptiveMap["items"] != null
-        ? List<Map>.from(adaptiveMap["items"]).map((child) {
-            return widgetState.cardRegistry.getElement(child);
-          }).toList()
-        : [];
 
     var toParseWidth = adaptiveMap["width"];
     if (toParseWidth != null) {
@@ -66,6 +65,45 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
       }
     } else {
       mode = "auto";
+    }
+
+    items = adaptiveMap["items"] != null
+        ? List<Map>.from(adaptiveMap["items"]).map((child) {
+            return widgetState.cardRegistry.getElement(child, parentMode: mode);
+          }).toList()
+        : [];
+
+    mainAxisAlignment = loadMainAxisAlignment();
+    crossAxisAlignment = loadCrossAxisAlignment();
+  }
+
+  MainAxisAlignment loadMainAxisAlignment() {
+    String verticalAlignment = adaptiveMap["verticalContentAlignment"]?.toLowerCase() ?? "top";
+
+    switch (verticalAlignment) {
+      case "top":
+        return MainAxisAlignment.start;
+      case "center":
+        return MainAxisAlignment.center;
+      case "bottom":
+        return MainAxisAlignment.end;
+      default:
+        return MainAxisAlignment.start;
+    }
+  }
+
+  CrossAxisAlignment loadCrossAxisAlignment() {
+    String horizontalAlignment = adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+
+    switch (horizontalAlignment) {
+      case "left":
+        return CrossAxisAlignment.start;
+      case "center":
+        return CrossAxisAlignment.center;
+      case "right":
+        return CrossAxisAlignment.end;
+      default:
+        return CrossAxisAlignment.start;
     }
   }
 
@@ -124,6 +162,19 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
       brightness: Theme.of(context).brightness,
     );
 
+    Widget child = Container(
+      color: backgroundColor,
+      child: Column(
+        children: []..addAll(items.map((it) => it).toList()),
+        crossAxisAlignment: crossAxisAlignment,
+        mainAxisAlignment: mainAxisAlignment,
+      ),
+    );
+
+    if (!widget.supportMarkdown) {
+      child = Expanded(child: child);
+    }
+
     Widget result = Stack(
       children: [
         backgroundImage,
@@ -133,13 +184,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
             padding: EdgeInsets.only(left: precedingSpacing),
             child: SeparatorElement(
               adaptiveMap: adaptiveMap,
-              child: Container(
-                color: backgroundColor,
-                child: Column(
-                  children: []..addAll(items.map((it) => it).toList()),
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                ),
-              ),
+              child: child,
             ),
           ),
         ),
@@ -148,13 +193,13 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
 
     assert(mode == "auto" || mode == "stretch" || mode == "manual");
     if (mode == "auto") {
-      result = Flexible(child: result);
+      return Flexible(child: result);
     } else if (mode == "stretch") {
-      result = Expanded(
+      return Expanded(
         child: result,
       );
     } else if (mode == "manual") {
-      result = Flexible(
+      return Flexible(
         flex: width,
         child: result,
       );

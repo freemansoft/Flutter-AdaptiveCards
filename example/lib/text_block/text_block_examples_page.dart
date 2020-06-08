@@ -25,6 +25,7 @@ class TextBlockPage extends StatelessWidget {
           DemoAdaptiveCard("lib/text_block/example8"),
           DemoAdaptiveCard("lib/text_block/example9"),
           DemoAdaptiveCard("lib/text_block/example10"),
+          DemoAdaptiveCard("lib/text_block/example11", supportMarkdown: false),
         ],
       ),
     );

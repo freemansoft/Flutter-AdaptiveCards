@@ -6,9 +6,10 @@ import '../elements/image.dart';
 import '../utils.dart';
 
 class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveImageSet({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveImageSet({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
 
   final Map adaptiveMap;
+  final bool supportMarkdown;
 
   @override
   _AdaptiveImageSetState createState() => _AdaptiveImageSetState();
@@ -24,7 +25,12 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
   void initState() {
     super.initState();
 
-    images = List<Map>.from(adaptiveMap["images"]).map((child) => AdaptiveImage(adaptiveMap: child)).toList();
+    images = List<Map>.from(adaptiveMap["images"])
+        .map((child) => AdaptiveImage(
+              adaptiveMap: child,
+              supportMarkdown: widget.supportMarkdown,
+            ))
+        .toList();
 
     loadSize();
   }

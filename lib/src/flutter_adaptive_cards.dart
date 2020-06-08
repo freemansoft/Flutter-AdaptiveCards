@@ -80,6 +80,7 @@ class AdaptiveCard extends StatefulWidget {
     this.hostConfig,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
+    this.supportMarkdown = true,
   }) : super(key: key);
 
   AdaptiveCard.network({
@@ -93,6 +94,7 @@ class AdaptiveCard extends StatefulWidget {
     this.onOpenUrl,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
+    this.supportMarkdown = true,
   }) : adaptiveCardContentProvider =
             NetworkAdaptiveCardContentProvider(url: url, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
@@ -107,6 +109,7 @@ class AdaptiveCard extends StatefulWidget {
     this.onOpenUrl,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
+    this.supportMarkdown = true,
   }) : adaptiveCardContentProvider =
             AssetAdaptiveCardContentProvider(path: assetPath, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
@@ -121,6 +124,7 @@ class AdaptiveCard extends StatefulWidget {
     this.onOpenUrl,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
+    this.supportMarkdown = true,
   }) : adaptiveCardContentProvider =
             MemoryAdaptiveCardContentProvider(content: content, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
@@ -136,6 +140,7 @@ class AdaptiveCard extends StatefulWidget {
   final Function(String url) onOpenUrl;
   final bool showDebugJson;
   final bool approximateDarkThemeColors;
+  final bool supportMarkdown;
 
   @override
   _AdaptiveCardState createState() => new _AdaptiveCardState();
@@ -192,7 +197,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       if (cardRegistry != null) {
         this.cardRegistry = cardRegistry;
       } else {
-        this.cardRegistry = const CardRegistry();
+        this.cardRegistry = CardRegistry(supportMarkdown: widget.supportMarkdown);
       }
     }
 

@@ -18,6 +18,9 @@ dependencies:
 
 Using Adaptive Cards in Flutter coudn't be simpler: All you need is the `AdaptiveCard` widget.
 
+### :warning: Markdown support vs. ColumnSet content alignment
+Due to [issue #171](https://github.com/flutter/flutter_markdown/issues/171) of the Flutter Markdown package, the flag `supportMarkdown` was introduced to all Adaptive Card contractors. The default value of this property is `true`, to stay compatible with older versions of this package, which didn't support content alignment in ColumnSets. If the value is set to `false` the content alignment in ColumnSets is working accordingly, but every TextBlock is displayed without Markdown rendering. As soon if the issue is resolved this flag will be removed.
+
 ### Loading an AdaptiveCard
 There are several constructors which handle loading of the AC from different sources.
 `AdaptiveCard.network` takes a url to download the payload and display it.

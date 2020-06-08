@@ -4,9 +4,11 @@ import 'package:flutter_adaptive_cards/src/base.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 
 class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveImage({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveImage({Key key, this.adaptiveMap, this.parentMode = "stretch", this.supportMarkdown}) : super(key: key);
 
   final Map adaptiveMap;
+  final String parentMode;
+  final bool supportMarkdown;
 
   @override
   _AdaptiveImageState createState() => _AdaptiveImageState();
@@ -43,11 +45,6 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
       );
     }
 
-    image = Align(
-      alignment: horizontalAlignment,
-      child: image,
-    );
-
     if (size != null) {
       image = ConstrainedBox(
         constraints: BoxConstraints(
@@ -59,14 +56,33 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
         child: image,
       );
     }
+
+    Widget child;
+
+    if (widget.supportMarkdown) {
+      child = Align(
+        alignment: horizontalAlignment,
+        child: image,
+      );
+    } else {
+      child = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          (widget.parentMode == "auto")
+              ? Flexible(child: image)
+              : Expanded(child: Align(alignment: horizontalAlignment, child: image))
+        ],
+      );
+    }
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: image,
+      child: child,
     );
   }
 
   Alignment loadAlignment() {
-    String alignmentString = adaptiveMap["horizontalAlignment"] ?? "left";
+    String alignmentString = adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
     switch (alignmentString) {
       case "left":
         return Alignment.centerLeft;

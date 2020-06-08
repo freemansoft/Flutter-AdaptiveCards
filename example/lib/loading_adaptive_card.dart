@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
@@ -19,18 +20,24 @@ class LabAdaptiveCard extends StatelessWidget {
 }
 
 class DemoAdaptiveCard extends StatefulWidget {
-
-  const DemoAdaptiveCard(this.assetPath, {Key key, this.hostConfig, this.approximateDarkThemeColors = true}) : super(key: key);
+  const DemoAdaptiveCard(
+    this.assetPath, {
+    Key key,
+    this.hostConfig,
+    this.approximateDarkThemeColors = true,
+    this.supportMarkdown = true,
+  }) : super(key: key);
 
   final String assetPath;
   final String hostConfig;
   final bool approximateDarkThemeColors;
+  final bool supportMarkdown;
 
   @override
   _DemoAdaptiveCardState createState() => new _DemoAdaptiveCardState();
 }
 
-class _DemoAdaptiveCardState extends State<DemoAdaptiveCard> with AutomaticKeepAliveClientMixin{
+class _DemoAdaptiveCardState extends State<DemoAdaptiveCard> with AutomaticKeepAliveClientMixin {
   String jsonFile;
 
   @override
@@ -54,6 +61,7 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard> with AutomaticKeepA
             showDebugJson: false,
             hostConfig: widget.hostConfig,
             approximateDarkThemeColors: widget.approximateDarkThemeColors,
+            supportMarkdown: widget.supportMarkdown,
           ),
           FlatButton(
             textColor: Colors.indigo,

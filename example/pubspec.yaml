@@ -42,16 +42,19 @@ flutter:
     - lib/text_block/example4
     - lib/text_block/example5
     - lib/text_block/example5
+    - lib/text_block/example6
     - lib/text_block/example7
     - lib/text_block/example8
     - lib/text_block/example9
     - lib/text_block/example10
+    - lib/text_block/example11
     - lib/image/example1
     - lib/image/example2
     - lib/image/example3
     - lib/image/example4
     - lib/image/example5
     - lib/image/example5
+    - lib/image/example6
     - lib/container/example1
     - lib/container/example2
     - lib/container/example3
@@ -61,6 +64,8 @@ flutter:
     - lib/column_set/example2
     - lib/column_set/example3
     - lib/column_set/example4
+    - lib/column_set/example5
+    - lib/column_set/example6
     - lib/column/example1
     - lib/column/example2
     - lib/column/example3

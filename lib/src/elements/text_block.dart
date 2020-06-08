@@ -7,9 +7,10 @@ import '../base.dart';
 import '../utils.dart';
 
 class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTextBlock({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveTextBlock({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
 
   final Map adaptiveMap;
+  final bool supportMarkdown;
 
   @override
   _AdaptiveTextBlockState createState() => _AdaptiveTextBlockState();
@@ -20,6 +21,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   double fontSize;
   Alignment horizontalAlignment;
   int maxLines;
+  TextAlign textAlign;
   String text;
 
   @override
@@ -28,41 +30,55 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
     fontSize = resolver.resolveFontSize(adaptiveMap["size"]);
     fontWeight = resolver.resolveFontWeight(adaptiveMap["weight"]);
     horizontalAlignment = loadAlignment();
+    textAlign = loadTextAlign();
     maxLines = loadMaxLines();
 
     text = parseTextString(adaptiveMap['text']);
   }
 
-  /*child: Text(
-            text,
-            style: TextStyle(
-              fontWeight: fontWeight,
-              fontSize: fontSize,
-              color: getColor(Theme.of(context).brightness),
-            ),
-            maxLines: maxLines,
-          )*/
+  /*child: */
 
   // TODO create own widget that parses _basic_ markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
   Widget build(BuildContext context) {
+    var textBody = widget.supportMarkdown ? getMarkdownText() : getText();
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: Align(
         // TODO IntrinsicWidth finxed a few things, but breaks more
         alignment: horizontalAlignment,
-        child: MarkdownBody(
-          // TODO the markdown library does currently not support max lines
-          // As markdown support is more important than maxLines right now
-          // this is in here.
-          //maxLines: maxLines,
-          data: text,
-          styleSheet: loadMarkdownStyleSheet(),
-          onTapLink: (href) {
-            RawAdaptiveCardState.of(context).openUrl(href);
-          },
-        ),
+        child: textBody,
       ),
+    );
+  }
+
+  Widget getText() {
+    return Text(
+      text,
+      textAlign: textAlign,
+      softWrap: true,
+      overflow: maxLines == 1 ? TextOverflow.ellipsis: null,
+      style: TextStyle(
+        fontWeight: fontWeight,
+        fontSize: fontSize,
+        color: getColor(Theme.of(context).brightness),
+      ),
+      maxLines: maxLines,
+    );
+  }
+
+  Widget getMarkdownText() {
+    return MarkdownBody(
+      // TODO the markdown library does currently not support max lines
+      // As markdown support is more important than maxLines right now
+      // this is in here.
+      //maxLines: maxLines,
+      data: text,
+      styleSheet: loadMarkdownStyleSheet(),
+      onTapLink: (href) {
+        RawAdaptiveCardState.of(context).openUrl(href);
+      },
     );
   }
 
@@ -81,7 +97,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   }
 
   Alignment loadAlignment() {
-    String alignmentString = widget.adaptiveMap["horizontalAlignment"] ?? "left";
+    String alignmentString = widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+
     switch (alignmentString) {
       case "left":
         return Alignment.centerLeft;
@@ -91,6 +108,21 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
         return Alignment.centerRight;
       default:
         return Alignment.centerLeft;
+    }
+  }
+
+  TextAlign loadTextAlign() {
+    String alignmentString = widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+
+    switch (alignmentString) {
+      case "left":
+        return TextAlign.start;
+      case "center":
+        return TextAlign.center;
+      case "right":
+        return TextAlign.right;
+      default:
+        return TextAlign.start;
     }
   }
 
