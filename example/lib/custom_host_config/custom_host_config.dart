@@ -122,7 +122,7 @@ class DynamicHostConfigPage extends StatelessWidget {
         "style": "emphasis"
       },
       "preExpandSingleShowCardAction": false,
-      "actionsOrientation": "Horizontal",
+      "actionsOrientation": "Vertical",
       "actionAlignment": "Left"
     },
     "adaptiveCard": {

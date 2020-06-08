@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -69,21 +70,31 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement> with AdaptiveE
 
     List<Widget> widgetChildren = children.map((element) => element).toList();
 
-    // Adds the actions
-    List<Widget> actionWidgets = allActions
-        .map((action) => Padding(
-              padding: EdgeInsets.only(right: 8),
-              child: action,
-            ))
-        .toList();
-
     Widget actionWidget;
     if (actionsOrientation == Axis.vertical) {
-      actionWidget = Column(
-        children: actionWidgets,
-        mainAxisAlignment: MainAxisAlignment.start,
-      );
+      List<Widget> actionWidgets = allActions.map((action) {
+        return SizedBox(
+          width: double.infinity,
+          child: action,
+        );
+      }).toList();
+
+      actionWidget = Row(children: [
+        Expanded(
+          child: Column(
+            children: actionWidgets,
+            crossAxisAlignment: CrossAxisAlignment.start,
+          ),
+        )
+      ]);
     } else {
+      List<Widget> actionWidgets = allActions.map((action) {
+        return Padding(
+          padding: EdgeInsets.only(right: 8),
+          child: action,
+        );
+      }).toList();
+
       actionWidget = Row(
         children: actionWidgets,
         crossAxisAlignment: CrossAxisAlignment.start,
