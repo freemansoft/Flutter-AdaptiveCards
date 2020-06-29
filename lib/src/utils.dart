@@ -122,17 +122,31 @@ Color adjustColorToFitDarkTheme(Color color, Brightness brightness) {
   }
 }
 
-Color getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-    {ReferenceResolver resolver, Map adaptiveMap, bool approximateDarkThemeColors, Brightness brightness}) {
-
+Color getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle({
+  ReferenceResolver resolver,
+  Map adaptiveMap,
+  bool approximateDarkThemeColors,
+  Brightness brightness,
+}) {
   if (adaptiveMap["backgroundImage"] != null) return null;
 
   var style = adaptiveMap["style"] ?? "default";
   if (style == "default") return null;
 
-  var colorString = resolver.hostConfig["containerStyles"][style]["backgroundColor"];
+  return getBackgroundColor(resolver, adaptiveMap, approximateDarkThemeColors, brightness);
+}
 
-  var backgroundColor = parseColor(colorString);
+Color getBackgroundColor(
+  ReferenceResolver resolver,
+  Map adaptiveMap,
+  bool approximateDarkThemeColors,
+  Brightness brightness,
+) {
+  String style = adaptiveMap["style"]?.toString()?.toLowerCase() ?? "default";
+
+  String color = resolver.hostConfig["containerStyles"][style]["backgroundColor"];
+
+  var backgroundColor = parseColor(color);
   if (backgroundColor != null && approximateDarkThemeColors) {
     backgroundColor = adjustColorToFitDarkTheme(backgroundColor, brightness);
   }
