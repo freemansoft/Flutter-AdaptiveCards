@@ -399,7 +399,12 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       }
       return true;
     }());
-    var backgroundColor = getBackgroundColor();
+    var backgroundColor = getBackgroundColor(
+      _resolver,
+      widget.map,
+      widget.approximateDarkThemeColors,
+      Theme.of(context).brightness,
+    );
 
     return Provider<RawAdaptiveCardState>.value(
       value: this,
@@ -411,16 +416,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         ),
       ),
     );
-  }
-
-  Color getBackgroundColor() {
-    var colorString = _resolver.hostConfig["containerStyles"]["default"]["backgroundColor"];
-
-    var backgroundColor = parseColor(colorString);
-    if (widget.approximateDarkThemeColors) {
-      backgroundColor = adjustColorToFitDarkTheme(backgroundColor, Theme.of(context).brightness);
-    }
-    return backgroundColor;
   }
 }
 
