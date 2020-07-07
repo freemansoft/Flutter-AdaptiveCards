@@ -17,7 +17,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
   Map<String, String> choices = Map();
 
   // Contains the values (the things to send as request)
-  Set<String> _selectedChoice = Set();
+  Set<String> _selectedChoices = Set();
 
   bool isCompact;
   bool isMultiSelect;
@@ -30,12 +30,12 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
     }
     isCompact = loadCompact();
     isMultiSelect = adaptiveMap["isMultiSelect"] ?? false;
-    _selectedChoice.addAll(value.split(","));
+    _selectedChoices.addAll(value.split(","));
   }
 
   @override
   void appendInput(Map map) {
-    map[id] = _selectedChoice;
+    map[id] = _selectedChoices.join(',');
   }
 
   @override
@@ -72,7 +72,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
               ))
           .toList(),
       onChanged: select,
-      value: _selectedChoice.single,
+      value: _selectedChoices.single,
     );
   }
 
@@ -82,7 +82,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
         return RadioListTile<String>(
           value: choices[key],
           onChanged: select,
-          groupValue: _selectedChoice.contains(choices[key]) ? choices[key] : null,
+          groupValue: _selectedChoices.contains(choices[key]) ? choices[key] : null,
           title: Text(key),
         );
       }).toList(),
@@ -94,7 +94,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
       children: choices.keys.map((key) {
         return CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          value: _selectedChoice.contains(choices[key]),
+          value: _selectedChoices.contains(choices[key]),
           onChanged: (_) {
             select(choices[key]);
           },
@@ -106,13 +106,13 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
 
   void select(String choice) {
     if (!isMultiSelect) {
-      _selectedChoice.clear();
-      _selectedChoice.add(choice);
+      _selectedChoices.clear();
+      _selectedChoices.add(choice);
     } else {
-      if (_selectedChoice.contains(choice)) {
-        _selectedChoice.remove(choice);
+      if (_selectedChoices.contains(choice)) {
+        _selectedChoices.remove(choice);
       } else {
-        _selectedChoice.add(choice);
+        _selectedChoices.add(choice);
       }
     }
     setState(() {});

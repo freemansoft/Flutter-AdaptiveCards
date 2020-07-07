@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:flutter_adaptive_cards/src/base.dart';
 import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
 import 'actions/open_url.dart';
 import 'actions/show_card.dart';
-import 'actions/sumbit.dart';
+import 'actions/submit.dart';
 
 class ActionSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   ActionSet({Key key, this.adaptiveMap}) : super(key: key);
