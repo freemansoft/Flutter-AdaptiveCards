@@ -119,9 +119,9 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
   }
 
   bool loadCompact() {
-    if (!adaptiveMap.containsKey("style")) return false;
-    if (adaptiveMap["style"] == "compact") return true;
-    if (adaptiveMap["style"] == "expanded") return false;
+    if (!adaptiveMap.containsKey("style")) return true;
+    if (adaptiveMap["style"].toString().toLowerCase() == "compact") return true;
+    if (adaptiveMap["style"].toString().toLowerCase() == "expanded") return false;
     throw StateError("The style of the ChoiceSet needs to be either compact or expanded");
   }
 }
