@@ -15,7 +15,7 @@ class _RenderTimePageState extends State<RenderTimePage> {
   void initState() {
     List body = [];
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1000; i++) {
       body.add({
         "type": "ColumnSet",
         "columns": [
@@ -56,7 +56,7 @@ class _RenderTimePageState extends State<RenderTimePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Render Time"),
+        title: Text("Render Time (ListView)"),
         actions: [
           BrightnessSwitch(),
         ],
