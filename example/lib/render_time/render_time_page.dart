@@ -15,7 +15,7 @@ class _RenderTimePageState extends State<RenderTimePage> {
   void initState() {
     List body = [];
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 100; i++) {
       body.add({
         "type": "ColumnSet",
         "columns": [
@@ -62,6 +62,7 @@ class _RenderTimePageState extends State<RenderTimePage> {
         ],
       ),
       body: Container(
+        alignment: Alignment.centerLeft,
         child: AdaptiveCard.memory(
           content: content,
           hostConfigPath: "lib/host_config",
