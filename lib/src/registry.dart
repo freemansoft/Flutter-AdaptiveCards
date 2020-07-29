@@ -43,6 +43,7 @@ class CardRegistry {
       {this.removedElements = const [],
       this.addedElements = const {},
       this.addedActions = const {},
+      this.listView,
       this.supportMarkdown = true});
 
   /// Provide custom elements to use.
@@ -57,6 +58,8 @@ class CardRegistry {
   // Due to https://github.com/flutter/flutter_markdown/issues/171,
   // markdown support doesn't work at the same time as content alignment in a column set
   final bool supportMarkdown;
+
+  final bool listView;
 
   Widget getElement(Map<String, dynamic> map, {String parentMode = "stretch"}) {
     String stringType = map["type"];
@@ -129,6 +132,7 @@ class CardRegistry {
       case "AdaptiveCard":
         return AdaptiveCardElement(
           adaptiveMap: map,
+          listView: listView,
         );
       case "ColumnSet":
         return AdaptiveColumnSet(

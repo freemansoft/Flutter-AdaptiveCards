@@ -78,6 +78,7 @@ class AdaptiveCard extends StatefulWidget {
     this.onSubmit,
     this.onOpenUrl,
     this.hostConfig,
+    this.listView = false,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
@@ -92,6 +93,7 @@ class AdaptiveCard extends StatefulWidget {
     this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
+    this.listView = false,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
@@ -107,6 +109,7 @@ class AdaptiveCard extends StatefulWidget {
     this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
+    this.listView = false,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
@@ -122,6 +125,7 @@ class AdaptiveCard extends StatefulWidget {
     this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
+    this.listView = false,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
@@ -141,6 +145,7 @@ class AdaptiveCard extends StatefulWidget {
   final bool showDebugJson;
   final bool approximateDarkThemeColors;
   final bool supportMarkdown;
+  final bool listView;
 
   @override
   _AdaptiveCardState createState() => new _AdaptiveCardState();
@@ -197,7 +202,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       if (cardRegistry != null) {
         this.cardRegistry = cardRegistry;
       } else {
-        this.cardRegistry = CardRegistry(supportMarkdown: widget.supportMarkdown);
+        this.cardRegistry = CardRegistry(supportMarkdown: widget.supportMarkdown, listView: widget.listView);
       }
     }
 
@@ -239,6 +244,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       cardRegistry: cardRegistry,
       onOpenUrl: onOpenUrl,
       onSubmit: onSubmit,
+      listView: widget.listView,
       showDebugJson: widget.showDebugJson,
       approximateDarkThemeColors: widget.approximateDarkThemeColors,
     );
@@ -257,6 +263,7 @@ class RawAdaptiveCard extends StatefulWidget {
     this.cardRegistry = const CardRegistry(),
     @required this.onSubmit,
     @required this.onOpenUrl,
+    this.listView = false,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
   }) : assert(onSubmit != null, onOpenUrl != null);
@@ -270,6 +277,7 @@ class RawAdaptiveCard extends StatefulWidget {
 
   final bool showDebugJson;
   final bool approximateDarkThemeColors;
+  final bool listView;
 
   @override
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
