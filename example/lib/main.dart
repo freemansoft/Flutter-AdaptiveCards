@@ -1,6 +1,7 @@
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:example/action_set/action_set_page.dart';
 import 'package:example/custom_host_config/custom_host_config.dart';
+import 'package:example/render_time/render_time_page.dart';
 import 'package:example/samples/samples.dart';
 import 'package:example/text_block/text_block_examples_page.dart';
 import 'package:flutter/foundation.dart' show debugDefaultTargetPlatformOverride;
@@ -65,7 +66,8 @@ class MyApp extends StatelessWidget {
             "Input.Time": (context) => InputTimePage(),
             "Input.Toggle": (context) => InputTogglePage(),
             "Input.ChoiceSet": (context) => InputChoiceSetPage(),
-            "about": (context) => AboutPage()
+            "about": (context) => AboutPage(),
+            "Render Time": (context) => RenderTimePage()
           },
         );
       },
@@ -132,7 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
           getRow(["Column", "ColumnSet"]),
           Divider(),
           getRow(["Input.Text", "Input.Number", "Input.Date"]),
-          getRow(["Input.Time", "Input.Toggle", "Input.ChoiceSet"])
+          getRow(["Input.Time", "Input.Toggle", "Input.ChoiceSet"]),
+          Divider(),
+          getButton("Render Time"),
         ],
       ),
     );

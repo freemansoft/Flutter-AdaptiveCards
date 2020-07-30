@@ -6,9 +6,10 @@ import 'base.dart';
 import 'elements/actions/show_card.dart';
 
 class AdaptiveCardElement extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveCardElement({Key key, this.adaptiveMap}) : super(key: UniqueKey());
+  AdaptiveCardElement({Key key, this.adaptiveMap, this.listView}) : super(key: UniqueKey());
 
   final Map adaptiveMap;
+  final bool listView;
 
   @override
   AdaptiveCardElementState createState() => AdaptiveCardElementState();
@@ -105,12 +106,18 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement> with AdaptiveE
     if (currentCardId != null) {
       widgetChildren.add(_registeredCards[currentCardId]);
     }
+
     Widget result = Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: widgetChildren,
-        crossAxisAlignment: CrossAxisAlignment.start,
-      ),
+      child: widget.listView
+          ? ListView(
+              shrinkWrap: true,
+              children: widgetChildren,
+            )
+          : Column(
+              children: widgetChildren,
+              crossAxisAlignment: CrossAxisAlignment.start,
+            ),
     );
 
     if (backgroundImage != null) {
