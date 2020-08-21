@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  uuid: ^2.0.4
+  uuid: ^2.2.0
   chewie: ^0.9.10
   intl: ^0.16.1
   tinycolor: ^1.0.2
