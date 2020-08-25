@@ -164,29 +164,29 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
   void initState() {
     super.initState();
     widget.adaptiveCardContentProvider.loadHostConfig().then((hostConfigMap) {
-      setState(() {
-        if (mounted) {
+      if (mounted) {
+        setState(() {
           hostConfig = hostConfigMap;
-        }
-      });
+        });
+      }
     });
     widget.adaptiveCardContentProvider.loadAdaptiveCardContent().then((adaptiveMap) {
-      setState(() {
-        if (mounted) {
+      if (mounted) {
+        setState(() {
           map = adaptiveMap;
-        }
-      });
+        });
+      }
     });
   }
 
   @override
   void didUpdateWidget(AdaptiveCard oldWidget) {
     widget.adaptiveCardContentProvider.loadHostConfig().then((hostConfigMap) {
-      setState(() {
-        if (mounted) {
+      if (mounted) {
+        setState(() {
           hostConfig = hostConfigMap;
-        }
-      });
+        });
+      }
     });
 
     super.didUpdateWidget(oldWidget);
