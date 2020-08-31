@@ -17,6 +17,7 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElementMixin {
   List<AdaptiveColumn> columns;
+  MainAxisAlignment horizontalAlignment;
 
   @override
   void initState() {
@@ -24,6 +25,8 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
     columns = List<Map>.from(adaptiveMap["columns"] ?? [])
         .map((child) => AdaptiveColumn(adaptiveMap: child, supportMarkdown: widget.supportMarkdown))
         .toList();
+
+    horizontalAlignment = loadHorizontalAlignment();
   }
 
   @override
@@ -38,6 +41,7 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
     Widget child = Row(
       children: columns.toList(),
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: horizontalAlignment,
     );
 
     if (!widget.supportMarkdown) {
@@ -54,5 +58,20 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
         ),
       ),
     );
+  }
+
+  MainAxisAlignment loadHorizontalAlignment() {
+    String horizontalAlignment = adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+
+    switch (horizontalAlignment) {
+      case "left":
+        return  MainAxisAlignment.start;
+      case "center":
+        return MainAxisAlignment.center;
+      case "right":
+        return MainAxisAlignment.end;
+      default:
+        return MainAxisAlignment.start;
+    }
   }
 }
