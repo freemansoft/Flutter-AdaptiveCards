@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
+import 'package:flutter_adaptive_cards/src/elements/media.dart';
+import 'package:flutter_adaptive_cards/src/elements/text_block.dart';
 import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-
-import 'utils/test_utils.dart';
 
 class MockAdaptiveCardState extends Mock implements RawAdaptiveCardState {
   @override
@@ -49,16 +49,12 @@ void main() {
     expect(second.runtimeType, equals(AdaptiveMedia));
   });
 
-
   testWidgets('Unknown element', (tester) async {
     CardRegistry cardRegistry = CardRegistry();
 
-    Widget adaptiveElement = cardRegistry.getElement({
-      'type': "NoType"
-    });
+    Widget adaptiveElement = cardRegistry.getElement({'type': "NoType"});
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
-
 
     AdaptiveUnknown unknown = adaptiveElement as AdaptiveUnknown;
 
@@ -66,9 +62,7 @@ void main() {
   });
 
   testWidgets('Removed element', (tester) async {
-    CardRegistry cardRegistry = CardRegistry(
-      removedElements: ['TextBlock']
-    );
+    CardRegistry cardRegistry = CardRegistry(removedElements: ['TextBlock']);
 
     Widget adaptiveElement = cardRegistry.getElement({
       "type": "TextBlock",
@@ -82,26 +76,19 @@ void main() {
     AdaptiveUnknown unknown = adaptiveElement as AdaptiveUnknown;
 
     expect(unknown.type, equals('TextBlock'));
-
   });
 
-
   testWidgets('Add element', (tester) async {
-    CardRegistry cardRegistry = CardRegistry(
-      addedElements: {
-        'Test': (map) => _TestAddition()
-      }
-    );
+    CardRegistry cardRegistry =
+        CardRegistry(addedElements: {'Test': (map) => _TestAddition()});
 
-   var element = cardRegistry.getElement({
-     'type': "Test"
-   });
+    var element = cardRegistry.getElement({'type': "Test"});
 
-   expect(element.runtimeType, equals(_TestAddition));
+    expect(element.runtimeType, equals(_TestAddition));
 
-   await tester.pumpWidget(element);
+    await tester.pumpWidget(element);
 
-   expect(find.text('Test'), findsOneWidget);
+    expect(find.text('Test'), findsOneWidget);
   });
 }
 
