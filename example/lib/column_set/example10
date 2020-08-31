@@ -5,15 +5,15 @@
     "body": [
         {
             "type": "TextBlock",
-            "text": "Horizontal alignment right",
+            "text": "Weighted width",
             "size": "ExtraLarge"
         },
         {
             "type": "ColumnSet",
-            "horizontalAlignment": "Right",
             "columns": [
                 {
                     "type": "Column",
+                    "width": 10,
                     "items": [
                         {
                             "type": "ActionSet",
@@ -32,6 +32,8 @@
                 },
                 {
                     "type": "Column",
+                    "width": 80,
+                    "horizontalAlignment": "Center",
                     "items": [
                         {
                             "type": "ActionSet",
@@ -46,10 +48,11 @@
                             ]
                         }
                     ],
-                    "spacing": "Small"
+                     "spacing": "Small"
                 },
                 {
                     "type": "Column",
+                    "width": 10,
                     "items": [
                         {
                             "type": "ActionSet",

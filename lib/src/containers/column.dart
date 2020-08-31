@@ -17,12 +17,13 @@ class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
 class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMixin {
   List<Widget> items;
 
-  /// Can be "auto", "stretch" or "manual"
+  /// Can be "auto", "stretch" or "weighted"
   String mode;
   int width;
 
-  MainAxisAlignment mainAxisAlignment;
-  CrossAxisAlignment crossAxisAlignment;
+  MainAxisAlignment verticalAlignment;
+  CrossAxisAlignment horizontalAlignment;
+  Alignment containerHorizontalAlignment;
 
   GenericAction action;
 
@@ -54,7 +55,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
       } else if (toParseWidth is int) {
         if (toParseWidth != null) {
           width = toParseWidth;
-          mode = "manual";
+          mode = "weighted";
         } else {
           // Handle gracefully
           mode = "auto";
@@ -73,11 +74,12 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
           }).toList()
         : [];
 
-    mainAxisAlignment = loadMainAxisAlignment();
-    crossAxisAlignment = loadCrossAxisAlignment();
+    verticalAlignment = loadVerticalAlignment();
+    horizontalAlignment = loadHorizontalAlignment();
+    containerHorizontalAlignment = loadHorizontalContainerAlignment();
   }
 
-  MainAxisAlignment loadMainAxisAlignment() {
+  MainAxisAlignment loadVerticalAlignment() {
     String verticalAlignment = adaptiveMap["verticalContentAlignment"]?.toLowerCase() ?? "top";
 
     switch (verticalAlignment) {
@@ -92,7 +94,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
     }
   }
 
-  CrossAxisAlignment loadCrossAxisAlignment() {
+  CrossAxisAlignment loadHorizontalAlignment() {
     String horizontalAlignment = adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
 
     switch (horizontalAlignment) {
@@ -104,6 +106,21 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
         return CrossAxisAlignment.end;
       default:
         return CrossAxisAlignment.start;
+    }
+  }
+
+  Alignment loadHorizontalContainerAlignment() {
+    String horizontalAlignment = adaptiveMap["horizontalAlignment"]?.toLowerCase();
+
+    switch (horizontalAlignment) {
+      case "left":
+        return Alignment.topLeft;
+      case "center":
+        return Alignment.topCenter;
+      case "right":
+        return Alignment.topRight;
+      default:
+        return null;
     }
   }
 
@@ -163,11 +180,12 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
     );
 
     Widget child = Container(
+      alignment: containerHorizontalAlignment,
       color: backgroundColor,
       child: Column(
         children: []..addAll(items.map((it) => it).toList()),
-        crossAxisAlignment: crossAxisAlignment,
-        mainAxisAlignment: mainAxisAlignment,
+        crossAxisAlignment: horizontalAlignment,
+        mainAxisAlignment: verticalAlignment,
       ),
     );
 
@@ -191,15 +209,15 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
       ],
     );
 
-    assert(mode == "auto" || mode == "stretch" || mode == "manual");
+    assert(mode == "auto" || mode == "stretch" || mode == "weighted");
     if (mode == "auto") {
       return Flexible(child: result);
     } else if (mode == "stretch") {
       return Expanded(
         child: result,
       );
-    } else if (mode == "manual") {
-      return Flexible(
+    } else if (mode == "weighted") {
+      return Expanded(
         flex: width,
         child: result,
       );

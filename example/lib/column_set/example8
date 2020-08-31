@@ -45,7 +45,8 @@
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    "spacing": "Small"
                 },
                 {
                     "type": "Column",
