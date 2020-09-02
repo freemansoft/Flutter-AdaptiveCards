@@ -17,42 +17,39 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
 class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin {
   Alignment horizontalAlignment;
   bool isPerson;
-  Tuple<double, double> size;
+  double width;
+  double height;
 
   @override
   void initState() {
     super.initState();
     horizontalAlignment = loadAlignment();
     isPerson = loadIsPerson();
-    size = loadSize();
+    loadSize();
   }
 
   @override
   Widget build(BuildContext context) {
     //TODO alt text
+
+    BoxFit fit = BoxFit.contain;
+    if (height != null && width != null) {
+      fit = BoxFit.fill;
+    }
+
     Widget image = AdaptiveTappable(
       adaptiveMap: adaptiveMap,
       child: Image(
         image: NetworkImage(url),
-        fit: BoxFit.contain,
+        fit: fit,
+        width: width,
+        height: height,
       ),
     );
 
     if (isPerson) {
       image = ClipOval(
         clipper: FullCircleClipper(),
-        child: image,
-      );
-    }
-
-    if (size != null) {
-      image = ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: size.a,
-          minHeight: size.a,
-          maxHeight: size.b,
-          maxWidth: size.b,
-        ),
         child: image,
       );
     }
@@ -102,7 +99,7 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
 
   String get url => adaptiveMap["url"];
 
-  Tuple<double, double> loadSize() {
+  void loadSize() {
     String sizeDescription = adaptiveMap["size"] ?? "auto";
     sizeDescription = sizeDescription.toLowerCase();
 
@@ -126,10 +123,11 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
       height = int.parse(heightString);
     }
 
-    if (height == null || width == null) {
+    if (height == null && width == null) {
       return null;
     }
 
-    return Tuple(width.toDouble(), height.toDouble());
+    this.width = width?.toDouble();
+    this.height = height?.toDouble();
   }
 }

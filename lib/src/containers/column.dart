@@ -45,7 +45,6 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
 
     backgroundImage = _getBackgroundImage(adaptiveMap);
 
-
     var toParseWidth = adaptiveMap["width"];
     if (toParseWidth != null) {
       if (toParseWidth == "auto") {
@@ -61,8 +60,16 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
           mode = "auto";
         }
       } else {
-        // Handle gracefully
-        mode = "auto";
+        var widthString = toParseWidth.toString();
+
+        if (widthString.endsWith("px")) {
+          widthString = widthString.substring(0, widthString.length - 2); // remove px
+          width = int.parse(widthString);
+          mode = "px";
+        } else {
+          // Handle gracefully
+          mode = "auto";
+        }
       }
     } else {
       mode = "auto";
@@ -209,7 +216,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
       ],
     );
 
-    assert(mode == "auto" || mode == "stretch" || mode == "weighted");
+    assert(mode == "auto" || mode == "stretch" || mode == "weighted" || mode == "px");
     if (mode == "auto") {
       return Flexible(child: result);
     } else if (mode == "stretch") {
@@ -219,6 +226,11 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
     } else if (mode == "weighted") {
       return Expanded(
         flex: width,
+        child: result,
+      );
+    } else if (mode == "px") {
+      return Container(
+        width: width.toDouble(),
         child: result,
       );
     }
