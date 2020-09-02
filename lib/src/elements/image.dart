@@ -34,7 +34,7 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
       adaptiveMap: adaptiveMap,
       child: Image(
         image: NetworkImage(url),
-        fit: BoxFit.contain,
+        fit: BoxFit.fill,
       ),
     );
 
@@ -49,9 +49,9 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
       image = ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: size.a,
-          minHeight: size.a,
+          maxWidth: size.a,
+          minHeight: size.b,
           maxHeight: size.b,
-          maxWidth: size.b,
         ),
         child: image,
       );
@@ -126,7 +126,11 @@ class _AdaptiveImageState extends State<AdaptiveImage> with AdaptiveElementMixin
       height = int.parse(heightString);
     }
 
-    if (height == null || width == null) {
+    if (height == null && width != null) {
+      height = width;
+    } else if (width == null && height != null) {
+      width = height;
+    } else if (height == null && width == null) {
       return null;
     }
 

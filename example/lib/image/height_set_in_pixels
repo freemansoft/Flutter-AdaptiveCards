@@ -1,0 +1,22 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.2",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Height set in pixels"
+        },
+        {
+            "type": "Image",
+            "url": "http://adaptivecards.io/content/cats/1.png",
+            "height": "100px",
+            "selectAction": {
+                "type": "Action.Submit",
+                "data": {
+                    "image": "cat"
+                }
+            }
+        }
+    ]
+}
