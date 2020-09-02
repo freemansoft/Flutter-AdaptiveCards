@@ -62,7 +62,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
       } else {
         var widthString = toParseWidth.toString();
 
-        if (widthString.contains("px")) {
+        if (widthString.endsWith("px")) {
           widthString = widthString.substring(0, widthString.length - 2); // remove px
           width = int.parse(widthString);
           mode = "px";
