@@ -5,6 +5,7 @@ import '../../flutter_adaptive_cards.dart';
 import '../additional.dart';
 import '../base.dart';
 import '../utils.dart';
+import 'package:provider/provider.dart';
 
 class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextBlock({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
@@ -41,7 +42,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   // TODO create own widget that parses _basic_ markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
   Widget build(BuildContext context) {
-    var textBody = widget.supportMarkdown ? getMarkdownText() : getText();
+    var textBody = widget.supportMarkdown ? getMarkdownText(context: context) : getText();
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
@@ -68,7 +69,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
     );
   }
 
-  Widget getMarkdownText() {
+  Widget getMarkdownText({BuildContext context}) {
     return MarkdownBody(
       // TODO the markdown library does currently not support max lines
       // As markdown support is more important than maxLines right now
@@ -77,7 +78,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
       data: text,
       styleSheet: loadMarkdownStyleSheet(),
       onTapLink: (href) {
-        RawAdaptiveCardState.of(context).openUrl(href);
+        var rawAdaptiveCardState = context.watch<RawAdaptiveCardState>();
+        rawAdaptiveCardState.openUrl(href);
       },
     );
   }

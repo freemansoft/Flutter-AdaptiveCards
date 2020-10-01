@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../flutter_adaptive_cards.dart';
 import 'base.dart';
+import 'package:provider/provider.dart';
 
 class SeparatorElement extends StatefulWidget with AdaptiveElementWidgetMixin {
   final Map adaptiveMap;
@@ -76,7 +78,7 @@ class ChildStyler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InheritedReferenceResolver(
-      resolver: InheritedReferenceResolver.of(context).copyWith(style: adaptiveMap["style"]),
+      resolver: context.watch<ReferenceResolver>().copyWith(style: adaptiveMap["style"]),
       child: child,
     );
   }

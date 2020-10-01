@@ -292,10 +292,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   // The root element
   Widget _adaptiveElement;
 
-  static RawAdaptiveCardState of(BuildContext context) {
-    return Provider.of<RawAdaptiveCardState>(context);
-  }
-
   @override
   void initState() {
     super.initState();
