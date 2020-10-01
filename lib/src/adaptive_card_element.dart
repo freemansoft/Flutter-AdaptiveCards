@@ -35,10 +35,6 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement> with AdaptiveE
     _registeredCards[id] = it;
   }
 
-  static AdaptiveCardElementState of(BuildContext context) {
-    return Provider.of<AdaptiveCardElementState>(context, listen: false);
-  }
-
   @override
   void initState() {
     super.initState();

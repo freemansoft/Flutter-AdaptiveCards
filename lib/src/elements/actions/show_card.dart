@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../adaptive_card_element.dart';
 import '../../base.dart';
+import 'package:provider/provider.dart';
 
 class AdaptiveActionShowCard extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveActionShowCard({Key key, this.adaptiveMap}) : super(key: key);
@@ -20,7 +21,7 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
     Widget card = widgetState.cardRegistry.getElement(adaptiveMap["card"]);
 
-    var _adaptiveCardElement = AdaptiveCardElementState.of(context);
+    var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
     if (_adaptiveCardElement != null) {
       _adaptiveCardElement.registerCard(id, card);
     }
@@ -34,7 +35,7 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(title),
-          AdaptiveCardElementState.of(context).currentCardId == id
+          context.watch<AdaptiveCardElementState>().currentCardId == id
               ? Icon(Icons.keyboard_arrow_up)
               : Icon(Icons.keyboard_arrow_down),
         ],
@@ -44,7 +45,7 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
   @override
   void onTapped() {
-    var _adaptiveCardElement = AdaptiveCardElementState.of(context);
+    var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
     if (_adaptiveCardElement != null) {
       _adaptiveCardElement.showCard(id);
     }
