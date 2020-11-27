@@ -15,7 +15,8 @@ class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
   _AdaptiveMediaState createState() => _AdaptiveMediaState();
 }
 
-class _AdaptiveMediaState extends State<AdaptiveMedia> with AdaptiveElementMixin {
+class _AdaptiveMediaState extends State<AdaptiveMedia>
+    with AdaptiveElementMixin {
   VideoPlayerController videoPlayerController;
   ChewieController controller;
 
@@ -23,7 +24,8 @@ class _AdaptiveMediaState extends State<AdaptiveMedia> with AdaptiveElementMixin
   String postUrl;
   String altText;
 
-  FadeAnimation imageFadeAnim = FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
+  FadeAnimation imageFadeAnim =
+      FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
 
   @override
   void initState() {
@@ -31,16 +33,22 @@ class _AdaptiveMediaState extends State<AdaptiveMedia> with AdaptiveElementMixin
 
     postUrl = adaptiveMap["poster"];
     sourceUrl = adaptiveMap["sources"][0]["url"];
+    initializePlayer();
+  }
+
+  Future<void> initializePlayer() async {
     videoPlayerController = VideoPlayerController.network(sourceUrl);
+
+    await videoPlayerController.initialize();
 
     controller = ChewieController(
       aspectRatio: 3 / 2,
       autoPlay: false,
       looping: true,
-      autoInitialize: true,
-      placeholder: postUrl != null ? Center(child: Image.network(postUrl)) : SizedBox(),
       videoPlayerController: videoPlayerController,
     );
+
+    setState(() {});
   }
 
   @override
@@ -52,10 +60,25 @@ class _AdaptiveMediaState extends State<AdaptiveMedia> with AdaptiveElementMixin
 
   @override
   Widget build(BuildContext context) {
+    Widget getVideoPlayer() {
+      return Chewie(
+        controller: controller,
+      );
+    }
+
+    Widget getPlaceholder() {
+      return postUrl != null ? Image.network(postUrl) : Container();
+    }
+
     return SeparatorElement(
-        adaptiveMap: adaptiveMap,
-        child: Chewie(
-          controller: controller,
-        ));
+      adaptiveMap: adaptiveMap,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        child: AspectRatio(
+          aspectRatio: 3 / 2,
+          child: controller == null ?  getPlaceholder() : getVideoPlayer(),
+        )
+      )
+    );
   }
 }
