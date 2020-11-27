@@ -77,7 +77,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
       //maxLines: maxLines,
       data: text,
       styleSheet: loadMarkdownStyleSheet(),
-      onTapLink: (href) {
+      onTapLink: (text, href, title) {
         var rawAdaptiveCardState = context.watch<RawAdaptiveCardState>();
         rawAdaptiveCardState.openUrl(href);
       },
