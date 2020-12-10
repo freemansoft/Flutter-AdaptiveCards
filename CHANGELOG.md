@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1](https://github.com/neohelden/Flutter-AdaptiveCards/compare/0.1.0...0.1.1) - 2020-12-10
+
+### Merged
+
+- Further changes for Release 0.1.0 [`#61`](https://github.com/neohelden/Flutter-AdaptiveCards/pull/61)
+
+### Commits
+
+- Update changelog [`f16168a`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/f16168ac59c3e7b00c7eef5edf6f77bfbc5a8107)
+- Update test files [`da5ee58`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/da5ee5870aae663f8ebc02d760b98ed4529eaef3)
+- Release v0.1.1 [`608365e`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/608365ea617873b6c4e1f983515c7d70b1f1c862)
+- Update pubspec for release [`1d6db85`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/1d6db856369072736cf8723e5810f621cf023557)
+- Rename docs folder to doc [`cba6d86`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/cba6d86dcf4d9451d488fefba9955ac6ebf760ac)
+- Ignore test failures folder [`32244b3`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/32244b3904c0457fa1d1fe8802dceb180bf53dcc)
+
 ## 0.1.0 - 2020-12-10
 
 ### Merged
