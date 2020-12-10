@@ -1,11 +1,10 @@
 name: flutter_adaptive_cards
 description: Adaptive Cards are platform-agnostic snippets of UI, authored in JSON, that apps and services can openly exchange.
 version: 0.1.0
-author: Neohelden GmbH <hello@neohelden.com>
 homepage: https://github.com/neohelden/Flutter-AdaptiveCards
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -23,6 +22,7 @@ dependencies:
   # Content
   ## Video player with controls
   chewie: ^0.12.0
+  video_player: ^1.0.1
   ## Markdown renderer
   flutter_markdown: ^0.5.1
 

@@ -1,4 +1,4 @@
-![AdaptiveCards for Flutter](docs/neohelden-flutter-adaptive-cards-lib.jpg?raw=true "Adaptive Cards for Flutter")
+![AdaptiveCards for Flutter](doc/neohelden-flutter-adaptive-cards-lib.jpg?raw=true "Adaptive Cards for Flutter")
 
 # Adaptive Cards for Flutter
 
