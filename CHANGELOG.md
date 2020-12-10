@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2](https://github.com/neohelden/Flutter-AdaptiveCards/compare/0.1.1...0.1.2) - 2020-12-10
+
+### Merged
+
+- Release 0.1.2 [`#62`](https://github.com/neohelden/Flutter-AdaptiveCards/pull/62)
+
+### Commits
+
+- Update changelog [`faac550`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/faac550e35a9f44dad6fe42d41233d24956ed936)
+- MacOS: Fix network issue [`b6d9bdf`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/b6d9bdf06f620c130a2ba6be16a786c4266d17fe)
+- Fix deprecated APIs [`360dd34`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/360dd3407a0dbdf44c92095eb043a062e42ad6fe)
+
 ## [0.1.1](https://github.com/neohelden/Flutter-AdaptiveCards/compare/0.1.0...0.1.1) - 2020-12-10
 
 ### Merged
