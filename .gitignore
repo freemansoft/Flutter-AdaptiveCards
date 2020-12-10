@@ -11,3 +11,5 @@ ios/Runner/GeneratedPluginRegistrant.*
 
 .idea/
 flutter_adaptive_cards.iml
+
+test/failures/
