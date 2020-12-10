@@ -1,6 +1,6 @@
 name: flutter_adaptive_cards
-description: A Flutter implementation of Adaptive Cards.
-version: 0.0.3
+description: Adaptive Cards are platform-agnostic snippets of UI, authored in JSON, that apps and services can openly exchange.
+version: 0.1.0
 author: Neohelden GmbH <hello@neohelden.com>
 homepage: https://github.com/neohelden/Flutter-AdaptiveCards
 

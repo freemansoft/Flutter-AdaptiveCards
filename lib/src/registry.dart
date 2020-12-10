@@ -214,7 +214,7 @@ class DefaultCardRegistry extends InheritedWidget {
   final CardRegistry cardRegistry;
 
   static CardRegistry of(BuildContext context) {
-    DefaultCardRegistry cardRegistry = context.inheritFromWidgetOfExactType(DefaultCardRegistry);
+    DefaultCardRegistry cardRegistry = context.dependOnInheritedWidgetOfExactType<DefaultCardRegistry>();
     if (cardRegistry == null) return null;
     return cardRegistry.cardRegistry;
   }
