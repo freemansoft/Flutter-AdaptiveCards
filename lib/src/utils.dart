@@ -20,7 +20,7 @@ class _FadeAnimationState extends State<FadeAnimation> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    animationController = AnimationController(duration: widget.duration);
+    animationController = AnimationController(duration: widget.duration, vsync: this);
     animationController.addListener(() {
       if (mounted) {
         setState(() {});

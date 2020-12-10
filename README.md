@@ -9,7 +9,7 @@ We decided to build a Flutter implementation of Adaptive Cards because we believ
 Add this to your package's pubspec.yaml file:
 ```yml
 dependencies:
-  flutter_adaptive_cards: ^0.1.1
+  flutter_adaptive_cards: ^0.1.2
 ```
 
 ```dart
