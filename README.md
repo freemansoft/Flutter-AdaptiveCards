@@ -1,4 +1,4 @@
-![AdaptiveCards for Flutter](doc/neohelden-flutter-adaptive-cards-lib.jpg?raw=true "Adaptive Cards for Flutter")
+![AdaptiveCards for Flutter](https://github.com/neohelden/Flutter-AdaptiveCards/raw/master/doc/neohelden-flutter-adaptive-cards-lib.jpg?raw=true "Adaptive Cards for Flutter")
 
 # Adaptive Cards for Flutter
 
@@ -6,12 +6,14 @@ We decided to build a Flutter implementation of Adaptive Cards because we believ
 
 ### Installing
 
-Put this into your `pubspec.yaml`
+Add this to your package's pubspec.yaml file:
 ```yml
 dependencies:
-  flutter_adaptive_cards:
-    git:
-      url: https://github.com/neohelden/Flutter-AdaptiveCards
+  flutter_adaptive_cards: ^0.1.1
+```
+
+```dart
+import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 ```
 
 ## Using
@@ -84,9 +86,10 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 - **Norbert Kozsir** (@Norbert515) – *Initial work*, Former Head of Flutter development at Neohelden GmbH
 - **Pascal Stech** (@Curvel) – *Maintainer*, Flutter Developer at Neohelden GmbH (NeoSEALs team)
+- **Maik Hummel** (@Beevelop) – *Maintainer*, CTO at Neohelden GmbH (Daddy of the NeoSEALs team)
 
 See also the list of [contributors](https://github.com/neohelden/flutter_adaptive_cards/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
