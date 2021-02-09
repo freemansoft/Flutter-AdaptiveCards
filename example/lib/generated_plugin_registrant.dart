@@ -2,8 +2,7 @@
 // Generated file. Do not edit.
 //
 
-// ignore: unused_import
-import 'dart:ui';
+// ignore_for_file: lines_longer_than_80_chars
 
 import 'package:import_js_library/import_js_library.dart';
 import 'package:shared_preferences_web/shared_preferences_web.dart';
@@ -14,11 +13,11 @@ import 'package:wakelock_web/wakelock_web.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 // ignore: public_member_api_docs
-void registerPlugins(PluginRegistry registry) {
-  ImportJsLibrary.registerWith(registry.registrarFor(ImportJsLibrary));
-  SharedPreferencesPlugin.registerWith(registry.registrarFor(SharedPreferencesPlugin));
-  UrlLauncherPlugin.registerWith(registry.registrarFor(UrlLauncherPlugin));
-  VideoPlayerPlugin.registerWith(registry.registrarFor(VideoPlayerPlugin));
-  WakelockWeb.registerWith(registry.registrarFor(WakelockWeb));
-  registry.registerMessageHandler();
+void registerPlugins(Registrar registrar) {
+  ImportJsLibrary.registerWith(registrar);
+  SharedPreferencesPlugin.registerWith(registrar);
+  UrlLauncherPlugin.registerWith(registrar);
+  VideoPlayerPlugin.registerWith(registrar);
+  WakelockWeb.registerWith(registrar);
+  registrar.registerMessageHandler();
 }
