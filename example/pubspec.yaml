@@ -11,9 +11,13 @@ dependencies:
   flutter:
     sdk: flutter
 
-  dynamic_theme: ^1.0.1
+  dynamic_theme:
+    git:
+      url: git@github.com:Norbert515/dynamic_theme.git
+      ref: d4e2e04ffab14ea315b9a34a32cd8ac5ee21c763
+
   url_launcher: ^5.4.7
-  http: ^0.12.0+4
+  http: ^0.13.0-nullsafety.0
 
   flutter_adaptive_cards:
     path: ..
@@ -50,3 +54,5 @@ flutter:
     - lib/inputs/input_choice_set/
     - lib/media/example1
     - lib/samples/
+
+publish_to: none

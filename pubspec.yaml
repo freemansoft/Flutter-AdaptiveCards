@@ -11,11 +11,11 @@ dependencies:
     sdk: flutter
 
   # General
-  http: ^0.12.2
+  http: ^0.13.0-nullsafety.0
   provider: ^4.3.2+2
   uuid: ^2.2.2
   ## Localization
-  intl: ^0.16.1
+  intl: ^0.17.0-nullsafety.2
   ## Used for automatic color adjustment for dark theme
   tinycolor: ^1.0.3
 

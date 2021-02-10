@@ -65,7 +65,7 @@ class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 
   @override
   Future<Map> loadAdaptiveCardContent() async {
-    return json.decode((await http.get(url)).body);
+    return json.decode((await http.get(Uri.dataFromString(url))).body);
   }
 }
 
