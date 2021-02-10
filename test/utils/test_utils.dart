@@ -17,8 +17,8 @@ Map getDefaultHostConfig() {
 }
 
 Widget getWidget(String path, String hostConfigPath) {
-  var file = File('samples/$path');
-  var hostConfigFile = File('host_configs/$hostConfigPath');
+  var file = File('test/samples/$path');
+  var hostConfigFile = File('test/host_configs/$hostConfigPath');
   var map = json.decode(file.readAsStringSync());
   var hostConfig = json.decode(hostConfigFile.readAsStringSync());
   Widget adaptiveCard = RawAdaptiveCard.fromMap(

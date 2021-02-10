@@ -105,7 +105,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement> with AdaptiveE
 
     Widget result = Padding(
       padding: const EdgeInsets.all(8.0),
-      child: widget.listView
+      child: widget.listView == true
           ? ListView(
               shrinkWrap: true,
               children: widgetChildren,

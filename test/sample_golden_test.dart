@@ -30,19 +30,19 @@ void main() {
     WidgetsBinding.instance.renderView.configuration =
         TestViewConfiguration(size: const Size(500, 700));
 
-    final fontData = File('../assets/fonts/Roboto/Roboto-Regular.ttf')
+    final fontData = File('assets/fonts/Roboto/Roboto-Regular.ttf')
         .readAsBytes()
         .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontData2 = File('../assets/fonts/Roboto/Roboto-Bold.ttf')
+    final fontData2 = File('assets/fonts/Roboto/Roboto-Bold.ttf')
         .readAsBytes()
         .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontData3 = File('../assets/fonts/Roboto/Roboto-Light.ttf')
+    final fontData3 = File('assets/fonts/Roboto/Roboto-Light.ttf')
         .readAsBytes()
         .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontData4 = File('../assets/fonts/Roboto/Roboto-Medium.ttf')
+    final fontData4 = File('assets/fonts/Roboto/Roboto-Medium.ttf')
         .readAsBytes()
         .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontData5 = File('../assets/fonts/Roboto/Roboto-Thin.ttf')
+    final fontData5 = File('assets/fonts/Roboto/Roboto-Thin.ttf')
         .readAsBytes()
         .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
     final fontLoader = FontLoader('Roboto')

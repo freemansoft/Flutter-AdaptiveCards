@@ -7,6 +7,7 @@ We decided to build a Flutter implementation of Adaptive Cards because we believ
 ### Installing
 
 Add this to your package's pubspec.yaml file:
+
 ```yml
 dependencies:
   flutter_adaptive_cards: ^0.1.2
@@ -21,21 +22,24 @@ import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 Using Adaptive Cards in Flutter coudn't be simpler: All you need is the `AdaptiveCard` widget.
 
 ### :warning: Markdown support vs. ColumnSet content alignment
+
 Due to [issue #171](https://github.com/flutter/flutter_markdown/issues/171) of the Flutter Markdown package, the flag `supportMarkdown` was introduced to all Adaptive Card contractors. The default value of this property is `true`, to stay compatible with older versions of this package, which didn't support content alignment in ColumnSets. If the value is set to `false` the content alignment in ColumnSets is working accordingly, but every TextBlock is displayed without Markdown rendering. As soon if the issue is resolved this flag will be removed.
 
 ### Loading an AdaptiveCard
+
 There are several constructors which handle loading of the AC from different sources.
 `AdaptiveCard.network` takes a url to download the payload and display it.
 `AdaptiveCard.asset` takes an asset path to load the payload from the local data.
 `AdaptiveCard.memory` takes a map (which can be obtained but decoding a string using the json class) and displays it.
 
 ### HostConfig
+
 The `HostConfig` can be configured via two parameters of every constructor:
-  1. The parameter `hostConfigPath` takes a static HostConfig which can be stored as a local asset. In this case, the [HostConfig has to be added to the pubspec.yaml](https://flutter.dev/docs/development/ui/assets-and-images) of the project.
-  2. The parameter `hostConfig` takes a dynamic HostConfig as a String. This can easily be programmaticly and can e.g. be used for switching between a light and a dark theme.
-  
+
+1. The parameter `hostConfigPath` takes a static HostConfig which can be stored as a local asset. In this case, the [HostConfig has to be added to the pubspec.yaml](https://flutter.dev/docs/development/ui/assets-and-images) of the project.
+2. The parameter `hostConfig` takes a dynamic HostConfig as a String. This can easily be programmaticly and can e.g. be used for switching between a light and a dark theme.
+
 If both parameters are set the `hostConfig`parameter will be used.
-  
 
 ### Example
 
@@ -61,22 +65,35 @@ AdaptiveCard.network(
   approximateDarkThemeColors: true,
 );
 ```
+
 ## Example App
+
 We try to show every possible configuration parameter supported by the AdaptiveCards components in the example app of this repository. If we missed any, please feel free to open an issue.
 
 ## Running the tests
 
-Simply type 
 ```sh
 flutter test
 ```
 
-and to update the golden files run 
+and to update the golden files run
 
 ```sh
 flutter test --update-goldens test/sample_golden_test.dart
 ```
-This updates the golden files for the sample cards.
+
+This updates the golden files for the sample cards. Depending on your operating system you might have issues with the font rendering. For the CI / CD setup you need to generate the golden files using a Docker container:
+
+```
+# run the following command in the root folder of this project
+docker run -it -v `pwd`:/app cirrusci/flutter:dev bash
+
+# and inside the container execute
+cd /app
+flutter test --update-goldens
+
+# afterwards commit the freshly generated sample files (after checking them)
+```
 
 ## Contributing
 
@@ -84,9 +101,9 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Authors
 
-- **Norbert Kozsir** (@Norbert515) – *Initial work*, Former Head of Flutter development at Neohelden GmbH
-- **Pascal Stech** (@Curvel) – *Maintainer*, Flutter Developer at Neohelden GmbH (NeoSEALs team)
-- **Maik Hummel** (@Beevelop) – *Maintainer*, CTO at Neohelden GmbH (Daddy of the NeoSEALs team)
+- **Norbert Kozsir** (@Norbert515) – _Initial work_, Former Head of Flutter development at Neohelden GmbH
+- **Pascal Stech** (@Curvel) – _Maintainer_, Flutter Developer at Neohelden GmbH (NeoSEALs team)
+- **Maik Hummel** (@Beevelop) – _Maintainer_, CTO at Neohelden GmbH (Daddy of the NeoSEALs team)
 
 See also the list of [contributors](https://github.com/neohelden/flutter_adaptive_cards/contributors) who participated in this project.
 
