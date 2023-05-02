@@ -1,6 +1,7 @@
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:example/action_set/action_set_page.dart';
 import 'package:example/custom_host_config/custom_host_config.dart';
+import 'package:example/network/network.dart';
 import 'package:example/render_time/render_time_page.dart';
 import 'package:example/samples/samples.dart';
 import 'package:example/text_block/text_block_examples_page.dart';
@@ -69,7 +70,8 @@ class MyApp extends StatelessWidget {
             'Input.Toggle': (context) => InputTogglePage(),
             'Input.ChoiceSet': (context) => InputChoiceSetPage(),
             'about': (context) => AboutPage(),
-            'Render Time': (context) => RenderTimePage()
+            'Render Time': (context) => RenderTimePage(),
+            'Network': (context) => NetworkPage()
           },
         );
       },
@@ -140,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
           getRow(['Input.Time', 'Input.Toggle', 'Input.ChoiceSet']),
           Divider(),
           getButton('Render Time'),
+          getButton('Network'),
         ],
       ),
     );

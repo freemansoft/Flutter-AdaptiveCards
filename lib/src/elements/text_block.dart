@@ -20,8 +20,8 @@ class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     with AdaptiveElementMixin {
-  late FontWeight fontWeight;
-  late double fontSize;
+  FontWeight? fontWeight;
+  double? fontSize;
   late Alignment horizontalAlignment;
   late int maxLines;
   late TextAlign textAlign;

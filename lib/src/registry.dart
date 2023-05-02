@@ -91,6 +91,8 @@ class CardRegistry {
         return GenericActionOpenUrl(map, state);
       case "Action.Submit":
         return GenericSubmitAction(map, state);
+      case "Action.ToggleVisibility":
+        return null;
     }
     assert(false, "No action found with type $stringType");
     return null;
@@ -198,7 +200,7 @@ class CardRegistry {
           adaptiveMap: map,
         );
       case "Action.Submit":
-        return AdaptiveActionSubmit(adaptiveMap: map, color: Colors.lightBlue);
+        return AdaptiveActionSubmit(adaptiveMap: map);
     }
     return AdaptiveUnknown(
       adaptiveMap: map,

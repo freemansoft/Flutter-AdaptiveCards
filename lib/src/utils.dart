@@ -118,7 +118,7 @@ Color? adjustColorToFitDarkTheme(Color? color, Brightness brightness) {
   if (brightness == Brightness.light) {
     return color;
   } else {
-    TinyColor tinyColor = TinyColor(color);
+    TinyColor tinyColor = TinyColor.fromColor(color);
     double luminance = tinyColor.getLuminance();
     if (tinyColor.isDark())
       return tinyColor.lighten(((1 - luminance) * 100).round()).color;
@@ -151,8 +151,8 @@ Color? getBackgroundColor(
 ) {
   String style = adaptiveMap["style"]?.toString()?.toLowerCase() ?? "default";
 
-  String color =
-      resolver.hostConfig["containerStyles"][style]["backgroundColor"];
+  String? color =
+      resolver.hostConfig["containerStyles"]?[style]?["backgroundColor"];
 
   var backgroundColor = parseColor(color);
   if (backgroundColor != null && approximateDarkThemeColors) {
