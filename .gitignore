@@ -21,3 +21,6 @@ example/pubspec.lock
 example/windows/flutter/generated_plugin_registrant.cc
 example/windows/flutter/generated_plugin_registrant.h
 example/windows/flutter/generated_plugins.cmake
+pubspec.lock
+.flutter-plugins-dependencies
+.flutter-plugins
