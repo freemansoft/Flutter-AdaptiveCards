@@ -6,7 +6,8 @@ class InheritedReferenceResolver extends StatelessWidget {
   final Widget child;
   final ReferenceResolver resolver;
 
-  const InheritedReferenceResolver({Key key, this.resolver, this.child}) : super(key: key);
+  const InheritedReferenceResolver(
+      {super.key, required this.resolver, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -18,17 +19,17 @@ class InheritedReferenceResolver extends StatelessWidget {
 }
 
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
-  Map get adaptiveMap;
+  Map<String, dynamic> get adaptiveMap;
 }
 
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
-  String id;
+  late String id;
 
-  RawAdaptiveCardState widgetState;
+  late RawAdaptiveCardState widgetState;
 
-  Map get adaptiveMap => widget.adaptiveMap;
+  Map<String, dynamic> get adaptiveMap => widget.adaptiveMap;
 
-  ReferenceResolver resolver;
+  late ReferenceResolver resolver;
 
   @override
   void initState() {
@@ -46,32 +47,40 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is AdaptiveElementMixin && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is AdaptiveElementMixin &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
 }
 
-mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T> implements AdaptiveElementMixin<T> {
-  String get title => widget.adaptiveMap["title"];
+mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
+    implements AdaptiveElementMixin<T> {
+  String get title => widget.adaptiveMap["title"] ?? '';
 
   void onTapped();
 }
 
-mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T> implements AdaptiveElementMixin<T> {
-  String value;
+mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
+    implements AdaptiveElementMixin<T> {
+  late String value;
 
   @override
   void initState() {
     super.initState();
-    value = adaptiveMap["value"].toString() == "null" ? "" : adaptiveMap["value"].toString();
+    value = adaptiveMap["value"].toString() == "null"
+        ? ""
+        : adaptiveMap["value"].toString();
   }
 
   void appendInput(Map map);
 }
 
-mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin> on State<T> implements AdaptiveInputMixin<T> {
-  String placeholder;
+mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>
+    on State<T> implements AdaptiveInputMixin<T> {
+  late String placeholder;
 
   @override
   void initState() {
@@ -84,20 +93,21 @@ mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin> on State<T
 abstract class GenericAction {
   GenericAction(this.adaptiveMap, this.rawAdaptiveCardState);
 
-  String get title => adaptiveMap["title"];
-  final Map adaptiveMap;
+  String? get title => adaptiveMap["title"];
+  final Map<String, dynamic> adaptiveMap;
   final RawAdaptiveCardState rawAdaptiveCardState;
 
   void tap();
 }
 
 class GenericSubmitAction extends GenericAction {
-  GenericSubmitAction(Map adaptiveMap, RawAdaptiveCardState rawAdaptiveCardState)
+  GenericSubmitAction(Map<String, dynamic> adaptiveMap,
+      RawAdaptiveCardState rawAdaptiveCardState)
       : super(adaptiveMap, rawAdaptiveCardState) {
     data = adaptiveMap["data"] ?? {};
   }
 
-  Map data;
+  late Map<String, dynamic> data;
 
   @override
   void tap() {
@@ -106,15 +116,18 @@ class GenericSubmitAction extends GenericAction {
 }
 
 class GenericActionOpenUrl extends GenericAction {
-  GenericActionOpenUrl(Map adaptiveMap, RawAdaptiveCardState rawAdaptiveCardState)
+  GenericActionOpenUrl(Map<String, dynamic> adaptiveMap,
+      RawAdaptiveCardState rawAdaptiveCardState)
       : super(adaptiveMap, rawAdaptiveCardState) {
     url = adaptiveMap["url"];
   }
 
-  String url;
+  late String? url;
 
   @override
   void tap() {
-    rawAdaptiveCardState.openUrl(url);
+    if (url != null) {
+      rawAdaptiveCardState.openUrl(url!);
+    }
   }
 }

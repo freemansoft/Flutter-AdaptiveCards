@@ -4,10 +4,11 @@ import 'package:flutter/services.dart';
 import '../additional.dart';
 import '../base.dart';
 
-class AdaptiveNumberInput extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveNumberInput({Key key, this.adaptiveMap}) : super(key: key);
+class AdaptiveNumberInput extends StatefulWidget
+    with AdaptiveElementWidgetMixin {
+  AdaptiveNumberInput({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveNumberInputState createState() => _AdaptiveNumberInputState();
@@ -17,8 +18,8 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin {
   TextEditingController controller = TextEditingController();
 
-  int min;
-  int max;
+  late int min;
+  late int max;
 
   @override
   void initState() {

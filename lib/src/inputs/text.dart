@@ -5,9 +5,9 @@ import '../additional.dart';
 import '../base.dart';
 
 class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTextInput({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveTextInput({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveTextInputState createState() => _AdaptiveTextInputState();
@@ -16,9 +16,9 @@ class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 class _AdaptiveTextInputState extends State<AdaptiveTextInput>
     with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin {
   TextEditingController controller = TextEditingController();
-  bool isMultiline;
-  int maxLength;
-  TextInputType style;
+  late bool isMultiline;
+  late int maxLength;
+  late TextInputType? style;
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
     map[id] = controller.text;
   }
 
-  TextInputType loadTextInputType() {
+  TextInputType? loadTextInputType() {
     /// Can be one of the following:
     /// - "text"
     /// - "tel"

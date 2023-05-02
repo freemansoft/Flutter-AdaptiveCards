@@ -3,18 +3,20 @@ import 'package:flutter/material.dart';
 import '../../base.dart';
 import 'icon_button.dart';
 
-class AdaptiveActionOpenUrl extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveActionOpenUrl({Key key, this.adaptiveMap}) : super(key: key);
+class AdaptiveActionOpenUrl extends StatefulWidget
+    with AdaptiveElementWidgetMixin {
+  AdaptiveActionOpenUrl({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveActionOpenUrlState createState() => _AdaptiveActionOpenUrlState();
 }
 
-class _AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl> with AdaptiveActionMixin, AdaptiveElementMixin {
-  GenericActionOpenUrl action;
-  String iconUrl;
+class _AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
+    with AdaptiveActionMixin, AdaptiveElementMixin {
+  late GenericActionOpenUrl action;
+  late String? iconUrl;
 
   @override
   void initState() {

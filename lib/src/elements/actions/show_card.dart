@@ -4,10 +4,11 @@ import '../../adaptive_card_element.dart';
 import '../../base.dart';
 import 'package:provider/provider.dart';
 
-class AdaptiveActionShowCard extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveActionShowCard({Key key, this.adaptiveMap}) : super(key: key);
+class AdaptiveActionShowCard extends StatefulWidget
+    with AdaptiveElementWidgetMixin {
+  AdaptiveActionShowCard({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveActionShowCardState createState() => _AdaptiveActionShowCardState();
@@ -22,14 +23,12 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
     Widget card = widgetState.cardRegistry.getElement(adaptiveMap["card"]);
 
     var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    if (_adaptiveCardElement != null) {
-      _adaptiveCardElement.registerCard(id, card);
-    }
+    _adaptiveCardElement.registerCard(id, card);
   }
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
+    return ElevatedButton(
       onPressed: onTapped,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -46,8 +45,6 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
   @override
   void onTapped() {
     var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    if (_adaptiveCardElement != null) {
-      _adaptiveCardElement.showCard(id);
-    }
+    _adaptiveCardElement.showCard(id);
   }
 }

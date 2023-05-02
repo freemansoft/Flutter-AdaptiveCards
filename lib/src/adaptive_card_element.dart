@@ -5,31 +5,35 @@ import 'package:provider/provider.dart';
 import 'base.dart';
 import 'elements/actions/show_card.dart';
 
-class AdaptiveCardElement extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveCardElement({Key key, this.adaptiveMap, this.listView}) : super(key: UniqueKey());
+class AdaptiveCardElement extends StatefulWidget
+    with AdaptiveElementWidgetMixin {
+  AdaptiveCardElement(
+      {Key? key, required this.adaptiveMap, required this.listView})
+      : super(key: UniqueKey());
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
   final bool listView;
 
   @override
   AdaptiveCardElementState createState() => AdaptiveCardElementState();
 }
 
-class AdaptiveCardElementState extends State<AdaptiveCardElement> with AdaptiveElementMixin {
-  String currentCardId;
+class AdaptiveCardElementState extends State<AdaptiveCardElement>
+    with AdaptiveElementMixin {
+  String? currentCardId;
 
-  List<Widget> children;
+  late List<Widget> children;
 
   List<Widget> allActions = [];
 
   List<AdaptiveActionShowCard> showCardActions = [];
   List<Widget> cards = [];
 
-  Axis actionsOrientation;
+  late Axis actionsOrientation;
 
-  String backgroundImage;
+  late String? backgroundImage;
 
-  Map<String, Widget> _registeredCards = Map();
+  Map<String, Widget> _registeredCards = {};
 
   void registerCard(String id, Widget it) {
     _registeredCards[id] = it;
@@ -44,20 +48,26 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement> with AdaptiveE
       actionsOrientation = Axis.horizontal;
     else if (stringAxis == "Vertical") actionsOrientation = Axis.vertical;
 
-    children = List<Map>.from(adaptiveMap["body"]).map((map) => widgetState.cardRegistry.getElement(map)).toList();
+    children = List<Map<String, dynamic>>.from(adaptiveMap["body"])
+        .map((map) => widgetState.cardRegistry.getElement(map))
+        .toList();
 
     backgroundImage = adaptiveMap['backgroundImage'];
   }
 
   void loadChildren() {
     if (widget.adaptiveMap.containsKey("actions")) {
-      allActions = List<Map>.from(widget.adaptiveMap["actions"])
+      allActions = List<Map<String, dynamic>>.from(
+              widget.adaptiveMap["actions"])
           .map((adaptiveMap) => widgetState.cardRegistry.getAction(adaptiveMap))
           .toList();
-      showCardActions =
-          List<AdaptiveActionShowCard>.from(allActions.where((action) => action is AdaptiveActionShowCard).toList());
-      cards = List<Widget>.from(
-          showCardActions.map((action) => widgetState.cardRegistry.getElement(action.adaptiveMap["card"])).toList());
+      showCardActions = List<AdaptiveActionShowCard>.from(allActions
+          .where((action) => action is AdaptiveActionShowCard)
+          .toList());
+      cards = List<Widget>.from(showCardActions
+          .map((action) =>
+              widgetState.cardRegistry.getElement(action.adaptiveMap["card"]))
+          .toList());
     }
   }
 
@@ -100,7 +110,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement> with AdaptiveE
     widgetChildren.add(actionWidget);
 
     if (currentCardId != null) {
-      widgetChildren.add(_registeredCards[currentCardId]);
+      widgetChildren.add(_registeredCards[currentCardId]!);
     }
 
     Widget result = Padding(
@@ -121,7 +131,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement> with AdaptiveE
         children: <Widget>[
           Positioned.fill(
             child: Image.network(
-              backgroundImage,
+              backgroundImage!,
               fit: BoxFit.cover,
             ),
           ),

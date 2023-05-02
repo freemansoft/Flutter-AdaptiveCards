@@ -4,9 +4,9 @@ import '../additional.dart';
 import '../base.dart';
 
 class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveDateInput({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveDateInput({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveDateInputState createState() => _AdaptiveDateInputState();
@@ -14,9 +14,9 @@ class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class _AdaptiveDateInputState extends State<AdaptiveDateInput>
     with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin {
-  DateTime selectedDateTime;
-  DateTime min;
-  DateTime max;
+  DateTime? selectedDateTime;
+  DateTime? min;
+  DateTime? max;
 
   @override
   void initState() {
@@ -33,18 +33,20 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
   Widget build(BuildContext context) {
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: RaisedButton(
+      child: ElevatedButton(
         onPressed: () async {
           selectedDateTime = await widgetState.pickDate(min, max);
           setState(() {});
         },
-        child: Text(selectedDateTime == null ? placeholder : selectedDateTime.toIso8601String()),
+        child: Text(selectedDateTime == null
+            ? placeholder
+            : selectedDateTime!.toIso8601String()),
       ),
     );
   }
 
   @override
   void appendInput(Map map) {
-    map[id] = selectedDateTime.toIso8601String();
+    map[id] = selectedDateTime!.toIso8601String();
   }
 }

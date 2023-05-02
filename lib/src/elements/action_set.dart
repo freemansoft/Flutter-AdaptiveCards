@@ -6,16 +6,16 @@ import 'actions/show_card.dart';
 import 'actions/submit.dart';
 
 class ActionSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  ActionSet({Key key, this.adaptiveMap}) : super(key: key);
+  ActionSet({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _ActionSetState createState() => _ActionSetState();
 }
 
 class _ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
-  List<Widget> actions = List();
+  List<Widget> actions = [];
 
   @override
   void initState() {
@@ -42,17 +42,7 @@ class _ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
       case "Action.Submit":
         return AdaptiveActionSubmit(adaptiveMap: map);
     }
+
     return AdaptiveUnknown(adaptiveMap: map, type: stringType);
   }
 }
-
-
-
-
-
-
-
-
-
-
-

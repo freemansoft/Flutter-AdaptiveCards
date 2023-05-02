@@ -6,24 +6,27 @@ import '../utils.dart';
 import 'column.dart';
 
 class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveColumnSet({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
+  AdaptiveColumnSet(
+      {super.key, required this.adaptiveMap, required this.supportMarkdown});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
   final bool supportMarkdown;
 
   @override
   _AdaptiveColumnSetState createState() => _AdaptiveColumnSetState();
 }
 
-class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElementMixin {
-  List<AdaptiveColumn> columns;
-  MainAxisAlignment horizontalAlignment;
+class _AdaptiveColumnSetState extends State<AdaptiveColumnSet>
+    with AdaptiveElementMixin {
+  late List<AdaptiveColumn> columns;
+  late MainAxisAlignment horizontalAlignment;
 
   @override
   void initState() {
     super.initState();
-    columns = List<Map>.from(adaptiveMap["columns"] ?? [])
-        .map((child) => AdaptiveColumn(adaptiveMap: child, supportMarkdown: widget.supportMarkdown))
+    columns = List<Map<String, dynamic>>.from(adaptiveMap["columns"] ?? [])
+        .map((child) => AdaptiveColumn(
+            adaptiveMap: child, supportMarkdown: widget.supportMarkdown))
         .toList();
 
     horizontalAlignment = loadHorizontalAlignment();
@@ -31,7 +34,8 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+    var backgroundColor =
+        getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
       resolver: resolver,
       adaptiveMap: adaptiveMap,
       approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
@@ -61,11 +65,12 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet> with AdaptiveElem
   }
 
   MainAxisAlignment loadHorizontalAlignment() {
-    String horizontalAlignment = adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+    String horizontalAlignment =
+        adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
 
     switch (horizontalAlignment) {
       case "left":
-        return  MainAxisAlignment.start;
+        return MainAxisAlignment.start;
       case "center":
         return MainAxisAlignment.center;
       case "right":

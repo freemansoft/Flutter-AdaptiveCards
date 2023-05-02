@@ -10,9 +10,9 @@ import '../base.dart';
 ///
 /// In debug mode these contain an error message describing the problem.
 class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveUnknown({Key key, this.adaptiveMap, this.type}) : super(key: key);
+  AdaptiveUnknown({super.key, required this.adaptiveMap, required this.type});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   final String type;
 
@@ -20,7 +20,8 @@ class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
   _AdaptiveUnknownState createState() => _AdaptiveUnknownState();
 }
 
-class _AdaptiveUnknownState extends State<AdaptiveUnknown> with AdaptiveElementMixin {
+class _AdaptiveUnknownState extends State<AdaptiveUnknown>
+    with AdaptiveElementMixin {
   @override
   Widget build(BuildContext context) {
     Widget result = SizedBox();
