@@ -62,8 +62,8 @@ Neo has been using Adaptive Cards for a while now, and we're excited to bring th
                     alignment: Alignment.center,
                     child: OutlinedButton(
                       onPressed: () {
-                        launch(
-                            "https://neohelden.com/?utm_source=flutter&utm_medium=aboutButton&utm_campaign=flutterDemoApp");
+                        launchUrl(Uri.parse(
+                            "https://neohelden.com/?utm_source=flutter&utm_medium=aboutButton&utm_campaign=flutterDemoApp"));
                       },
                       child: Text("Check out the website"),
                     ),
@@ -91,7 +91,7 @@ Neo has been using Adaptive Cards for a while now, and we're excited to bring th
                           children: <Widget>[
                             Text(
                               "Norbert Kozsir - former Head of Flutter @Neohelden",
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
                             SizedBox(
                               height: 8,
@@ -100,7 +100,7 @@ Neo has been using Adaptive Cards for a while now, and we're excited to bring th
                               "Norbert was the head of Flutter development at Neohelden and "
                               "brought this library to life. "
                               "He is still very active in the Flutter community and keeps rocking every day.",
-                              style: Theme.of(context).textTheme.bodyText2,
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ],
                         ),
@@ -148,7 +148,7 @@ Neo has been using Adaptive Cards for a while now, and we're excited to bring th
                           children: <Widget>[
                             Text(
                               "Pascal Stech - Flutter Developer @Neohelden",
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme.of(context).textTheme.headlineSmall,
                             ),
                             SizedBox(
                               height: 8,
@@ -156,7 +156,7 @@ Neo has been using Adaptive Cards for a while now, and we're excited to bring th
                             Text(
                               "Pascal is part of the NeoSEALs team at Neohelden. He currently maintains the Flutter AdaptiveCards implementation."
                               " He is also building the Neo Client App using Flutter.",
-                              style: Theme.of(context).textTheme.bodyText2,
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
                           ],
                         ),

@@ -96,7 +96,7 @@ class AdaptiveCard extends StatefulWidget {
   AdaptiveCard.network({
     super.key,
     this.placeholder,
-    required this.cardRegistry,
+    this.cardRegistry,
     required String url,
     required String hostConfigPath,
     required this.hostConfig,
@@ -130,7 +130,7 @@ class AdaptiveCard extends StatefulWidget {
   AdaptiveCard.memory({
     super.key,
     this.placeholder,
-    required this.cardRegistry,
+    this.cardRegistry,
     required Map<String, dynamic> content,
     required String hostConfigPath,
     required this.hostConfig,
@@ -231,7 +231,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       } else {
         onSubmit = (it) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("No handler found for: \n" + it.toString())));
+              content: Text('No handler found for: \n' + it.toString())));
         };
       }
     }
@@ -244,8 +244,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
         onOpenUrl = foundOpenUrl;
       } else {
         onOpenUrl = (it) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("No handler found for: \n" + it.toString())));
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('und for: \n' + it.toString())));
         };
       }
     }
@@ -403,15 +403,15 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                     builder: (context) {
                       return AlertDialog(
                         title: Text(
-                            "JSON (only added in debug mode, you can also turn"
-                            "it of manually by passing showDebugJson = false)"),
+                            'JSON (only added in debug mode, you can also turn'
+                            'it of manually by passing showDebugJson = false)'),
                         content:
                             SingleChildScrollView(child: Text(prettyprint)),
                         actions: <Widget>[
                           Center(
                             child: TextButton(
                               onPressed: () => Navigator.of(context).pop(),
-                              child: Text("Thanks"),
+                              child: Text('Thanks'),
                             ),
                           )
                         ],
@@ -419,7 +419,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                       );
                     });
               },
-              child: Text("Debug show the JSON"),
+              child: Text('Debug show the JSON'),
             ),
             Divider(
               height: 0,
@@ -507,7 +507,7 @@ abstract class AdaptiveElement {
   /// An example:
   /// @override
   /// Widget generateWidget() {
-  ///  assert(separator != null, "Did you forget to call loadSeperator in this class?");
+  ///  assert(separator != null, 'Did you forget to call loadSeperator in this class?');
   ///  return Column(
   ///    children: <Widget>[
   ///      separator? Divider(height: topSpacing,): SizedBox(height: topSpacing,),
@@ -526,8 +526,8 @@ abstract class AdaptiveElement {
   }
 
   void loadId() {
-    if (adaptiveMap.containsKey("id")) {
-      id = adaptiveMap["id"];
+    if (adaptiveMap.containsKey('id')) {
+      id = adaptiveMap['id'];
     } else {
       id = widgetState.idGenerator.getId();
     }
@@ -570,38 +570,38 @@ class ReferenceResolver {
   dynamic resolve(String key, String value) {
     dynamic res = hostConfig[key][firstCharacterToLowerCase(value)];
     assert(res != null,
-        "Could not find hostConfig[$key][${firstCharacterToLowerCase(value)}]");
+        'Could not find hostConfig[$key][${firstCharacterToLowerCase(value)}]');
     return res;
   }
 
   dynamic get(String key) {
     dynamic res = hostConfig[key];
-    assert(res != null, "Could not find hostConfig[$key]");
+    assert(res != null, 'Could not find hostConfig[$key]');
     return res;
   }
 
-  FontWeight resolveFontWeight(String value) {
-    int weight = resolve("fontWeights", value ?? "default");
+  FontWeight resolveFontWeight(String? value) {
+    int weight = resolve('fontWeights', value ?? 'default');
     assert(
         weight != null,
-        "\n"
-        "FontWeight '${value ?? "default"}' was not found in the host_config. \n\n"
-        "The available font weights were: \n\n"
-        "${(hostConfig["fontWeights"] as Map).entries.map((entry) => "${entry.key}: ${entry.value}\n").toList()}");
+        '\n'
+        'FontWeight \'${value ?? 'default'}\' was not found in the host_config. \n\n'
+        'The available font weights were: \n\n'
+        '${(hostConfig['fontWeights'] as Map).entries.map((entry) => '${entry.key}: ${entry.value}\n').toList()}');
     FontWeight fontWeight = FontWeight.values.firstWhere(
-        (possibleWeight) => possibleWeight.toString() == "FontWeight.w$weight");
-    assert(fontWeight != null, "There is no FontWight.w$weight");
+        (possibleWeight) => possibleWeight.toString() == 'FontWeight.w$weight');
+    assert(fontWeight != null, 'There is no FontWight.w$weight');
     return fontWeight;
   }
 
-  double resolveFontSize(String value) {
-    int size = resolve("fontSizes", value ?? "default");
+  double resolveFontSize(String? value) {
+    int size = resolve('fontSizes', value ?? 'default');
     assert(
         size != null,
-        "\n"
-        "Fontsize '${value ?? "default"}' was not found in the host_config. \n\n"
-        "The available font sizes were: \n\n"
-        "${(hostConfig["fontSizes"] as Map).entries.map((entry) => "${entry.key}: ${entry.value}\n").toList()}");
+        '\n'
+        'Fontsize \'${value ?? 'default'}\' was not found in the host_config. \n\n'
+        'The available font sizes were: \n\n'
+        '${(hostConfig['fontSizes'] as Map).entries.map((entry) => '${entry.key}: ${entry.value}\n').toList()}');
     return size.toDouble();
   }
 
@@ -615,32 +615,32 @@ class ReferenceResolver {
   /// - good
   /// - warning
   /// - attention
-  Color? resolveForegroundColor(String colorType, bool isSubtle) {
-    String myColor = colorType ?? "default";
-    String subtleOrDefault = isSubtle ?? false ? "subtle" : "default";
-    final style = currentStyle ?? "default";
+  Color? resolveForegroundColor(String? colorType, bool? isSubtle) {
+    String myColor = colorType ?? 'default';
+    String subtleOrDefault = isSubtle ?? false ? 'subtle' : 'default';
+    final style = currentStyle ?? 'default';
     // Make it case insensitive
-    String colorValue = hostConfig["containerStyles"][style]["foregroundColors"]
+    String colorValue = hostConfig['containerStyles'][style]['foregroundColors']
         [firstCharacterToLowerCase(myColor)][subtleOrDefault];
     return parseColor(colorValue);
   }
 
   ReferenceResolver copyWith({String? style}) {
-    assert(style == null || style == "default" || style == "emphasis");
-    String myStyle = style ?? "default";
+    assert(style == null || style == 'default' || style == 'emphasis');
+    String myStyle = style ?? 'default';
     return ReferenceResolver(
       hostConfig: this.hostConfig,
       currentStyle: myStyle,
     );
   }
 
-  double? resolveSpacing(String spacing) {
-    String mySpacing = spacing ?? "default";
-    if (mySpacing == "none") return 0.0;
+  double? resolveSpacing(String? spacing) {
+    String mySpacing = spacing ?? 'default';
+    if (mySpacing == 'none') return 0.0;
     int? intSpacing =
-        hostConfig["spacing"][firstCharacterToLowerCase(mySpacing)];
+        hostConfig['spacing'][firstCharacterToLowerCase(mySpacing)];
     assert(intSpacing != null,
-        "hostConfig[\"spacing\"][\"${firstCharacterToLowerCase(mySpacing)}\"] was null");
+        'hostConfig[\'spacing\'][\'${firstCharacterToLowerCase(mySpacing)}\'] was null');
     return intSpacing?.toDouble();
   }
 }
