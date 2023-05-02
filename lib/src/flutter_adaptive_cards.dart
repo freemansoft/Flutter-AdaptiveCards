@@ -3,7 +3,6 @@ library flutter_adaptive_cards;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
@@ -34,7 +33,8 @@ abstract class AdaptiveCardContentProvider {
 }
 
 class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  MemoryAdaptiveCardContentProvider({@required this.content, String hostConfigPath, String hostConfig})
+  MemoryAdaptiveCardContentProvider(
+      {@required this.content, String hostConfigPath, String hostConfig})
       : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   Map content;
@@ -46,7 +46,8 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 }
 
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  AssetAdaptiveCardContentProvider({@required this.path, String hostConfigPath, String hostConfig})
+  AssetAdaptiveCardContentProvider(
+      {@required this.path, String hostConfigPath, String hostConfig})
       : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String path;
@@ -58,7 +59,8 @@ class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 }
 
 class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  NetworkAdaptiveCardContentProvider({@required this.url, String hostConfigPath, String hostConfig})
+  NetworkAdaptiveCardContentProvider(
+      {@required this.url, String hostConfigPath, String hostConfig})
       : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String url;
@@ -97,8 +99,8 @@ class AdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
-  }) : adaptiveCardContentProvider =
-            NetworkAdaptiveCardContentProvider(url: url, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
+  }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(
+            url: url, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   AdaptiveCard.asset({
     Key key,
@@ -113,8 +115,10 @@ class AdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
-  }) : adaptiveCardContentProvider =
-            AssetAdaptiveCardContentProvider(path: assetPath, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
+  }) : adaptiveCardContentProvider = AssetAdaptiveCardContentProvider(
+            path: assetPath,
+            hostConfigPath: hostConfigPath,
+            hostConfig: hostConfig);
 
   AdaptiveCard.memory({
     Key key,
@@ -129,8 +133,10 @@ class AdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
-  }) : adaptiveCardContentProvider =
-            MemoryAdaptiveCardContentProvider(content: content, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
+  }) : adaptiveCardContentProvider = MemoryAdaptiveCardContentProvider(
+            content: content,
+            hostConfigPath: hostConfigPath,
+            hostConfig: hostConfig);
 
   final AdaptiveCardContentProvider adaptiveCardContentProvider;
 
@@ -170,7 +176,9 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
         });
       }
     });
-    widget.adaptiveCardContentProvider.loadAdaptiveCardContent().then((adaptiveMap) {
+    widget.adaptiveCardContentProvider
+        .loadAdaptiveCardContent()
+        .then((adaptiveMap) {
       if (mounted) {
         setState(() {
           map = adaptiveMap;
@@ -202,7 +210,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       if (cardRegistry != null) {
         this.cardRegistry = cardRegistry;
       } else {
-        this.cardRegistry = CardRegistry(supportMarkdown: widget.supportMarkdown, listView: widget.listView);
+        this.cardRegistry = CardRegistry(
+            supportMarkdown: widget.supportMarkdown, listView: widget.listView);
       }
     }
 
@@ -214,7 +223,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
         onSubmit = foundOnSubmit;
       } else {
         onSubmit = (it) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No handler found for: \n" + it.toString())));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("No handler found for: \n" + it.toString())));
         };
       }
     }
@@ -227,7 +237,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
         onOpenUrl = foundOpenUrl;
       } else {
         onOpenUrl = (it) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No handler found for: \n" + it.toString())));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("No handler found for: \n" + it.toString())));
         };
       }
     }
@@ -342,7 +353,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   void showError(String message) {
-    Scaffold.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   /// min and max dates may be null, in this case no constraint is made in that direction
@@ -368,8 +380,10 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       if (widget.showDebugJson) {
         child = Column(
           children: <Widget>[
-            FlatButton(
-              textColor: Colors.indigo,
+            TextButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.indigo,
+              ),
               onPressed: () {
                 JsonEncoder encoder = new JsonEncoder.withIndent('  ');
                 String prettyprint = encoder.convert(widget.map);
@@ -377,12 +391,14 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text("JSON (only added in debug mode, you can also turn"
+                        title: Text(
+                            "JSON (only added in debug mode, you can also turn"
                             "it of manually by passing showDebugJson = false)"),
-                        content: SingleChildScrollView(child: Text(prettyprint)),
+                        content:
+                            SingleChildScrollView(child: Text(prettyprint)),
                         actions: <Widget>[
                           Center(
-                            child: FlatButton(
+                            child: TextButton(
                               onPressed: () => Navigator.of(context).pop(),
                               child: Text("Thanks"),
                             ),
@@ -518,7 +534,10 @@ abstract class AdaptiveElement {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is AdaptiveElement && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is AdaptiveElement &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -539,7 +558,8 @@ class ReferenceResolver {
 
   dynamic resolve(String key, String value) {
     dynamic res = hostConfig[key][firstCharacterToLowerCase(value)];
-    assert(res != null, "Could not find hostConfig[$key][${firstCharacterToLowerCase(value)}]");
+    assert(res != null,
+        "Could not find hostConfig[$key][${firstCharacterToLowerCase(value)}]");
     return res;
   }
 
@@ -557,8 +577,8 @@ class ReferenceResolver {
         "FontWeight '${value ?? "default"}' was not found in the host_config. \n\n"
         "The available font weights were: \n\n"
         "${(hostConfig["fontWeights"] as Map).entries.map((entry) => "${entry.key}: ${entry.value}\n").toList()}");
-    FontWeight fontWeight =
-        FontWeight.values.firstWhere((possibleWeight) => possibleWeight.toString() == "FontWeight.w$weight");
+    FontWeight fontWeight = FontWeight.values.firstWhere(
+        (possibleWeight) => possibleWeight.toString() == "FontWeight.w$weight");
     assert(fontWeight != null, "There is no FontWight.w$weight");
     return fontWeight;
   }
@@ -589,8 +609,8 @@ class ReferenceResolver {
     String subtleOrDefault = isSubtle ?? false ? "subtle" : "default";
     final style = currentStyle ?? "default";
     // Make it case insensitive
-    String colorValue =
-        hostConfig["containerStyles"][style]["foregroundColors"][firstCharacterToLowerCase(myColor)][subtleOrDefault];
+    String colorValue = hostConfig["containerStyles"][style]["foregroundColors"]
+        [firstCharacterToLowerCase(myColor)][subtleOrDefault];
     return parseColor(colorValue);
   }
 
@@ -606,8 +626,10 @@ class ReferenceResolver {
   double resolveSpacing(String spacing) {
     String mySpacing = spacing ?? "default";
     if (mySpacing == "none") return 0.0;
-    int intSpacing = hostConfig["spacing"][firstCharacterToLowerCase(mySpacing)];
-    assert(intSpacing != null, "hostConfig[\"spacing\"][\"${firstCharacterToLowerCase(mySpacing)}\"] was null");
+    int intSpacing =
+        hostConfig["spacing"][firstCharacterToLowerCase(mySpacing)];
+    assert(intSpacing != null,
+        "hostConfig[\"spacing\"][\"${firstCharacterToLowerCase(mySpacing)}\"] was null");
     return intSpacing.toDouble();
   }
 }

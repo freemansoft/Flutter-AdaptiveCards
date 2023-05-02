@@ -41,11 +41,12 @@ class _AdaptiveTimeInputState extends State<AdaptiveTimeInput>
   Widget build(BuildContext context) {
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: RaisedButton(
+      child: ElevatedButton(
         onPressed: () async {
           TimeOfDay result = await widgetState.pickTime();
           if (result.hour >= min.hour && result.hour <= max.hour) {
-            widgetState.showError("Time must be after ${min.format(widgetState.context)}"
+            widgetState.showError(
+                "Time must be after ${min.format(widgetState.context)}"
                 " and before ${max.format(widgetState.context)}");
           } else {
             setState(() {
@@ -53,7 +54,9 @@ class _AdaptiveTimeInputState extends State<AdaptiveTimeInput>
             });
           }
         },
-        child: Text(selectedTime == null ? placeholder : selectedTime.format(widgetState.context)),
+        child: Text(selectedTime == null
+            ? placeholder
+            : selectedTime.format(widgetState.context)),
       ),
     );
   }

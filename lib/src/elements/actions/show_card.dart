@@ -4,7 +4,8 @@ import '../../adaptive_card_element.dart';
 import '../../base.dart';
 import 'package:provider/provider.dart';
 
-class AdaptiveActionShowCard extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveActionShowCard extends StatefulWidget
+    with AdaptiveElementWidgetMixin {
   AdaptiveActionShowCard({Key key, this.adaptiveMap}) : super(key: key);
 
   final Map adaptiveMap;
@@ -29,7 +30,7 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
+    return ElevatedButton(
       onPressed: onTapped,
       child: Row(
         mainAxisSize: MainAxisSize.min,

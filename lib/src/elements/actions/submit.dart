@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../base.dart';
 
-class AdaptiveActionSubmit extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveActionSubmit({Key key, this.adaptiveMap, this.color}) : super(key: key);
+class AdaptiveActionSubmit extends StatefulWidget
+    with AdaptiveElementWidgetMixin {
+  AdaptiveActionSubmit({Key key, this.adaptiveMap, this.color})
+      : super(key: key);
 
   final Map adaptiveMap;
 
@@ -14,7 +16,8 @@ class AdaptiveActionSubmit extends StatefulWidget with AdaptiveElementWidgetMixi
   _AdaptiveActionSubmitState createState() => _AdaptiveActionSubmitState();
 }
 
-class _AdaptiveActionSubmitState extends State<AdaptiveActionSubmit> with AdaptiveActionMixin, AdaptiveElementMixin {
+class _AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
+    with AdaptiveActionMixin, AdaptiveElementMixin {
   GenericSubmitAction action;
 
   @override
@@ -25,8 +28,10 @@ class _AdaptiveActionSubmitState extends State<AdaptiveActionSubmit> with Adapti
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      color: widget.color,
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: widget.color, // Background color
+      ),
       onPressed: onTapped,
       child: Text(title, textAlign: TextAlign.center),
     );

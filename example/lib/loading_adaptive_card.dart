@@ -37,7 +37,8 @@ class DemoAdaptiveCard extends StatefulWidget {
   _DemoAdaptiveCardState createState() => new _DemoAdaptiveCardState();
 }
 
-class _DemoAdaptiveCardState extends State<DemoAdaptiveCard> with AutomaticKeepAliveClientMixin {
+class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
+    with AutomaticKeepAliveClientMixin {
   String jsonFile;
 
   @override
@@ -63,8 +64,10 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard> with AutomaticKeepA
             approximateDarkThemeColors: widget.approximateDarkThemeColors,
             supportMarkdown: widget.supportMarkdown,
           ),
-          FlatButton(
-            textColor: Colors.indigo,
+          TextButton(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.indigo, // textColor
+            ),
             onPressed: () {
               showDialog(
                   context: context,
@@ -74,7 +77,7 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard> with AutomaticKeepA
                       content: SingleChildScrollView(child: Text(jsonFile)),
                       actions: <Widget>[
                         Center(
-                          child: FlatButton(
+                          child: TextButton(
                             onPressed: () => Navigator.of(context).pop(),
                             child: Text("Thanks"),
                           ),
