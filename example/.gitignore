@@ -5,7 +5,14 @@
 .pub/
 
 build/
+ios/.generated/
+ios/Flutter/Generated.xcconfig
+ios/Runner/GeneratedPluginRegistrant.*
 
+.idea/
+flutter_adaptive_cards.iml
+
+test/failures/
 .flutter-plugins
 .flutter-plugins-dependencies
 flutter_export_environment.sh

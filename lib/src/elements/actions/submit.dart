@@ -4,13 +4,12 @@ import '../../base.dart';
 
 class AdaptiveActionSubmit extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveActionSubmit({Key key, this.adaptiveMap, this.color})
-      : super(key: key);
+  AdaptiveActionSubmit({super.key, required this.adaptiveMap, this.color});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   // Native styling
-  final Color color;
+  final Color? color;
 
   @override
   _AdaptiveActionSubmitState createState() => _AdaptiveActionSubmitState();
@@ -18,7 +17,7 @@ class AdaptiveActionSubmit extends StatefulWidget
 
 class _AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
     with AdaptiveActionMixin, AdaptiveElementMixin {
-  GenericSubmitAction action;
+  late GenericSubmitAction action;
 
   @override
   void initState() {

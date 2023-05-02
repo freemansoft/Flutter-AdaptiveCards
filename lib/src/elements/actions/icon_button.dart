@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../../base.dart';
 
 class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
-  IconButtonAction({Key key, this.adaptiveMap, this.onTapped})
-      : super(key: key);
+  IconButtonAction(
+      {super.key, required this.adaptiveMap, required this.onTapped});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   final VoidCallback onTapped;
 
@@ -16,7 +16,7 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class _IconButtonActionState extends State<IconButtonAction>
     with AdaptiveActionMixin, AdaptiveElementMixin {
-  String iconUrl;
+  late String? iconUrl;
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _IconButtonActionState extends State<IconButtonAction>
       result = ElevatedButton.icon(
         onPressed: onTapped,
         icon: Image.network(
-          iconUrl,
+          iconUrl!,
           height: 36.0,
         ),
         label: Text(title),

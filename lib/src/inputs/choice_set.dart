@@ -4,23 +4,24 @@ import '../additional.dart';
 import '../base.dart';
 
 class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveChoiceSet({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveChoiceSet({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveChoiceSetState createState() => _AdaptiveChoiceSetState();
 }
 
-class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInputMixin, AdaptiveElementMixin {
+class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
+    with AdaptiveInputMixin, AdaptiveElementMixin {
   // Map from title to value
-  Map<String, String> choices = Map();
+  Map<String, String> choices = {};
 
   // Contains the values (the things to send as request)
   Set<String> _selectedChoices = Set();
 
-  bool isCompact;
-  bool isMultiSelect;
+  late bool isCompact;
+  late bool isMultiSelect;
 
   @override
   void initState() {
@@ -80,9 +81,10 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
     return Column(
       children: choices.keys.map((key) {
         return RadioListTile<String>(
-          value: choices[key],
+          value: choices[key]!,
           onChanged: select,
-          groupValue: _selectedChoices.contains(choices[key]) ? choices[key] : null,
+          groupValue:
+              _selectedChoices.contains(choices[key]) ? choices[key] : null,
           title: Text(key),
         );
       }).toList(),
@@ -104,15 +106,19 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
     );
   }
 
-  void select(String choice) {
+  void select(String? choice) {
     if (!isMultiSelect) {
       _selectedChoices.clear();
-      _selectedChoices.add(choice);
+      if (choice != null) {
+        _selectedChoices.add(choice);
+      }
     } else {
       if (_selectedChoices.contains(choice)) {
         _selectedChoices.remove(choice);
       } else {
-        _selectedChoices.add(choice);
+        if (choice != null) {
+          _selectedChoices.add(choice);
+        }
       }
     }
     setState(() {});
@@ -121,7 +127,9 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet> with AdaptiveInpu
   bool loadCompact() {
     if (!adaptiveMap.containsKey("style")) return true;
     if (adaptiveMap["style"].toString().toLowerCase() == "compact") return true;
-    if (adaptiveMap["style"].toString().toLowerCase() == "expanded") return false;
-    throw StateError("The style of the ChoiceSet needs to be either compact or expanded");
+    if (adaptiveMap["style"].toString().toLowerCase() == "expanded")
+      return false;
+    throw StateError(
+        "The style of the ChoiceSet needs to be either compact or expanded");
   }
 }

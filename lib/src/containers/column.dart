@@ -5,40 +5,43 @@ import '../base.dart';
 import '../utils.dart';
 
 class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveColumn({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
+  AdaptiveColumn(
+      {super.key, required this.adaptiveMap, required this.supportMarkdown});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
   final bool supportMarkdown;
 
   @override
   _AdaptiveColumnState createState() => _AdaptiveColumnState();
 }
 
-class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMixin {
-  List<Widget> items;
+class _AdaptiveColumnState extends State<AdaptiveColumn>
+    with AdaptiveElementMixin {
+  late List<Widget> items;
 
   /// Can be "auto", "stretch" or "weighted"
-  String mode;
-  int width;
+  late String mode;
+  late int width;
 
-  MainAxisAlignment verticalAlignment;
-  CrossAxisAlignment horizontalAlignment;
-  Alignment containerHorizontalAlignment;
+  late MainAxisAlignment verticalAlignment;
+  late CrossAxisAlignment horizontalAlignment;
+  late Alignment? containerHorizontalAlignment;
 
-  GenericAction action;
+  GenericAction? action;
 
   // Need to do the separator manually for this class
   // because the flexible needs to be applied to the class above
-  double precedingSpacing;
-  Widget backgroundImage;
-  bool separator;
+  late double? precedingSpacing;
+  late Widget backgroundImage;
+  late bool separator;
 
   @override
   void initState() {
     super.initState();
 
     if (adaptiveMap.containsKey("selectAction")) {
-      action = widgetState.cardRegistry.getGenericAction(adaptiveMap["selectAction"], widgetState);
+      action = widgetState.cardRegistry
+          .getGenericAction(adaptiveMap["selectAction"], widgetState);
     }
     precedingSpacing = resolver.resolveSpacing(adaptiveMap["spacing"]);
     separator = adaptiveMap["separator"] ?? false;
@@ -63,7 +66,8 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
         var widthString = toParseWidth.toString();
 
         if (widthString.endsWith("px")) {
-          widthString = widthString.substring(0, widthString.length - 2); // remove px
+          widthString =
+              widthString.substring(0, widthString.length - 2); // remove px
           width = int.parse(widthString);
           mode = "px";
         } else {
@@ -76,7 +80,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
     }
 
     items = adaptiveMap["items"] != null
-        ? List<Map>.from(adaptiveMap["items"]).map((child) {
+        ? List<Map<String, dynamic>>.from(adaptiveMap["items"]).map((child) {
             return widgetState.cardRegistry.getElement(child, parentMode: mode);
           }).toList()
         : [];
@@ -87,7 +91,8 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
   }
 
   MainAxisAlignment loadVerticalAlignment() {
-    String verticalAlignment = adaptiveMap["verticalContentAlignment"]?.toLowerCase() ?? "top";
+    String verticalAlignment =
+        adaptiveMap["verticalContentAlignment"]?.toLowerCase() ?? "top";
 
     switch (verticalAlignment) {
       case "top":
@@ -102,7 +107,8 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
   }
 
   CrossAxisAlignment loadHorizontalAlignment() {
-    String horizontalAlignment = adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+    String horizontalAlignment =
+        adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
 
     switch (horizontalAlignment) {
       case "left":
@@ -116,8 +122,9 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
     }
   }
 
-  Alignment loadHorizontalContainerAlignment() {
-    String horizontalAlignment = adaptiveMap["horizontalAlignment"]?.toLowerCase();
+  Alignment? loadHorizontalContainerAlignment() {
+    String horizontalAlignment =
+        adaptiveMap["horizontalAlignment"]?.toLowerCase();
 
     switch (horizontalAlignment) {
       case "left":
@@ -179,7 +186,8 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+    var backgroundColor =
+        getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
       resolver: resolver,
       adaptiveMap: adaptiveMap,
       approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
@@ -206,7 +214,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
         InkWell(
           onTap: action?.tap,
           child: Padding(
-            padding: EdgeInsets.only(left: precedingSpacing),
+            padding: EdgeInsets.only(left: precedingSpacing ?? 0),
             child: SeparatorElement(
               adaptiveMap: adaptiveMap,
               child: child,
@@ -216,7 +224,10 @@ class _AdaptiveColumnState extends State<AdaptiveColumn> with AdaptiveElementMix
       ],
     );
 
-    assert(mode == "auto" || mode == "stretch" || mode == "weighted" || mode == "px");
+    assert(mode == "auto" ||
+        mode == "stretch" ||
+        mode == "weighted" ||
+        mode == "px");
     if (mode == "auto") {
       return Flexible(child: result);
     } else if (mode == "stretch") {

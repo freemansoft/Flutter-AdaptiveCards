@@ -6,26 +6,28 @@ import '../elements/image.dart';
 import '../utils.dart';
 
 class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveImageSet({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
+  AdaptiveImageSet(
+      {super.key, required this.adaptiveMap, required this.supportMarkdown});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
   final bool supportMarkdown;
 
   @override
   _AdaptiveImageSetState createState() => _AdaptiveImageSetState();
 }
 
-class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElementMixin {
-  List<AdaptiveImage> images;
+class _AdaptiveImageSetState extends State<AdaptiveImageSet>
+    with AdaptiveElementMixin {
+  late List<AdaptiveImage> images;
 
-  String imageSize;
-  double maybeSize;
+  late String imageSize;
+  double? maybeSize;
 
   @override
   void initState() {
     super.initState();
 
-    images = List<Map>.from(adaptiveMap["images"])
+    images = List<Map<String, dynamic>>.from(adaptiveMap["images"])
         .map((child) => AdaptiveImage(
               adaptiveMap: child,
               supportMarkdown: widget.supportMarkdown,
@@ -37,7 +39,8 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+    var backgroundColor =
+        getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
       resolver: resolver,
       adaptiveMap: adaptiveMap,
       approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
@@ -51,7 +54,10 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
         child: LayoutBuilder(builder: (context, constraints) {
           return Wrap(
             //maxCrossAxisExtent: 200.0,
-            children: images.map((img) => SizedBox(width: calculateSize(constraints), child: img)).toList(),
+            children: images
+                .map((img) =>
+                    SizedBox(width: calculateSize(constraints), child: img))
+                .toList(),
             //shrinkWrap: true,
           );
         }),
@@ -60,7 +66,7 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet> with AdaptiveElemen
   }
 
   double calculateSize(BoxConstraints constraints) {
-    if (maybeSize != null) return maybeSize;
+    if (maybeSize != null) return maybeSize!;
     if (imageSize == "stretch") return constraints.maxWidth;
     // Display a maximum of 5 children
     if (images.length >= 5) {

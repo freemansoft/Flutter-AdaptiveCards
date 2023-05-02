@@ -13,14 +13,13 @@ ios/Runner/GeneratedPluginRegistrant.*
 flutter_adaptive_cards.iml
 
 test/failures/
-example/windows/flutter/generated_plugin_registrant.cc
-example/windows/flutter/generated_plugin_registrant.h
-example/windows/flutter/generated_plugins.cmake
+.flutter-plugins
+.flutter-plugins-dependencies
+example/linux/flutter/generated_plugin_registrant.cc
+example/linux/flutter/generated_plugin_registrant.cc
+example/linux/flutter/generated_plugin_registrant.h
 example/macos/Flutter/GeneratedPluginRegistrant.swift
 example/pubspec.lock
-example/windows/flutter/generated_plugin_registrant.cc
-example/windows/flutter/generated_plugin_registrant.h
 example/windows/flutter/generated_plugins.cmake
 pubspec.lock
-.flutter-plugins-dependencies
-.flutter-plugins
+

@@ -7,9 +7,9 @@ import '../base.dart';
 import '../utils.dart';
 
 class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveMedia({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveMedia({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveMediaState createState() => _AdaptiveMediaState();
@@ -17,12 +17,12 @@ class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class _AdaptiveMediaState extends State<AdaptiveMedia>
     with AdaptiveElementMixin {
-  VideoPlayerController videoPlayerController;
-  ChewieController controller;
+  late VideoPlayerController videoPlayerController;
+  ChewieController? controller;
 
-  String sourceUrl;
-  String postUrl;
-  String altText;
+  late String sourceUrl;
+  late String? postUrl;
+  late String altText;
 
   FadeAnimation imageFadeAnim =
       FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
@@ -54,7 +54,7 @@ class _AdaptiveMediaState extends State<AdaptiveMedia>
   @override
   void dispose() {
     videoPlayerController.dispose();
-    controller.dispose();
+    controller?.dispose();
     super.dispose();
   }
 
@@ -62,23 +62,21 @@ class _AdaptiveMediaState extends State<AdaptiveMedia>
   Widget build(BuildContext context) {
     Widget getVideoPlayer() {
       return Chewie(
-        controller: controller,
+        controller: controller!,
       );
     }
 
     Widget getPlaceholder() {
-      return postUrl != null ? Image.network(postUrl) : Container();
+      return postUrl != null ? Image.network(postUrl!) : Container();
     }
 
     return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        child: AspectRatio(
-          aspectRatio: 3 / 2,
-          child: controller == null ?  getPlaceholder() : getVideoPlayer(),
-        )
-      )
-    );
+        adaptiveMap: adaptiveMap,
+        child: Container(
+            width: MediaQuery.of(context).size.width,
+            child: AspectRatio(
+              aspectRatio: 3 / 2,
+              child: controller == null ? getPlaceholder() : getVideoPlayer(),
+            )));
   }
 }

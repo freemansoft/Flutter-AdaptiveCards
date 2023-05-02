@@ -5,18 +5,19 @@ import 'base.dart';
 import 'package:provider/provider.dart';
 
 class SeparatorElement extends StatefulWidget with AdaptiveElementWidgetMixin {
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
   final Widget child;
 
-  SeparatorElement({Key key, this.adaptiveMap, this.child}) : super(key: key);
+  SeparatorElement({super.key, required this.adaptiveMap, required this.child});
 
   @override
   _SeparatorElementState createState() => _SeparatorElementState();
 }
 
-class _SeparatorElementState extends State<SeparatorElement> with AdaptiveElementMixin {
-  double topSpacing;
-  bool separator;
+class _SeparatorElementState extends State<SeparatorElement>
+    with AdaptiveElementMixin {
+  late double? topSpacing;
+  late bool separator;
 
   @override
   void initState() {
@@ -38,24 +39,26 @@ class _SeparatorElementState extends State<SeparatorElement> with AdaptiveElemen
 }
 
 class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTappable({Key key, this.child, this.adaptiveMap}) : super(key: key);
+  AdaptiveTappable({super.key, required this.child, required this.adaptiveMap});
 
   final Widget child;
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveTappableState createState() => _AdaptiveTappableState();
 }
 
-class _AdaptiveTappableState extends State<AdaptiveTappable> with AdaptiveElementMixin {
-  GenericAction action;
+class _AdaptiveTappableState extends State<AdaptiveTappable>
+    with AdaptiveElementMixin {
+  GenericAction? action;
 
   @override
   void initState() {
     super.initState();
     if (adaptiveMap.containsKey("selectAction")) {
-      action = widgetState.cardRegistry.getGenericAction(adaptiveMap["selectAction"], widgetState);
+      action = widgetState.cardRegistry
+          .getGenericAction(adaptiveMap["selectAction"], widgetState);
     }
   }
 
@@ -73,12 +76,15 @@ class ChildStyler extends StatelessWidget {
 
   final Map adaptiveMap;
 
-  const ChildStyler({Key key, this.child, this.adaptiveMap}) : super(key: key);
+  const ChildStyler(
+      {super.key, required this.child, required this.adaptiveMap});
 
   @override
   Widget build(BuildContext context) {
     return InheritedReferenceResolver(
-      resolver: context.watch<ReferenceResolver>().copyWith(style: adaptiveMap["style"]),
+      resolver: context
+          .watch<ReferenceResolver>()
+          .copyWith(style: adaptiveMap["style"]),
       child: child,
     );
   }

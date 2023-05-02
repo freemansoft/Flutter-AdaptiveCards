@@ -4,21 +4,22 @@ import '../additional.dart';
 import '../base.dart';
 
 class AdaptiveToggle extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveToggle({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveToggle({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveToggleState createState() => _AdaptiveToggleState();
 }
 
-class _AdaptiveToggleState extends State<AdaptiveToggle> with AdaptiveInputMixin, AdaptiveElementMixin {
+class _AdaptiveToggleState extends State<AdaptiveToggle>
+    with AdaptiveInputMixin, AdaptiveElementMixin {
   bool boolValue = false;
 
-  String valueOff;
-  String valueOn;
+  late String valueOff;
+  late String valueOn;
 
-  String title;
+  late String title;
 
   @override
   void initState() {

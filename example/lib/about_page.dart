@@ -36,8 +36,10 @@ class AboutPage extends StatelessWidget {
                     child: Image.asset("assets/neo_logo_light.png"),
                   ),
                   Divider(),
-                  Text("Neo: AI-Assistant for Enterprise",
-                      style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    "Neo: AI-Assistant for Enterprise",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   SizedBox(
                     height: 8,
                   ),
@@ -89,7 +91,7 @@ Neo has been using Adaptive Cards for a while now, and we're excited to bring th
                           children: <Widget>[
                             Text(
                               "Norbert Kozsir - former Head of Flutter @Neohelden",
-                              style: Theme.of(context).textTheme.headlineSmall,
+                              style: Theme.of(context).textTheme.headline6,
                             ),
                             SizedBox(
                               height: 8,
@@ -98,7 +100,7 @@ Neo has been using Adaptive Cards for a while now, and we're excited to bring th
                               "Norbert was the head of Flutter development at Neohelden and "
                               "brought this library to life. "
                               "He is still very active in the Flutter community and keeps rocking every day.",
-                              style: Theme.of(context).textTheme.bodySmall,
+                              style: Theme.of(context).textTheme.bodyText2,
                             ),
                           ],
                         ),

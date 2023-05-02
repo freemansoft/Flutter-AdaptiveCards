@@ -5,23 +5,25 @@ import '../base.dart';
 import '../utils.dart';
 
 class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveContainer({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveContainer({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveContainerState createState() => _AdaptiveContainerState();
 }
 
-class _AdaptiveContainerState extends State<AdaptiveContainer> with AdaptiveElementMixin {
+class _AdaptiveContainerState extends State<AdaptiveContainer>
+    with AdaptiveElementMixin {
 // TODO implement verticalContentAlignment
-  List<Widget> children;
+  late List<Widget> children;
 
   @override
   void initState() {
     super.initState();
     if (adaptiveMap["items"] != null) {
-      children = List<Map>.from(adaptiveMap["items"]).map((child) {
+      children =
+          List<Map<String, dynamic>>.from(adaptiveMap["items"]).map((child) {
         return widgetState.cardRegistry.getElement(child);
       }).toList();
     } else {
@@ -31,7 +33,8 @@ class _AdaptiveContainerState extends State<AdaptiveContainer> with AdaptiveElem
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+    var backgroundColor =
+        getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
       resolver: resolver,
       adaptiveMap: adaptiveMap,
       approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,

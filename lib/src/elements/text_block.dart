@@ -8,22 +8,24 @@ import '../utils.dart';
 import 'package:provider/provider.dart';
 
 class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTextBlock({Key key, this.adaptiveMap, this.supportMarkdown}) : super(key: key);
+  AdaptiveTextBlock(
+      {super.key, required this.adaptiveMap, required this.supportMarkdown});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
   final bool supportMarkdown;
 
   @override
   _AdaptiveTextBlockState createState() => _AdaptiveTextBlockState();
 }
 
-class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElementMixin {
-  FontWeight fontWeight;
-  double fontSize;
-  Alignment horizontalAlignment;
-  int maxLines;
-  TextAlign textAlign;
-  String text;
+class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
+    with AdaptiveElementMixin {
+  late FontWeight fontWeight;
+  late double fontSize;
+  late Alignment horizontalAlignment;
+  late int maxLines;
+  late TextAlign textAlign;
+  late String text;
 
   @override
   void initState() {
@@ -42,7 +44,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   // TODO create own widget that parses _basic_ markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
   Widget build(BuildContext context) {
-    var textBody = widget.supportMarkdown ? getMarkdownText(context: context) : getText();
+    var textBody =
+        widget.supportMarkdown ? getMarkdownText(context: context) : getText();
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
@@ -59,7 +62,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
       text,
       textAlign: textAlign,
       softWrap: true,
-      overflow: maxLines == 1 ? TextOverflow.ellipsis: null,
+      overflow: maxLines == 1 ? TextOverflow.ellipsis : null,
       style: TextStyle(
         fontWeight: fontWeight,
         fontSize: fontSize,
@@ -69,7 +72,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
     );
   }
 
-  Widget getMarkdownText({BuildContext context}) {
+  Widget getMarkdownText({BuildContext? context}) {
     return MarkdownBody(
       // TODO the markdown library does currently not support max lines
       // As markdown support is more important than maxLines right now
@@ -78,8 +81,10 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
       data: text,
       styleSheet: loadMarkdownStyleSheet(),
       onTapLink: (text, href, title) {
-        var rawAdaptiveCardState = context.watch<RawAdaptiveCardState>();
-        rawAdaptiveCardState.openUrl(href);
+        if (href != null) {
+          var rawAdaptiveCardState = context?.watch<RawAdaptiveCardState>();
+          rawAdaptiveCardState?.openUrl(href);
+        }
       },
     );
   }
@@ -90,8 +95,9 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   }*/
 
   // Probably want to pass context down the tree, until now -> this
-  Color getColor(Brightness brightness) {
-    Color color = resolver.resolveForegroundColor(adaptiveMap["color"], adaptiveMap["isSubtle"]);
+  Color? getColor(Brightness brightness) {
+    Color? color = resolver.resolveForegroundColor(
+        adaptiveMap["color"], adaptiveMap["isSubtle"]);
     if (color != null && widgetState.widget.approximateDarkThemeColors) {
       color = adjustColorToFitDarkTheme(color, brightness);
     }
@@ -99,7 +105,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   }
 
   Alignment loadAlignment() {
-    String alignmentString = widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+    String alignmentString =
+        widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
 
     switch (alignmentString) {
       case "left":
@@ -114,7 +121,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   }
 
   TextAlign loadTextAlign() {
-    String alignmentString = widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+    String alignmentString =
+        widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
 
     switch (alignmentString) {
       case "left":
@@ -139,7 +147,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock> with AdaptiveElem
   /// TODO Markdown still has some problems
   MarkdownStyleSheet loadMarkdownStyleSheet() {
     var color = getColor(Theme.of(context).brightness);
-    TextStyle style = TextStyle(fontWeight: fontWeight, fontSize: fontSize, color: color);
+    TextStyle style =
+        TextStyle(fontWeight: fontWeight, fontSize: fontSize, color: color);
 
     return MarkdownStyleSheet(
       a: style,

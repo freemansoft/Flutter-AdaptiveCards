@@ -6,9 +6,9 @@ import 'package:provider/provider.dart';
 
 class AdaptiveActionShowCard extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveActionShowCard({Key key, this.adaptiveMap}) : super(key: key);
+  AdaptiveActionShowCard({super.key, required this.adaptiveMap});
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   _AdaptiveActionShowCardState createState() => _AdaptiveActionShowCardState();
@@ -23,9 +23,7 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
     Widget card = widgetState.cardRegistry.getElement(adaptiveMap["card"]);
 
     var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    if (_adaptiveCardElement != null) {
-      _adaptiveCardElement.registerCard(id, card);
-    }
+    _adaptiveCardElement.registerCard(id, card);
   }
 
   @override
@@ -47,8 +45,6 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
   @override
   void onTapped() {
     var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    if (_adaptiveCardElement != null) {
-      _adaptiveCardElement.showCard(id);
-    }
+    _adaptiveCardElement.showCard(id);
   }
 }

@@ -43,7 +43,7 @@ class CardRegistry {
       {this.removedElements = const [],
       this.addedElements = const {},
       this.addedActions = const {},
-      this.listView,
+      this.listView = false,
       this.supportMarkdown = true});
 
   /// Provide custom elements to use.
@@ -71,18 +71,21 @@ class CardRegistry {
       );
 
     if (addedElements.containsKey(stringType)) {
-      return addedElements[stringType](map);
+      return addedElements[stringType]!(map);
     } else {
-      return _getBaseElement(map, parentMode: parentMode, supportMarkdown: supportMarkdown);
+      return _getBaseElement(map,
+          parentMode: parentMode, supportMarkdown: supportMarkdown);
     }
   }
 
-  GenericAction getGenericAction(Map<String, dynamic> map, RawAdaptiveCardState state) {
+  GenericAction? getGenericAction(
+      Map<String, dynamic> map, RawAdaptiveCardState state) {
     String stringType = map["type"];
 
     switch (stringType) {
       case "Action.ShowCard":
-        assert(false, "Action.ShowCard can only be used directly by the root card");
+        assert(false,
+            "Action.ShowCard can only be used directly by the root card");
         return null;
       case "Action.OpenUrl":
         return GenericActionOpenUrl(map, state);
@@ -103,16 +106,17 @@ class CardRegistry {
       );
 
     if (addedActions.containsKey(stringType)) {
-      return addedActions[stringType](map);
-    } else {
-      return _getBaseAction(map);
+      return addedActions[stringType]!(map);
     }
+
+    return _getBaseAction(map);
   }
 
   /// This returns an [AdaptiveElement] with the correct type.
   ///
   /// It looks at the [type] property and decides which object to construct
-  Widget _getBaseElement(Map<String, dynamic> map, {String parentMode = "stretch", bool supportMarkdown}) {
+  Widget _getBaseElement(Map<String, dynamic> map,
+      {String parentMode = "stretch", required bool supportMarkdown}) {
     String stringType = map["type"];
 
     switch (stringType) {
@@ -150,7 +154,8 @@ class CardRegistry {
           adaptiveMap: map,
         );
       case "ImageSet":
-        return AdaptiveImageSet(adaptiveMap: map, supportMarkdown: supportMarkdown);
+        return AdaptiveImageSet(
+            adaptiveMap: map, supportMarkdown: supportMarkdown);
       case "Input.Text":
         return AdaptiveTextInput(adaptiveMap: map);
       case "Input.Number":
@@ -193,9 +198,7 @@ class CardRegistry {
           adaptiveMap: map,
         );
       case "Action.Submit":
-        return AdaptiveActionSubmit(
-          adaptiveMap: map,
-        );
+        return AdaptiveActionSubmit(adaptiveMap: map, color: Colors.lightBlue);
     }
     return AdaptiveUnknown(
       adaptiveMap: map,
@@ -206,15 +209,16 @@ class CardRegistry {
 
 class DefaultCardRegistry extends InheritedWidget {
   DefaultCardRegistry({
-    Key key,
-    @required this.cardRegistry,
-    @required Widget child,
-  }) : super(key: key, child: child);
+    super.key,
+    required this.cardRegistry,
+    required Widget child,
+  }) : super(child: child);
 
   final CardRegistry cardRegistry;
 
-  static CardRegistry of(BuildContext context) {
-    DefaultCardRegistry cardRegistry = context.dependOnInheritedWidgetOfExactType<DefaultCardRegistry>();
+  static CardRegistry? of(BuildContext context) {
+    DefaultCardRegistry? cardRegistry =
+        context.dependOnInheritedWidgetOfExactType<DefaultCardRegistry>();
     if (cardRegistry == null) return null;
     return cardRegistry.cardRegistry;
   }
