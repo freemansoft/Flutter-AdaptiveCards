@@ -74,7 +74,7 @@ class _AdaptiveTappableState extends State<AdaptiveTappable>
 class ChildStyler extends StatelessWidget {
   final Widget child;
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   const ChildStyler(
       {super.key, required this.child, required this.adaptiveMap});

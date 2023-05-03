@@ -16,7 +16,8 @@ class NetworkPage extends StatelessWidget {
       body: ListView(
         children: <Widget>[
           AdaptiveCard.network(
-            placeholder: Text('Loading, please wait'),
+            // placeholder:
+            //     Container(child: Center(child: CircularProgressIndicator())),
             url: 'assets/ac-qv-faqs.json',
             hostConfigPath: 'assets/host_config.json',
             onSubmit: (map) {

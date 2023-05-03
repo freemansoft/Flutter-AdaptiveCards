@@ -18,7 +18,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   Map<String, String> choices = {};
 
   // Contains the values (the things to send as request)
-  Set<String> _selectedChoices = Set();
+  Set<String> _selectedChoices = {};
 
   late bool isCompact;
   late bool isMultiSelect;

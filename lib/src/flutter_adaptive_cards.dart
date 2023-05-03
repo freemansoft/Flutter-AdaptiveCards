@@ -14,13 +14,12 @@ import 'package:provider/provider.dart';
 import 'base.dart';
 
 abstract class AdaptiveCardContentProvider {
-  AdaptiveCardContentProvider(
-      {required this.hostConfigPath, required this.hostConfig});
+  AdaptiveCardContentProvider({required this.hostConfigPath, this.hostConfig});
 
   final String hostConfigPath;
   final String? hostConfig;
 
-  Future<Map> loadHostConfig() async {
+  Future<Map<String, dynamic>> loadHostConfig() async {
     if (hostConfig != null) {
       var cleanedHostConfig = hostConfig!.replaceAll(new RegExp(r'\n'), '');
       return json.decode(cleanedHostConfig);
@@ -37,7 +36,7 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   MemoryAdaptiveCardContentProvider(
       {required this.content,
       required String hostConfigPath,
-      required String hostConfig})
+      String? hostConfig})
       : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   Map<String, dynamic> content;
@@ -50,9 +49,7 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   AssetAdaptiveCardContentProvider(
-      {required this.path,
-      required String hostConfigPath,
-      required String hostConfig})
+      {required this.path, required String hostConfigPath, String? hostConfig})
       : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String path;
@@ -65,9 +62,7 @@ class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 
 class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   NetworkAdaptiveCardContentProvider(
-      {required this.url,
-      required String hostConfigPath,
-      required String hostConfig})
+      {required this.url, required String hostConfigPath, String? hostConfig})
       : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String url;
@@ -86,7 +81,7 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry = const CardRegistry(),
     this.onSubmit,
     this.onOpenUrl,
-    required this.hostConfig,
+    this.hostConfig,
     this.listView = false,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
@@ -99,7 +94,7 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     required String url,
     required String hostConfigPath,
-    required this.hostConfig,
+    this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -115,7 +110,7 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     required String assetPath,
     required String hostConfigPath,
-    required this.hostConfig,
+    this.hostConfig,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -151,7 +146,7 @@ class AdaptiveCard extends StatefulWidget {
 
   final CardRegistry? cardRegistry;
 
-  final String hostConfig;
+  final String? hostConfig;
 
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
@@ -166,7 +161,7 @@ class AdaptiveCard extends StatefulWidget {
 
 class _AdaptiveCardState extends State<AdaptiveCard> {
   Map<String, dynamic>? map;
-  Map? hostConfig;
+  Map<String, dynamic>? hostConfig;
 
   late CardRegistry cardRegistry;
 
@@ -254,8 +249,10 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
   @override
   Widget build(BuildContext context) {
     if (map == null || hostConfig == null) {
-      return widget.placeholder ?? const SizedBox();
+      return widget.placeholder ??
+          Container(child: Center(child: CircularProgressIndicator()));
     }
+
     return RawAdaptiveCard.fromMap(
       map!,
       hostConfig!,
@@ -287,7 +284,7 @@ class RawAdaptiveCard extends StatefulWidget {
   }) : assert(onSubmit != null, onOpenUrl != null);
 
   final Map<String, dynamic> map;
-  final Map hostConfig;
+  final Map<String, dynamic> hostConfig;
   final CardRegistry cardRegistry;
 
   final Function(Map map)? onSubmit;
@@ -563,7 +560,7 @@ class ReferenceResolver {
     this.currentStyle,
   });
 
-  final Map hostConfig;
+  final Map<String, dynamic> hostConfig;
 
   final String? currentStyle;
 
@@ -641,6 +638,7 @@ class ReferenceResolver {
         hostConfig['spacing'][firstCharacterToLowerCase(mySpacing)];
     assert(intSpacing != null,
         'hostConfig[\'spacing\'][\'${firstCharacterToLowerCase(mySpacing)}\'] was null');
+
     return intSpacing?.toDouble();
   }
 }
