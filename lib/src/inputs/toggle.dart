@@ -57,4 +57,11 @@ class _AdaptiveToggleState extends State<AdaptiveToggle>
   void appendInput(Map map) {
     map[id] = boolValue ? valueOn : valueOff;
   }
+
+  @override
+  void initInput(Map map) {
+    if (map[id] != null) {
+      boolValue = map[id];
+    }
+  }
 }

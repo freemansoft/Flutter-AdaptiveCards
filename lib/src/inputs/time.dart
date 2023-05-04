@@ -71,4 +71,11 @@ class _AdaptiveTimeInputState extends State<AdaptiveTimeInput>
   void appendInput(Map map) {
     map[id] = selectedTime.toString();
   }
+
+  @override
+  void initInput(Map map) {
+    if (map[id] != null) {
+      selectedTime = parseTime(map[id]);
+    }
+  }
 }

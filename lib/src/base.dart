@@ -76,6 +76,8 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   }
 
   void appendInput(Map map);
+  
+  void initInput(Map map);
 }
 
 mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>

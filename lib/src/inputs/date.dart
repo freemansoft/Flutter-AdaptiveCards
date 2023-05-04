@@ -76,4 +76,13 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
       map[id] = selectedDateTime!.toIso8601String();
     }
   }
+
+  @override
+  void initInput(Map map) {
+    if (map[id] != null) {
+      try {
+        selectedDateTime = DateTime.parse(map[id]);
+      } catch (formatException) {}
+    }
+  }
 }

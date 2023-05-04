@@ -56,4 +56,11 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   void appendInput(Map map) {
     map[id] = controller.text;
   }
+
+  @override
+  void initInput(Map map) {
+    if (map[id] != null) {
+      controller.text = map[id];
+    }
+  }
 }

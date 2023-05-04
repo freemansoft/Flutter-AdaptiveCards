@@ -45,6 +45,13 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   }
 
   @override
+  void initInput(Map map) {
+    if (map[id] != null) {
+      _selectedChoices.addAll(map[id].split(','));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     var widget;
 
