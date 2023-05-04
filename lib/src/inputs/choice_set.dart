@@ -73,6 +73,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   /// This is built when multiSelect is false and isCompact is true
   Widget _buildCompact() {
     return DropdownButton<String>(
+      isExpanded: true,
       items: choices.keys
           .map((key) => DropdownMenuItem<String>(
                 value: choices[key],
