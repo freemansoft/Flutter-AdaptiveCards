@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -17,6 +18,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
   DateTime? selectedDateTime;
   DateTime? min;
   DateTime? max;
+  final inputFormat = DateFormat('dd/MM/yyyy');
 
   @override
   void initState() {
@@ -24,29 +26,43 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
 
     try {
       selectedDateTime = DateTime.parse(value);
-      min = DateTime.parse(adaptiveMap["min"]);
-      max = DateTime.parse(adaptiveMap["max"]);
+      min = DateTime.parse(adaptiveMap['min']);
+      max = DateTime.parse(adaptiveMap['max']);
     } catch (formatException) {}
   }
 
   @override
   Widget build(BuildContext context) {
     return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      child: ElevatedButton(
-        onPressed: () async {
-          selectedDateTime = await widgetState.pickDate(min, max);
-          setState(() {});
-        },
-        child: Text(selectedDateTime == null
-            ? placeholder
-            : selectedDateTime!.toIso8601String()),
-      ),
-    );
+        adaptiveMap: adaptiveMap,
+        child: SizedBox(
+          width: double.infinity,
+          child: TextButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black, // textColor
+            ),
+            onPressed: () async {
+              await widgetState.pickDate(min, max, (DateTime? date) {
+                setState(() {
+                  selectedDateTime = date;
+                });
+              });
+            },
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(selectedDateTime == null
+                  ? placeholder
+                  : inputFormat.format(selectedDateTime!)),
+            ),
+          ),
+        ));
   }
 
   @override
   void appendInput(Map map) {
-    map[id] = selectedDateTime!.toIso8601String();
+    if (selectedDateTime != null) {
+      map[id] = selectedDateTime!.toIso8601String();
+    }
   }
 }
