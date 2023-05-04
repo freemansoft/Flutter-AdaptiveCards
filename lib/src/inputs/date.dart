@@ -38,9 +38,13 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
         child: SizedBox(
           width: double.infinity,
           child: TextButton(
-            style: ElevatedButton.styleFrom(
+            style: TextButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: Colors.black, // textColor
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                      color: Colors.grey, width: 0.0, style: BorderStyle.solid),
+                  borderRadius: BorderRadius.zero),
             ),
             onPressed: () async {
               await widgetState.pickDate(min, max, (DateTime? date) {
@@ -49,11 +53,17 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
                 });
               });
             },
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(selectedDateTime == null
-                  ? placeholder
-                  : inputFormat.format(selectedDateTime!)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(selectedDateTime == null
+                      ? placeholder
+                      : inputFormat.format(selectedDateTime!)),
+                ),
+                Icon(Icons.calendar_today)
+              ],
             ),
           ),
         ));

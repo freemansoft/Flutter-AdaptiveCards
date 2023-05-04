@@ -72,10 +72,16 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   Widget _buildCompact() {
     return Container(
         padding: EdgeInsets.all(8),
+        height: 40.0,
         decoration: BoxDecoration(
           color: Colors.white,
+          border: Border.all(
+            color: Colors.grey,
+            width: 0.0,
+          ),
         ),
-        child: DropdownButton<String>(
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
           isExpanded: true,
           dropdownColor: Colors.white,
           icon: Icon(
@@ -91,7 +97,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
               .toList(),
           onChanged: select,
           value: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
-        ));
+        )));
   }
 
   Widget _buildExpandedSingleSelect() {
