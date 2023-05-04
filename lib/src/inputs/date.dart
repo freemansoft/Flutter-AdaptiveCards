@@ -42,9 +42,10 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
               backgroundColor: Colors.white,
               foregroundColor: Colors.black, // textColor
               shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: Colors.grey, width: 0.0, style: BorderStyle.solid),
-                  borderRadius: BorderRadius.zero),
+                side: BorderSide(
+                    color: Colors.grey, width: 0.0, style: BorderStyle.solid),
+                borderRadius: BorderRadius.all(Radius.circular(4.0)),
+              ),
             ),
             onPressed: () async {
               await widgetState.pickDate(min, max, (DateTime? date) {

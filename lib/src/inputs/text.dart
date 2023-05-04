@@ -42,6 +42,8 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
             keyboardType: style,
             maxLines: isMultiline ? null : 1,
             decoration: InputDecoration(
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
               contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
               enabledBorder: const OutlineInputBorder(
                 // width: 0.0 produces a thin "hairline" border
@@ -52,7 +54,6 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
               hoverColor: Colors.white,
               hintText: placeholder,
               hintStyle: TextStyle(color: Colors.black54),
-              border: OutlineInputBorder(),
             ),
           ),
         ));

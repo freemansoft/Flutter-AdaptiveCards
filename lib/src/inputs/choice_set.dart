@@ -79,6 +79,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
             color: Colors.grey,
             width: 0.0,
           ),
+          borderRadius: BorderRadius.all(Radius.circular(4.0)),
         ),
         child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
