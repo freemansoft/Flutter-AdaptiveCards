@@ -155,7 +155,7 @@ Color? getBackgroundColor(
   bool approximateDarkThemeColors,
   Brightness brightness,
 ) {
-  String style = adaptiveMap['style']?.toString()?.toLowerCase() ?? 'default';
+  String style = adaptiveMap['style']?.toString().toLowerCase() ?? 'default';
 
   String? color =
       resolver.hostConfig['containerStyles']?[style]?['backgroundColor'];

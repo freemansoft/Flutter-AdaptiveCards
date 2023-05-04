@@ -21,6 +21,7 @@ class NetworkPage extends StatelessWidget {
             url: 'assets/ac-qv-faqs.json',
             hostConfigPath: 'assets/host_config.json',
             onSubmit: (map) {
+              print(map);
               // Send to server or handle locally
             },
             onOpenUrl: (url) {
