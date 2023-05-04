@@ -23,14 +23,14 @@ class _AdaptiveTimeInputState extends State<AdaptiveTimeInput>
     super.initState();
 
     selectedTime = parseTime(value) ?? TimeOfDay.now();
-    min = parseTime(adaptiveMap["min"]) ?? TimeOfDay(minute: 0, hour: 0);
-    max = parseTime(adaptiveMap["max"]) ?? TimeOfDay(minute: 59, hour: 23);
+    min = parseTime(adaptiveMap['min']) ?? TimeOfDay(minute: 0, hour: 0);
+    max = parseTime(adaptiveMap['max']) ?? TimeOfDay(minute: 59, hour: 23);
   }
 
   TimeOfDay? parseTime(String? time) {
     if (time == null || time.isEmpty) return null;
-    List<String> times = time.split(":");
-    assert(times.length == 2, "Invalid TimeOfDay format");
+    List<String> times = time.split(':');
+    assert(times.length == 2, 'Invalid TimeOfDay format');
     return TimeOfDay(
       hour: int.parse(times[0]),
       minute: int.parse(times[1]),
@@ -47,8 +47,8 @@ class _AdaptiveTimeInputState extends State<AdaptiveTimeInput>
           if (result != null) {
             if (result.hour >= min.hour && result.hour <= max.hour) {
               widgetState.showError(
-                  "Time must be after ${min.format(widgetState.context)}"
-                  " and before ${max.format(widgetState.context)}");
+                  'Time must be after ${min.format(widgetState.context)}'
+                  ' and before ${max.format(widgetState.context)}');
             } else {
               setState(() {
                 selectedTime = result;
