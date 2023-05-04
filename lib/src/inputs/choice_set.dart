@@ -36,8 +36,6 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
     if (value.isNotEmpty) {
       _selectedChoices.addAll(value.split(','));
-    } else {
-      _selectedChoices.addAll([choices.values.first.toString()]);
     }
   }
 
@@ -92,7 +90,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
                   ))
               .toList(),
           onChanged: select,
-          value: _selectedChoices.single,
+          value: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
         ));
   }
 
