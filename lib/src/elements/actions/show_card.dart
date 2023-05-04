@@ -20,7 +20,7 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
   void initState() {
     super.initState();
 
-    Widget card = widgetState.cardRegistry.getElement(adaptiveMap["card"]);
+    Widget card = widgetState.cardRegistry.getElement(adaptiveMap['card']);
 
     var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
     _adaptiveCardElement.registerCard(id, card);

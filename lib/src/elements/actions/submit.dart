@@ -30,6 +30,7 @@ class _AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: widget.color, // Background color
+        // minimumSize: const Size.fromHeight(50),
       ),
       onPressed: onTapped,
       child: Text(title, textAlign: TextAlign.center),
