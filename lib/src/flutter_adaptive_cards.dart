@@ -69,7 +69,9 @@ class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() async {
-    return json.decode((await http.get(Uri.parse(url))).body);
+    var body = (await http.get(Uri.parse(url))).bodyBytes;
+
+    return json.decode(utf8.decode(body));
   }
 }
 

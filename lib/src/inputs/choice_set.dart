@@ -20,18 +20,25 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   // Contains the values (the things to send as request)
   Set<String> _selectedChoices = {};
 
+  late bool isFiltered;
   late bool isCompact;
   late bool isMultiSelect;
 
   @override
   void initState() {
     super.initState();
-    for (Map map in adaptiveMap["choices"]) {
-      choices[map["title"]] = map["value"].toString();
+    for (Map map in adaptiveMap['choices']) {
+      choices[map['title']] = map['value'].toString();
     }
+    isFiltered = loadFiltered();
     isCompact = loadCompact();
-    isMultiSelect = adaptiveMap["isMultiSelect"] ?? false;
-    _selectedChoices.addAll(value.split(","));
+    isMultiSelect = adaptiveMap['isMultiSelect'] ?? false;
+
+    if (value.isNotEmpty) {
+      _selectedChoices.addAll(value.split(','));
+    } else {
+      _selectedChoices.addAll([choices.values.first.toString()]);
+    }
   }
 
   @override
@@ -67,9 +74,9 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   Widget _buildCompact() {
     return DropdownButton<String>(
       items: choices.keys
-          .map((choice) => DropdownMenuItem<String>(
-                value: choices[choice],
-                child: Text(choice),
+          .map((key) => DropdownMenuItem<String>(
+                value: choices[key],
+                child: Text(key),
               ))
           .toList(),
       onChanged: select,
@@ -125,11 +132,18 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   }
 
   bool loadCompact() {
-    if (!adaptiveMap.containsKey("style")) return true;
-    if (adaptiveMap["style"].toString().toLowerCase() == "compact") return true;
-    if (adaptiveMap["style"].toString().toLowerCase() == "expanded")
-      return false;
+    if (!adaptiveMap.containsKey('style')) return true;
+    String style = adaptiveMap['style'].toString().toLowerCase();
+    if (style == 'compact' || style == 'filtered') return true;
+    if (style == 'expanded') return false;
     throw StateError(
-        "The style of the ChoiceSet needs to be either compact or expanded");
+        'The style of the ChoiceSet needs to be either compact or expanded');
+  }
+
+  bool loadFiltered() {
+    if (!adaptiveMap.containsKey('style')) return false;
+    if (adaptiveMap['style'].toString().toLowerCase() == 'filtered')
+      return true;
+    return false;
   }
 }

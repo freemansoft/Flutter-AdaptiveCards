@@ -40,6 +40,7 @@ class _ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
       case "Action.OpenUrl":
         return AdaptiveActionOpenUrl(adaptiveMap: map);
       case "Action.Submit":
+      case "Action.Execute":
         return AdaptiveActionSubmit(adaptiveMap: map);
     }
 

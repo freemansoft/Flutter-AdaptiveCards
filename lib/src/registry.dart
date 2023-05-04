@@ -90,6 +90,7 @@ class CardRegistry {
       case "Action.OpenUrl":
         return GenericActionOpenUrl(map, state);
       case "Action.Submit":
+      case "Action.Execute":
         return GenericSubmitAction(map, state);
       case "Action.ToggleVisibility":
         return null;
