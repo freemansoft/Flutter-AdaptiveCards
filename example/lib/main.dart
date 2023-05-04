@@ -8,6 +8,7 @@ import 'package:example/text_block/text_block_examples_page.dart';
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'about_page.dart';
 import 'action_open_url/action_open_url_examples_page.dart';
@@ -30,7 +31,7 @@ import 'media/media.dart';
 
 void main() {
   debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -44,6 +45,12 @@ class MyApp extends StatelessWidget {
       ),
       themedWidgetBuilder: (context, theme) {
         return new MaterialApp(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('vi', '')],
           title: 'Flutter Adaptive Cards',
           theme: theme,
           home: new MyHomePage(),

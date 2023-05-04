@@ -5,17 +5,23 @@
     "body": [
         {
             "type": "Input.Text",
-            "placeholder": "Placeholder text",
+            "placeholder": "",
             "label": "Họ tên",
             "id": "fullname",
             "isRequired": true
         },
         {
+            "type": "Input.Text",
+            "placeholder": "",
+            "label": "Số điện thoại",
+            "isRequired": true
+        },
+        {
             "type": "Input.Date",
             "id": "bookingdate",
-            "placeholder": "dd/mm/yyyy",
             "label": "Ngày khám",
-            "isRequired": true
+            "isRequired": true,
+            "errorMessage": "Ngày khám không được để trống"
         },
         {
             "type": "Input.ChoiceSet",
@@ -29,7 +35,7 @@
                     "value": "female"
                 }
             ],
-            "placeholder": "Placeholder text",
+            "placeholder": " ",
             "label": "Giới tính",
             "id": "gender",
             "isRequired": true,
@@ -51,19 +57,17 @@
                     "value": "Choice 3"
                 }
             ],
-            "placeholder": "Placeholder text",
-            "style": "filtered",
+            "placeholder": "Chọn khoa khám",
             "label": "Khoa khám",
             "id": "department"
         },
         {
+            "type": "Input.Text",
+            "placeholder": "",
+            "label": "Lý do"
+        },
+        {
             "type": "ActionSet",
-            "actions": [
-                {
-                    "type": "Action.Execute",
-                    "title": "Đăng ký khám"
-                }
-            ],
             "id": "booking"
         }
     ]
