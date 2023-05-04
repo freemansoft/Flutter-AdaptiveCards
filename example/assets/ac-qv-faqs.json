@@ -1,20 +1,21 @@
 {
     "type": "AdaptiveCard",
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-    "version": "1.6",
+    "version": "1.5",
     "body": [
         {
             "type": "Input.Text",
-            "placeholder": "",
+            "placeholder": " ",
             "label": "Họ tên",
             "id": "fullname",
             "isRequired": true
         },
         {
             "type": "Input.Text",
-            "placeholder": "",
+            "placeholder": " ",
             "label": "Số điện thoại",
-            "isRequired": true
+            "isRequired": true,
+            "id": "phonenumber"
         },
         {
             "type": "Input.Date",
@@ -35,7 +36,7 @@
                     "value": "female"
                 }
             ],
-            "placeholder": " ",
+            "placeholder": " Chọn giới tính",
             "label": "Giới tính",
             "id": "gender",
             "isRequired": true,
@@ -63,12 +64,20 @@
         },
         {
             "type": "Input.Text",
-            "placeholder": "",
-            "label": "Lý do"
+            "placeholder": " ",
+            "label": "Lý do",
+            "isMultiline": true,
+            "id": "reason"
         },
         {
             "type": "ActionSet",
-            "id": "booking"
+            "id": "booking",
+            "actions": [
+                {
+                    "type": "Action.Execute",
+                    "title": "Đăng ký khám"
+                }
+            ]
         }
     ]
 }

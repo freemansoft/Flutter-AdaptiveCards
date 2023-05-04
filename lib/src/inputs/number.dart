@@ -26,8 +26,8 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     super.initState();
 
     controller.text = value;
-    min = adaptiveMap["min"];
-    max = adaptiveMap["max"];
+    min = adaptiveMap['min'];
+    max = adaptiveMap['max'];
   }
 
   @override
@@ -38,7 +38,7 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
         keyboardType: TextInputType.number,
         inputFormatters: [
           TextInputFormatter.withFunction((oldVal, newVal) {
-            if (newVal.text == "") return newVal;
+            if (newVal.text == '') return newVal;
             int newNumber = int.parse(newVal.text);
             if (newNumber >= min && newNumber <= max) return newVal;
             return oldVal;

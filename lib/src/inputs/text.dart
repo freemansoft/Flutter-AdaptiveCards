@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -38,7 +39,10 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
             style:
                 TextStyle(backgroundColor: Colors.white, color: Colors.black),
             controller: controller,
-            maxLength: maxLength,
+            // maxLength: maxLength,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(maxLength),
+            ],
             keyboardType: style,
             maxLines: isMultiline ? null : 1,
             decoration: InputDecoration(
