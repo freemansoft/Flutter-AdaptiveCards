@@ -72,17 +72,28 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   /// This is built when multiSelect is false and isCompact is true
   Widget _buildCompact() {
-    return DropdownButton<String>(
-      isExpanded: true,
-      items: choices.keys
-          .map((key) => DropdownMenuItem<String>(
-                value: choices[key],
-                child: Text(key),
-              ))
-          .toList(),
-      onChanged: select,
-      value: _selectedChoices.single,
-    );
+    return Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+        ),
+        child: DropdownButton<String>(
+          isExpanded: true,
+          dropdownColor: Colors.white,
+          icon: Icon(
+            Icons.arrow_drop_down,
+            color: Colors.black,
+          ),
+          style: const TextStyle(color: Colors.black),
+          items: choices.keys
+              .map((key) => DropdownMenuItem<String>(
+                    value: choices[key],
+                    child: Text(key),
+                  ))
+              .toList(),
+          onChanged: select,
+          value: _selectedChoices.single,
+        ));
   }
 
   Widget _buildExpandedSingleSelect() {
