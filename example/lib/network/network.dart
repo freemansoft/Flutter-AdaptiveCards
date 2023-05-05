@@ -9,7 +9,7 @@ class NetworkPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Media'),
+        title: Text('Network'),
         actions: [
           BrightnessSwitch(),
         ],
@@ -21,6 +21,7 @@ class NetworkPage extends StatelessWidget {
             //     Container(child: Center(child: CircularProgressIndicator())),
             url: 'assets/ac-qv-faqs.json',
             hostConfigPath: 'assets/host_config.json',
+            initData: {'fullname': 'minato'},
             onSubmit: (map) {
               print(map);
               // Send to server or handle locally

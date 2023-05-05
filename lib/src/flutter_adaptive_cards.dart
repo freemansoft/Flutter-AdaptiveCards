@@ -82,6 +82,8 @@ class AdaptiveCard extends StatefulWidget {
     required this.adaptiveCardContentProvider,
     this.placeholder,
     this.cardRegistry = const CardRegistry(),
+    this.initData,
+    this.onLoaded,
     this.onSubmit,
     this.onOpenUrl,
     this.hostConfig,
@@ -98,6 +100,8 @@ class AdaptiveCard extends StatefulWidget {
     required String url,
     required String hostConfigPath,
     this.hostConfig,
+    this.initData,
+    this.onLoaded,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -114,6 +118,8 @@ class AdaptiveCard extends StatefulWidget {
     required String assetPath,
     required String hostConfigPath,
     this.hostConfig,
+    this.initData,
+    this.onLoaded,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -132,6 +138,8 @@ class AdaptiveCard extends StatefulWidget {
     required Map<String, dynamic> content,
     required String hostConfigPath,
     required this.hostConfig,
+    this.initData,
+    this.onLoaded,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -151,6 +159,9 @@ class AdaptiveCard extends StatefulWidget {
 
   final String? hostConfig;
 
+  final Map? initData;
+
+  final Function()? onLoaded;
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
   final bool showDebugJson;
@@ -165,9 +176,11 @@ class AdaptiveCard extends StatefulWidget {
 class _AdaptiveCardState extends State<AdaptiveCard> {
   Map<String, dynamic>? map;
   Map<String, dynamic>? hostConfig;
+  Map? initData;
 
   late CardRegistry cardRegistry;
 
+  Function()? onLoaded;
   Function(Map map)? onSubmit;
   Function(String url)? onOpenUrl;
 
@@ -190,6 +203,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
         });
       }
     });
+
+    initData = widget.initData;
   }
 
   @override
@@ -260,6 +275,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       map!,
       hostConfig!,
       cardRegistry: cardRegistry,
+      initData: initData,
+      onLoaded: onLoaded,
       onOpenUrl: onOpenUrl,
       onSubmit: onSubmit,
       listView: widget.listView,
@@ -279,6 +296,8 @@ class RawAdaptiveCard extends StatefulWidget {
     this.map,
     this.hostConfig, {
     this.cardRegistry = const CardRegistry(),
+    this.initData,
+    this.onLoaded,
     required this.onSubmit,
     required this.onOpenUrl,
     this.listView = false,
@@ -289,7 +308,9 @@ class RawAdaptiveCard extends StatefulWidget {
   final Map<String, dynamic> map;
   final Map<String, dynamic> hostConfig;
   final CardRegistry cardRegistry;
+  final Map? initData;
 
+  final Function()? onLoaded;
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
 
@@ -322,6 +343,16 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     cardRegistry = widget.cardRegistry;
 
     _adaptiveElement = widget.cardRegistry.getElement(widget.map);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.initData != null) {
+        if (widget.onLoaded != null) {
+          widget.onLoaded!();
+        }
+
+        initInput(widget.initData!);
+      }
+    });
   }
 
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
@@ -357,6 +388,19 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     }
   }
 
+  void initInput(Map map) {
+    var visitor;
+    visitor = (element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveInputMixin) {
+          (element.state as AdaptiveInputMixin).initInput(map);
+        }
+      }
+      element.visitChildren(visitor);
+    };
+    context.visitChildElements(visitor);
+  }
+
   void openUrl(String url) {
     if (widget.onOpenUrl != null) {
       widget.onOpenUrl!(url);
@@ -378,7 +422,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         builder: (BuildContext builder) => SizedBox(
             height: MediaQuery.of(context).copyWith().size.height / 3,
             child: CupertinoDatePicker(
-              dateOrder: DatePickerDateOrder.dmy,
               mode: CupertinoDatePickerMode.date,
               minimumDate:
                   min ?? DateTime.now().subtract(Duration(days: 10000)),
