@@ -63,7 +63,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
                       ? placeholder
                       : inputFormat.format(selectedDateTime!)),
                 ),
-                Icon(Icons.calendar_today)
+                Icon(Icons.calendar_today, size: 15)
               ],
             ),
           ),
