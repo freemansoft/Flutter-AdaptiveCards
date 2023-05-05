@@ -20,6 +20,7 @@ class AdaptiveCardElement extends StatefulWidget
 
 class AdaptiveCardElementState extends State<AdaptiveCardElement>
     with AdaptiveElementMixin {
+  String? version;
   String? currentCardId;
 
   late List<Widget> children;
@@ -42,6 +43,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   @override
   void initState() {
     super.initState();
+
+    version = adaptiveMap['version'];
+    print(version ?? '');
 
     String stringAxis = resolver.resolve("actions", "actionsOrientation");
     if (stringAxis == "Horizontal")
