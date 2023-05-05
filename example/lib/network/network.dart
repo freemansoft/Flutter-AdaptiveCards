@@ -21,7 +21,10 @@ class NetworkPage extends StatelessWidget {
             //     Container(child: Center(child: CircularProgressIndicator())),
             url: 'assets/ac-qv-faqs.json',
             hostConfigPath: 'assets/host_config.json',
-            initData: {'fullname': 'minato'},
+            initData: {'fullname': 'minato', 'gender': 'female'},
+            onChange: (id, key) {
+              print('$id - $key');
+            },
             onSubmit: (map) {
               print(map);
               // Send to server or handle locally

@@ -23,7 +23,7 @@ class _AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
     super.initState();
 
     action = GenericActionOpenUrl(adaptiveMap, widgetState);
-    iconUrl = adaptiveMap["iconUrl"];
+    iconUrl = adaptiveMap['iconUrl'];
   }
 
   @override

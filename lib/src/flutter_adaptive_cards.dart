@@ -83,7 +83,7 @@ class AdaptiveCard extends StatefulWidget {
     this.placeholder,
     this.cardRegistry = const CardRegistry(),
     this.initData,
-    this.onLoaded,
+    this.onChange,
     this.onSubmit,
     this.onOpenUrl,
     this.hostConfig,
@@ -101,7 +101,7 @@ class AdaptiveCard extends StatefulWidget {
     required String hostConfigPath,
     this.hostConfig,
     this.initData,
-    this.onLoaded,
+    this.onChange,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -119,7 +119,7 @@ class AdaptiveCard extends StatefulWidget {
     required String hostConfigPath,
     this.hostConfig,
     this.initData,
-    this.onLoaded,
+    this.onChange,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -139,7 +139,7 @@ class AdaptiveCard extends StatefulWidget {
     required String hostConfigPath,
     required this.hostConfig,
     this.initData,
-    this.onLoaded,
+    this.onChange,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -161,9 +161,10 @@ class AdaptiveCard extends StatefulWidget {
 
   final Map? initData;
 
-  final Function()? onLoaded;
+  final Function(String id, dynamic value)? onChange;
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
+
   final bool showDebugJson;
   final bool approximateDarkThemeColors;
   final bool supportMarkdown;
@@ -180,7 +181,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
 
   late CardRegistry cardRegistry;
 
-  Function()? onLoaded;
+  Function(String id, dynamic value)? onChange;
   Function(Map map)? onSubmit;
   Function(String url)? onOpenUrl;
 
@@ -235,6 +236,10 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       }
     }
 
+    if (widget.onChange != null) {
+      onChange = widget.onChange;
+    }
+
     if (widget.onSubmit != null) {
       onSubmit = widget.onSubmit;
     } else {
@@ -276,7 +281,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       hostConfig!,
       cardRegistry: cardRegistry,
       initData: initData,
-      onLoaded: onLoaded,
+      onChange: onChange,
       onOpenUrl: onOpenUrl,
       onSubmit: onSubmit,
       listView: widget.listView,
@@ -297,7 +302,7 @@ class RawAdaptiveCard extends StatefulWidget {
     this.hostConfig, {
     this.cardRegistry = const CardRegistry(),
     this.initData,
-    this.onLoaded,
+    this.onChange,
     required this.onSubmit,
     required this.onOpenUrl,
     this.listView = false,
@@ -310,7 +315,7 @@ class RawAdaptiveCard extends StatefulWidget {
   final CardRegistry cardRegistry;
   final Map? initData;
 
-  final Function()? onLoaded;
+  final Function(String id, dynamic value)? onChange;
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
 
@@ -346,10 +351,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.initData != null) {
-        if (widget.onLoaded != null) {
-          widget.onLoaded!();
-        }
-
         initInput(widget.initData!);
       }
     });
@@ -404,6 +405,12 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void openUrl(String url) {
     if (widget.onOpenUrl != null) {
       widget.onOpenUrl!(url);
+    }
+  }
+
+  void changeValue(String id, dynamic value) {
+    if (widget.onChange != null) {
+      widget.onChange!(id, value);
     }
   }
 

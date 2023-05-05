@@ -47,15 +47,15 @@
             "choices": [
                 {
                     "title": "Khoa Nội",
-                    "value": "Choice 1"
+                    "value": "Khoa Nội"
                 },
                 {
                     "title": "Khoa Ngoại",
-                    "value": "Choice 2"
+                    "value": "Khoa Ngoại"
                 },
                 {
                     "title": "Khoa Nhi",
-                    "value": "Choice 3"
+                    "value": "Khoa Nhi"
                 }
             ],
             "placeholder": "Chọn khoa khám",
