@@ -233,7 +233,7 @@ Widget loadLabel(String? label, bool isRequired) {
   return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-          padding: EdgeInsets.only(left: 0, bottom: 8, right: 0, top: 0),
+          padding: EdgeInsets.only(bottom: 8, top: 0),
           child: isRequired
               ? Text.rich(
                   TextSpan(
