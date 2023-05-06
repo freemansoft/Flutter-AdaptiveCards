@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../additional.dart';
-import '../base.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/base.dart';
 
 class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveDateInput({super.key, required this.adaptiveMap});
@@ -25,7 +25,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
     super.initState();
 
     try {
-      selectedDateTime = DateTime.parse(value);
+      selectedDateTime = inputFormat.parse(value);
       min = DateTime.parse(adaptiveMap['min']);
       max = DateTime.parse(adaptiveMap['max']);
     } catch (formatException) {}
@@ -81,8 +81,12 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
   void initInput(Map map) {
     if (map[id] != null) {
       try {
-        selectedDateTime = DateTime.parse(map[id]);
-      } catch (formatException) {}
+        setState(() {
+          selectedDateTime = inputFormat.parse(map[id]);
+        });
+      } catch (formatException) {
+        print(formatException);
+      }
     }
   }
 }

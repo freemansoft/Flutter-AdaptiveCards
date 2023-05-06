@@ -21,7 +21,11 @@ class NetworkPage extends StatelessWidget {
             //     Container(child: Center(child: CircularProgressIndicator())),
             url: 'assets/ac-qv-faqs.json',
             hostConfigPath: 'assets/host_config.json',
-            initData: {'fullname': 'minato', 'gender': 'female'},
+            initData: {
+              'fullname': 'minato',
+              'bookingdate': '08/05/2023',
+              'gender': 'female'
+            },
             onChange: (id, key) {
               print('$id - $key');
             },

@@ -137,7 +137,7 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     required Map<String, dynamic> content,
     required String hostConfigPath,
-    required this.hostConfig,
+    this.hostConfig,
     this.initData,
     this.onChange,
     this.onSubmit,
