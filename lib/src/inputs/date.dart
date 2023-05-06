@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter_adaptive_cards/src/additional.dart';
@@ -15,6 +16,8 @@ class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class _AdaptiveDateInputState extends State<AdaptiveDateInput>
     with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin {
+  String? label;
+  late bool isRequired;
   DateTime? selectedDateTime;
   DateTime? min;
   DateTime? max;
@@ -24,10 +27,12 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
   void initState() {
     super.initState();
 
+    label = adaptiveMap['label'];
+    isRequired = adaptiveMap['isRequired'] ?? false;
     try {
       selectedDateTime = inputFormat.parse(value);
-      min = DateTime.parse(adaptiveMap['min']);
-      max = DateTime.parse(adaptiveMap['max']);
+      min = inputFormat.parse(adaptiveMap['min']);
+      max = inputFormat.parse(adaptiveMap['max']);
     } catch (formatException) {}
   }
 
@@ -35,40 +40,43 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
   Widget build(BuildContext context) {
     return SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: SizedBox(
-          width: double.infinity,
-          height: 40,
-          child: TextButton(
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black, // textColor
-              shape: RoundedRectangleBorder(
-                side: BorderSide(
-                    color: Colors.grey, width: 0.0, style: BorderStyle.solid),
-                borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          loadLabel(label, isRequired),
+          SizedBox(
+            width: double.infinity,
+            height: 40,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black, // textColor
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                      color: Colors.grey, width: 0.0, style: BorderStyle.solid),
+                  borderRadius: BorderRadius.all(Radius.circular(4.0)),
+                ),
+              ),
+              onPressed: () async {
+                await widgetState.pickDate(min, max, (DateTime? date) {
+                  setState(() {
+                    selectedDateTime = date;
+                  });
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(selectedDateTime == null
+                        ? placeholder
+                        : inputFormat.format(selectedDateTime!)),
+                  ),
+                  Icon(Icons.calendar_today, size: 15)
+                ],
               ),
             ),
-            onPressed: () async {
-              await widgetState.pickDate(min, max, (DateTime? date) {
-                setState(() {
-                  selectedDateTime = date;
-                });
-              });
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(selectedDateTime == null
-                      ? placeholder
-                      : inputFormat.format(selectedDateTime!)),
-                ),
-                Icon(Icons.calendar_today, size: 15)
-              ],
-            ),
-          ),
-        ));
+          )
+        ]));
   }
 
   @override

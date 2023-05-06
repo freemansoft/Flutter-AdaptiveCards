@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:provider/provider.dart';
 
 import '../additional.dart';
@@ -22,6 +23,8 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   // Contains the values (the things to send as request)
   Set<String> _selectedChoices = {};
 
+  String? label;
+  late bool isRequired;
   late bool isFiltered;
   late bool isCompact;
   late bool isMultiSelect;
@@ -29,6 +32,10 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   @override
   void initState() {
     super.initState();
+
+    label = adaptiveMap['label'];
+    isRequired = adaptiveMap['isRequired'] ?? false;
+
     for (Map map in adaptiveMap['choices']) {
       _choices[map['title']] = map['value'].toString();
     }
@@ -90,7 +97,9 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: widget,
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [loadLabel(label, isRequired), widget]),
     );
   }
 

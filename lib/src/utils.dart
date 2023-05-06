@@ -225,6 +225,38 @@ String parseTextString(String text) {
   });
 }
 
+Widget loadLabel(String? label, bool isRequired) {
+  if (label == null) {
+    return SizedBox();
+  }
+
+  return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+          padding: EdgeInsets.only(left: 0, bottom: 8, right: 0, top: 0),
+          child: isRequired
+              ? Text.rich(
+                  TextSpan(
+                    children: [
+                      WidgetSpan(
+                        child: Text(
+                          label,
+                        ),
+                      ),
+                      WidgetSpan(
+                        child: Text(
+                          '*',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Text(
+                  label,
+                )));
+}
+
 class UUIDGenerator {
   UUIDGenerator() : uuid = Uuid();
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -16,13 +17,19 @@ class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 class _AdaptiveTextInputState extends State<AdaptiveTextInput>
     with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin {
   TextEditingController controller = TextEditingController();
+
+  String? label;
+  late bool isRequired;
   late bool isMultiline;
   late int maxLength;
-  late TextInputType? style;
+  TextInputType? style;
 
   @override
   void initState() {
     super.initState();
+
+    label = adaptiveMap['label'];
+    isRequired = adaptiveMap['isRequired'] ?? false;
     isMultiline = adaptiveMap['isMultiline'] ?? false;
     maxLength = adaptiveMap['maxLength'];
     style = loadTextInputType();
@@ -33,34 +40,38 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
   Widget build(BuildContext context) {
     return SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: SizedBox(
-          height: 40,
-          child: TextField(
-            style:
-                TextStyle(backgroundColor: Colors.white, color: Colors.black),
-            controller: controller,
-            // maxLength: maxLength,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(maxLength),
-            ],
-            keyboardType: style,
-            maxLines: isMultiline ? null : 1,
-            decoration: InputDecoration(
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
-              contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              enabledBorder: const OutlineInputBorder(
-                // width: 0.0 produces a thin "hairline" border
-                borderSide: const BorderSide(color: Colors.grey, width: 0.0),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          loadLabel(label, isRequired),
+          SizedBox(
+            height: 40,
+            child: TextField(
+              style:
+                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
+              controller: controller,
+              // maxLength: maxLength,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(maxLength),
+              ],
+              keyboardType: style,
+              maxLines: isMultiline ? null : 1,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0)),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                enabledBorder: const OutlineInputBorder(
+                  // width: 0.0 produces a thin "hairline" border
+                  borderSide: const BorderSide(color: Colors.grey, width: 0.0),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                hoverColor: Colors.white,
+                hintText: placeholder,
+                hintStyle: TextStyle(color: Colors.black54),
               ),
-              filled: true,
-              fillColor: Colors.white,
-              hoverColor: Colors.white,
-              hintText: placeholder,
-              hintStyle: TextStyle(color: Colors.black54),
             ),
-          ),
-        ));
+          )
+        ]));
   }
 
   @override

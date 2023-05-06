@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -18,12 +19,17 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin {
   TextEditingController controller = TextEditingController();
 
+  String? label;
+  late bool isRequired;
   late int min;
   late int max;
 
   @override
   void initState() {
     super.initState();
+
+    label = adaptiveMap['label'];
+    isRequired = adaptiveMap['isRequired'] ?? false;
 
     controller.text = value;
     min = adaptiveMap['min'];
@@ -34,38 +40,42 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   Widget build(BuildContext context) {
     return SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: SizedBox(
-          height: 40,
-          child: TextField(
-            style:
-                TextStyle(backgroundColor: Colors.white, color: Colors.black),
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              TextInputFormatter.withFunction((oldVal, newVal) {
-                if (newVal.text == '') return newVal;
-                int newNumber = int.parse(newVal.text);
-                if (newNumber >= min && newNumber <= max) return newVal;
-                return oldVal;
-              })
-            ],
-            controller: controller,
-            decoration: InputDecoration(
-              // labelText: placeholder,
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
-              contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              enabledBorder: const OutlineInputBorder(
-                // width: 0.0 produces a thin "hairline" border
-                borderSide: const BorderSide(color: Colors.grey, width: 0.0),
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          loadLabel(label, isRequired),
+          SizedBox(
+            height: 40,
+            child: TextField(
+              style:
+                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                TextInputFormatter.withFunction((oldVal, newVal) {
+                  if (newVal.text == '') return newVal;
+                  int newNumber = int.parse(newVal.text);
+                  if (newNumber >= min && newNumber <= max) return newVal;
+                  return oldVal;
+                })
+              ],
+              controller: controller,
+              decoration: InputDecoration(
+                // labelText: placeholder,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0)),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                enabledBorder: const OutlineInputBorder(
+                  // width: 0.0 produces a thin "hairline" border
+                  borderSide: const BorderSide(color: Colors.grey, width: 0.0),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                hoverColor: Colors.white,
+                hintText: placeholder,
+                hintStyle: TextStyle(color: Colors.black54),
               ),
-              filled: true,
-              fillColor: Colors.white,
-              hoverColor: Colors.white,
-              hintText: placeholder,
-              hintStyle: TextStyle(color: Colors.black54),
             ),
-          ),
-        ));
+          )
+        ]));
   }
 
   @override
