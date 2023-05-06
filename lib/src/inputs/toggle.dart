@@ -61,7 +61,9 @@ class _AdaptiveToggleState extends State<AdaptiveToggle>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      boolValue = map[id];
+      setState(() {
+        boolValue = map[id];
+      });
     }
   }
 }

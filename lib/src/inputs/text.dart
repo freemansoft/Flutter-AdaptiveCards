@@ -71,7 +71,9 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      controller.text = map[id];
+      setState(() {
+        controller.text = map[id];
+      });
     }
   }
 

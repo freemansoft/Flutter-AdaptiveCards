@@ -17,7 +17,7 @@ class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     with AdaptiveInputMixin, AdaptiveElementMixin {
   // Map from title to value
-  Map<String, String> choices = {};
+  Map<String, String> _choices = {};
 
   // Contains the values (the things to send as request)
   Set<String> _selectedChoices = {};
@@ -30,7 +30,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   void initState() {
     super.initState();
     for (Map map in adaptiveMap['choices']) {
-      choices[map['title']] = map['value'].toString();
+      _choices[map['title']] = map['value'].toString();
     }
     isFiltered = loadFiltered();
     isCompact = loadCompact();
@@ -54,6 +54,18 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         _selectedChoices.add(map[id]);
       });
     }
+  }
+
+  @override
+  void loadInput(Map map) {
+    setState(() {
+      _choices.clear();
+      _selectedChoices.clear();
+
+      map.forEach((key, value) {
+        _choices[key] = value.toString();
+      });
+    });
   }
 
   @override
@@ -104,9 +116,9 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
             color: Colors.black,
           ),
           style: const TextStyle(color: Colors.black),
-          items: choices.keys
+          items: _choices.keys
               .map((key) => DropdownMenuItem<String>(
-                    value: choices[key],
+                    value: _choices[key],
                     child: Text(key),
                   ))
               .toList(),
@@ -119,14 +131,14 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   Widget _buildExpandedSingleSelect(RawAdaptiveCardState state) {
     return Column(
-      children: choices.keys.map((key) {
+      children: _choices.keys.map((key) {
         return RadioListTile<String>(
-          value: choices[key]!,
+          value: _choices[key]!,
           onChanged: (value) {
             select(state, value);
           },
           groupValue:
-              _selectedChoices.contains(choices[key]) ? choices[key] : null,
+              _selectedChoices.contains(_choices[key]) ? _choices[key] : null,
           title: Text(key),
         );
       }).toList(),
@@ -135,12 +147,12 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   Widget _buildExpandedMultiSelect(RawAdaptiveCardState state) {
     return Column(
-      children: choices.keys.map((key) {
+      children: _choices.keys.map((key) {
         return CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          value: _selectedChoices.contains(choices[key]),
+          value: _selectedChoices.contains(_choices[key]),
           onChanged: (value) {
-            select(state, choices[key]);
+            select(state, _choices[key]);
           },
           title: Text(key),
         );

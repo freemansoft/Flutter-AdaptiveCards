@@ -37,6 +37,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
         adaptiveMap: adaptiveMap,
         child: SizedBox(
           width: double.infinity,
+          height: 40,
           child: TextButton(
             style: TextButton.styleFrom(
               backgroundColor: Colors.white,

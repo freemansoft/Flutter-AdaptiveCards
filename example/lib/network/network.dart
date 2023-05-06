@@ -26,8 +26,14 @@ class NetworkPage extends StatelessWidget {
               'bookingdate': '08/05/2023',
               'gender': 'female'
             },
-            onChange: (id, key) {
+            onChange: (id, key, cardState) {
               print('$id - $key');
+              if (id == 'gender') {
+                if (key == 'male')
+                  cardState.loadInput('department', {'1': '1'});
+                else
+                  cardState.loadInput('department', {'2': '2', '3': '3'});
+              }
             },
             onSubmit: (map) {
               print(map);

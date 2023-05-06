@@ -161,7 +161,8 @@ class AdaptiveCard extends StatefulWidget {
 
   final Map? initData;
 
-  final Function(String id, dynamic value)? onChange;
+  final Function(String id, dynamic value, RawAdaptiveCardState state)?
+      onChange;
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
 
@@ -181,7 +182,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
 
   late CardRegistry cardRegistry;
 
-  Function(String id, dynamic value)? onChange;
+  Function(String id, dynamic value, RawAdaptiveCardState cardState)? onChange;
   Function(Map map)? onSubmit;
   Function(String url)? onOpenUrl;
 
@@ -315,7 +316,8 @@ class RawAdaptiveCard extends StatefulWidget {
   final CardRegistry cardRegistry;
   final Map? initData;
 
-  final Function(String id, dynamic value)? onChange;
+  final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
+      onChange;
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
 
@@ -402,6 +404,21 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     context.visitChildElements(visitor);
   }
 
+  void loadInput(String id, Map map) {
+    var visitor;
+    visitor = (element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveInputMixin) {
+          if ((element.state as AdaptiveInputMixin).id == id) {
+            (element.state as AdaptiveInputMixin).loadInput(map);
+          }
+        }
+      }
+      element.visitChildren(visitor);
+    };
+    context.visitChildElements(visitor);
+  }
+
   void openUrl(String url) {
     if (widget.onOpenUrl != null) {
       widget.onOpenUrl!(url);
@@ -410,7 +427,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
   void changeValue(String id, dynamic value) {
     if (widget.onChange != null) {
-      widget.onChange!(id, value);
+      widget.onChange!(id, value, this);
     }
   }
 
