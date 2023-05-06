@@ -58,9 +58,11 @@
                     "value": "Khoa Nhi"
                 }
             ],
+            "style": "filtered",
             "placeholder": "Chọn khoa khám",
             "label": "Khoa khám",
-            "id": "department"
+            "id": "department",
+            "value": "Khoa Nội"
         },
         {
             "type": "Input.Text",

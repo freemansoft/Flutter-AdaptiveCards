@@ -38,6 +38,9 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
 
   @override
   Widget build(BuildContext context) {
+    Locale myLocale = Localizations.localeOf(context);
+    print(myLocale);
+
     return SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
