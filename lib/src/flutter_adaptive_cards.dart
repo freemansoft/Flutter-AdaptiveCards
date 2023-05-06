@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
+import 'package:flutter_adaptive_cards/src/inputs/choice_filter.dart';
+import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:http/http.dart' as http;
@@ -434,6 +436,15 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void showError(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> searchList(
+      List<SearchModel>? data, Function(dynamic value) callback) async {
+    await showModalBottomSheet(
+        context: context,
+        builder: (BuildContext builder) => SizedBox(
+            height: MediaQuery.of(context).copyWith().size.height / 2,
+            child: ChoiceFilter(data: data, callback: callback)));
   }
 
   /// min and max dates may be null, in this case no constraint is made in that direction

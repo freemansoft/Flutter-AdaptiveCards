@@ -18,8 +18,7 @@ dependencies:
   intl: ^0.17.0
   ## Used for automatic color adjustment for dark theme
   tinycolor2: ^3.0.1
-  dropdown_search: ^5.0.6
-
+  
   # Content
   ## Video player with controls
   chewie: ^1.4.0

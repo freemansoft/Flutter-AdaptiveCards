@@ -1,4 +1,3 @@
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
@@ -12,15 +11,6 @@ class SearchModel {
   final String name;
 
   SearchModel({required this.id, required this.name});
-
-  factory SearchModel.fromJson(Map<String, dynamic> json) {
-    return SearchModel(id: json["id"], name: json["name"]);
-  }
-
-  static List<SearchModel>? fromJsonList(List? list) {
-    if (list == null) return null;
-    return list.map((item) => SearchModel.fromJson(item)).toList();
-  }
 
   ///this method will prevent the override of toString
   String modelAsString() {
@@ -134,72 +124,45 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     );
   }
 
-  Widget _customPopupItemBuilder(
-      BuildContext context, SearchModel item, bool isSelected) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8),
-      decoration: !isSelected
-          ? null
-          : BoxDecoration(
-              color: Colors.blue[50],
-              border: Border.all(
-                color: Colors.grey,
-                width: 0.0,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(4.0)),
-            ),
-      child: ListTile(
-        dense: true,
-        selected: isSelected,
-        title: Text(item.name, style: TextStyle(color: Colors.black)),
-      ),
-    );
-  }
-
   Widget _buildFiltered(RawAdaptiveCardState state) {
-    return Container(
-        height: 40.0,
-        child: DropdownSearch<SearchModel>(
-          compareFn: (i, s) => i.isEqual(s),
-          items: _choices.keys
+    return SizedBox(
+      width: double.infinity,
+      height: 40,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black, // textColor
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: Colors.grey, style: BorderStyle.solid),
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+          ),
+        ),
+        onPressed: () async {
+          var list = _choices.keys
               .map((key) => SearchModel(
                     id: key,
                     name: _choices[key] ?? '',
                   ))
-              .toList(),
-          // dropdownDecoratorProps: DropDownDecoratorProps(
-          //   dropdownSearchDecoration: InputDecoration(
-          //     filled: true,
-          //     fillColor: Colors.white,
-          //     border: OutlineInputBorder(
-          //         borderRadius: BorderRadius.circular(4.0)),
-          //   ),
-          // ),
-          popupProps: PopupPropsMultiSelection.modalBottomSheet(
-            showSelectedItems: true,
-            showSearchBox: true,
-            itemBuilder: _customPopupItemBuilder,
-            searchFieldProps: TextFieldProps(
-              style: const TextStyle(color: Colors.black),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderSide:
-                        const BorderSide(color: Colors.grey, width: 0.0),
-                    borderRadius: BorderRadius.circular(4.0)),
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              ),
+              .toList();
+          await widgetState.searchList(list, (dynamic value) {
+            setState(() {
+              select(state, value?.id);
+            });
+          });
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                  _selectedChoices.isNotEmpty ? _selectedChoices.single : ''),
             ),
-          ),
-          onChanged: (value) {
-            select(state, value?.id);
-          },
-          selectedItem: _selectedChoices.isNotEmpty
-              ? SearchModel(
-                  id: _selectedChoices.single,
-                  name: _choices[_selectedChoices.single] ?? '')
-              : null,
-        ));
+            Icon(Icons.arrow_drop_down_outlined, size: 25)
+          ],
+        ),
+      ),
+    );
   }
 
   /// This is built when multiSelect is false and isCompact is true
@@ -209,10 +172,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         height: 40.0,
         decoration: BoxDecoration(
           color: Colors.white,
-          border: Border.all(
-            color: Colors.grey,
-            width: 0.0,
-          ),
+          border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.all(Radius.circular(4.0)),
         ),
         child: DropdownButtonHideUnderline(

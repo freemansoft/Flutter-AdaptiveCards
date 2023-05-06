@@ -65,7 +65,7 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
                     EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 enabledBorder: const OutlineInputBorder(
                   // width: 0.0 produces a thin "hairline" border
-                  borderSide: const BorderSide(color: Colors.grey, width: 0.0),
+                  borderSide: const BorderSide(color: Colors.grey),
                 ),
                 filled: true,
                 fillColor: Colors.white,
