@@ -72,7 +72,8 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
                 filled: true,
                 fillColor: Colors.white,
                 hoverColor: Colors.white,
-                suffixIcon: Icon(Icons.calendar_today, size: 15),
+                suffixIcon:
+                    Icon(Icons.calendar_today, size: 15, color: Colors.black54),
                 hintText: placeholder,
                 hintStyle: TextStyle(color: Colors.black54),
                 errorStyle: TextStyle(height: 0),

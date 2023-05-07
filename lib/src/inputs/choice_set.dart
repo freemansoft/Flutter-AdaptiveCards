@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:provider/provider.dart';
 
@@ -49,6 +50,8 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   late bool isCompact;
   late bool isMultiSelect;
 
+  TextEditingController controller = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -79,17 +82,16 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       setState(() {
         _selectedChoices.clear();
         _selectedChoices.add(map[id]);
+
+        controller.text =
+            _selectedChoices.isNotEmpty ? _selectedChoices.single : '';
       });
     }
   }
 
   @override
   bool checkRequired() {
-    if (!isRequired) {
-      return true;
-    }
-
-    return true;
+    return formKey.currentState!.validate();
   }
 
   @override
@@ -137,16 +139,54 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     return SizedBox(
       width: double.infinity,
       height: 40,
-      child: TextButton(
-        style: TextButton.styleFrom(
+      child: TextFormField(
+        readOnly: true,
+        style: TextStyle(
           backgroundColor: Colors.white,
-          foregroundColor: Colors.black, // textColor
-          shape: RoundedRectangleBorder(
-            side: BorderSide(color: Colors.grey, style: BorderStyle.solid),
-            borderRadius: BorderRadius.all(Radius.circular(4.0)),
-          ),
+          color: Colors.black,
         ),
-        onPressed: () async {
+        controller: controller,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 8,
+            horizontal: 8,
+          ),
+          enabledBorder: const OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.grey),
+          ),
+          errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                width: 1,
+                color: Colors.red,
+              )),
+          focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                width: 1,
+                color: Colors.redAccent,
+              )),
+          filled: true,
+          fillColor: Colors.white,
+          hoverColor: Colors.white,
+          suffixIcon: Icon(
+            Icons.arrow_drop_down,
+            color: Colors.black54,
+          ),
+          // hintText: placeholder,
+          hintStyle: TextStyle(color: Colors.black54),
+          errorStyle: TextStyle(height: 0),
+        ),
+        validator: (value) {
+          if (!isRequired) return null;
+          if (value == null || value.isEmpty) {
+            return '';
+          } else {
+            return null;
+          }
+        },
+        onTap: () async {
           var list = _choices.keys
               .map((key) => SearchModel(
                     id: key,
@@ -159,17 +199,6 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
             });
           });
         },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                  _selectedChoices.isNotEmpty ? _selectedChoices.single : ''),
-            ),
-            Icon(Icons.arrow_drop_down_outlined, size: 25)
-          ],
-        ),
       ),
     );
   }
@@ -190,7 +219,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           dropdownColor: Colors.white,
           icon: Icon(
             Icons.arrow_drop_down,
-            color: Colors.black,
+            color: Colors.black54,
           ),
           style: const TextStyle(color: Colors.black),
           items: _choices.keys
@@ -254,7 +283,10 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     }
 
     state.changeValue(id, choice);
-    setState(() {});
+    setState(() {
+      controller.text =
+          _selectedChoices.isNotEmpty ? _selectedChoices.single : '';
+    });
   }
 
   bool loadCompact() {
