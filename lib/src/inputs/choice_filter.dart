@@ -49,35 +49,33 @@ class _ChoiceFilterState extends State<ChoiceFilter> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              height: 40,
-              child: TextField(
-                style: TextStyle(
-                    backgroundColor: Colors.white, color: Colors.black),
-                controller: controller,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4.0)),
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.grey),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  hoverColor: Colors.white,
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  // suffix: IconButton(
-                  //     icon: Icon(Icons.cancel, color: Colors.grey),
-                  //     onPressed: () {
-                  //       controller.clear();
-                  //       onSearchTextChanged('');
-                  //     }),
+        Container(
+            margin: const EdgeInsets.all(8.0),
+            height: 40,
+            child: TextField(
+              style:
+                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
+              controller: controller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0)),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.grey),
                 ),
-                onChanged: onSearchTextChanged,
+                filled: true,
+                fillColor: Colors.white,
+                hoverColor: Colors.white,
+                prefixIcon: Icon(Icons.search, color: Colors.grey),
+                // suffix: IconButton(
+                //     icon: Icon(Icons.cancel, color: Colors.grey),
+                //     onPressed: () {
+                //       controller.clear();
+                //       onSearchTextChanged('');
+                //     }),
               ),
+              onChanged: onSearchTextChanged,
             )),
         Expanded(
           child: _searchResult.length != 0 || controller.text.isNotEmpty
