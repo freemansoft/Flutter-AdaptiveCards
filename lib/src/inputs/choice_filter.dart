@@ -47,33 +47,38 @@ class _ChoiceFilterState extends State<ChoiceFilter> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          color: Colors.white,
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4.0),
-              side: BorderSide(color: Colors.grey),
-            ),
-            child: ListTile(
-              leading: Icon(Icons.search),
-              title: TextField(
+        Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              height: 40,
+              child: TextField(
+                style: TextStyle(
+                    backgroundColor: Colors.white, color: Colors.black),
                 controller: controller,
                 decoration: InputDecoration(
-                    hintText: 'Search', border: InputBorder.none),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4.0)),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  hoverColor: Colors.white,
+                  prefixIcon: Icon(Icons.search, color: Colors.grey),
+                  // suffix: IconButton(
+                  //     icon: Icon(Icons.cancel, color: Colors.grey),
+                  //     onPressed: () {
+                  //       controller.clear();
+                  //       onSearchTextChanged('');
+                  //     }),
+                ),
                 onChanged: onSearchTextChanged,
               ),
-              trailing: IconButton(
-                icon: Icon(Icons.cancel),
-                onPressed: () {
-                  controller.clear();
-                  onSearchTextChanged('');
-                },
-              ),
-            ),
-          ),
-        ),
+            )),
         Expanded(
           child: _searchResult.length != 0 || controller.text.isNotEmpty
               ? ListView.builder(

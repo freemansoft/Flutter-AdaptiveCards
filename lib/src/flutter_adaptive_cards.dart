@@ -442,6 +442,10 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       List<SearchModel>? data, Function(dynamic value) callback) async {
     await showModalBottomSheet(
         context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(6.0)),
+          side: BorderSide(color: Colors.grey),
+        ),
         builder: (BuildContext builder) => SizedBox(
             height: MediaQuery.of(context).copyWith().size.height / 2,
             child: ChoiceFilter(data: data, callback: callback)));
