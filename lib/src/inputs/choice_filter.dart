@@ -53,6 +53,7 @@ class _ChoiceFilterState extends State<ChoiceFilter> {
             margin: const EdgeInsets.all(8.0),
             height: 40,
             child: TextField(
+              autofocus: true,
               style:
                   TextStyle(backgroundColor: Colors.white, color: Colors.black),
               controller: controller,
