@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:intl/intl.dart';
 
@@ -22,6 +23,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
   DateTime? min;
   DateTime? max;
   final inputFormat = DateFormat('dd/MM/yyyy');
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
@@ -48,37 +50,51 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
           SizedBox(
             width: double.infinity,
             height: 40,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black, // textColor
-                shape: RoundedRectangleBorder(
-                  side:
-                      BorderSide(color: Colors.grey, style: BorderStyle.solid),
-                  borderRadius: BorderRadius.all(Radius.circular(4.0)),
+            child: TextFormField(
+              readOnly: true,
+              style:
+                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
+              controller: controller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0)),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                enabledBorder: const OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.grey),
                 ),
+                errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(width: 1, color: Colors.red)),
+                focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                filled: true,
+                fillColor: Colors.white,
+                hoverColor: Colors.white,
+                suffixIcon: Icon(Icons.calendar_today, size: 15),
+                hintText: placeholder,
+                hintStyle: TextStyle(color: Colors.black54),
+                errorStyle: TextStyle(height: 0),
               ),
-              onPressed: () async {
+              validator: (value) {
+                if (!isRequired) return null;
+                if (value == null || value.isEmpty) {
+                  return '';
+                } else {
+                  return null;
+                }
+              },
+              onTap: () async {
                 await widgetState.pickDate(min, max, (DateTime? date) {
                   setState(() {
                     selectedDateTime = date;
+                    controller.text = selectedDateTime == null
+                        ? placeholder
+                        : inputFormat.format(selectedDateTime!);
                   });
                 });
               },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(selectedDateTime == null
-                        ? placeholder
-                        : inputFormat.format(selectedDateTime!)),
-                  ),
-                  Padding(
-                      padding: EdgeInsets.only(right: 4),
-                      child: Icon(Icons.calendar_today, size: 15))
-                ],
-              ),
             ),
           )
         ]));
@@ -97,6 +113,9 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
       try {
         setState(() {
           selectedDateTime = inputFormat.parse(map[id]);
+          controller.text = selectedDateTime == null
+              ? placeholder
+              : inputFormat.format(selectedDateTime!);
         });
       } catch (formatException) {
         print(formatException);
@@ -106,6 +125,6 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
 
   @override
   bool checkRequired() {
-    return true;
+    return formKey.currentState!.validate();
   }
 }
