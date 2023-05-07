@@ -66,6 +66,7 @@ mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
 mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   late String value;
+  late String placeholder;
 
   @override
   void initState() {
@@ -73,6 +74,8 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     value = adaptiveMap['value'].toString() == 'null'
         ? ''
         : adaptiveMap['value'].toString();
+
+    placeholder = widget.adaptiveMap['placeholder'] ?? '';
   }
 
   void appendInput(Map map);
@@ -86,13 +89,9 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
 
 mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>
     on State<T> implements AdaptiveInputMixin<T> {
-  late String placeholder;
-
   @override
   void initState() {
     super.initState();
-
-    placeholder = widget.adaptiveMap['placeholder'] ?? '';
   }
 }
 

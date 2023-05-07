@@ -174,7 +174,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
             Icons.arrow_drop_down,
             color: Colors.black54,
           ),
-          // hintText: placeholder,
+          hintText: placeholder,
           hintStyle: TextStyle(color: Colors.black54),
           errorStyle: TextStyle(height: 0),
         ),
