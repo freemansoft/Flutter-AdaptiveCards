@@ -91,8 +91,8 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   @override
   bool checkRequired() {
-    var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    var formKey = _adaptiveCardElement.formKey;
+    var adaptiveCardElement = context.read<AdaptiveCardElementState>();
+    var formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
   }
@@ -185,9 +185,8 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           if (!isRequired) return null;
           if (value == null || value.isEmpty) {
             return '';
-          } else {
-            return null;
           }
+          return null;
         },
         onTap: () async {
           var list = _choices.keys

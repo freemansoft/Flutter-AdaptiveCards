@@ -80,9 +80,8 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
                 if (!isRequired) return null;
                 if (value == null || value.isEmpty) {
                   return '';
-                } else {
-                  return null;
                 }
+                return null;
               },
             ),
           )
@@ -103,8 +102,8 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
 
   @override
   bool checkRequired() {
-    var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    var formKey = _adaptiveCardElement.formKey;
+    var adaptiveCardElement = context.read<AdaptiveCardElementState>();
+    var formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
   }
