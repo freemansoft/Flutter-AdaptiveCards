@@ -12,7 +12,7 @@ class ChoiceFilter extends StatefulWidget {
 }
 
 class _ChoiceFilterState extends State<ChoiceFilter> {
-  TextEditingController controller = new TextEditingController();
+  TextEditingController _searchController = new TextEditingController();
 
   List<SearchModel> _searchResult = [];
   List<SearchModel> _data = [];
@@ -56,7 +56,7 @@ class _ChoiceFilterState extends State<ChoiceFilter> {
               autofocus: true,
               style:
                   TextStyle(backgroundColor: Colors.white, color: Colors.black),
-              controller: controller,
+              controller: _searchController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4.0)),
@@ -69,17 +69,19 @@ class _ChoiceFilterState extends State<ChoiceFilter> {
                 fillColor: Colors.white,
                 hoverColor: Colors.white,
                 prefixIcon: Icon(Icons.search, color: Colors.grey),
-                // suffix: IconButton(
-                //     icon: Icon(Icons.cancel, color: Colors.grey),
-                //     onPressed: () {
-                //       controller.clear();
-                //       onSearchTextChanged('');
-                //     }),
+                suffix: _searchController.text.isEmpty
+                    ? null
+                    : IconButton(
+                        icon: Icon(Icons.cancel, color: Colors.grey),
+                        onPressed: () {
+                          _searchController.clear();
+                          onSearchTextChanged('');
+                        }),
               ),
               onChanged: onSearchTextChanged,
             )),
         Expanded(
-          child: _searchResult.length != 0 || controller.text.isNotEmpty
+          child: _searchResult.length != 0 || _searchController.text.isNotEmpty
               ? ListView.builder(
                   itemCount: _searchResult.length,
                   itemBuilder: (context, index) {
