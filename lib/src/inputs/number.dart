@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 
 import '../additional.dart';
@@ -44,7 +45,7 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
           loadLabel(label, isRequired),
           SizedBox(
             height: 40,
-            child: TextField(
+            child: TextFormField(
               style:
                   TextStyle(backgroundColor: Colors.white, color: Colors.black),
               keyboardType: TextInputType.number,
@@ -72,7 +73,16 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
                 hoverColor: Colors.white,
                 hintText: placeholder,
                 hintStyle: TextStyle(color: Colors.black54),
+                errorStyle: TextStyle(height: 0),
               ),
+              validator: (value) {
+                if (!isRequired) return null;
+                if (value == null || value.isEmpty) {
+                  return '';
+                } else {
+                  return null;
+                }
+              },
             ),
           )
         ]));
@@ -88,5 +98,10 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     if (map[id] != null) {
       controller.text = map[id];
     }
+  }
+
+  @override
+  bool checkRequired() {
+    return formKey.currentState!.validate();
   }
 }

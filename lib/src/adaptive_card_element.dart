@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'base.dart';
 import 'elements/actions/show_card.dart';
 
+final formKey = GlobalKey<FormState>();
+
 class AdaptiveCardElement extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveCardElement(
@@ -146,7 +148,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     return Provider<AdaptiveCardElementState>.value(
       value: this,
-      child: result,
+      child: Form(key: formKey, child: result),
     );
   }
 

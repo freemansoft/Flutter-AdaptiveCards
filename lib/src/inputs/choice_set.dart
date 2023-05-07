@@ -84,6 +84,15 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   }
 
   @override
+  bool checkRequired() {
+    if (!isRequired) {
+      return true;
+    }
+
+    return true;
+  }
+
+  @override
   void loadInput(Map map) {
     setState(() {
       _choices.clear();

@@ -66,4 +66,9 @@ class _AdaptiveToggleState extends State<AdaptiveToggle>
       });
     }
   }
+
+  @override
+  bool checkRequired() {
+    return true;
+  }
 }

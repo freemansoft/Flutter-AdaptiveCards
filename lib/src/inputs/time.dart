@@ -78,4 +78,9 @@ class _AdaptiveTimeInputState extends State<AdaptiveTimeInput>
       selectedTime = parseTime(map[id]);
     }
   }
+
+  @override
+  bool checkRequired() {
+    return true;
+  }
 }

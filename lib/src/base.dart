@@ -80,6 +80,8 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   void initInput(Map map);
 
   void loadInput(Map map) {}
+
+  bool checkRequired();
 }
 
 mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>

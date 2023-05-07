@@ -377,18 +377,24 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   /// Submits all the inputs of this adaptive card, does it by recursively
   /// visiting the elements in the tree
   void submit(Map map) {
+    bool valid = true;
+
     var visitor;
     visitor = (element) {
       if (element is StatefulElement) {
         if (element.state is AdaptiveInputMixin) {
-          (element.state as AdaptiveInputMixin).appendInput(map);
+          if ((element.state as AdaptiveInputMixin).checkRequired()) {
+            (element.state as AdaptiveInputMixin).appendInput(map);
+          } else {
+            valid = false;
+          }
         }
       }
       element.visitChildren(visitor);
     };
     context.visitChildElements(visitor);
 
-    if (widget.onSubmit != null) {
+    if (widget.onSubmit != null && valid) {
       widget.onSubmit!(map);
     }
   }

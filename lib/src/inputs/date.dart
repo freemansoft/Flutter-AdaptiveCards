@@ -103,4 +103,9 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
       }
     }
   }
+
+  @override
+  bool checkRequired() {
+    return true;
+  }
 }

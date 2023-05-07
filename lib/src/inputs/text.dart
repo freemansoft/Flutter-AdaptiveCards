@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 
 import '../additional.dart';
@@ -44,7 +45,7 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
           loadLabel(label, isRequired),
           SizedBox(
             height: 40,
-            child: TextField(
+            child: TextFormField(
               style:
                   TextStyle(backgroundColor: Colors.white, color: Colors.black),
               controller: controller,
@@ -62,12 +63,27 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
                 enabledBorder: const OutlineInputBorder(
                   borderSide: const BorderSide(color: Colors.grey),
                 ),
+                errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(width: 1, color: Colors.red)),
+                focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(width: 1, color: Colors.redAccent)),
                 filled: true,
                 fillColor: Colors.white,
                 hoverColor: Colors.white,
                 hintText: placeholder,
                 hintStyle: TextStyle(color: Colors.black54),
+                errorStyle: TextStyle(height: 0),
               ),
+              validator: (value) {
+                if (!isRequired) return null;
+                if (value == null || value.isEmpty) {
+                  return '';
+                } else {
+                  return null;
+                }
+              },
             ),
           )
         ]));
@@ -85,6 +101,11 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
         controller.text = map[id];
       });
     }
+  }
+
+  @override
+  bool checkRequired() {
+    return formKey.currentState!.validate();
   }
 
   TextInputType? loadTextInputType() {
