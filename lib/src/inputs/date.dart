@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/base.dart';
+import 'package:provider/provider.dart';
 
 class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveDateInput({super.key, required this.adaptiveMap});
@@ -126,6 +127,9 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
 
   @override
   bool checkRequired() {
+    var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
+    var formKey = _adaptiveCardElement.formKey;
+
     return formKey.currentState!.validate();
   }
 }

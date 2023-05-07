@@ -91,6 +91,9 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   @override
   bool checkRequired() {
+    var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
+    var formKey = _adaptiveCardElement.formKey;
+
     return formKey.currentState!.validate();
   }
 

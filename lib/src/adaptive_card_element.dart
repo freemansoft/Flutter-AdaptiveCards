@@ -5,8 +5,6 @@ import 'package:provider/provider.dart';
 import 'base.dart';
 import 'elements/actions/show_card.dart';
 
-final formKey = GlobalKey<FormState>();
-
 class AdaptiveCardElement extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveCardElement(
@@ -37,6 +35,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   late String? backgroundImage;
 
   Map<String, Widget> _registeredCards = {};
+  final formKey = GlobalKey<FormState>();
 
   void registerCard(String id, Widget it) {
     _registeredCards[id] = it;
@@ -119,8 +118,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       widgetChildren.add(_registeredCards[currentCardId]!);
     }
 
-    Widget result = Padding(
-      padding: const EdgeInsets.all(8.0),
+    Widget result = Container(
+      margin: const EdgeInsets.all(8.0),
       child: widget.listView == true
           ? ListView(
               shrinkWrap: true,

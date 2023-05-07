@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
+import 'package:provider/provider.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -105,6 +106,9 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
 
   @override
   bool checkRequired() {
+    var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
+    var formKey = _adaptiveCardElement.formKey;
+
     return formKey.currentState!.validate();
   }
 
