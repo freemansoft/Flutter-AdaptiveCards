@@ -20,6 +20,7 @@ class AdaptiveCardElement extends StatefulWidget
 
 class AdaptiveCardElementState extends State<AdaptiveCardElement>
     with AdaptiveElementMixin {
+  String? version;
   String? currentCardId;
 
   late List<Widget> children;
@@ -34,6 +35,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   late String? backgroundImage;
 
   Map<String, Widget> _registeredCards = {};
+  final formKey = GlobalKey<FormState>();
 
   void registerCard(String id, Widget it) {
     _registeredCards[id] = it;
@@ -42,6 +44,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   @override
   void initState() {
     super.initState();
+
+    version = adaptiveMap['version'];
+    print(version ?? '');
 
     String stringAxis = resolver.resolve("actions", "actionsOrientation");
     if (stringAxis == "Horizontal")
@@ -113,8 +118,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       widgetChildren.add(_registeredCards[currentCardId]!);
     }
 
-    Widget result = Padding(
-      padding: const EdgeInsets.all(8.0),
+    Widget result = Container(
+      margin: const EdgeInsets.all(8.0),
       child: widget.listView == true
           ? ListView(
               shrinkWrap: true,
@@ -142,7 +147,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     return Provider<AdaptiveCardElementState>.value(
       value: this,
-      child: result,
+      child: Form(key: formKey, child: result),
     );
   }
 

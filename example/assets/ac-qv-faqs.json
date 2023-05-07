@@ -1,0 +1,86 @@
+{
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.6",
+    "body": [
+        {
+            "type": "Input.Text",
+            "placeholder": " ",
+            "label": "Họ tên",
+            "id": "fullname",
+            "isRequired": true
+        },
+        {
+            "type": "Input.Text",
+            "placeholder": " ",
+            "label": "Số điện thoại",
+            "isRequired": true,
+            "id": "phonenumber"
+        },
+        {
+            "type": "Input.Date",
+            "id": "bookingdate",
+            "label": "Ngày khám",
+            "isRequired": true,
+            "errorMessage": "Ngày khám không được để trống"
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "choices": [
+                {
+                    "title": "Nam",
+                    "value": "male"
+                },
+                {
+                    "title": "Nữ",
+                    "value": "female"
+                }
+            ],
+            "placeholder": " Chọn giới tính",
+            "label": "Giới tính",
+            "id": "gender",
+            "isRequired": true,
+            "value": "male"
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "choices": [
+                {
+                    "title": "Khoa Nội",
+                    "value": "Khoa Nội"
+                },
+                {
+                    "title": "Khoa Ngoại",
+                    "value": "Khoa Ngoại"
+                },
+                {
+                    "title": "Khoa Nhi",
+                    "value": "Khoa Nhi"
+                }
+            ],
+            "style": "filtered",
+            "placeholder": "Chọn khoa khám",
+            "label": "Khoa khám",
+            "isRequired": true,
+            "id": "department",
+            "value": "Khoa Nội"
+        },
+        {
+            "type": "Input.Text",
+            "placeholder": " ",
+            "label": "Lý do",
+            "isMultiline": true,
+            "id": "reason"
+        },
+        {
+            "type": "ActionSet",
+            "id": "booking",
+            "actions": [
+                {
+                    "type": "Action.Execute",
+                    "title": "Đăng ký khám"
+                }
+            ]
+        }
+    ]
+}

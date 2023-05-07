@@ -38,8 +38,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     resolver = context.read<ReferenceResolver>();
 
     widgetState = context.read<RawAdaptiveCardState>();
-    if (widget.adaptiveMap.containsKey("id")) {
-      id = widget.adaptiveMap["id"];
+    if (widget.adaptiveMap.containsKey('id')) {
+      id = widget.adaptiveMap['id'];
     } else {
       id = widgetState.idGenerator.getId();
     }
@@ -58,7 +58,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
-  String get title => widget.adaptiveMap["title"] ?? '';
+  String get title => widget.adaptiveMap['title'] ?? '';
 
   void onTapped();
 }
@@ -66,34 +66,39 @@ mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
 mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   late String value;
-
-  @override
-  void initState() {
-    super.initState();
-    value = adaptiveMap["value"].toString() == "null"
-        ? ""
-        : adaptiveMap["value"].toString();
-  }
-
-  void appendInput(Map map);
-}
-
-mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>
-    on State<T> implements AdaptiveInputMixin<T> {
   late String placeholder;
 
   @override
   void initState() {
     super.initState();
+    value = adaptiveMap['value'].toString() == 'null'
+        ? ''
+        : adaptiveMap['value'].toString();
 
-    placeholder = widget.adaptiveMap["placeholder"] ?? "";
+    placeholder = widget.adaptiveMap['placeholder'] ?? '';
+  }
+
+  void appendInput(Map map);
+
+  void initInput(Map map);
+
+  void loadInput(Map map) {}
+
+  bool checkRequired();
+}
+
+mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>
+    on State<T> implements AdaptiveInputMixin<T> {
+  @override
+  void initState() {
+    super.initState();
   }
 }
 
 abstract class GenericAction {
   GenericAction(this.adaptiveMap, this.rawAdaptiveCardState);
 
-  String? get title => adaptiveMap["title"];
+  String? get title => adaptiveMap['title'];
   final Map<String, dynamic> adaptiveMap;
   final RawAdaptiveCardState rawAdaptiveCardState;
 
@@ -104,7 +109,7 @@ class GenericSubmitAction extends GenericAction {
   GenericSubmitAction(Map<String, dynamic> adaptiveMap,
       RawAdaptiveCardState rawAdaptiveCardState)
       : super(adaptiveMap, rawAdaptiveCardState) {
-    data = adaptiveMap["data"] ?? {};
+    data = adaptiveMap['data'] ?? {};
   }
 
   late Map<String, dynamic> data;
@@ -119,7 +124,7 @@ class GenericActionOpenUrl extends GenericAction {
   GenericActionOpenUrl(Map<String, dynamic> adaptiveMap,
       RawAdaptiveCardState rawAdaptiveCardState)
       : super(adaptiveMap, rawAdaptiveCardState) {
-    url = adaptiveMap["url"];
+    url = adaptiveMap['url'];
   }
 
   late String? url;

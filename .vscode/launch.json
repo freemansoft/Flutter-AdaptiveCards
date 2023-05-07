@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "App",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "cwd": "${workspaceFolder}/example",
+      "program": "lib/main.dart",
+      "args": []
+    },
+    {
+      "name": "Web",
+      "request": "launch",
+      "flutterMode": "debug",
+      "cwd": "${workspaceFolder}/example",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": ["-d", "chrome", "--web-port", "3000"]
+    }
+  ]
+}

@@ -3,9 +3,12 @@ library flutter_adaptive_cards;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
+import 'package:flutter_adaptive_cards/src/inputs/choice_filter.dart';
+import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:http/http.dart' as http;
@@ -14,13 +17,12 @@ import 'package:provider/provider.dart';
 import 'base.dart';
 
 abstract class AdaptiveCardContentProvider {
-  AdaptiveCardContentProvider(
-      {required this.hostConfigPath, required this.hostConfig});
+  AdaptiveCardContentProvider({required this.hostConfigPath, this.hostConfig});
 
   final String hostConfigPath;
   final String? hostConfig;
 
-  Future<Map> loadHostConfig() async {
+  Future<Map<String, dynamic>> loadHostConfig() async {
     if (hostConfig != null) {
       var cleanedHostConfig = hostConfig!.replaceAll(new RegExp(r'\n'), '');
       return json.decode(cleanedHostConfig);
@@ -37,7 +39,7 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   MemoryAdaptiveCardContentProvider(
       {required this.content,
       required String hostConfigPath,
-      required String hostConfig})
+      String? hostConfig})
       : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   Map<String, dynamic> content;
@@ -50,9 +52,7 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   AssetAdaptiveCardContentProvider(
-      {required this.path,
-      required String hostConfigPath,
-      required String hostConfig})
+      {required this.path, required String hostConfigPath, String? hostConfig})
       : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String path;
@@ -65,16 +65,16 @@ class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 
 class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   NetworkAdaptiveCardContentProvider(
-      {required this.url,
-      required String hostConfigPath,
-      required String hostConfig})
+      {required this.url, required String hostConfigPath, String? hostConfig})
       : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
 
   String url;
 
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() async {
-    return json.decode((await http.get(Uri.dataFromString(url))).body);
+    var body = (await http.get(Uri.parse(url))).bodyBytes;
+
+    return json.decode(utf8.decode(body));
   }
 }
 
@@ -84,9 +84,11 @@ class AdaptiveCard extends StatefulWidget {
     required this.adaptiveCardContentProvider,
     this.placeholder,
     this.cardRegistry = const CardRegistry(),
+    this.initData,
+    this.onChange,
     this.onSubmit,
     this.onOpenUrl,
-    required this.hostConfig,
+    this.hostConfig,
     this.listView = false,
     this.showDebugJson = true,
     this.approximateDarkThemeColors = true,
@@ -96,10 +98,12 @@ class AdaptiveCard extends StatefulWidget {
   AdaptiveCard.network({
     super.key,
     this.placeholder,
-    required this.cardRegistry,
+    this.cardRegistry,
     required String url,
     required String hostConfigPath,
-    required this.hostConfig,
+    this.hostConfig,
+    this.initData,
+    this.onChange,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -115,7 +119,9 @@ class AdaptiveCard extends StatefulWidget {
     this.cardRegistry,
     required String assetPath,
     required String hostConfigPath,
-    required this.hostConfig,
+    this.hostConfig,
+    this.initData,
+    this.onChange,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -130,10 +136,12 @@ class AdaptiveCard extends StatefulWidget {
   AdaptiveCard.memory({
     super.key,
     this.placeholder,
-    required this.cardRegistry,
+    this.cardRegistry,
     required Map<String, dynamic> content,
     required String hostConfigPath,
-    required this.hostConfig,
+    this.hostConfig,
+    this.initData,
+    this.onChange,
     this.onSubmit,
     this.onOpenUrl,
     this.listView = false,
@@ -151,10 +159,15 @@ class AdaptiveCard extends StatefulWidget {
 
   final CardRegistry? cardRegistry;
 
-  final String hostConfig;
+  final String? hostConfig;
 
+  final Map? initData;
+
+  final Function(String id, dynamic value, RawAdaptiveCardState state)?
+      onChange;
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
+
   final bool showDebugJson;
   final bool approximateDarkThemeColors;
   final bool supportMarkdown;
@@ -166,10 +179,12 @@ class AdaptiveCard extends StatefulWidget {
 
 class _AdaptiveCardState extends State<AdaptiveCard> {
   Map<String, dynamic>? map;
-  Map? hostConfig;
+  Map<String, dynamic>? hostConfig;
+  Map? initData;
 
   late CardRegistry cardRegistry;
 
+  Function(String id, dynamic value, RawAdaptiveCardState cardState)? onChange;
   Function(Map map)? onSubmit;
   Function(String url)? onOpenUrl;
 
@@ -192,6 +207,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
         });
       }
     });
+
+    initData = widget.initData;
   }
 
   @override
@@ -222,6 +239,10 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       }
     }
 
+    if (widget.onChange != null) {
+      onChange = widget.onChange;
+    }
+
     if (widget.onSubmit != null) {
       onSubmit = widget.onSubmit;
     } else {
@@ -231,7 +252,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       } else {
         onSubmit = (it) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("No handler found for: \n" + it.toString())));
+              content: Text('No handler found for: \n' + it.toString())));
         };
       }
     }
@@ -244,8 +265,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
         onOpenUrl = foundOpenUrl;
       } else {
         onOpenUrl = (it) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("No handler found for: \n" + it.toString())));
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('und for: \n' + it.toString())));
         };
       }
     }
@@ -254,12 +275,16 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
   @override
   Widget build(BuildContext context) {
     if (map == null || hostConfig == null) {
-      return widget.placeholder ?? const SizedBox();
+      return widget.placeholder ??
+          Container(child: Center(child: CircularProgressIndicator()));
     }
+
     return RawAdaptiveCard.fromMap(
       map!,
       hostConfig!,
       cardRegistry: cardRegistry,
+      initData: initData,
+      onChange: onChange,
       onOpenUrl: onOpenUrl,
       onSubmit: onSubmit,
       listView: widget.listView,
@@ -279,6 +304,8 @@ class RawAdaptiveCard extends StatefulWidget {
     this.map,
     this.hostConfig, {
     this.cardRegistry = const CardRegistry(),
+    this.initData,
+    this.onChange,
     required this.onSubmit,
     required this.onOpenUrl,
     this.listView = false,
@@ -287,9 +314,12 @@ class RawAdaptiveCard extends StatefulWidget {
   }) : assert(onSubmit != null, onOpenUrl != null);
 
   final Map<String, dynamic> map;
-  final Map hostConfig;
+  final Map<String, dynamic> hostConfig;
   final CardRegistry cardRegistry;
+  final Map? initData;
 
+  final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
+      onChange;
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
 
@@ -322,6 +352,12 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     cardRegistry = widget.cardRegistry;
 
     _adaptiveElement = widget.cardRegistry.getElement(widget.map);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.initData != null) {
+        initInput(widget.initData!);
+      }
+    });
   }
 
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
@@ -341,20 +377,54 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   /// Submits all the inputs of this adaptive card, does it by recursively
   /// visiting the elements in the tree
   void submit(Map map) {
+    bool valid = true;
+
     var visitor;
     visitor = (element) {
       if (element is StatefulElement) {
         if (element.state is AdaptiveInputMixin) {
-          (element.state as AdaptiveInputMixin).appendInput(map);
+          if ((element.state as AdaptiveInputMixin).checkRequired()) {
+            (element.state as AdaptiveInputMixin).appendInput(map);
+          } else {
+            valid = false;
+          }
         }
       }
       element.visitChildren(visitor);
     };
     context.visitChildElements(visitor);
 
-    if (widget.onSubmit != null) {
+    if (widget.onSubmit != null && valid) {
       widget.onSubmit!(map);
     }
+  }
+
+  void initInput(Map map) {
+    var visitor;
+    visitor = (element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveInputMixin) {
+          (element.state as AdaptiveInputMixin).initInput(map);
+        }
+      }
+      element.visitChildren(visitor);
+    };
+    context.visitChildElements(visitor);
+  }
+
+  void loadInput(String id, Map map) {
+    var visitor;
+    visitor = (element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveInputMixin) {
+          if ((element.state as AdaptiveInputMixin).id == id) {
+            (element.state as AdaptiveInputMixin).loadInput(map);
+          }
+        }
+      }
+      element.visitChildren(visitor);
+    };
+    context.visitChildElements(visitor);
   }
 
   void openUrl(String url) {
@@ -363,19 +433,49 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     }
   }
 
+  void changeValue(String id, dynamic value) {
+    if (widget.onChange != null) {
+      widget.onChange!(id, value, this);
+    }
+  }
+
   void showError(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  /// min and max dates may be null, in this case no constraint is made in that direction
-  Future<DateTime?> pickDate(DateTime? min, DateTime? max) {
-    DateTime initialDate = DateTime.now();
-    return showDatePicker(
+  Future<void> searchList(
+      List<SearchModel>? data, Function(dynamic value) callback) async {
+    await showModalBottomSheet(
         context: context,
-        initialDate: initialDate,
-        firstDate: min ?? DateTime.now().subtract(Duration(days: 10000)),
-        lastDate: max ?? DateTime.now().add(Duration(days: 10000)));
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(6.0)),
+          side: BorderSide(color: Colors.grey),
+        ),
+        builder: (BuildContext builder) => SizedBox(
+            height: MediaQuery.of(context).copyWith().size.height / 2,
+            child: ChoiceFilter(data: data, callback: callback)));
+  }
+
+  /// min and max dates may be null, in this case no constraint is made in that direction
+  Future<void> pickDate(
+      DateTime? min, DateTime? max, Function(DateTime date) callback) async {
+    DateTime initialDate = DateTime.now();
+
+    await showModalBottomSheet(
+        context: context,
+        builder: (BuildContext builder) => SizedBox(
+            height: MediaQuery.of(context).copyWith().size.height / 3,
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.date,
+              minimumDate:
+                  min ?? DateTime.now().subtract(Duration(days: 10000)),
+              maximumDate: max ?? DateTime.now().add(Duration(days: 10000)),
+              initialDateTime: initialDate,
+              onDateTimeChanged: (DateTime date) {
+                callback(date);
+              },
+            )));
   }
 
   Future<TimeOfDay?> pickTime() {
@@ -403,15 +503,15 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                     builder: (context) {
                       return AlertDialog(
                         title: Text(
-                            "JSON (only added in debug mode, you can also turn"
-                            "it of manually by passing showDebugJson = false)"),
+                            'JSON (only added in debug mode, you can also turn'
+                            'it of manually by passing showDebugJson = false)'),
                         content:
                             SingleChildScrollView(child: Text(prettyprint)),
                         actions: <Widget>[
                           Center(
                             child: TextButton(
                               onPressed: () => Navigator.of(context).pop(),
-                              child: Text("Thanks"),
+                              child: Text('Thanks'),
                             ),
                           )
                         ],
@@ -419,7 +519,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                       );
                     });
               },
-              child: Text("Debug show the JSON"),
+              child: Text('Debug show the JSON'),
             ),
             Divider(
               height: 0,
@@ -507,7 +607,7 @@ abstract class AdaptiveElement {
   /// An example:
   /// @override
   /// Widget generateWidget() {
-  ///  assert(separator != null, "Did you forget to call loadSeperator in this class?");
+  ///  assert(separator != null, 'Did you forget to call loadSeperator in this class?');
   ///  return Column(
   ///    children: <Widget>[
   ///      separator? Divider(height: topSpacing,): SizedBox(height: topSpacing,),
@@ -526,8 +626,8 @@ abstract class AdaptiveElement {
   }
 
   void loadId() {
-    if (adaptiveMap.containsKey("id")) {
-      id = adaptiveMap["id"];
+    if (adaptiveMap.containsKey('id')) {
+      id = adaptiveMap['id'];
     } else {
       id = widgetState.idGenerator.getId();
     }
@@ -563,46 +663,46 @@ class ReferenceResolver {
     this.currentStyle,
   });
 
-  final Map hostConfig;
+  final Map<String, dynamic> hostConfig;
 
   final String? currentStyle;
 
   dynamic resolve(String key, String value) {
     dynamic res = hostConfig[key][firstCharacterToLowerCase(value)];
     assert(res != null,
-        "Could not find hostConfig[$key][${firstCharacterToLowerCase(value)}]");
+        'Could not find hostConfig[$key][${firstCharacterToLowerCase(value)}]');
     return res;
   }
 
   dynamic get(String key) {
     dynamic res = hostConfig[key];
-    assert(res != null, "Could not find hostConfig[$key]");
+    assert(res != null, 'Could not find hostConfig[$key]');
     return res;
   }
 
-  FontWeight resolveFontWeight(String value) {
-    int weight = resolve("fontWeights", value ?? "default");
+  FontWeight? resolveFontWeight(String? value) {
+    int? weight = resolve('fontWeights', value ?? 'default');
     assert(
         weight != null,
-        "\n"
-        "FontWeight '${value ?? "default"}' was not found in the host_config. \n\n"
-        "The available font weights were: \n\n"
-        "${(hostConfig["fontWeights"] as Map).entries.map((entry) => "${entry.key}: ${entry.value}\n").toList()}");
-    FontWeight fontWeight = FontWeight.values.firstWhere(
-        (possibleWeight) => possibleWeight.toString() == "FontWeight.w$weight");
-    assert(fontWeight != null, "There is no FontWight.w$weight");
+        '\n'
+        'FontWeight \'${value ?? 'default'}\' was not found in the host_config. \n\n'
+        'The available font weights were: \n\n'
+        '${(hostConfig['fontWeights'] as Map).entries.map((entry) => '${entry.key}: ${entry.value}\n').toList()}');
+    FontWeight? fontWeight = FontWeight.values.firstWhere(
+        (possibleWeight) => possibleWeight.toString() == 'FontWeight.w$weight');
+    assert(fontWeight != null, 'There is no FontWight.w$weight');
     return fontWeight;
   }
 
-  double resolveFontSize(String value) {
-    int size = resolve("fontSizes", value ?? "default");
+  double? resolveFontSize(String? value) {
+    int? size = resolve('fontSizes', value ?? 'default');
     assert(
         size != null,
-        "\n"
-        "Fontsize '${value ?? "default"}' was not found in the host_config. \n\n"
-        "The available font sizes were: \n\n"
-        "${(hostConfig["fontSizes"] as Map).entries.map((entry) => "${entry.key}: ${entry.value}\n").toList()}");
-    return size.toDouble();
+        '\n'
+        'Fontsize \'${value ?? 'default'}\' was not found in the host_config. \n\n'
+        'The available font sizes were: \n\n'
+        '${(hostConfig['fontSizes'] as Map).entries.map((entry) => '${entry.key}: ${entry.value}\n').toList()}');
+    return size?.toDouble();
   }
 
   /// Resolves a color from the host config
@@ -615,32 +715,33 @@ class ReferenceResolver {
   /// - good
   /// - warning
   /// - attention
-  Color? resolveForegroundColor(String colorType, bool isSubtle) {
-    String myColor = colorType ?? "default";
-    String subtleOrDefault = isSubtle ?? false ? "subtle" : "default";
-    final style = currentStyle ?? "default";
+  Color? resolveForegroundColor(String? colorType, bool? isSubtle) {
+    String myColor = colorType ?? 'default';
+    String subtleOrDefault = isSubtle ?? false ? 'subtle' : 'default';
+    final style = currentStyle ?? 'default';
     // Make it case insensitive
-    String colorValue = hostConfig["containerStyles"][style]["foregroundColors"]
-        [firstCharacterToLowerCase(myColor)][subtleOrDefault];
+    String? colorValue = hostConfig['containerStyles']?[style]
+            ?['foregroundColors']?[firstCharacterToLowerCase(myColor)]
+        [subtleOrDefault];
     return parseColor(colorValue);
   }
 
   ReferenceResolver copyWith({String? style}) {
-    assert(style == null || style == "default" || style == "emphasis");
-    String myStyle = style ?? "default";
+    String myStyle = style ?? 'default';
     return ReferenceResolver(
       hostConfig: this.hostConfig,
       currentStyle: myStyle,
     );
   }
 
-  double? resolveSpacing(String spacing) {
-    String mySpacing = spacing ?? "default";
-    if (mySpacing == "none") return 0.0;
+  double? resolveSpacing(String? spacing) {
+    String mySpacing = spacing ?? 'default';
+    if (mySpacing == 'none') return 0.0;
     int? intSpacing =
-        hostConfig["spacing"][firstCharacterToLowerCase(mySpacing)];
+        hostConfig['spacing'][firstCharacterToLowerCase(mySpacing)];
     assert(intSpacing != null,
-        "hostConfig[\"spacing\"][\"${firstCharacterToLowerCase(mySpacing)}\"] was null");
+        'hostConfig[\'spacing\'][\'${firstCharacterToLowerCase(mySpacing)}\'] was null');
+
     return intSpacing?.toDouble();
   }
 }

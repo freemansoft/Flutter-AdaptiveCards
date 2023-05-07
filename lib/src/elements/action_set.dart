@@ -20,7 +20,7 @@ class _ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
   @override
   void initState() {
     super.initState();
-    List actionMaps = adaptiveMap["actions"];
+    List actionMaps = adaptiveMap['actions'];
     actionMaps.forEach((action) {
       actions.add(_getAction(action));
     });
@@ -32,14 +32,15 @@ class _ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
   }
 
   Widget _getAction(Map<String, dynamic> map) {
-    String stringType = map["type"];
+    String stringType = map['type'];
 
     switch (stringType) {
-      case "Action.ShowCard":
+      case 'Action.ShowCard':
         return AdaptiveActionShowCard(adaptiveMap: map);
-      case "Action.OpenUrl":
+      case 'Action.OpenUrl':
         return AdaptiveActionOpenUrl(adaptiveMap: map);
-      case "Action.Submit":
+      case 'Action.Submit':
+      case 'Action.Execute':
         return AdaptiveActionSubmit(adaptiveMap: map);
     }
 

@@ -17,10 +17,14 @@ class _AdaptiveContainerState extends State<AdaptiveContainer>
     with AdaptiveElementMixin {
 // TODO implement verticalContentAlignment
   late List<Widget> children;
+  late double spacing;
 
   @override
   void initState() {
     super.initState();
+
+    spacing = resolver.resolveSpacing(adaptiveMap["spacing"]) ?? 0.0;
+
     if (adaptiveMap["items"] != null) {
       children =
           List<Map<String, dynamic>>.from(adaptiveMap["items"]).map((child) {
@@ -50,7 +54,9 @@ class _AdaptiveContainerState extends State<AdaptiveContainer>
           child: Container(
             color: backgroundColor,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              // padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding:
+                  EdgeInsets.symmetric(vertical: spacing, horizontal: spacing),
               child: Column(
                 children: children.toList(),
               ),

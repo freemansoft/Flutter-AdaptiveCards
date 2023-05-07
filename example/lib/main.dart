@@ -1,11 +1,14 @@
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:example/action_set/action_set_page.dart';
 import 'package:example/custom_host_config/custom_host_config.dart';
+import 'package:example/network/network.dart';
 import 'package:example/render_time/render_time_page.dart';
 import 'package:example/samples/samples.dart';
 import 'package:example/text_block/text_block_examples_page.dart';
-import 'package:flutter/foundation.dart' show debugDefaultTargetPlatformOverride;
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride;
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'about_page.dart';
 import 'action_open_url/action_open_url_examples_page.dart';
@@ -28,7 +31,7 @@ import 'media/media.dart';
 
 void main() {
   debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
-  runApp(new MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -42,32 +45,40 @@ class MyApp extends StatelessWidget {
       ),
       themedWidgetBuilder: (context, theme) {
         return new MaterialApp(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('vi', '')],
           title: 'Flutter Adaptive Cards',
           theme: theme,
           home: new MyHomePage(),
           routes: {
-            "Samples": (context) => SamplesPage(),
-            "Samples with dynamic HostConfig": (context) => DynamicHostConfigPage(),
-            "TextBlock": (context) => TextBlockPage(),
-            "Image": (context) => ImagePage(),
-            "Container": (context) => ContainerPage(),
-            "ColumnSet": (context) => ColumnSetPage(),
-            "Column": (context) => ColumnPage(),
-            "FactSet": (context) => FactSetPage(),
-            "ImageSet": (context) => ImageSetPage(),
-            "ActionSet": (context) => ActionSetPage(),
-            "Action.OpenUrl": (context) => ActionOpenUrlPage(),
-            "Action.Submit": (context) => ActionSubmitPage(),
-            "Action.ShowCard": (context) => ActionShowCardPage(),
-            "Input.Text": (context) => InputText(),
-            "Input.Number": (context) => InputNumber(),
-            "Media": (context) => MediaPage(),
-            "Input.Date": (context) => InputDatePage(),
-            "Input.Time": (context) => InputTimePage(),
-            "Input.Toggle": (context) => InputTogglePage(),
-            "Input.ChoiceSet": (context) => InputChoiceSetPage(),
-            "about": (context) => AboutPage(),
-            "Render Time": (context) => RenderTimePage()
+            'Samples': (context) => SamplesPage(),
+            'Samples with dynamic HostConfig': (context) =>
+                DynamicHostConfigPage(),
+            'TextBlock': (context) => TextBlockPage(),
+            'Image': (context) => ImagePage(),
+            'Container': (context) => ContainerPage(),
+            'ColumnSet': (context) => ColumnSetPage(),
+            'Column': (context) => ColumnPage(),
+            'FactSet': (context) => FactSetPage(),
+            'ImageSet': (context) => ImageSetPage(),
+            'ActionSet': (context) => ActionSetPage(),
+            'Action.OpenUrl': (context) => ActionOpenUrlPage(),
+            'Action.Submit': (context) => ActionSubmitPage(),
+            'Action.ShowCard': (context) => ActionShowCardPage(),
+            'Input.Text': (context) => InputText(),
+            'Input.Number': (context) => InputNumber(),
+            'Media': (context) => MediaPage(),
+            'Input.Date': (context) => InputDatePage(),
+            'Input.Time': (context) => InputTimePage(),
+            'Input.Toggle': (context) => InputTogglePage(),
+            'Input.ChoiceSet': (context) => InputChoiceSetPage(),
+            'about': (context) => AboutPage(),
+            'Render Time': (context) => RenderTimePage(),
+            'Network': (context) => NetworkPage()
           },
         );
       },
@@ -85,15 +96,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Flutter Adaptive Cards"),
+        title: new Text('Flutter Adaptive Cards'),
         actions: [
           BrightnessSwitch(),
           MaterialButton(
             onPressed: () {
-              Navigator.of(context).pushNamed("about");
+              Navigator.of(context).pushNamed('about');
             },
             child: Text(
-              "About",
+              'About',
               style: TextStyle(color: Colors.white),
             ),
           ),
@@ -108,35 +119,37 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 children: <Widget>[
                   Image.asset(
-                    "assets/banner.jpg",
+                    'assets/banner.jpg',
                   ),
                   Divider(),
                   Text(
-                    "Flutter-Adaptive Cards by Neohelden",
-                    style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
+                    'Flutter-Adaptive Cards by Neohelden',
+                    style:
+                        TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
           ),
-          getButton("Samples"),
-          getButton("Samples with dynamic HostConfig"),
-          getRow(["Image", "ImageSet"]),
-          getButton("Media"),
+          getButton('Samples'),
+          getButton('Samples with dynamic HostConfig'),
+          getRow(['Image', 'ImageSet']),
+          getButton('Media'),
           Divider(),
-          getRow(["Action.OpenUrl", "Action.Submit", "Action.ShowCard"]),
-          getButton("ActionSet"),
+          getRow(['Action.OpenUrl', 'Action.Submit', 'Action.ShowCard']),
+          getButton('ActionSet'),
           Divider(),
-          getButton("Container"),
-          getButton("FactSet"),
-          getButton("TextBlock"),
-          getRow(["Column", "ColumnSet"]),
+          getButton('Container'),
+          getButton('FactSet'),
+          getButton('TextBlock'),
+          getRow(['Column', 'ColumnSet']),
           Divider(),
-          getRow(["Input.Text", "Input.Number", "Input.Date"]),
-          getRow(["Input.Time", "Input.Toggle", "Input.ChoiceSet"]),
+          getRow(['Input.Text', 'Input.Number', 'Input.Date']),
+          getRow(['Input.Time', 'Input.Toggle', 'Input.ChoiceSet']),
           Divider(),
-          getButton("Render Time"),
+          getButton('Render Time'),
+          getButton('Network'),
         ],
       ),
     );

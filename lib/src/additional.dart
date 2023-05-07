@@ -22,8 +22,8 @@ class _SeparatorElementState extends State<SeparatorElement>
   @override
   void initState() {
     super.initState();
-    topSpacing = resolver.resolveSpacing(adaptiveMap["spacing"]);
-    separator = adaptiveMap["separator"] ?? false;
+    topSpacing = resolver.resolveSpacing(adaptiveMap['spacing']);
+    separator = adaptiveMap['separator'] ?? false;
   }
 
   @override
@@ -56,9 +56,9 @@ class _AdaptiveTappableState extends State<AdaptiveTappable>
   @override
   void initState() {
     super.initState();
-    if (adaptiveMap.containsKey("selectAction")) {
+    if (adaptiveMap.containsKey('selectAction')) {
       action = widgetState.cardRegistry
-          .getGenericAction(adaptiveMap["selectAction"], widgetState);
+          .getGenericAction(adaptiveMap['selectAction'], widgetState);
     }
   }
 
@@ -74,7 +74,7 @@ class _AdaptiveTappableState extends State<AdaptiveTappable>
 class ChildStyler extends StatelessWidget {
   final Widget child;
 
-  final Map adaptiveMap;
+  final Map<String, dynamic> adaptiveMap;
 
   const ChildStyler(
       {super.key, required this.child, required this.adaptiveMap});
@@ -84,7 +84,7 @@ class ChildStyler extends StatelessWidget {
     return InheritedReferenceResolver(
       resolver: context
           .watch<ReferenceResolver>()
-          .copyWith(style: adaptiveMap["style"]),
+          .copyWith(style: adaptiveMap['style']),
       child: child,
     );
   }

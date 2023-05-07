@@ -1,7 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_card_element.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
+import 'package:provider/provider.dart';
 
 import '../additional.dart';
 import '../base.dart';
+
+class SearchModel {
+  final String id;
+  final String name;
+
+  SearchModel({required this.id, required this.name});
+
+  ///this method will prevent the override of toString
+  String modelAsString() {
+    return '#${this.id} ${this.name}';
+  }
+
+  ///custom comparing function to check if two users are equal
+  bool isEqual(SearchModel model) {
+    return this.id == model.id;
+  }
+
+  @override
+  String toString() => name;
+}
 
 class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveChoiceSet({super.key, required this.adaptiveMap});
@@ -15,23 +39,36 @@ class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     with AdaptiveInputMixin, AdaptiveElementMixin {
   // Map from title to value
-  Map<String, String> choices = {};
+  Map<String, String> _choices = {};
 
   // Contains the values (the things to send as request)
-  Set<String> _selectedChoices = Set();
+  Set<String> _selectedChoices = {};
 
+  String? label;
+  late bool isRequired;
+  late bool isFiltered;
   late bool isCompact;
   late bool isMultiSelect;
+
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    for (Map map in adaptiveMap["choices"]) {
-      choices[map["title"]] = map["value"].toString();
+
+    label = adaptiveMap['label'];
+    isRequired = adaptiveMap['isRequired'] ?? false;
+
+    for (Map map in adaptiveMap['choices']) {
+      _choices[map['title']] = map['value'].toString();
     }
+    isFiltered = loadFiltered();
     isCompact = loadCompact();
-    isMultiSelect = adaptiveMap["isMultiSelect"] ?? false;
-    _selectedChoices.addAll(value.split(","));
+    isMultiSelect = adaptiveMap['isMultiSelect'] ?? false;
+
+    if (value.isNotEmpty) {
+      _selectedChoices.addAll(value.split(','));
+    }
   }
 
   @override
@@ -40,65 +77,190 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   }
 
   @override
-  Widget build(BuildContext context) {
-    var widget;
+  void initInput(Map map) {
+    if (map[id] != null) {
+      setState(() {
+        _selectedChoices.clear();
+        _selectedChoices.add(map[id]);
 
-    if (isCompact) {
+        controller.text =
+            _selectedChoices.isNotEmpty ? _selectedChoices.single : '';
+      });
+    }
+  }
+
+  @override
+  bool checkRequired() {
+    var adaptiveCardElement = context.read<AdaptiveCardElementState>();
+    var formKey = adaptiveCardElement.formKey;
+
+    return formKey.currentState!.validate();
+  }
+
+  @override
+  void loadInput(Map map) {
+    setState(() {
+      _choices.clear();
+      _selectedChoices.clear();
+
+      map.forEach((key, value) {
+        _choices[key] = value.toString();
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var rawAdaptiveCardState = context.watch<RawAdaptiveCardState>();
+
+    var widget;
+    if (isFiltered) {
+      widget = _buildFiltered(rawAdaptiveCardState);
+    } else if (isCompact) {
       if (isMultiSelect) {
-        widget = _buildExpandedMultiSelect();
+        widget = _buildExpandedMultiSelect(rawAdaptiveCardState);
       } else {
-        widget = _buildCompact();
+        widget = _buildCompact(rawAdaptiveCardState);
       }
     } else {
       if (isMultiSelect) {
-        widget = _buildExpandedMultiSelect();
+        widget = _buildExpandedMultiSelect(rawAdaptiveCardState);
       } else {
-        widget = _buildExpandedSingleSelect();
+        widget = _buildExpandedSingleSelect(rawAdaptiveCardState);
       }
     }
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: widget,
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [loadLabel(label, isRequired), widget]),
+    );
+  }
+
+  Widget _buildFiltered(RawAdaptiveCardState state) {
+    return SizedBox(
+      width: double.infinity,
+      height: 40,
+      child: TextFormField(
+        readOnly: true,
+        style: TextStyle(
+          backgroundColor: Colors.white,
+          color: Colors.black,
+        ),
+        controller: controller,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 8,
+            horizontal: 8,
+          ),
+          enabledBorder: const OutlineInputBorder(
+            borderSide: const BorderSide(color: Colors.grey),
+          ),
+          errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                width: 1,
+                color: Colors.red,
+              )),
+          focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(
+                width: 1,
+                color: Colors.redAccent,
+              )),
+          filled: true,
+          fillColor: Colors.white,
+          hoverColor: Colors.white,
+          suffixIcon: Icon(
+            Icons.arrow_drop_down,
+            color: Colors.black54,
+          ),
+          hintText: placeholder,
+          hintStyle: TextStyle(color: Colors.black54),
+          errorStyle: TextStyle(height: 0),
+        ),
+        validator: (value) {
+          if (!isRequired) return null;
+          if (value == null || value.isEmpty) {
+            return '';
+          }
+          return null;
+        },
+        onTap: () async {
+          var list = _choices.keys
+              .map((key) => SearchModel(
+                    id: key,
+                    name: _choices[key] ?? '',
+                  ))
+              .toList();
+          await widgetState.searchList(list, (dynamic value) {
+            setState(() {
+              select(state, value?.id);
+            });
+          });
+        },
+      ),
     );
   }
 
   /// This is built when multiSelect is false and isCompact is true
-  Widget _buildCompact() {
-    return DropdownButton<String>(
-      items: choices.keys
-          .map((choice) => DropdownMenuItem<String>(
-                value: choices[choice],
-                child: Text(choice),
-              ))
-          .toList(),
-      onChanged: select,
-      value: _selectedChoices.single,
-    );
+  Widget _buildCompact(RawAdaptiveCardState state) {
+    return Container(
+        padding: EdgeInsets.all(8),
+        height: 40.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        ),
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+          isExpanded: true,
+          dropdownColor: Colors.white,
+          icon: Icon(
+            Icons.arrow_drop_down,
+            color: Colors.black54,
+          ),
+          style: const TextStyle(color: Colors.black),
+          items: _choices.keys
+              .map((key) => DropdownMenuItem<String>(
+                    value: _choices[key],
+                    child: Text(key),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            select(state, value);
+          },
+          value: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
+        )));
   }
 
-  Widget _buildExpandedSingleSelect() {
+  Widget _buildExpandedSingleSelect(RawAdaptiveCardState state) {
     return Column(
-      children: choices.keys.map((key) {
+      children: _choices.keys.map((key) {
         return RadioListTile<String>(
-          value: choices[key]!,
-          onChanged: select,
+          value: _choices[key]!,
+          onChanged: (value) {
+            select(state, value);
+          },
           groupValue:
-              _selectedChoices.contains(choices[key]) ? choices[key] : null,
+              _selectedChoices.contains(_choices[key]) ? _choices[key] : null,
           title: Text(key),
         );
       }).toList(),
     );
   }
 
-  Widget _buildExpandedMultiSelect() {
+  Widget _buildExpandedMultiSelect(RawAdaptiveCardState state) {
     return Column(
-      children: choices.keys.map((key) {
+      children: _choices.keys.map((key) {
         return CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
-          value: _selectedChoices.contains(choices[key]),
-          onChanged: (_) {
-            select(choices[key]);
+          value: _selectedChoices.contains(_choices[key]),
+          onChanged: (value) {
+            select(state, _choices[key]);
           },
           title: Text(key),
         );
@@ -106,7 +268,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     );
   }
 
-  void select(String? choice) {
+  void select(RawAdaptiveCardState state, String? choice) {
     if (!isMultiSelect) {
       _selectedChoices.clear();
       if (choice != null) {
@@ -121,15 +283,27 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         }
       }
     }
-    setState(() {});
+
+    state.changeValue(id, choice);
+    setState(() {
+      controller.text =
+          _selectedChoices.isNotEmpty ? _selectedChoices.single : '';
+    });
   }
 
   bool loadCompact() {
-    if (!adaptiveMap.containsKey("style")) return true;
-    if (adaptiveMap["style"].toString().toLowerCase() == "compact") return true;
-    if (adaptiveMap["style"].toString().toLowerCase() == "expanded")
-      return false;
+    if (!adaptiveMap.containsKey('style')) return true;
+    String style = adaptiveMap['style'].toString().toLowerCase();
+    if (style == 'compact' || style == 'filtered') return true;
+    if (style == 'expanded') return false;
     throw StateError(
-        "The style of the ChoiceSet needs to be either compact or expanded");
+        'The style of the ChoiceSet needs to be either compact or expanded');
+  }
+
+  bool loadFiltered() {
+    if (!adaptiveMap.containsKey('style')) return false;
+    if (adaptiveMap['style'].toString().toLowerCase() == 'filtered')
+      return true;
+    return false;
   }
 }
