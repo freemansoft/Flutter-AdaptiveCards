@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:provider/provider.dart';
@@ -59,9 +58,12 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     label = adaptiveMap['label'];
     isRequired = adaptiveMap['isRequired'] ?? false;
 
-    for (Map map in adaptiveMap['choices']) {
-      _choices[map['title']] = map['value'].toString();
+    if (adaptiveMap['choices'] != null) {
+      for (Map map in adaptiveMap['choices']) {
+        _choices[map['title']] = map['value'].toString();
+      }
     }
+
     isFiltered = loadFiltered();
     isCompact = loadCompact();
     isMultiSelect = adaptiveMap['isMultiSelect'] ?? false;
@@ -111,22 +113,20 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   @override
   Widget build(BuildContext context) {
-    var rawAdaptiveCardState = context.watch<RawAdaptiveCardState>();
-
     var widget;
     if (isFiltered) {
-      widget = _buildFiltered(rawAdaptiveCardState);
+      widget = _buildFiltered();
     } else if (isCompact) {
       if (isMultiSelect) {
-        widget = _buildExpandedMultiSelect(rawAdaptiveCardState);
+        widget = _buildExpandedMultiSelect();
       } else {
-        widget = _buildCompact(rawAdaptiveCardState);
+        widget = _buildCompact();
       }
     } else {
       if (isMultiSelect) {
-        widget = _buildExpandedMultiSelect(rawAdaptiveCardState);
+        widget = _buildExpandedMultiSelect();
       } else {
-        widget = _buildExpandedSingleSelect(rawAdaptiveCardState);
+        widget = _buildExpandedSingleSelect();
       }
     }
 
@@ -138,7 +138,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     );
   }
 
-  Widget _buildFiltered(RawAdaptiveCardState state) {
+  Widget _buildFiltered() {
     return SizedBox(
       width: double.infinity,
       height: 40,
@@ -197,7 +197,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
               .toList();
           await widgetState.searchList(list, (dynamic value) {
             setState(() {
-              select(state, value?.id);
+              select(value?.id);
             });
           });
         },
@@ -206,7 +206,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   }
 
   /// This is built when multiSelect is false and isCompact is true
-  Widget _buildCompact(RawAdaptiveCardState state) {
+  Widget _buildCompact() {
     return Container(
         padding: EdgeInsets.all(8),
         height: 40.0,
@@ -231,19 +231,19 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
                   ))
               .toList(),
           onChanged: (value) {
-            select(state, value);
+            select(value);
           },
           value: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
         )));
   }
 
-  Widget _buildExpandedSingleSelect(RawAdaptiveCardState state) {
+  Widget _buildExpandedSingleSelect() {
     return Column(
       children: _choices.keys.map((key) {
         return RadioListTile<String>(
           value: _choices[key]!,
           onChanged: (value) {
-            select(state, value);
+            select(value);
           },
           groupValue:
               _selectedChoices.contains(_choices[key]) ? _choices[key] : null,
@@ -253,14 +253,14 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     );
   }
 
-  Widget _buildExpandedMultiSelect(RawAdaptiveCardState state) {
+  Widget _buildExpandedMultiSelect() {
     return Column(
       children: _choices.keys.map((key) {
         return CheckboxListTile(
           controlAffinity: ListTileControlAffinity.leading,
           value: _selectedChoices.contains(_choices[key]),
           onChanged: (value) {
-            select(state, _choices[key]);
+            select(_choices[key]);
           },
           title: Text(key),
         );
@@ -268,7 +268,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     );
   }
 
-  void select(RawAdaptiveCardState state, String? choice) {
+  void select(String? choice) {
     if (!isMultiSelect) {
       _selectedChoices.clear();
       if (choice != null) {
@@ -284,7 +284,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       }
     }
 
-    state.changeValue(id, choice);
+    widgetState.changeValue(id, choice);
     setState(() {
       controller.text =
           _selectedChoices.isNotEmpty ? _selectedChoices.single : '';
