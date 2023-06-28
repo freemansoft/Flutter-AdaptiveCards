@@ -1,3 +1,67 @@
+This is an Adaptive Card implementation for Flutter that has been been updated from the original by others.  They did amazing work.  No one appears to be doing PRs to bring it back to the original so I'm just listing the forking history below.
+
+* Adaptive cards are described https://github.com/MicrosoftDocs/AdaptiveCards
+* Adaptive cards are dscribed here https://adaptivecards.io/explorer
+
+# Execution
+The web version will have a CORs issue so run it with the mobile compatible _html_ renderer.
+
+```
+flutter run -d chrome --web-renderer html
+```
+
+# Tests
+1. Test sample 2 is still failing with a rendering issue on my Windows 11 PC that I don't understand
+1. I updated the golden images to match my windows machine.  It may be that they were correct for a Mac or linux machine.
+
+# Compatibility
+_to be moved to changelog probably_
+
+This codebase has been updated to support some of the null safety requred for 3.0.0.  It works with the following version of flutter.
+
+```
+PS C:\Users\foo> flutter --version
+Flutter 3.7.9 • channel unknown • unknown source
+Framework • revision 62bd79521d (3 months ago) • 2023-03-30 10:59:36 -0700
+Engine • revision ec975089ac
+Tools • Dart 2.19.6 • DevTools 2.20.1
+```
+I fixed the version of Flutter while working in this repo with
+```
+	git checkout 3.7.9
+	flutter doctor -v
+```
+
+You can find the Flutter / Dart bundling versions here: https://docs.flutter.dev/release/archive?tab=windows
+
+## VS Code
+In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extension cleaned up some imports and mad other changes that have been comitted to the repository.
+
+## Changes
+2023 06
+* Updated where nulls were used by Flutter is now null safe.
+* Picked a default with for text entry that may be wrong or differ from the old default.
+* Just did the dumb fix for mockito mocking with null safety.
+* Test images updated for windows
+* Image URLs updated to their new homes.  Some old sites were migrated or taken down
+* Minor changes to use Material in one config file because VS Code warned about it
+
+_________________________________________________________________________
+
+# Repository History
+
+Everything below this line is from the original README.md
+The referenced GitHub repository has vanished.  Look at the forking train to figure out where the current repository was forked from or look here:
+
+1. https://github.com/freemansoft/Flutter-AdaptiveCards Mine forked from
+1. https://github.com/lannes/Flutter-AdaptiveCards forked from
+1. https://github.com/juansoilan/Flutter-AdaptiveCards forked from the original
+1. https://github.com/rodydavis/Flutter-AdaptiveCards the original but possibly from the no longer here repo
+1. https://github.com/neohelden/Flutter-AdaptiveCards
+
+
+___________________________________________________________________________
+
 ![AdaptiveCards for Flutter](https://github.com/neohelden/Flutter-AdaptiveCards/raw/master/doc/neohelden-flutter-adaptive-cards-lib.jpg?raw=true "Adaptive Cards for Flutter")
 
 # Adaptive Cards for Flutter

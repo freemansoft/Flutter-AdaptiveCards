@@ -33,7 +33,7 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
     label = adaptiveMap['label'];
     isRequired = adaptiveMap['isRequired'] ?? false;
     isMultiline = adaptiveMap['isMultiline'] ?? false;
-    maxLength = adaptiveMap['maxLength'];
+    maxLength = adaptiveMap['maxLength'] ?? 20;
     style = loadTextInputType();
     controller.text = value;
   }

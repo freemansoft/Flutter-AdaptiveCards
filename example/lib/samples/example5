@@ -19,15 +19,15 @@
       "images": [
         {
           "type": "Image",
-          "url": "http://contososcubademo.azurewebsites.net/assets/steak.jpg"
+          "url": "http://adaptivecards.io/content/steak.jpeg"
         },
         {
           "type": "Image",
-          "url": "http://contososcubademo.azurewebsites.net/assets/chicken.jpg"
+          "url": "http://adaptivecards.io/content/chicken.jpeg"
         },
         {
           "type": "Image",
-          "url": "http://contososcubademo.azurewebsites.net/assets/tofu.jpg"
+          "url": "http://adaptivecards.io/content/tofu.jpeg"
         }
       ]
     }

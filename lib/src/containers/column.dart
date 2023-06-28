@@ -124,7 +124,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
 
   Alignment? loadHorizontalContainerAlignment() {
     String horizontalAlignment =
-        adaptiveMap["horizontalAlignment"]?.toLowerCase();
+        adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "";
 
     switch (horizontalAlignment) {
       case "left":

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -55,9 +54,6 @@ void main() {
   });
 
   testWidgets('Golden Sample 1', (tester) async {
-    final binding = tester.binding as AutomatedTestWidgetsFlutterBinding;
-    binding.addTime(Duration(seconds: 4));
-
     ValueKey key = ValueKey('paint');
     Widget sample1 = getSampleForGoldenTest(key, 'example1');
 
@@ -85,9 +81,6 @@ void main() {
         find.byKey(key), matchesGoldenFile('gold_files/sample1_comment.png'));
   });
   testWidgets('Golden Sample 2', (tester) async {
-    final binding = tester.binding as AutomatedTestWidgetsFlutterBinding;
-    binding.addTime(Duration(seconds: 4));
-
     ValueKey key = ValueKey('paint');
     Widget sample1 = getSampleForGoldenTest(key, 'example2');
 
@@ -116,9 +109,6 @@ void main() {
   });
 
   testWidgets('Golden Sample 3', (tester) async {
-    final binding = tester.binding as AutomatedTestWidgetsFlutterBinding;
-    binding.addTime(Duration(seconds: 4));
-
     ValueKey key = ValueKey('paint');
     Widget sample1 = getSampleForGoldenTest(key, 'example3');
 
@@ -131,9 +121,6 @@ void main() {
   });
 
   testWidgets('Golden Sample 4', (tester) async {
-    final binding = tester.binding as AutomatedTestWidgetsFlutterBinding;
-    binding.addTime(Duration(seconds: 4));
-
     ValueKey key = ValueKey('paint');
     Widget sample1 = getSampleForGoldenTest(key, 'example4');
 
@@ -145,9 +132,6 @@ void main() {
   });
 
   testWidgets('Golden Sample 5', (tester) async {
-    final binding = tester.binding as AutomatedTestWidgetsFlutterBinding;
-    binding.addTime(Duration(seconds: 4));
-
     ValueKey key = ValueKey('paint');
     Widget sample1 = getSampleForGoldenTest(key, 'example5');
 
@@ -181,9 +165,6 @@ void main() {
   });
   // TODO add other tests
   testWidgets('Golden Sample 14', (tester) async {
-    final binding = tester.binding as AutomatedTestWidgetsFlutterBinding;
-    binding.addTime(Duration(seconds: 4));
-
     ValueKey key = ValueKey('paint');
     Widget sample1 = getSampleForGoldenTest(key, 'example14');
 

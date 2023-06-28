@@ -690,7 +690,6 @@ class ReferenceResolver {
         '${(hostConfig['fontWeights'] as Map).entries.map((entry) => '${entry.key}: ${entry.value}\n').toList()}');
     FontWeight? fontWeight = FontWeight.values.firstWhere(
         (possibleWeight) => possibleWeight.toString() == 'FontWeight.w$weight');
-    assert(fontWeight != null, 'There is no FontWight.w$weight');
     return fontWeight;
   }
 

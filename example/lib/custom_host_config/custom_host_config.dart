@@ -163,7 +163,7 @@ class DynamicHostConfigPage extends StatelessWidget {
         itemCount: 15,
         itemBuilder: (context, index) {
           return Theme(
-            data: ThemeData(buttonColor: Colors.green),
+            data: ThemeData(),
             child: DemoAdaptiveCard(
               "lib/samples/example${index + 1}",
               hostConfig: hostConfig,

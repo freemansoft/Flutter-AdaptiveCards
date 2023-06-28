@@ -19,7 +19,9 @@ void main() {
   RawAdaptiveCardState state;
   setUp(() {
     state = MockAdaptiveCardState();
-    when(state.idGenerator).thenReturn(UUIDGenerator());
+    // mocking has changed with null safety but we really only needed this
+    state.idGenerator = UUIDGenerator();
+    // when(state.idGenerator).thenReturn(UUIDGenerator());
   });
 
   testWidgets('Basic types return', (tester) async {

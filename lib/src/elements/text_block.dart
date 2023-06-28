@@ -141,7 +141,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     bool wrap = widget.adaptiveMap["wrap"] ?? false;
     if (!wrap) return 1;
     // can be null, but that's okay for the text widget.
-    return widget.adaptiveMap["maxLines"];
+    // int cannot be null
+    return widget.adaptiveMap["maxLines"] ?? 1;
   }
 
   /// TODO Markdown still has some problems
