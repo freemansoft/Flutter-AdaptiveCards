@@ -36,6 +36,10 @@ You can find the Flutter / Dart bundling versions here: https://docs.flutter.dev
 
 ## VS Code
 In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extension cleaned up some imports and mad other changes that have been comitted to the repository.
+1. VSCode told me to enable `Developer Mode` in order to run the app
+
+## TODO
+* Add template and data json merge support
 
 ## Changes
 2023 06
