@@ -7,6 +7,7 @@ This is an Adaptive Card implementation for Flutter that has been been updated f
 The web version will have a CORs issue so run it with the mobile compatible _html_ renderer.
 
 ```
+cd example
 flutter run -d chrome --web-renderer html
 ```
 

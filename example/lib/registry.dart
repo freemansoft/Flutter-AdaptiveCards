@@ -32,13 +32,14 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: new Center(
         child: AdaptiveCard.asset(
-          assetPath: "sample",
-          hostConfigPath: "host_config",
+          // loads from the assets directory in the project
+          assetPath: "lib/easy_card",
+          hostConfigPath: "lib/host_config",
           // TODO fix this
-          /*cardRegistry: CardRegistry(addedActions: {
-            "Action.Submit": (map, widgetState, card) =>
-                AdaptiveActionSubmit(map, widgetState, color: Colors.red)
-          }),*/
+          // cardRegistry: CardRegistry(addedActions: {
+          //   "Action.Submit": (map, widgetState, card) =>
+          //       AdaptiveActionSubmit(map, widgetState, color: Colors.red)
+          // }),
         ),
       ),
     );
