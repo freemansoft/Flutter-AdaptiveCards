@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   Divider(),
                   Text(
-                    'Flutter-Adaptive Cards by Neohelden',
+                    'Flutter-Adaptive Cards',
                     style:
                         TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
                     textAlign: TextAlign.center,
