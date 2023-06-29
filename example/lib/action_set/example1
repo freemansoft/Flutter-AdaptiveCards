@@ -1,45 +1,45 @@
 {
-    "type": "AdaptiveCard",
-    "body": [
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.2",
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "ActionSet example",
+      "wrap": true
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
         {
-            "type": "TextBlock",
-            "text": "ActionSet example",
-            "wrap": true
+          "title": "Action.Submit",
+          "type": "Action.Submit"
         },
         {
-            "type": "ActionSet",
+          "title": "Action.OpenUrl",
+          "type": "Action.OpenUrl",
+          "url": "https://adaptivecards.io/"
+        },
+        {
+          "title": "Action.ShowCard",
+          "type": "Action.ShowCard",
+          "card": {
+            "type": "AdaptiveCard",
+            "body": [
+              {
+                "type": "TextBlock",
+                "text": "What do you think?"
+              }
+            ],
             "actions": [
-                {
-                    "title": "Action.Submit",
-                    "type": "Action.Submit"
-                },
-                {
-                    "title": "Action.OpenUrl",
-                    "type": "Action.OpenUrl",
-                    "url": "https://adaptivecards.io/"
-                },
-                {
-                    "title": "Action.ShowCard",
-                    "type": "Action.ShowCard",
-                    "card": {
-                            "type": "AdaptiveCard",
-                            "body": [
-                              {
-                                "type": "TextBlock",
-                                "text": "What do you think?"
-                              }
-                            ],
-                            "actions": [
-                              {
-                                "type": "Action.Submit",
-                                "title": "Neat!"
-                              }
-                            ]
-                          }
-                }
+              {
+                "type": "Action.Submit",
+                "title": "Neat!"
+              }
             ]
+          }
         }
-    ],
-    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-    "version": "1.2"
+      ]
+    }
+  ]
 }

@@ -1,7 +1,7 @@
 {
-    "type": "AdaptiveCard",
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-    "version": "1.2",
+    "type": "AdaptiveCard",
+    "version": "1.5",
     "body": [
         {
             "type": "TextBlock",
@@ -48,7 +48,7 @@
                             ]
                         }
                     ],
-                     "spacing": "Small"
+                    "spacing": "Small"
                 },
                 {
                     "type": "Column",

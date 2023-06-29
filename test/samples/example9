@@ -1,10 +1,10 @@
 {
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "type": "AdaptiveCard",
-  "version": "1.0",
+  "version": "1.5",
+  "speak": "Tom's Pie is a Pizza restaurant which is rated 9.3 by customers.",
   "body": [
     {
-      "speak": "Tom's Pie is a Pizza restaurant which is rated 9.3 by customers.",
       "type": "ColumnSet",
       "columns": [
         {

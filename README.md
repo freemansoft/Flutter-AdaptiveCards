@@ -41,6 +41,8 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
 
 ## TODO
 * Add template and data json merge support
+* `InitData` / `InitInput` should be rethought or replaced with templates
+* Add `Table` support
 
 ## Changes
 2023 06

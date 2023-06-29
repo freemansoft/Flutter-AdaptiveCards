@@ -78,7 +78,8 @@ class MyApp extends StatelessWidget {
             'Input.ChoiceSet': (context) => InputChoiceSetPage(),
             'about': (context) => AboutPage(),
             'Render Time': (context) => RenderTimePage(),
-            'Network': (context) => NetworkPage()
+            'Network via Assets': (context) => NetworkAssetsPage(),
+            'Network Remote': (context) => NetworkPage()
           },
         );
       },
@@ -149,7 +150,8 @@ class _MyHomePageState extends State<MyHomePage> {
           getRow(['Input.Time', 'Input.Toggle', 'Input.ChoiceSet']),
           Divider(),
           getButton('Render Time'),
-          getButton('Network'),
+          getButton('Network via Assets'),
+          getButton('Network Remote'),
         ],
       ),
     );

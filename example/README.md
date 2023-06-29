@@ -38,3 +38,7 @@ TODO: make it hot load the JSON file from a URL
 cd into this, example, directory
 flutter run -t lib/lab.dart -d chrome --web-renderer html
 ```
+
+# Open Items
+
+* `LabAdaptiveCard` doesn't have a _show the JSON_ function

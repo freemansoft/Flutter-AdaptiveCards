@@ -4,6 +4,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 
+/*
+ * Adaptive card driven from network and not assets or URL
+ * */
+class RemoteAdaptiveCard extends StatelessWidget {
+  const RemoteAdaptiveCard({Key key, this.url}) : super(key: key);
+
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return AdaptiveCard.network(
+      hostConfigPath: "lib/host_config",
+      url: url,
+      showDebugJson: true,
+    );
+  }
+}
+
+/*
+ * Adaptive card driven from memory and not assets or URL
+ * */
 class LabAdaptiveCard extends StatelessWidget {
   const LabAdaptiveCard({Key key, this.payload}) : super(key: key);
 
@@ -19,6 +40,10 @@ class LabAdaptiveCard extends StatelessWidget {
   }
 }
 
+/*
+ * Adaptive card driven from assets and not memory or URL
+ * Missing the "Show the JSON" button
+ */
 class DemoAdaptiveCard extends StatefulWidget {
   const DemoAdaptiveCard(
     this.assetPath, {
@@ -37,6 +62,8 @@ class DemoAdaptiveCard extends StatefulWidget {
   _DemoAdaptiveCardState createState() => new _DemoAdaptiveCardState();
 }
 
+// This exists as stateful to support the "show the JSON" function
+// Note that it means we load the JSON twice, once for this and once for the widget
 class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
     with AutomaticKeepAliveClientMixin {
   String jsonFile;
