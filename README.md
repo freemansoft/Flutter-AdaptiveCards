@@ -57,6 +57,8 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
 * Image URLs updated to their new homes.  Some old sites were migrated or taken down
 * Minor changes to use Material in one config file because VS Code warned about it
 * Pulled the neohelden logos from the main page in the example. Neohelden has dropped all references from their website and deleted their repository. Had the extra advantage of shrinking the image.
+* Refactored example to use common driver page for most of the samples
+* Now have a couple samples that pull from adaptivecards.io github repo
 
 _________________________________________________________________________
 

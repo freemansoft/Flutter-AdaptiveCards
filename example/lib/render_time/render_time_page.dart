@@ -14,8 +14,9 @@ class _RenderTimePageState extends State<RenderTimePage> {
   @override
   void initState() {
     List body = [];
+    int body_repeats = 1000;
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < body_repeats; i++) {
       body.add({
         "type": "ColumnSet",
         "columns": [
@@ -32,7 +33,12 @@ class _RenderTimePageState extends State<RenderTimePage> {
           {
             "type": "Column",
             "items": [
-              {"type": "TextBlock", "weight": "Bolder", "text": "$i aaaaaaaaaaaaaaaaaaaaa", "wrap": true},
+              {
+                "type": "TextBlock",
+                "weight": "Bolder",
+                "text": "$i aaaaaaaaaaaaaaaaaaaaa",
+                "wrap": true
+              },
               {
                 "type": "TextBlock",
                 "spacing": "None",
@@ -47,7 +53,7 @@ class _RenderTimePageState extends State<RenderTimePage> {
       });
     }
 
-    content = {"type": "AdaptiveCard", "body": body};
+    content = {"type": "AdaptiveCard", "blocks": body_repeats, "body": body};
 
     super.initState();
   }
@@ -56,7 +62,9 @@ class _RenderTimePageState extends State<RenderTimePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Render Time (ListView)"),
+        title: Text("Render Time (ListView sized:" +
+            content['blocks'].toString() +
+            ")"),
         actions: [
           BrightnessSwitch(),
         ],
