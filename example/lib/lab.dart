@@ -4,10 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
 
+///
+/// This program lets you specify a local or remote adaptive card for viewing.
+/// Intended to be used as  debugging jig
+///
+/// `flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-renderer html `
+///
 void main() {
   debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
   runApp(new MyApp());
 }
+
+const resourceUrl =
+    String.fromEnvironment('url', defaultValue: 'lib/easy_card');
 
 class MyApp extends StatelessWidget {
   @override
@@ -37,101 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text('Adpative cards lab'),
       ),
       body: new Center(
-        child: SingleChildScrollView(
-            child: LabAdaptiveCard(
-          payload: '''
-{
-                  "\$schema":"http://adaptivecards.io/schemas/adaptive-card.json",
-                  "type":"AdaptiveCard",
-                  "version":"1.5",
-                  "body":[
-                     {
-                        "type":"Container",
-                        "items":[
-                           {
-                              "type":"TextBlock",
-                              "size":"Medium",
-                              "weight":"Bolder",
-                              "text":"Open inspections points"
-                           }
-                        ]
-                     },
-                     {
-                        "type":"ColumnSet",
-                        "separator":true,
-                        "spacing":"medium",
-                        "columns":[
-                           {
-                              "type":"Column",
-                              "width":"auto",
-                              "items":[
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"Id",
-                                    "isSubtle":true,
-                                    "weight":"bolder"
-                                 },
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"1",
-                                    "spacing":"small"
-                                 },
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"2",
-                                    "spacing":"small"
-                                 },
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"3",
-                                    "spacing":"small"
-                                 },
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"4",
-                                    "spacing":"small"
-                                 }
-                              ]
-                           },
-                           {
-                              "type":"Column",
-                              "width":"auto",
-                              "items":[
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"Inspection Point",
-                                    "isSubtle":true,
-                                    "weight":"bolder"
-                                 },
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"H turbine - Rotor - Seal strips : Loss",
-                                    "spacing":"small"
-                                 },
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"H turbine - Rotor - Seal strips : Shear of shroud",
-                                    "spacing":"small"
-                                 },
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"Bearing casing MAD11 - Journal bearing - Bearing shell : Damage",
-                                    "spacing":"small"
-                                 },
-                                 {
-                                    "type":"TextBlock",
-                                    "text":"Bearing casing MAD11 - Sensors - Thermocouples (bearing) : Damage",
-                                    "spacing":"small"
-                                 }
-                              ]
-                           }
-                        ]
-                     }
-                  ]
-               }
-
-         ''',
-        )),
+        child: SingleChildScrollView(child: DemoAdaptiveCard(resourceUrl)),
       ),
     );
   }

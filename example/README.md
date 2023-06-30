@@ -1,6 +1,6 @@
-# example
+# AdaptiveCards example application example
 
-Example of Adaptive Cards.
+This should demonstrate all the cards, local and remote sources for AdaptiveCards
 
 ## Getting Started
 
@@ -29,14 +29,12 @@ flutter run -t lib/registry.dart -d chrome --web-renderer html
 
 
 ### lab.dart
-Displays an adaptive card and has a "show the JSON" button.
-The JSON is embedded in the program so you can hot reload testing it.
+Displays an adaptive card. Lets you specify the URL or relative file location as a command line argument.  Intended as a debugging jig
 
-TODO: make it hot load the JSON file from a URL
-
+This snippet assumes you want to test the adaptive card activity_update located in the example's lib directory. You could do a
 ```
-cd into this, example, directory
-flutter run -t lib/lab.dart -d chrome --web-renderer html
+cd example
+flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-renderer html
 ```
 
 # Open Items

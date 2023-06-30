@@ -1,7 +1,11 @@
-This is an Adaptive Card implementation for Flutter that has been been updated from the original by others.  They did amazing work.  No one appears to be doing PRs to bring it back to the original so I'm just listing the forking history below.
+This is an Adaptive Card implementation for Flutter that has been been updated from the original by others. They did amazing work. No one appears to be doing PRs to bring it back to the original so I'm just listing the forking history below.
 
-* Adaptive cards are described https://github.com/MicrosoftDocs/AdaptiveCards
-* Adaptive cards are dscribed here https://adaptivecards.io/explorer
+* [Description of Active Cards]( https://github.com/MicrosoftDocs/AdaptiveCards)
+* [The main Microsoft Active Cards site](https://adaptivecards.io/explorer)
+* [The main GitHub repo with samples](https://github.com/microsoft/AdaptiveCards)
+  * [The v1.5 samples on the main GitHub repo](https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5/Scenarios)
+  * [Template samples. Templates are not supported in this library](https://github.com/microsoft/AdaptiveCards/tree/main/samples/Templates/Scenarios)
+* [Another example repo containing samples/templates](https://github.com/pnp/AdaptiveCards-Templates)
 
 # Execution
 The web version will have a CORs issue so run it with the mobile compatible _html_ renderer.
@@ -57,8 +61,9 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
 * Image URLs updated to their new homes.  Some old sites were migrated or taken down
 * Minor changes to use Material in one config file because VS Code warned about it
 * Pulled the neohelden logos from the main page in the example. Neohelden has dropped all references from their website and deleted their repository. Had the extra advantage of shrinking the image.
-* Refactored example to use common driver page for most of the samples
+* Refactored example to use common driver page for most of the samples.  Remolved the single purpose drivers
 * Now have a couple samples that pull from adaptivecards.io github repo
+* lab.dart can now run against any adaptive card local or remote.  See [example readme](example/README.md)
 
 _________________________________________________________________________
 
