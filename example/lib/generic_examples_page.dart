@@ -6,8 +6,12 @@ import 'brightness_switch.dart';
 class GenericListPage extends StatelessWidget {
   final String title;
   final List<String> urls;
+  final List<bool> supportMarkdowns;
 
-  GenericListPage({Key key, this.title, this.urls});
+  // TODO: supportMarkdown should eventually be eliminated - see README.md
+  GenericListPage(
+      {Key key, this.title, this.urls, this.supportMarkdowns = const []})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,12 @@ class GenericListPage extends StatelessWidget {
       body: ListView.builder(
         itemCount: this.urls.length,
         itemBuilder: (context, index) {
-          return DemoAdaptiveCard(urls[index]);
+          if (this.supportMarkdowns.length > index + 1) {
+            return DemoAdaptiveCard(urls[index],
+                supportMarkdown: supportMarkdowns[index]);
+          } else {
+            return DemoAdaptiveCard(urls[index]);
+          }
         },
       ),
     );

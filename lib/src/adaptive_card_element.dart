@@ -46,7 +46,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     super.initState();
 
     version = adaptiveMap['version'];
-    print(version ?? '');
+    print("AdaptiveCardElement: " + this.id + " version: " + (version ?? ''));
 
     String stringAxis = resolver.resolve("actions", "actionsOrientation");
     if (stringAxis == "Horizontal")

@@ -2,8 +2,6 @@ import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:example/custom_host_config/custom_host_config.dart';
 import 'package:example/network/network.dart';
 import 'package:example/render_time/render_time_page.dart';
-import 'package:example/samples/samples.dart';
-import 'package:example/text_block/text_block_examples_page.dart';
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
 import 'package:flutter/material.dart';
@@ -11,7 +9,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'about_page.dart';
 import 'brightness_switch.dart';
-import 'column_set/column_set_examples_page.dart';
 import 'generic_examples_page.dart';
 
 void main() {
@@ -40,10 +37,77 @@ class MyApp extends StatelessWidget {
           theme: theme,
           home: new MyHomePage(),
           routes: {
-            'Samples': (context) => SamplesPage(),
+            'Samples': (context) => GenericListPage(
+                  // column set only works if markdownEnabled:false
+                  title: "Samples (first is markdownEnabled:false)",
+                  urls: [
+                    "lib/samples/example1",
+                    "lib/samples/example1",
+                    "lib/samples/example2",
+                    "lib/samples/example3",
+                    "lib/samples/example4",
+                    "lib/samples/example5",
+                    "lib/samples/example6",
+                    "lib/samples/example7",
+                    "lib/samples/example8",
+                    "lib/samples/example9",
+                    "lib/samples/example10",
+                    "lib/samples/example11",
+                    "lib/samples/example12",
+                    "lib/samples/example13",
+                    "lib/samples/example14",
+                    "lib/samples/example15",
+                  ],
+                  supportMarkdowns: [
+                    false,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                  ],
+                ),
             'Samples with dynamic HostConfig': (context) =>
                 DynamicHostConfigPage(),
-            'TextBlock': (context) => TextBlockPage(),
+            'TextBlock': (context) => GenericListPage(
+                  title: "TextBlock (last is markdownEnabled:false)",
+                  urls: [
+                    "lib/text_block/example1",
+                    "lib/text_block/example2",
+                    "lib/text_block/example3",
+                    "lib/text_block/example4",
+                    "lib/text_block/example5",
+                    "lib/text_block/example6",
+                    "lib/text_block/example7",
+                    "lib/text_block/example8",
+                    "lib/text_block/example9",
+                    "lib/text_block/example10",
+                    "lib/text_block/example11",
+                  ],
+                  supportMarkdowns: [
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    false
+                  ],
+                ),
             'Image': (context) => GenericListPage(title: 'Image', urls: [
                   "lib/image/example1",
                   "lib/image/example2",
@@ -63,7 +127,35 @@ class MyApp extends StatelessWidget {
                   "lib/container/example4",
                   "lib/container/example5",
                 ]),
-            'ColumnSet': (context) => ColumnSetPage(),
+            'ColumnSet': (context) => GenericListPage(
+                  title: "ColumnSet",
+                  urls: [
+                    "lib/column_set/example1",
+                    "lib/column_set/example2",
+                    "lib/column_set/example3",
+                    "lib/column_set/example4",
+                    "lib/column_set/example5",
+                    "lib/column_set/example6",
+                    "lib/column_set/example7",
+                    "lib/column_set/example8",
+                    "lib/column_set/example9",
+                    "lib/column_set/example10",
+                    "lib/column_set/column_width_in_pixels",
+                  ],
+                  supportMarkdowns: [
+                    true,
+                    true,
+                    true,
+                    true,
+                    false,
+                    false,
+                    true,
+                    true,
+                    true,
+                    true,
+                    false
+                  ],
+                ),
             'Column': (context) => GenericListPage(title: "Column", urls: [
                   "lib/column/example1",
                   "lib/column/example2",
