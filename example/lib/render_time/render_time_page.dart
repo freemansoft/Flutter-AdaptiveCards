@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 
-import '../brightness_switch.dart';
+import 'package:example/brightness_switch.dart';
 
 class RenderTimePage extends StatefulWidget {
   @override

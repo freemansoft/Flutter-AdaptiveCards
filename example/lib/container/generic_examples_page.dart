@@ -3,23 +3,25 @@ import 'package:flutter/material.dart';
 
 import 'package:example/brightness_switch.dart';
 
-class SamplesPage extends StatelessWidget {
+class GenericListPage extends StatelessWidget {
+  final String title;
+  final List<String> urls;
+
+  GenericListPage({Key key, this.title, this.urls});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Samples"),
+        title: Text(this.title),
         actions: [
           BrightnessSwitch(),
         ],
       ),
       body: ListView.builder(
-        itemCount: 15,
+        itemCount: this.urls.length,
         itemBuilder: (context, index) {
-          if (index == 0)
-            return DemoAdaptiveCard("lib/samples/example${index + 1}",
-                supportMarkdown: false);
-          return DemoAdaptiveCard("lib/samples/example${index + 1}");
+          return DemoAdaptiveCard(urls[index]);
         },
       ),
     );

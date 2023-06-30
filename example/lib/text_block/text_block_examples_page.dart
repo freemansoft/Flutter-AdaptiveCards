@@ -1,7 +1,7 @@
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
 
-import '../brightness_switch.dart';
+import 'package:example/brightness_switch.dart';
 
 class TextBlockPage extends StatelessWidget {
   @override
