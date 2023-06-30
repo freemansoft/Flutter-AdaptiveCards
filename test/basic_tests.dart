@@ -11,9 +11,6 @@ void main() {
   });
 
   testWidgets('Activity Update test', (tester) async {
-    final binding = tester.binding as AutomatedTestWidgetsFlutterBinding;
-    binding.addTime(Duration(seconds: 10));
-
     Widget widget = getWidthDefaultHostConfig('example1');
 
     await tester.pumpWidget(widget);

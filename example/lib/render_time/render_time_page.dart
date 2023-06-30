@@ -14,9 +14,9 @@ class _RenderTimePageState extends State<RenderTimePage> {
   @override
   void initState() {
     List body = [];
-    int body_repeats = 1000;
+    int bodyRepeats = 1000;
 
-    for (int i = 0; i < body_repeats; i++) {
+    for (int i = 0; i < bodyRepeats; i++) {
       body.add({
         "type": "ColumnSet",
         "columns": [
@@ -53,7 +53,7 @@ class _RenderTimePageState extends State<RenderTimePage> {
       });
     }
 
-    content = {"type": "AdaptiveCard", "blocks": body_repeats, "body": body};
+    content = {"type": "AdaptiveCard", "blocks": bodyRepeats, "body": body};
 
     super.initState();
   }
