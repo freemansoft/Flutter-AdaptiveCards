@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../flutter_adaptive_cards.dart';
 import 'base.dart';
-import 'package:provider/provider.dart';
 
 class SeparatorElement extends StatefulWidget with AdaptiveElementWidgetMixin {
   final Map<String, dynamic> adaptiveMap;

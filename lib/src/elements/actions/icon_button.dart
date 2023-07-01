@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards/src/base.dart';
+
+import '../../base.dart';
 
 class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
   IconButtonAction(

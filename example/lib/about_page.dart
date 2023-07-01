@@ -1,7 +1,7 @@
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:dynamic_theme/theme_switcher_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:dynamic_theme/theme_switcher_widgets.dart';
 
 class AboutPage extends StatelessWidget {
   @override
@@ -51,7 +51,7 @@ Users can interact with Neo using voice and text and request information from th
 Our Conversational Platform allows for easy configuration and extension of Neo's functionalities and integrations, which enables customization of Neo to individual needs and requirements.
 
 Neo has been using Adaptive Cards for a while now, and we're excited to bring them to Flutter!
-                  
+
                   ''',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),

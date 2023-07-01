@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/base.dart';
-import 'package:flutter_adaptive_cards/src/utils.dart';
+
+import '../additional.dart';
+import '../base.dart';
+import '../utils.dart';
 
 class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImage(

@@ -64,6 +64,7 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
 * Refactored example to use common driver page for most of the samples.  Remolved the single purpose drivers
 * Now have a couple samples that pull from adaptivecards.io github repo
 * lab.dart can now run against any adaptive card local or remote.  See [example readme](example/README.md)
+* used VS Code plugin `dart import` to organize imports
 
 _________________________________________________________________________
 

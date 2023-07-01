@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../adaptive_card_element.dart';
 import '../../base.dart';
-import 'package:provider/provider.dart';
 
 class AdaptiveActionShowCard extends StatefulWidget
     with AdaptiveElementWidgetMixin {
