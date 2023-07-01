@@ -503,8 +503,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                     builder: (context) {
                       return AlertDialog(
                         title: Text(
-                            'JSON (only added in debug mode, you can also turn'
-                            'it of manually by passing showDebugJson = false)'),
+                            'JSON (only added in debug mode, you can also turn '
+                            'it off manually by passing showDebugJson = false)'),
                         content:
                             SingleChildScrollView(child: Text(prettyprint)),
                         actions: <Widget>[

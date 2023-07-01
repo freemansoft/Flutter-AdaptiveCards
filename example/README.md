@@ -39,5 +39,4 @@ flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-
 
 # Open Items
 
-* `LabAdaptiveCard` doesn't have a _show the JSON_ function
 * `GenericListPage` doesn't support enable/disable markdown. Fixing this could get rid of more of the sample page drivers

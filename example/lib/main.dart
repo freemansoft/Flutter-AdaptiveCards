@@ -1,6 +1,5 @@
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:example/custom_host_config/custom_host_config.dart';
-import 'package:example/network/network.dart';
 import 'package:example/render_time/render_time_page.dart';
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
@@ -9,7 +8,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'about_page.dart';
 import 'brightness_switch.dart';
-import 'generic_examples_page.dart';
+import 'generic_page.dart';
+import 'network_page.dart';
 
 void main() {
   debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
@@ -212,8 +212,8 @@ class MyApp extends StatelessWidget {
                 ),
             'about': (context) => AboutPage(),
             'Render Time': (context) => RenderTimePage(),
-            'Network via Assets': (context) =>
-                NetworkPage(url: 'assets/ac-qv-faqs.json'),
+            'Network via Assets': (context) => NetworkPage(
+                title: "ac-qv-faqs via assets", url: 'assets/ac-qv-faqs.json'),
             'Sample Expense Report': (context) => NetworkPage(
                 title: "Expense Report",
                 url:

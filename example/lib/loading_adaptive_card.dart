@@ -1,51 +1,14 @@
 ///
 /// This is a convenience because we build so many cards in the example
 ///
-import 'dart:convert';
-
+/// Why do we need this instead of just consuming AdaptiveCard.asset ?  I have no idea
+///
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 
 ///
-/// Adaptive card driven from network and not assets or URL
-///
-class RemoteAdaptiveCard extends StatelessWidget {
-  const RemoteAdaptiveCard({Key key, this.url}) : super(key: key);
-
-  final String url;
-
-  @override
-  Widget build(BuildContext context) {
-    return AdaptiveCard.network(
-      hostConfigPath: "lib/host_config",
-      url: url,
-      showDebugJson: true,
-    );
-  }
-}
-
-///
-/// Adaptive card driven from memory and not assets or URL
-///
-class LabAdaptiveCard extends StatelessWidget {
-  const LabAdaptiveCard({Key key, this.payload}) : super(key: key);
-
-  final String payload;
-
-  @override
-  Widget build(BuildContext context) {
-    return AdaptiveCard.memory(
-      hostConfigPath: "lib/host_config",
-      content: json.decode(payload),
-      showDebugJson: true,
-    );
-  }
-}
-
-///
 /// Adaptive card driven from assets and not memory or URL
-/// Missing the "Show the JSON" button
 ///
 class DemoAdaptiveCard extends StatefulWidget {
   const DemoAdaptiveCard(
@@ -89,35 +52,10 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
           AdaptiveCard.asset(
             assetPath: widget.assetPath,
             hostConfigPath: "lib/host_config",
-            showDebugJson: false,
+            showDebugJson: true, // enable in the example app
             hostConfig: widget.hostConfig,
             approximateDarkThemeColors: widget.approximateDarkThemeColors,
             supportMarkdown: widget.supportMarkdown,
-          ),
-          TextButton(
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.indigo, // textColor
-            ),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text("JSON"),
-                      content: SingleChildScrollView(child: Text(jsonFile)),
-                      actions: <Widget>[
-                        Center(
-                          child: TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text("Thanks"),
-                          ),
-                        )
-                      ],
-                      contentPadding: EdgeInsets.all(8.0),
-                    );
-                  });
-            },
-            child: Text("Show the JSON"),
           ),
         ],
       ),

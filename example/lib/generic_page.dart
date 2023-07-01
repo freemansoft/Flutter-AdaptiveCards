@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 
 import 'brightness_switch.dart';
 
+///
+/// A generic page that holds a list of AdaptiveCards based on the passed in URLs
+/// Similar to NetworkPage but operates against a list of local resources
+///
 class GenericListPage extends StatelessWidget {
   final String title;
   final List<String> urls;

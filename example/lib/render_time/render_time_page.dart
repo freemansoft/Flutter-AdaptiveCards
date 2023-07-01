@@ -74,7 +74,7 @@ class _RenderTimePageState extends State<RenderTimePage> {
         child: AdaptiveCard.memory(
           content: content,
           hostConfigPath: "lib/host_config",
-          showDebugJson: false,
+          showDebugJson: true,
           listView: true,
           approximateDarkThemeColors: true,
           supportMarkdown: false,

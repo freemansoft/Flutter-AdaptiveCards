@@ -4,12 +4,18 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:example/brightness_switch.dart';
 
+///
+/// Similar to GenericListPage but operates against a **single** URL and not a list of resources
+///
 class NetworkPage extends StatelessWidget {
   final String title;
   final String url;
 
   NetworkPage({Key key, this.title, this.url}); // todo: add required here
 
+  ///
+  /// Will get error if no title passed "a non-null String must be provided to a Text widget."
+  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +39,7 @@ class NetworkPage extends StatelessWidget {
             onOpenUrl: (url) {
               launchUrl(Uri.parse(url));
             },
-            showDebugJson: false,
+            showDebugJson: true, // enable debug in the example app
             approximateDarkThemeColors: true,
           )
         ],
