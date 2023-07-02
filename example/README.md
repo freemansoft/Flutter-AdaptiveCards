@@ -27,15 +27,36 @@ flutter run -t lib/registry.dart -d chrome --web-renderer html
 ```
 
 ### lab_web.dart
-Displays an adaptive card. Lets you specify the URL or relative file location by pasting into a text field on the page.  Intended as a debugging jig
+Displays an adaptive card. Lets you specify the URL by pasting into a text field on the page.  Intended as a debugging tool
 
 ```
 cd example
 flutter run  lib/lab_web.dart -d chrome --web-renderer html
 ```
 
+
+```mermaid
+
+sequenceDiagram
+    participant user as User
+    participant browser as Browser
+    participant flutter-app as Flutter App
+    participant remote-site as Remote Site
+
+    user        ->> browser: Enter URL and hit enter
+    browser     ->> flutter-app: Submit Adaptive Card Request
+    activate flutter-app
+    flutter-app ->>  remote-site: Retrieve Adaptive Cards
+    activate remote-site
+    remote-site -->> flutter-app: Adaptive Card
+    deactivate remote-site
+    flutter-app ->>  flutter-app: Create Widget Tree from Adaptive Cards
+    flutter-app -->> browser: HTML plus other stuff
+    deactivate flutter-app
+```
+
 ### lab.dart
-Displays an adaptive card. Lets you specify the URL or relative file location as a command line argument.  Intended as a debugging jig
+Displays an adaptive card. Lets you specify a relative file location as a command line argument.  Intended as a debugging tool
 
 This snippet assumes you want to test the adaptive card activity_update located in the example's lib directory.
 ```

@@ -1,5 +1,8 @@
 This is an Adaptive Card implementation for Flutter that has been been updated from the original by others. They did amazing work. No one appears to be doing PRs to bring it back to the original so I'm just listing the forking history below.
 
+![Adaptive Cards](https://adaptivecards.io/content/bf-logo.png)
+
+* [Adaptive Cards website](https://adaptivecards.io/)
 * [Description of Active Cards]( https://github.com/MicrosoftDocs/AdaptiveCards)
 * [The main Microsoft Active Cards site](https://adaptivecards.io/explorer)
 * [The main GitHub repo with samples](https://github.com/microsoft/AdaptiveCards)
@@ -51,6 +54,7 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
   * `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
     * currently invoked direclty in code in handlers in sample
 * Add `Table` support
+* Add diagrams: sequence or flow for main program
 
 ## Changes
 2023 06
