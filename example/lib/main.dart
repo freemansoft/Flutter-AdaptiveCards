@@ -16,6 +16,10 @@ void main() {
   runApp(MyApp());
 }
 
+///
+/// Uses named routes which are now frowned upon.
+/// This is a static app so not a big deal
+///
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -36,6 +40,8 @@ class MyApp extends StatelessWidget {
           title: 'Flutter Adaptive Cards',
           theme: theme,
           home: new MyHomePage(),
+          // can use named routes in hard coded demo
+          // Inject the resources into to the page
           routes: {
             'Samples': (context) => GenericListPage(
                   // column set only works if markdownEnabled:false
@@ -310,6 +316,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  ///
+  /// list of buttons whose titles match the named route
+  ///
   Widget getRow(List<String> element) {
     return Row(
       children: element
@@ -320,6 +329,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  ///
+  /// A buton whose title and route action have the same value
+  /// i.e. The button title matches the named route
+  ///
   Widget getButton(String element) {
     return Card(
       child: InkWell(
@@ -331,6 +344,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  ///
+  /// Button action that does a pushName with the passed in text
+  ///
   void pushNamed(String element) {
     Navigator.pushNamed(context, element);
   }

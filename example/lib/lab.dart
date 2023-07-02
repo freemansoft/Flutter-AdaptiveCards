@@ -15,6 +15,11 @@ void main() {
   runApp(new MyApp());
 }
 
+///
+/// Passed in with
+/// * `--dart-define=url=lib/activity_update`
+/// * `--dart-define=url=<url>`
+///
 const resourceUrl =
     String.fromEnvironment('url', defaultValue: 'lib/easy_card');
 
