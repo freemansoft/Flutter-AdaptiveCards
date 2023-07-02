@@ -12,12 +12,31 @@
     },
     {
       "name": "Web",
+      "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
       "cwd": "${workspaceFolder}/example",
-      "type": "dart",
       "program": "lib/main.dart",
-      "args": ["-d", "chrome", "--web-port", "3000"]
+      "args": [
+        "-d",
+        "chrome",
+        "--web-renderer",
+        "html",
+        "--web-port",
+        "3000"
+      ]
+    },
+    {
+      "name": "Emulator-555",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "cwd": "${workspaceFolder}/example",
+      "program": "lib/main.dart",
+      "args": [
+        "-d",
+        "emulator-555"
+      ]
     }
   ]
 }

@@ -11,7 +11,7 @@ import 'network_page.dart';
 /// This program lets you specify a local or remote adaptive card for viewing.
 /// Intended to be used as  debugging jig
 ///
-/// `flutter run lib/lab_web.dart -d chrome --web-renderer html `
+/// `flutter run lib/lab_web.dart -d chrome --web-renderer html --web-port <port>`
 ///
 void main() {
   debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;

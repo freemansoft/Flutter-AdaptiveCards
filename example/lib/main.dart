@@ -303,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
           getRow(['Render Time', 'Network via Assets']),
           Text(
             'https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5',
-            style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
             textAlign: TextAlign.center,
           ),
           getRow([

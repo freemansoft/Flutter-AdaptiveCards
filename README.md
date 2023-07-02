@@ -11,12 +11,21 @@ This is an Adaptive Card implementation for Flutter that has been been updated f
 * [Another example repo containing samples/templates](https://github.com/pnp/AdaptiveCards-Templates)
 
 # Execution
+
+## Web
 The web version will have a CORs issue so run it with the mobile compatible _html_ renderer.
 
 ```
 cd example
-flutter run -d chrome --web-renderer html
+flutter run -d chrome --web-renderer html --web-port 3000
 ```
+
+## Emulator
+```
+cd example
+flutter run -d chrome --web-renderer html --web-port 3000
+```
+
 
 # Tests
 1. Test sample 2 is still failing with a rendering issue on my Windows 11 PC that I don't understand
@@ -69,6 +78,10 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
 * Now have a couple samples that pull from adaptivecards.io github repo
 * lab.dart can now run against any adaptive card local or remote.  See [example readme](example/README.md)
 * used VS Code plugin `dart import` to organize imports
+* android with Java 17
+  * gradle upgrade from 5.6.2 to 7.4.2
+  * upgraded kotlin version to 1.8.22
+  * added `--add-opens=java.base/java.io=ALL-UNNAMED` to jvm args to run on Java 17 (Java 16+)
 
 _________________________________________________________________________
 

@@ -17,13 +17,13 @@ A demo with several different adaptive cards that can be activated by clicking o
 Main.dart is the default so it doesn't need to be passed as `-t` parameter
 ```
 cd example
-flutter run -d chrome --web-renderer html
+flutter run -d chrome --web-renderer html --web-port 3000
 ```
 
 ### registry.dart
 ```
 cd example
-flutter run -t lib/registry.dart -d chrome --web-renderer html
+flutter run -t lib/registry.dart -d chrome --web-renderer html --web-port 3000
 ```
 
 ### lab_web.dart
@@ -31,7 +31,18 @@ Displays an adaptive card. Lets you specify the URL by pasting into a text field
 
 ```
 cd example
-flutter run  lib/lab_web.dart -d chrome --web-renderer html
+flutter run  lib/lab_web.dart -d chrome --web-renderer html --web-port 3000
+```
+
+or for an emulator
+```
+cd example
+flutter run lib/lab_web.dart -d <emulator name>
+```
+in my case
+```
+cd example
+flutter run lib/lab_web.dart -d emulator-555
 ```
 
 
@@ -67,3 +78,4 @@ flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-
 # Open Items
 
 * `GenericListPage` doesn't support enable/disable markdown. Fixing this could get rid of more of the sample page drivers
+* `Network via Assets` works in web but not in Android mobile

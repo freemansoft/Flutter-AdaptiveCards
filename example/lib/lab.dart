@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart'
 /// This program lets you specify a local or remote adaptive card for viewing.
 /// Intended to be used as  debugging jig
 ///
-/// `flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-renderer html `
+/// `flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-renderer html --web-port <port> `
 ///
 void main() {
   debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
