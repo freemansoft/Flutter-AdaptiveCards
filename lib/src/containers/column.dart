@@ -1,3 +1,6 @@
+///
+/// https://adaptivecards.io/explorer/Column.html
+///
 import 'package:flutter/material.dart';
 
 import '../additional.dart';

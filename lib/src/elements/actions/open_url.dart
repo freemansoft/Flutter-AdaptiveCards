@@ -1,3 +1,6 @@
+///
+/// https://adaptivecards.io/explorer/Action.OpenUrl.html
+///
 import 'package:flutter/material.dart';
 
 import '../../base.dart';

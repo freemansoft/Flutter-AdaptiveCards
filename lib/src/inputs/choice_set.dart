@@ -1,3 +1,6 @@
+///
+/// https://adaptivecards.io/explorer/Input.ChoiceSet.html
+///
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -59,6 +62,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     isRequired = adaptiveMap['isRequired'] ?? false;
 
     if (adaptiveMap['choices'] != null) {
+      /// https://adaptivecards.io/explorer/Input.Choice.html
       for (Map map in adaptiveMap['choices']) {
         _choices[map['title']] = map['value'].toString();
       }

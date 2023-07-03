@@ -80,13 +80,25 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
 
 ## TODO
 * Add template and data json merge support
+* Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
     * `initData` currently injected directly into a widget
     * `initInput(initData)` used to replace values. initData is a widget parameter. `initInput` is called if initData exist on component
   * `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
     * currently invoked direclty in code in handlers in sample
-* Add `Table` support
-* Add diagrams: sequence or flow for main program
+* Implement missing _Card Elements_
+  * Add `RichTextBlock`
+  * Add `TextRun`
+  * `MediaSource` implemented as map in `Media`
+* Implement missing _Containers_
+  * Add `Table`
+  * Add `TableCell`
+  * `Fact` implemented as map in `FactSet`
+* Implement missing _Inputs_
+  * `Input.Choice` implemented as map in `ChoiceSet`
+* Implement missing _Actions_
+  * Add `ToggleVisibility` - currently implemented as `no-op`
+  * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
 
 ## Changes
 2023 06

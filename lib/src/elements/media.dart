@@ -1,3 +1,7 @@
+/// Implements
+/// * https://adaptivecards.io/explorer/Media.html
+/// * https://adaptivecards.io/explorer/MediaSource.html
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -32,6 +36,7 @@ class _AdaptiveMediaState extends State<AdaptiveMedia>
     super.initState();
 
     postUrl = adaptiveMap["poster"];
+    // https://adaptivecards.io/explorer/MediaSource.html
     sourceUrl = adaptiveMap["sources"][0]["url"];
     initializePlayer();
   }

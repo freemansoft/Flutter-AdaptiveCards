@@ -1,3 +1,6 @@
+/// Implements
+/// https://adaptivecards.io/explorer/FactSet.html
+/// https://adaptivecards.io/explorer/Fact.html
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
@@ -21,6 +24,8 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
   @override
   void initState() {
     super.initState();
+
+    /// https://adaptivecards.io/explorer/Fact.html
     facts = List<Map>.from(adaptiveMap["facts"]).toList();
   }
 

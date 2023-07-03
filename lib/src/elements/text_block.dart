@@ -1,3 +1,6 @@
+///
+/// https://adaptivecards.io/explorer/TextBlock.html
+///
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';

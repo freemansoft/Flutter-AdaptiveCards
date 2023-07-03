@@ -1,3 +1,6 @@
+///
+/// https://adaptivecards.io/explorer/Input.Toggle.html
+///
 import 'package:flutter/material.dart';
 
 import '../additional.dart';
