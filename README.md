@@ -10,7 +10,30 @@ This is an Adaptive Card implementation for Flutter that has been been updated f
   * [Template samples. Templates are not supported in this library](https://github.com/microsoft/AdaptiveCards/tree/main/samples/Templates/Scenarios)
 * [Another example repo containing samples/templates](https://github.com/pnp/AdaptiveCards-Templates)
 
+The cannonical flow would be
+
+```mermaid
+sequenceDiagram
+    participant user as User
+    participant browser as Client or Browser or Device
+    participant flutter-app as Flutter App
+    participant remote-site as Backend API
+
+    user        ->> browser: User Action
+    browser     ->> flutter-app: Submit Request
+    activate flutter-app
+    flutter-app ->>  remote-site: Invoke API
+    activate remote-site
+    remote-site -->> flutter-app: Adaptive Card
+    deactivate remote-site
+    flutter-app ->>  flutter-app: Create Widget Tree from Adaptive Cards
+    flutter-app -->> browser: Device markup / Controls
+    deactivate flutter-app
+```
+
+
 # Execution
+
 
 ## Web
 The web version will have a CORs issue so run it with the mobile compatible _html_ renderer.

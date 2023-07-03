@@ -47,12 +47,11 @@ flutter run lib/lab_web.dart -d emulator-555
 
 
 ```mermaid
-
 sequenceDiagram
     participant user as User
     participant browser as Browser
     participant flutter-app as Flutter App
-    participant remote-site as Remote Site
+    participant remote-site as Adaptive Cards GitHub Sample Repo
 
     user        ->> browser: Enter URL and hit enter
     browser     ->> flutter-app: Submit Adaptive Card Request
