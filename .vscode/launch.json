@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "App",
+      "name": "Examples App",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -11,7 +11,7 @@
       "args": []
     },
     {
-      "name": "Web",
+      "name": "Examples Web",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -27,7 +27,7 @@
       ]
     },
     {
-      "name": "Emulator-555",
+      "name": "Examples Emulator-555",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -37,6 +37,34 @@
         "-d",
         "emulator-555"
       ]
-    }
+    },
+    {
+      "name": "Example lab_web Web",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "cwd": "${workspaceFolder}/example",
+      "program": "lib/lab_web.dart",
+      "args": [
+        "-d",
+        "chrome",
+        "--web-renderer",
+        "html",
+        "--web-port",
+        "3000"
+      ]
+    },
+    {
+      "name": "Examples lab_web Emulator-555",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "cwd": "${workspaceFolder}/example",
+      "program": "lib/lab_web.dart",
+      "args": [
+        "-d",
+        "emulator-555"
+      ]
+    },
   ]
 }
