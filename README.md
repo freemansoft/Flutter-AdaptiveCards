@@ -66,8 +66,9 @@ Framework • revision 62bd79521d (3 months ago) • 2023-03-30 10:59:36 -0700
 Engine • revision ec975089ac
 Tools • Dart 2.19.6 • DevTools 2.20.1
 ```
-I fixed the version of Flutter while working in this repo with
+You can move to this version of flutter by:
 ```
+  cd <flutter-install-directory>
 	git checkout 3.7.9
 	flutter doctor -v
 ```
