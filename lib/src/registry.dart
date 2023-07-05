@@ -7,6 +7,7 @@ import 'containers/column_set.dart';
 import 'containers/container.dart';
 import 'containers/fact_set.dart';
 import 'containers/image_set.dart';
+import 'containers/table.dart';
 import 'elements/action_set.dart';
 import 'elements/actions/open_url.dart';
 import 'elements/actions/show_card.dart';
@@ -155,6 +156,11 @@ class CardRegistry {
       case "FactSet":
         return AdaptiveFactSet(
           adaptiveMap: map,
+        );
+      case "Table":
+        return AdaptiveTable(
+          adaptiveMap: map,
+          supportMarkdown: supportMarkdown,
         );
       case "ImageSet":
         return AdaptiveImageSet(

@@ -216,6 +216,8 @@ class MyApp extends StatelessWidget {
                   title: 'Input.ChoiceSet',
                   urls: ["lib/inputs/input_choice_set/example1"],
                 ),
+            'Table': (context) =>
+                GenericListPage(title: 'table', urls: ["lib/table/example1"]),
             'about': (context) => AboutPage(),
             'Render Time': (context) => RenderTimePage(),
             'Network via Assets': (context) => NetworkPage(
@@ -311,6 +313,8 @@ class _MyHomePageState extends State<MyHomePage> {
             'Sample Show Card Wizard',
             'Sample Agenda'
           ]),
+          Divider(),
+          getRow(['Table'])
         ],
       ),
     );

@@ -87,15 +87,15 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
   * `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
     * currently invoked direclty in code in handlers in sample
 * Implement missing _Card Elements_
-  * Add `RichTextBlock`
-  * Add `TextRun`
-  * `MediaSource` implemented as map in `Media`
+  * Add `RichTextBlock` see https://adaptivecards.io/explorer/RichTextBlock.html
+  * Add `TextRun` see https://adaptivecards.io/explorer/TextRun.html
+  * `MediaSource` implemented as a map in `Media`
 * Implement missing _Containers_
-  * Add `Table`
-  * Add `TableCell`
-  * `Fact` implemented as map in `FactSet`
+  * Add `Table` see https://adaptivecards.io/explorer/Table.html
+  * Add `TableCell` see https://adaptivecards.io/explorer/TableCell.html
+  * `Fact` implemented as a map in `FactSet`
 * Implement missing _Inputs_
-  * `Input.Choice` implemented as map in `ChoiceSet`
+  * `Input.Choice` implemented as a map in `ChoiceSet`
 * Implement missing _Actions_
   * Add `ToggleVisibility` - currently implemented as `no-op`
   * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
