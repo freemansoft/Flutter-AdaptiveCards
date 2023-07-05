@@ -3,11 +3,11 @@ This is an Adaptive Card implementation for Flutter that has been been updated f
 ![Adaptive Cards](https://adaptivecards.io/content/bf-logo.png)
 
 * [Adaptive Cards website](https://adaptivecards.io/)
-* [Description of Active Cards]( https://github.com/MicrosoftDocs/AdaptiveCards)
-* [The main Microsoft Active Cards site](https://adaptivecards.io/explorer)
+* [Adaptive Cards Schema Docs](https://adaptivecards.io/explorer)
 * [The main GitHub repo with samples](https://github.com/microsoft/AdaptiveCards)
   * [The v1.5 samples on the main GitHub repo](https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5/Scenarios)
   * [Template samples. Templates are not supported in this library](https://github.com/microsoft/AdaptiveCards/tree/main/samples/Templates/Scenarios)
+* [Description of Active Cards]( https://github.com/MicrosoftDocs/AdaptiveCards)
 * [Another example repo containing samples/templates](https://github.com/pnp/AdaptiveCards-Templates)
 
 The cannonical flow would be
