@@ -6,11 +6,13 @@
 ///
 /// Reasonable test schema is https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json
 ///
+import 'dart:developer';
 import 'package:format/format.dart';
 import 'package:flutter/material.dart';
 
 import '../base.dart';
 import '../utils.dart';
+import 'container.dart';
 
 class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTable(
@@ -38,20 +40,51 @@ class _AdaptiveTableState extends State<AdaptiveTable>
     // Shold all be Table Rows
     rows = List<Map<String, dynamic>>.from(adaptiveMap["rows"] ?? []);
 
-    print(format("Table: columns: {} rows: {}", columns.length, rows.length));
+    // print(format("Table: columns: {} rows: {}", columns.length, rows.length));
     // TODO: Need to create widgets/adaptivecards for all the items in each TableCell
     // Contents of TableCell will be a widget that can hold any number of rendeing widgets
 
     tableRows = List<TableRow>.generate(rows.length, (rowNum) {
-      return TableRow(
-          children: List<Widget>.generate(columns.length, (colNum) {
+      // this row out of all the rows
+      Map<String, dynamic> row = rows[rowNum];
+      //print(format("Row: num:{} - {})", rowNum, row.toString()));
+
+      // All the table cells in this row [cell, cell, cell]
+      List<Map<String, dynamic>> rowTableCells =
+          List<Map<String, dynamic>>.from(rows[rowNum]["cells"]);
+      //print(format("rowTableCells: row:{} length:{} - {} ", rowNum,
+      //    rowTableCells.length, rowTableCells.toString()));
+
+      // all of the expected widgets in this row [cell[widget], cell[widget]]
+      List<List<dynamic>> rowCellItems =
+          List<List<dynamic>>.generate(rowTableCells.length, (rowNum) {
+        return rowTableCells[rowNum]["items"];
+      });
+      // print(format("rowCellItems: row:{} length:{} - {}", rowNum,
+      //    rowCellItems.length, rowCellItems.toString()));
+
+      List<TableCell> tableCells =
+          List<TableCell>.generate(rowCellItems.length, (col) {
+        List<Map<String, dynamic>> oneCellItems =
+            List<Map<String, dynamic>>.from(rowCellItems[col]);
+        // print(format("oneCellItems: row:{} col:{} widgets in cell:{} - {}",
+        //     rowNum, col, oneCellItems.length, oneCellItems.toString()));
         return TableCell(
-            child: Text(
-                format("Table Cell not implemented ({},{})", rowNum, colNum)));
-      }));
+            child: Scrollbar(
+                child: Wrap(
+                    children: List<Widget>.generate(oneCellItems.length,
+                        (widgetIndex) {
+          //print(oneCellItems[widgetIndex]);
+          return widgetState.cardRegistry.getElement(oneCellItems[widgetIndex]);
+        }).toList())));
+      }).toList();
+
+      // print(format("cell children: {}", tableCellChildren));
+      // return TableRow(children: [tableCellChildren]);
+      return TableRow(children: tableCells);
     });
 
-    horizontalAlignment = loadHorizontalAlignment();
+    //horizontalAlignment = loadHorizontalAlignment();
   }
 
   @override
