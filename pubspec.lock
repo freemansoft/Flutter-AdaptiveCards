@@ -208,6 +208,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  format:
+    dependency: "direct main"
+    description:
+      name: format
+      sha256: cec3ceb18e615016713f485bf41c32a3278fd7a7ea66f0f235b9115be7c2dd97
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   frontend_server_client:
     dependency: transitive
     description:

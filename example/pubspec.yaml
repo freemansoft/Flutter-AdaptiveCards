@@ -55,5 +55,6 @@ flutter:
     - lib/inputs/input_choice_set/
     - lib/media/example1
     - lib/samples/
+    - lib/table/
 
 publish_to: none

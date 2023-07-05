@@ -25,6 +25,7 @@ dependencies:
   video_player: ^2.6.1
   ## Markdown renderer
   flutter_markdown: ^0.6.14
+  format: ^1.1.1
 
 dev_dependencies:
   flutter_test:
