@@ -89,21 +89,23 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
 * Implement missing _Card Elements_
   * Add `RichTextBlock` see https://adaptivecards.io/explorer/RichTextBlock.html
   * Add `TextRun` see https://adaptivecards.io/explorer/TextRun.html
-  * `MediaSource` implemented as a map in `Media`
+  * `MediaSource` currently implemented as a map in `Media`
 * Implement missing _Containers_
   * Add `Table` see https://adaptivecards.io/explorer/Table.html
-  * Add `TableCell` see https://adaptivecards.io/explorer/TableCell.html
-  * `Fact` implemented as a map in `FactSet`
+  * Add `TableCell` currently implemented in-line in `Table` see https://adaptivecards.io/explorer/TableCell.html
+  * `Fact` currently implemented as a map in `FactSet`
 * Implement missing _Inputs_
-  * `Input.Choice` implemented as a map in `ChoiceSet`
+  * `Input.Choice` currently implemented as a map in `ChoiceSet`
 * Implement missing _Actions_
   * Add `ToggleVisibility` - currently implemented as `no-op`
   * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
 
 ## Changes
+2023 07
+* Brain dead `Table` implementation as a starting point
 2023 06
 * Updated where nulls were used by Flutter is now null safe.
-* Picked a default with for text entry that may be wrong or differ from the old default.
+* Picked a default with for text alignment that may be wrong or differ from the old default.
 * Just did the dumb fix for mockito mocking with null safety.
 * Test images updated for windows
 * Image URLs updated to their new homes.  Some old sites were migrated or taken down
