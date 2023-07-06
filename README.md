@@ -55,7 +55,7 @@ flutter run -d chrome --web-renderer html --web-port 3000
 1. I updated the golden images to match my windows machine.  It may be that they were correct for a Mac or linux machine.
 
 # Compatibility
-_to be moved to changelog probably_
+_Compatability changes should be captured in the Changelog section below_
 
 This codebase has been updated to support some of the null safety requred for 3.0.0.  It works with the following version of flutter.
 
@@ -73,13 +73,13 @@ You can move to this version of flutter by:
 	flutter doctor -v
 ```
 
-You can find the Flutter / Dart bundling versions here: https://docs.flutter.dev/release/archive?tab=windows
+Released Flutter / Dart bundling versions are located here: https://docs.flutter.dev/release/archive?tab=windows
 
 ## VS Code
-In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extension cleaned up some imports and mad other changes that have been comitted to the repository.
-1. VSCode told me to enable `Developer Mode` in order to run the app
+This repo has been reformatted and updated using VS Code extensions.  The VS Code Flutter/Dart extension cleaned up some imports and mad other changes that have been comitted to the repository.
+1. VSCode told me to enable `Developer Mode` in **Windows** settings in order to run the examples. Is that for the Windows app or the Web app?
 
-## TODO
+## Open TODO items
 * Add template and data json merge support
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
@@ -101,9 +101,9 @@ In this repo the code is managed with VS Code.  The VS Code Flutter/Dart extensi
   * Add `ToggleVisibility` - currently implemented as `no-op`
   * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
 
-## Changes
+## ChangeLog
 2023 07
-* Brain dead `Table` implementation as a starting point
+* added _brain dead_ `Table` implementation as a starting point
 2023 06
 * Updated where nulls were used by Flutter is now null safe.
 * Picked a default with for text alignment that may be wrong or differ from the old default.
