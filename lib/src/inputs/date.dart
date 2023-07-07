@@ -39,8 +39,10 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
     isRequired = adaptiveMap['isRequired'] ?? false;
     try {
       selectedDateTime = inputFormat.parse(value);
-      min = inputFormat.parse(adaptiveMap['min']);
-      max = inputFormat.parse(adaptiveMap['max']);
+      if (adaptiveMap.containsKey('min'))
+        min = inputFormat.parse(adaptiveMap['min']);
+      if (adaptiveMap.containsKey('max'))
+        max = inputFormat.parse(adaptiveMap['max']);
     } catch (formatException) {}
   }
 
@@ -92,14 +94,15 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
                 return null;
               },
               onTap: () async {
-                await widgetState.pickDate(min, max, (DateTime? date) {
+                DateTime? result = await widgetState.pickDate(min, max);
+                if (result != null) {
                   setState(() {
-                    selectedDateTime = date;
+                    selectedDateTime = result;
                     controller.text = selectedDateTime == null
                         ? placeholder
                         : inputFormat.format(selectedDateTime!);
                   });
-                });
+                }
               },
             ),
           )

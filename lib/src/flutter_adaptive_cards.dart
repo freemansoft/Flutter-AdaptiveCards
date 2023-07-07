@@ -458,24 +458,13 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   /// min and max dates may be null, in this case no constraint is made in that direction
-  Future<void> pickDate(
-      DateTime? min, DateTime? max, Function(DateTime date) callback) async {
+  Future<DateTime?> pickDate(DateTime? min, DateTime? max) {
     DateTime initialDate = DateTime.now();
-
-    await showModalBottomSheet(
+    return showDatePicker(
         context: context,
-        builder: (BuildContext builder) => SizedBox(
-            height: MediaQuery.of(context).copyWith().size.height / 3,
-            child: CupertinoDatePicker(
-              mode: CupertinoDatePickerMode.date,
-              minimumDate:
-                  min ?? DateTime.now().subtract(Duration(days: 10000)),
-              maximumDate: max ?? DateTime.now().add(Duration(days: 10000)),
-              initialDateTime: initialDate,
-              onDateTimeChanged: (DateTime date) {
-                callback(date);
-              },
-            )));
+        initialDate: initialDate,
+        firstDate: min ?? DateTime.now().subtract(Duration(days: 10000)),
+        lastDate: max ?? DateTime.now().add(Duration(days: 10000)));
   }
 
   Future<TimeOfDay?> pickTime() {

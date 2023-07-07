@@ -80,8 +80,9 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 1. VSCode told me to enable `Developer Mode` in **Windows** settings in order to run the examples. Is that for the Windows app or the Web app?
 
 ## Open TODO items
-* Date Picker is busted sometimes in the web app and hardcoded to Cupertino while Time picker is Material default
 * Add template and data json merge support
+* Inject locale behavior in more places
+* Switch to Cupertino date/time pickers when running on IoS
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
     * `initData` currently injected directly into a widget
@@ -105,6 +106,8 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 ## ChangeLog
 2023 07
 * added _brain dead_ `Table` implementation as a starting point
+* migrated from print() to developer.log()
+* migrated from Cupertino date picker to Material datePicker to match the time picker.
 2023 06
 * Updated where nulls were used by Flutter is now null safe.
 * Picked a default with for text alignment that may be wrong or differ from the old default.
