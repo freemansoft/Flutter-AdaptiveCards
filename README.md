@@ -82,7 +82,6 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 ## Open TODO items
 * Add template and data json merge support
 * Inject locale behavior in more places
-* Switch to Cupertino date/time pickers when running on IoS
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
     * `initData` currently injected directly into a widget
@@ -107,7 +106,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 2023 07
 * added _brain dead_ `Table` implementation as a starting point
 * migrated from print() to developer.log()
-* migrated from Cupertino date picker to Material datePicker to match the time picker.
+* Support both Material and Cupertino Date and Time pickers based on platform
 2023 06
 * Updated where nulls were used by Flutter is now null safe.
 * Picked a default with for text alignment that may be wrong or differ from the old default.

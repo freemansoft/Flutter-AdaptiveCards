@@ -46,7 +46,8 @@ class _AdaptiveTimeInputState extends State<AdaptiveTimeInput>
       adaptiveMap: adaptiveMap,
       child: ElevatedButton(
         onPressed: () async {
-          TimeOfDay? result = await widgetState.pickTimeMaterial(context);
+          TimeOfDay? result = await widgetState.timePickerForPlatform(
+              context, selectedTime, min, max);
           if (result != null) {
             if (result.hour >= min.hour && result.hour <= max.hour) {
               widgetState.showError(

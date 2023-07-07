@@ -38,6 +38,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
     label = adaptiveMap['label'];
     isRequired = adaptiveMap['isRequired'] ?? false;
     try {
+      // set the value from the card as the current selected
       selectedDateTime = inputFormat.parse(value);
       if (adaptiveMap.containsKey('min'))
         min = inputFormat.parse(adaptiveMap['min']);
@@ -94,8 +95,8 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
                 return null;
               },
               onTap: () async {
-                DateTime? result =
-                    await widgetState.pickDateMaterial(context, min, max);
+                DateTime? result = await widgetState.datePickerForPlatform(
+                    context, selectedDateTime, min, max);
                 if (result != null) {
                   setState(() {
                     selectedDateTime = result;

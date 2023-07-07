@@ -1,5 +1,8 @@
 library flutter_adaptive_cards;
 
+import 'dart:developer' as developer;
+import 'package:format/format.dart';
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -457,10 +460,54 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
             child: ChoiceFilter(data: data, callback: callback)));
   }
 
+  Future<DateTime?> datePickerForPlatform(
+      BuildContext context, DateTime? value, DateTime? min, DateTime? max) {
+    if (Theme.of(context).platform == TargetPlatform.macOS ||
+        Theme.of(context).platform == TargetPlatform.iOS) {
+      return datePickerCupertino(context, value, min, max);
+    } else {
+      return datePickerMaterial(context, value, min, max);
+    }
+  }
+
+  Future<DateTime?> datePickerCupertino(BuildContext context, DateTime? value,
+      DateTime? min, DateTime? max) async {
+    DateTime initialDate = value ?? DateTime.now();
+    DateTime? pickedDate = initialDate;
+
+    // showCupertinoModalPopup is a built-in function of the cupertino library
+    await showCupertinoModalPopup<DateTime?>(
+        context: context,
+        builder: (_) => Container(
+              height: 500,
+              color: const Color.fromARGB(255, 255, 255, 255),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 400,
+                    child: CupertinoDatePicker(
+                        mode: CupertinoDatePickerMode.date,
+                        initialDateTime: initialDate,
+                        onDateTimeChanged: (val) {
+                          pickedDate = val;
+                        }),
+                  ),
+
+                  // Close the modal
+                  CupertinoButton(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
+              ),
+            ));
+    return pickedDate;
+  }
+
   /// min and max dates may be null, in this case no constraint is made in that direction
-  Future<DateTime?> pickDateMaterial(
-      BuildContext context, DateTime? min, DateTime? max) {
-    DateTime initialDate = DateTime.now();
+  Future<DateTime?> datePickerMaterial(
+      BuildContext context, DateTime? value, DateTime? min, DateTime? max) {
+    DateTime initialDate = value ?? DateTime.now();
     return showDatePicker(
         context: context,
         initialDate: initialDate,
@@ -468,8 +515,76 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         lastDate: max ?? DateTime.now().add(Duration(days: 10000)));
   }
 
-  Future<TimeOfDay?> pickTimeMaterial(BuildContext context) {
-    TimeOfDay initialTimeOfDay = TimeOfDay.now();
+  Future<TimeOfDay?> timePickerForPlatform(BuildContext context,
+      TimeOfDay? defaultTime, TimeOfDay? minTime, TimeOfDay? maxTime) {
+    if (Theme.of(context).platform == TargetPlatform.macOS ||
+        Theme.of(context).platform == TargetPlatform.iOS) {
+      return timePickerCupertino(context, defaultTime, minTime, maxTime);
+    } else {
+      return timePickerMaterial(context, defaultTime, minTime, maxTime);
+    }
+  }
+
+  Future<TimeOfDay?> timePickerCupertino(
+      BuildContext context,
+      TimeOfDay? defaultTime,
+      TimeOfDay? minimumTime,
+      TimeOfDay? maximumTime) async {
+    TimeOfDay initialTimeOfDay = defaultTime ?? TimeOfDay.now();
+    // the picker requires a DateTime but won't be carried forward in the results
+    DateTime initialDateTime =
+        DateTime(1, 1, 1, initialTimeOfDay.hour, initialTimeOfDay.minute);
+    DateTime minDateTime =
+        DateTime(1, 1, 1, minimumTime?.hour ?? 0, minimumTime?.minute ?? 0);
+    DateTime maxDateTime =
+        DateTime(1, 1, 1, maximumTime?.hour ?? 23, maximumTime?.minute ?? 59);
+    developer.log(format(
+        "CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}",
+        initialTimeOfDay,
+        initialDateTime,
+        minDateTime,
+        maxDateTime));
+
+    TimeOfDay? pickedTimeOfDay = initialTimeOfDay;
+
+    // showCupertinoModalPopup is a built-in function of the cupertino library
+    await showCupertinoModalPopup<TimeOfDay?>(
+        context: context,
+        builder: (_) => Container(
+              height: 500,
+              color: const Color.fromARGB(255, 255, 255, 255),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 400,
+                    child: CupertinoDatePicker(
+                        mode: CupertinoDatePickerMode.time,
+                        use24hFormat: false,
+                        initialDateTime: initialDateTime,
+                        minimumDate: minDateTime,
+                        maximumDate: maxDateTime,
+                        onDateTimeChanged: (val) {
+                          pickedTimeOfDay = TimeOfDay.fromDateTime(val);
+                        }),
+                  ),
+
+                  // Close the modal
+                  CupertinoButton(
+                    child: const Text('OK'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
+              ),
+            ));
+    return pickedTimeOfDay;
+  }
+
+  ///
+  /// TODO: Does not actually support min and max time
+  ///
+  Future<TimeOfDay?> timePickerMaterial(BuildContext context,
+      TimeOfDay? defaultTime, TimeOfDay? minTime, TimeOfDay? maxTime) {
+    TimeOfDay initialTimeOfDay = defaultTime ?? TimeOfDay.now();
     return showTimePicker(context: context, initialTime: initialTimeOfDay);
   }
 
