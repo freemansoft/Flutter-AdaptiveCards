@@ -28,7 +28,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
   DateTime? selectedDateTime;
   DateTime? min;
   DateTime? max;
-  final inputFormat = DateFormat('dd/MM/yyyy');
+  final inputFormat = DateFormat('yyyy-MM-dd');
   TextEditingController controller = TextEditingController();
 
   @override

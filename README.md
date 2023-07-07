@@ -80,7 +80,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 1. VSCode told me to enable `Developer Mode` in **Windows** settings in order to run the examples. Is that for the Windows app or the Web app?
 
 ## Open TODO items
-* Date Picker is busted and hardcoded to Cupertino while Time picker is Material default
+* Date Picker is busted sometimes in the web app and hardcoded to Cupertino while Time picker is Material default
 * Add template and data json merge support
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
