@@ -41,21 +41,19 @@ class _AdaptiveTableState extends State<AdaptiveTable>
     rows = List<Map<String, dynamic>>.from(adaptiveMap["rows"] ?? []);
 
     // print(format("Table: columns: {} rows: {}", columns.length, rows.length));
-    // TODO: Need to create widgets/adaptivecards for all the items in each TableCell
-    // Contents of TableCell will be a widget that can hold any number of rendeing widgets
-
+    // TableCell(Widet([Widget])) A TableCell contains a Widget that contains an arbitrary number of widgets
     tableRows = List<TableRow>.generate(rows.length, (rowNum) {
       // this row out of all the rows
       Map<String, dynamic> row = rows[rowNum];
       //print(format("Row: num:{} - {})", rowNum, row.toString()));
 
-      // All the table cells in this row [cell, cell, cell]
+      // All the table cell markup in this row [cell, cell, cell]
       List<Map<String, dynamic>> rowTableCells =
-          List<Map<String, dynamic>>.from(rows[rowNum]["cells"]);
+          List<Map<String, dynamic>>.from(row["cells"]);
       //print(format("rowTableCells: row:{} length:{} - {} ", rowNum,
       //    rowTableCells.length, rowTableCells.toString()));
 
-      // all of the expected widgets in this row [cell[widget], cell[widget]]
+      // The row markup contains a [TableCells[items]]
       List<List<dynamic>> rowCellItems =
           List<List<dynamic>>.generate(rowTableCells.length, (rowNum) {
         return rowTableCells[rowNum]["items"];
@@ -76,8 +74,8 @@ class _AdaptiveTableState extends State<AdaptiveTable>
                         (widgetIndex) {
           //print(oneCellItems[widgetIndex]);
           return widgetState.cardRegistry.getElement(oneCellItems[widgetIndex]);
-        }).toList())));
-      }).toList();
+        }))));
+      });
 
       // print(format("cell children: {}", tableCellChildren));
       // return TableRow(children: [tableCellChildren]);
