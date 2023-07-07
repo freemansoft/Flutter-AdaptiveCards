@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+import 'package:format/format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -33,7 +35,7 @@ class NetworkPage extends StatelessWidget {
             url: this.url,
             hostConfigPath: 'assets/host_config.json',
             onSubmit: (map) {
-              print(map);
+              developer.log(format("submit map: {}", map));
               // Send to server or handle locally
             },
             onOpenUrl: (url) {

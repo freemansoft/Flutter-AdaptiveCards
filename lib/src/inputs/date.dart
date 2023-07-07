@@ -1,6 +1,8 @@
 ///
 /// https://adaptivecards.io/explorer/Input.Date.html
 ///
+import 'dart:developer' as developer;
+import 'package:format/format.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +47,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
   @override
   Widget build(BuildContext context) {
     Locale myLocale = Localizations.localeOf(context);
-    print(myLocale);
+    developer.log(format("locale: {}", myLocale));
 
     return SeparatorElement(
         adaptiveMap: adaptiveMap,
@@ -122,7 +124,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
               : inputFormat.format(selectedDateTime!);
         });
       } catch (formatException) {
-        print(formatException);
+        developer.log(format("{}", formatException));
       }
     }
   }

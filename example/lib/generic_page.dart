@@ -1,3 +1,6 @@
+import 'dart:developer' as developer;
+import 'package:format/format.dart';
+
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +22,7 @@ class GenericListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(urls);
+    developer.log(format("URLs: {}", urls));
     return Scaffold(
       appBar: AppBar(
         title: Text(this.title),

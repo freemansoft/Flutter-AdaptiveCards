@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('vi', '')],
+          supportedLocales: const [Locale('en', "US"), Locale('vi', '')],
           title: 'Flutter Adaptive Cards',
           theme: theme,
           home: new MyHomePage(),

@@ -1,3 +1,6 @@
+import 'dart:developer' as developer;
+import 'package:format/format.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +49,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     super.initState();
 
     version = adaptiveMap['version'];
-    print("AdaptiveCardElement: " + this.id + " version: " + (version ?? ''));
+    developer.log(format(
+        "AdaptiveCardElement: {} version: {}", this.id, (version ?? '')));
 
     String stringAxis = resolver.resolve("actions", "actionsOrientation");
     if (stringAxis == "Horizontal")
