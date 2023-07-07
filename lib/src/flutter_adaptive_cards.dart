@@ -458,7 +458,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   /// min and max dates may be null, in this case no constraint is made in that direction
-  Future<DateTime?> pickDate(DateTime? min, DateTime? max) {
+  Future<DateTime?> pickDateMaterial(
+      BuildContext context, DateTime? min, DateTime? max) {
     DateTime initialDate = DateTime.now();
     return showDatePicker(
         context: context,
@@ -467,7 +468,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         lastDate: max ?? DateTime.now().add(Duration(days: 10000)));
   }
 
-  Future<TimeOfDay?> pickTime() {
+  Future<TimeOfDay?> pickTimeMaterial(BuildContext context) {
     TimeOfDay initialTimeOfDay = TimeOfDay.now();
     return showTimePicker(context: context, initialTime: initialTimeOfDay);
   }

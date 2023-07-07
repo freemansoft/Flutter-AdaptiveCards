@@ -94,7 +94,8 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
                 return null;
               },
               onTap: () async {
-                DateTime? result = await widgetState.pickDate(min, max);
+                DateTime? result =
+                    await widgetState.pickDateMaterial(context, min, max);
                 if (result != null) {
                   setState(() {
                     selectedDateTime = result;
