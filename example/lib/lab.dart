@@ -11,8 +11,11 @@ import 'package:flutter/foundation.dart'
 /// `flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-renderer html --web-port <port> `
 ///
 void main() {
-  debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
-  runApp(new MyApp());
+  // this forces fuchsia on all platforms including ios
+  // debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+  // Should pick up from some override maybe command line?
+  debugDefaultTargetPlatformOverride = null;
+  runApp(MyApp());
 }
 
 ///

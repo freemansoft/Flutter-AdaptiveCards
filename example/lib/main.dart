@@ -12,7 +12,10 @@ import 'generic_page.dart';
 import 'network_page.dart';
 
 void main() {
-  debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+  // this forces fuchsia on all platforms including ios
+  // debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+  // Should pick up from some override maybe command line?
+  debugDefaultTargetPlatformOverride = null;
   runApp(MyApp());
 }
 
