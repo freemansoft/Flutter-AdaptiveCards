@@ -80,7 +80,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 1. VSCode told me to enable `Developer Mode` in **Windows** settings in order to run the examples. Is that for the Windows app or the Web app?
 
 ## Open TODO items
-* Add template and data json merge support
+* Add template and data json merge support - Adaptive Cards 1.3
 * Inject locale behavior in more places
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
@@ -101,7 +101,10 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * Implement missing _Actions_
   * Add `ToggleVisibility` - currently implemented as `no-op`
   * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
-* Add ability to set `debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia` as command line override in examples
+* Examples
+  * Add ability to set `debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia` as command line override in examples instead of hard coding
+  * Fix Cupertino date picker light invisible text in spinners
+  * Changing from light to dark mode erases any selected data - noticiable in `Input` examples
 
 
 ## ChangeLog
@@ -109,7 +112,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * added _brain dead_ `Table` implementation as a starting point
 * migrated from print() to developer.log()
 * Support both Material and Cupertino Date and Time pickers based on platform
-* Removed `fuscia` target platform overrides in examples 
+* Removed `fuscia` target platform overrides in examples
 2023 06
 * Updated where nulls were used by Flutter is now null safe.
 * Picked a default with for text alignment that may be wrong or differ from the old default.
