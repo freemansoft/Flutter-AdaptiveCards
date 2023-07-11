@@ -103,7 +103,6 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
   * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
 * Examples
   * Add ability to set `debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia` as command line override in examples instead of hard coding
-  * Fix Cupertino date picker light invisible text in spinners
   * Changing from light to dark mode erases any selected data - noticiable in `Input` examples
 
 

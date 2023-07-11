@@ -480,8 +480,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         context: context,
         builder: (_) => Container(
               height: 500,
-              // the color seems light/dark correct without this
-              //color: const Color.fromARGB(255, 255, 255, 255),
               child: Column(
                 children: [
                   SizedBox(
@@ -553,8 +551,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         context: context,
         builder: (_) => Container(
               height: 500,
-              // the color seems light/dark correct without this
-              //color: const Color.fromARGB(255, 255, 255, 255),
               child: Column(
                 children: [
                   SizedBox(
