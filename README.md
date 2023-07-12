@@ -10,26 +10,37 @@ This is an Adaptive Card implementation for Flutter that has been been updated f
 * [Description of Active Cards]( https://github.com/MicrosoftDocs/AdaptiveCards)
 * [Another example repo containing samples/templates](https://github.com/pnp/AdaptiveCards-Templates)
 
-The cannonical flow would be
+Teams often create a flow management layer in front of the core business services. The cannonical flow would be
 
 ```mermaid
 sequenceDiagram
     participant user as User
     participant browser as Client or Browser or Device
     participant flutter-app as Flutter App
+    participant flow-services as Flow Services
     participant remote-site as Backend API
 
     user        ->> browser: User Action
     browser     ->> flutter-app: Submit Request
     activate flutter-app
-    flutter-app ->>  remote-site: Invoke API
+    flutter-app ->> remote-site: API Call
+    remote-site -->> flutter-app: Results
+    flutter-app ->> flow-services: Activate Flow
+    activate flow-services
+    flow-services ->>  remote-site: Invoke API
     activate remote-site
-    remote-site -->> flutter-app: Adaptive Card
+    remote-site -->> flow-services: API Results
     deactivate remote-site
+    flow-services ->>  flow-services: Generate Flow
+    flow-services -->> flutter-app: Adaptive Card
+    deactivate flow-services
     flutter-app ->>  flutter-app: Create Widget Tree from Adaptive Cards
+    flutter-app ->> remote-site: API Call
+    remote-site -->> flutter-app: Results
     flutter-app -->> browser: Device markup / Controls
     deactivate flutter-app
 ```
+
 
 
 # Execution
