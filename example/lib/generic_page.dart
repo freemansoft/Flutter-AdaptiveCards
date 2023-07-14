@@ -4,8 +4,6 @@ import 'package:format/format.dart';
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
 
-import 'brightness_switch.dart';
-
 ///
 /// A generic page that holds a list of AdaptiveCards based on the passed in URLs
 /// Similar to NetworkPage but operates against a list of local resources
@@ -27,7 +25,15 @@ class GenericListPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(this.title),
         actions: [
-          BrightnessSwitch(),
+          MaterialButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('about');
+            },
+            child: Text(
+              'About',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ],
       ),
       body: ListView.builder(

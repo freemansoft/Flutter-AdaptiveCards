@@ -1,9 +1,16 @@
-import 'package:dynamic_theme/dynamic_theme.dart';
-import 'package:dynamic_theme/theme_switcher_widgets.dart';
+import 'brightness_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 class AboutPage extends StatelessWidget {
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
+  final FlexSchemeData flexSchemeData;
+
+  const AboutPage(
+      {this.themeMode, this.onThemeModeChanged, this.flexSchemeData});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,29 +20,18 @@ class AboutPage extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.all(8),
         children: <Widget>[
-          ListTile(
-            title: Text("Change brightness"),
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (_) => BrightnessSwitcherDialog(
-                        onSelectedTheme: (it) {
-                          DynamicTheme.of(context).setBrightness(it);
-                        },
-                      ));
-            },
+          BrightnessSwitch(
+            themeMode: themeMode,
+            onThemeModeChanged: onThemeModeChanged,
+            flexSchemeData: flexSchemeData,
           ),
+          Divider(),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.asset("assets/neo_logo_light.png"),
-                  ),
-                  Divider(),
                   Text(
                     "Neo: AI-Assistant for Enterprise",
                     style: Theme.of(context).textTheme.titleMedium,

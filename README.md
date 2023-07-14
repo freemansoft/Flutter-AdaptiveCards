@@ -119,6 +119,8 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 
 ## ChangeLog
 2023 07
+* migrated example from `DynamicTheme` to https://rydmike.com/colorscheme https://rydmike.com/colorpicker
+  * https://github.com/rydmike/flex_color_scheme to get a better feel theme and color possibilities
 * added _brain dead_ `Table` implementation as a starting point
 * migrated from print() to developer.log()
 * Support both Material and Cupertino Date and Time pickers based on platform

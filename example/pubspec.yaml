@@ -12,10 +12,7 @@ dependencies:
   flutter_localizations: # Add this line
     sdk: flutter
 
-  dynamic_theme:
-    git:
-      url: https://github.com/Norbert515/dynamic_theme.git
-      ref: d4e2e04ffab14ea315b9a34a32cd8ac5ee21c763
+  flex_color_scheme: ^7.0.5
 
   url_launcher: ^6.1.10
   http: ^0.13.6

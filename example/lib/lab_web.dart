@@ -1,10 +1,10 @@
-import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
 
+import 'about_page.dart';
 import 'network_page.dart';
 
 ///
@@ -24,44 +24,80 @@ void main() {
 ///
 /// Does not use named routes
 ///
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  ThemeMode themeMode = ThemeMode.system;
+  FlexScheme usedScheme = FlexScheme.mandyRed;
+
   @override
   Widget build(BuildContext context) {
-    return DynamicTheme(
-        defaultBrightness: Brightness.dark,
-        data: (brightness) => new ThemeData(
-              primarySwatch: Colors.blue,
-              brightness: brightness,
+    return MaterialApp(
+      title: 'Flutter Demo',
+      // The Mandy red, light theme.
+      theme: FlexThemeData.light(scheme: usedScheme),
+      // The Mandy red, dark theme.
+      darkTheme: FlexThemeData.dark(scheme: usedScheme),
+      // Use dark or light theme based on system setting.
+      themeMode: themeMode,
+      home: new MyHomePage(
+        title: 'Flutter Adaptive CardWeb Tester',
+        themeMode: themeMode,
+        onThemeModeChanged: (ThemeMode mode) {
+          setState(() {
+            themeMode = mode;
+          });
+        },
+        flexSchemeData: FlexColor.schemes[usedScheme],
+      ),
+      routes: {
+        'about': (context) => AboutPage(
+              themeMode: themeMode,
+              onThemeModeChanged: (ThemeMode mode) {
+                setState(() {
+                  themeMode = mode;
+                });
+              },
+              flexSchemeData: FlexColor.schemes[usedScheme],
             ),
-        themedWidgetBuilder: (context, theme) {
-          return new MaterialApp(
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            title: 'Flutter Lab Demo',
-            theme: new ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: new MyHomePage(),
-          );
-        });
+      },
+    );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
-  @override
-  _MyHomePageState createState() => new _MyHomePageState();
-}
+class MyHomePage extends StatelessWidget {
+  MyHomePage(
+      {Key key,
+      this.title,
+      this.themeMode,
+      this.onThemeModeChanged,
+      this.flexSchemeData})
+      : super(key: key);
 
-class _MyHomePageState extends State<MyHomePage> {
+  final String title;
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
+  final FlexSchemeData flexSchemeData;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Flutter Adaptive Cards Demo'),
+        title: new Text(title),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('about');
+            },
+            child: Text(
+              'About',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
       ),
       body: ListView(children: <Widget>[
         SizedBox(

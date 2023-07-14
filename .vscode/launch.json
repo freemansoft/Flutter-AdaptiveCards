@@ -39,6 +39,22 @@
       ]
     },
     {
+      "name": "Example lab assets Web",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "cwd": "${workspaceFolder}/example",
+      "program": "lib/lab.dart",
+      "args": [
+        "-d",
+        "chrome",
+        "--web-renderer",
+        "html",
+        "--web-port",
+        "3000"
+      ]
+    },
+    {
       "name": "Example lab_web Web",
       "type": "dart",
       "request": "launch",

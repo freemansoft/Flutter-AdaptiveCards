@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 
 void main() => runApp(new MyApp());
@@ -6,29 +7,29 @@ void main() => runApp(new MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: new MyHomePage(),
+      // The Mandy red, light theme.
+      theme: FlexThemeData.light(scheme: FlexScheme.mandyRed),
+      // The Mandy red, dark theme.
+      darkTheme: FlexThemeData.dark(scheme: FlexScheme.mandyRed),
+      // Use dark or light theme based on system setting.
+      themeMode: ThemeMode.system,
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+class MyHomePage extends StatelessWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
 
-  @override
-  _MyHomePageState createState() => new _MyHomePageState();
-}
+  final String title;
 
-class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Flutter Demo Home Page'),
+        title: new Text(title),
       ),
       body: new Center(
         child: AdaptiveCard.asset(

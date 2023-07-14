@@ -1,8 +1,11 @@
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
+
+import 'about_page.dart';
 
 ///
 /// This program lets you specify a local or remote adaptive card for viewing.
@@ -26,32 +29,79 @@ void main() {
 const resourceUrl =
     String.fromEnvironment('url', defaultValue: 'lib/easy_card');
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  ThemeMode themeMode = ThemeMode.system;
+  FlexScheme usedScheme = FlexScheme.mandyRed;
+
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: new MyHomePage(),
+      // The Mandy red, light theme.
+      theme: FlexThemeData.light(scheme: usedScheme),
+      // The Mandy red, dark theme.
+      darkTheme: FlexThemeData.dark(scheme: usedScheme),
+      // Use dark or light theme based on system setting.
+      themeMode: themeMode,
+      home: MyHomePage(
+          title: 'Adaptive Cards Lab',
+          themeMode: themeMode,
+          onThemeModeChanged: (ThemeMode mode) {
+            setState(() {
+              themeMode = mode;
+            });
+          },
+          flexSchemeData: FlexColor.schemes[usedScheme]),
+      routes: {
+        'about': (context) => AboutPage(
+              themeMode: themeMode,
+              onThemeModeChanged: (ThemeMode mode) {
+                setState(() {
+                  themeMode = mode;
+                });
+              },
+              flexSchemeData: FlexColor.schemes[usedScheme],
+            ),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+class MyHomePage extends StatelessWidget {
+  MyHomePage(
+      {Key key,
+      this.title,
+      this.themeMode,
+      this.onThemeModeChanged,
+      this.flexSchemeData})
+      : super(key: key);
 
-  @override
-  _MyHomePageState createState() => new _MyHomePageState();
-}
+  final String title;
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
+  final FlexSchemeData flexSchemeData;
 
-class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Adpative cards lab'),
+        title: new Text(title),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('about');
+            },
+            child: Text(
+              'About',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
       ),
       body: new Center(
         child: SingleChildScrollView(child: DemoAdaptiveCard(resourceUrl)),
