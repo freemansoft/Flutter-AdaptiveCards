@@ -176,4 +176,17 @@ void main() {
 
     await tester.pump(Duration(seconds: 1));
   });
+
+  testWidgets('Golden Sample 16', (tester) async {
+    ValueKey key = ValueKey('paint');
+    Widget sample1 = getSampleForGoldenTest(key, 'example16');
+
+    await tester.pumpWidget(sample1);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+        find.byKey(key), matchesGoldenFile('gold_files/sample16-base.png'));
+
+    await tester.pump(Duration(seconds: 1));
+  });
 }

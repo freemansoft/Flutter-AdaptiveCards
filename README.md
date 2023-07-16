@@ -115,6 +115,8 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * Examples
   * Add ability to set `debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia` as command line override in examples instead of hard coding
   * Changing from light to dark mode erases any selected data - noticiable in `Input` examples
+* Tests
+  * samples_smoke_tests.dart dynamically creates test widgets and those are not detected by the test jig so none of those are run.
 
 
 ## ChangeLog
