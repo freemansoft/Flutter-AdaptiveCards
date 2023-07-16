@@ -11,8 +11,8 @@ void main() {
     HttpOverrides.global = MyTestHttpOverrides();
   });
 
-  for (int i = 1; i <= 15; i++) {
-    testWidgets('sample$i smoke test', (tester) async {
+  for (int i = 1; i <= 16; i++) {
+    testWidgets('example$i smoke test', (tester) async {
       Widget widget = getWidget('example$i', 'host_config');
 
       // This ones pretty big, we need to wrap in in a scrollable

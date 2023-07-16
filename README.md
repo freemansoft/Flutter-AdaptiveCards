@@ -116,11 +116,12 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
   * Add ability to set `debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia` as command line override in examples instead of hard coding
   * Changing from light to dark mode erases any selected data - noticiable in `Input` examples
 * Tests
-  * samples_smoke_tests.dart dynamically creates test widgets and those are not detected by the test jig so none of those are run.
+  * findText for Text doesn't seem to be working so commented out in `basic_test.dart`
 
 
 ## ChangeLog
 2023 07
+* flutter tests must end in `_test`.  Renamed `_tests` files to `_test`
 * migrated example from `DynamicTheme` to https://rydmike.com/colorscheme https://rydmike.com/colorpicker
   * https://github.com/rydmike/flex_color_scheme to get a better feel theme and color possibilities
 * example about pane is injected modal panel
