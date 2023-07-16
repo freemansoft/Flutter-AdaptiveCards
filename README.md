@@ -41,12 +41,10 @@ sequenceDiagram
     deactivate flutter-app
 ```
 
-
-
 # Execution
 
-
 ## Web
+
 The web version will have a CORs issue so run it with the mobile compatible _html_ renderer.
 
 ```
@@ -55,17 +53,19 @@ flutter run -d chrome --web-renderer html --web-port 3000
 ```
 
 ## Emulator
+
 ```
 cd example
 flutter run -d chrome --web-renderer html --web-port 3000
 ```
 
-
 # Tests
+
 1. Test sample 2 is still failing with a rendering issue on my Windows 11 PC that I don't understand
 1. I updated the golden images to match my windows machine.  It may be that they were correct for a Mac or linux machine.
 
 # Compatibility
+
 _Compatability changes should be captured in the Changelog section below_
 
 This codebase has been updated to support some of the null safety requred for 3.0.0.  It works with the following version of flutter.
@@ -77,20 +77,25 @@ Framework • revision 62bd79521d (3 months ago) • 2023-03-30 10:59:36 -0700
 Engine • revision ec975089ac
 Tools • Dart 2.19.6 • DevTools 2.20.1
 ```
+
 You can move to this version of flutter by:
+
 ```
   cd <flutter-install-directory>
-	git checkout 3.7.9
-	flutter doctor -v
+ git checkout 3.7.9
+ flutter doctor -v
 ```
 
-Released Flutter / Dart bundling versions are located here: https://docs.flutter.dev/release/archive?tab=windows
+Released Flutter / Dart bundling versions are located here: <https://docs.flutter.dev/release/archive?tab=windows>
 
 ## VS Code
+
 This repo has been reformatted and updated using VS Code extensions.  The VS Code Flutter/Dart extension cleaned up some imports and mad other changes that have been comitted to the repository.
+
 1. VSCode told me to enable `Developer Mode` in **Windows** settings in order to run the examples. Is that for the Windows app or the Web app?
 
 ## Open TODO items
+
 * Add template and data json merge support - Adaptive Cards 1.3
 * Inject locale behavior in more places
 * Data merge changes - possibly related to template
@@ -100,12 +105,12 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
   * `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
     * currently invoked direclty in code in handlers in sample
 * Implement missing _Card Elements_
-  * Add `RichTextBlock` see https://adaptivecards.io/explorer/RichTextBlock.html
-  * Add `TextRun` see https://adaptivecards.io/explorer/TextRun.html
+  * Add `RichTextBlock` see <https://adaptivecards.io/explorer/RichTextBlock.html>
+  * Add `TextRun` see <https://adaptivecards.io/explorer/TextRun.html>
   * `MediaSource` currently implemented as a map in `Media`
 * Implement missing _Containers_
-  * Add `Table` see https://adaptivecards.io/explorer/Table.html
-  * Add `TableCell` currently implemented in-line in `Table` see https://adaptivecards.io/explorer/TableCell.html
+  * Add `Table` see <https://adaptivecards.io/explorer/Table.html>
+  * Add `TableCell` currently implemented in-line in `Table` see <https://adaptivecards.io/explorer/TableCell.html>
   * `Fact` currently implemented as a map in `FactSet`
 * Implement missing _Inputs_
   * `Input.Choice` currently implemented as a map in `ChoiceSet`
@@ -118,12 +123,13 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * Tests
   * findText for Text doesn't seem to be working so commented out in `basic_test.dart`
 
-
 ## ChangeLog
+
 2023 07
+
 * flutter tests must end in `_test`.  Renamed `_tests` files to `_test`
-* migrated example from `DynamicTheme` to https://rydmike.com/colorscheme https://rydmike.com/colorpicker
-  * https://github.com/rydmike/flex_color_scheme to get a better feel theme and color possibilities
+* migrated example from `DynamicTheme` to <https://rydmike.com/colorscheme> <https://rydmike.com/colorpicker>
+  * <https://github.com/rydmike/flex_color_scheme> to get a better feel theme and color possibilities
 * example about pane is injected modal panel
 * added _brain dead_ `Table` implementation as a starting point
 * migrated from print() to developer.log()
@@ -153,16 +159,13 @@ _________________________________________________________________________
 Everything below this line is from the original README.md
 The referenced GitHub repository has vanished.  Look at the forking train to figure out where the current repository was forked from or look here:
 
-1. https://github.com/freemansoft/Flutter-AdaptiveCards Mine forked from
-1. https://github.com/lannes/Flutter-AdaptiveCards forked from
-1. https://github.com/juansoilan/Flutter-AdaptiveCards forked from the original
-1. https://github.com/rodydavis/Flutter-AdaptiveCards the original but possibly from the no longer here repo
-1. https://github.com/neohelden/Flutter-AdaptiveCards
-
+1. <https://github.com/freemansoft/Flutter-AdaptiveCards> Mine forked from
+1. <https://github.com/lannes/Flutter-AdaptiveCards> forked from
+1. <https://github.com/juansoilan/Flutter-AdaptiveCards> forked from the original
+1. <https://github.com/rodydavis/Flutter-AdaptiveCards> the original but possibly from the no longer here repo
+1. <https://github.com/neohelden/Flutter-AdaptiveCards>
 
 ___________________________________________________________________________
-
-![AdaptiveCards for Flutter](https://github.com/neohelden/Flutter-AdaptiveCards/raw/master/doc/neohelden-flutter-adaptive-cards-lib.jpg?raw=true "Adaptive Cards for Flutter")
 
 # Adaptive Cards for Flutter
 
@@ -170,11 +173,13 @@ We decided to build a Flutter implementation of Adaptive Cards because we believ
 
 ### Installing
 
+**No releases have been created for 0.2.0 at this time**
+
 Add this to your package's pubspec.yaml file:
 
 ```yml
 dependencies:
-  flutter_adaptive_cards: ^0.1.2
+  flutter_adaptive_cards: ^0.2.0
 ```
 
 ```dart
@@ -236,8 +241,16 @@ We try to show every possible configuration parameter supported by the AdaptiveC
 
 ## Running the tests
 
+Test files must end in `_test` , `_test.dart` in order to be recognized by the test jig.
+
 ```sh
 flutter test
+```
+
+to see the result of each test
+
+```sh
+flutter test -r expanded
 ```
 
 and to update the golden files run
@@ -265,11 +278,11 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Authors
 
-- **Norbert Kozsir** (@Norbert515) – _Initial work_, Former Head of Flutter development at Neohelden GmbH
-- **Pascal Stech** (@Curvel) – _Maintainer_, Flutter Developer at Neohelden GmbH (NeoSEALs team)
-- **Maik Hummel** (@Beevelop) – _Maintainer_, CTO at Neohelden GmbH (Daddy of the NeoSEALs team)
+* **Norbert Kozsir** (@Norbert515) – _Initial work_, Former Head of Flutter development at Neohelden GmbH
+* **Pascal Stech** (@Curvel) – _Maintainer_, Flutter Developer at Neohelden GmbH (NeoSEALs team)
+* **Maik Hummel** (@Beevelop) – _Maintainer_, CTO at Neohelden GmbH (Daddy of the NeoSEALs team)
 
-See also the list of [contributors](https://github.com/neohelden/flutter_adaptive_cards/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/freemansoft/Flutter-AdaptiveCards/contributors) who participated in this project.
 
 ## License
 

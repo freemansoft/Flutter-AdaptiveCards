@@ -1,7 +1,7 @@
 name: flutter_adaptive_cards
 description: Adaptive Cards are platform-agnostic snippets of UI, authored in JSON, that apps and services can openly exchange.
-version: 0.1.2
-homepage: https://github.com/neohelden/Flutter-AdaptiveCards
+version: 0.2.0
+homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
 
 environment:
   sdk: ">=2.19.6 <3.0.0"
