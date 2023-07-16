@@ -15,10 +15,10 @@ class NetworkPage extends StatelessWidget {
   final AboutPage aboutPage;
 
   NetworkPage({
-    Key key,
-    this.title,
-    this.url,
-    this.aboutPage,
+    Key? key,
+    required this.title,
+    required this.url,
+    required this.aboutPage,
   }); // todo: add required here
 
   ///

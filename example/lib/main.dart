@@ -30,6 +30,9 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   ThemeMode themeMode = ThemeMode.system;
   FlexScheme usedScheme = FlexScheme.mandyRed;
+  // we know mandyRed exists in this map...
+  FlexSchemeData usedSchemeData =
+      FlexColor.schemes[FlexScheme.mandyRed] as FlexSchemeData;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,7 @@ class MyAppState extends State<MyApp> {
           themeMode = mode;
         });
       },
-      flexSchemeData: FlexColor.schemes[usedScheme],
+      flexSchemeData: usedSchemeData,
     );
     return MaterialApp(
       localizationsDelegates: const [
@@ -104,7 +107,9 @@ class MyAppState extends State<MyApp> {
               ],
               aboutPage: aboutPage,
             ),
-        'Samples with dynamic HostConfig': (context) => DynamicHostConfigPage(),
+        'Samples with dynamic HostConfig': (context) => DynamicHostConfigPage(
+              aboutPage: aboutPage,
+            ),
         'TextBlock': (context) => GenericListPage(
               title: "TextBlock (last is markdownEnabled:false)",
               urls: [
@@ -240,7 +245,10 @@ class MyAppState extends State<MyApp> {
               aboutPage: aboutPage,
             ),
         'Action.ShowCard': (context) => GenericListPage(
-            title: 'Action.ShowCard', urls: ["lib/action_show_card/example1"]),
+              title: 'Action.ShowCard',
+              urls: ["lib/action_show_card/example1"],
+              aboutPage: aboutPage,
+            ),
         'Input.Text': (context) => GenericListPage(
               title: 'Input.text',
               urls: [
@@ -318,9 +326,9 @@ class MyAppState extends State<MyApp> {
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({
-    Key key,
-    this.title,
-    this.aboutPage,
+    Key? key,
+    required this.title,
+    required this.aboutPage,
   }) : super(key: key);
 
   final String title;
@@ -335,7 +343,8 @@ class MyHomePage extends StatelessWidget {
           aboutPage.aboutButton(context),
         ],
       ),
-      body: ListView(
+      body: SelectionArea(
+          child: ListView(
         padding: EdgeInsets.all(16.0),
         children: <Widget>[
           Card(
@@ -387,7 +396,7 @@ class MyHomePage extends StatelessWidget {
           Divider(),
           getRow(context, ['Table'])
         ],
-      ),
+      )),
     );
   }
 

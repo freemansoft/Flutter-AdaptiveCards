@@ -6,7 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+// TODO: this needs to be a test that loads a counter and a button with "+" Add icon
 import 'package:example/main.dart';
 
 void main() {

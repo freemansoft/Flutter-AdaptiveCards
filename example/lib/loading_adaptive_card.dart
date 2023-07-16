@@ -13,14 +13,14 @@ import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 class DemoAdaptiveCard extends StatefulWidget {
   const DemoAdaptiveCard(
     this.assetPath, {
-    Key key,
+    Key? key,
     this.hostConfig,
     this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
   }) : super(key: key);
 
   final String assetPath;
-  final String hostConfig;
+  final String? hostConfig;
   final bool approximateDarkThemeColors;
   final bool supportMarkdown;
 
@@ -32,7 +32,7 @@ class DemoAdaptiveCard extends StatefulWidget {
 /// Note that it means we load the JSON twice, once for this and once for the widget
 class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
     with AutomaticKeepAliveClientMixin {
-  String jsonFile;
+  String jsonFile = '{}';
 
   @override
   void initState() {
@@ -45,7 +45,8 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Padding(
+    return SelectionArea(
+        child: Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: <Widget>[
@@ -59,7 +60,7 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
           ),
         ],
       ),
-    );
+    ));
   }
 
   @override

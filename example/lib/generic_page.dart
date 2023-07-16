@@ -18,11 +18,11 @@ class GenericListPage extends StatelessWidget {
 
   // TODO: supportMarkdown should eventually be eliminated - see README.md
   GenericListPage({
-    Key key,
-    this.title,
-    this.urls,
+    Key? key,
+    required this.title,
+    required this.urls,
     this.supportMarkdowns = const [],
-    this.aboutPage,
+    required this.aboutPage,
   }) : super(key: key);
 
   @override

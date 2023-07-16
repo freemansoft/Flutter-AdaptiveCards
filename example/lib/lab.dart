@@ -37,6 +37,9 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   ThemeMode themeMode = ThemeMode.system;
   FlexScheme usedScheme = FlexScheme.mandyRed;
+  // we know mandyRed exists in this map...
+  FlexSchemeData usedSchemeData =
+      FlexColor.schemes[FlexScheme.mandyRed] as FlexSchemeData;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +60,7 @@ class MyAppState extends State<MyApp> {
               themeMode = mode;
             });
           },
-          flexSchemeData: FlexColor.schemes[usedScheme],
+          flexSchemeData: usedSchemeData,
         ),
       ),
     );
@@ -66,9 +69,9 @@ class MyAppState extends State<MyApp> {
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({
-    Key key,
-    this.title,
-    this.aboutPage,
+    Key? key,
+    required this.title,
+    required this.aboutPage,
   }) : super(key: key);
 
   final String title;
@@ -77,15 +80,16 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(title),
-        actions: [
-          aboutPage.aboutButton(context),
-        ],
-      ),
-      body: new Center(
-        child: SingleChildScrollView(child: DemoAdaptiveCard(resourceUrl)),
-      ),
-    );
+        appBar: new AppBar(
+          title: new Text(title),
+          actions: [
+            aboutPage.aboutButton(context),
+          ],
+        ),
+        body: SelectionArea(
+          child: new Center(
+            child: SingleChildScrollView(child: DemoAdaptiveCard(resourceUrl)),
+          ),
+        ));
   }
 }

@@ -9,7 +9,9 @@ class AboutPage extends StatelessWidget {
   final FlexSchemeData flexSchemeData;
 
   const AboutPage(
-      {this.themeMode, this.onThemeModeChanged, this.flexSchemeData});
+      {required this.themeMode,
+      required this.onThemeModeChanged,
+      required this.flexSchemeData});
 
   ///
   /// This is so we can style the button the same everywhere

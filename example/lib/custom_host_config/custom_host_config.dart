@@ -7,8 +7,8 @@ class DynamicHostConfigPage extends StatelessWidget {
   final AboutPage aboutPage;
 
   DynamicHostConfigPage({
-    Key key,
-    this.aboutPage,
+    Key? key,
+    required this.aboutPage,
   }); // todo: add required here
 
   @override

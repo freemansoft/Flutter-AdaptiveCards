@@ -47,14 +47,14 @@ sequenceDiagram
 
 The web version will have a CORs issue so run it with the mobile compatible _html_ renderer.
 
-```
+```zsh
 cd example
 flutter run -d chrome --web-renderer html --web-port 3000
 ```
 
 ## Emulator
 
-```
+```zsh
 cd example
 flutter run -d chrome --web-renderer html --web-port 3000
 ```
@@ -70,7 +70,7 @@ _Compatability changes should be captured in the Changelog section below_
 
 This codebase has been updated to support some of the null safety requred for 3.0.0.  It works with the following version of flutter.
 
-```
+```powershell
 PS C:\Users\foo> flutter --version
 Flutter 3.7.9 • channel unknown • unknown source
 Framework • revision 62bd79521d (3 months ago) • 2023-03-30 10:59:36 -0700
@@ -80,7 +80,7 @@ Tools • Dart 2.19.6 • DevTools 2.20.1
 
 You can move to this version of flutter by:
 
-```
+```zsh
   cd <flutter-install-directory>
  git checkout 3.7.9
  flutter doctor -v
@@ -122,11 +122,15 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
   * Changing from light to dark mode erases any selected data - noticiable in `Input` examples
 * Tests
   * findText for Text doesn't seem to be working so commented out in `basic_test.dart`
+  * When migrating past Flutter 3.7,  test are failing with haning timers
+  * `example\widget_test.dart` should never be working because we don't have any code that has an increment button and counters.  Probably should be either renamed again to not be picked up., deleted or disabled.
 
 ## ChangeLog
 
 2023 07
 
+* Added text selection enablement in the examples.
+* Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
 * flutter tests must end in `_test`.  Renamed `_tests` files to `_test`
 * migrated example from `DynamicTheme` to <https://rydmike.com/colorscheme> <https://rydmike.com/colorpicker>
   * <https://github.com/rydmike/flex_color_scheme> to get a better feel theme and color possibilities
@@ -171,7 +175,7 @@ ___________________________________________________________________________
 
 We decided to build a Flutter implementation of Adaptive Cards because we believe in the future of both technologies. With Flutter, we found an exciting framework for ultra-fast and cross-platform UI development. And with Adaptive Cards, we can combine that with an industry standard for exchanging card content in a structured way. At Neohelden, we're building on both of these technologies with our AI-assistant for business – and you can learn more about why we built this in our [blog-post on the release of our Adaptive Cards in Flutter library](https://neohelden.com/blog/tech/using-adaptive-cards-in-flutter/).
 
-### Installing
+## Installing
 
 **No releases have been created for 0.2.0 at this time**
 
@@ -261,7 +265,7 @@ flutter test --update-goldens test/sample_golden_test.dart
 
 This updates the golden files for the sample cards. Depending on your operating system you might have issues with the font rendering. For the CI / CD setup you need to generate the golden files using a Docker container:
 
-```
+```zsh
 # run the following command in the root folder of this project
 docker run -it -v `pwd`:/app cirrusci/flutter:dev bash
 

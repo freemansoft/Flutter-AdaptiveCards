@@ -7,7 +7,7 @@ class RenderTimePage extends StatefulWidget {
 }
 
 class _RenderTimePageState extends State<RenderTimePage> {
-  Map<String, dynamic> content;
+  Map<String, dynamic> content = Map();
 
   @override
   void initState() {

@@ -38,11 +38,12 @@ void main() {
     checkCorrectTransform(
         '{{DATE(2017-02-14T06:00Z, LONG)}}', 'Tuesday, February 14th, 2017');
 
-    checkCorrectTransform('{{TIME(2017-02-14T06:00Z)}}', '6:00 AM');
-    checkCorrectTransform('{{TIME(2017-02-14T13:00Z)}}', '1:00 PM');
+    // the character between time and AM/PM was a space and is now something else on a Mac
+    checkCorrectTransform('{{TIME(2017-02-14T06:00Z)}}', '6:00 AM');
+    checkCorrectTransform('{{TIME(2017-02-14T13:00Z)}}', '1:00 PM');
 
-    checkCorrectTransform('{{TIME(2017-02-14T13:23Z)}}', '1:23 PM');
-    checkCorrectTransform('{{TIME(2017-02-14T13:59Z)}}', '1:59 PM');
-    checkCorrectTransform('{{TIME(2017-02-14T13:04Z)}}', '1:04 PM');
+    checkCorrectTransform('{{TIME(2017-02-14T13:23Z)}}', '1:23 PM');
+    checkCorrectTransform('{{TIME(2017-02-14T13:59Z)}}', '1:59 PM');
+    checkCorrectTransform('{{TIME(2017-02-14T13:04Z)}}', '1:04 PM');
   });
 }

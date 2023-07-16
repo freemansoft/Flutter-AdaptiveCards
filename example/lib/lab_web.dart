@@ -29,6 +29,9 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   ThemeMode themeMode = ThemeMode.system;
   FlexScheme usedScheme = FlexScheme.mandyRed;
+  // we know mandyRed exists in this map...
+  FlexSchemeData usedSchemeData =
+      FlexColor.schemes[FlexScheme.mandyRed] as FlexSchemeData;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +52,7 @@ class MyAppState extends State<MyApp> {
               themeMode = mode;
             });
           },
-          flexSchemeData: FlexColor.schemes[usedScheme],
+          flexSchemeData: usedSchemeData,
         ),
       ),
     );
@@ -58,9 +61,9 @@ class MyAppState extends State<MyApp> {
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({
-    Key key,
-    this.title,
-    this.aboutPage,
+    Key? key,
+    required this.title,
+    required this.aboutPage,
   }) : super(key: key);
 
   final String title;
@@ -69,36 +72,41 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(title),
-        actions: [
-          aboutPage.aboutButton(context),
-        ],
-      ),
-      body: ListView(children: <Widget>[
-        SizedBox(
-          height: 32.0,
-          child: Center(
-            child: Text(
-              "You can find samples at https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5/Scenarios Use the raw json files.",
-              style: TextStyle(fontSize: 12),
-              textAlign: TextAlign.center,
+        appBar: new AppBar(
+          title: new Text(title),
+          actions: [
+            aboutPage.aboutButton(context),
+          ],
+        ),
+        body: SelectionArea(
+          child: ListView(children: <Widget>[
+            SizedBox(
+              height: 32.0,
+              child: Center(
+                child: Text(
+                  "You can find samples at https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5/Scenarios Use the raw json files.",
+                  style: TextStyle(fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
-          ),
-        ),
-        TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: 'Paste in Adaptive card URL and Enter',
-          ),
-          onSubmitted: (url) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => NetworkPage(title: url, url: url)));
-          },
-        ),
-      ]),
-    );
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Paste in Adaptive card URL and Enter',
+              ),
+              onSubmitted: (url) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NetworkPage(
+                              title: url,
+                              url: url,
+                              aboutPage: aboutPage,
+                            )));
+              },
+            ),
+          ]),
+        ));
   }
 }
