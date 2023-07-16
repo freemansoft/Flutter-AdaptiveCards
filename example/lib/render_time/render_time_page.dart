@@ -1,4 +1,3 @@
-import 'package:example/brightness_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 
@@ -64,12 +63,8 @@ class _RenderTimePageState extends State<RenderTimePage> {
         title: Text("Render Time (ListView sized:" +
             content['blocks'].toString() +
             ")"),
-        actions: [
-          BrightnessSwitch(),
-        ],
       ),
-      body: Container(
-        alignment: Alignment.centerLeft,
+      body: SingleChildScrollView(
         child: AdaptiveCard.memory(
           content: content,
           hostConfigPath: "lib/host_config",

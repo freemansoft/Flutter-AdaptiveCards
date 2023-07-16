@@ -4,6 +4,8 @@ import 'package:format/format.dart';
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
 
+import 'about_page.dart';
+
 ///
 /// A generic page that holds a list of AdaptiveCards based on the passed in URLs
 /// Similar to NetworkPage but operates against a list of local resources
@@ -12,11 +14,16 @@ class GenericListPage extends StatelessWidget {
   final String title;
   final List<String> urls;
   final List<bool> supportMarkdowns;
+  final AboutPage aboutPage;
 
   // TODO: supportMarkdown should eventually be eliminated - see README.md
-  GenericListPage(
-      {Key key, this.title, this.urls, this.supportMarkdowns = const []})
-      : super(key: key);
+  GenericListPage({
+    Key key,
+    this.title,
+    this.urls,
+    this.supportMarkdowns = const [],
+    this.aboutPage,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +32,7 @@ class GenericListPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(this.title),
         actions: [
-          MaterialButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('about');
-            },
-            child: Text(
-              'About',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
+          aboutPage.aboutButton(context),
         ],
       ),
       body: ListView.builder(

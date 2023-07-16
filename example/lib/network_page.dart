@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:example/brightness_switch.dart';
+import 'about_page.dart';
 
 ///
 /// Similar to GenericListPage but operates against a **single** URL and not a list of resources
@@ -12,8 +12,14 @@ import 'package:example/brightness_switch.dart';
 class NetworkPage extends StatelessWidget {
   final String title;
   final String url;
+  final AboutPage aboutPage;
 
-  NetworkPage({Key key, this.title, this.url}); // todo: add required here
+  NetworkPage({
+    Key key,
+    this.title,
+    this.url,
+    this.aboutPage,
+  }); // todo: add required here
 
   ///
   /// Will get error if no title passed "a non-null String must be provided to a Text widget."
@@ -22,9 +28,9 @@ class NetworkPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.title),
+        title: Text(title),
         actions: [
-          BrightnessSwitch(),
+          aboutPage.aboutButton(context),
         ],
       ),
       body: ListView(

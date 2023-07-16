@@ -49,42 +49,30 @@ class MyAppState extends State<MyApp> {
       // Use dark or light theme based on system setting.
       themeMode: themeMode,
       home: MyHomePage(
-          title: 'Adaptive Cards Lab',
+        title: 'Adaptive Cards Lab',
+        aboutPage: AboutPage(
           themeMode: themeMode,
           onThemeModeChanged: (ThemeMode mode) {
             setState(() {
               themeMode = mode;
             });
           },
-          flexSchemeData: FlexColor.schemes[usedScheme]),
-      routes: {
-        'about': (context) => AboutPage(
-              themeMode: themeMode,
-              onThemeModeChanged: (ThemeMode mode) {
-                setState(() {
-                  themeMode = mode;
-                });
-              },
-              flexSchemeData: FlexColor.schemes[usedScheme],
-            ),
-      },
+          flexSchemeData: FlexColor.schemes[usedScheme],
+        ),
+      ),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage(
-      {Key key,
-      this.title,
-      this.themeMode,
-      this.onThemeModeChanged,
-      this.flexSchemeData})
-      : super(key: key);
+  MyHomePage({
+    Key key,
+    this.title,
+    this.aboutPage,
+  }) : super(key: key);
 
   final String title;
-  final ThemeMode themeMode;
-  final ValueChanged<ThemeMode> onThemeModeChanged;
-  final FlexSchemeData flexSchemeData;
+  final AboutPage aboutPage;
 
   @override
   Widget build(BuildContext context) {
@@ -92,15 +80,7 @@ class MyHomePage extends StatelessWidget {
       appBar: new AppBar(
         title: new Text(title),
         actions: [
-          MaterialButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('about');
-            },
-            child: Text(
-              'About',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
+          aboutPage.aboutButton(context),
         ],
       ),
       body: new Center(

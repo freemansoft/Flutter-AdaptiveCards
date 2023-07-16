@@ -21,9 +21,6 @@ void main() {
   runApp(MyApp());
 }
 
-///
-/// Does not use named routes
-///
 class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => MyAppState();
@@ -45,42 +42,29 @@ class MyAppState extends State<MyApp> {
       themeMode: themeMode,
       home: new MyHomePage(
         title: 'Flutter Adaptive CardWeb Tester',
-        themeMode: themeMode,
-        onThemeModeChanged: (ThemeMode mode) {
-          setState(() {
-            themeMode = mode;
-          });
-        },
-        flexSchemeData: FlexColor.schemes[usedScheme],
+        aboutPage: AboutPage(
+          themeMode: themeMode,
+          onThemeModeChanged: (ThemeMode mode) {
+            setState(() {
+              themeMode = mode;
+            });
+          },
+          flexSchemeData: FlexColor.schemes[usedScheme],
+        ),
       ),
-      routes: {
-        'about': (context) => AboutPage(
-              themeMode: themeMode,
-              onThemeModeChanged: (ThemeMode mode) {
-                setState(() {
-                  themeMode = mode;
-                });
-              },
-              flexSchemeData: FlexColor.schemes[usedScheme],
-            ),
-      },
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage(
-      {Key key,
-      this.title,
-      this.themeMode,
-      this.onThemeModeChanged,
-      this.flexSchemeData})
-      : super(key: key);
+  MyHomePage({
+    Key key,
+    this.title,
+    this.aboutPage,
+  }) : super(key: key);
 
   final String title;
-  final ThemeMode themeMode;
-  final ValueChanged<ThemeMode> onThemeModeChanged;
-  final FlexSchemeData flexSchemeData;
+  final AboutPage aboutPage;
 
   @override
   Widget build(BuildContext context) {
@@ -88,15 +72,7 @@ class MyHomePage extends StatelessWidget {
       appBar: new AppBar(
         title: new Text(title),
         actions: [
-          MaterialButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('about');
-            },
-            child: Text(
-              'About',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
+          aboutPage.aboutButton(context),
         ],
       ),
       body: ListView(children: <Widget>[

@@ -33,6 +33,15 @@ class MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    AboutPage aboutPage = AboutPage(
+      themeMode: themeMode,
+      onThemeModeChanged: (ThemeMode mode) {
+        setState(() {
+          themeMode = mode;
+        });
+      },
+      flexSchemeData: FlexColor.schemes[usedScheme],
+    );
     return MaterialApp(
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -49,13 +58,7 @@ class MyAppState extends State<MyApp> {
       themeMode: themeMode,
       home: new MyHomePage(
         title: 'Flutter Adaptive Cards',
-        themeMode: themeMode,
-        onThemeModeChanged: (ThemeMode mode) {
-          setState(() {
-            themeMode = mode;
-          });
-        },
-        flexSchemeData: FlexColor.schemes[usedScheme],
+        aboutPage: aboutPage,
       ),
       // can use named routes in hard coded demo
       // Inject the resources into to the page
@@ -99,6 +102,7 @@ class MyAppState extends State<MyApp> {
                 true,
                 true,
               ],
+              aboutPage: aboutPage,
             ),
         'Samples with dynamic HostConfig': (context) => DynamicHostConfigPage(),
         'TextBlock': (context) => GenericListPage(
@@ -129,25 +133,34 @@ class MyAppState extends State<MyApp> {
                 true,
                 false
               ],
+              aboutPage: aboutPage,
             ),
-        'Image': (context) => GenericListPage(title: 'Image', urls: [
-              "lib/image/example1",
-              "lib/image/example2",
-              "lib/image/example3",
-              "lib/image/example4",
-              "lib/image/example5",
-              "lib/image/example6",
-              "lib/image/width_and_heigh_set_in_pixels",
-              "lib/image/width_set_in_pixels",
-              "lib/image/height_set_in_pixels",
-            ]),
-        'Container': (context) => GenericListPage(title: "Container", urls: [
-              "lib/container/example1",
-              "lib/container/example2",
-              "lib/container/example3",
-              "lib/container/example4",
-              "lib/container/example5",
-            ]),
+        'Image': (context) => GenericListPage(
+              title: 'Image',
+              urls: [
+                "lib/image/example1",
+                "lib/image/example2",
+                "lib/image/example3",
+                "lib/image/example4",
+                "lib/image/example5",
+                "lib/image/example6",
+                "lib/image/width_and_heigh_set_in_pixels",
+                "lib/image/width_set_in_pixels",
+                "lib/image/height_set_in_pixels",
+              ],
+              aboutPage: aboutPage,
+            ),
+        'Container': (context) => GenericListPage(
+              title: "Container",
+              urls: [
+                "lib/container/example1",
+                "lib/container/example2",
+                "lib/container/example3",
+                "lib/container/example4",
+                "lib/container/example5",
+              ],
+              aboutPage: aboutPage,
+            ),
         'ColumnSet': (context) => GenericListPage(
               title: "ColumnSet",
               urls: [
@@ -176,99 +189,142 @@ class MyAppState extends State<MyApp> {
                 true,
                 false
               ],
+              aboutPage: aboutPage,
             ),
-        'Column': (context) => GenericListPage(title: "Column", urls: [
-              "lib/column/example1",
-              "lib/column/example2",
-              "lib/column/example3",
-              "lib/column/example4",
-              "lib/column/example5"
-            ]),
-        'FactSet': (context) => GenericListPage(title: 'FactSet', urls: [
-              "lib/fact_set/example1",
-            ]),
-        'ImageSet': (context) => GenericListPage(title: 'ImageSet', urls: [
-              "lib/image_set/example1",
-              "lib/image_set/example2",
-            ]),
-        'ActionSet': (context) => GenericListPage(title: 'ActionSet', urls: [
-              "lib/action_set/example1",
-            ]),
-        'Action.OpenUrl': (context) =>
-            GenericListPage(title: 'ActionOpenUrl', urls: [
-              "lib/action_open_url/example1",
-              "lib/action_open_url/example2",
-            ]),
-        'Action.Submit': (context) =>
-            GenericListPage(title: 'ActionSubmit', urls: [
-              "lib/action_submit/example1",
-            ]),
+        'Column': (context) => GenericListPage(
+              title: "Column",
+              urls: [
+                "lib/column/example1",
+                "lib/column/example2",
+                "lib/column/example3",
+                "lib/column/example4",
+                "lib/column/example5"
+              ],
+              aboutPage: aboutPage,
+            ),
+        'FactSet': (context) => GenericListPage(
+              title: 'FactSet',
+              urls: [
+                "lib/fact_set/example1",
+              ],
+              aboutPage: aboutPage,
+            ),
+        'ImageSet': (context) => GenericListPage(
+              title: 'ImageSet',
+              urls: [
+                "lib/image_set/example1",
+                "lib/image_set/example2",
+              ],
+              aboutPage: aboutPage,
+            ),
+        'ActionSet': (context) => GenericListPage(
+              title: 'ActionSet',
+              urls: [
+                "lib/action_set/example1",
+              ],
+              aboutPage: aboutPage,
+            ),
+        'Action.OpenUrl': (context) => GenericListPage(
+              title: 'ActionOpenUrl',
+              urls: [
+                "lib/action_open_url/example1",
+                "lib/action_open_url/example2",
+              ],
+              aboutPage: aboutPage,
+            ),
+        'Action.Submit': (context) => GenericListPage(
+              title: 'ActionSubmit',
+              urls: [
+                "lib/action_submit/example1",
+              ],
+              aboutPage: aboutPage,
+            ),
         'Action.ShowCard': (context) => GenericListPage(
             title: 'Action.ShowCard', urls: ["lib/action_show_card/example1"]),
-        'Input.Text': (context) => GenericListPage(title: 'Input.text', urls: [
-              "lib/inputs/input_text/example1",
-              "lib/inputs/input_text/example2",
-            ]),
+        'Input.Text': (context) => GenericListPage(
+              title: 'Input.text',
+              urls: [
+                "lib/inputs/input_text/example1",
+                "lib/inputs/input_text/example2",
+              ],
+              aboutPage: aboutPage,
+            ),
         'Input.Number': (context) => GenericListPage(
-            title: 'Input.Number', urls: ["lib/inputs/input_number/example1"]),
-        'Media': (context) =>
-            GenericListPage(title: 'Media', urls: ["lib/media/example1"]),
+              title: 'Input.Number',
+              urls: ["lib/inputs/input_number/example1"],
+              aboutPage: aboutPage,
+            ),
+        'Media': (context) => GenericListPage(
+              title: 'Media',
+              urls: ["lib/media/example1"],
+              aboutPage: aboutPage,
+            ),
         'Input.Date': (context) => GenericListPage(
-            title: 'Input.Date', urls: ["lib/inputs/input_date/example1"]),
-        'Input.Time': (context) => GenericListPage(title: 'Input.Time', urls: [
-              "lib/inputs/input_time/example1",
-              "lib/inputs/input_time/example2",
-            ]),
+              title: 'Input.Date',
+              urls: ["lib/inputs/input_date/example1"],
+              aboutPage: aboutPage,
+            ),
+        'Input.Time': (context) => GenericListPage(
+              title: 'Input.Time',
+              urls: [
+                "lib/inputs/input_time/example1",
+                "lib/inputs/input_time/example2",
+              ],
+              aboutPage: aboutPage,
+            ),
         'Input.Toggle': (context) => GenericListPage(
-            title: 'Input.Toggle', urls: ["lib/inputs/input_toggle/example1"]),
+              title: 'Input.Toggle',
+              urls: ["lib/inputs/input_toggle/example1"],
+              aboutPage: aboutPage,
+            ),
         'Input.ChoiceSet': (context) => GenericListPage(
               title: 'Input.ChoiceSet',
               urls: ["lib/inputs/input_choice_set/example1"],
+              aboutPage: aboutPage,
             ),
-        'Table': (context) =>
-            GenericListPage(title: 'table', urls: ["lib/table/example1"]),
-        'about': (context) => AboutPage(
-              themeMode: themeMode,
-              onThemeModeChanged: (ThemeMode mode) {
-                setState(() {
-                  themeMode = mode;
-                });
-              },
-              flexSchemeData: FlexColor.schemes[usedScheme],
+        'Table': (context) => GenericListPage(
+              title: 'table',
+              urls: ["lib/table/example1"],
+              aboutPage: aboutPage,
             ),
         'Render Time': (context) => RenderTimePage(),
         'Network via Assets': (context) => NetworkPage(
-            title: "ac-qv-faqs via assets", url: 'assets/ac-qv-faqs.json'),
+              title: "ac-qv-faqs via assets",
+              url: 'assets/ac-qv-faqs.json',
+              aboutPage: aboutPage,
+            ),
         'Sample Expense Report': (context) => NetworkPage(
-            title: "Expense Report",
-            url:
-                'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/ExpenseReport.json'),
+              title: "Expense Report",
+              url:
+                  'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/ExpenseReport.json',
+              aboutPage: aboutPage,
+            ),
         'Sample Show Card Wizard': (context) => NetworkPage(
-            title: 'Show Card Wizard',
-            url:
-                'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/ShowCardWizard.json'),
+              title: 'Show Card Wizard',
+              url:
+                  'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/ShowCardWizard.json',
+              aboutPage: aboutPage,
+            ),
         'Sample Agenda': (context) => NetworkPage(
-            title: 'Agenda',
-            url:
-                'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/Agenda.json'),
+              title: 'Agenda',
+              url:
+                  'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/Agenda.json',
+              aboutPage: aboutPage,
+            ),
       },
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage(
-      {Key key,
-      this.title,
-      this.themeMode,
-      this.onThemeModeChanged,
-      this.flexSchemeData})
-      : super(key: key);
+  MyHomePage({
+    Key key,
+    this.title,
+    this.aboutPage,
+  }) : super(key: key);
 
   final String title;
-  final ThemeMode themeMode;
-  final ValueChanged<ThemeMode> onThemeModeChanged;
-  final FlexSchemeData flexSchemeData;
+  final AboutPage aboutPage;
 
   @override
   Widget build(BuildContext context) {
@@ -276,25 +332,12 @@ class MyHomePage extends StatelessWidget {
       appBar: new AppBar(
         title: new Text(title),
         actions: [
-          MaterialButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('about');
-            },
-            child: Text(
-              'About',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
+          aboutPage.aboutButton(context),
         ],
       ),
       body: ListView(
         padding: EdgeInsets.all(16.0),
         children: <Widget>[
-          // BrightnessSwitch(
-          //   themeMode: widget.themeMode,
-          //   onThemeModeChanged: widget.onThemeModeChanged,
-          //   flexSchemeData: widget.flexSchemeData,
-          // ),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -331,9 +374,9 @@ class MyHomePage extends StatelessWidget {
           getRow(context, ['Input.Time', 'Input.Toggle', 'Input.ChoiceSet']),
           Divider(),
           getRow(context, ['Render Time', 'Network via Assets']),
+          Divider(),
           Text(
             'https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5',
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
             textAlign: TextAlign.center,
           ),
           getRow(context, [

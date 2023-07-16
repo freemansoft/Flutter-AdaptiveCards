@@ -11,14 +11,35 @@ class AboutPage extends StatelessWidget {
   const AboutPage(
       {this.themeMode, this.onThemeModeChanged, this.flexSchemeData});
 
+  ///
+  /// This is so we can style the button the same everywhere
+  ///
+  Widget aboutButton(BuildContext context) {
+    // should be the natural button to support ios
+    return MaterialButton(
+      onPressed: () {
+        showAbout(context);
+      },
+      child: Text(
+        'About',
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  Future<void> showAbout(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(content: build(context));
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("About"),
-      ),
-      body: ListView(
-        padding: EdgeInsets.all(8),
+    return SingleChildScrollView(
+      child: Column(
+        //padding: EdgeInsets.all(8),
         children: <Widget>[
           BrightnessSwitch(
             themeMode: themeMode,

@@ -1,9 +1,16 @@
 import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
 
-import 'package:example/brightness_switch.dart';
+import '../about_page.dart';
 
 class DynamicHostConfigPage extends StatelessWidget {
+  final AboutPage aboutPage;
+
+  DynamicHostConfigPage({
+    Key key,
+    this.aboutPage,
+  }); // todo: add required here
+
   @override
   Widget build(BuildContext context) {
     var isLight = Theme.of(context).brightness == Brightness.light;
@@ -156,7 +163,7 @@ class DynamicHostConfigPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Custom Host Config"),
         actions: [
-          BrightnessSwitch(),
+          aboutPage.aboutButton(context),
         ],
       ),
       body: ListView.builder(
