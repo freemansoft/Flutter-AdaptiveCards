@@ -111,6 +111,7 @@ flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-
 
 2023 07
 
+* Added text selection enablement in the main examples.
 * Made null safe for Flutter > 3.7.0
 * migrated example from `DynamicTheme` to <https://rydmike.com/colorscheme> <https://rydmike.com/colorpicker>
   * <https://github.com/rydmike/flex_color_scheme> to get a better feel theme and color possibilities

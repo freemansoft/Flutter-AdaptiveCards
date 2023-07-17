@@ -135,7 +135,6 @@ TODO for the example programs moved to [example/README.md]
 
 2023 07
 
-* Added text selection enablement in the examples.
 * Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
 * added _brain dead_ `Table` implementation as a starting point
 * migrated from print() to developer.log()
@@ -157,7 +156,6 @@ TODO for the example programs moved to [example/README.md]
   * Just did the dumb fix for mockito mocking with null safety.
   * Test images updated for windows
   * Image URLs updated to their new homes.  Some old sites were migrated or taken down
-
 * android with Java 17
   * gradle upgrade from 5.6.2 to 7.4.2
   * upgraded kotlin version to 1.8.22
