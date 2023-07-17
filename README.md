@@ -1,3 +1,5 @@
+# Adaptive Cards in Flutter
+
 This is an Adaptive Card implementation for Flutter that has been been updated from the original by others. They did amazing work. No one appears to be doing PRs to bring it back to the original so I'm just listing the forking history below.
 
 ![Adaptive Cards](https://adaptivecards.io/content/bf-logo.png)
@@ -41,32 +43,18 @@ sequenceDiagram
     deactivate flutter-app
 ```
 
-# Execution
+## Example Execution
 
-## Web
+There is an expansive example program that demonstrates all Adaptive Cards. See [example README.md](example/README.md)
 
-The web version will have a CORs issue so run it with the mobile compatible _html_ renderer.
-
-```zsh
-cd example
-flutter run -d chrome --web-renderer html --web-port 3000
-```
-
-## Emulator
-
-```zsh
-cd example
-flutter run -d chrome --web-renderer html --web-port 3000
-```
-
-# Tests
+## Tests
 
 1. Test sample 2 is still failing with a rendering issue on my Windows 11 PC that I don't understand
 1. I updated the golden images to match my windows machine.  It may be that they were correct for a Mac or linux machine.
 
-# Compatibility
+## Compatibility
 
-_Compatability changes should be captured in the Changelog section below_
+Compatability changes should be captured in the Changelog section below
 
 This codebase has been updated to support some of the null safety requred for 3.0.0.  It works with the following version of flutter.
 
@@ -94,7 +82,20 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 
 1. VSCode told me to enable `Developer Mode` in **Windows** settings in order to run the examples. Is that for the Windows app or the Web app?
 
+### Current Plugins
+
+* Flutter
+* Dart
+* dart-import
+* markdownlint
+* Markdown Preview Mermaid
+* Intellicode
+* GitHub Actions
+* GitLens
+
 ## Open TODO items
+
+TODO for the example programs moved to [example/README.md]
 
 * Add template and data json merge support - Adaptive Cards 1.3
 * Inject locale behavior in more places
@@ -117,9 +118,6 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * Implement missing _Actions_
   * Add `ToggleVisibility` - currently implemented as `no-op`
   * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
-* Examples
-  * Add ability to set `debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia` as command line override in examples instead of hard coding
-  * Changing from light to dark mode erases any selected data - noticiable in `Input` examples
 * Tests
   * findText for Text doesn't seem to be working so commented out in `basic_test.dart`
   * When migrating past Flutter 3.7,  test are failing with haning timers
@@ -129,28 +127,28 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 
 2023 07
 
-* Added text selection enablement in the examples.
 * Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
-* flutter tests must end in `_test`.  Renamed `_tests` files to `_test`
-* migrated example from `DynamicTheme` to <https://rydmike.com/colorscheme> <https://rydmike.com/colorpicker>
-  * <https://github.com/rydmike/flex_color_scheme> to get a better feel theme and color possibilities
-* example about pane is injected modal panel
 * added _brain dead_ `Table` implementation as a starting point
 * migrated from print() to developer.log()
 * Support both Material and Cupertino Date and Time pickers based on platform
-* Removed `fuscia` target platform overrides in examples
+* Test:
+  * Flutter tests must end in `_test`.  Renamed `_tests` files to `_test`
+  * Test upgrade to work with Flutter 3.10 and flutter_test ???
+  * Added simple `Table` test
+  * Migrated test off of Roboto to default testing font in an attempt to make more platform agnostic. line spacing was different on different platforms even using project bundled Roboto
+  * Upgraded testing SDK
+
 2023 06
+
 * Updated where nulls were used by Flutter is now null safe.
 * Picked a default with for text alignment that may be wrong or differ from the old default.
-* Just did the dumb fix for mockito mocking with null safety.
-* Test images updated for windows
-* Image URLs updated to their new homes.  Some old sites were migrated or taken down
 * Minor changes to use Material in one config file because VS Code warned about it
-* Pulled the neohelden logos from the main page in the example. Neohelden has dropped all references from their website and deleted their repository. Had the extra advantage of shrinking the image.
-* Refactored example to use common driver page for most of the samples.  Remolved the single purpose drivers
-* Now have a couple samples that pull from adaptivecards.io github repo
-* lab.dart can now run against any adaptive card local or remote.  See [example readme](example/README.md)
 * used VS Code plugin `dart import` to organize imports
+* Test:
+  * Just did the dumb fix for mockito mocking with null safety.
+  * Test images updated for windows
+  * Image URLs updated to their new homes.  Some old sites were migrated or taken down
+
 * android with Java 17
   * gradle upgrade from 5.6.2 to 7.4.2
   * upgraded kotlin version to 1.8.22
@@ -169,7 +167,7 @@ The referenced GitHub repository has vanished.  Look at the forking train to fig
 1. <https://github.com/rodydavis/Flutter-AdaptiveCards> the original but possibly from the no longer here repo
 1. <https://github.com/neohelden/Flutter-AdaptiveCards>
 
-___________________________________________________________________________
+_________________________________________________________________...
 
 # Adaptive Cards for Flutter
 
@@ -177,7 +175,7 @@ We decided to build a Flutter implementation of Adaptive Cards because we believ
 
 ## Installing
 
-**No releases have been created for 0.2.0 at this time**
+No releases have been created for 0.2.0 at this time
 
 Add this to your package's pubspec.yaml file:
 
