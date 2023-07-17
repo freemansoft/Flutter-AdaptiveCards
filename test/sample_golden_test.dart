@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,7 +28,9 @@ void main() {
   setUp(() async {
     HttpOverrides.global = MyTestHttpOverrides();
     WidgetsBinding.instance.renderView.configuration =
-        TestViewConfiguration(size: const Size(500, 700));
+        TestViewConfiguration.fromView(
+            size: const Size(500, 700),
+            view: PlatformDispatcher.instance.implicitView!);
 
     final fontData = File('assets/fonts/Roboto/Roboto-Regular.ttf')
         .readAsBytes()
@@ -55,10 +58,10 @@ void main() {
 
   testWidgets('Golden Sample 1', (tester) async {
     ValueKey key = ValueKey('paint');
-    Widget sample1 = getSampleForGoldenTest(key, 'example1');
+    Widget sample = getSampleForGoldenTest(key, 'example1');
 
-    //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample1), key: key,))));
-    await tester.pumpWidget(sample1);
+    //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample), key: key,))));
+    await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -82,10 +85,10 @@ void main() {
   });
   testWidgets('Golden Sample 2', (tester) async {
     ValueKey key = ValueKey('paint');
-    Widget sample1 = getSampleForGoldenTest(key, 'example2');
+    Widget sample = getSampleForGoldenTest(key, 'example2');
 
-    //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample1), key: key,))));
-    await tester.pumpWidget(sample1);
+    //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample), key: key,))));
+    await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -110,9 +113,9 @@ void main() {
 
   testWidgets('Golden Sample 3', (tester) async {
     ValueKey key = ValueKey('paint');
-    Widget sample1 = getSampleForGoldenTest(key, 'example3');
+    Widget sample = getSampleForGoldenTest(key, 'example3');
 
-    await tester.pumpWidget(sample1);
+    await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -122,9 +125,9 @@ void main() {
 
   testWidgets('Golden Sample 4', (tester) async {
     ValueKey key = ValueKey('paint');
-    Widget sample1 = getSampleForGoldenTest(key, 'example4');
+    Widget sample = getSampleForGoldenTest(key, 'example4');
 
-    await tester.pumpWidget(sample1);
+    await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -133,9 +136,9 @@ void main() {
 
   testWidgets('Golden Sample 5', (tester) async {
     ValueKey key = ValueKey('paint');
-    Widget sample1 = getSampleForGoldenTest(key, 'example5');
+    Widget sample = getSampleForGoldenTest(key, 'example5');
 
-    await tester.pumpWidget(sample1);
+    await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -166,9 +169,9 @@ void main() {
   // TODO add other tests
   testWidgets('Golden Sample 14', (tester) async {
     ValueKey key = ValueKey('paint');
-    Widget sample1 = getSampleForGoldenTest(key, 'example14');
+    Widget sample = getSampleForGoldenTest(key, 'example14');
 
-    await tester.pumpWidget(sample1);
+    await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
     await expectLater(
@@ -179,9 +182,9 @@ void main() {
 
   testWidgets('Golden Sample 16', (tester) async {
     ValueKey key = ValueKey('paint');
-    Widget sample1 = getSampleForGoldenTest(key, 'example16');
+    Widget sample = getSampleForGoldenTest(key, 'example16');
 
-    await tester.pumpWidget(sample1);
+    await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
     await expectLater(

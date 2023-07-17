@@ -6,7 +6,7 @@
         {
             "type": "TextBlock",
             "text": "No Markdown Support",
-            "horizontalAlignment": "Center"
+            "horizontalAlignment": "center"
         },
         {
             "type": "TextBlock",
@@ -15,12 +15,12 @@
         {
             "type": "TextBlock",
             "text": "Center aligned text",
-            "horizontalAlignment": "Center"
+            "horizontalAlignment": "center"
         },
         {
             "type": "TextBlock",
             "text": "Right aligned text",
-            "horizontalAlignment": "Right"
+            "horizontalAlignment": "right"
         },
         {
             "type": "TextBlock",
@@ -29,12 +29,12 @@
         {
             "type": "TextBlock",
             "text": "Center aligned text Center aligned text Center aligned text Center aligned text Center aligned text",
-            "horizontalAlignment": "Center"
+            "horizontalAlignment": "center"
         },
         {
             "type": "TextBlock",
             "text": "Right aligned text Right aligned text Right aligned text Right aligned text Right aligned text",
-            "horizontalAlignment": "Right"
+            "horizontalAlignment": "right"
         },
         {
             "type": "TextBlock",
@@ -45,13 +45,13 @@
             "type": "TextBlock",
             "wrap": true,
             "text": "Center aligned text Center aligned text Center aligned text Center aligned text Center aligned text",
-            "horizontalAlignment": "Center"
+            "horizontalAlignment": "center"
         },
         {
             "type": "TextBlock",
             "wrap": true,
             "text": "Right aligned text Right aligned text Right aligned text Right aligned text Right aligned text",
-            "horizontalAlignment": "Right"
+            "horizontalAlignment": "right"
         }
     ]
 }

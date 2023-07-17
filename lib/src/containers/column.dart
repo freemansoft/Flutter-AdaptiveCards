@@ -58,13 +58,8 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
       } else if (toParseWidth == "stretch") {
         mode = "stretch";
       } else if (toParseWidth is int) {
-        if (toParseWidth != null) {
-          width = toParseWidth;
-          mode = "weighted";
-        } else {
-          // Handle gracefully
-          mode = "auto";
-        }
+        width = toParseWidth;
+        mode = "weighted";
       } else {
         var widthString = toParseWidth.toString();
 

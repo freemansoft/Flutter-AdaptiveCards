@@ -62,28 +62,32 @@ flutter run -d chrome --web-renderer html --web-port 3000
 # Tests
 
 1. Test sample 2 is still failing with a rendering issue on my Windows 11 PC that I don't understand
-1. I updated the golden images to match my windows machine.  It may be that they were correct for a Mac or linux machine.
+1. I updated the golden images to match my windows machine.  The line spacing is subtly different so you have to pick a platform for the golden tests which means I've poluted the repo for no reason. https://github.com/flutter/flutter/issues/2943
+1. Golden toolkit can show black bars instead of text if font isn't loaded https://pub.dev/packages/golden_toolkit
+
 
 # Compatibility
 
 _Compatability changes should be captured in the Changelog section below_
 
-This codebase has been updated to support some of the null safety requred for 3.0.0.  It works with the following version of flutter.
+This codebase has been updated to support some of the null safety requred for 3.7.0+.  It works with the following version of flutter.
+
 
 ```powershell
-PS C:\Users\foo> flutter --version
-Flutter 3.7.9 • channel unknown • unknown source
-Framework • revision 62bd79521d (3 months ago) • 2023-03-30 10:59:36 -0700
-Engine • revision ec975089ac
-Tools • Dart 2.19.6 • DevTools 2.20.1
+PS C:\dev\flutter> flutter --version
+Flutter 3.10.6 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision f468f3366c (4 days ago) • 2023-07-12 15:19:05 -0700
+Engine • revision cdbeda788a
+Tools • Dart 3.0.6 • DevTools 2.23.1
 ```
 
 You can move to this version of flutter by:
 
 ```zsh
-  cd <flutter-install-directory>
- git checkout 3.7.9
- flutter doctor -v
+cd <flutter-install-directory>
+Flutter channel stable
+Flutter upgrade
+
 ```
 
 Released Flutter / Dart bundling versions are located here: <https://docs.flutter.dev/release/archive?tab=windows>
@@ -117,18 +121,22 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * Implement missing _Actions_
   * Add `ToggleVisibility` - currently implemented as `no-op`
   * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
+* verify `toLowerCase()` has been done everywhere for styling parameters like `adaptiveMap['style'].toString().toLowerCase()`
 * Examples
   * Add ability to set `debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia` as command line override in examples instead of hard coding
   * Changing from light to dark mode erases any selected data - noticiable in `Input` examples
 * Tests
   * findText for Text doesn't seem to be working so commented out in `basic_test.dart`
-  * When migrating past Flutter 3.7,  test are failing with haning timers
+  * Font line spacing is subtly different between platforms.  You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
+  * Golden toolkit can show black bars instead of text if font isn't loaded https://pub.dev/packages/golden_toolkit - test 2 fails for this reason
+  * When migrating past Flutter 3.7,  test are failing with handling timers
   * `example\widget_test.dart` should never be working because we don't have any code that has an increment button and counters.  Probably should be either renamed again to not be picked up., deleted or disabled.
 
 ## ChangeLog
 
 2023 07
 
+* Styling values are all lower case - changed all sample files and host configs to match
 * Added text selection enablement in the examples.
 * Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
 * flutter tests must end in `_test`.  Renamed `_tests` files to `_test`

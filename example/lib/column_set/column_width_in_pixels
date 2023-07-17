@@ -6,7 +6,7 @@
         {
             "type": "TextBlock",
             "text": "Column width in pixels",
-            "size": "ExtraLarge"
+            "size": "extraLarge"
         },
         {
             "type": "ColumnSet",

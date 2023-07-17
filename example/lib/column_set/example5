@@ -6,11 +6,11 @@
         {
             "type": "TextBlock",
             "text": "Alignment Images",
-            "size": "ExtraLarge"
+            "size": "extraLarge"
         },
         {
             "type": "ColumnSet",
-            "spacing": "None",
+            "spacing": "none",
             "columns": [
                 {
                     "type": "Column",
@@ -19,11 +19,11 @@
                         {
                             "type": "Image",
                             "url": "http://adaptivecards.io/content/cats/1.png",
-                            "size": "Small",
-                            "horizontalAlignment": "Left"
+                            "size": "small",
+                            "horizontalAlignment": "left"
                         }
                     ],
-                    "horizontalAlignment": "Left"
+                    "horizontalAlignment": "left"
                 },
                 {
                     "type": "Column",
@@ -32,12 +32,12 @@
                         {
                             "type": "Image",
                             "url": "http://adaptivecards.io/content/cats/1.png",
-                            "size": "Small",
-                            "horizontalAlignment": "Center"
+                            "size": "small",
+                            "horizontalAlignment": "center"
                         }
                     ],
-                    "verticalContentAlignment": "Center",
-                    "horizontalAlignment": "Center"
+                    "verticalContentAlignment": "center",
+                    "horizontalAlignment": "center"
                 },
                 {
                     "type": "Column",
@@ -46,12 +46,12 @@
                         {
                             "type": "Image",
                             "url": "http://adaptivecards.io/content/cats/1.png",
-                            "size": "Small",
-                            "horizontalAlignment": "Right"
+                            "size": "small",
+                            "horizontalAlignment": "right"
                         }
                     ],
-                    "verticalContentAlignment": "Bottom",
-                    "horizontalAlignment": "Right"
+                    "verticalContentAlignment": "bottom",
+                    "horizontalAlignment": "right"
                 },
                 {
                     "type": "Column",
@@ -60,7 +60,7 @@
                         {
                             "type": "Image",
                             "url": "http://adaptivecards.io/content/cats/1.png",
-                            "size": "Large"
+                            "size": "large"
                         }
                     ]
                 }
@@ -76,7 +76,7 @@
                         {
                             "type": "TextBlock",
                             "text": "top:left",
-                            "horizontalAlignment": "Center"
+                            "horizontalAlignment": "center"
                         }
                     ]
                 },
@@ -87,7 +87,7 @@
                         {
                             "type": "TextBlock",
                             "text": "center:center",
-                            "horizontalAlignment": "Center"
+                            "horizontalAlignment": "center"
                         }
                     ]
                 },
@@ -98,7 +98,7 @@
                         {
                             "type": "TextBlock",
                             "text": "bottom:right",
-                            "horizontalAlignment": "Center"
+                            "horizontalAlignment": "center"
                         }
                     ]
                 },
@@ -109,7 +109,7 @@
                         {
                             "type": "TextBlock",
                             "text": " ",
-                            "horizontalAlignment": "Center"
+                            "horizontalAlignment": "center"
                         }
                     ]
                 }

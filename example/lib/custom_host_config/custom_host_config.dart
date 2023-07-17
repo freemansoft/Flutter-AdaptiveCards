@@ -121,7 +121,7 @@ class DynamicHostConfigPage extends StatelessWidget {
     },
     "actions": {
       "maxActions": 5,
-      "spacing": "Default",
+      "spacing": "default",
       "buttonSpacing": 10,
       "showCard": {
         "actionMode": "Inline",
@@ -130,28 +130,28 @@ class DynamicHostConfigPage extends StatelessWidget {
       },
       "preExpandSingleShowCardAction": false,
       "actionsOrientation": "Vertical",
-      "actionAlignment": "Left"
+      "actionAlignment": "left"
     },
     "adaptiveCard": {
       "allowCustomStyle": false
     },
     "imageSet": {
-      "imageSize": "Medium",
+      "imageSize": "medium",
       "maxImageHeight": 100
     },
     "factSet": {
       "title": {
-        "size": "Default",
-        "color": "Default",
+        "size": "default",
+        "color": "default",
         "isSubtle": false,
-        "weight": "Bolder",
+        "weight": "bolder",
         "warp": true
       },
       "value": {
-        "size": "Default",
-        "color": "Default",
+        "size": "default",
+        "color": "default",
         "isSubtle": false,
-        "weight": "Default",
+        "weight": "default",
         "warp": true
       },
       "spacing": 10

@@ -33,13 +33,13 @@ class _RenderTimePageState extends State<RenderTimePage> {
             "items": [
               {
                 "type": "TextBlock",
-                "weight": "Bolder",
+                "weight": "bolder",
                 "text": "$i aaaaaaaaaaaaaaaaaaaaa",
                 "wrap": true
               },
               {
                 "type": "TextBlock",
-                "spacing": "None",
+                "spacing": "none",
                 "text": "$i bbbbbbbbbbbbbbbbbbbb",
                 "isSubtle": true,
                 "wrap": true

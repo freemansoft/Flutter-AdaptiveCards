@@ -708,6 +708,7 @@ abstract class AdaptiveElement {
   /// Each mixin has the opportunity to add something to the widget hierarchy.
   ///
   /// An example:
+  /// ```
   /// @override
   /// Widget generateWidget() {
   ///  assert(separator != null, 'Did you forget to call loadSeperator in this class?');
@@ -718,6 +719,7 @@ abstract class AdaptiveElement {
   ///    ],
   ///  );
   ///}
+  ///```
   ///
   /// This works because each mixin calls [generateWidget] in its generateWidget
   /// and adds the returned value into the widget tree. Eventually the base

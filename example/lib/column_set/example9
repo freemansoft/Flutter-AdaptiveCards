@@ -6,11 +6,11 @@
         {
             "type": "TextBlock",
             "text": "Horizontal alignment right",
-            "size": "ExtraLarge"
+            "size": "extraLarge"
         },
         {
             "type": "ColumnSet",
-            "horizontalAlignment": "Right",
+            "horizontalAlignment": "right",
             "columns": [
                 {
                     "type": "Column",
@@ -28,7 +28,7 @@
                             ]
                         }
                     ],
-                    "spacing": "Small"
+                    "spacing": "small"
                 },
                 {
                     "type": "Column",
@@ -46,7 +46,7 @@
                             ]
                         }
                     ],
-                    "spacing": "Small"
+                    "spacing": "small"
                 },
                 {
                     "type": "Column",
@@ -64,10 +64,10 @@
                             ]
                         }
                     ],
-                    "spacing": "Small"
+                    "spacing": "small"
                 }
             ],
-            "spacing": "Small"
+            "spacing": "small"
         }
     ]
 }

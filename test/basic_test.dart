@@ -52,5 +52,8 @@ void main() {
     // Also has OK widget but it's a different instance
 
     expect(find.byWidget(button), findsNothing);
+
+    await tester.pump(
+        const Duration(seconds: 1)); // skip past any activity or animation
   });
 }

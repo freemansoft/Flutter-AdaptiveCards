@@ -29,7 +29,7 @@
                   "type": "TextBlock",
                   "text": "Name",
                   "wrap": true,
-                  "weight": "Bolder"
+                  "weight": "bolder"
                 }
               ]
             },
@@ -40,7 +40,7 @@
                   "type": "TextBlock",
                   "text": "Type",
                   "wrap": true,
-                  "weight": "Bolder"
+                  "weight": "bolder"
                 }
               ]
             },
@@ -51,7 +51,7 @@
                   "type": "TextBlock",
                   "text": "Description",
                   "wrap": true,
-                  "weight": "Bolder"
+                  "weight": "bolder"
                 }
               ]
             }
@@ -163,7 +163,7 @@
                   "type": "TextBlock",
                   "text": "Name",
                   "wrap": true,
-                  "weight": "Bolder"
+                  "weight": "bolder"
                 }
               ]
             },
@@ -174,7 +174,7 @@
                   "type": "TextBlock",
                   "text": "Type",
                   "wrap": true,
-                  "weight": "Bolder"
+                  "weight": "bolder"
                 }
               ]
             },
@@ -185,7 +185,7 @@
                   "type": "TextBlock",
                   "text": "Description",
                   "wrap": true,
-                  "weight": "Bolder"
+                  "weight": "bolder"
                 }
               ]
             }
