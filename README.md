@@ -129,7 +129,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
   * findText for Text doesn't seem to be working so commented out in `basic_test.dart`
   * Font line spacing is subtly different between platforms.  You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
   * Golden toolkit can show black bars instead of text if font isn't loaded https://pub.dev/packages/golden_toolkit - test 2 fails for this reason
-  * When migrating past Flutter 3.7,  test are failing with handling timers
+    * https://github.com/flutter/flutter/issues/56383
   * `example\widget_test.dart` should never be working because we don't have any code that has an increment button and counters.  Probably should be either renamed again to not be picked up., deleted or disabled.
 
 ## ChangeLog
