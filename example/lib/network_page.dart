@@ -35,16 +35,26 @@ class NetworkPage extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
+          // We're not using DemoAdaptieCard() here so add our own onXXX handlers
           AdaptiveCard.network(
-            // placeholder:
-            //     Container(child: Center(child: CircularProgressIndicator())),
             url: this.url,
             hostConfigPath: 'assets/host_config.json',
+            onChange: (id, value, state) {
+              developer.log(format(
+                  "onChange: id: {}, value: {}, state: {}", id, value, state));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(format("onChange: id: {}, value: {}, state: {}",
+                      id, value, state))));
+            },
             onSubmit: (map) {
-              developer.log(format("submit map: {}", map));
-              // Send to server or handle locally
+              developer.log(format("onSubmit map: {}", map.toString()));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(format(
+                      'onSubmit: No handler found for map: \n {}',
+                      map.toString()))));
             },
             onOpenUrl: (url) {
+              developer.log(format("onOpenUrl url: {}", url));
               launchUrl(Uri.parse(url));
             },
             showDebugJson: true, // enable debug in the example app

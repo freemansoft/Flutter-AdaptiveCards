@@ -1,6 +1,10 @@
+import 'dart:developer' as developer;
+import 'package:format/format.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() => runApp(new MyApp());
 
@@ -32,10 +36,29 @@ class MyHomePage extends StatelessWidget {
         title: new Text(title),
       ),
       body: new Center(
+        // We're not using DemoAdaptieCard() here so add our own onXXX handlers
         child: AdaptiveCard.asset(
           // loads from the assets directory in the project
           assetPath: "lib/easy_card",
           hostConfigPath: "lib/host_config",
+          onChange: (id, value, state) {
+            developer.log(format(
+                "onChange: id: {}, value: {}, state: {}", id, value, state));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(format("onChange: id: {}, value: {}, state: {}",
+                    id, value, state))));
+          },
+          onSubmit: (map) {
+            developer.log(format("onSubmit map: {}", map.toString()));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(format(
+                    'onSubmit: No handler found for map: \n {}',
+                    map.toString()))));
+          },
+          onOpenUrl: (url) {
+            developer.log(format("onOpenUrl url: {}", url));
+            launchUrl(Uri.parse(url));
+          },
           // TODO fix this
           // cardRegistry: CardRegistry(addedActions: {
           //   "Action.Submit": (map, widgetState, card) =>

@@ -27,7 +27,7 @@ class GenericListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    developer.log(format("URLs: {}", urls));
+    developer.log(format("URLs: {}", urls.toString()));
     return Scaffold(
       appBar: AppBar(
         title: Text(this.title),

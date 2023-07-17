@@ -103,7 +103,7 @@ flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-
 
 ## Open Items
 
-* `Network via Assets` works in web but not in Android mobile. There is some layout issue.
+* `Network via Assets` works in web but not in Android mobile. There is some font sizing related layout issue.
 * Add ability to set `debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia` as command line override in examples instead of hard coding
 * Changing from light to dark mode erases any selected data - noticiable in `Input` examples
 
@@ -111,6 +111,8 @@ flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-
 
 2023 07
 
+* Added sample `onOpenUrl` and `onSubmit` handlers to the top level Adaptive Objects in the examples.
+  * OpenUrl now actually opens a browser in the example program.
 * Added text selection enablement in the main examples.
 * Made null safe for Flutter > 3.7.0
 * migrated example from `DynamicTheme` to <https://rydmike.com/colorscheme> <https://rydmike.com/colorpicker>

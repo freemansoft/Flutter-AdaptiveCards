@@ -100,31 +100,33 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 
 ## Open TODO items
 
-TODO for the example programs moved to [example/README.md]
+TODO for the example programs moved to [example README](example/README.md)
 
 * Add template and data json merge support - Adaptive Cards 1.3
 * Inject locale behavior in more places
-* Media `poster` is broken, possibly with the latest media player update
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
     * `initData` currently injected directly into a widget
     * `initInput(initData)` used to replace values. initData is a widget parameter. `initInput` is called if initData exist on component
   * `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
     * currently invoked direclty in code in handlers in sample
-* Implement missing _Card Elements_
-  * Add `RichTextBlock` see <https://adaptivecards.io/explorer/RichTextBlock.html>
-  * Add `TextRun` see <https://adaptivecards.io/explorer/TextRun.html>
-  * `MediaSource` currently implemented as a map in `Media`
-* Implement missing _Containers_
-  * Add `Table` see <https://adaptivecards.io/explorer/Table.html>
-  * Add `TableCell` currently implemented in-line in `Table` see <https://adaptivecards.io/explorer/TableCell.html>
-  * `Fact` currently implemented as a map in `FactSet`
-* Implement missing _Inputs_
-  * `Input.Choice` currently implemented as a map in `ChoiceSet`
-* Implement missing _Actions_
-  * Add `ToggleVisibility` - currently implemented as `no-op`
-  * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
-* Tests
+* _Card Elements_ missing implementations and features
+  * Add [`RichTextBlock`](https://adaptivecards.io/explorer/RichTextBlock.html)
+  * Add [`TextRun`](https://adaptivecards.io/explorer/TextRun.html)
+  * Note: [`MediaSource`](https://adaptivecards.io/explorer/MediaSource.html) currently implemented as a map in [`Media`](https://adaptivecards.io/explorer/Media.html)
+  * [`Media`](https://adaptivecards.io/explorer/Media.html) `poster` attribute does not show poster, possibly with the latest media player update
+* _Containers_ missing implementations and features
+  * Add [`Table`](https://adaptivecards.io/explorer/Table.html) attributes
+    * Column sizes, grid style show grid lines, etc
+    * [`TableCell`](https://adaptivecards.io/explorer/TableCell.html) currently implemented in-line in [`Table`](https://adaptivecards.io/explorer/Table.html)
+  * Note: [`Fact`](https://adaptivecards.io/explorer/Fact.html) currently implemented as a map in `FactSet`
+* _Inputs_ missing implementations and features
+  * None identified
+  * Note: [`Input.Choice`](https://adaptivecards.io/explorer/Input.Choice.html) currently implemented as a map in [`ChoiceSet`](https://adaptivecards.io/explorer/Input.ChoiceSet.html)
+* _Actions_ missing implementations and features
+  * Add [`Action.ToggleVisibility`](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) - currently implemented as `no-op` along with its' associated [`TargetElement`](https://adaptivecards.io/explorer/TargetElement.html)
+  * [`Action.Execute`](https://adaptivecards.io/explorer/Action.Execute.html) and [`Action.Submit`](https://adaptivecards.io/explorer/Action.Submit.html) are currently both mapped to `Action.Submit` via dispatch. Their behavior should possibly be different.
+* _Tests_
   * findText for Text doesn't seem to be working so commented out in `basic_test.dart`
   * Font line spacing is subtly different between platforms.  You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
   * Using default flutter fonts instead of roboto <https://github.com/flutter/flutter/issues/56383>
@@ -136,14 +138,14 @@ TODO for the example programs moved to [example/README.md]
 2023 07
 
 * Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
-* added _brain dead_ `Table` implementation as a starting point
-* migrated from print() to developer.log()
+* added minimal `Table` implementation as a starting point
+* migrated from `print()` to `developer.log()`
 * Support both Material and Cupertino Date and Time pickers based on platform
 * Test:
   * Flutter tests must end in `_test`.  Renamed `_tests` files to `_test`
   * Test upgrade to work with Flutter 3.10 and flutter_test ???
   * Added simple `Table` test
-  * Migrated test off of Roboto to default testing font in an attempt to make more platform agnostic. line spacing was different on different platforms even using project bundled Roboto
+  * Migrated test off `Roboto` font to default testing font in an attempt to make more platform agnostic. line spacing was different on different platforms even using project bundled Roboto
   * Upgraded testing SDK
 
 2023 06

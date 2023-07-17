@@ -255,7 +255,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       } else {
         onSubmit = (it) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('No handler found for: \n' + it.toString())));
+              content:
+                  Text(format('No handler found for: \n {}', it.toString()))));
         };
       }
     }
@@ -269,7 +270,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       } else {
         onOpenUrl = (it) {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('und for: \n' + it.toString())));
+              SnackBar(content: Text(format('und for: \n {}', it.toString()))));
         };
       }
     }

@@ -24,6 +24,7 @@ Widget getWidget(String path, String hostConfigPath) {
   Widget adaptiveCard = RawAdaptiveCard.fromMap(
     map,
     hostConfig,
+    //onChange: (_) {},
     onSubmit: (_) {},
     onOpenUrl: (_) {},
   );
