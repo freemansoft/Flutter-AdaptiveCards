@@ -61,9 +61,10 @@ flutter run -d chrome --web-renderer html --web-port 3000
 
 # Tests
 
-1. Test sample 2 is still failing with a rendering issue on my Windows 11 PC that I don't understand
-1. I updated the golden images to match my windows machine.  The line spacing is subtly different so you have to pick a platform for the golden tests which means I've poluted the repo for no reason. https://github.com/flutter/flutter/issues/2943
-1. Golden toolkit can show black bars instead of text if font isn't loaded https://pub.dev/packages/golden_toolkit
+The test use the standard flutter testing mechanism which uses the `FlutterTest` font or the `Ahem` font.
+* The tests used to load the Roboto fonts to get an exact match but the line spacing can be off between platforms.
+* I've updated the golden images (again) to use the default testing font.  The line spacing is subtly different so you have to pick a platform for the golden tests which means I've poluted the repo for no reason. https://github.com/flutter/flutter/issues/2943
+1. Note that the test could upgrade to ebay's golden toolkit that renders fonts.  In that case we could bring back the Roboto fonts. Golden toolkit can show black bars instead of text if font isn't loaded https://pub.dev/packages/golden_toolkit
 
 
 # Compatibility
@@ -102,6 +103,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 
 * Add template and data json merge support - Adaptive Cards 1.3
 * Inject locale behavior in more places
+* Media `poster` is broken, possibly with the latest media player update
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
     * `initData` currently injected directly into a widget
@@ -128,8 +130,8 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * Tests
   * findText for Text doesn't seem to be working so commented out in `basic_test.dart`
   * Font line spacing is subtly different between platforms.  You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
-  * Golden toolkit can show black bars instead of text if font isn't loaded https://pub.dev/packages/golden_toolkit - test 2 fails for this reason
-    * https://github.com/flutter/flutter/issues/56383
+  * Using default flutter fonts instead of roboto https://github.com/flutter/flutter/issues/56383
+    * Could use golden toolkit but it will show black bars instead of text if font isn't loaded https://pub.dev/packages/golden_toolkit
   * `example\widget_test.dart` should never be working because we don't have any code that has an increment button and counters.  Probably should be either renamed again to not be picked up., deleted or disabled.
 
 ## ChangeLog

@@ -32,28 +32,29 @@ void main() {
             size: const Size(500, 700),
             view: PlatformDispatcher.instance.implicitView!);
 
-    final fontData = File('assets/fonts/Roboto/Roboto-Regular.ttf')
-        .readAsBytes()
-        .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontData2 = File('assets/fonts/Roboto/Roboto-Bold.ttf')
-        .readAsBytes()
-        .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontData3 = File('assets/fonts/Roboto/Roboto-Light.ttf')
-        .readAsBytes()
-        .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontData4 = File('assets/fonts/Roboto/Roboto-Medium.ttf')
-        .readAsBytes()
-        .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontData5 = File('assets/fonts/Roboto/Roboto-Thin.ttf')
-        .readAsBytes()
-        .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontLoader = FontLoader('Roboto')
-      ..addFont(fontData)
-      ..addFont(fontData2)
-      ..addFont(fontData3)
-      ..addFont(fontData4)
-      ..addFont(fontData5);
-    await fontLoader.load();
+    // TODO: Delete this commented out code! Or, use https://pub.dev/packages/golden_toolkit
+    // final fontData = File('assets/fonts/Roboto/Roboto-Regular.ttf')
+    //     .readAsBytes()
+    //     .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+    // final fontData2 = File('assets/fonts/Roboto/Roboto-Bold.ttf')
+    //     .readAsBytes()
+    //     .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+    // final fontData3 = File('assets/fonts/Roboto/Roboto-Light.ttf')
+    //     .readAsBytes()
+    //     .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+    // final fontData4 = File('assets/fonts/Roboto/Roboto-Medium.ttf')
+    //     .readAsBytes()
+    //     .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+    // final fontData5 = File('assets/fonts/Roboto/Roboto-Thin.ttf')
+    //     .readAsBytes()
+    //     .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+    // final fontLoader = FontLoader('Roboto')
+    //   ..addFont(fontData)
+    //   ..addFont(fontData2)
+    //   ..addFont(fontData3)
+    //   ..addFont(fontData4)
+    //   ..addFont(fontData5);
+    // await fontLoader.load();
   });
 
   testWidgets('Golden Sample 1', (tester) async {
@@ -83,6 +84,10 @@ void main() {
     await expectLater(
         find.byKey(key), matchesGoldenFile('gold_files/sample1_comment.png'));
   });
+
+  ///
+  /// TODO: This test is a little bogus because the frame looks the same after tapping the buttons
+  ///
   testWidgets('Golden Sample 2', (tester) async {
     ValueKey key = ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example2');
