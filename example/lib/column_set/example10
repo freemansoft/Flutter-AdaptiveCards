@@ -6,7 +6,7 @@
         {
             "type": "TextBlock",
             "text": "Weighted width",
-            "size": "ExtraLarge"
+            "size": "extraLarge"
         },
         {
             "type": "ColumnSet",
@@ -28,12 +28,12 @@
                             ]
                         }
                     ],
-                    "spacing": "Small"
+                    "spacing": "small"
                 },
                 {
                     "type": "Column",
                     "width": 80,
-                    "horizontalAlignment": "Center",
+                    "horizontalAlignment": "center",
                     "items": [
                         {
                             "type": "ActionSet",
@@ -48,7 +48,7 @@
                             ]
                         }
                     ],
-                    "spacing": "Small"
+                    "spacing": "small"
                 },
                 {
                     "type": "Column",
@@ -67,10 +67,10 @@
                             ]
                         }
                     ],
-                    "spacing": "Small"
+                    "spacing": "small"
                 }
             ],
-            "spacing": "Small"
+            "spacing": "small"
         }
     ]
 }

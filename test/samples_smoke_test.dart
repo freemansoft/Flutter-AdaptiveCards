@@ -22,6 +22,8 @@ void main() {
         );
       }
       await tester.pumpWidget(widget);
+      await tester.pump(
+          const Duration(seconds: 1)); // skip past any activity or animation
     });
   }
 }

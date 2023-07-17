@@ -4,7 +4,7 @@ version: 0.2.0
 homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
 
 environment:
-  sdk: ">=2.19.6 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -22,7 +22,7 @@ dependencies:
   # Content
   ## Video player with controls
   chewie: ^1.4.0
-  video_player: ^2.6.1
+  video_player: ^2.7.0
   ## Markdown renderer
   flutter_markdown: ^0.6.14
   format: ^1.1.1

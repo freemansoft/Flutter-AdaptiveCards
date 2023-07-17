@@ -42,7 +42,8 @@ class _AdaptiveMediaState extends State<AdaptiveMedia>
   }
 
   Future<void> initializePlayer() async {
-    videoPlayerController = VideoPlayerController.network(sourceUrl);
+    videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(sourceUrl));
 
     await videoPlayerController.initialize();
 

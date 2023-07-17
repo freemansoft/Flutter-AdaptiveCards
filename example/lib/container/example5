@@ -14,7 +14,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "spacing: none",
+          "text": "spacing: none, weight: bolder",
           "weight": "bolder",
           "size": "medium"
         }
@@ -27,7 +27,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "spacing: extraLarge, separator: true",
+          "text": "spacing: extraLarge, weight: bolder, separator: true",
           "weight": "bolder",
           "size": "medium"
         }

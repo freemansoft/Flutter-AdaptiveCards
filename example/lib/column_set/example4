@@ -5,8 +5,8 @@
     "body": [
         {
             "type": "TextBlock",
-            "size": "Medium",
-            "weight": "Bolder",
+            "size": "medium",
+            "weight": "bolder",
             "text": "Column background image"
         },
         {

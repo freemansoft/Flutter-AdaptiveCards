@@ -6,11 +6,11 @@
         {
             "type": "TextBlock",
             "text": "Alignment Text",
-            "size": "ExtraLarge"
+            "size": "extraLarge"
         },
         {
             "type": "ColumnSet",
-            "spacing": "None",
+            "spacing": "none",
             "columns": [
                 {
                     "type": "Column",
@@ -19,23 +19,23 @@
                         {
                             "type": "TextBlock",
                             "text": "top:center",
-                            "horizontalAlignment": "Center"
+                            "horizontalAlignment": "center"
                         }
                     ],
-                    "horizontalAlignment": "Center"
+                    "horizontalAlignment": "center"
                 },
                 {
                     "type": "Column",
                     "width": "stretch",
-                    "verticalContentAlignment": "Center",
+                    "verticalContentAlignment": "center",
                     "items": [
                         {
                             "type": "TextBlock",
                             "text": "center:right",
-                            "horizontalAlignment": "Right"
+                            "horizontalAlignment": "right"
                         }
                     ],
-                    "horizontalAlignment": "Right"
+                    "horizontalAlignment": "right"
                 },
                 {
                     "type": "Column",
@@ -46,7 +46,7 @@
                             "text": "bottom:left"
                         }
                     ],
-                    "verticalContentAlignment": "Bottom"
+                    "verticalContentAlignment": "bottom"
                 },
                 {
                     "type": "Column",
@@ -55,7 +55,7 @@
                         {
                             "type": "Image",
                             "url": "http://adaptivecards.io/content/cats/1.png",
-                            "size": "Large"
+                            "size": "large"
                         }
                     ]
                 }

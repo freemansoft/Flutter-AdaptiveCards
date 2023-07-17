@@ -49,29 +49,34 @@ There is an expansive example program that demonstrates all Adaptive Cards. See 
 
 ## Tests
 
-1. Test sample 2 is still failing with a rendering issue on my Windows 11 PC that I don't understand
-1. I updated the golden images to match my windows machine.  It may be that they were correct for a Mac or linux machine.
+The test use the standard flutter testing mechanism which uses the `FlutterTest` font or the `Ahem` font.
+
+* The tests used to load the Roboto fonts to get an exact match but the line spacing can be off between platforms.
+* I've updated the golden images (again) to use the default testing font.  The line spacing is subtly different so you have to pick a platform for the golden tests which means I've poluted the repo for no reason. <https://github.com/flutter/flutter/issues/2943>
+
+1. Note that the test could upgrade to ebay's golden toolkit that renders fonts.  In that case we could bring back the Roboto fonts. Golden toolkit can show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
 
 ## Compatibility
 
 Compatability changes should be captured in the Changelog section below
 
-This codebase has been updated to support some of the null safety requred for 3.0.0.  It works with the following version of flutter.
+This codebase has been updated to support some of the null safety requred for 3.7.0+.  It works with the following version of flutter.
 
 ```powershell
-PS C:\Users\foo> flutter --version
-Flutter 3.7.9 • channel unknown • unknown source
-Framework • revision 62bd79521d (3 months ago) • 2023-03-30 10:59:36 -0700
-Engine • revision ec975089ac
-Tools • Dart 2.19.6 • DevTools 2.20.1
+PS C:\dev\flutter> flutter --version
+Flutter 3.10.6 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision f468f3366c (4 days ago) • 2023-07-12 15:19:05 -0700
+Engine • revision cdbeda788a
+Tools • Dart 3.0.6 • DevTools 2.23.1
 ```
 
 You can move to this version of flutter by:
 
 ```zsh
-  cd <flutter-install-directory>
- git checkout 3.7.9
- flutter doctor -v
+cd <flutter-install-directory>
+Flutter channel stable
+Flutter upgrade
+
 ```
 
 Released Flutter / Dart bundling versions are located here: <https://docs.flutter.dev/release/archive?tab=windows>
@@ -99,6 +104,7 @@ TODO for the example programs moved to [example/README.md]
 
 * Add template and data json merge support - Adaptive Cards 1.3
 * Inject locale behavior in more places
+* Media `poster` is broken, possibly with the latest media player update
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
     * `initData` currently injected directly into a widget
@@ -120,13 +126,16 @@ TODO for the example programs moved to [example/README.md]
   * `Action.Execute` and `Action.Submit` are currently the same via dispatch. Their behavior should possibly be different
 * Tests
   * findText for Text doesn't seem to be working so commented out in `basic_test.dart`
-  * When migrating past Flutter 3.7,  test are failing with haning timers
+  * Font line spacing is subtly different between platforms.  You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
+  * Using default flutter fonts instead of roboto <https://github.com/flutter/flutter/issues/56383>
+    * Could use golden toolkit but it will show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
   * `example\widget_test.dart` should never be working because we don't have any code that has an increment button and counters.  Probably should be either renamed again to not be picked up., deleted or disabled.
 
 ## ChangeLog
 
 2023 07
 
+* Added text selection enablement in the examples.
 * Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
 * added _brain dead_ `Table` implementation as a starting point
 * migrated from print() to developer.log()
