@@ -148,10 +148,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       height: 40,
       child: TextFormField(
         readOnly: true,
-        style: TextStyle(
-          backgroundColor: Colors.white,
-          color: Colors.black,
-        ),
+        style: TextStyle(),
         controller: controller,
         decoration: InputDecoration(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
@@ -160,29 +157,24 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
             horizontal: 8,
           ),
           enabledBorder: const OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.grey),
+            borderSide: const BorderSide(),
           ),
           errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                 width: 1,
-                color: Colors.red,
               )),
           focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                 width: 1,
-                color: Colors.redAccent,
               )),
           filled: true,
-          fillColor: Colors.white,
-          hoverColor: Colors.white,
           suffixIcon: Icon(
             Icons.arrow_drop_down,
-            color: Colors.black54,
           ),
           hintText: placeholder,
-          hintStyle: TextStyle(color: Colors.black54),
+          hintStyle: TextStyle(),
           errorStyle: TextStyle(height: 0),
         ),
         validator: (value) {
@@ -215,19 +207,16 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         padding: EdgeInsets.all(8),
         height: 40.0,
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey),
+          border: Border.all(),
           borderRadius: BorderRadius.all(Radius.circular(4.0)),
         ),
         child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
           isExpanded: true,
-          dropdownColor: Colors.white,
           icon: Icon(
             Icons.arrow_drop_down,
-            color: Colors.black54,
           ),
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(),
           items: _choices.keys
               .map((key) => DropdownMenuItem<String>(
                     value: _choices[key],

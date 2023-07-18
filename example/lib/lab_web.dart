@@ -85,7 +85,7 @@ class MyHomePage extends StatelessWidget {
               child: Center(
                 child: Text(
                   "You can find samples at https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5/Scenarios Use the raw json files.",
-                  style: TextStyle(fontSize: 12),
+                  style: Theme.of(context).textTheme.bodyMedium,
                   textAlign: TextAlign.center,
                 ),
               ),

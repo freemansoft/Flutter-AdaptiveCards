@@ -247,7 +247,7 @@ Widget loadLabel(String? label, bool isRequired) {
                       WidgetSpan(
                         child: Text(
                           '*',
-                          style: TextStyle(color: Colors.red),
+                          style: TextStyle(),
                         ),
                       ),
                     ],

@@ -69,7 +69,6 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       style: TextStyle(
         fontWeight: fontWeight,
         fontSize: fontSize,
-        color: getColor(Theme.of(context).brightness),
       ),
       maxLines: maxLines,
     );

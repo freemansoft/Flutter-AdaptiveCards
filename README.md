@@ -137,6 +137,7 @@ TODO for the example programs moved to [example README](example/README.md)
 
 2023 07
 
+* Eliminate all hard coded Text sizes and colors
 * Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
 * added minimal `Table` implementation as a starting point
 * migrated from `print()` to `developer.log()`

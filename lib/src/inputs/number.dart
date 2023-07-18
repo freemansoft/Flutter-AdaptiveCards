@@ -50,8 +50,7 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
           SizedBox(
             height: 40,
             child: TextFormField(
-              style:
-                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
+              style: TextStyle(),
               keyboardType: TextInputType.number,
               inputFormatters: [
                 TextInputFormatter.withFunction((oldVal, newVal) {
@@ -70,13 +69,11 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
                     EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 enabledBorder: const OutlineInputBorder(
                   // width: 0.0 produces a thin "hairline" border
-                  borderSide: const BorderSide(color: Colors.grey),
+                  borderSide: const BorderSide(),
                 ),
                 filled: true,
-                fillColor: Colors.white,
-                hoverColor: Colors.white,
                 hintText: placeholder,
-                hintStyle: TextStyle(color: Colors.black54),
+                hintStyle: TextStyle(),
                 errorStyle: TextStyle(height: 0),
               ),
               validator: (value) {

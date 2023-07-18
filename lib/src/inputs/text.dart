@@ -50,8 +50,7 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
           SizedBox(
             height: 40,
             child: TextFormField(
-              style:
-                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
+              style: TextStyle(),
               controller: controller,
               // maxLength: maxLength,
               inputFormatters: [
@@ -65,19 +64,21 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 enabledBorder: const OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.grey),
+                  borderSide: const BorderSide(),
                 ),
                 errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1, color: Colors.red)),
+                    borderSide: BorderSide(
+                      width: 1,
+                    )),
                 focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                    borderSide: BorderSide(
+                      width: 1,
+                    )),
                 filled: true,
-                fillColor: Colors.white,
-                hoverColor: Colors.white,
                 hintText: placeholder,
-                hintStyle: TextStyle(color: Colors.black54),
+                hintStyle: TextStyle(),
                 errorStyle: TextStyle(height: 0),
               ),
               validator: (value) {

@@ -61,8 +61,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
             height: 40,
             child: TextFormField(
               readOnly: true,
-              style:
-                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
+              style: TextStyle(),
               controller: controller,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -70,21 +69,18 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 enabledBorder: const OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.grey),
+                  borderSide: const BorderSide(),
                 ),
                 errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1, color: Colors.red)),
+                    borderSide: BorderSide(width: 1)),
                 focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1, color: Colors.redAccent)),
+                    borderSide: BorderSide(width: 1)),
                 filled: true,
-                fillColor: Colors.white,
-                hoverColor: Colors.white,
-                suffixIcon:
-                    Icon(Icons.calendar_today, size: 15, color: Colors.black54),
+                suffixIcon: Icon(Icons.calendar_today, size: 15),
                 hintText: placeholder,
-                hintStyle: TextStyle(color: Colors.black54),
+                hintStyle: TextStyle(),
                 errorStyle: TextStyle(height: 0),
               ),
               validator: (value) {

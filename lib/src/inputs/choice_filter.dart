@@ -55,8 +55,7 @@ class _ChoiceFilterState extends State<ChoiceFilter> {
             height: 40,
             child: TextField(
               autofocus: true,
-              style:
-                  TextStyle(backgroundColor: Colors.white, color: Colors.black),
+              style: TextStyle(),
               controller: _searchController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -64,16 +63,14 @@ class _ChoiceFilterState extends State<ChoiceFilter> {
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 enabledBorder: const OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.grey),
+                  borderSide: const BorderSide(),
                 ),
                 filled: true,
-                fillColor: Colors.white,
-                hoverColor: Colors.white,
-                prefixIcon: Icon(Icons.search, color: Colors.grey),
+                prefixIcon: Icon(Icons.search),
                 suffix: _searchController.text.isEmpty
                     ? null
                     : IconButton(
-                        icon: Icon(Icons.cancel, color: Colors.grey),
+                        icon: Icon(Icons.cancel),
                         onPressed: () {
                           _searchController.clear();
                           onSearchTextChanged('');

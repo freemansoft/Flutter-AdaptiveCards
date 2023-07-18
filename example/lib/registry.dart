@@ -62,7 +62,7 @@ class MyHomePage extends StatelessWidget {
           // TODO fix this
           // cardRegistry: CardRegistry(addedActions: {
           //   "Action.Submit": (map, widgetState, card) =>
-          //       AdaptiveActionSubmit(map, widgetState, color: Colors.red)
+          //       AdaptiveActionSubmit(map, widgetState)
           // }),
         ),
       ),

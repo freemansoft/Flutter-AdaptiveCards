@@ -454,7 +454,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         context: context,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(6.0)),
-          side: BorderSide(color: Colors.grey),
+          side: BorderSide(),
         ),
         builder: (BuildContext builder) => SizedBox(
             height: MediaQuery.of(context).copyWith().size.height / 2,
@@ -596,9 +596,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         child = Column(
           children: <Widget>[
             TextButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.indigo, // textColor
-              ),
               onPressed: () {
                 JsonEncoder encoder = new JsonEncoder.withIndent('  ');
                 String prettyprint = encoder.convert(widget.map);

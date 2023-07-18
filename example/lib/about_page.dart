@@ -24,7 +24,6 @@ class AboutPage extends StatelessWidget {
       },
       child: Text(
         'About',
-        style: TextStyle(color: Colors.white),
       ),
     );
   }

@@ -358,8 +358,7 @@ class MyHomePage extends StatelessWidget {
                   Divider(),
                   Text(
                     'Flutter-Adaptive Cards',
-                    style:
-                        TextStyle(fontSize: 24.0, fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.displayMedium,
                     textAlign: TextAlign.center,
                   ),
                 ],
