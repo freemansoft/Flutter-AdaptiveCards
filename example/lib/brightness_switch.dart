@@ -15,6 +15,7 @@ class BrightnessSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     // A 3-way theme mode toggle switch that shows the color scheme.
     return FlexThemeModeSwitch(
+      // showSystemMode: false,
       themeMode: themeMode,
       onThemeModeChanged: onThemeModeChanged,
       // The `FlexThemeModeSwitch` has a `FlexSchemeData` property that

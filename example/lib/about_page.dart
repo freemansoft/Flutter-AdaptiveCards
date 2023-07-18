@@ -14,7 +14,8 @@ class AboutPage extends StatelessWidget {
       required this.flexSchemeData});
 
   ///
-  /// This is so we can style the button the same everywhere
+  /// This is so we can style the button the same everywhere.
+  /// This assumes the about button is in the app bar
   ///
   Widget aboutButton(BuildContext context) {
     // should be the natural button to support ios
@@ -22,9 +23,9 @@ class AboutPage extends StatelessWidget {
       onPressed: () {
         showAbout(context);
       },
-      child: Text(
-        'About',
-      ),
+      child: Text('About',
+          style:
+              TextStyle(color: Theme.of(context).appBarTheme.foregroundColor)),
     );
   }
 

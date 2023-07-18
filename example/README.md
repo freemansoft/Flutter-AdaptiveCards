@@ -105,7 +105,8 @@ flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-
 
 * `Network via Assets` works in web but not in Android mobile. There is some font sizing related layout issue.
 * Add ability to set `debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia` as command line override in examples instead of hard coding
-* Changing from light to dark mode erases any selected data - noticiable in `Input` examples
+* Changing from light to dark mode erases any selected data - noticiable in `Input` examples - is this because of using stateless widgets?
+* Should make more use of schemes as described in <https://github.com/rydmike/flex_color_scheme/blob/master/FEATURES.md> or simple [ThemePopupMenu from example 4](https://github.com/rydmike/flex_color_scheme/blob/master/example/lib/example4_all_themes/home_page.dart)
 
 ## Changelog
 
