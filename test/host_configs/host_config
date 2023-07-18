@@ -1,7 +1,6 @@
 {
 	"choiceSetInputValueSeparator": ",",
 	"supportsInteractivity": true,
-	"fontFamily": "Segoe UI",
 	"spacing": {
 		"small": 3,
 		"default": 8,
@@ -13,18 +12,6 @@
 	"separator": {
 		"lineThickness": 1,
 		"lineColor": "#EEEEEE"
-	},
-	"fontSizes": {
-		"small": 12,
-		"default": 14,
-		"medium": 17,
-		"large": 21,
-		"extraLarge": 26
-	},
-	"fontWeights": {
-		"lighter": 200,
-		"default": 400,
-		"bolder": 600
 	},
 	"imageSizes": {
 		"small": 40,

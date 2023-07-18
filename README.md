@@ -137,7 +137,8 @@ TODO for the example programs moved to [example README](example/README.md)
 
 2023 07
 
-* Eliminate all hard coded Text sizes and colors
+* Remove `fontSizes` and `fontWeights` from host_config - use inherited themes
+* Eliminate all hard coded Text sizes and colors to use inerited themes
 * Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
 * added minimal `Table` implementation as a starting point
 * migrated from `print()` to `developer.log()`
@@ -181,11 +182,10 @@ _________________________________________________________________...
 
 # Adaptive Cards for Flutter
 
-We decided to build a Flutter implementation of Adaptive Cards because we believe in the future of both technologies. With Flutter, we found an exciting framework for ultra-fast and cross-platform UI development. And with Adaptive Cards, we can combine that with an industry standard for exchanging card content in a structured way. At Neohelden, we're building on both of these technologies with our AI-assistant for business – and you can learn more about why we built this in our [blog-post on the release of our Adaptive Cards in Flutter library](https://neohelden.com/blog/tech/using-adaptive-cards-in-flutter/).
 
 ## Installing
 
-No releases have been created for 0.2.0 at this time
+No releases have been created for 0.2.0 at this time. This is a placeholder for when the Git repo starts creating releases
 
 Add this to your package's pubspec.yaml file:
 
@@ -213,7 +213,7 @@ There are several constructors which handle loading of the AC from different sou
 `AdaptiveCard.asset` takes an asset path to load the payload from the local data.
 `AdaptiveCard.memory` takes a map (which can be obtained but decoding a string using the json class) and displays it.
 
-### HostConfig
+### AdaptiveCards HostConfig
 
 The `HostConfig` can be configured via two parameters of every constructor:
 
@@ -221,6 +221,21 @@ The `HostConfig` can be configured via two parameters of every constructor:
 2. The parameter `hostConfig` takes a dynamic HostConfig as a String. This can easily be programmaticly and can e.g. be used for switching between a light and a dark theme.
 
 If both parameters are set the `hostConfig`parameter will be used.
+
+#### HostConfig Unsupported elements
+
+The following sections do not exist in hostconfig because they are better served via the standard Flutter Theme and Style handling. This repo pretty much completely uses `textTheme` for calculating fornts and default colors. The color scheme also has other [properties](https://api.flutter.dev/flutter/material/ColorScheme/ColorScheme.html)  There is also a `primaryTextTheme` that contrasts with `textTheme`.
+
+* `fontTypes` - This is in many of the [samples](https://github.com/Microsoft/AdaptiveCards/blob/master/samples/HostConfig/sample.json) but not in the [documentation](https://learn.microsoft.com/en-us/adaptive-cards/rendering-cards/host-config)
+* `fontFamily` - thi sis in the [documentation](https://learn.microsoft.com/en-us/adaptive-cards/rendering-cards/host-config) but not the samples
+* `fontSizes` - Use Flutter Themes instead
+* `fontWeights` - Use Flutter Themes instead
+* `foregroundColors` - Currently implemented. This should be deprececated.
+
+Other sections may exist but may not be supported
+* `supportsInteractivity`
+* `allowCustomStyle`
+* others
 
 ### Example
 

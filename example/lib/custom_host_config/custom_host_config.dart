@@ -20,7 +20,6 @@ class DynamicHostConfigPage extends StatelessWidget {
   {
     "choiceSetInputValueSeparator": ",",
     "supportsInteractivity": true,
-    "fontFamily": "Segoe UI",
     "spacing": {
       "none": 0,
       "small": 3,
@@ -33,18 +32,6 @@ class DynamicHostConfigPage extends StatelessWidget {
     "separator": {
       "lineThickness": 1,
       "lineColor": "#EEEEEE"
-    },
-    "fontSizes": {
-      "small": 12,
-      "default": 14,
-      "medium": 17,
-      "large": 21,
-      "extraLarge": 26
-    },
-    "fontWeights": {
-      "lighter": 200,
-      "default": 400,
-      "bolder": 600
     },
     "imageSizes": {
       "small": 40,

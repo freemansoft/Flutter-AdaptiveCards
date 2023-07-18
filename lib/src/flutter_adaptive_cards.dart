@@ -783,30 +783,6 @@ class ReferenceResolver {
     return res;
   }
 
-  FontWeight? resolveFontWeight(String? value) {
-    int? weight = resolve('fontWeights', value ?? 'default');
-    assert(
-        weight != null,
-        '\n'
-        'FontWeight \'${value ?? 'default'}\' was not found in the host_config. \n\n'
-        'The available font weights were: \n\n'
-        '${(hostConfig['fontWeights'] as Map).entries.map((entry) => '${entry.key}: ${entry.value}\n').toList()}');
-    FontWeight? fontWeight = FontWeight.values.firstWhere(
-        (possibleWeight) => possibleWeight.toString() == 'FontWeight.w$weight');
-    return fontWeight;
-  }
-
-  double? resolveFontSize(String? value) {
-    int? size = resolve('fontSizes', value ?? 'default');
-    assert(
-        size != null,
-        '\n'
-        'Fontsize \'${value ?? 'default'}\' was not found in the host_config. \n\n'
-        'The available font sizes were: \n\n'
-        '${(hostConfig['fontSizes'] as Map).entries.map((entry) => '${entry.key}: ${entry.value}\n').toList()}');
-    return size?.toDouble();
-  }
-
   /// Resolves a color from the host config
   ///
   /// Typically one of the following colors:
