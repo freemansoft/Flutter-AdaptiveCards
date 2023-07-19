@@ -6,7 +6,6 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../additional.dart';
 import '../base.dart';
-import '../utils.dart';
 
 class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveFactSet({super.key, required this.adaptiveMap});

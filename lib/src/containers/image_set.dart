@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import '../additional.dart';
 import '../base.dart';
 import '../elements/image.dart';
-import '../utils.dart';
 
 class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImageSet(

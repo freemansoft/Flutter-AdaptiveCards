@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../additional.dart';
 import '../base.dart';
-import '../utils.dart';
 
 class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveContainer({super.key, required this.adaptiveMap});

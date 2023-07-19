@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../additional.dart';
 import '../base.dart';
-import '../utils.dart';
 import 'column.dart';
 
 class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {

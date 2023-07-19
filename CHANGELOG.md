@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This is a placeholder until someone figures out how to do the release numbers and do releases.
 Mostly because I didn't want this to overlay the 2020 Neohelden version.
 
+- Updated all dependencies to latest as of 7/2023 including  moving to null safe Flutter SDK
+
+### Merged
+
+### Commits
+
+## [0.13] pre - various parties
+This section should include anthing prior to the 6/2023
+
+- Updated may packages including UUID to version 3.0 and others
+
 ### Merged
 
 ### Commits

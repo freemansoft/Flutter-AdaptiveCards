@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tinycolor2/tinycolor2.dart';
 import 'package:uuid/uuid.dart';
-
-import '../flutter_adaptive_cards.dart';
 
 class FadeAnimation extends StatefulWidget {
   FadeAnimation(
