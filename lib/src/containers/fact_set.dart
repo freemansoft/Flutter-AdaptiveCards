@@ -32,11 +32,8 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
   @override
   Widget build(BuildContext context) {
     var backgroundColor =
-        getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      resolver: resolver,
+        resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
       adaptiveMap: adaptiveMap,
-      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
-      brightness: Theme.of(context).brightness,
     );
 
     var color = getColor(Theme.of(context).brightness);
@@ -92,10 +89,6 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
   Color? getColor(Brightness brightness) {
     Color? color = resolver.resolveForegroundColor(
         adaptiveMap["style"], adaptiveMap["isSubtle"]);
-
-    if (color != null && widgetState.widget.approximateDarkThemeColors) {
-      color = adjustColorToFitDarkTheme(color, brightness);
-    }
 
     return color;
   }

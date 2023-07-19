@@ -112,6 +112,7 @@ flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-
 
 2023 07
 
+* hostconfig colors are ARGB so an alpha channel is always needed
 * Added sample `onOpenUrl` and `onSubmit` handlers to the top level Adaptive Objects in the examples.
   * OpenUrl now actually opens a browser in the example program.
 * Added text selection enablement in the main examples.

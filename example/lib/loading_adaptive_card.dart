@@ -22,13 +22,11 @@ class DemoAdaptiveCard extends StatefulWidget {
     this.assetPath, {
     Key? key,
     this.hostConfig,
-    this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
   }) : super(key: key);
 
   final String assetPath;
   final String? hostConfig;
-  final bool approximateDarkThemeColors;
   final bool supportMarkdown;
 
   @override
@@ -62,7 +60,6 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
             hostConfigPath: "lib/host_config",
             showDebugJson: true, // enable in the example app
             hostConfig: widget.hostConfig,
-            approximateDarkThemeColors: widget.approximateDarkThemeColors,
             supportMarkdown: widget.supportMarkdown,
             onChange: (id, value, state) {
               developer.log(format(

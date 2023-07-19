@@ -41,11 +41,8 @@ class _AdaptiveContainerState extends State<AdaptiveContainer>
   @override
   Widget build(BuildContext context) {
     var backgroundColor =
-        getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      resolver: resolver,
+        resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
       adaptiveMap: adaptiveMap,
-      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
-      brightness: Theme.of(context).brightness,
     );
 
     return ChildStyler(

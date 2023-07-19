@@ -43,63 +43,63 @@ class DynamicHostConfigPage extends StatelessWidget {
         "foregroundColors": {
           "default": {
             "default": "#$defaultForegroundColor",
-            "subtle": "#EEFF0000"
+            "subtle": "#88FF0000"
           },
           "dark": {
-            "default": "#000000",
+            "default": "#FF000000",
             "subtle": "#66000000"
           },
           "light": {
-            "default": "#FFFFFF",
+            "default": "#FFFFFFFF",
             "subtle": "#33000000"
           },
           "accent": {
-            "default": "#2E89FC",
+            "default": "#FF2E89FC",
             "subtle": "#882E89FC"
           },
           "good": {
-            "default": "#54a254",
+            "default": "#FF54a254",
             "subtle": "#DD54a254"
           },
           "warning": {
-            "default": "#c3ab23",
+            "default": "#FFc3ab23",
             "subtle": "#DDc3ab23"
           },
           "attention": {
-            "default": "#FF0000",
+            "default": "#FFFF0000",
             "subtle": "#DDFF0000"
           }
         },
-        "backgroundColor": "#AAAAAA"
+        "backgroundColor": "#FFAAAAAA"
       },
       "emphasis": {
         "foregroundColors": {
           "default": {
-            "default": "#333333",
-            "subtle": "#EE333333"
+            "default": "#FF333333",
+            "subtle": "#88333333"
           },
           "dark": {
-            "default": "#000000",
+            "default": "#FF000000",
             "subtle": "#66000000"
           },
           "light": {
-            "default": "#FFFFFF",
+            "default": "#FFFFFFFF",
             "subtle": "#33000000"
           },
           "accent": {
-            "default": "#2E89FC",
+            "default": "#FF2E89FC",
             "subtle": "#882E89FC"
           },
           "good": {
-            "default": "#54a254",
+            "default": "#FF54a254",
             "subtle": "#DD54a254"
           },
           "warning": {
-            "default": "#c3ab23",
+            "default": "#FFc3ab23",
             "subtle": "#DDc3ab23"
           },
           "attention": {
-            "default": "#FF0000",
+            "default": "#FFFF0000",
             "subtle": "#DDFF0000"
           }
         },
@@ -161,7 +161,6 @@ class DynamicHostConfigPage extends StatelessWidget {
             child: DemoAdaptiveCard(
               "lib/samples/example${index + 1}",
               hostConfig: hostConfig,
-              approximateDarkThemeColors: false,
             ),
           );
         },

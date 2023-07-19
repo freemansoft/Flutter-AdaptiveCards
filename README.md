@@ -137,6 +137,8 @@ TODO for the example programs moved to [example README](example/README.md)
 
 2023 07
 
+* hostconfig colors are ARGB so an alpha channel is always needed
+* Remove `approximateDarkThemeColors` and brightness because people should use light and dark themes
 * Remove `fontSizes` and `fontWeights` from host_config - use inherited themes
 * Eliminate all hard coded Text sizes and colors to use inerited themes
 * Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
@@ -254,11 +256,6 @@ AdaptiveCard.network(
   // NOTE: this will only be shown in debug mode, this attribute does change nothing for realease builds.
   // This is very useful for debugging purposes
   showDebugJson: true,
-  // If you have not implemented explicit dark theme, Adaptive Cards will try to approximate its colors to match the dark theme
-  // so the contrast and color meaning stays the same.
-  // Turn this off, if you want to have full control over the colors when using the dark theme.
-  // NOTE: This is currently still under development
-  approximateDarkThemeColors: true,
 );
 ```
 

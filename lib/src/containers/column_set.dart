@@ -38,11 +38,8 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   @override
   Widget build(BuildContext context) {
     var backgroundColor =
-        getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      resolver: resolver,
+        resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
       adaptiveMap: adaptiveMap,
-      approximateDarkThemeColors: widgetState.widget.approximateDarkThemeColors,
-      brightness: Theme.of(context).brightness,
     );
 
     Widget child = Row(

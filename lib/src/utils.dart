@@ -113,61 +113,6 @@ String getDayOfMonthSuffix(final int n) {
   }
 }
 
-Color? adjustColorToFitDarkTheme(Color? color, Brightness brightness) {
-  if (color == null) return null;
-
-  if (brightness == Brightness.light) {
-    return color;
-  } else {
-    TinyColor tinyColor = TinyColor.fromColor(color);
-    double luminance = tinyColor.getLuminance();
-    if (tinyColor.isDark())
-      return tinyColor.lighten(((1 - luminance) * 100).round()).color;
-    if (tinyColor.isLight())
-      return tinyColor.darken(((0 + luminance) * 100).round()).color;
-    return color;
-  }
-}
-
-Color? getBackgroundColorIfNoBackgroundImageAndNoDefaultStyle({
-  required ReferenceResolver resolver,
-  required Map adaptiveMap,
-  required bool approximateDarkThemeColors,
-  required Brightness brightness,
-}) {
-  if (adaptiveMap['backgroundImage'] != null) {
-    if (adaptiveMap['backgroundImage']['url'] != null) {
-      return null;
-    }
-  }
-
-  var style = adaptiveMap['style'] ?? 'default';
-  if (style == 'default') {
-    return null;
-  }
-
-  return getBackgroundColor(
-      resolver, adaptiveMap, approximateDarkThemeColors, brightness);
-}
-
-Color? getBackgroundColor(
-  ReferenceResolver resolver,
-  Map adaptiveMap,
-  bool approximateDarkThemeColors,
-  Brightness brightness,
-) {
-  String style = adaptiveMap['style']?.toString().toLowerCase() ?? 'default';
-
-  String? color =
-      resolver.hostConfig['containerStyles']?[style]?['backgroundColor'];
-
-  var backgroundColor = parseColor(color);
-  if (backgroundColor != null && approximateDarkThemeColors) {
-    backgroundColor = adjustColorToFitDarkTheme(backgroundColor, brightness);
-  }
-  return backgroundColor;
-}
-
 /// Parses a given text string to property handle DATE() and TIME()
 /// TODO this needs a bunch of tests
 String parseTextString(String text) {

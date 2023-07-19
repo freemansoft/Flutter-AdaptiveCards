@@ -70,7 +70,6 @@ class _RenderTimePageState extends State<RenderTimePage> {
           hostConfigPath: "lib/host_config",
           showDebugJson: true,
           listView: true,
-          approximateDarkThemeColors: true,
           supportMarkdown: false,
         ),
       ),

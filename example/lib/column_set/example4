@@ -20,7 +20,7 @@
                     },
                     "items": [
                         {
-                            "text": "Blue",
+                            "text": "Blue Image",
                             "type": "TextBlock"
                         }
                     ]
@@ -44,7 +44,7 @@
                     },
                     "items": [
                         {
-                            "text": "Blue",
+                            "text": "Blue Image",
                             "type": "TextBlock"
                         }
                     ]

@@ -94,7 +94,6 @@ class AdaptiveCard extends StatefulWidget {
     this.hostConfig,
     this.listView = false,
     this.showDebugJson = true,
-    this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
   });
 
@@ -111,7 +110,6 @@ class AdaptiveCard extends StatefulWidget {
     this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
-    this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(
             url: url, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
@@ -129,7 +127,6 @@ class AdaptiveCard extends StatefulWidget {
     this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
-    this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = AssetAdaptiveCardContentProvider(
             path: assetPath,
@@ -149,7 +146,6 @@ class AdaptiveCard extends StatefulWidget {
     this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
-    this.approximateDarkThemeColors = true,
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = MemoryAdaptiveCardContentProvider(
             content: content,
@@ -172,7 +168,6 @@ class AdaptiveCard extends StatefulWidget {
   final Function(String url)? onOpenUrl;
 
   final bool showDebugJson;
-  final bool approximateDarkThemeColors;
   final bool supportMarkdown;
   final bool listView;
 
@@ -293,7 +288,6 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       onSubmit: onSubmit,
       listView: widget.listView,
       showDebugJson: widget.showDebugJson,
-      approximateDarkThemeColors: widget.approximateDarkThemeColors,
     );
   }
 }
@@ -314,7 +308,6 @@ class RawAdaptiveCard extends StatefulWidget {
     required this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
-    this.approximateDarkThemeColors = true,
   }) : assert(onSubmit != null, onOpenUrl != null);
 
   final Map<String, dynamic> map;
@@ -328,7 +321,6 @@ class RawAdaptiveCard extends StatefulWidget {
   final Function(String url)? onOpenUrl;
 
   final bool showDebugJson;
-  final bool approximateDarkThemeColors;
   final bool listView;
 
   @override
@@ -631,11 +623,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       }
       return true;
     }());
-    var backgroundColor = getBackgroundColor(
-      _resolver,
-      widget.map,
-      widget.approximateDarkThemeColors,
-      Theme.of(context).brightness,
+    var backgroundColor = _resolver.resolveBackgroundColor(
+      widget.map['style']?.toString().toLowerCase(),
     );
 
     return Provider<RawAdaptiveCardState>.value(
@@ -801,7 +790,42 @@ class ReferenceResolver {
     String? colorValue = hostConfig['containerStyles']?[style]
             ?['foregroundColors']?[firstCharacterToLowerCase(myColor)]
         [subtleOrDefault];
+    developer.log(format("resolved foreground color:{} subtle:{} to color:{}",
+        myColor, subtleOrDefault, colorValue));
     return parseColor(colorValue);
+  }
+
+  Color? resolveBackgroundColor(
+    String? myStyle,
+  ) {
+    String style = myStyle ?? 'default';
+
+    String? color = hostConfig['containerStyles']
+        ?[firstCharacterToLowerCase(style)]?['backgroundColor'];
+
+    developer
+        .log(format("resolved background style:{} to color:{}", style, color));
+
+    var backgroundColor = parseColor(color);
+    return backgroundColor;
+  }
+
+  Color? resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle({
+    required Map adaptiveMap,
+  }) {
+    if (adaptiveMap['backgroundImage'] != null) {
+      if (adaptiveMap['backgroundImage']['url'] != null) {
+        return null;
+      }
+    }
+
+    var style = adaptiveMap['style'] ?? 'default';
+    if (style == 'default') {
+      return null;
+    }
+
+    return resolveBackgroundColor(
+        adaptiveMap['style']?.toString().toLowerCase());
   }
 
   ReferenceResolver copyWith({String? style}) {

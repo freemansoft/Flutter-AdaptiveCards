@@ -58,7 +58,6 @@ class NetworkPage extends StatelessWidget {
               launchUrl(Uri.parse(url));
             },
             showDebugJson: true, // enable debug in the example app
-            approximateDarkThemeColors: true,
           )
         ],
       ),

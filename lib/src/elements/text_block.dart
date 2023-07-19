@@ -104,9 +104,6 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   Color? getColor(Brightness brightness) {
     Color? color = resolver.resolveForegroundColor(
         adaptiveMap["color"], adaptiveMap["isSubtle"]);
-    if (color != null && widgetState.widget.approximateDarkThemeColors) {
-      color = adjustColorToFitDarkTheme(color, brightness);
-    }
     return color;
   }
 
