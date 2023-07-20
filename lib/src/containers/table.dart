@@ -37,7 +37,8 @@ class _AdaptiveTableState extends State<AdaptiveTable>
     rows = List<Map<String, dynamic>>.from(adaptiveMap["rows"] ?? []);
 
     developer.log(
-        format("Table: columns: {} rows: {}", columns.length, rows.length));
+        format("Table: columns: {} rows: {}", columns.length, rows.length),
+        name: runtimeType.toString());
   }
 
   @override
@@ -85,21 +86,21 @@ class _AdaptiveTableState extends State<AdaptiveTable>
   /// Generates a TableRow for the Table TableRow[TableCell[Widget]]
   ///
   TableRow generateTableRowWidgets(Map<String, dynamic> row) {
-    //developer.log(format("Row: num:{} - {})", rowNum, row.toString()));
+    //developer.log(format("Row: {})", row.toString()),name: runtimeType.toString());
 
     // All the table cell markup in this row [cell, cell, cell]
     List<Map<String, dynamic>> rowTableCells =
         List<Map<String, dynamic>>.from(row["cells"]);
     //developer.log(format("rowTableCells: row:{} length:{} - {} ", rowNum,
-    //    rowTableCells.length, rowTableCells.toString()));
+    //    rowTableCells.length, rowTableCells.toString()),name: runtimeType.toString());
 
     // The row markup contains a [TableCells[items]]
     List<List<dynamic>> rowCellItems =
         List<List<dynamic>>.generate(rowTableCells.length, (rowNum) {
       return rowTableCells[rowNum]["items"];
     });
-    // developer.log(format("rowCellItems: row:{} length:{} - {}", rowNum,
-    //    rowCellItems.length, rowCellItems.toString()));
+    // developer.log(format("rowCellItems: length:{} - {}",
+    //    rowCellItems.length, rowCellItems.toString()),name: runtimeType.toString());
 
     List<TableCell> tableCells =
         List<TableCell>.generate(rowCellItems.length, (col) {
@@ -113,13 +114,15 @@ class _AdaptiveTableState extends State<AdaptiveTable>
               child: Wrap(
                   children:
                       List<Widget>.generate(oneCellItems.length, (widgetIndex) {
-        developer.log(format("onCellItems for index {} : {}", widgetIndex,
-            oneCellItems[widgetIndex]));
+        developer.log(
+            format("onCellItems for index {} : {}", widgetIndex,
+                oneCellItems[widgetIndex]),
+            name: runtimeType.toString());
         return widgetState.cardRegistry.getElement(oneCellItems[widgetIndex]);
       }))));
     });
 
-    // developer.log(format("cell children: {}", tableCellChildren));
+    // developer.log(format("cell children: {}", tableCellChildren),name: runtimeType.toString());
     // return TableRow(children: [tableCellChildren]);
     return TableRow(children: tableCells);
   }

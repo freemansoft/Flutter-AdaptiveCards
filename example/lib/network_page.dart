@@ -5,6 +5,7 @@ import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'about_page.dart';
+import 'nav_support.dart';
 
 ///
 /// Similar to GenericListPage but operates against a **single** URL and not a list of resources
@@ -40,21 +41,25 @@ class NetworkPage extends StatelessWidget {
             url: this.url,
             hostConfigPath: 'assets/host_config.json',
             onChange: (id, value, state) {
-              developer.log(format(
-                  "onChange: id: {}, value: {}, state: {}", id, value, state));
+              developer.log(
+                  format("onChange: id: {}, value: {}, state: {}", id, value,
+                      state),
+                  name: runtimeType.toString());
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(format("onChange: id: {}, value: {}, state: {}",
                       id, value, state))));
             },
             onSubmit: (map) {
-              developer.log(format("onSubmit map: {}", map.toString()));
+              developer.log(format("onSubmit map: {}", map.toString()),
+                  name: runtimeType.toString());
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(format(
                       'onSubmit: No handler found for map: \n {}',
                       map.toString()))));
             },
             onOpenUrl: (url) {
-              developer.log(format("onOpenUrl url: {}", url));
+              developer.log(format("onOpenUrl url: {}", url),
+                  name: runtimeType.toString());
               launchUrl(Uri.parse(url));
             },
             showDebugJson: true, // enable debug in the example app

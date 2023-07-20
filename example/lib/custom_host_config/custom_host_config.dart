@@ -2,6 +2,7 @@ import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
 
 import '../about_page.dart';
+import '../nav_support.dart';
 
 class DynamicHostConfigPage extends StatelessWidget {
   final AboutPage aboutPage;
