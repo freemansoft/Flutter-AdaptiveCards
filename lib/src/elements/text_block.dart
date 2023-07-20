@@ -101,7 +101,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   }*/
 
   // Probably want to pass context down the tree, until now -> this
-  Color? getColor(Brightness brightness) {
+  Color? getColor() {
     Color? color = resolver.resolveForegroundColor(
         context: context,
         colorType: adaptiveMap["color"],
@@ -194,7 +194,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   /// TODO Markdown still has some problems
   MarkdownStyleSheet loadMarkdownStyleSheet() {
-    var color = getColor(Theme.of(context).brightness);
+    var color = getColor();
     TextStyle style =
         TextStyle(fontWeight: fontWeight, fontSize: fontSize, color: color);
 

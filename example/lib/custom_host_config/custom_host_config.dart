@@ -13,9 +13,6 @@ class DynamicHostConfigPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var isLight = Theme.of(context).brightness == Brightness.light;
-    var defaultForegroundColor = isLight ? "FF0000" : "00FF00";
-
     var hostConfig = '''
   {
     "choiceSetInputValueSeparator": ",",
