@@ -27,7 +27,8 @@ Widget getWidget(String path, String hostConfigPath) {
     //onChange: (_) {},
     onSubmit: (_) {},
     onOpenUrl: (_) {},
-    showDebugJson: false, // should set this to false for prod like testing!
+    // debug panels don't show in prod so dislable them in the golden images
+    showDebugJson: false,
   );
 
   return MaterialApp(

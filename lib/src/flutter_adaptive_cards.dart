@@ -530,12 +530,14 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         DateTime(1, 1, 1, minimumTime?.hour ?? 0, minimumTime?.minute ?? 0);
     DateTime maxDateTime =
         DateTime(1, 1, 1, maximumTime?.hour ?? 23, maximumTime?.minute ?? 59);
-    developer.log(format(
-        "CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}",
-        initialTimeOfDay,
-        initialDateTime,
-        minDateTime,
-        maxDateTime));
+    developer.log(
+        format(
+            "CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}",
+            initialTimeOfDay,
+            initialDateTime,
+            minDateTime,
+            maxDateTime),
+        name: runtimeType.toString());
 
     TimeOfDay? pickedTimeOfDay = initialTimeOfDay;
 
@@ -831,12 +833,10 @@ class ReferenceResolver {
     if (foregroundColor != null && subtleOrDefault == "subtle")
       foregroundColor = Color.fromARGB(foregroundColor.alpha ~/ 2,
           foregroundColor.red, foregroundColor.green, foregroundColor.blue);
-    developer.log(format(
-        "resolved foreground style:{} color:{} subtle:{} to color:{}",
-        myStyle,
-        colorType,
-        subtleOrDefault,
-        foregroundColor));
+    developer.log(
+        format("resolved foreground style:{} color:{} subtle:{} to color:{}",
+            myStyle, colorType, subtleOrDefault, foregroundColor),
+        name: runtimeType.toString());
     return foregroundColor;
   }
 
@@ -879,8 +879,10 @@ class ReferenceResolver {
         backgroundColor = Theme.of(context).colorScheme.primaryContainer;
     }
 
-    developer.log(format(
-        "resolved background style:{} to color:{}", myStyle, backgroundColor));
+    developer.log(
+        format("resolved background style:{} to color:{}", myStyle,
+            backgroundColor),
+        name: runtimeType.toString());
 
     return backgroundColor;
   }
