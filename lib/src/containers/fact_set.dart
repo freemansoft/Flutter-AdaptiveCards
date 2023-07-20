@@ -37,7 +37,7 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
             backgroundImageUrl:
                 adaptiveMap['backgroundImage']?['url']?.toString());
 
-    var color = getColor(Theme.of(context).brightness);
+    var color = getColor();
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
@@ -87,7 +87,7 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
     );
   }
 
-  Color? getColor(Brightness brightness) {
+  Color? getColor() {
     Color? color = resolver.resolveForegroundColor(
         context: context,
         colorType: adaptiveMap["style"],

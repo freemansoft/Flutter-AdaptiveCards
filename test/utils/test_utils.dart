@@ -27,6 +27,7 @@ Widget getWidget(String path, String hostConfigPath) {
     //onChange: (_) {},
     onSubmit: (_) {},
     onOpenUrl: (_) {},
+    showDebugJson: false, // should set this to false for prod like testing!
   );
 
   return MaterialApp(
