@@ -793,44 +793,65 @@ class ReferenceResolver {
     // default or emphasis, I think
     final String myStyle = currentStyle ?? 'default';
 
-    if (myColorType == 'default') {
-      // derive our foreground color from the theme if the color is set to default
-      Color? foregroundColor;
+    Color? foregroundColor;
+    switch (myColorType) {
+      // "default" means default for the current style
+      case "default":
+        {
+          // derive our foreground color from the theme if the color is set to default
 
-      switch (myStyle) {
-        case "default":
-          foregroundColor = Theme.of(context).colorScheme.onPrimaryContainer;
-        case "emphasis":
-          foregroundColor = Theme.of(context).colorScheme.onSecondaryContainer;
-        case "good":
-          foregroundColor = Theme.of(context).colorScheme.onTertiaryContainer;
-        case "attention":
-        case "warning:":
-          foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
-        default:
-          foregroundColor = Theme.of(context).colorScheme.onPrimaryContainer;
-      }
-
-      if (subtleOrDefault == "subtle")
-        foregroundColor = Color.fromARGB(foregroundColor.alpha ~/ 2,
-            foregroundColor.red, foregroundColor.green, foregroundColor.blue);
-      developer.log(format(
-          "resolved foreground style:{} color:{} subtle:{} to color:{}",
-          myStyle,
-          myColorType,
-          subtleOrDefault,
-          foregroundColor));
-      return foregroundColor;
-    } else {
-      // it was not default so look in hostconfig
-      // Make it case insensitive
-      String? colorValue = hostConfig['containerStyles']
-              ?[firstCharacterToLowerCase(myStyle)]?['foregroundColors']
-          ?[firstCharacterToLowerCase(myColorType)][subtleOrDefault];
-      developer.log(format("resolved foreground color:{} subtle:{} to color:{}",
-          myColorType, subtleOrDefault, colorValue));
-      return parseColor(colorValue);
+          switch (myStyle) {
+            case "default":
+              foregroundColor =
+                  Theme.of(context).colorScheme.onPrimaryContainer;
+            case "emphasis":
+              foregroundColor =
+                  Theme.of(context).colorScheme.onSecondaryContainer;
+            case "good":
+              foregroundColor =
+                  Theme.of(context).colorScheme.onTertiaryContainer;
+            case "attention":
+            case "warning:":
+              foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
+            default:
+              foregroundColor =
+                  Theme.of(context).colorScheme.onPrimaryContainer;
+          }
+        }
+      // we can override the default foreground for the current background
+      case "emphasis":
+        foregroundColor = Theme.of(context).colorScheme.onSecondaryContainer;
+      case "good":
+        foregroundColor = Theme.of(context).colorScheme.onTertiaryContainer;
+      case "attention":
+      case "warning:":
+        foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
+      default:
+        {
+          // TODO: delete this to kill all of the colors in hostconfig
+          // It didn't map to a style so hope it is in the hostconfig
+          String? colorValue = hostConfig['containerStyles']
+                  ?[firstCharacterToLowerCase(myStyle)]?['foregroundColors']
+              ?[firstCharacterToLowerCase(myColorType)][subtleOrDefault];
+          developer.log(format(
+              "resolved foreground via hostconfig color:{} subtle:{} to color:{}",
+              myColorType,
+              subtleOrDefault,
+              colorValue));
+          // this won't pass code review but we dont' need to worry about subtle on this one path
+          return parseColor(colorValue);
+        }
     }
+    if (subtleOrDefault == "subtle")
+      foregroundColor = Color.fromARGB(foregroundColor.alpha ~/ 2,
+          foregroundColor.red, foregroundColor.green, foregroundColor.blue);
+    developer.log(format(
+        "resolved foreground style:{} color:{} subtle:{} to color:{}",
+        myStyle,
+        myColorType,
+        subtleOrDefault,
+        foregroundColor));
+    return foregroundColor;
   }
 
   /// Resolves a background color from the host config

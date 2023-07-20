@@ -45,7 +45,7 @@ sequenceDiagram
 
 ## Adaptive Card Color handling has changed.
 
-It used to be there were 3 background styles and 5 foreground styles plus light/dark.  Then Microsoft defined 5 background styles that align with the 5 foregound styles.  This library makes the assumption that the 'default' foreground color for a style should align with the background color for that style. This means we can map the Flutter container styles and onContainer styles to the Adaptive Card styles.  So if you pick a container style then you will automatically get the right foreground color for that style if you don't specify anything.
+It used to be there were 3 background styles and 5 foreground styles plus light/dark.  Then Microsoft defined 5 background styles that align with the 5 foregound styles.  This library makes the assumption that the 'default' foreground color for a style should align with the background color for that style. This means we can map the Flutter `container`` styles and `onContainer`` styles to the Adaptive Card styles.  So if you pick a container style then you will automatically get the right foreground color for that style if you don't specify anything.
 
 Adaptive Card Container ColorStyles now map to themed Flutter container styles.
 
@@ -68,11 +68,12 @@ All other foreground styles are retrieved from the host_config.
 flowchart
   subgraph ForegroundStyles[Foreground Color from Styles]
   notset[widget style not specified] --> inherit[Inherit from parent]
-  default[widget style default] --> container["Flutter ContainerStyle (defaults to default) derived onXxxContainer" ]
-  emphasis[widget style emphasis] --> hostConfig[hostConfig nested under style]
-  good[widget style good] --> hostConfig
-  attention[widget style attention] --> hostConfig
-  warning[widget style warning] --> hostConfig
+  default[widget style default] --> associatedContainer["onContainer that matches the current container bound by style above" ]
+  emphasis[widget style emphasis] --> container["onContainer that matches the container bound by style above"]
+  good[widget style good] --> container
+  attention[widget style attention] --> container
+  warning[widget style warning] --> container
+  unrecognized --> hostconfig
   end
 ```
 
