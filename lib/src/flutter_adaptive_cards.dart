@@ -788,13 +788,12 @@ class ReferenceResolver {
   /// If the color type is 'default' then it picks the standard color for the current style.
   Color? resolveForegroundColor(
       {required BuildContext context, String? colorType, bool? isSubtle}) {
-    final String myColorType = colorType ?? 'default';
     final String subtleOrDefault = isSubtle ?? false ? 'subtle' : 'default';
     // default or emphasis, I think
     final String myStyle = currentStyle ?? 'default';
 
     Color? foregroundColor;
-    switch (myColorType) {
+    switch (colorType) {
       // "default" means default for the current style
       case "default":
         {
@@ -827,28 +826,15 @@ class ReferenceResolver {
       case "warning:":
         foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
       default:
-        {
-          // TODO: delete this to kill all of the colors in hostconfig
-          // It didn't map to a style so hope it is in the hostconfig
-          String? colorValue = hostConfig['containerStyles']
-                  ?[firstCharacterToLowerCase(myStyle)]?['foregroundColors']
-              ?[firstCharacterToLowerCase(myColorType)][subtleOrDefault];
-          developer.log(format(
-              "resolved foreground via hostconfig color:{} subtle:{} to color:{}",
-              myColorType,
-              subtleOrDefault,
-              colorValue));
-          // this won't pass code review but we dont' need to worry about subtle on this one path
-          return parseColor(colorValue);
-        }
+        foregroundColor = null;
     }
-    if (subtleOrDefault == "subtle")
+    if (foregroundColor != null && subtleOrDefault == "subtle")
       foregroundColor = Color.fromARGB(foregroundColor.alpha ~/ 2,
           foregroundColor.red, foregroundColor.green, foregroundColor.blue);
     developer.log(format(
         "resolved foreground style:{} color:{} subtle:{} to color:{}",
         myStyle,
-        myColorType,
+        colorType,
         subtleOrDefault,
         foregroundColor));
     return foregroundColor;
