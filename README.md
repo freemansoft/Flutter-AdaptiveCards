@@ -174,8 +174,10 @@ TODO for the example programs moved to [example README](example/README.md)
 
 2023 07
 
-* hostconfig background colors are ignored in place of the container background colors
-* hostconfig foreground colors are ignored in place of container foreground colors when set to 'default'
+* hostconfig
+  * Removed containerStyles
+  * hostconfig background colors are ignored in place of the container background colors
+  * hostconfig foreground colors are ignored in place of container foreground colors when set to 'default'
 * hostconfig colors are ARGB so an alpha channel is always needed - host_config files updated
 * Remove `approximateDarkThemeColors` and brightness because people should use light and dark themes
 * Remove `fontSizes` and `fontWeights` from host_config - use inherited themes
