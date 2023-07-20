@@ -100,7 +100,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Contained container - no style",
+              "text": "Contained container: has no style with dark text",
               "color": "dark"
             }
           ]
@@ -111,7 +111,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Contained container - emphasis",
+              "text": "Contained container: emphasis with dark text",
               "color": "dark"
             }
           ]
@@ -122,7 +122,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Contained container - default",
+              "text": "Contained container: default with dark text",
               "color": "dark"
             }
           ]

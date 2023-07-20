@@ -103,7 +103,9 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   // Probably want to pass context down the tree, until now -> this
   Color? getColor(Brightness brightness) {
     Color? color = resolver.resolveForegroundColor(
-        adaptiveMap["color"], adaptiveMap["isSubtle"]);
+        context: context,
+        colorType: adaptiveMap["color"],
+        isSubtle: adaptiveMap["isSubtle"]);
     return color;
   }
 

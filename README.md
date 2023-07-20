@@ -43,6 +43,41 @@ sequenceDiagram
     deactivate flutter-app
 ```
 
+## Adaptive Card Color handling has changed.
+
+It used to be there were 3 background styles and 5 foreground styles plus light/dark.  Then Microsoft defined 5 background styles that align with the 5 foregound styles.  This library makes the assumption that the 'default' foreground color for a style should align with the background color for that style. This means we can map the Flutter container styles and onContainer styles to the Adaptive Card styles.  So if you pick a container style then you will automatically get the right foreground color for that style if you don't specify anything.
+
+Adaptive Card Container ColorStyles now map to themed Flutter container styles.
+
+```mermaid
+flowchart
+  subgraph ContainerStyles[Background Color from ContainerStyles]
+  notset[ContainerStyle not specified] --> inherited[inherited from parent]
+  default[ContainerStyle default] --> primaryContainer
+  emphasis[ContainerStyle emphasis] --> secondaryContainer
+  good[ContainerStyle good] --> tertiaryContainer
+  attention[ContainerStyle attention] --> errorContainer
+  warning[ContainerStyle waring] --> errorContainer
+  end
+```
+
+The CardStyle foreground color comes from the containers when the foreground style is 'default'.
+All other foreground styles are retrieved from the host_config.
+
+```mermaid
+flowchart
+  subgraph ForegroundStyles[Foreground Color from Styles]
+  notset[widget style not specified] --> inherit[Inherit from parent]
+  default[widget style default] --> container["Flutter ContainerStyle (defaults to default) derived onXxxContainer" ]
+  emphasis[widget style emphasis] --> hostConfig[hostConfig nested under style]
+  good[widget style good] --> hostConfig
+  attention[widget style attention] --> hostConfig
+  warning[widget style warning] --> hostConfig
+  end
+```
+
+
+
 ## Example Execution
 
 There is an expansive example program that demonstrates all Adaptive Cards. See [example README.md](example/README.md)
@@ -87,7 +122,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 
 1. VSCode told me to enable `Developer Mode` in **Windows** settings in order to run the examples. Is that for the Windows app or the Web app?
 
-### Current Plugins
+### Plugins used during coding
 
 * Flutter
 * Dart
@@ -103,6 +138,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 TODO for the example programs moved to [example README](example/README.md)
 
 * Add template and data json merge support - Adaptive Cards 1.3
+* There is currently no way to unset a container style inside a child container. This means you can't get back to a card background color in a nested container if you set it somewhere in the widget tree betwen you and the card.
 * Inject locale behavior in more places
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates
@@ -137,7 +173,9 @@ TODO for the example programs moved to [example README](example/README.md)
 
 2023 07
 
-* hostconfig colors are ARGB so an alpha channel is always needed
+* hostconfig background colors are ignored in place of the container background colors
+* hostconfig foreground colors are ignored in place of container foreground colors when set to 'default'
+* hostconfig colors are ARGB so an alpha channel is always needed - host_config files updated
 * Remove `approximateDarkThemeColors` and brightness because people should use light and dark themes
 * Remove `fontSizes` and `fontWeights` from host_config - use inherited themes
 * Eliminate all hard coded Text sizes and colors to use inerited themes

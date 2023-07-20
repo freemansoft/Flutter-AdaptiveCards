@@ -41,8 +41,10 @@ class _AdaptiveContainerState extends State<AdaptiveContainer>
   Widget build(BuildContext context) {
     var backgroundColor =
         resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      adaptiveMap: adaptiveMap,
-    );
+            context: context,
+            style: adaptiveMap['style']?.toString(),
+            backgroundImageUrl:
+                adaptiveMap['backgroundImage']?['url']?.toString());
 
     return ChildStyler(
       adaptiveMap: adaptiveMap,

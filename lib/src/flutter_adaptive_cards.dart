@@ -624,7 +624,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       return true;
     }());
     var backgroundColor = _resolver.resolveBackgroundColor(
-      widget.map['style']?.toString().toLowerCase(),
+      context: context,
+      style: widget.map['style']?.toString().toLowerCase(),
     );
 
     return Provider<RawAdaptiveCardState>.value(
@@ -772,7 +773,8 @@ class ReferenceResolver {
     return res;
   }
 
-  /// Resolves a color from the host config
+  /// Resolves a color type from the Theme palette if colorType is null or 'default'
+  /// Resovles a color to the host config if colorType is not null and not 'default'
   ///
   /// Typically one of the following colors:
   /// - default
@@ -782,50 +784,120 @@ class ReferenceResolver {
   /// - good
   /// - warning
   /// - attention
-  Color? resolveForegroundColor(String? colorType, bool? isSubtle) {
-    String myColor = colorType ?? 'default';
-    String subtleOrDefault = isSubtle ?? false ? 'subtle' : 'default';
-    final style = currentStyle ?? 'default';
-    // Make it case insensitive
-    String? colorValue = hostConfig['containerStyles']?[style]
-            ?['foregroundColors']?[firstCharacterToLowerCase(myColor)]
-        [subtleOrDefault];
-    developer.log(format("resolved foreground color:{} subtle:{} to color:{}",
-        myColor, subtleOrDefault, colorValue));
-    return parseColor(colorValue);
+  ///
+  /// If the color type is 'default' then it picks the standard color for the current style.
+  Color? resolveForegroundColor(
+      {required BuildContext context, String? colorType, bool? isSubtle}) {
+    final String myColorType = colorType ?? 'default';
+    final String subtleOrDefault = isSubtle ?? false ? 'subtle' : 'default';
+    // default or emphasis, I think
+    final String myStyle = currentStyle ?? 'default';
+
+    if (myColorType == 'default') {
+      // derive our foreground color from the theme if the color is set to default
+      Color? foregroundColor;
+
+      switch (myStyle) {
+        case "default":
+          foregroundColor = Theme.of(context).colorScheme.onPrimaryContainer;
+        case "emphasis":
+          foregroundColor = Theme.of(context).colorScheme.onSecondaryContainer;
+        case "good":
+          foregroundColor = Theme.of(context).colorScheme.onTertiaryContainer;
+        case "attention":
+        case "warning:":
+          foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
+        default:
+          foregroundColor = Theme.of(context).colorScheme.onPrimaryContainer;
+      }
+
+      if (subtleOrDefault == "subtle")
+        foregroundColor = Color.fromARGB(foregroundColor.alpha ~/ 2,
+            foregroundColor.red, foregroundColor.green, foregroundColor.blue);
+      developer.log(format(
+          "resolved foreground style:{} color:{} subtle:{} to color:{}",
+          myStyle,
+          myColorType,
+          subtleOrDefault,
+          foregroundColor));
+      return foregroundColor;
+    } else {
+      // it was not default so look in hostconfig
+      // Make it case insensitive
+      String? colorValue = hostConfig['containerStyles']
+              ?[firstCharacterToLowerCase(myStyle)]?['foregroundColors']
+          ?[firstCharacterToLowerCase(myColorType)][subtleOrDefault];
+      developer.log(format("resolved foreground color:{} subtle:{} to color:{}",
+          myColorType, subtleOrDefault, colorValue));
+      return parseColor(colorValue);
+    }
   }
 
-  Color? resolveBackgroundColor(
-    String? myStyle,
-  ) {
-    String style = myStyle ?? 'default';
+  /// Resolves a background color from the host config
+  /// Assumes you always want a color call
+  ///
+  /// Typically one of the following ContainerStyles styles - v 1.0
+  ///
+  /// - default
+  /// - emphasis
+  ///
+  /// - good added v1.2
+  /// - attention added v1.2
+  /// - warning added v1.2
+  /// - accent added v1.2
+  ///
+  /// Maps to surface and primaryContainer or SecondaryContainer
+  ///
+  /// Use resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle() if you want no color if nothing specified
 
-    String? color = hostConfig['containerStyles']
-        ?[firstCharacterToLowerCase(style)]?['backgroundColor'];
+  Color? resolveBackgroundColor({
+    required BuildContext context,
+    required String? style,
+  }) {
+    String myStyle = style ?? 'default';
 
-    developer
-        .log(format("resolved background style:{} to color:{}", style, color));
+    Color? backgroundColor;
 
-    var backgroundColor = parseColor(color);
+    switch (myStyle) {
+      case "default":
+        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+      case "emphasis":
+        backgroundColor = Theme.of(context).colorScheme.secondaryContainer;
+      case "good":
+        backgroundColor = Theme.of(context).colorScheme.tertiaryContainer;
+      case "attention":
+      case "warning:":
+        backgroundColor = Theme.of(context).colorScheme.errorContainer;
+      default:
+        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+    }
+
+    developer.log(format(
+        "resolved background style:{} to color:{}", myStyle, backgroundColor));
+
     return backgroundColor;
   }
 
+  ///
+  /// This returns no color if a background image url is provided or if there is no style
+  ///
+  /// Style is typically one of the ContainerStyles
+  /// - default
+  /// - emphasis
+  ///
+  ///
   Color? resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle({
-    required Map adaptiveMap,
+    required BuildContext context,
+    required String? style,
+    required String? backgroundImageUrl,
   }) {
-    if (adaptiveMap['backgroundImage'] != null) {
-      if (adaptiveMap['backgroundImage']['url'] != null) {
-        return null;
-      }
-    }
-
-    var style = adaptiveMap['style'] ?? 'default';
-    if (style == 'default') {
+    if (backgroundImageUrl != null) {
       return null;
     }
 
-    return resolveBackgroundColor(
-        adaptiveMap['style']?.toString().toLowerCase());
+    if (style == null) return null;
+
+    return resolveBackgroundColor(context: context, style: style.toLowerCase());
   }
 
   ReferenceResolver copyWith({String? style}) {

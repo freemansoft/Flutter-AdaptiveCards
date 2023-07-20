@@ -43,8 +43,10 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet>
   Widget build(BuildContext context) {
     var backgroundColor =
         resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      adaptiveMap: adaptiveMap,
-    );
+            context: context,
+            style: adaptiveMap['style']?.toString(),
+            backgroundImageUrl:
+                adaptiveMap['backgroundImage']?['url']?.toString());
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,

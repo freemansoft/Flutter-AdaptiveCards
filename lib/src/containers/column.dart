@@ -185,8 +185,9 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
   Widget build(BuildContext context) {
     var backgroundColor =
         resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      adaptiveMap: adaptiveMap,
-    );
+            context: context,
+            style: adaptiveMap['style']?.toString(),
+            backgroundImageUrl: adaptiveMap['backgroundImage']?['url']);
 
     Widget child = Container(
       alignment: containerHorizontalAlignment,

@@ -37,9 +37,7 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      // The Mandy red, light theme.
       theme: FlexThemeData.light(scheme: usedScheme),
-      // The Mandy red, dark theme.
       darkTheme: FlexThemeData.dark(scheme: usedScheme),
       // Use dark or light theme based on system setting.
       themeMode: themeMode,

@@ -11,14 +11,18 @@ void main() => runApp(new MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ThemeMode themeMode = ThemeMode.system;
+    late FlexScheme usedScheme = FlexScheme.deepBlue;
+    // we know this prebuilt scheme exists exists in this map...
+    late FlexSchemeData usedSchemeData =
+        FlexColor.schemes[usedScheme] as FlexSchemeData;
+
     return MaterialApp(
       title: 'Flutter Demo',
-      // The Mandy red, light theme.
-      theme: FlexThemeData.light(scheme: FlexScheme.mandyRed),
-      // The Mandy red, dark theme.
-      darkTheme: FlexThemeData.dark(scheme: FlexScheme.mandyRed),
+      theme: FlexThemeData.light(scheme: usedScheme),
+      darkTheme: FlexThemeData.dark(scheme: usedScheme),
       // Use dark or light theme based on system setting.
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }

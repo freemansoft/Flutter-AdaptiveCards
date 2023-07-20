@@ -32,8 +32,10 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
   Widget build(BuildContext context) {
     var backgroundColor =
         resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      adaptiveMap: adaptiveMap,
-    );
+            context: context,
+            style: adaptiveMap['style']?.toString(),
+            backgroundImageUrl:
+                adaptiveMap['backgroundImage']?['url']?.toString());
 
     var color = getColor(Theme.of(context).brightness);
 
@@ -87,7 +89,9 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
 
   Color? getColor(Brightness brightness) {
     Color? color = resolver.resolveForegroundColor(
-        adaptiveMap["style"], adaptiveMap["isSubtle"]);
+        context: context,
+        colorType: adaptiveMap["style"],
+        isSubtle: adaptiveMap["isSubtle"]);
 
     return color;
   }

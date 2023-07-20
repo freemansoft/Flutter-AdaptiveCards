@@ -21,7 +21,46 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Default Style"
+              "text": "Column is default - no container"
+            },
+            {
+              "type": "Container",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Column default - Container no Style"
+                }
+              ]
+            },
+            {
+              "type": "Container",
+              "style": "emphasis",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Column default - Container emphasis style"
+                }
+              ]
+            },
+            {
+              "type": "Container",
+              "style": "good",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Column default - Container good style"
+                }
+              ]
+            },
+            {
+              "type": "Container",
+              "style": "attention",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Column default - Container attention style"
+                }
+              ]
             }
           ]
         },
@@ -31,7 +70,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Emphasis Style"
+              "text": "Column is emphasis Style"
             },
             {
               "type": "Container",
