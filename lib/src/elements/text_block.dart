@@ -148,7 +148,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     assert(() {
       if (foo == null) {
         developer.log(format("Unable to find TextStyle for {}", sizeString),
-            name: this.runtimeType.toString());
+            name: runtimeType.toString());
       }
       return true;
     }());

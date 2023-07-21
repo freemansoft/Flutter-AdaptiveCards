@@ -51,7 +51,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     version = adaptiveMap['version'];
     developer.log(
         format("AdaptiveCardElement: {} version: {}", this.id, (version ?? '')),
-        name: this.runtimeType.toString());
+        name: runtimeType.toString());
 
     String stringAxis = resolver.resolve("actions", "actionsOrientation");
     if (stringAxis == "Horizontal")

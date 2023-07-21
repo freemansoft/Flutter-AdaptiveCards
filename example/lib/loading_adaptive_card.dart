@@ -65,14 +65,14 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
               developer.log(
                   format("onChange: id: {}, value: {}, state: {}", id, value,
                       state),
-                  name: this.runtimeType.toString());
+                  name: runtimeType.toString());
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(format("onChange: id: {}, value: {}, state: {}",
                       id, value, state))));
             },
             onSubmit: (map) {
               developer.log(format("onSubmit map: {}", map.toString()),
-                  name: this.runtimeType.toString());
+                  name: runtimeType.toString());
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(format(
                       'onSubmit: No handler found for map: \n {}',
@@ -80,7 +80,7 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
             },
             onOpenUrl: (url) {
               developer.log(format("onOpenUrl url: {}", url),
-                  name: this.runtimeType.toString());
+                  name: runtimeType.toString());
               launchUrl(Uri.parse(url));
             },
           ),

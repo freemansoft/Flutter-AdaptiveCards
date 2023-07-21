@@ -538,7 +538,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
               initialDateTime,
               minDateTime,
               maxDateTime),
-          name: this.runtimeType.toString());
+          name: runtimeType.toString());
       return true;
     }());
 
@@ -842,7 +842,7 @@ class ReferenceResolver {
       developer.log(
           format("resolved foreground style:{} color:{} subtle:{} to color:{}",
               myStyle, colorType, subtleOrDefault, foregroundColor),
-          name: this.runtimeType.toString());
+          name: runtimeType.toString());
       return true;
     }());
     return foregroundColor;
@@ -891,7 +891,7 @@ class ReferenceResolver {
       developer.log(
           format("resolved background style:{} to color:{}", myStyle,
               backgroundColor),
-          name: this.runtimeType.toString());
+          name: runtimeType.toString());
       return true;
     }());
 
