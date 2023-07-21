@@ -145,9 +145,13 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     }
     // Style might not exist but that seems unlikely
     double? foo = textStyle?.fontSize;
-    if (foo == null) {
-      developer.log(format("Unable to find TextStyle for {}", sizeString));
-    }
+    assert(() {
+      if (foo == null) {
+        developer.log(format("Unable to find TextStyle for {}", sizeString),
+            name: this.runtimeType.toString());
+      }
+      return true;
+    }());
     return foo ??= 12.0;
   }
 

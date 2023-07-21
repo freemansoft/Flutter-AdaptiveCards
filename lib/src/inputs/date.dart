@@ -50,7 +50,11 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
   @override
   Widget build(BuildContext context) {
     Locale myLocale = Localizations.localeOf(context);
-    developer.log(format("locale: {}", myLocale));
+    assert(() {
+      developer.log(format("locale: {}", myLocale),
+          name: this.runtimeType.toString());
+      return true;
+    }());
 
     return SeparatorElement(
         adaptiveMap: adaptiveMap,
@@ -125,7 +129,8 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
               : inputFormat.format(selectedDateTime!);
         });
       } catch (formatException) {
-        developer.log(format("{}", formatException));
+        developer.log(format("{}", formatException),
+            name: this.runtimeType.toString());
       }
     }
   }

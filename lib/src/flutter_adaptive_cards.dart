@@ -530,12 +530,17 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         DateTime(1, 1, 1, minimumTime?.hour ?? 0, minimumTime?.minute ?? 0);
     DateTime maxDateTime =
         DateTime(1, 1, 1, maximumTime?.hour ?? 23, maximumTime?.minute ?? 59);
-    developer.log(format(
-        "CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}",
-        initialTimeOfDay,
-        initialDateTime,
-        minDateTime,
-        maxDateTime));
+    assert(() {
+      developer.log(
+          format(
+              "CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}",
+              initialTimeOfDay,
+              initialDateTime,
+              minDateTime,
+              maxDateTime),
+          name: this.runtimeType.toString());
+      return true;
+    }());
 
     TimeOfDay? pickedTimeOfDay = initialTimeOfDay;
 
@@ -760,13 +765,15 @@ class ReferenceResolver {
 
   final String? currentStyle;
 
+  /// return the value hostConfig[key][value]
   dynamic resolve(String key, String value) {
-    dynamic res = hostConfig[key][firstCharacterToLowerCase(value)];
+    dynamic res = hostConfig[key]?[firstCharacterToLowerCase(value)];
     assert(res != null,
         'Could not find hostConfig[$key][${firstCharacterToLowerCase(value)}]');
     return res;
   }
 
+  /// return the value for hostConfig[key]
   dynamic get(String key) {
     dynamic res = hostConfig[key];
     assert(res != null, 'Could not find hostConfig[$key]');
@@ -831,12 +838,13 @@ class ReferenceResolver {
     if (foregroundColor != null && subtleOrDefault == "subtle")
       foregroundColor = Color.fromARGB(foregroundColor.alpha ~/ 2,
           foregroundColor.red, foregroundColor.green, foregroundColor.blue);
-    developer.log(format(
-        "resolved foreground style:{} color:{} subtle:{} to color:{}",
-        myStyle,
-        colorType,
-        subtleOrDefault,
-        foregroundColor));
+    assert(() {
+      developer.log(
+          format("resolved foreground style:{} color:{} subtle:{} to color:{}",
+              myStyle, colorType, subtleOrDefault, foregroundColor),
+          name: this.runtimeType.toString());
+      return true;
+    }());
     return foregroundColor;
   }
 
@@ -879,8 +887,13 @@ class ReferenceResolver {
         backgroundColor = Theme.of(context).colorScheme.primaryContainer;
     }
 
-    developer.log(format(
-        "resolved background style:{} to color:{}", myStyle, backgroundColor));
+    assert(() {
+      developer.log(
+          format("resolved background style:{} to color:{}", myStyle,
+              backgroundColor),
+          name: this.runtimeType.toString());
+      return true;
+    }());
 
     return backgroundColor;
   }
@@ -918,10 +931,8 @@ class ReferenceResolver {
   double? resolveSpacing(String? spacing) {
     String mySpacing = spacing ?? 'default';
     if (mySpacing == 'none') return 0.0;
-    int? intSpacing =
-        hostConfig['spacing'][firstCharacterToLowerCase(mySpacing)];
-    assert(intSpacing != null,
-        'hostConfig[\'spacing\'][\'${firstCharacterToLowerCase(mySpacing)}\'] was null');
+    int? intSpacing = resolve('spacing', mySpacing) as int?;
+    assert(intSpacing != null, 'resolve(\'spacing\',\'$mySpacing\') was null');
 
     return intSpacing?.toDouble();
   }
