@@ -46,21 +46,25 @@ class MyHomePage extends StatelessWidget {
           assetPath: "lib/easy_card",
           hostConfigPath: "lib/host_config",
           onChange: (id, value, state) {
-            developer.log(format(
-                "onChange: id: {}, value: {}, state: {}", id, value, state));
+            developer.log(
+                format(
+                    "onChange: id: {}, value: {}, state: {}", id, value, state),
+                name: this.runtimeType.toString());
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(format("onChange: id: {}, value: {}, state: {}",
                     id, value, state))));
           },
           onSubmit: (map) {
-            developer.log(format("onSubmit map: {}", map.toString()));
+            developer.log(format("onSubmit map: {}", map.toString()),
+                name: this.runtimeType.toString());
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(format(
                     'onSubmit: No handler found for map: \n {}',
                     map.toString()))));
           },
           onOpenUrl: (url) {
-            developer.log(format("onOpenUrl url: {}", url));
+            developer.log(format("onOpenUrl url: {}", url),
+                name: this.runtimeType.toString());
             launchUrl(Uri.parse(url));
           },
           // TODO fix this
