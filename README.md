@@ -43,9 +43,9 @@ sequenceDiagram
     deactivate flutter-app
 ```
 
-## Adaptive Card Color handling has changed.
+## Adaptive Card Color handling has changed
 
-It used to be there were 3 background styles and 5 foreground styles plus light/dark.  Then Microsoft defined 5 background styles that align with the 5 foregound styles.  This library makes the assumption that the 'default' foreground color for a style should align with the background color for that style. This means we can map the Flutter `container`` styles and `onContainer`` styles to the Adaptive Card styles.  So if you pick a container style then you will automatically get the right foreground color for that style if you don't specify anything.
+It used to be there were 3 background styles and 5 foreground styles plus light/dark.  Then Microsoft defined 5 background styles that align with the 5 foregound styles.  This library makes the assumption that the 'default' foreground color for a style should align with the background color for that style. This means we can map the Flutter `container` styles and `onContainer` styles to the Adaptive Card styles.  So if you pick a container style then you will automatically get the right foreground color for that style if you don't specify anything.
 
 Adaptive Card Container ColorStyles now map to themed Flutter container styles.
 
@@ -76,8 +76,6 @@ flowchart
   unrecognized --> hostconfig
   end
 ```
-
-
 
 ## Example Execution
 
@@ -225,7 +223,6 @@ _________________________________________________________________...
 
 # Adaptive Cards for Flutter
 
-
 ## Installing
 
 No releases have been created for 0.2.0 at this time. This is a placeholder for when the Git repo starts creating releases
@@ -276,6 +273,7 @@ The following sections do not exist in hostconfig because they are better served
 * `foregroundColors` - Currently implemented. This should be deprececated.
 
 Other sections may exist but may not be supported
+
 * `supportsInteractivity`
 * `allowCustomStyle`
 * others
@@ -293,8 +291,8 @@ AdaptiveCard.network(
   onOpenUrl: (url) {
     // Open url using the browser or handle differently
   },
-  // If this is set, a button will appear next to each adaptive card which when clicked shows the payload.
-  // NOTE: this will only be shown in debug mode, this attribute does change nothing for realease builds.
+  // If this is set, a button will appear next to each adaptive card which when clicked shows the JSON payload.
+  // NOTE: this flag only has impact in development mode, this attribute does change nothing for realease builds.
   // This is very useful for debugging purposes
   showDebugJson: true,
 );

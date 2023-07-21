@@ -52,7 +52,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
     Locale myLocale = Localizations.localeOf(context);
     assert(() {
       developer.log(format("locale: {}", myLocale),
-          name: this.runtimeType.toString());
+          name: runtimeType.toString());
       return true;
     }());
 
@@ -130,7 +130,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
         });
       } catch (formatException) {
         developer.log(format("{}", formatException),
-            name: this.runtimeType.toString());
+            name: runtimeType.toString());
       }
     }
   }
