@@ -133,38 +133,39 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * GitLens
 
 ## Widget Hierarchy with Flutter-AdaptiveCards
-Taken from the example App
+The Widgets marked with `(*)`are Flutter-AdaptiveCars specific including those build using the `Provider` framework.
 
 ```
-Demo Adaptive Card
+Demo Adaptive Card*
 ├── Selection Area (copy/paste enable)
 │   └── Padding
 │       └── Column
-│           └── AdaptiveCard
-│               └── RawAdaptiveCard
-│                   └── Provider<RawAdaptiveCardState>
-│                       └── InheritedReferenceResolver
-│                           └── Provier<ReferenceResolver>
+│           └── AdaptiveCard(*)
+│               └── RawAdaptiveCard(*)
+│                   └── Provider<RawAdaptiveCardState>(*)
+│                       └── InheritedReferenceResolver(*)
+│                           └── Provider<ReferenceResolver>(*)
 │                               └── Card
 │                                   └── Column
 │                                       ├── TextButton
 │                                       ├── Divider
-│                                       └── AdaptiveCardElement
-│                                           └── Provider<AdaptiveCardElement>
+│                                       └── AdaptiveCardElement(*)
+│                                           └── Provider<AdaptiveCardElement>(*)
 │                                               └── Form
 │                                                   └── Container
 │                                                       └── Column
-│                                                           ├── AdaptiveTextBlock
+│                                                           ├── AdaptiveTextBlock(*)
 │                                                           │   └── SeparatorElement
 │                                                           │       └── Column
 │                                                           │           └── ...
-│                                                           ├── AdaptiveColumnSet
-│                                                               └── ...
-│                                                                   └── ...
-│                                                                       └── ...
+│                                                           └── AdaptiveColumnSet(*)
+│                                                               └── SeparatorElement
+│                                                                   └── Column
+│                                                                       └── SizedBox
+│                                                                           └── AdaptiveTapable(*)
 
 ```
-
+Taken from the example App
 ## Open TODO items
 
 TODO for the example programs moved to [example README](example/README.md)
