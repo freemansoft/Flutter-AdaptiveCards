@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'adaptive_card_element.dart';
-import 'base.dart';
 import 'containers/column_set.dart';
 import 'containers/container.dart';
 import 'containers/fact_set.dart';
@@ -16,6 +15,7 @@ import 'elements/media.dart';
 import 'elements/text_block.dart';
 import 'elements/unknown.dart';
 import 'flutter_raw_adaptive_card.dart';
+import 'generic_action.dart';
 import 'inputs/choice_set.dart';
 import 'inputs/date.dart';
 import 'inputs/number.dart';

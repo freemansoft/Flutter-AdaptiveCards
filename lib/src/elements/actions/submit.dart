@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 
 import '../../base.dart';
+import '../../generic_action.dart';
 
 class AdaptiveActionSubmit extends StatefulWidget
     with AdaptiveElementWidgetMixin {
