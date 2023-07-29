@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'base.dart';
+import 'generic_action.dart';
 import 'reference_resolver.dart';
 
 class SeparatorElement extends StatefulWidget with AdaptiveElementWidgetMixin {
