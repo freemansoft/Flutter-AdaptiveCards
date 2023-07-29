@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../flutter_adaptive_cards.dart';
+import 'flutter_raw_adaptive_card.dart';
+import 'reference_resolver.dart';
 
 class InheritedReferenceResolver extends StatelessWidget {
   final Widget child;
