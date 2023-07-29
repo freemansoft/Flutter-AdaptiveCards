@@ -136,8 +136,11 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 
 TODO for the example programs moved to [example README](example/README.md)
 
+* Currently uses `Provider` for inherited state.  Determine if this 3rd party dependency is a good idea given `Provider`` is essentially EOL or frozen.
 * Add template and data json merge support - Adaptive Cards 1.3
+* Find out if there is any regex validation tag or extension
 * There is currently no way to unset a container style inside a child container. This means you can't get back to a card background color in a nested container if you set it somewhere in the widget tree betwen you and the card.
+* Make a single purpose dart file for consumer imports with no code in it in place of `flutter_adaptive_cards.dart` or move the code in that file.
 * Inject locale behavior in more places
 * Data merge changes - possibly related to template
   * `InitData` / `InitInput` should be rethought or replaced with templates

@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
     ThemeMode themeMode = ThemeMode.system;
     late FlexScheme usedScheme = FlexScheme.deepBlue;
     // we know this prebuilt scheme exists exists in this map...
+    // ignore: unused_local_variable
     late FlexSchemeData usedSchemeData =
         FlexColor.schemes[usedScheme] as FlexSchemeData;
 
