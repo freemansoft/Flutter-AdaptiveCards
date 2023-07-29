@@ -132,6 +132,39 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * GitHub Actions
 * GitLens
 
+## Widget Hierarchy with Flutter-AdaptiveCards
+Taken from the example App
+
+```
+Demo Adaptive Card
+├── Selection Area (copy/paste enable)
+│   └── Padding
+│       └── Column
+│           └── AdaptiveCard
+│               └── RawAdaptiveCard
+│                   └── Provider<RawAdaptiveCardState>
+│                       └── InheritedReferenceResolver
+│                           └── Provier<ReferenceResolver>
+│                               └── Card
+│                                   └── Column
+│                                       ├── TextButton
+│                                       ├── Divider
+│                                       └── AdaptiveCardElement
+│                                           └── Provider<AdaptiveCardElement>
+│                                               └── Form
+│                                                   └── Container
+│                                                       └── Column
+│                                                           ├── AdaptiveTextBlock
+│                                                           │   └── SeparatorElement
+│                                                           │       └── Column
+│                                                           │           └── ...
+│                                                           ├── AdaptiveColumnSet
+│                                                               └── ...
+│                                                                   └── ...
+│                                                                       └── ...
+
+```
+
 ## Open TODO items
 
 TODO for the example programs moved to [example README](example/README.md)
