@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 
 import 'flutter_raw_adaptive_card.dart';
 
@@ -83,7 +84,7 @@ abstract class AdaptiveElement {
     if (adaptiveMap.containsKey('id')) {
       id = adaptiveMap['id'];
     } else {
-      id = widgetState.idGenerator.getId();
+      id = UUIDGenerator().getId();
     }
   }
 
