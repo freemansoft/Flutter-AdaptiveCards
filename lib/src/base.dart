@@ -2,23 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'flutter_raw_adaptive_card.dart';
-import 'reference_resolver.dart';
-
-class InheritedReferenceResolver extends StatelessWidget {
-  final Widget child;
-  final ReferenceResolver resolver;
-
-  const InheritedReferenceResolver(
-      {super.key, required this.resolver, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Provider<ReferenceResolver>.value(
-      value: resolver,
-      child: child,
-    );
-  }
-}
 
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
   Map<String, dynamic> get adaptiveMap;
@@ -31,13 +14,9 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   Map<String, dynamic> get adaptiveMap => widget.adaptiveMap;
 
-  late ReferenceResolver resolver;
-
   @override
   void initState() {
     super.initState();
-
-    resolver = context.read<ReferenceResolver>();
 
     widgetState = context.read<RawAdaptiveCardState>();
     if (widget.adaptiveMap.containsKey('id')) {

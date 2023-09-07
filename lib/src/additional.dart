@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 import 'base.dart';
 import 'generic_action.dart';
-import 'reference_resolver.dart';
 
 class SeparatorElement extends StatefulWidget with AdaptiveElementWidgetMixin {
   final Map<String, dynamic> adaptiveMap;
@@ -23,12 +22,14 @@ class _SeparatorElementState extends State<SeparatorElement>
   @override
   void initState() {
     super.initState();
-    topSpacing = resolver.resolveSpacing(adaptiveMap['spacing']);
-    separator = adaptiveMap['separator'] ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
+    topSpacing = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveSpacing(adaptiveMap['spacing']);
+    separator = adaptiveMap['separator'] ?? false;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -72,6 +73,7 @@ class _AdaptiveTappableState extends State<AdaptiveTappable>
   }
 }
 
+/// Used in some containers to change the style from there on down
 class ChildStyler extends StatelessWidget {
   final Widget child;
 
@@ -83,8 +85,8 @@ class ChildStyler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InheritedReferenceResolver(
-      resolver: context
-          .watch<ReferenceResolver>()
+      resolver: InheritedReferenceResolver.of(context)
+          .resolver
           .copyWith(style: adaptiveMap['style']),
       child: child,
     );

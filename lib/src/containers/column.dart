@@ -2,6 +2,7 @@
 /// https://adaptivecards.io/explorer/Column.html
 ///
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -34,7 +35,6 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
 
   // Need to do the separator manually for this class
   // because the flexible needs to be applied to the class above
-  late double? precedingSpacing;
   late Widget backgroundImage;
   late bool separator;
 
@@ -46,7 +46,6 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
       action = widgetState.cardRegistry
           .getGenericAction(adaptiveMap["selectAction"], widgetState);
     }
-    precedingSpacing = resolver.resolveSpacing(adaptiveMap["spacing"]);
     separator = adaptiveMap["separator"] ?? false;
 
     backgroundImage = _getBackgroundImage(adaptiveMap);
@@ -184,8 +183,12 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor =
-        resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+    double? precedingSpacing = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveSpacing(adaptiveMap["spacing"]);
+    var backgroundColor = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
             context: context,
             style: adaptiveMap['style']?.toString(),
             backgroundImageUrl: adaptiveMap['backgroundImage']?['url']);

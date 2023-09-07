@@ -2,6 +2,7 @@
 /// https://adaptivecards.io/explorer/FactSet.html
 /// https://adaptivecards.io/explorer/Fact.html
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../additional.dart';
@@ -30,14 +31,15 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor =
-        resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+    var backgroundColor = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
             context: context,
             style: adaptiveMap['style']?.toString(),
             backgroundImageUrl:
                 adaptiveMap['backgroundImage']?['url']?.toString());
 
-    var color = getColor();
+    var color = getColor(context);
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
@@ -87,11 +89,13 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
     );
   }
 
-  Color? getColor() {
-    Color? color = resolver.resolveForegroundColor(
-        context: context,
-        colorType: adaptiveMap["style"],
-        isSubtle: adaptiveMap["isSubtle"]);
+  Color? getColor(BuildContext context) {
+    Color? color = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveForegroundColor(
+            context: context,
+            colorType: adaptiveMap["style"],
+            isSubtle: adaptiveMap["isSubtle"]);
 
     return color;
   }
