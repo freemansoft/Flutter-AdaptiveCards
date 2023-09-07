@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:provider/provider.dart';
 
 import 'flutter_raw_adaptive_card.dart';
@@ -22,7 +23,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     if (widget.adaptiveMap.containsKey('id')) {
       id = widget.adaptiveMap['id'];
     } else {
-      id = widgetState.idGenerator.getId();
+      id = UUIDGenerator().getId();
     }
   }
 

@@ -200,10 +200,21 @@ Widget loadLabel(String? label, bool isRequired) {
                 )));
 }
 
+/// Everyone uses the same scheme for UUID Generation
 class UUIDGenerator {
-  UUIDGenerator() : uuid = Uuid();
+  static final UUIDGenerator _instance = UUIDGenerator._internal();
 
-  final Uuid uuid;
+  /// We use a factory which returns the singleton
+  factory UUIDGenerator() {
+    return _instance;
+  }
+
+  /// The named constructor is the "real" constructor
+  UUIDGenerator._internal() {
+    uuid = Uuid();
+  }
+
+  late final Uuid uuid;
 
   String getId() {
     return uuid.v1();

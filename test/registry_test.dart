@@ -4,7 +4,6 @@ import 'package:flutter_adaptive_cards/src/elements/text_block.dart';
 import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
-import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -16,13 +15,7 @@ class MockAdaptiveCardState extends Mock implements RawAdaptiveCardState {
 }
 
 void main() {
-  RawAdaptiveCardState state;
-  setUp(() {
-    state = MockAdaptiveCardState();
-    // mocking has changed with null safety but we really only needed this
-    state.idGenerator = UUIDGenerator();
-    // when(state.idGenerator).thenReturn(UUIDGenerator());
-  });
+  setUp(() {});
 
   testWidgets('Basic types return', (tester) async {
     CardRegistry cardRegistry = CardRegistry();

@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 import 'base.dart';
 import 'reference_resolver.dart';
 import 'registry.dart';
-import 'utils.dart';
 
 /// Main entry point to adaptive cards.
 ///
@@ -52,7 +51,6 @@ class RawAdaptiveCard extends StatefulWidget {
 class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   // Wrapper around the host config
   late ReferenceResolver _resolver;
-  late UUIDGenerator idGenerator;
   late CardRegistry cardRegistry;
 
   // The root element
@@ -66,7 +64,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       hostConfig: widget.hostConfig,
     );
 
-    idGenerator = UUIDGenerator();
     cardRegistry = widget.cardRegistry;
 
     _adaptiveElement = widget.cardRegistry.getElement(widget.map);
