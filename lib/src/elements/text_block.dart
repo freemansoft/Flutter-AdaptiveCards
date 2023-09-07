@@ -2,6 +2,7 @@
 /// https://adaptivecards.io/explorer/TextBlock.html
 ///
 import 'dart:developer' as developer;
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:format/format.dart';
 
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   /*child: */
 
-  // TODO create own widget that parses _basic_ markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
+  // TODO create own widget that parses_basic markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
   Widget build(BuildContext context) {
     // should be lazily calculated because styling could have changed
@@ -78,18 +79,18 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     );
   }
 
-  Widget getMarkdownText({BuildContext? context}) {
+  Widget getMarkdownText({required BuildContext context}) {
     return MarkdownBody(
       // TODO the markdown library does currently not support max lines
       // As markdown support is more important than maxLines right now
       // this is in here.
       //maxLines: maxLines,
       data: text,
-      styleSheet: loadMarkdownStyleSheet(),
+      styleSheet: loadMarkdownStyleSheet(context),
       onTapLink: (text, href, title) {
         if (href != null) {
-          var rawAdaptiveCardState = context?.watch<RawAdaptiveCardState>();
-          rawAdaptiveCardState?.openUrl(href);
+          var rawAdaptiveCardState = context.watch<RawAdaptiveCardState>();
+          rawAdaptiveCardState.openUrl(href);
         }
       },
     );
@@ -101,11 +102,13 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   }*/
 
   // Probably want to pass context down the tree, until now -> this
-  Color? getColor() {
-    Color? color = resolver.resolveForegroundColor(
-        context: context,
-        colorType: adaptiveMap["color"],
-        isSubtle: adaptiveMap["isSubtle"]);
+  Color? getColor(BuildContext context) {
+    Color? color = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveForegroundColor(
+            context: context,
+            colorType: adaptiveMap["color"],
+            isSubtle: adaptiveMap["isSubtle"]);
     return color;
   }
 
@@ -197,8 +200,8 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   }
 
   /// TODO Markdown still has some problems
-  MarkdownStyleSheet loadMarkdownStyleSheet() {
-    var color = getColor();
+  MarkdownStyleSheet loadMarkdownStyleSheet(BuildContext context) {
+    var color = getColor(context);
     TextStyle style =
         TextStyle(fontWeight: fontWeight, fontSize: fontSize, color: color);
 

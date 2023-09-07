@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:format/format.dart';

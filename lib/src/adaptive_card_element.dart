@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:format/format.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -53,11 +54,6 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
         format("AdaptiveCardElement: {} version: {}", this.id, (version ?? '')),
         name: runtimeType.toString());
 
-    String stringAxis = resolver.resolve("actions", "actionsOrientation");
-    if (stringAxis == "Horizontal")
-      actionsOrientation = Axis.horizontal;
-    else if (stringAxis == "Vertical") actionsOrientation = Axis.vertical;
-
     children = List<Map<String, dynamic>>.from(adaptiveMap["body"])
         .map((map) => widgetState.cardRegistry.getElement(map))
         .toList();
@@ -83,6 +79,13 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
   @override
   Widget build(BuildContext context) {
+    String stringAxis = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolve("actions", "actionsOrientation");
+    if (stringAxis == "Horizontal")
+      actionsOrientation = Axis.horizontal;
+    else if (stringAxis == "Vertical") actionsOrientation = Axis.vertical;
+
     loadChildren();
 
     List<Widget> widgetChildren = children.map((element) => element).toList();

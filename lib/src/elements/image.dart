@@ -2,6 +2,7 @@
 /// https://adaptivecards.io/explorer/Image.html
 ///
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -34,11 +35,12 @@ class _AdaptiveImageState extends State<AdaptiveImage>
     super.initState();
     horizontalAlignment = loadAlignment();
     isPerson = loadIsPerson();
-    loadSize();
   }
 
   @override
   Widget build(BuildContext context) {
+    // here because we need a context to find the inherited reference resolver
+    loadSize();
     //TODO alt text
 
     BoxFit fit = BoxFit.contain;
@@ -117,7 +119,9 @@ class _AdaptiveImageState extends State<AdaptiveImage>
 
     int? size;
     if (sizeDescription != "auto" && sizeDescription != "stretch") {
-      size = resolver.resolve("imageSizes", sizeDescription);
+      size = InheritedReferenceResolver.of(context)
+          .resolver
+          .resolve("imageSizes", sizeDescription);
     }
 
     int? width = size;

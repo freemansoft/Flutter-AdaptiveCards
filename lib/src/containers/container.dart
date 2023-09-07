@@ -2,6 +2,7 @@
 /// https://adaptivecards.io/explorer/Container.html
 ///
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -25,8 +26,6 @@ class _AdaptiveContainerState extends State<AdaptiveContainer>
   void initState() {
     super.initState();
 
-    spacing = resolver.resolveSpacing(adaptiveMap["spacing"]) ?? 0.0;
-
     if (adaptiveMap["items"] != null) {
       children =
           List<Map<String, dynamic>>.from(adaptiveMap["items"]).map((child) {
@@ -39,8 +38,13 @@ class _AdaptiveContainerState extends State<AdaptiveContainer>
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor =
-        resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+    spacing = InheritedReferenceResolver.of(context)
+            .resolver
+            .resolveSpacing(adaptiveMap["spacing"]) ??
+        0.0;
+    var backgroundColor = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
             context: context,
             style: adaptiveMap['style']?.toString(),
             backgroundImageUrl:

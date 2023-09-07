@@ -128,6 +128,7 @@ class ReferenceResolver {
 
     switch (myStyle) {
       case "default":
+      case "accent":
         backgroundColor = Theme.of(context).colorScheme.primaryContainer;
       case "emphasis":
         backgroundColor = Theme.of(context).colorScheme.secondaryContainer;

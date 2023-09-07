@@ -2,6 +2,7 @@
 /// https://adaptivecards.io/explorer/ImageSet.html
 ///
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 import '../additional.dart';
 import '../base.dart';
@@ -35,14 +36,14 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet>
               supportMarkdown: widget.supportMarkdown,
             ))
         .toList();
-
-    loadSize();
   }
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor =
-        resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+    loadSize();
+    var backgroundColor = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
             context: context,
             style: adaptiveMap['style']?.toString(),
             backgroundImageUrl:
@@ -89,7 +90,9 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet>
       imageSize = "stretch";
       return;
     }
-    int size = resolver.resolve("imageSizes", sizeDescription);
+    int size = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolve("imageSizes", sizeDescription);
     maybeSize = size.toDouble();
   }
 }
