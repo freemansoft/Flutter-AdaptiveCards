@@ -4,8 +4,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
+import '../adaptive_mixins.dart';
 import '../additional.dart';
-import '../base.dart';
 import 'column.dart';
 
 class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {

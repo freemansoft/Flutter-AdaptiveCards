@@ -144,7 +144,6 @@ Demo Adaptive Card*
 │               └── RawAdaptiveCard(*)
 │                   └── Provider<RawAdaptiveCardState>(*)
 │                       └── InheritedReferenceResolver(*)
-│                           └── Provider<ReferenceResolver>(*)
 │                               └── Card
 │                                   └── Column
 │                                       ├── TextButton

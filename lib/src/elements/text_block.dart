@@ -2,15 +2,15 @@
 /// https://adaptivecards.io/explorer/TextBlock.html
 ///
 import 'dart:developer' as developer;
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-import 'package:format/format.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:format/format.dart';
 import 'package:provider/provider.dart';
 
+import '../adaptive_mixins.dart';
 import '../additional.dart';
-import '../base.dart';
 import '../flutter_raw_adaptive_card.dart';
 import '../utils.dart';
 

@@ -6,9 +6,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'base.dart';
-import 'elements/actions/show_card.dart';
+import '../adaptive_mixins.dart';
+import '../elements/actions/show_card.dart';
 
+/// The `AdaptiveCard` card type.
+/// This is actually classified under _cards_ and not _elements_ in the taxonomy
+/// https://adaptivecards.io/explorer/
 class AdaptiveCardElement extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveCardElement(

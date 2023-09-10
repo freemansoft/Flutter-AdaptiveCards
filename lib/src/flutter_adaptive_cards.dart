@@ -12,6 +12,8 @@ import 'action_handler.dart';
 import 'flutter_raw_adaptive_card.dart';
 import 'registry.dart';
 
+/// Core definition for AdaptiveCardContent providers.
+/// We use specialized versions for each way we get content
 abstract class AdaptiveCardContentProvider {
   AdaptiveCardContentProvider({required this.hostConfigPath, this.hostConfig});
 
@@ -31,6 +33,7 @@ abstract class AdaptiveCardContentProvider {
   Future<Map<String, dynamic>> loadAdaptiveCardContent();
 }
 
+/// Content provider for getting card specifications from memory
 class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   MemoryAdaptiveCardContentProvider(
       {required this.content,
@@ -46,6 +49,7 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   }
 }
 
+/// Content provider for getting card specifications from the Asset tree
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   AssetAdaptiveCardContentProvider(
       {required this.path, required String hostConfigPath, String? hostConfig})
@@ -59,6 +63,7 @@ class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   }
 }
 
+/// Content provider for getting card specifications from a network resource
 class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   NetworkAdaptiveCardContentProvider(
       {required this.url, required String hostConfigPath, String? hostConfig})
@@ -74,6 +79,9 @@ class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   }
 }
 
+/// The start of our AdaptiveCard widget tree but is not the actual `AdaptiveCard`
+/// Wraps a `RawAdaptiveCard`
+/// Pass in the Action handlers specific to the host program
 class AdaptiveCard extends StatefulWidget {
   AdaptiveCard({
     super.key,
@@ -145,6 +153,7 @@ class AdaptiveCard extends StatefulWidget {
             hostConfigPath: hostConfigPath,
             hostConfig: hostConfig);
 
+  /// Content provider usually specific to a named constructor
   final AdaptiveCardContentProvider adaptiveCardContentProvider;
 
   final Widget? placeholder;
@@ -155,9 +164,14 @@ class AdaptiveCard extends StatefulWidget {
 
   final Map? initData;
 
-  final Function(String id, dynamic value, RawAdaptiveCardState state)?
+  /// Environment specific function that knows how to handle state change
+  final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
       onChange;
+
+  /// Environment specific function that knows how to handle submission to remote APIs
   final Function(Map map)? onSubmit;
+
+  /// Environment specific function that knows how to open a URL on this platform
   final Function(String url)? onOpenUrl;
 
   final bool showDebugJson;
@@ -168,15 +182,22 @@ class AdaptiveCard extends StatefulWidget {
   _AdaptiveCardState createState() => new _AdaptiveCardState();
 }
 
+/// State for **The** AdaptiveCard card
 class _AdaptiveCardState extends State<AdaptiveCard> {
+  /// The loaded json map for this `AdaptiveCard` and its descendants
   Map<String, dynamic>? map;
   Map<String, dynamic>? hostConfig;
   Map? initData;
 
   late CardRegistry cardRegistry;
 
+  /// Environment specific function that knows how to handle state change
   Function(String id, dynamic value, RawAdaptiveCardState cardState)? onChange;
+
+  /// Environment specific function that knows how to handle submission to remote APIs
   Function(Map map)? onSubmit;
+
+  /// Environment specific function that knows how to open a URL on this platform
   Function(String url)? onOpenUrl;
 
   @override

@@ -7,10 +7,11 @@
 /// Reasonable test schema is https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json
 ///
 import 'dart:developer' as developer;
-import 'package:format/format.dart';
-import 'package:flutter/material.dart';
 
-import '../base.dart';
+import 'package:flutter/material.dart';
+import 'package:format/format.dart';
+
+import '../adaptive_mixins.dart';
 
 class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTable(

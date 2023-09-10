@@ -3,7 +3,7 @@
 ///
 import 'package:flutter/material.dart';
 
-import '../../base.dart';
+import '../../adaptive_mixins.dart';
 import '../../generic_action.dart';
 import 'icon_button.dart';
 

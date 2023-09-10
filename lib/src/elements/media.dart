@@ -6,8 +6,8 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import '../adaptive_mixins.dart';
 import '../additional.dart';
-import '../base.dart';
 import '../utils.dart';
 
 class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {

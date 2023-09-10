@@ -5,7 +5,7 @@
 ///
 import 'package:flutter/material.dart';
 
-import '../base.dart';
+import '../adaptive_mixins.dart';
 import 'actions/open_url.dart';
 import 'actions/show_card.dart';
 import 'actions/submit.dart';
