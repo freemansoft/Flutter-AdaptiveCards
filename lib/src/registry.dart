@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'adaptive_card_element.dart';
+import 'cards/adaptive_card_element.dart';
 import 'containers/column_set.dart';
 import 'containers/container.dart';
 import 'containers/fact_set.dart';

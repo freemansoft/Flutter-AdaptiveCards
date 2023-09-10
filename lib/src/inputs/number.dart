@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../adaptive_card_element.dart';
+import '../adaptive_mixins.dart';
 import '../additional.dart';
-import '../base.dart';
+import '../cards/adaptive_card_element.dart';
 import '../utils.dart';
 
 class AdaptiveNumberInput extends StatefulWidget

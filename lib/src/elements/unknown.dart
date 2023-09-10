@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../base.dart';
+import '../adaptive_mixins.dart';
 
 /// Element for an unknown type
 ///

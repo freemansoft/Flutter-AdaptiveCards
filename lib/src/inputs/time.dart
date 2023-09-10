@@ -3,8 +3,8 @@
 ///
 import 'package:flutter/material.dart';
 
+import '../adaptive_mixins.dart';
 import '../additional.dart';
-import '../base.dart';
 
 class AdaptiveTimeInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTimeInput({super.key, required this.adaptiveMap});

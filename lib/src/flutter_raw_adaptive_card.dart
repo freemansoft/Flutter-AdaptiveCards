@@ -3,21 +3,20 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:format/format.dart';
 import 'package:provider/provider.dart';
 
-import 'base.dart';
-import 'reference_resolver.dart';
-import 'registry.dart';
-
-/// Main entry point to adaptive cards.
+/// Created by `AdaptiveCard` so there is usually only one of these per page.
 ///
 /// This widget takes a [map] (which usually is just a json decoded string) and
-/// displays in natively. Additionally a host config needs to be provided for
-/// styling.
+/// displays in natively.
+/// Additionally a host config needs to be provided for styling.
 class RawAdaptiveCard extends StatefulWidget {
   RawAdaptiveCard.fromMap(
     this.map,
@@ -53,7 +52,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   late ReferenceResolver _resolver;
   late CardRegistry cardRegistry;
 
-  // The root element
+  // The root element that is loaded from the map
   late Widget _adaptiveElement;
 
   @override
