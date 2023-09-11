@@ -60,10 +60,13 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     placeholder = widget.adaptiveMap['placeholder'] ?? '';
   }
 
+  /// Input cards implement this to copy their state **to** the map
   void appendInput(Map map);
 
+  /// Input cards implement this as a way of loading state from a Map, `inputData`
   void initInput(Map map);
 
+  /// Input card types implement this as a way of changing their state, currently only choice_set
   void loadInput(Map map) {}
 
   bool checkRequired();

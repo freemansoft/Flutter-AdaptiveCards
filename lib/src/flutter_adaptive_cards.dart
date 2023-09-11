@@ -156,12 +156,15 @@ class AdaptiveCard extends StatefulWidget {
   /// Content provider usually specific to a named constructor
   final AdaptiveCardContentProvider adaptiveCardContentProvider;
 
+  /// Shown while asynch oloading is happening
   final Widget? placeholder;
 
+  /// Used to convert card type strings into Card instances
   final CardRegistry? cardRegistry;
 
   final String? hostConfig;
 
+  /// data that may be copied into `Input` cards to replace their templated state
   final Map? initData;
 
   /// Environment specific function that knows how to handle state change
@@ -187,6 +190,8 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
   /// The loaded json map for this `AdaptiveCard` and its descendants
   Map<String, dynamic>? map;
   Map<String, dynamic>? hostConfig;
+
+  /// data that may be copied into `Input` cards to replace their templated state
   Map? initData;
 
   late CardRegistry cardRegistry;
@@ -251,10 +256,12 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       }
     }
 
+    // Update the onChange if one is provided
     if (widget.onChange != null) {
       onChange = widget.onChange;
     }
 
+    // Update the onChange if one is provided or there is one in the DefaultAdapterCardHandlers
     if (widget.onSubmit != null) {
       onSubmit = widget.onSubmit;
     } else {
@@ -270,6 +277,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
       }
     }
 
+    // Update the onOpenUrl if one is provided or there is one in the DefaultAdapterCardHandlers
     if (widget.onOpenUrl != null) {
       onOpenUrl = widget.onOpenUrl;
     } else {
