@@ -216,6 +216,7 @@ class CardRegistry {
   }
 }
 
+/// Used to find the current CardRegistry
 class DefaultCardRegistry extends InheritedWidget {
   DefaultCardRegistry({
     super.key,
@@ -223,6 +224,7 @@ class DefaultCardRegistry extends InheritedWidget {
     required Widget child,
   }) : super(child: child);
 
+  /// Used to convert card type strings into Card instances
   final CardRegistry cardRegistry;
 
   static CardRegistry? of(BuildContext context) {
