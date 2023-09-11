@@ -77,6 +77,20 @@ flowchart
   end
 ```
 
+## Loading Data into fields outside of the AdaptiveCard JSON
+
+You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will be passed across the AdaptiveCard widget Tree
+
+* `InitData` / `InitInput` can be used for late binding data into a widget tree
+  * `initData` currently injected directly into a widget
+  * `initInput(initData)` used to replace values in inputs. `initData` is a widget parameter. `initInput` is called if initData exists on component
+* `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
+  * currently invoked directly in code in handlers in sample
+
+## Event Handlers
+You can insert a `DefaultAdaptiveCardHandlers` in the Widget tree prior to loading the `AdaptiveCard`s.  Those handlers will be used for all actions
+
+
 ## Example Execution
 
 There is an expansive example program that demonstrates all Adaptive Cards. See [example README.md](example/README.md)
@@ -165,6 +179,7 @@ Demo Adaptive Card*
 
 ```
 Taken from the example App
+
 ## Open TODO items
 
 TODO for the example programs moved to [example README](example/README.md)
@@ -175,12 +190,6 @@ TODO for the example programs moved to [example README](example/README.md)
 * There is currently no way to unset a container style inside a child container. This means you can't get back to a card background color in a nested container if you set it somewhere in the widget tree betwen you and the card.
 * Make a single purpose dart file for consumer imports with no code in it in place of `flutter_adaptive_cards.dart` or move the code in that file.
 * Inject locale behavior in more places
-* Data merge changes - possibly related to template
-  * `InitData` / `InitInput` should be rethought or replaced with templates
-    * `initData` currently injected directly into a widget
-    * `initInput(initData)` used to replace values. initData is a widget parameter. `initInput` is called if initData exist on component
-  * `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
-    * currently invoked direclty in code in handlers in sample
 * _Card Elements_ missing implementations and features
   * Add [`RichTextBlock`](https://adaptivecards.io/explorer/RichTextBlock.html)
   * Add [`TextRun`](https://adaptivecards.io/explorer/TextRun.html)
