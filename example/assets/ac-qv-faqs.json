@@ -1,74 +1,76 @@
 {
     "type": "AdaptiveCard",
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-    "version": "1.6",
+    "version": "1.5",
     "body": [
         {
             "type": "Input.Text",
             "placeholder": " ",
-            "label": "Họ tên",
+            "label": "Full Name",
             "id": "fullname",
-            "isRequired": true
+            "isRequired": true,
+            "errorMessage": "Full Name is Required"
         },
         {
             "type": "Input.Text",
             "placeholder": " ",
-            "label": "Số điện thoại",
+            "label": "Phone Number",
             "isRequired": true,
-            "id": "phonenumber"
+            "id": "phonenumber",
+            "errorMessage": "Phone Number is Required"
         },
         {
             "type": "Input.Date",
             "id": "bookingdate",
-            "label": "Ngày khám",
+            "label": "Booking Date",
             "isRequired": true,
-            "errorMessage": "Ngày khám không được để trống"
+            "errorMessage": "Booking date is required"
         },
         {
             "type": "Input.ChoiceSet",
             "choices": [
                 {
-                    "title": "Nam",
+                    "title": "Male",
                     "value": "male"
                 },
                 {
-                    "title": "Nữ",
+                    "title": "Female",
                     "value": "female"
                 }
             ],
-            "placeholder": " Chọn giới tính",
-            "label": "Giới tính",
+            "placeholder": "Make a Selection",
+            "label": "Gender",
             "id": "gender",
             "isRequired": true,
-            "value": "male"
+            "value": "male",
+            "errorMessage": "Select a Gender"
         },
         {
             "type": "Input.ChoiceSet",
             "choices": [
                 {
-                    "title": "Khoa Nội",
-                    "value": "Khoa Nội"
+                    "title": "Endocrinology",
+                    "value": "Endocrinology"
                 },
                 {
-                    "title": "Khoa Ngoại",
-                    "value": "Khoa Ngoại"
+                    "title": "Surgery",
+                    "value": "Surgery"
                 },
                 {
-                    "title": "Khoa Nhi",
-                    "value": "Khoa Nhi"
+                    "title": "Pediatrics",
+                    "value": "Pediatrics"
                 }
             ],
-            "style": "filtered",
-            "placeholder": "Chọn khoa khám",
-            "label": "Khoa khám",
+            "placeholder": "Make a Selection",
+            "label": "Department",
             "isRequired": true,
             "id": "department",
-            "value": "Khoa Nội"
+            "value": "Surgery"
         },
         {
             "type": "Input.Text",
             "placeholder": " ",
-            "label": "Lý do",
+            "label": "Reason",
             "isMultiline": true,
             "id": "reason"
         },
@@ -78,7 +80,7 @@
             "actions": [
                 {
                     "type": "Action.Execute",
-                    "title": "Đăng ký khám"
+                    "title": "Register"
                 }
             ]
         }

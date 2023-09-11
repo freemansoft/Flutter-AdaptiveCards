@@ -86,7 +86,8 @@ class MyHomePage extends StatelessWidget {
         ),
         body: SelectionArea(
           child: new Center(
-            child: SingleChildScrollView(child: DemoAdaptiveCard(resourceUrl)),
+            child: SingleChildScrollView(
+                child: DemoAdaptiveCard(assetPath: resourceUrl)),
           ),
         ));
   }

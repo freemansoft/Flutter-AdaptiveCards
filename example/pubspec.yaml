@@ -33,25 +33,25 @@ flutter:
     - lib/adaptive_card_string
     - lib/host_config
     - lib/activity_update
-    - lib/text_block/
-    - lib/image/
-    - lib/container/
-    - lib/column_set/
-    - lib/column/
-    - lib/fact_set/
-    - lib/image_set/
-    - lib/action_set/
-    - lib/action_open_url/
-    - lib/action_submit/
-    - lib/action_show_card/
-    - lib/inputs/input_text/
-    - lib/inputs/input_number/
-    - lib/inputs/input_date/
-    - lib/inputs/input_time/
-    - lib/inputs/input_toggle/
-    - lib/inputs/input_choice_set/
-    - lib/media/example1
-    - lib/samples/
-    - lib/table/
+    - lib/samples/text_block/
+    - lib/samples/image/
+    - lib/samples/container/
+    - lib/samples/column_set/
+    - lib/samples/column/
+    - lib/samples/fact_set/
+    - lib/samples/image_set/
+    - lib/samples/action_set/
+    - lib/samples/action_open_url/
+    - lib/samples/action_submit/
+    - lib/samples/action_show_card/
+    - lib/samples/inputs/input_text/
+    - lib/samples/inputs/input_number/
+    - lib/samples/inputs/input_date/
+    - lib/samples/inputs/input_time/
+    - lib/samples/inputs/input_toggle/
+    - lib/samples/inputs/input_choice_set/
+    - lib/samples/media/example1
+    - lib/samples/examples/
+    - lib/samples/table/
 
 publish_to: none

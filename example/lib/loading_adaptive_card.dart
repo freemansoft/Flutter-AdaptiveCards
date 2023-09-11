@@ -17,17 +17,25 @@ import 'package:url_launcher/url_launcher.dart';
 /// This is usually the root card in the example apps.
 /// We have default action behavior that will get picked up by everyone
 ///
+/// Adds demonstration `onChange()` and `onSubmit()` handlers
+///
+/// * param: initData is optional and must map the schema of the cards
 class DemoAdaptiveCard extends StatefulWidget {
-  const DemoAdaptiveCard(
-    this.assetPath, {
+  const DemoAdaptiveCard({
+    required this.assetPath,
     Key? key,
     this.hostConfig,
     this.supportMarkdown = true,
+    this.initData,
   }) : super(key: key);
 
   final String assetPath;
   final String? hostConfig;
   final bool supportMarkdown;
+
+  /// This map must match the taxonomy of the page you pass in. Default to no initData.
+  /// Was added to show how initData works
+  final Map<String, String>? initData;
 
   @override
   _DemoAdaptiveCardState createState() => new _DemoAdaptiveCardState();
@@ -55,12 +63,14 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: <Widget>[
+          // We're not using DefaultAdaptiveCardHandlers() here so add our own onXXX() handlers
           AdaptiveCard.asset(
             assetPath: widget.assetPath,
             hostConfigPath: "lib/host_config",
             showDebugJson: true, // enable in the example app
             hostConfig: widget.hostConfig,
             supportMarkdown: widget.supportMarkdown,
+            initData: widget.initData,
             onChange: (id, value, state) {
               developer.log(
                   format("onChange: id: {}, value: {}, state: {}", id, value,
