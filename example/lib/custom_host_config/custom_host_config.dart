@@ -88,7 +88,7 @@ class DynamicHostConfigPage extends StatelessWidget {
           return Theme(
             data: ThemeData(),
             child: DemoAdaptiveCard(
-              "lib/samples/example${index + 1}",
+              assetPath: "lib/samples/example${index + 1}",
               hostConfig: hostConfig,
             ),
           );

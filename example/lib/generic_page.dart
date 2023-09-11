@@ -11,11 +11,14 @@ import 'nav_support.dart';
 /// A generic page that holds a list of AdaptiveCards based on the passed in URLs
 /// Similar to NetworkPage but operates against a list of local resources
 ///
+/// Supports accepting an initData - hack actually sends same initData to every page in list
+/// Should actually pass in a list of initData, one for each url!
 class GenericListPage extends StatelessWidget {
   final String title;
   final List<String> urls;
   final List<bool> supportMarkdowns;
   final AboutPage aboutPage;
+  final Map<String, String> initData;
 
   // TODO: supportMarkdown should eventually be eliminated - see README.md
   GenericListPage({
@@ -24,6 +27,7 @@ class GenericListPage extends StatelessWidget {
     required this.urls,
     this.supportMarkdowns = const [],
     required this.aboutPage,
+    this.initData = const {},
   }) : super(key: key);
 
   @override
@@ -43,10 +47,16 @@ class GenericListPage extends StatelessWidget {
         itemCount: this.urls.length,
         itemBuilder: (context, index) {
           if (this.supportMarkdowns.length > index + 1) {
-            return DemoAdaptiveCard(urls[index],
-                supportMarkdown: supportMarkdowns[index]);
+            return DemoAdaptiveCard(
+              assetPath: urls[index],
+              supportMarkdown: supportMarkdowns[index],
+              initData: initData,
+            );
           } else {
-            return DemoAdaptiveCard(urls[index]);
+            return DemoAdaptiveCard(
+              assetPath: urls[index],
+              initData: initData,
+            );
           }
         },
       ),

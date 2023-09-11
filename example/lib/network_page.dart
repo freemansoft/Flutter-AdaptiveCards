@@ -7,8 +7,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'about_page.dart';
 
 ///
-/// Similar to GenericListPage but operates against a **single** URL and not a list of resources
+/// Generic page that handles a resource.
+/// Similar to GenericListPage but operates against a **single** URL and not a list of resources.
 ///
+/// Adds demonstration `onChange()` and `onSubmit()` handlers
 class NetworkPage extends StatelessWidget {
   final String title;
   final String url;
@@ -35,7 +37,7 @@ class NetworkPage extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          // We're not using DemoAdaptieCard() here so add our own onXXX handlers
+          // We're not using DefaultAdaptiveCardHandlers() here so add our own onXXX() handlers
           AdaptiveCard.network(
             url: this.url,
             hostConfigPath: 'assets/host_config.json',

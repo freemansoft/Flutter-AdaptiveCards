@@ -79,17 +79,19 @@ flowchart
 
 ## Loading Data into fields outside of the AdaptiveCard JSON
 
-You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will be passed across the AdaptiveCard widget Tree
+You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will be passed across the AdaptiveCard widget Tree.
+`initData` is demonstrated in the sample app on the `initData` button. `loadData` was in the sample app but was removed and needs to be re-added.
 
 * `InitData` / `InitInput` can be used for late binding data into a widget tree
-  * `initData` currently injected directly into a widget
-  * `initInput(initData)` used to replace values in inputs. `initData` is a widget parameter. `initInput` is called if initData exists on component
+  * `initData` injected directly into a widget tree and visited across the tree in `InitInput`
+  * `initInput(initData)` used to replace values in inputs. `initData` is a widget parameter.
+  * `initInput` is called if initData exists on component
 * `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
-  * currently invoked directly in code in handlers in sample
 
 ## Event Handlers
-You can insert a `DefaultAdaptiveCardHandlers` in the Widget tree prior to loading the `AdaptiveCard`s.  Those handlers will be used for all actions
+You can insert a `DefaultAdaptiveCardHandlers` in the Widget tree prior to loading the `AdaptiveCard`s.  Those handlers will be used for all actions.
 
+Your program can pass it's own handlers to the `AdaptiveCard` constructors.  See the `NetworkPage` class in the example app.
 
 ## Example Execution
 
@@ -184,6 +186,7 @@ Taken from the example App
 
 TODO for the example programs moved to [example README](example/README.md)
 
+* `initData` does not appear to be working on date fields.  The `initData` button in the sample program demonstrates this
 * Currently uses `Provider` for inherited state.  Determine if this 3rd party dependency is a good idea given `Provider`` is essentially EOL or frozen.
 * Add template and data json merge support - Adaptive Cards 1.3
 * Find out if there is any regex validation tag or extension
