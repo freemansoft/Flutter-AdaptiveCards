@@ -84,7 +84,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   Widget build(BuildContext context) {
     String stringAxis = InheritedReferenceResolver.of(context)
         .resolver
-        .resolve("actions", "actionsOrientation");
+        .resolveOrientation("actionsOrientation");
     if (stringAxis == "Horizontal")
       actionsOrientation = Axis.horizontal;
     else if (stringAxis == "Vertical") actionsOrientation = Axis.vertical;

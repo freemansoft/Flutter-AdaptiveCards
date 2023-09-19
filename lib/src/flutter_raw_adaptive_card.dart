@@ -20,8 +20,7 @@ class RawAdaptiveCard extends StatefulWidget {
   ///
   /// Additionally a host config needs to be provided for styling.
   RawAdaptiveCard.fromMap(
-    this.map,
-    this.hostConfig, {
+    this.map, {
     this.cardRegistry = const CardRegistry(),
     this.initData,
     this.onChange,
@@ -32,7 +31,6 @@ class RawAdaptiveCard extends StatefulWidget {
   }) : assert(onSubmit != null, onOpenUrl != null);
 
   final Map<String, dynamic> map;
-  final Map<String, dynamic> hostConfig;
   final CardRegistry cardRegistry;
   final Map? initData;
 
@@ -60,9 +58,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void initState() {
     super.initState();
 
-    _resolver = ReferenceResolver(
-      hostConfig: widget.hostConfig,
-    );
+    _resolver = ReferenceResolver();
 
     cardRegistry = widget.cardRegistry;
 
@@ -76,9 +72,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
-    _resolver = ReferenceResolver(
-      hostConfig: widget.hostConfig,
-    );
+    _resolver = ReferenceResolver();
     _adaptiveElement = widget.cardRegistry.getElement(widget.map);
     super.didUpdateWidget(oldWidget);
   }

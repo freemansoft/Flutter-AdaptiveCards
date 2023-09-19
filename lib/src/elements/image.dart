@@ -121,7 +121,7 @@ class _AdaptiveImageState extends State<AdaptiveImage>
     if (sizeDescription != "auto" && sizeDescription != "stretch") {
       size = InheritedReferenceResolver.of(context)
           .resolver
-          .resolve("imageSizes", sizeDescription);
+          .resolveImageSizes(sizeDescription);
     }
 
     int? width = size;

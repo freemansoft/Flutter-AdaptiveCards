@@ -1,4 +1,3 @@
-import 'package:example/custom_host_config/custom_host_config.dart';
 import 'package:example/render_time/render_time_page.dart';
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
@@ -112,9 +111,6 @@ class MyAppState extends State<MyApp> {
                 true,
                 true,
               ],
-              aboutPage: aboutPage,
-            ),
-        'Samples with dynamic HostConfig': (context) => DynamicHostConfigPage(
               aboutPage: aboutPage,
             ),
         'TextBlock': (context) => GenericListPage(
@@ -385,7 +381,6 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
           ),
-          getRow(context, ['Samples', 'Samples with dynamic HostConfig']),
           getRow(context, ['Image', 'ImageSet']),
           getButton(context, 'Media'),
           Divider(),

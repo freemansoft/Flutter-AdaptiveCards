@@ -110,6 +110,9 @@ flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-
 
 ## Changelog
 
+2023 09
+* hostconfig removed.
+
 2023 07
 
 * Added home button in generic page if no back navigation available

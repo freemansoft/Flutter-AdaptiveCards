@@ -40,7 +40,6 @@ class NetworkPage extends StatelessWidget {
           // We're not using DefaultAdaptiveCardHandlers() here so add our own onXXX() handlers
           AdaptiveCard.network(
             url: this.url,
-            hostConfigPath: 'assets/host_config.json',
             onChange: (id, value, state) {
               developer.log(
                   format("onChange: id: {}, value: {}, state: {}", id, value,

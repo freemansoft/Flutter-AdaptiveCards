@@ -92,7 +92,7 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet>
     }
     int size = InheritedReferenceResolver.of(context)
         .resolver
-        .resolve("imageSizes", sizeDescription);
+        .resolveImageSizes(sizeDescription);
     maybeSize = size.toDouble();
   }
 }
