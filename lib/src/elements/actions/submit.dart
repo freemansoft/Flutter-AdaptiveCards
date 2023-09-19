@@ -26,6 +26,7 @@ class _AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
   @override
   void initState() {
     super.initState();
+    // should this use the registry?
     action = GenericSubmitAction(adaptiveMap, widgetState);
   }
 

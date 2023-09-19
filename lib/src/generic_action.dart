@@ -1,5 +1,6 @@
 import 'flutter_raw_adaptive_card.dart';
 
+/// The root default actions for onTaps for Action.Submit and Action.OpenUrl
 abstract class GenericAction {
   GenericAction(this.adaptiveMap, this.rawAdaptiveCardState);
 
@@ -10,6 +11,8 @@ abstract class GenericAction {
   void tap();
 }
 
+/// Default actions for onTaps for Action.Submit
+/// Delegates to rawAdaptiveCardState
 class GenericSubmitAction extends GenericAction {
   GenericSubmitAction(Map<String, dynamic> adaptiveMap,
       RawAdaptiveCardState rawAdaptiveCardState)
@@ -25,6 +28,8 @@ class GenericSubmitAction extends GenericAction {
   }
 }
 
+/// Default actions for onTaps for Action.OpenUrl
+/// Delegates to rawAdaptiveCardState
 class GenericActionOpenUrl extends GenericAction {
   GenericActionOpenUrl(Map<String, dynamic> adaptiveMap,
       RawAdaptiveCardState rawAdaptiveCardState)
