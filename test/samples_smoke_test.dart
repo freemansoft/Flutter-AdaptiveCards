@@ -13,7 +13,9 @@ void main() {
 
   for (int i = 1; i <= 16; i++) {
     testWidgets('example$i smoke test', (tester) async {
-      Widget widget = getWidget('example$i', 'host_config');
+      Widget widget = getWidget(
+        'example$i',
+      );
 
       // This ones pretty big, we need to wrap in in a scrollable
       if (i == 8) {

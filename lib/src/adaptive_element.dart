@@ -27,7 +27,7 @@ typedef AdaptiveElementVisitor = void Function(AdaptiveElement element);
 /// child 1 child2
 /// --------------------------------------------------------------------
 ///
-/// The [resolver] is a handy wrapper around the hostConfig, which makes accessing
+/// The [resolver] is a handy wrapper around the theming and styling, which makes accessing
 /// it easier.
 ///
 /// The [widgetState] provides access to flutter specific implementations.

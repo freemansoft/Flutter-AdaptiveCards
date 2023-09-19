@@ -67,7 +67,6 @@ class _RenderTimePageState extends State<RenderTimePage> {
       body: SingleChildScrollView(
         child: AdaptiveCard.memory(
           content: content,
-          hostConfigPath: "lib/host_config",
           showDebugJson: true,
           listView: true,
           supportMarkdown: false,

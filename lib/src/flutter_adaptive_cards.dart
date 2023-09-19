@@ -15,31 +15,16 @@ import 'registry.dart';
 /// Core definition for AdaptiveCardContent providers.
 /// We use specialized versions for each way we get content
 abstract class AdaptiveCardContentProvider {
-  AdaptiveCardContentProvider({required this.hostConfigPath, this.hostConfig});
-
-  final String hostConfigPath;
-  final String? hostConfig;
-
-  Future<Map<String, dynamic>> loadHostConfig() async {
-    if (hostConfig != null) {
-      var cleanedHostConfig = hostConfig!.replaceAll(new RegExp(r'\n'), '');
-      return json.decode(cleanedHostConfig);
-    }
-
-    String hostConfigString = await rootBundle.loadString(hostConfigPath);
-    return json.decode(hostConfigString);
-  }
+  AdaptiveCardContentProvider();
 
   Future<Map<String, dynamic>> loadAdaptiveCardContent();
 }
 
 /// Content provider for getting card specifications from memory
 class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  MemoryAdaptiveCardContentProvider(
-      {required this.content,
-      required String hostConfigPath,
-      String? hostConfig})
-      : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
+  MemoryAdaptiveCardContentProvider({
+    required this.content,
+  }) : super();
 
   Map<String, dynamic> content;
 
@@ -51,9 +36,9 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 
 /// Content provider for getting card specifications from the Asset tree
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  AssetAdaptiveCardContentProvider(
-      {required this.path, required String hostConfigPath, String? hostConfig})
-      : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
+  AssetAdaptiveCardContentProvider({
+    required this.path,
+  }) : super();
 
   String path;
 
@@ -65,9 +50,7 @@ class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 
 /// Content provider for getting card specifications from a network resource
 class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  NetworkAdaptiveCardContentProvider(
-      {required this.url, required String hostConfigPath, String? hostConfig})
-      : super(hostConfigPath: hostConfigPath, hostConfig: hostConfig);
+  NetworkAdaptiveCardContentProvider({required this.url}) : super();
 
   String url;
 
@@ -92,7 +75,6 @@ class AdaptiveCard extends StatefulWidget {
     this.onChange,
     this.onSubmit,
     this.onOpenUrl,
-    this.hostConfig,
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
@@ -103,8 +85,6 @@ class AdaptiveCard extends StatefulWidget {
     this.placeholder,
     this.cardRegistry,
     required String url,
-    required String hostConfigPath,
-    this.hostConfig,
     this.initData,
     this.onChange,
     this.onSubmit,
@@ -113,15 +93,14 @@ class AdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(
-            url: url, hostConfigPath: hostConfigPath, hostConfig: hostConfig);
+          url: url,
+        );
 
   AdaptiveCard.asset({
     super.key,
     this.placeholder,
     this.cardRegistry,
     required String assetPath,
-    required String hostConfigPath,
-    this.hostConfig,
     this.initData,
     this.onChange,
     this.onSubmit,
@@ -130,17 +109,14 @@ class AdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = AssetAdaptiveCardContentProvider(
-            path: assetPath,
-            hostConfigPath: hostConfigPath,
-            hostConfig: hostConfig);
+          path: assetPath,
+        );
 
   AdaptiveCard.memory({
     super.key,
     this.placeholder,
     this.cardRegistry,
     required Map<String, dynamic> content,
-    required String hostConfigPath,
-    this.hostConfig,
     this.initData,
     this.onChange,
     this.onSubmit,
@@ -149,9 +125,8 @@ class AdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = MemoryAdaptiveCardContentProvider(
-            content: content,
-            hostConfigPath: hostConfigPath,
-            hostConfig: hostConfig);
+          content: content,
+        );
 
   /// Content provider usually specific to a named constructor
   final AdaptiveCardContentProvider adaptiveCardContentProvider;
@@ -161,8 +136,6 @@ class AdaptiveCard extends StatefulWidget {
 
   /// Used to convert card type strings into Card instances
   final CardRegistry? cardRegistry;
-
-  final String? hostConfig;
 
   /// data that may be copied into `Input` cards to replace their templated state
   final Map? initData;
@@ -189,7 +162,6 @@ class AdaptiveCard extends StatefulWidget {
 class _AdaptiveCardState extends State<AdaptiveCard> {
   /// The loaded json map for this `AdaptiveCard` and its descendants
   Map<String, dynamic>? map;
-  Map<String, dynamic>? hostConfig;
 
   /// data that may be copied into `Input` cards to replace their templated state
   Map? initData;
@@ -208,13 +180,6 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
   @override
   void initState() {
     super.initState();
-    widget.adaptiveCardContentProvider.loadHostConfig().then((hostConfigMap) {
-      if (mounted) {
-        setState(() {
-          hostConfig = hostConfigMap;
-        });
-      }
-    });
     widget.adaptiveCardContentProvider
         .loadAdaptiveCardContent()
         .then((adaptiveMap) {
@@ -230,14 +195,6 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
 
   @override
   void didUpdateWidget(AdaptiveCard oldWidget) {
-    widget.adaptiveCardContentProvider.loadHostConfig().then((hostConfigMap) {
-      if (mounted) {
-        setState(() {
-          hostConfig = hostConfigMap;
-        });
-      }
-    });
-
     super.didUpdateWidget(oldWidget);
   }
 
@@ -295,14 +252,13 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
 
   @override
   Widget build(BuildContext context) {
-    if (map == null || hostConfig == null) {
+    if (map == null) {
       return widget.placeholder ??
           Container(child: Center(child: CircularProgressIndicator()));
     }
 
     return RawAdaptiveCard.fromMap(
       map!,
-      hostConfig!,
       cardRegistry: cardRegistry,
       initData: initData,
       onChange: onChange,

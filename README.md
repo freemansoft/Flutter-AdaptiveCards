@@ -73,7 +73,7 @@ flowchart
   good[widget style good] --> container
   attention[widget style attention] --> container
   warning[widget style warning] --> container
-  unrecognized --> hostconfig
+  unrecognized --> <tbd>
   end
 ```
 
@@ -218,6 +218,10 @@ TODO for the example programs moved to [example README](example/README.md)
 
 ## ChangeLog
 
+2023 09
+* Removed hostconfig - some pieces still to be put together
+  * 3 styles still to be fixed in the resolver
+
 2023 07
 
 * hostconfig
@@ -301,30 +305,6 @@ There are several constructors which handle loading of the AC from different sou
 `AdaptiveCard.asset` takes an asset path to load the payload from the local data.
 `AdaptiveCard.memory` takes a map (which can be obtained but decoding a string using the json class) and displays it.
 
-### AdaptiveCards HostConfig
-
-The `HostConfig` can be configured via two parameters of every constructor:
-
-1. The parameter `hostConfigPath` takes a static HostConfig which can be stored as a local asset. In this case, the [HostConfig has to be added to the pubspec.yaml](https://flutter.dev/docs/development/ui/assets-and-images) of the project.
-2. The parameter `hostConfig` takes a dynamic HostConfig as a String. This can easily be programmaticly and can e.g. be used for switching between a light and a dark theme.
-
-If both parameters are set the `hostConfig`parameter will be used.
-
-#### HostConfig Unsupported elements
-
-The following sections do not exist in hostconfig because they are better served via the standard Flutter Theme and Style handling. This repo pretty much completely uses `textTheme` for calculating fornts and default colors. The color scheme also has other [properties](https://api.flutter.dev/flutter/material/ColorScheme/ColorScheme.html)  There is also a `primaryTextTheme` that contrasts with `textTheme`.
-
-* `fontTypes` - This is in many of the [samples](https://github.com/Microsoft/AdaptiveCards/blob/master/samples/HostConfig/sample.json) but not in the [documentation](https://learn.microsoft.com/en-us/adaptive-cards/rendering-cards/host-config)
-* `fontFamily` - thi sis in the [documentation](https://learn.microsoft.com/en-us/adaptive-cards/rendering-cards/host-config) but not the samples
-* `fontSizes` - Use Flutter Themes instead
-* `fontWeights` - Use Flutter Themes instead
-* `foregroundColors` - Currently implemented. This should be deprececated.
-
-Other sections may exist but may not be supported
-
-* `supportsInteractivity`
-* `allowCustomStyle`
-* others
 
 ### Example
 

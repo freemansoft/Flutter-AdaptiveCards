@@ -12,7 +12,7 @@ void main() {
   });
 
   testWidgets('Activity Update test', (tester) async {
-    Widget widget = getWidthDefaultHostConfig('example1');
+    Widget widget = getWidget('example1');
 
     await tester.pumpWidget(widget);
 

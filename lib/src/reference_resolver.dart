@@ -3,35 +3,15 @@ import "dart:developer" as developer;
 import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 
-import 'utils.dart';
-
 /// Resolves values based on the host config.
 ///
 /// All values can also be null, in that case the default is used
 class ReferenceResolver {
   ReferenceResolver({
-    required this.hostConfig,
     this.currentStyle,
   });
 
-  final Map<String, dynamic> hostConfig;
-
   final String? currentStyle;
-
-  /// return the value hostConfig[key][value]
-  dynamic resolve(String key, String value) {
-    dynamic res = hostConfig[key]?[firstCharacterToLowerCase(value)];
-    assert(res != null,
-        'Could not find hostConfig[$key][${firstCharacterToLowerCase(value)}]');
-    return res;
-  }
-
-  /// return the value for hostConfig[key]
-  dynamic get(String key) {
-    dynamic res = hostConfig[key];
-    assert(res != null, 'Could not find hostConfig[$key]');
-    return res;
-  }
 
   /// Resolves a color type from the Theme palette if colorType is null or 'default'
   /// Resovles a color to the host config if colorType is not null and not 'default'
@@ -177,17 +157,28 @@ class ReferenceResolver {
   ReferenceResolver copyWith({String? style}) {
     String myStyle = style ?? 'default';
     return ReferenceResolver(
-      hostConfig: this.hostConfig,
       currentStyle: myStyle,
     );
   }
 
+  /// TODO: hook up to something
   double? resolveSpacing(String? spacing) {
     String mySpacing = spacing ?? 'default';
     if (mySpacing == 'none') return 0.0;
-    int? intSpacing = resolve('spacing', mySpacing) as int?;
+    int? intSpacing = 2;
     assert(intSpacing != null, 'resolve(\'spacing\',\'$mySpacing\') was null');
 
     return intSpacing?.toDouble();
+  }
+
+  /// TODO: Hook this up to something!
+  int resolveImageSizes(String sizeDescription) {
+    return 64;
+  }
+
+  ///TODO: hook this up somehow
+  /// "Horizontal" or "Vertical"
+  String resolveOrientation(String s) {
+    return "Horizontal";
   }
 }

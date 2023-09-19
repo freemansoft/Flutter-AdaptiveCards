@@ -24,13 +24,11 @@ class DemoAdaptiveCard extends StatefulWidget {
   const DemoAdaptiveCard({
     required this.assetPath,
     Key? key,
-    this.hostConfig,
     this.supportMarkdown = true,
     this.initData,
   }) : super(key: key);
 
   final String assetPath;
-  final String? hostConfig;
   final bool supportMarkdown;
 
   /// This map must match the taxonomy of the page you pass in. Default to no initData.
@@ -66,9 +64,7 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
           // We're not using DefaultAdaptiveCardHandlers() here so add our own onXXX() handlers
           AdaptiveCard.asset(
             assetPath: widget.assetPath,
-            hostConfigPath: "lib/host_config",
             showDebugJson: true, // enable in the example app
-            hostConfig: widget.hostConfig,
             supportMarkdown: widget.supportMarkdown,
             initData: widget.initData,
             onChange: (id, value, state) {

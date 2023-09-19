@@ -45,7 +45,6 @@ class MyHomePage extends StatelessWidget {
         child: AdaptiveCard.asset(
           // loads from the assets directory in the project
           assetPath: "lib/easy_card",
-          hostConfigPath: "lib/host_config",
           onChange: (id, value, state) {
             developer.log(
                 format(
