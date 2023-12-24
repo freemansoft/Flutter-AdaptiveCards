@@ -3,17 +3,19 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class FadeAnimation extends StatefulWidget {
-  FadeAnimation(
-      {required this.child, this.duration = const Duration(milliseconds: 500)});
+  const FadeAnimation(
+      {super.key,
+      required this.child,
+      this.duration = const Duration(milliseconds: 500)});
 
   final Widget child;
   final Duration duration;
 
   @override
-  _FadeAnimationState createState() => _FadeAnimationState();
+  FadeAnimationState createState() => FadeAnimationState();
 }
 
-class _FadeAnimationState extends State<FadeAnimation>
+class FadeAnimationState extends State<FadeAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController animationController;
 
@@ -94,7 +96,7 @@ Color? parseColor(String? colorValue) {
 }
 
 String getDayOfMonthSuffix(final int n) {
-  assert(n >= 1 && n <= 31, 'illegal day of month: ' + n.toString());
+  assert(n >= 1 && n <= 31, 'illegal day of month: $n');
   if (n >= 11 && n <= 13) {
     return 'th';
   }
@@ -170,13 +172,13 @@ String parseTextString(String text) {
 
 Widget loadLabel(String? label, bool isRequired) {
   if (label == null) {
-    return SizedBox();
+    return const SizedBox();
   }
 
   return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-          padding: EdgeInsets.only(bottom: 8, top: 0),
+          padding: const EdgeInsets.only(bottom: 8, top: 0),
           child: isRequired
               ? Text.rich(
                   TextSpan(
@@ -186,7 +188,7 @@ Widget loadLabel(String? label, bool isRequired) {
                           label,
                         ),
                       ),
-                      WidgetSpan(
+                      const WidgetSpan(
                         child: Text(
                           '*',
                           style: TextStyle(),
@@ -211,7 +213,7 @@ class UUIDGenerator {
 
   /// The named constructor is the "real" constructor
   UUIDGenerator._internal() {
-    uuid = Uuid();
+    uuid = const Uuid();
   }
 
   late final Uuid uuid;

@@ -32,6 +32,7 @@ dev_dependencies:
     sdk: flutter
   test: ^1.14.3
   mockito: ^5.4.1
+  flutter_lints:
 
 flutter:
   uses-material-design: true

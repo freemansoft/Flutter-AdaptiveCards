@@ -1,6 +1,3 @@
-///
-/// https://adaptivecards.io/explorer/Input.ChoiceSet.html
-///
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +6,9 @@ import '../additional.dart';
 import '../cards/adaptive_card_element.dart';
 import '../utils.dart';
 
+///
+/// https://adaptivecards.io/explorer/Input.ChoiceSet.html
+///
 class SearchModel {
   final String id;
   final String name;
@@ -17,12 +17,12 @@ class SearchModel {
 
   ///this method will prevent the override of toString
   String modelAsString() {
-    return '#${this.id} ${this.name}';
+    return '#$id $name';
   }
 
   ///custom comparing function to check if two users are equal
   bool isEqual(SearchModel model) {
-    return this.id == model.id;
+    return id == model.id;
   }
 
   @override
@@ -32,19 +32,20 @@ class SearchModel {
 class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveChoiceSet({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveChoiceSetState createState() => _AdaptiveChoiceSetState();
+  AdaptiveChoiceSetState createState() => AdaptiveChoiceSetState();
 }
 
-class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
+class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     with AdaptiveInputMixin, AdaptiveElementMixin {
   // Map from title to value
-  Map<String, String> _choices = {};
+  final Map<String, String> _choices = {};
 
   // Contains the values (the things to send as request)
-  Set<String> _selectedChoices = {};
+  final Set<String> _selectedChoices = {};
 
   String? label;
   late bool isRequired;
@@ -117,7 +118,7 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   @override
   Widget build(BuildContext context) {
-    var widget;
+    Widget widget;
     if (isFiltered) {
       widget = _buildFiltered();
     } else if (isCompact) {
@@ -148,34 +149,34 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       height: 40,
       child: TextFormField(
         readOnly: true,
-        style: TextStyle(),
+        style: const TextStyle(),
         controller: controller,
         decoration: InputDecoration(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
-          contentPadding: EdgeInsets.symmetric(
+          contentPadding: const EdgeInsets.symmetric(
             vertical: 8,
             horizontal: 8,
           ),
           enabledBorder: const OutlineInputBorder(
-            borderSide: const BorderSide(),
+            borderSide: BorderSide(),
           ),
-          errorBorder: OutlineInputBorder(
+          errorBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                 width: 1,
               )),
-          focusedErrorBorder: OutlineInputBorder(
+          focusedErrorBorder: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(4)),
               borderSide: BorderSide(
                 width: 1,
               )),
           filled: true,
-          suffixIcon: Icon(
+          suffixIcon: const Icon(
             Icons.arrow_drop_down,
           ),
           hintText: placeholder,
-          hintStyle: TextStyle(),
-          errorStyle: TextStyle(height: 0),
+          hintStyle: const TextStyle(),
+          errorStyle: const TextStyle(height: 0),
         ),
         validator: (value) {
           if (!isRequired) return null;
@@ -204,16 +205,16 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   /// This is built when multiSelect is false and isCompact is true
   Widget _buildCompact() {
     return Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         height: 40.0,
         decoration: BoxDecoration(
           border: Border.all(),
-          borderRadius: BorderRadius.all(Radius.circular(4.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(4.0)),
         ),
         child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
           isExpanded: true,
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_drop_down,
           ),
           style: const TextStyle(),
@@ -295,8 +296,10 @@ class _AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   bool loadFiltered() {
     if (!adaptiveMap.containsKey('style')) return false;
-    if (adaptiveMap['style'].toString().toLowerCase() == 'filtered')
+    if (adaptiveMap['style'].toString().toLowerCase() == 'filtered') {
       return true;
+    }
+
     return false;
   }
 }

@@ -1,6 +1,3 @@
-///
-/// https://adaptivecards.io/explorer/Column.html
-///
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
@@ -8,18 +5,22 @@ import '../adaptive_mixins.dart';
 import '../additional.dart';
 import '../generic_action.dart';
 
+///
+/// https://adaptivecards.io/explorer/Column.html
+///
 class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveColumn(
       {super.key, required this.adaptiveMap, required this.supportMarkdown});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
   final bool supportMarkdown;
 
   @override
-  _AdaptiveColumnState createState() => _AdaptiveColumnState();
+  AdaptiveColumnState createState() => AdaptiveColumnState();
 }
 
-class _AdaptiveColumnState extends State<AdaptiveColumn>
+class AdaptiveColumnState extends State<AdaptiveColumn>
     with AdaptiveElementMixin {
   late List<Widget> items;
 
@@ -42,42 +43,42 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
   void initState() {
     super.initState();
 
-    if (adaptiveMap.containsKey("selectAction")) {
+    if (adaptiveMap.containsKey('selectAction')) {
       action = widgetState.cardRegistry
-          .getGenericAction(adaptiveMap["selectAction"], widgetState);
+          .getGenericAction(adaptiveMap['selectAction'], widgetState);
     }
-    separator = adaptiveMap["separator"] ?? false;
+    separator = adaptiveMap['separator'] ?? false;
 
     backgroundImage = _getBackgroundImage(adaptiveMap);
 
-    var toParseWidth = adaptiveMap["width"];
+    var toParseWidth = adaptiveMap['width'];
     if (toParseWidth != null) {
-      if (toParseWidth == "auto") {
-        mode = "auto";
-      } else if (toParseWidth == "stretch") {
-        mode = "stretch";
+      if (toParseWidth == 'auto') {
+        mode = 'auto';
+      } else if (toParseWidth == 'stretch') {
+        mode = 'stretch';
       } else if (toParseWidth is int) {
         width = toParseWidth;
-        mode = "weighted";
+        mode = 'weighted';
       } else {
         var widthString = toParseWidth.toString();
 
-        if (widthString.endsWith("px")) {
+        if (widthString.endsWith('px')) {
           widthString =
               widthString.substring(0, widthString.length - 2); // remove px
           width = int.parse(widthString);
-          mode = "px";
+          mode = 'px';
         } else {
           // Handle gracefully
-          mode = "auto";
+          mode = 'auto';
         }
       }
     } else {
-      mode = "auto";
+      mode = 'auto';
     }
 
-    items = adaptiveMap["items"] != null
-        ? List<Map<String, dynamic>>.from(adaptiveMap["items"]).map((child) {
+    items = adaptiveMap['items'] != null
+        ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((child) {
             return widgetState.cardRegistry.getElement(child, parentMode: mode);
           }).toList()
         : [];
@@ -89,14 +90,14 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
 
   MainAxisAlignment loadVerticalAlignment() {
     String verticalAlignment =
-        adaptiveMap["verticalContentAlignment"]?.toLowerCase() ?? "top";
+        adaptiveMap['verticalContentAlignment']?.toLowerCase() ?? 'top';
 
     switch (verticalAlignment) {
-      case "top":
+      case 'top':
         return MainAxisAlignment.start;
-      case "center":
+      case 'center':
         return MainAxisAlignment.center;
-      case "bottom":
+      case 'bottom':
         return MainAxisAlignment.end;
       default:
         return MainAxisAlignment.start;
@@ -105,14 +106,14 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
 
   CrossAxisAlignment loadHorizontalAlignment() {
     String horizontalAlignment =
-        adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+        adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
 
     switch (horizontalAlignment) {
-      case "left":
+      case 'left':
         return CrossAxisAlignment.start;
-      case "center":
+      case 'center':
         return CrossAxisAlignment.center;
-      case "right":
+      case 'right':
         return CrossAxisAlignment.end;
       default:
         return CrossAxisAlignment.start;
@@ -121,14 +122,14 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
 
   Alignment? loadHorizontalContainerAlignment() {
     String horizontalAlignment =
-        adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "";
+        adaptiveMap['horizontalAlignment']?.toLowerCase() ?? '';
 
     switch (horizontalAlignment) {
-      case "left":
+      case 'left':
         return Alignment.topLeft;
-      case "center":
+      case 'center':
         return Alignment.topCenter;
-      case "right":
+      case 'right':
         return Alignment.topRight;
       default:
         return null;
@@ -136,16 +137,16 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
   }
 
   Widget _getBackgroundImage(Map element) {
-    var backgroundImage = adaptiveMap["backgroundImage"];
+    var backgroundImage = adaptiveMap['backgroundImage'];
     if (backgroundImage != null) {
-      var backgroundImageUrl = backgroundImage["url"];
-      var fillMode = backgroundImage["fillMode"];
+      var backgroundImageUrl = backgroundImage['url'];
+      var fillMode = backgroundImage['fillMode'];
 
       BoxFit fit;
       switch (fillMode) {
-        case "RepeatVertically":
-        case "RepeatHorizontally":
-        case "Repeat":
+        case 'RepeatVertically':
+        case 'RepeatHorizontally':
+        case 'Repeat':
           fit = BoxFit.none;
           break;
         default:
@@ -154,13 +155,13 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
 
       ImageRepeat repeat;
       switch (fillMode) {
-        case "RepeatVertically":
+        case 'RepeatVertically':
           repeat = ImageRepeat.repeatY;
           break;
-        case "RepeatHorizontally":
+        case 'RepeatHorizontally':
           repeat = ImageRepeat.repeatX;
           break;
-        case "Repeat":
+        case 'Repeat':
           repeat = ImageRepeat.repeat;
           break;
         default:
@@ -175,7 +176,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
         );
       }
     }
-    return SizedBox(
+    return const SizedBox(
       width: 0,
       height: 0,
     );
@@ -185,7 +186,7 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
   Widget build(BuildContext context) {
     double? precedingSpacing = InheritedReferenceResolver.of(context)
         .resolver
-        .resolveSpacing(adaptiveMap["spacing"]);
+        .resolveSpacing(adaptiveMap['spacing']);
     var backgroundColor = InheritedReferenceResolver.of(context)
         .resolver
         .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
@@ -197,9 +198,9 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
       alignment: containerHorizontalAlignment,
       color: backgroundColor,
       child: Column(
-        children: []..addAll(items.map((it) => it).toList()),
         crossAxisAlignment: horizontalAlignment,
         mainAxisAlignment: verticalAlignment,
+        children: [...items.map((it) => it)],
       ),
     );
 
@@ -223,23 +224,23 @@ class _AdaptiveColumnState extends State<AdaptiveColumn>
       ],
     );
 
-    assert(mode == "auto" ||
-        mode == "stretch" ||
-        mode == "weighted" ||
-        mode == "px");
-    if (mode == "auto") {
+    assert(mode == 'auto' ||
+        mode == 'stretch' ||
+        mode == 'weighted' ||
+        mode == 'px');
+    if (mode == 'auto') {
       return Flexible(child: result);
-    } else if (mode == "stretch") {
+    } else if (mode == 'stretch') {
       return Expanded(
         child: result,
       );
-    } else if (mode == "weighted") {
+    } else if (mode == 'weighted') {
       return Expanded(
         flex: width,
         child: result,
       );
-    } else if (mode == "px") {
-      return Container(
+    } else if (mode == 'px') {
+      return SizedBox(
         width: width.toDouble(),
         child: result,
       );

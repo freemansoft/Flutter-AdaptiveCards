@@ -1,4 +1,4 @@
-import "dart:developer" as developer;
+import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:format/format.dart';
@@ -35,22 +35,22 @@ class ReferenceResolver {
     Color? foregroundColor;
     switch (colorType) {
       // "default" means default for the current style
-      case "default":
+      case 'default':
         {
           // derive our foreground color from the theme if the color is set to default
 
           switch (myStyle) {
-            case "default":
+            case 'default':
               foregroundColor =
                   Theme.of(context).colorScheme.onPrimaryContainer;
-            case "emphasis":
+            case 'emphasis':
               foregroundColor =
                   Theme.of(context).colorScheme.onSecondaryContainer;
-            case "good":
+            case 'good':
               foregroundColor =
                   Theme.of(context).colorScheme.onTertiaryContainer;
-            case "attention":
-            case "warning:":
+            case 'attention':
+            case 'warning:':
               foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
             default:
               foregroundColor =
@@ -58,22 +58,23 @@ class ReferenceResolver {
           }
         }
       // we can override the default foreground for the current background
-      case "emphasis":
+      case 'emphasis':
         foregroundColor = Theme.of(context).colorScheme.onSecondaryContainer;
-      case "good":
+      case 'good':
         foregroundColor = Theme.of(context).colorScheme.onTertiaryContainer;
-      case "attention":
-      case "warning:":
+      case 'attention':
+      case 'warning:':
         foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
       default:
         foregroundColor = null;
     }
-    if (foregroundColor != null && subtleOrDefault == "subtle")
+    if (foregroundColor != null && subtleOrDefault == 'subtle') {
       foregroundColor = Color.fromARGB(foregroundColor.alpha ~/ 2,
           foregroundColor.red, foregroundColor.green, foregroundColor.blue);
+    }
     assert(() {
       developer.log(
-          format("resolved foreground style:{} color:{} subtle:{} to color:{}",
+          format('resolved foreground style:{} color:{} subtle:{} to color:{}',
               myStyle, colorType, subtleOrDefault, foregroundColor),
           name: runtimeType.toString());
       return true;
@@ -107,15 +108,15 @@ class ReferenceResolver {
     Color? backgroundColor;
 
     switch (myStyle) {
-      case "default":
-      case "accent":
+      case 'default':
+      case 'accent':
         backgroundColor = Theme.of(context).colorScheme.primaryContainer;
-      case "emphasis":
+      case 'emphasis':
         backgroundColor = Theme.of(context).colorScheme.secondaryContainer;
-      case "good":
+      case 'good':
         backgroundColor = Theme.of(context).colorScheme.tertiaryContainer;
-      case "attention":
-      case "warning:":
+      case 'attention':
+      case 'warning:':
         backgroundColor = Theme.of(context).colorScheme.errorContainer;
       default:
         backgroundColor = Theme.of(context).colorScheme.primaryContainer;
@@ -123,7 +124,7 @@ class ReferenceResolver {
 
     assert(() {
       developer.log(
-          format("resolved background style:{} to color:{}", myStyle,
+          format('resolved background style:{} to color:{}', myStyle,
               backgroundColor),
           name: runtimeType.toString());
       return true;
@@ -166,9 +167,8 @@ class ReferenceResolver {
     String mySpacing = spacing ?? 'default';
     if (mySpacing == 'none') return 0.0;
     int? intSpacing = 2;
-    assert(intSpacing != null, 'resolve(\'spacing\',\'$mySpacing\') was null');
 
-    return intSpacing?.toDouble();
+    return intSpacing.toDouble();
   }
 
   /// TODO: Hook this up to something!
@@ -179,6 +179,6 @@ class ReferenceResolver {
   ///TODO: hook this up somehow
   /// "Horizontal" or "Vertical"
   String resolveOrientation(String s) {
-    return "Horizontal";
+    return 'Horizontal';
   }
 }

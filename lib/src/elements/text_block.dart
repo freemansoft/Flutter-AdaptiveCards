@@ -1,6 +1,3 @@
-///
-/// https://adaptivecards.io/explorer/TextBlock.html
-///
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
@@ -14,18 +11,22 @@ import '../additional.dart';
 import '../flutter_raw_adaptive_card.dart';
 import '../utils.dart';
 
+///
+/// https://adaptivecards.io/explorer/TextBlock.html
+///
 class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextBlock(
       {super.key, required this.adaptiveMap, required this.supportMarkdown});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
   final bool supportMarkdown;
 
   @override
-  _AdaptiveTextBlockState createState() => _AdaptiveTextBlockState();
+  AdaptiveTextBlockState createState() => AdaptiveTextBlockState();
 }
 
-class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
+class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     with AdaptiveElementMixin {
   late FontWeight fontWeight = FontWeight.normal;
   late double fontSize = 12;
@@ -107,20 +108,20 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
         .resolver
         .resolveForegroundColor(
             context: context,
-            colorType: adaptiveMap["color"],
-            isSubtle: adaptiveMap["isSubtle"]);
+            colorType: adaptiveMap['color'],
+            isSubtle: adaptiveMap['isSubtle']);
     return color;
   }
 
   FontWeight loadWeight() {
     String weightString =
-        widget.adaptiveMap["weight"]?.toLowerCase() ?? "default";
+        widget.adaptiveMap['weight']?.toLowerCase() ?? 'default';
     switch (weightString) {
-      case "default":
+      case 'default':
         return FontWeight.normal;
-      case "lighter":
+      case 'lighter':
         return FontWeight.w300;
-      case "bolder":
+      case 'bolder':
         return FontWeight.bold;
       default:
         return FontWeight.normal;
@@ -128,19 +129,19 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   }
 
   double loadSize() {
-    String sizeString = widget.adaptiveMap["size"]?.toLowerCase() ?? "default";
+    String sizeString = widget.adaptiveMap['size']?.toLowerCase() ?? 'default';
     TextTheme textTheme = Theme.of(context).textTheme;
     TextStyle? textStyle;
     switch (sizeString) {
-      case "default":
+      case 'default':
         textStyle = textTheme.bodyMedium;
-      case "small":
+      case 'small':
         textStyle = textTheme.bodySmall;
-      case "medium":
+      case 'medium':
         textStyle = textTheme.bodyMedium;
-      case "large":
+      case 'large':
         textStyle = textTheme.bodyLarge;
-      case "extraLarge":
+      case 'extraLarge':
         textStyle = textTheme.titleLarge;
       default: // in case some invalid value
         // should log here for debugging
@@ -150,7 +151,7 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     double? foo = textStyle?.fontSize;
     assert(() {
       if (foo == null) {
-        developer.log(format("Unable to find TextStyle for {}", sizeString),
+        developer.log(format('Unable to find TextStyle for {}', sizeString),
             name: runtimeType.toString());
       }
       return true;
@@ -160,14 +161,14 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   Alignment loadAlignment() {
     String alignmentString =
-        widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+        widget.adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
 
     switch (alignmentString) {
-      case "left":
+      case 'left':
         return Alignment.centerLeft;
-      case "center":
+      case 'center':
         return Alignment.center;
-      case "right":
+      case 'right':
         return Alignment.centerRight;
       default:
         return Alignment.centerLeft;
@@ -176,14 +177,14 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   TextAlign loadTextAlign() {
     String alignmentString =
-        widget.adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+        widget.adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
 
     switch (alignmentString) {
-      case "left":
+      case 'left':
         return TextAlign.start;
-      case "center":
+      case 'center':
         return TextAlign.center;
-      case "right":
+      case 'right':
         return TextAlign.right;
       default:
         return TextAlign.start;
@@ -192,11 +193,11 @@ class _AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   /// This also takes care of the wrap property, because maxLines = 1 => no wrap
   int loadMaxLines() {
-    bool wrap = widget.adaptiveMap["wrap"] ?? false;
+    bool wrap = widget.adaptiveMap['wrap'] ?? false;
     if (!wrap) return 1;
     // can be null, but that's okay for the text widget.
     // int cannot be null
-    return widget.adaptiveMap["maxLines"] ?? 1;
+    return widget.adaptiveMap['maxLines'] ?? 1;
   }
 
   /// TODO Markdown still has some problems

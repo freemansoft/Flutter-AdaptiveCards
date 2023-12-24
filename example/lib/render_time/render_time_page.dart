@@ -16,42 +16,42 @@ class _RenderTimePageState extends State<RenderTimePage> {
 
     for (int i = 0; i < bodyRepeats; i++) {
       body.add({
-        "type": "ColumnSet",
-        "columns": [
+        'type': 'ColumnSet',
+        'columns': [
           {
-            "type": "Column",
-            "width": "auto",
-            "items": [
+            'type': 'Column',
+            'width': 'auto',
+            'items': [
               {
-                "type": "TextBlock",
-                "text": "$i.",
+                'type': 'TextBlock',
+                'text': '$i.',
               }
             ]
           },
           {
-            "type": "Column",
-            "items": [
+            'type': 'Column',
+            'items': [
               {
-                "type": "TextBlock",
-                "weight": "bolder",
-                "text": "$i aaaaaaaaaaaaaaaaaaaaa",
-                "wrap": true
+                'type': 'TextBlock',
+                'weight': 'bolder',
+                'text': '$i aaaaaaaaaaaaaaaaaaaaa',
+                'wrap': true
               },
               {
-                "type": "TextBlock",
-                "spacing": "none",
-                "text": "$i bbbbbbbbbbbbbbbbbbbb",
-                "isSubtle": true,
-                "wrap": true
+                'type': 'TextBlock',
+                'spacing': 'none',
+                'text': '$i bbbbbbbbbbbbbbbbbbbb',
+                'isSubtle': true,
+                'wrap': true
               }
             ],
-            "width": "stretch"
+            'width': 'stretch'
           }
         ]
       });
     }
 
-    content = {"type": "AdaptiveCard", "blocks": bodyRepeats, "body": body};
+    content = {'type': 'AdaptiveCard', 'blocks': bodyRepeats, 'body': body};
 
     super.initState();
   }
@@ -60,9 +60,9 @@ class _RenderTimePageState extends State<RenderTimePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Render Time (ListView sized:" +
+        title: Text('Render Time (ListView sized:' +
             content['blocks'].toString() +
-            ")"),
+            ')'),
       ),
       body: SingleChildScrollView(
         child: AdaptiveCard.memory(

@@ -1,6 +1,3 @@
-///
-/// https://adaptivecards.io/explorer/Input.Number.html
-///
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -10,17 +7,22 @@ import '../additional.dart';
 import '../cards/adaptive_card_element.dart';
 import '../utils.dart';
 
+///
+/// https://adaptivecards.io/explorer/Input.Number.html
+///
+// ignore_for_file: unnecessary_const
 class AdaptiveNumberInput extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveNumberInput({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveNumberInputState createState() => _AdaptiveNumberInputState();
+  AdaptiveNumberInputState createState() => AdaptiveNumberInputState();
 }
 
-class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
+class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin {
   TextEditingController controller = TextEditingController();
 
@@ -50,7 +52,7 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
           SizedBox(
             height: 40,
             child: TextFormField(
-              style: TextStyle(),
+              style: const TextStyle(),
               keyboardType: TextInputType.number,
               inputFormatters: [
                 TextInputFormatter.withFunction((oldVal, newVal) {
@@ -66,15 +68,15 @@ class _AdaptiveNumberInputState extends State<AdaptiveNumberInput>
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4.0)),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 enabledBorder: const OutlineInputBorder(
                   // width: 0.0 produces a thin "hairline" border
                   borderSide: const BorderSide(),
                 ),
                 filled: true,
                 hintText: placeholder,
-                hintStyle: TextStyle(),
-                errorStyle: TextStyle(height: 0),
+                hintStyle: const TextStyle(),
+                errorStyle: const TextStyle(height: 0),
               ),
               validator: (value) {
                 if (!isRequired) return null;

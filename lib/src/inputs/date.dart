@@ -1,6 +1,3 @@
-///
-/// https://adaptivecards.io/explorer/Input.Date.html
-///
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
@@ -13,16 +10,20 @@ import '../additional.dart';
 import '../cards/adaptive_card_element.dart';
 import '../utils.dart';
 
+///
+/// https://adaptivecards.io/explorer/Input.Date.html
+///
 class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveDateInput({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveDateInputState createState() => _AdaptiveDateInputState();
+  AdaptiveDateInputState createState() => AdaptiveDateInputState();
 }
 
-class _AdaptiveDateInputState extends State<AdaptiveDateInput>
+class AdaptiveDateInputState extends State<AdaptiveDateInput>
     with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin {
   String? label;
   late bool isRequired;
@@ -41,18 +42,22 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
     try {
       // set the value from the card as the current selected
       selectedDateTime = inputFormat.parse(value);
-      if (adaptiveMap.containsKey('min'))
+      if (adaptiveMap.containsKey('min')) {
         min = inputFormat.parse(adaptiveMap['min']);
-      if (adaptiveMap.containsKey('max'))
+      }
+      if (adaptiveMap.containsKey('max')) {
         max = inputFormat.parse(adaptiveMap['max']);
-    } catch (formatException) {}
+      }
+    } catch (formatException) {
+      // what should we do here?
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     Locale myLocale = Localizations.localeOf(context);
     assert(() {
-      developer.log(format("locale: {}", myLocale),
+      developer.log(format('locale: {}', myLocale),
           name: runtimeType.toString());
       return true;
     }());
@@ -66,27 +71,27 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
             height: 40,
             child: TextFormField(
               readOnly: true,
-              style: TextStyle(),
+              style: const TextStyle(),
               controller: controller,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4.0)),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 enabledBorder: const OutlineInputBorder(
-                  borderSide: const BorderSide(),
+                  borderSide: BorderSide(),
                 ),
-                errorBorder: OutlineInputBorder(
+                errorBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(4)),
                     borderSide: BorderSide(width: 1)),
-                focusedErrorBorder: OutlineInputBorder(
+                focusedErrorBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(4)),
                     borderSide: BorderSide(width: 1)),
                 filled: true,
-                suffixIcon: Icon(Icons.calendar_today, size: 15),
+                suffixIcon: const Icon(Icons.calendar_today, size: 15),
                 hintText: placeholder,
-                hintStyle: TextStyle(),
-                errorStyle: TextStyle(height: 0),
+                hintStyle: const TextStyle(),
+                errorStyle: const TextStyle(height: 0),
               ),
               validator: (value) {
                 if (!isRequired) return null;
@@ -130,7 +135,7 @@ class _AdaptiveDateInputState extends State<AdaptiveDateInput>
               : inputFormat.format(selectedDateTime!);
         });
       } catch (formatException) {
-        developer.log(format("{}", formatException),
+        developer.log(format('{}', formatException),
             name: runtimeType.toString());
       }
     }

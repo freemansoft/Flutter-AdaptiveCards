@@ -66,7 +66,7 @@ class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 /// Wraps a `RawAdaptiveCard`
 /// Pass in the Action handlers specific to the host program
 class AdaptiveCard extends StatefulWidget {
-  AdaptiveCard({
+  const AdaptiveCard({
     super.key,
     required this.adaptiveCardContentProvider,
     this.placeholder,
@@ -155,11 +155,11 @@ class AdaptiveCard extends StatefulWidget {
   final bool listView;
 
   @override
-  _AdaptiveCardState createState() => new _AdaptiveCardState();
+  AdaptiveCardState createState() => AdaptiveCardState();
 }
 
 /// State for **The** AdaptiveCard card
-class _AdaptiveCardState extends State<AdaptiveCard> {
+class AdaptiveCardState extends State<AdaptiveCard> {
   /// The loaded json map for this `AdaptiveCard` and its descendants
   Map<String, dynamic>? map;
 
@@ -254,7 +254,7 @@ class _AdaptiveCardState extends State<AdaptiveCard> {
   Widget build(BuildContext context) {
     if (map == null) {
       return widget.placeholder ??
-          Container(child: Center(child: CircularProgressIndicator()));
+          const Center(child: CircularProgressIndicator());
     }
 
     return RawAdaptiveCard.fromMap(

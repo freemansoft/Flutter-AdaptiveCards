@@ -5,19 +5,12 @@ class BasicMarkdown extends MarkdownWidget {
   /// Creates a non-scrolling widget that parses and displays Markdown.
   const BasicMarkdown(
       {super.key,
-      required String data,
-      required MarkdownStyleSheet styleSheet,
-      required SyntaxHighlighter syntaxHighlighter,
-      required MarkdownTapLinkCallback onTapLink,
-      required String imageDirectory,
-      required this.maxLines})
-      : super(
-          data: data,
-          styleSheet: styleSheet,
-          syntaxHighlighter: syntaxHighlighter,
-          onTapLink: onTapLink,
-          imageDirectory: imageDirectory,
-        );
+      required super.data,
+      required MarkdownStyleSheet super.styleSheet,
+      required SyntaxHighlighter super.syntaxHighlighter,
+      required MarkdownTapLinkCallback super.onTapLink,
+      required String super.imageDirectory,
+      required this.maxLines});
 
   final int maxLines;
 
@@ -26,7 +19,7 @@ class BasicMarkdown extends MarkdownWidget {
     if (children?.length == 1) return children!.single;
 
     //if(maxLines != null && )
-    return new Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: children ?? [],
     );

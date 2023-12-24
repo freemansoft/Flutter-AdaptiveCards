@@ -18,6 +18,7 @@ class AdaptiveCardElement extends StatefulWidget
       {Key? key, required this.adaptiveMap, required this.listView})
       : super(key: UniqueKey());
 
+  @override
   final Map<String, dynamic> adaptiveMap;
   final bool listView;
 
@@ -41,7 +42,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
   late String? backgroundImage;
 
-  Map<String, Widget> _registeredCards = {};
+  final Map<String, Widget> _registeredCards = {};
   final formKey = GlobalKey<FormState>();
 
   void registerCard(String id, Widget it) {
@@ -54,41 +55,46 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     version = adaptiveMap['version'];
     developer.log(
-        format("AdaptiveCardElement: {} version: {}", this.id, (version ?? '')),
+        format('AdaptiveCardElement: {} version: {}', id, (version ?? '')),
         name: runtimeType.toString());
 
-    children = List<Map<String, dynamic>>.from(adaptiveMap["body"])
+    children = List<Map<String, dynamic>>.from(adaptiveMap['body'])
         .map((map) => widgetState.cardRegistry.getElement(map))
         .toList();
 
     backgroundImage = adaptiveMap['backgroundImage'];
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    String stringAxis = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveOrientation('actionsOrientation');
+    if (stringAxis == 'Horizontal') {
+      actionsOrientation = Axis.horizontal;
+    } else if (stringAxis == 'Vertical') {
+      actionsOrientation = Axis.vertical;
+    }
+  }
+
   void loadChildren() {
-    if (widget.adaptiveMap.containsKey("actions")) {
+    if (widget.adaptiveMap.containsKey('actions')) {
       allActions = List<Map<String, dynamic>>.from(
-              widget.adaptiveMap["actions"])
+              widget.adaptiveMap['actions'])
           .map((adaptiveMap) => widgetState.cardRegistry.getAction(adaptiveMap))
           .toList();
-      showCardActions = List<AdaptiveActionShowCard>.from(allActions
-          .where((action) => action is AdaptiveActionShowCard)
-          .toList());
+      showCardActions = List<AdaptiveActionShowCard>.from(
+          allActions.whereType<AdaptiveActionShowCard>().toList());
       cards = List<Widget>.from(showCardActions
           .map((action) =>
-              widgetState.cardRegistry.getElement(action.adaptiveMap["card"]))
+              widgetState.cardRegistry.getElement(action.adaptiveMap['card']))
           .toList());
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    String stringAxis = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveOrientation("actionsOrientation");
-    if (stringAxis == "Horizontal")
-      actionsOrientation = Axis.horizontal;
-    else if (stringAxis == "Vertical") actionsOrientation = Axis.vertical;
-
     loadChildren();
 
     List<Widget> widgetChildren = children.map((element) => element).toList();
@@ -105,22 +111,22 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       actionWidget = Row(children: [
         Expanded(
           child: Column(
-            children: actionWidgets,
             crossAxisAlignment: CrossAxisAlignment.start,
+            children: actionWidgets,
           ),
         )
       ]);
     } else {
       List<Widget> actionWidgets = allActions.map((action) {
         return Padding(
-          padding: EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.only(right: 8),
           child: action,
         );
       }).toList();
 
       actionWidget = Row(
-        children: actionWidgets,
         crossAxisAlignment: CrossAxisAlignment.start,
+        children: actionWidgets,
       );
     }
     widgetChildren.add(actionWidget);
@@ -137,8 +143,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
               children: widgetChildren,
             )
           : Column(
-              children: widgetChildren,
               crossAxisAlignment: CrossAxisAlignment.start,
+              children: widgetChildren,
             ),
     );
 
@@ -162,7 +168,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     );
   }
 
-  /// This is called when an [_AdaptiveActionShowCard] triggers it.
+  /// This is called when an [AdaptiveActionShowCard] triggers it.
   void showCard(String id) {
     if (currentCardId == id) {
       currentCardId = null;

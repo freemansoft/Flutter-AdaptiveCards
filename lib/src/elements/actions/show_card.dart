@@ -1,23 +1,24 @@
-///
-/// https://adaptivecards.io/explorer/Action.ShowCard.html
-///
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../adaptive_mixins.dart';
 import '../../cards/adaptive_card_element.dart';
 
+///
+/// https://adaptivecards.io/explorer/Action.ShowCard.html
+///
 class AdaptiveActionShowCard extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionShowCard({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveActionShowCardState createState() => _AdaptiveActionShowCardState();
+  AdaptiveActionShowCardState createState() => AdaptiveActionShowCardState();
 }
 
-class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
+class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
     with AdaptiveActionMixin, AdaptiveElementMixin {
   @override
   void initState() {
@@ -25,8 +26,8 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
     Widget card = widgetState.cardRegistry.getElement(adaptiveMap['card']);
 
-    var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    _adaptiveCardElement.registerCard(id, card);
+    var adaptiveCardElement = context.read<AdaptiveCardElementState>();
+    adaptiveCardElement.registerCard(id, card);
   }
 
   @override
@@ -38,8 +39,8 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
         children: <Widget>[
           Text(title),
           context.watch<AdaptiveCardElementState>().currentCardId == id
-              ? Icon(Icons.keyboard_arrow_up)
-              : Icon(Icons.keyboard_arrow_down),
+              ? const Icon(Icons.keyboard_arrow_up)
+              : const Icon(Icons.keyboard_arrow_down),
         ],
       ),
     );
@@ -47,7 +48,7 @@ class _AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
   @override
   void onTapped() {
-    var _adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    _adaptiveCardElement.showCard(id);
+    var adaptiveCardElement = context.read<AdaptiveCardElementState>();
+    adaptiveCardElement.showCard(id);
   }
 }

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'flutter_raw_adaptive_card.dart';
 
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
+  // this is an abstract method that everyone needs to implmenet
   Map<String, dynamic> get adaptiveMap;
 }
 

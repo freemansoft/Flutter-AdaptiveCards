@@ -62,14 +62,15 @@ class CardRegistry {
 
   final bool listView;
 
-  Widget getElement(Map<String, dynamic> map, {String parentMode = "stretch"}) {
-    String stringType = map["type"];
+  Widget getElement(Map<String, dynamic> map, {String parentMode = 'stretch'}) {
+    String stringType = map['type'];
 
-    if (removedElements.contains(stringType))
+    if (removedElements.contains(stringType)) {
       return AdaptiveUnknown(
         type: stringType,
         adaptiveMap: map,
       );
+    }
 
     if (addedElements.containsKey(stringType)) {
       return addedElements[stringType]!(map);
@@ -81,33 +82,34 @@ class CardRegistry {
 
   GenericAction? getGenericAction(
       Map<String, dynamic> map, RawAdaptiveCardState state) {
-    String stringType = map["type"];
+    String stringType = map['type'];
 
     switch (stringType) {
-      case "Action.ShowCard":
+      case 'Action.ShowCard':
         assert(false,
-            "Action.ShowCard can only be used directly by the root card");
+            'Action.ShowCard can only be used directly by the root card');
         return null;
-      case "Action.OpenUrl":
+      case 'Action.OpenUrl':
         return GenericActionOpenUrl(map, state);
-      case "Action.Submit":
-      case "Action.Execute":
+      case 'Action.Submit':
+      case 'Action.Execute':
         return GenericSubmitAction(map, state);
-      case "Action.ToggleVisibility":
+      case 'Action.ToggleVisibility':
         return null;
     }
-    assert(false, "No action found with type $stringType");
+    assert(false, 'No action found with type $stringType');
     return null;
   }
 
   Widget getAction(Map<String, dynamic> map) {
-    String stringType = map["type"];
+    String stringType = map['type'];
 
-    if (removedElements.contains(stringType))
+    if (removedElements.contains(stringType)) {
       return AdaptiveUnknown(
         adaptiveMap: map,
         type: stringType,
       );
+    }
 
     if (addedActions.containsKey(stringType)) {
       return addedActions[stringType]!(map);
@@ -120,68 +122,68 @@ class CardRegistry {
   ///
   /// It looks at the [type] property and decides which object to construct
   Widget _getBaseElement(Map<String, dynamic> map,
-      {String parentMode = "stretch", required bool supportMarkdown}) {
-    String stringType = map["type"];
+      {String parentMode = 'stretch', required bool supportMarkdown}) {
+    String stringType = map['type'];
 
     switch (stringType) {
-      case "Media":
+      case 'Media':
         return AdaptiveMedia(adaptiveMap: map);
-      case "Container":
+      case 'Container':
         return AdaptiveContainer(
           adaptiveMap: map,
         );
-      case "TextBlock":
+      case 'TextBlock':
         return AdaptiveTextBlock(
           adaptiveMap: map,
           supportMarkdown: supportMarkdown,
         );
-      case "ActionSet":
+      case 'ActionSet':
         return ActionSet(adaptiveMap: map);
-      case "AdaptiveCard":
+      case 'AdaptiveCard':
         return AdaptiveCardElement(
           adaptiveMap: map,
           listView: listView,
         );
-      case "ColumnSet":
+      case 'ColumnSet':
         return AdaptiveColumnSet(
           adaptiveMap: map,
           supportMarkdown: supportMarkdown,
         );
-      case "Image":
+      case 'Image':
         return AdaptiveImage(
           adaptiveMap: map,
           parentMode: parentMode,
           supportMarkdown: supportMarkdown,
         );
-      case "FactSet":
+      case 'FactSet':
         return AdaptiveFactSet(
           adaptiveMap: map,
         );
-      case "Table":
+      case 'Table':
         return AdaptiveTable(
           adaptiveMap: map,
           supportMarkdown: supportMarkdown,
         );
-      case "ImageSet":
+      case 'ImageSet':
         return AdaptiveImageSet(
             adaptiveMap: map, supportMarkdown: supportMarkdown);
-      case "Input.Text":
+      case 'Input.Text':
         return AdaptiveTextInput(adaptiveMap: map);
-      case "Input.Number":
+      case 'Input.Number':
         return AdaptiveNumberInput(adaptiveMap: map);
-      case "Input.Date":
+      case 'Input.Date':
         return AdaptiveDateInput(
           adaptiveMap: map,
         );
-      case "Input.Time":
+      case 'Input.Time':
         return AdaptiveTimeInput(
           adaptiveMap: map,
         );
-      case "Input.Toggle":
+      case 'Input.Toggle':
         return AdaptiveToggle(
           adaptiveMap: map,
         );
-      case "Input.ChoiceSet":
+      case 'Input.ChoiceSet':
         return AdaptiveChoiceSet(
           adaptiveMap: map,
         );
@@ -195,18 +197,18 @@ class CardRegistry {
   Widget _getBaseAction(
     Map<String, dynamic> map,
   ) {
-    String stringType = map["type"];
+    String stringType = map['type'];
 
     switch (stringType) {
-      case "Action.ShowCard":
+      case 'Action.ShowCard':
         return AdaptiveActionShowCard(
           adaptiveMap: map,
         );
-      case "Action.OpenUrl":
+      case 'Action.OpenUrl':
         return AdaptiveActionOpenUrl(
           adaptiveMap: map,
         );
-      case "Action.Submit":
+      case 'Action.Submit':
         return AdaptiveActionSubmit(adaptiveMap: map);
     }
     return AdaptiveUnknown(
@@ -218,11 +220,11 @@ class CardRegistry {
 
 /// Used to find the current CardRegistry
 class DefaultCardRegistry extends InheritedWidget {
-  DefaultCardRegistry({
+  const DefaultCardRegistry({
     super.key,
     required this.cardRegistry,
-    required Widget child,
-  }) : super(child: child);
+    required super.child,
+  });
 
   /// Used to convert card type strings into Card instances
   final CardRegistry cardRegistry;

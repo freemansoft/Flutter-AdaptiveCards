@@ -37,17 +37,17 @@ void main() {
     await tester.tap(find.widgetWithText(ElevatedButton, 'Set due date'));
     await tester.pump();
 
-    expect(find.widgetWithText(ElevatedButton, "OK"), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'OK'), findsOneWidget);
 
     Widget button =
-        tester.firstWidget(find.widgetWithText(ElevatedButton, "OK"));
+        tester.firstWidget(find.widgetWithText(ElevatedButton, 'OK'));
 
-    await tester.tap(find.widgetWithText(ElevatedButton, "Comment"));
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Comment'));
     await tester.pump();
 
     expect(find.byType(ElevatedButton), findsNWidgets(3));
 
-    expect(find.widgetWithText(ElevatedButton, "OK"), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'OK'), findsOneWidget);
 
     // Also has OK widget but it's a different instance
 

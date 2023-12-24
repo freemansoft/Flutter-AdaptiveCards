@@ -1,21 +1,22 @@
-///
-/// https://adaptivecards.io/explorer/Input.Toggle.html
-///
 import 'package:flutter/material.dart';
 
 import '../adaptive_mixins.dart';
 import '../additional.dart';
 
+///
+/// https://adaptivecards.io/explorer/Input.Toggle.html
+///
 class AdaptiveToggle extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveToggle({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveToggleState createState() => _AdaptiveToggleState();
+  AdaptiveToggleState createState() => AdaptiveToggleState();
 }
 
-class _AdaptiveToggleState extends State<AdaptiveToggle>
+class AdaptiveToggleState extends State<AdaptiveToggle>
     with AdaptiveInputMixin, AdaptiveElementMixin {
   bool boolValue = false;
 
@@ -28,10 +29,10 @@ class _AdaptiveToggleState extends State<AdaptiveToggle>
   void initState() {
     super.initState();
 
-    valueOff = adaptiveMap["valueOff"] ?? "false";
-    valueOn = adaptiveMap["valueOn"] ?? "true";
+    valueOff = adaptiveMap['valueOff'] ?? 'false';
+    valueOn = adaptiveMap['valueOn'] ?? 'true';
     boolValue = value == valueOn;
-    title = adaptiveMap["title"] ?? "";
+    title = adaptiveMap['title'] ?? '';
   }
 
   @override

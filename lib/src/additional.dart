@@ -4,32 +4,36 @@ import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'adaptive_mixins.dart';
 import 'generic_action.dart';
 
-class SeparatorElement extends StatefulWidget with AdaptiveElementWidgetMixin {
+class SeparatorElement extends StatefulWidget
+    implements AdaptiveElementWidgetMixin {
+  @override
   final Map<String, dynamic> adaptiveMap;
+
   final Widget child;
 
-  SeparatorElement({super.key, required this.adaptiveMap, required this.child});
+  const SeparatorElement(
+      {super.key, required this.adaptiveMap, required this.child});
 
   @override
-  _SeparatorElementState createState() => _SeparatorElementState();
+  SeparatorElementState createState() => SeparatorElementState();
 }
 
-class _SeparatorElementState extends State<SeparatorElement>
+class SeparatorElementState extends State<SeparatorElement>
     with AdaptiveElementMixin {
   late double? topSpacing;
   late bool separator;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     topSpacing = InheritedReferenceResolver.of(context)
         .resolver
         .resolveSpacing(adaptiveMap['spacing']);
     separator = adaptiveMap['separator'] ?? false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -45,13 +49,14 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   final Widget child;
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveTappableState createState() => _AdaptiveTappableState();
+  AdaptiveTappableState createState() => AdaptiveTappableState();
 }
 
-class _AdaptiveTappableState extends State<AdaptiveTappable>
+class AdaptiveTappableState extends State<AdaptiveTappable>
     with AdaptiveElementMixin {
   GenericAction? action;
 

@@ -89,6 +89,7 @@ You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in
 * `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
 
 ## Event Handlers
+
 You can insert a `DefaultAdaptiveCardHandlers` in the Widget tree prior to loading the `AdaptiveCard`s.  Those handlers will be used for all actions.
 
 Your program can pass it's own handlers to the `AdaptiveCard` constructors.  See the `NetworkPage` class in the example app.
@@ -149,6 +150,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 * GitLens
 
 ## Widget Hierarchy with Flutter-AdaptiveCards
+
 The Widgets marked with `(*)`are Flutter-AdaptiveCars specific including those build using the `Provider` framework.
 
 ```
@@ -180,6 +182,7 @@ Demo Adaptive Card*
 │                                                                           └── AdaptiveTapable(*)
 
 ```
+
 Taken from the example App
 
 ## Open TODO items
@@ -206,7 +209,7 @@ TODO for the example programs moved to [example README](example/README.md)
 * _Inputs_ missing implementations and features
   * None identified
   * Note: [`Input.Choice`](https://adaptivecards.io/explorer/Input.Choice.html) currently implemented as a map in [`ChoiceSet`](https://adaptivecards.io/explorer/Input.ChoiceSet.html)
-* _Actions_ missing implementations and features
+* Actions_ missing implementations and features
   * Add [`Action.ToggleVisibility`](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) - currently implemented as `no-op` along with its' associated [`TargetElement`](https://adaptivecards.io/explorer/TargetElement.html)
   * [`Action.Execute`](https://adaptivecards.io/explorer/Action.Execute.html) and [`Action.Submit`](https://adaptivecards.io/explorer/Action.Submit.html) are currently both mapped to `AdaptiveActionSubmit` in `action_set.dart`. Their behavior should possibly be different.
 * _Tests_
@@ -219,6 +222,7 @@ TODO for the example programs moved to [example README](example/README.md)
 ## ChangeLog
 
 2023 09
+
 * Removed hostconfig - some pieces still to be put together
   * 3 styles still to be fixed in the resolver
 
@@ -304,7 +308,6 @@ There are several constructors which handle loading of the AC from different sou
 `AdaptiveCard.network` takes a url to download the payload and display it.
 `AdaptiveCard.asset` takes an asset path to load the payload from the local data.
 `AdaptiveCard.memory` takes a map (which can be obtained but decoding a string using the json class) and displays it.
-
 
 ### Example
 

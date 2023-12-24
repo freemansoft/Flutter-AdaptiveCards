@@ -42,15 +42,15 @@ class NetworkPage extends StatelessWidget {
             url: this.url,
             onChange: (id, value, state) {
               developer.log(
-                  format("onChange: id: {}, value: {}, state: {}", id, value,
+                  format('onChange: id: {}, value: {}, state: {}', id, value,
                       state),
                   name: runtimeType.toString());
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(format("onChange: id: {}, value: {}, state: {}",
+                  content: Text(format('onChange: id: {}, value: {}, state: {}',
                       id, value, state))));
             },
             onSubmit: (map) {
-              developer.log(format("onSubmit map: {}", map.toString()),
+              developer.log(format('onSubmit map: {}', map.toString()),
                   name: runtimeType.toString());
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(format(
@@ -58,7 +58,7 @@ class NetworkPage extends StatelessWidget {
                       map.toString()))));
             },
             onOpenUrl: (url) {
-              developer.log(format("onOpenUrl url: {}", url),
+              developer.log(format('onOpenUrl url: {}', url),
                   name: runtimeType.toString());
               launchUrl(Uri.parse(url));
             },
