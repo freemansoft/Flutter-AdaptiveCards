@@ -44,18 +44,18 @@ class MyHomePage extends StatelessWidget {
         // We're not using DemoAdaptieCard() here so add our own onXXX handlers
         child: AdaptiveCard.asset(
           // loads from the assets directory in the project
-          assetPath: "lib/easy_card",
+          assetPath: 'lib/easy_card',
           onChange: (id, value, state) {
             developer.log(
                 format(
-                    "onChange: id: {}, value: {}, state: {}", id, value, state),
+                    'onChange: id: {}, value: {}, state: {}', id, value, state),
                 name: runtimeType.toString());
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(format("onChange: id: {}, value: {}, state: {}",
+                content: Text(format('onChange: id: {}, value: {}, state: {}',
                     id, value, state))));
           },
           onSubmit: (map) {
-            developer.log(format("onSubmit map: {}", map.toString()),
+            developer.log(format('onSubmit map: {}', map.toString()),
                 name: runtimeType.toString());
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(format(
@@ -63,11 +63,11 @@ class MyHomePage extends StatelessWidget {
                     map.toString()))));
           },
           onOpenUrl: (url) {
-            developer.log(format("onOpenUrl url: {}", url),
+            developer.log(format('onOpenUrl url: {}', url),
                 name: runtimeType.toString());
             launchUrl(Uri.parse(url));
           },
-          // TODO fix this
+          // TODO fix this commented out code around CardRegistry
           // cardRegistry: CardRegistry(addedActions: {
           //   "Action.Submit": (map, widgetState, card) =>
           //       AdaptiveActionSubmit(map, widgetState)

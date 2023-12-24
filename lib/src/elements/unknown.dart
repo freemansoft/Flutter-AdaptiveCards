@@ -12,25 +12,26 @@ import '../adaptive_mixins.dart';
 class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveUnknown({super.key, required this.adaptiveMap, required this.type});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   final String type;
 
   @override
-  _AdaptiveUnknownState createState() => _AdaptiveUnknownState();
+  AdaptiveUnknownState createState() => AdaptiveUnknownState();
 }
 
-class _AdaptiveUnknownState extends State<AdaptiveUnknown>
+class AdaptiveUnknownState extends State<AdaptiveUnknown>
     with AdaptiveElementMixin {
   @override
   Widget build(BuildContext context) {
-    Widget result = SizedBox();
+    Widget result = const SizedBox();
 
     // Only do this in debug mode
     assert(() {
-      result = ErrorWidget("Type ${widget.type} not found. \n\n"
-          "Because of this, a portion of the tree was dropped: \n"
-          "$adaptiveMap");
+      result = ErrorWidget('Type ${widget.type} not found. \n\n'
+          'Because of this, a portion of the tree was dropped: \n'
+          '$adaptiveMap');
 
       return true;
     }());

@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-import '../lib/src/utils.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 
 void main() {
   void checkIfSameAfterParse(String text) {
@@ -14,19 +14,21 @@ void main() {
   }
 
   test('Does not change normal or malformed text', () async {
-    checkIfSameAfterParse("Hello");
-    checkIfSameAfterParse("Some stuff {{ Hello");
-    checkIfSameAfterParse("Hello my name is {{Norbert}}");
-    checkIfSameAfterParse("This is the current date: {{text, SHORT}}");
-    checkIfSameAfterParse("{{\\\n\r\a\0 a123084 }}");
-    checkIfSameAfterParse("{{DATE(2017-02-14T06:00Z, SHORTSSS)}}");
-    checkIfSameAfterParse("{{DATE(2017-0322-14T06:00Z, SHORTSHORTSSS)}}");
-    checkIfSameAfterParse("{{DDATE(2017-02-14T06:00Z, SHORT)}}");
-    checkIfSameAfterParse("{{DATE(2017-02-14T06:00Z, SHORT))}}");
+    checkIfSameAfterParse('Hello');
+    checkIfSameAfterParse('Some stuff {{ Hello');
+    checkIfSameAfterParse('Hello my name is {{Norbert}}');
+    checkIfSameAfterParse('This is the current date: {{text, SHORT}}');
+    // escapes \a\0 are not supported in dart so they don't actually do anything
+    // ignore: unnecessary_string_escapes
+    checkIfSameAfterParse('{{\\\n\r\a\0 a123084 }}');
+    checkIfSameAfterParse('{{DATE(2017-02-14T06:00Z, SHORTSSS)}}');
+    checkIfSameAfterParse('{{DATE(2017-0322-14T06:00Z, SHORTSHORTSSS)}}');
+    checkIfSameAfterParse('{{DDATE(2017-02-14T06:00Z, SHORT)}}');
+    checkIfSameAfterParse('{{DATE(2017-02-14T06:00Z, SHORT))}}');
 
-    checkIfSameAfterParse("{{TIME(2017-02-14T06:00Z, SHORT)}}");
-    checkIfSameAfterParse("{{TIME(2017-02-14T06:00Z, )}}");
-    checkIfSameAfterParse("{{TIMES(2017-02-14T06:00Z)}}");
+    checkIfSameAfterParse('{{TIME(2017-02-14T06:00Z, SHORT)}}');
+    checkIfSameAfterParse('{{TIME(2017-02-14T06:00Z, )}}');
+    checkIfSameAfterParse('{{TIMES(2017-02-14T06:00Z)}}');
   });
 
   test('Basic parsing', () {

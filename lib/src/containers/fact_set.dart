@@ -1,6 +1,3 @@
-/// Implements
-/// https://adaptivecards.io/explorer/FactSet.html
-/// https://adaptivecards.io/explorer/Fact.html
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -8,37 +5,47 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import '../adaptive_mixins.dart';
 import '../additional.dart';
 
+/// Implements
+/// https://adaptivecards.io/explorer/FactSet.html
+/// https://adaptivecards.io/explorer/Fact.html
+///
 class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveFactSet({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveFactSetState createState() => _AdaptiveFactSetState();
+  AdaptiveFactSetState createState() => AdaptiveFactSetState();
 }
 
-class _AdaptiveFactSetState extends State<AdaptiveFactSet>
+class AdaptiveFactSetState extends State<AdaptiveFactSet>
     with AdaptiveElementMixin {
   late List<Map> facts;
+  Color? backgroundColor;
 
   @override
   void initState() {
     super.initState();
 
     /// https://adaptivecards.io/explorer/Fact.html
-    facts = List<Map>.from(adaptiveMap["facts"]).toList();
+    facts = List<Map>.from(adaptiveMap['facts']).toList();
   }
 
   @override
-  Widget build(BuildContext context) {
-    var backgroundColor = InheritedReferenceResolver.of(context)
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    backgroundColor = InheritedReferenceResolver.of(context)
         .resolver
         .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
             context: context,
             style: adaptiveMap['style']?.toString(),
             backgroundImageUrl:
                 adaptiveMap['backgroundImage']?['url']?.toString());
+  }
 
+  @override
+  Widget build(BuildContext context) {
     var color = getColor(context);
 
     return SeparatorElement(
@@ -46,31 +53,31 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
       child: Container(
         color: backgroundColor,
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: facts
                   .map((fact) => Text(
-                        fact["title"],
+                        fact['title'],
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: color),
                       ))
                   .toList(),
-              crossAxisAlignment: CrossAxisAlignment.start,
             ),
-            SizedBox(
+            const SizedBox(
               width: 8.0,
             ),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: facts
                   .map((fact) => MarkdownBody(
-                        data: fact["value"],
+                        data: fact['value'],
                         styleSheet: loadMarkdownStyleSheet(color),
                       ))
                   .toList(),
-              crossAxisAlignment: CrossAxisAlignment.start,
             ),
           ],
-          crossAxisAlignment: CrossAxisAlignment.start,
         ),
       ),
     );
@@ -94,8 +101,8 @@ class _AdaptiveFactSetState extends State<AdaptiveFactSet>
         .resolver
         .resolveForegroundColor(
             context: context,
-            colorType: adaptiveMap["style"],
-            isSubtle: adaptiveMap["isSubtle"]);
+            colorType: adaptiveMap['style'],
+            isSubtle: adaptiveMap['isSubtle']);
 
     return color;
   }

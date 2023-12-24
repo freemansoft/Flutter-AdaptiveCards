@@ -1,6 +1,3 @@
-///
-/// https://adaptivecards.io/explorer/Input.Text.html
-///
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -10,16 +7,20 @@ import '../additional.dart';
 import '../cards/adaptive_card_element.dart';
 import '../utils.dart';
 
+///
+/// httfps://adaptivecards.io/explorer/Input.Text.html
+///
 class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextInput({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveTextInputState createState() => _AdaptiveTextInputState();
+  AdaptiveTextInputState createState() => AdaptiveTextInputState();
 }
 
-class _AdaptiveTextInputState extends State<AdaptiveTextInput>
+class AdaptiveTextInputState extends State<AdaptiveTextInput>
     with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin {
   TextEditingController controller = TextEditingController();
 
@@ -30,9 +31,8 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
   TextInputType? style;
 
   @override
-  void initState() {
-    super.initState();
-
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     label = adaptiveMap['label'];
     isRequired = adaptiveMap['isRequired'] ?? false;
     isMultiline = adaptiveMap['isMultiline'] ?? false;
@@ -50,7 +50,7 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
           SizedBox(
             height: 40,
             child: TextFormField(
-              style: TextStyle(),
+              style: const TextStyle(),
               controller: controller,
               // maxLength: maxLength,
               inputFormatters: [
@@ -62,24 +62,24 @@ class _AdaptiveTextInputState extends State<AdaptiveTextInput>
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4.0)),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 enabledBorder: const OutlineInputBorder(
-                  borderSide: const BorderSide(),
+                  borderSide: BorderSide(),
                 ),
-                errorBorder: OutlineInputBorder(
+                errorBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(4)),
                     borderSide: BorderSide(
                       width: 1,
                     )),
-                focusedErrorBorder: OutlineInputBorder(
+                focusedErrorBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(4)),
                     borderSide: BorderSide(
                       width: 1,
                     )),
                 filled: true,
                 hintText: placeholder,
-                hintStyle: TextStyle(),
-                errorStyle: TextStyle(height: 0),
+                hintStyle: const TextStyle(),
+                errorStyle: const TextStyle(height: 0),
               ),
               validator: (value) {
                 if (!isRequired) return null;

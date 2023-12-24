@@ -17,6 +17,7 @@ Mostly because I didn't want this to overlay the 2020 Neohelden version.
 ### Commits
 
 ## [0.13] pre - various parties
+
 This section should include anthing prior to the 6/2023
 
 - Updated may packages including UUID to version 3.0 and others
@@ -167,7 +168,7 @@ This section should include anthing prior to the 6/2023
 - Implement about page [`fa5e773`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/fa5e773dd0d06bf8d6981bc936b0ed9347b63966)
 - Fix Columns [`0e1e6cd`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/0e1e6cd96b003d2865fbe5af5ec169a555645326)
 - Added more tests [`8b52087`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/8b5208749406e248120b8c37118a47534acc62ad)
-- made constructor named and extends the mixins from _AdaptiveElement [`294a8f8`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/294a8f8d2516d1a49e7f0cb0877e4723d58e4271)
+- made constructor named and extends the mixins from AdaptiveElement [`294a8f8`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/294a8f8d2516d1a49e7f0cb0877e4723d58e4271)
 - preprocessing ids [`417fa15`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/417fa153d062ebaa919529a16415d4582a6cfd13)
 - Update dependencies [`81354d8`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/81354d8114a61a4bcae2ca91375295461ed87276)
 - Added default card registry, started with native styling [`1dae50b`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/1dae50ba3999b2c58019509caabd45f619ec2b16)

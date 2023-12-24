@@ -1,33 +1,34 @@
-///
-/// https://adaptivecards.io/explorer/Input.Time.html
-///
 import 'package:flutter/material.dart';
 
 import '../adaptive_mixins.dart';
 import '../additional.dart';
 
+///
+/// https://adaptivecards.io/explorer/Input.Time.html
+///
 class AdaptiveTimeInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTimeInput({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveTimeInputState createState() => _AdaptiveTimeInputState();
+  AdaptiveTimeInputState createState() => AdaptiveTimeInputState();
 }
 
-class _AdaptiveTimeInputState extends State<AdaptiveTimeInput>
+class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
     with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin {
   late TimeOfDay? selectedTime;
   late TimeOfDay min;
   late TimeOfDay max;
 
   @override
-  void initState() {
-    super.initState();
-
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     selectedTime = parseTime(value) ?? TimeOfDay.now();
-    min = parseTime(adaptiveMap['min']) ?? TimeOfDay(minute: 0, hour: 0);
-    max = parseTime(adaptiveMap['max']) ?? TimeOfDay(minute: 59, hour: 23);
+    min = parseTime(adaptiveMap['min']) ?? const TimeOfDay(minute: 0, hour: 0);
+    max =
+        parseTime(adaptiveMap['max']) ?? const TimeOfDay(minute: 59, hour: 23);
   }
 
   TimeOfDay? parseTime(String? time) {
@@ -50,9 +51,10 @@ class _AdaptiveTimeInputState extends State<AdaptiveTimeInput>
               context, selectedTime, min, max);
           if (result != null) {
             if (result.hour >= min.hour && result.hour <= max.hour) {
+              // can't count on context in async
               widgetState.showError(
-                  'Time must be after ${min.format(widgetState.context)}'
-                  ' and before ${max.format(widgetState.context)}');
+                  'Time must be after ${context.mounted ? min.format(widgetState.context) : min.toString()}'
+                  ' and before ${context.mounted ? max.format(widgetState.context) : max.toString()}');
             } else {
               setState(() {
                 selectedTime = result;

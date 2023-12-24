@@ -1,22 +1,23 @@
-///
-/// https://adaptivecards.io/explorer/Container.html
-///
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 import '../adaptive_mixins.dart';
 import '../additional.dart';
 
+///
+/// https://adaptivecards.io/explorer/Container.html
+///
 class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveContainer({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveContainerState createState() => _AdaptiveContainerState();
+  AdaptiveContainerState createState() => AdaptiveContainerState();
 }
 
-class _AdaptiveContainerState extends State<AdaptiveContainer>
+class AdaptiveContainerState extends State<AdaptiveContainer>
     with AdaptiveElementMixin {
 // TODO implement verticalContentAlignment
   late List<Widget> children;
@@ -26,9 +27,9 @@ class _AdaptiveContainerState extends State<AdaptiveContainer>
   void initState() {
     super.initState();
 
-    if (adaptiveMap["items"] != null) {
+    if (adaptiveMap['items'] != null) {
       children =
-          List<Map<String, dynamic>>.from(adaptiveMap["items"]).map((child) {
+          List<Map<String, dynamic>>.from(adaptiveMap['items']).map((child) {
         return widgetState.cardRegistry.getElement(child);
       }).toList();
     } else {
@@ -37,11 +38,16 @@ class _AdaptiveContainerState extends State<AdaptiveContainer>
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     spacing = InheritedReferenceResolver.of(context)
             .resolver
-            .resolveSpacing(adaptiveMap["spacing"]) ??
+            .resolveSpacing(adaptiveMap['spacing']) ??
         0.0;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     var backgroundColor = InheritedReferenceResolver.of(context)
         .resolver
         .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(

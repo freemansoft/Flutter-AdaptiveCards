@@ -1,6 +1,3 @@
-///
-/// https://adaptivecards.io/explorer/ColumnSet.html
-///
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
@@ -8,26 +5,31 @@ import '../adaptive_mixins.dart';
 import '../additional.dart';
 import 'column.dart';
 
+///
+/// https://adaptivecards.io/explorer/ColumnSet.html
+///
 class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveColumnSet(
       {super.key, required this.adaptiveMap, required this.supportMarkdown});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
   final bool supportMarkdown;
 
   @override
-  _AdaptiveColumnSetState createState() => _AdaptiveColumnSetState();
+  AdaptiveColumnSetState createState() => AdaptiveColumnSetState();
 }
 
-class _AdaptiveColumnSetState extends State<AdaptiveColumnSet>
+class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
     with AdaptiveElementMixin {
-  late List<AdaptiveColumn> columns;
-  late MainAxisAlignment horizontalAlignment;
+  List<AdaptiveColumn>? columns;
+  MainAxisAlignment? horizontalAlignment;
+  Color? backgroundColor;
 
   @override
   void initState() {
     super.initState();
-    columns = List<Map<String, dynamic>>.from(adaptiveMap["columns"] ?? [])
+    columns = List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? [])
         .map((child) => AdaptiveColumn(
             adaptiveMap: child, supportMarkdown: widget.supportMarkdown))
         .toList();
@@ -36,19 +38,23 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   }
 
   @override
-  Widget build(BuildContext context) {
-    var backgroundColor = InheritedReferenceResolver.of(context)
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    backgroundColor = InheritedReferenceResolver.of(context)
         .resolver
         .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
             context: context,
             style: adaptiveMap['style']?.toString(),
             backgroundImageUrl:
                 adaptiveMap['backgroundImage']?['url']?.toString());
+  }
 
+  @override
+  Widget build(BuildContext context) {
     Widget child = Row(
-      children: columns.toList(),
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: horizontalAlignment,
+      mainAxisAlignment: horizontalAlignment!,
+      children: columns!.toList(),
     );
 
     if (!widget.supportMarkdown) {
@@ -69,14 +75,14 @@ class _AdaptiveColumnSetState extends State<AdaptiveColumnSet>
 
   MainAxisAlignment loadHorizontalAlignment() {
     String horizontalAlignment =
-        adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+        adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
 
     switch (horizontalAlignment) {
-      case "left":
+      case 'left':
         return MainAxisAlignment.start;
-      case "center":
+      case 'center':
         return MainAxisAlignment.center;
-      case "right":
+      case 'right':
         return MainAxisAlignment.end;
       default:
         return MainAxisAlignment.start;

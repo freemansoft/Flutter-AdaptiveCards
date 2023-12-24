@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import 'choice_set.dart';
 
 class ChoiceFilter extends StatefulWidget {
-  ChoiceFilter({super.key, required this.data, required this.callback});
+  const ChoiceFilter({super.key, required this.data, required this.callback});
 
   final List<SearchModel>? data;
   final Function(dynamic value)? callback;
 
   @override
-  _ChoiceFilterState createState() => _ChoiceFilterState();
+  ChoiceFilterState createState() => ChoiceFilterState();
 }
 
-class _ChoiceFilterState extends State<ChoiceFilter> {
-  TextEditingController _searchController = new TextEditingController();
+class ChoiceFilterState extends State<ChoiceFilter> {
+  final TextEditingController _searchController = TextEditingController();
 
-  List<SearchModel> _searchResult = [];
+  final List<SearchModel> _searchResult = [];
   List<SearchModel> _data = [];
 
   @override
@@ -55,22 +55,22 @@ class _ChoiceFilterState extends State<ChoiceFilter> {
             height: 40,
             child: TextField(
               autofocus: true,
-              style: TextStyle(),
+              style: const TextStyle(),
               controller: _searchController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4.0)),
                 contentPadding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 enabledBorder: const OutlineInputBorder(
-                  borderSide: const BorderSide(),
+                  borderSide: BorderSide(),
                 ),
                 filled: true,
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search),
                 suffix: _searchController.text.isEmpty
                     ? null
                     : IconButton(
-                        icon: Icon(Icons.cancel),
+                        icon: const Icon(Icons.cancel),
                         onPressed: () {
                           _searchController.clear();
                           onSearchTextChanged('');
@@ -79,7 +79,7 @@ class _ChoiceFilterState extends State<ChoiceFilter> {
               onChanged: onSearchTextChanged,
             )),
         Expanded(
-          child: _searchResult.length != 0 || _searchController.text.isNotEmpty
+          child: _searchResult.isNotEmpty || _searchController.text.isNotEmpty
               ? ListView.builder(
                   itemCount: _searchResult.length,
                   itemBuilder: (context, index) {

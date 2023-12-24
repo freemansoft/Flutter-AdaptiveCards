@@ -58,7 +58,7 @@ void main() {
   });
 
   testWidgets('Golden Sample 1', (tester) async {
-    ValueKey key = ValueKey('paint');
+    ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example1');
 
     //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample), key: key,))));
@@ -76,9 +76,9 @@ void main() {
     await expectLater(find.byKey(key),
         matchesGoldenFile('gold_files/sample1_set_due_date.png'));
 
-    expect(find.widgetWithText(ElevatedButton, "OK"), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'OK'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(ElevatedButton, "Comment"));
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Comment'));
     await tester.pump();
 
     await expectLater(
@@ -89,7 +89,7 @@ void main() {
   /// TODO: This test is a little bogus because the frame looks the same after tapping the buttons
   ///
   testWidgets('Golden Sample 2', (tester) async {
-    ValueKey key = ValueKey('paint');
+    ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example2');
 
     //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample), key: key,))));
@@ -117,7 +117,7 @@ void main() {
   });
 
   testWidgets('Golden Sample 3', (tester) async {
-    ValueKey key = ValueKey('paint');
+    ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example3');
 
     await tester.pumpWidget(sample);
@@ -125,11 +125,11 @@ void main() {
 
     await expectLater(
         find.byKey(key), matchesGoldenFile('gold_files/sample3-base.png'));
-    await tester.pump(Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
   });
 
   testWidgets('Golden Sample 4', (tester) async {
-    ValueKey key = ValueKey('paint');
+    ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example4');
 
     await tester.pumpWidget(sample);
@@ -140,7 +140,7 @@ void main() {
   });
 
   testWidgets('Golden Sample 5', (tester) async {
-    ValueKey key = ValueKey('paint');
+    ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example5');
 
     await tester.pumpWidget(sample);
@@ -149,9 +149,9 @@ void main() {
     await expectLater(
         find.byKey(key), matchesGoldenFile('gold_files/sample5-base.png'));
 
-    expect(find.widgetWithText(ElevatedButton, "Steak"), findsOneWidget);
-    expect(find.widgetWithText(ElevatedButton, "Chicken"), findsOneWidget);
-    expect(find.widgetWithText(ElevatedButton, "Tofu"), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'Steak'), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'Chicken'), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'Tofu'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(ElevatedButton, 'Steak'));
     await tester.pump();
@@ -173,7 +173,7 @@ void main() {
   });
   // TODO add other tests
   testWidgets('Golden Sample 14', (tester) async {
-    ValueKey key = ValueKey('paint');
+    ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example14');
 
     await tester.pumpWidget(sample);
@@ -182,11 +182,11 @@ void main() {
     await expectLater(
         find.byKey(key), matchesGoldenFile('gold_files/sample14-base.png'));
 
-    await tester.pump(Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
   });
 
   testWidgets('Golden Sample 16', (tester) async {
-    ValueKey key = ValueKey('paint');
+    ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example16');
 
     await tester.pumpWidget(sample);
@@ -195,6 +195,6 @@ void main() {
     await expectLater(
         find.byKey(key), matchesGoldenFile('gold_files/sample16-base.png'));
 
-    await tester.pump(Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 1));
   });
 }

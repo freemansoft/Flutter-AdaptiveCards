@@ -1,7 +1,3 @@
-/// Implements
-/// * https://adaptivecards.io/explorer/Media.html
-/// * https://adaptivecards.io/explorer/MediaSource.html
-
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -10,16 +6,20 @@ import '../adaptive_mixins.dart';
 import '../additional.dart';
 import '../utils.dart';
 
+/// Implements
+/// * https://adaptivecards.io/explorer/Media.html
+/// * https://adaptivecards.io/explorer/MediaSource.html
 class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveMedia({super.key, required this.adaptiveMap});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  _AdaptiveMediaState createState() => _AdaptiveMediaState();
+  AdaptiveMediaState createState() => AdaptiveMediaState();
 }
 
-class _AdaptiveMediaState extends State<AdaptiveMedia>
+class AdaptiveMediaState extends State<AdaptiveMedia>
     with AdaptiveElementMixin {
   late VideoPlayerController videoPlayerController;
   ChewieController? controller;
@@ -29,15 +29,15 @@ class _AdaptiveMediaState extends State<AdaptiveMedia>
   late String altText;
 
   FadeAnimation imageFadeAnim =
-      FadeAnimation(child: const Icon(Icons.play_arrow, size: 100.0));
+      const FadeAnimation(child: Icon(Icons.play_arrow, size: 100.0));
 
   @override
   void initState() {
     super.initState();
 
-    postUrl = adaptiveMap["poster"];
+    postUrl = adaptiveMap['poster'];
     // https://adaptivecards.io/explorer/MediaSource.html
-    sourceUrl = adaptiveMap["sources"][0]["url"];
+    sourceUrl = adaptiveMap['sources'][0]['url'];
     initializePlayer();
   }
 
@@ -78,7 +78,7 @@ class _AdaptiveMediaState extends State<AdaptiveMedia>
 
     return SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: Container(
+        child: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: AspectRatio(
               aspectRatio: 3 / 2,

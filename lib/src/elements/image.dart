@@ -1,6 +1,3 @@
-///
-/// https://adaptivecards.io/explorer/Image.html
-///
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
@@ -8,22 +5,26 @@ import '../adaptive_mixins.dart';
 import '../additional.dart';
 import '../utils.dart';
 
+///
+/// https://adaptivecards.io/explorer/Image.html
+///
 class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImage(
       {super.key,
       required this.adaptiveMap,
-      this.parentMode = "stretch",
+      this.parentMode = 'stretch',
       required this.supportMarkdown});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
   final String parentMode;
   final bool supportMarkdown;
 
   @override
-  _AdaptiveImageState createState() => _AdaptiveImageState();
+  AdaptiveImageState createState() => AdaptiveImageState();
 }
 
-class _AdaptiveImageState extends State<AdaptiveImage>
+class AdaptiveImageState extends State<AdaptiveImage>
     with AdaptiveElementMixin {
   late Alignment horizontalAlignment;
   late bool isPerson;
@@ -38,11 +39,14 @@ class _AdaptiveImageState extends State<AdaptiveImage>
   }
 
   @override
-  Widget build(BuildContext context) {
-    // here because we need a context to find the inherited reference resolver
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     loadSize();
-    //TODO alt text
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    //TODO add alt text
     BoxFit fit = BoxFit.contain;
     if (height != null && width != null) {
       fit = BoxFit.fill;
@@ -76,7 +80,7 @@ class _AdaptiveImageState extends State<AdaptiveImage>
       child = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          (widget.parentMode == "auto")
+          (widget.parentMode == 'auto')
               ? Flexible(child: image)
               : Expanded(
                   child: Align(alignment: horizontalAlignment, child: image))
@@ -92,13 +96,13 @@ class _AdaptiveImageState extends State<AdaptiveImage>
 
   Alignment loadAlignment() {
     String alignmentString =
-        adaptiveMap["horizontalAlignment"]?.toLowerCase() ?? "left";
+        adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
     switch (alignmentString) {
-      case "left":
+      case 'left':
         return Alignment.centerLeft;
-      case "center":
+      case 'center':
         return Alignment.center;
-      case "right":
+      case 'right':
         return Alignment.centerRight;
       default:
         return Alignment.centerLeft;
@@ -106,19 +110,20 @@ class _AdaptiveImageState extends State<AdaptiveImage>
   }
 
   bool loadIsPerson() {
-    if (adaptiveMap["style"] == null || adaptiveMap["style"] == "default")
+    if (adaptiveMap['style'] == null || adaptiveMap['style'] == 'default') {
       return false;
+    }
     return true;
   }
 
-  String get url => adaptiveMap["url"];
+  String get url => adaptiveMap['url'];
 
   void loadSize() {
-    String sizeDescription = adaptiveMap["size"] ?? "auto";
+    String sizeDescription = adaptiveMap['size'] ?? 'auto';
     sizeDescription = sizeDescription.toLowerCase();
 
     int? size;
-    if (sizeDescription != "auto" && sizeDescription != "stretch") {
+    if (sizeDescription != 'auto' && sizeDescription != 'stretch') {
       size = InheritedReferenceResolver.of(context)
           .resolver
           .resolveImageSizes(sizeDescription);
@@ -128,21 +133,21 @@ class _AdaptiveImageState extends State<AdaptiveImage>
     int? height = size;
 
     // Overwrite dynamic size if fixed size is given
-    if (adaptiveMap["width"] != null) {
-      var widthString = adaptiveMap["width"].toString();
+    if (adaptiveMap['width'] != null) {
+      var widthString = adaptiveMap['width'].toString();
       widthString =
           widthString.substring(0, widthString.length - 2); // remove px
       width = int.parse(widthString);
     }
-    if (adaptiveMap["height"] != null) {
-      var heightString = adaptiveMap["height"].toString();
+    if (adaptiveMap['height'] != null) {
+      var heightString = adaptiveMap['height'].toString();
       heightString =
           heightString.substring(0, heightString.length - 2); // remove px
       height = int.parse(heightString);
     }
 
     if (height == null && width == null) {
-      return null;
+      return;
     }
 
     this.width = width?.toDouble();

@@ -10,7 +10,7 @@ import 'package:mockito/mockito.dart';
 class MockAdaptiveCardState extends Mock implements RawAdaptiveCardState {
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.debug}) {
-    return "";
+    return '';
   }
 }
 
@@ -18,25 +18,25 @@ void main() {
   setUp(() {});
 
   testWidgets('Basic types return', (tester) async {
-    CardRegistry cardRegistry = CardRegistry();
+    CardRegistry cardRegistry = const CardRegistry();
     Widget adaptiveElement = cardRegistry.getElement({
-      "type": "TextBlock",
-      "text": "Adaptive Card design session",
-      "size": "large",
-      "weight": "bolder"
+      'type': 'TextBlock',
+      'text': 'Adaptive Card design session',
+      'size': 'large',
+      'weight': 'bolder'
     });
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveTextBlock));
 
     Widget second = cardRegistry.getElement({
-      "type": "Media",
-      "poster":
-          "https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png",
-      "sources": [
+      'type': 'Media',
+      'poster':
+          'https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png',
+      'sources': [
         {
-          "mimeType": "video/mp4",
-          "url":
-              "https://adaptivecardsblob.blob.core.windows.net/assets/AdaptiveCardsOverviewVideo.mp4"
+          'mimeType': 'video/mp4',
+          'url':
+              'https://adaptivecardsblob.blob.core.windows.net/assets/AdaptiveCardsOverviewVideo.mp4'
         }
       ]
     });
@@ -45,9 +45,9 @@ void main() {
   });
 
   testWidgets('Unknown element', (tester) async {
-    CardRegistry cardRegistry = CardRegistry();
+    CardRegistry cardRegistry = const CardRegistry();
 
-    Widget adaptiveElement = cardRegistry.getElement({'type': "NoType"});
+    Widget adaptiveElement = cardRegistry.getElement({'type': 'NoType'});
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
 
@@ -57,13 +57,14 @@ void main() {
   });
 
   testWidgets('Removed element', (tester) async {
-    CardRegistry cardRegistry = CardRegistry(removedElements: ['TextBlock']);
+    CardRegistry cardRegistry =
+        const CardRegistry(removedElements: ['TextBlock']);
 
     Widget adaptiveElement = cardRegistry.getElement({
-      "type": "TextBlock",
-      "text": "Adaptive Card design session",
-      "size": "large",
-      "weight": "bolder"
+      'type': 'TextBlock',
+      'text': 'Adaptive Card design session',
+      'size': 'large',
+      'weight': 'bolder'
     });
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
@@ -77,7 +78,7 @@ void main() {
     CardRegistry cardRegistry =
         CardRegistry(addedElements: {'Test': (map) => _TestAddition()});
 
-    var element = cardRegistry.getElement({'type': "Test"});
+    var element = cardRegistry.getElement({'type': 'Test'});
 
     expect(element.runtimeType, equals(_TestAddition));
 
@@ -90,10 +91,8 @@ void main() {
 class _TestAddition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Container(
-        child: Text('Test'),
-      ),
+    return const MaterialApp(
+      home: Text('Test'),
     );
   }
 }

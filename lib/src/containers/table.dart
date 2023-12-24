@@ -1,3 +1,10 @@
+import 'dart:developer' as developer;
+
+import 'package:flutter/material.dart';
+import 'package:format/format.dart';
+
+import '../adaptive_mixins.dart';
+
 ///
 /// https://adaptivecards.io/explorer/ColumnSet.html
 ///
@@ -6,25 +13,19 @@
 ///
 /// Reasonable test schema is https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json
 ///
-import 'dart:developer' as developer;
-
-import 'package:flutter/material.dart';
-import 'package:format/format.dart';
-
-import '../adaptive_mixins.dart';
-
 class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTable(
       {super.key, required this.adaptiveMap, required this.supportMarkdown});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
   final bool supportMarkdown;
 
   @override
-  _AdaptiveTableState createState() => _AdaptiveTableState();
+  AdaptiveTableState createState() => AdaptiveTableState();
 }
 
-class _AdaptiveTableState extends State<AdaptiveTable>
+class AdaptiveTableState extends State<AdaptiveTable>
     with AdaptiveElementMixin {
   late List<Map<String, dynamic>> columns;
   late List<Map<String, dynamic>> rows;
@@ -32,14 +33,14 @@ class _AdaptiveTableState extends State<AdaptiveTable>
   @override
   void initState() {
     super.initState();
-    columns = List<Map<String, dynamic>>.from(adaptiveMap["columns"] ?? []);
+    columns = List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? []);
 
     // Should all be Table Rows
-    rows = List<Map<String, dynamic>>.from(adaptiveMap["rows"] ?? []);
+    rows = List<Map<String, dynamic>>.from(adaptiveMap['rows'] ?? []);
 
     assert(() {
       developer.log(
-          format("Table: columns: {} rows: {}", columns.length, rows.length),
+          format('Table: columns: {} rows: {}', columns.length, rows.length),
           name: runtimeType.toString());
       return true;
     }());
@@ -50,7 +51,7 @@ class _AdaptiveTableState extends State<AdaptiveTable>
     return Table(
       border: TableBorder.all(),
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      defaultColumnWidth: FlexColumnWidth(),
+      defaultColumnWidth: const FlexColumnWidth(),
       // column width should be picked up from the columns["width"]
       // columnWidths: const <int, TableColumnWidth>{
       //   1: FlexColumnWidth(),
@@ -63,14 +64,14 @@ class _AdaptiveTableState extends State<AdaptiveTable>
 
   MainAxisAlignment loadHorizontalAlignment() {
     String horizontalAlignment =
-        adaptiveMap["horizontalCellContentAlignment"]?.toLowerCase() ?? "left";
+        adaptiveMap['horizontalCellContentAlignment']?.toLowerCase() ?? 'left';
 
     switch (horizontalAlignment) {
-      case "left":
+      case 'left':
         return MainAxisAlignment.start;
-      case "center":
+      case 'center':
         return MainAxisAlignment.center;
-      case "right":
+      case 'right':
         return MainAxisAlignment.end;
       default:
         return MainAxisAlignment.start;
@@ -95,7 +96,7 @@ class _AdaptiveTableState extends State<AdaptiveTable>
 
     // All the table cell markup in this row [cell, cell, cell]
     List<Map<String, dynamic>> rowTableCells =
-        List<Map<String, dynamic>>.from(row["cells"]);
+        List<Map<String, dynamic>>.from(row['cells']);
     //developer.log(format("rowTableCells: row:{} length:{} - {} ", rowNum,
     //    rowTableCells.length, rowTableCells.toString()),
     //      name: runtimeType.toString());
@@ -103,7 +104,7 @@ class _AdaptiveTableState extends State<AdaptiveTable>
     // The row markup contains a [TableCells[items]]
     List<List<dynamic>> rowCellItems =
         List<List<dynamic>>.generate(rowTableCells.length, (rowNum) {
-      return rowTableCells[rowNum]["items"];
+      return rowTableCells[rowNum]['items'];
     });
     // developer.log(format("rowCellItems: row:{} length:{} - {}", rowNum,
     //    rowCellItems.length, rowCellItems.toString()),
@@ -124,7 +125,7 @@ class _AdaptiveTableState extends State<AdaptiveTable>
                   children:
                       List<Widget>.generate(oneCellItems.length, (widgetIndex) {
         developer.log(
-            format("onCellItems for index {} : {}", widgetIndex,
+            format('onCellItems for index {} : {}', widgetIndex,
                 oneCellItems[widgetIndex]),
             name: runtimeType.toString());
         return widgetState.cardRegistry.getElement(oneCellItems[widgetIndex]);

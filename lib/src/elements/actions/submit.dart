@@ -1,25 +1,26 @@
-///
-/// https://adaptivecards.io/explorer/Action.Submit.html
-///
 import 'package:flutter/material.dart';
 
 import '../../adaptive_mixins.dart';
 import '../../generic_action.dart';
 
+///
+/// https://adaptivecards.io/explorer/Action.Submit.html
+///
 class AdaptiveActionSubmit extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionSubmit({super.key, required this.adaptiveMap, this.color});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   // Native styling
   final Color? color;
 
   @override
-  _AdaptiveActionSubmitState createState() => _AdaptiveActionSubmitState();
+  AdaptiveActionSubmitState createState() => AdaptiveActionSubmitState();
 }
 
-class _AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
+class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
     with AdaptiveActionMixin, AdaptiveElementMixin {
   late GenericSubmitAction action;
 

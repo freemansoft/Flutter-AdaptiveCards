@@ -1,6 +1,3 @@
-///
-/// https://adaptivecards.io/explorer/ImageSet.html
-///
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
@@ -8,29 +5,35 @@ import '../adaptive_mixins.dart';
 import '../additional.dart';
 import '../elements/image.dart';
 
+///
+/// https://adaptivecards.io/explorer/ImageSet.html
+///
 class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImageSet(
       {super.key, required this.adaptiveMap, required this.supportMarkdown});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
   final bool supportMarkdown;
 
   @override
-  _AdaptiveImageSetState createState() => _AdaptiveImageSetState();
+  AdaptiveImageSetState createState() => AdaptiveImageSetState();
 }
 
-class _AdaptiveImageSetState extends State<AdaptiveImageSet>
+class AdaptiveImageSetState extends State<AdaptiveImageSet>
     with AdaptiveElementMixin {
   late List<AdaptiveImage> images;
 
   late String imageSize;
   double? maybeSize;
 
+  Color? backgroundColor;
+
   @override
   void initState() {
     super.initState();
 
-    images = List<Map<String, dynamic>>.from(adaptiveMap["images"])
+    images = List<Map<String, dynamic>>.from(adaptiveMap['images'])
         .map((child) => AdaptiveImage(
               adaptiveMap: child,
               supportMarkdown: widget.supportMarkdown,
@@ -39,16 +42,20 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet>
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     loadSize();
-    var backgroundColor = InheritedReferenceResolver.of(context)
+    backgroundColor = InheritedReferenceResolver.of(context)
         .resolver
         .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
             context: context,
             style: adaptiveMap['style']?.toString(),
             backgroundImageUrl:
                 adaptiveMap['backgroundImage']?['url']?.toString());
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: Container(
@@ -69,11 +76,11 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet>
 
   double calculateSize(BoxConstraints constraints) {
     if (maybeSize != null) return maybeSize!;
-    if (imageSize == "stretch") return constraints.maxWidth;
+    if (imageSize == 'stretch') return constraints.maxWidth;
     // Display a maximum of 5 children
     if (images.length >= 5) {
       return constraints.maxWidth / 5;
-    } else if (images.length == 0) {
+    } else if (images.isEmpty) {
       return 0.0;
     } else {
       return constraints.maxWidth / images.length;
@@ -81,13 +88,13 @@ class _AdaptiveImageSetState extends State<AdaptiveImageSet>
   }
 
   void loadSize() {
-    String sizeDescription = adaptiveMap["imageSize"] ?? "auto";
-    if (sizeDescription == "auto") {
-      imageSize = "auto";
+    String sizeDescription = adaptiveMap['imageSize'] ?? 'auto';
+    if (sizeDescription == 'auto') {
+      imageSize = 'auto';
       return;
     }
-    if (sizeDescription == "stretch") {
-      imageSize = "stretch";
+    if (sizeDescription == 'stretch') {
+      imageSize = 'stretch';
       return;
     }
     int size = InheritedReferenceResolver.of(context)

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_single_quotes
+
 import 'package:flutter/material.dart';
 
 import '../../adaptive_mixins.dart';
@@ -6,15 +8,16 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
   IconButtonAction(
       {super.key, required this.adaptiveMap, required this.onTapped});
 
+  @override
   final Map<String, dynamic> adaptiveMap;
 
   final VoidCallback onTapped;
 
   @override
-  _IconButtonActionState createState() => _IconButtonActionState();
+  IconButtonActionState createState() => IconButtonActionState();
 }
 
-class _IconButtonActionState extends State<IconButtonAction>
+class IconButtonActionState extends State<IconButtonAction>
     with AdaptiveActionMixin, AdaptiveElementMixin {
   late String? iconUrl;
 

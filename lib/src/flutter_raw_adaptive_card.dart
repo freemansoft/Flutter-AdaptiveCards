@@ -19,8 +19,9 @@ class RawAdaptiveCard extends StatefulWidget {
   /// displays in natively.
   ///
   /// Additionally a host config needs to be provided for styling.
-  RawAdaptiveCard.fromMap(
+  const RawAdaptiveCard.fromMap(
     this.map, {
+    super.key,
     this.cardRegistry = const CardRegistry(),
     this.initData,
     this.onChange,
@@ -71,6 +72,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     });
   }
 
+  @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
     _resolver = ReferenceResolver();
     _adaptiveElement = widget.cardRegistry.getElement(widget.map);
@@ -88,8 +90,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void submit(Map map) {
     bool valid = true;
 
-    var visitor;
-    visitor = (element) {
+    void visitor(Element element) {
       if (element is StatefulElement) {
         if (element.state is AdaptiveInputMixin) {
           if ((element.state as AdaptiveInputMixin).checkRequired()) {
@@ -100,7 +101,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         }
       }
       element.visitChildren(visitor);
-    };
+    }
+
     context.visitChildElements(visitor);
 
     if (widget.onSubmit != null && valid) {
@@ -109,21 +111,24 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   void initInput(Map map) {
-    var visitor;
-    visitor = (element) {
+    // this code exists in several places
+    // but looks like it uses the visitor prior to assignment
+    void visitor(Element element) {
       if (element is StatefulElement) {
         if (element.state is AdaptiveInputMixin) {
           (element.state as AdaptiveInputMixin).initInput(map);
         }
       }
       element.visitChildren(visitor);
-    };
+    }
+
     context.visitChildElements(visitor);
   }
 
   void loadInput(String id, Map map) {
-    var visitor;
-    visitor = (element) {
+    // this code exists in several places
+    // but looks like it uses the visitor prior to assignment
+    void visitor(Element element) {
       if (element is StatefulElement) {
         if (element.state is AdaptiveInputMixin) {
           if ((element.state as AdaptiveInputMixin).id == id) {
@@ -132,7 +137,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         }
       }
       element.visitChildren(visitor);
-    };
+    }
+
     context.visitChildElements(visitor);
   }
 
@@ -157,7 +163,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       List<SearchModel>? data, Function(dynamic value) callback) async {
     await showModalBottomSheet(
         context: context,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(6.0)),
           side: BorderSide(),
         ),
@@ -184,7 +190,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     // showCupertinoModalPopup is a built-in function of the cupertino library
     await showCupertinoModalPopup<DateTime?>(
         context: context,
-        builder: (_) => Container(
+        builder: (_) => SizedBox(
               height: 500,
               child: Column(
                 children: [
@@ -216,8 +222,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     return showDatePicker(
         context: context,
         initialDate: initialDate,
-        firstDate: min ?? DateTime.now().subtract(Duration(days: 10000)),
-        lastDate: max ?? DateTime.now().add(Duration(days: 10000)));
+        firstDate: min ?? DateTime.now().subtract(const Duration(days: 10000)),
+        lastDate: max ?? DateTime.now().add(const Duration(days: 10000)));
   }
 
   Future<TimeOfDay?> timePickerForPlatform(BuildContext context,
@@ -246,7 +252,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     assert(() {
       developer.log(
           format(
-              "CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}",
+              'CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}',
               initialTimeOfDay,
               initialDateTime,
               minDateTime,
@@ -260,7 +266,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     // showCupertinoModalPopup is a built-in function of the cupertino library
     await showCupertinoModalPopup<TimeOfDay?>(
         context: context,
-        builder: (_) => Container(
+        builder: (_) => SizedBox(
               height: 500,
               child: Column(
                 children: [
@@ -307,13 +313,13 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
           children: <Widget>[
             TextButton(
               onPressed: () {
-                JsonEncoder encoder = new JsonEncoder.withIndent('  ');
+                JsonEncoder encoder = const JsonEncoder.withIndent('  ');
                 String prettyprint = encoder.convert(widget.map);
                 showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: Text(
+                        title: const Text(
                             'JSON (only added in debug mode, you can also turn '
                             'it off manually by passing showDebugJson = false)'),
                         content:
@@ -322,17 +328,17 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                           Center(
                             child: TextButton(
                               onPressed: () => Navigator.of(context).pop(),
-                              child: Text('Thanks'),
+                              child: const Text('Thanks'),
                             ),
                           )
                         ],
-                        contentPadding: EdgeInsets.all(8.0),
+                        contentPadding: const EdgeInsets.all(8.0),
                       );
                     });
               },
-              child: Text('Debug show the JSON'),
+              child: const Text('Debug show the JSON'),
             ),
-            Divider(
+            const Divider(
               height: 0,
             ),
             child,
