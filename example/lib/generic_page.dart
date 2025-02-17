@@ -21,14 +21,14 @@ class GenericListPage extends StatelessWidget {
   final Map<String, String> initData;
 
   // TODO: supportMarkdown should eventually be eliminated - see README.md
-  GenericListPage({
-    Key? key,
+  const GenericListPage({
+    super.key,
     required this.title,
     required this.urls,
     this.supportMarkdowns = const [],
     required this.aboutPage,
     this.initData = const {},
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +37,16 @@ class GenericListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: homeButtonIfNoHistory(context),
-        title: Text(this.title),
+        title: Text(title),
         actions: [
           // add home button to child pages in example app so can hit reload off the home page
           aboutPage.aboutButton(context),
         ],
       ),
       body: ListView.builder(
-        itemCount: this.urls.length,
+        itemCount: urls.length,
         itemBuilder: (context, index) {
-          if (this.supportMarkdowns.length > index + 1) {
+          if (supportMarkdowns.length > index + 1) {
             return DemoAdaptiveCard(
               assetPath: urls[index],
               supportMarkdown: supportMarkdowns[index],

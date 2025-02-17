@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Examples App",
+      "name": "Examples App - Mobile",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -11,7 +11,7 @@
       "args": []
     },
     {
-      "name": "Examples Web",
+      "name": "Examples App - Web",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
@@ -20,14 +20,12 @@
       "args": [
         "-d",
         "chrome",
-        "--web-renderer",
-        "html",
         "--web-port",
         "3000"
       ]
     },
     {
-      "name": "Examples Emulator-555",
+      "name": "Examples App - Emulator-555",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",

@@ -1,4 +1,4 @@
-library flutter_adaptive_cards;
+library;
 
 import 'dart:async';
 import 'dart:convert';

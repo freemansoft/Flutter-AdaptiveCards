@@ -69,8 +69,12 @@ class ReferenceResolver {
         foregroundColor = null;
     }
     if (foregroundColor != null && subtleOrDefault == 'subtle') {
-      foregroundColor = Color.fromARGB(foregroundColor.alpha ~/ 2,
-          foregroundColor.red, foregroundColor.green, foregroundColor.blue);
+      foregroundColor = Color.fromARGB(
+        foregroundColor.a ~/ 2,
+        foregroundColor.r.toInt(),
+        foregroundColor.g.toInt(),
+        foregroundColor.b.toInt(),
+      );
     }
     assert(() {
       developer.log(

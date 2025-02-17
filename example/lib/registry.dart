@@ -6,9 +6,11 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     ThemeMode themeMode = ThemeMode.system;
@@ -30,17 +32,17 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
       ),
-      body: new Center(
+      body: Center(
         // We're not using DemoAdaptieCard() here so add our own onXXX handlers
         child: AdaptiveCard.asset(
           // loads from the assets directory in the project

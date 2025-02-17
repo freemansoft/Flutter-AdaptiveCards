@@ -30,6 +30,8 @@ const resourceUrl =
     String.fromEnvironment('url', defaultValue: 'lib/easy_card');
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   State<MyApp> createState() => MyAppState();
 }
@@ -66,26 +68,26 @@ class MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({
-    Key? key,
+  const MyHomePage({
+    super.key,
     required this.title,
     required this.aboutPage,
-  }) : super(key: key);
+  });
 
   final String title;
   final AboutPage aboutPage;
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(title),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(title),
           actions: [
             aboutPage.aboutButton(context),
           ],
         ),
         body: SelectionArea(
-          child: new Center(
+          child: Center(
             child: SingleChildScrollView(
                 child: DemoAdaptiveCard(assetPath: resourceUrl)),
           ),

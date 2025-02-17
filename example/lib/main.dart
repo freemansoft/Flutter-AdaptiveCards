@@ -23,6 +23,8 @@ void main() {
 /// This is a static app so not a big deal
 ///
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   State<MyApp> createState() => MyAppState();
 }
@@ -65,7 +67,7 @@ class MyAppState extends State<MyApp> {
       // themeMode: ThemeMode.system,
       // Use dark or light theme based on system setting.
       themeMode: themeMode,
-      home: new MyHomePage(
+      home: MyHomePage(
         title: 'Flutter Adaptive Cards',
         aboutPage: aboutPage,
       ),
@@ -341,20 +343,20 @@ class MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatelessWidget {
-  MyHomePage({
-    Key? key,
+  const MyHomePage({
+    super.key,
     required this.title,
     required this.aboutPage,
-  }) : super(key: key);
+  });
 
   final String title;
   final AboutPage aboutPage;
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
         actions: [
           aboutPage.aboutButton(context),
         ],

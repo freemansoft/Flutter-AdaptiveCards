@@ -16,8 +16,8 @@ class NetworkPage extends StatelessWidget {
   final String url;
   final AboutPage aboutPage;
 
-  NetworkPage({
-    Key? key,
+  const NetworkPage({
+    super.key,
     required this.title,
     required this.url,
     required this.aboutPage,
@@ -39,7 +39,7 @@ class NetworkPage extends StatelessWidget {
         children: <Widget>[
           // We're not using DefaultAdaptiveCardHandlers() here so add our own onXXX() handlers
           AdaptiveCard.network(
-            url: this.url,
+            url: url,
             onChange: (id, value, state) {
               developer.log(
                   format('onChange: id: {}, value: {}, state: {}', id, value,
