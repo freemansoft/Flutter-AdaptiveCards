@@ -9,7 +9,8 @@ class AboutPage extends StatelessWidget {
   final FlexSchemeData flexSchemeData;
 
   const AboutPage(
-      {required this.themeMode,
+      {super.key,
+      required this.themeMode,
       required this.onThemeModeChanged,
       required this.flexSchemeData});
 

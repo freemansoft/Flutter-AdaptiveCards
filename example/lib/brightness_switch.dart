@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 class BrightnessSwitch extends StatelessWidget {
   const BrightnessSwitch(
-      {required this.themeMode,
+      {super.key,
+      required this.themeMode,
       required this.onThemeModeChanged,
       required this.flexSchemeData});
   final ThemeMode themeMode;

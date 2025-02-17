@@ -3,6 +3,8 @@
 ///
 /// Why do we need this instead of just consuming AdaptiveCard.asset ?  I have no idea
 ///
+library;
+
 import 'dart:developer' as developer;
 import 'package:format/format.dart';
 
@@ -23,10 +25,10 @@ import 'package:url_launcher/url_launcher.dart';
 class DemoAdaptiveCard extends StatefulWidget {
   const DemoAdaptiveCard({
     required this.assetPath,
-    Key? key,
+    super.key,
     this.supportMarkdown = true,
     this.initData,
-  }) : super(key: key);
+  });
 
   final String assetPath;
   final bool supportMarkdown;
@@ -36,7 +38,7 @@ class DemoAdaptiveCard extends StatefulWidget {
   final Map<String, String>? initData;
 
   @override
-  _DemoAdaptiveCardState createState() => new _DemoAdaptiveCardState();
+  _DemoAdaptiveCardState createState() => _DemoAdaptiveCardState();
 }
 
 /// This exists as stateful to support the "show the JSON" function

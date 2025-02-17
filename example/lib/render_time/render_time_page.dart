@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 
 class RenderTimePage extends StatefulWidget {
+  const RenderTimePage({super.key});
+
   @override
   _RenderTimePageState createState() => _RenderTimePageState();
 }
 
 class _RenderTimePageState extends State<RenderTimePage> {
-  Map<String, dynamic> content = Map();
+  Map<String, dynamic> content = {};
 
   @override
   void initState() {
@@ -60,9 +62,7 @@ class _RenderTimePageState extends State<RenderTimePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Render Time (ListView sized:' +
-            content['blocks'].toString() +
-            ')'),
+        title: Text('Render Time (ListView sized:${content['blocks']})'),
       ),
       body: SingleChildScrollView(
         child: AdaptiveCard.memory(
