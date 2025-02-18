@@ -14,8 +14,11 @@ import '../adaptive_mixins.dart';
 /// Reasonable test schema is https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json
 ///
 class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTable(
-      {super.key, required this.adaptiveMap, required this.supportMarkdown});
+  AdaptiveTable({
+    super.key,
+    required this.adaptiveMap,
+    required this.supportMarkdown,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
@@ -40,8 +43,9 @@ class AdaptiveTableState extends State<AdaptiveTable>
 
     assert(() {
       developer.log(
-          format('Table: columns: {} rows: {}', columns.length, rows.length),
-          name: runtimeType.toString());
+        format('Table: columns: {} rows: {}', columns.length, rows.length),
+        name: runtimeType.toString(),
+      );
       return true;
     }());
   }
@@ -95,41 +99,54 @@ class AdaptiveTableState extends State<AdaptiveTable>
     //  name: runtimeType.toString());
 
     // All the table cell markup in this row [cell, cell, cell]
-    List<Map<String, dynamic>> rowTableCells =
-        List<Map<String, dynamic>>.from(row['cells']);
+    List<Map<String, dynamic>> rowTableCells = List<Map<String, dynamic>>.from(
+      row['cells'],
+    );
     //developer.log(format("rowTableCells: row:{} length:{} - {} ", rowNum,
     //    rowTableCells.length, rowTableCells.toString()),
     //      name: runtimeType.toString());
 
     // The row markup contains a [TableCells[items]]
-    List<List<dynamic>> rowCellItems =
-        List<List<dynamic>>.generate(rowTableCells.length, (rowNum) {
-      return rowTableCells[rowNum]['items'];
-    });
+    List<List<dynamic>> rowCellItems = List<List<dynamic>>.generate(
+      rowTableCells.length,
+      (rowNum) {
+        return rowTableCells[rowNum]['items'];
+      },
+    );
     // developer.log(format("rowCellItems: row:{} length:{} - {}", rowNum,
     //    rowCellItems.length, rowCellItems.toString()),
     //      name: runtimeType.toString());
 
-    List<TableCell> tableCells =
-        List<TableCell>.generate(rowCellItems.length, (col) {
-      List<Map<String, dynamic>> oneCellItems =
-          List<Map<String, dynamic>>.from(rowCellItems[col]);
+    List<TableCell> tableCells = List<TableCell>.generate(rowCellItems.length, (
+      col,
+    ) {
+      List<Map<String, dynamic>> oneCellItems = List<Map<String, dynamic>>.from(
+        rowCellItems[col],
+      );
       // TableCell(Widget([Widget])) A TableCell contains a Widget that contains an arbitrary number of widgets
       // developer.log(
       //     format("oneCellItems: row:{} col:{} widgets in cell:{} - {}", rowNum,
       //         col, oneCellItems.length, oneCellItems.toString()),
       //     name: this.runtimeType.toString());
       return TableCell(
-          child: Scrollbar(
-              child: Wrap(
-                  children:
-                      List<Widget>.generate(oneCellItems.length, (widgetIndex) {
-        developer.log(
-            format('onCellItems for index {} : {}', widgetIndex,
-                oneCellItems[widgetIndex]),
-            name: runtimeType.toString());
-        return widgetState.cardRegistry.getElement(oneCellItems[widgetIndex]);
-      }))));
+        child: Scrollbar(
+          child: Wrap(
+            children: List<Widget>.generate(oneCellItems.length, (widgetIndex) {
+              developer.log(
+                format(
+                  'onCellItems for index {} : {}',
+                  widgetIndex,
+                  oneCellItems[widgetIndex],
+                ),
+                name: runtimeType.toString(),
+              );
+              return widgetState.cardRegistry.getElement(
+                oneCellItems[widgetIndex],
+              );
+            }),
+          ),
+        ),
+      );
     });
 
     // developer.log(format("cell children: {}", tableCellChildren));

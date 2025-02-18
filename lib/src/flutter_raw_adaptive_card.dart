@@ -36,7 +36,7 @@ class RawAdaptiveCard extends StatefulWidget {
   final Map? initData;
 
   final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
-      onChange;
+  onChange;
   final Function(Map map)? onSubmit;
   final Function(String url)? onOpenUrl;
 
@@ -155,25 +155,35 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   void showError(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> searchList(
-      List<SearchModel>? data, Function(dynamic value) callback) async {
+    List<SearchModel>? data,
+    Function(dynamic value) callback,
+  ) async {
     await showModalBottomSheet(
-        context: context,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(6.0)),
-          side: BorderSide(),
-        ),
-        builder: (BuildContext builder) => SizedBox(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(6.0)),
+        side: BorderSide(),
+      ),
+      builder:
+          (BuildContext builder) => SizedBox(
             height: MediaQuery.of(context).copyWith().size.height / 2,
-            child: ChoiceFilter(data: data, callback: callback)));
+            child: ChoiceFilter(data: data, callback: callback),
+          ),
+    );
   }
 
   Future<DateTime?> datePickerForPlatform(
-      BuildContext context, DateTime? value, DateTime? min, DateTime? max) {
+    BuildContext context,
+    DateTime? value,
+    DateTime? min,
+    DateTime? max,
+  ) {
     if (Theme.of(context).platform == TargetPlatform.macOS ||
         Theme.of(context).platform == TargetPlatform.iOS) {
       return datePickerCupertino(context, value, min, max);
@@ -182,52 +192,68 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     }
   }
 
-  Future<DateTime?> datePickerCupertino(BuildContext context, DateTime? value,
-      DateTime? min, DateTime? max) async {
+  Future<DateTime?> datePickerCupertino(
+    BuildContext context,
+    DateTime? value,
+    DateTime? min,
+    DateTime? max,
+  ) async {
     DateTime initialDate = value ?? DateTime.now();
     DateTime? pickedDate = initialDate;
 
     // showCupertinoModalPopup is a built-in function of the cupertino library
     await showCupertinoModalPopup<DateTime?>(
-        context: context,
-        builder: (_) => SizedBox(
-              height: 500,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 400,
-                    child: CupertinoDatePicker(
-                        mode: CupertinoDatePickerMode.date,
-                        initialDateTime: initialDate,
-                        onDateTimeChanged: (val) {
-                          pickedDate = val;
-                        }),
+      context: context,
+      builder:
+          (_) => SizedBox(
+            height: 500,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 400,
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: initialDate,
+                    onDateTimeChanged: (val) {
+                      pickedDate = val;
+                    },
                   ),
+                ),
 
-                  // Close the modal
-                  CupertinoButton(
-                    child: const Text('OK'),
-                    onPressed: () => Navigator.of(context).pop(),
-                  )
-                ],
-              ),
-            ));
+                // Close the modal
+                CupertinoButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+    );
     return pickedDate;
   }
 
   /// min and max dates may be null, in this case no constraint is made in that direction
   Future<DateTime?> datePickerMaterial(
-      BuildContext context, DateTime? value, DateTime? min, DateTime? max) {
+    BuildContext context,
+    DateTime? value,
+    DateTime? min,
+    DateTime? max,
+  ) {
     DateTime initialDate = value ?? DateTime.now();
     return showDatePicker(
-        context: context,
-        initialDate: initialDate,
-        firstDate: min ?? DateTime.now().subtract(const Duration(days: 10000)),
-        lastDate: max ?? DateTime.now().add(const Duration(days: 10000)));
+      context: context,
+      initialDate: initialDate,
+      firstDate: min ?? DateTime.now().subtract(const Duration(days: 10000)),
+      lastDate: max ?? DateTime.now().add(const Duration(days: 10000)),
+    );
   }
 
-  Future<TimeOfDay?> timePickerForPlatform(BuildContext context,
-      TimeOfDay? defaultTime, TimeOfDay? minTime, TimeOfDay? maxTime) {
+  Future<TimeOfDay?> timePickerForPlatform(
+    BuildContext context,
+    TimeOfDay? defaultTime,
+    TimeOfDay? minTime,
+    TimeOfDay? maxTime,
+  ) {
     if (Theme.of(context).platform == TargetPlatform.macOS ||
         Theme.of(context).platform == TargetPlatform.iOS) {
       return timePickerCupertino(context, defaultTime, minTime, maxTime);
@@ -237,27 +263,45 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   Future<TimeOfDay?> timePickerCupertino(
-      BuildContext context,
-      TimeOfDay? defaultTime,
-      TimeOfDay? minimumTime,
-      TimeOfDay? maximumTime) async {
+    BuildContext context,
+    TimeOfDay? defaultTime,
+    TimeOfDay? minimumTime,
+    TimeOfDay? maximumTime,
+  ) async {
     TimeOfDay initialTimeOfDay = defaultTime ?? TimeOfDay.now();
     // the picker requires a DateTime but won't be carried forward in the results
-    DateTime initialDateTime =
-        DateTime(1, 1, 1, initialTimeOfDay.hour, initialTimeOfDay.minute);
-    DateTime minDateTime =
-        DateTime(1, 1, 1, minimumTime?.hour ?? 0, minimumTime?.minute ?? 0);
-    DateTime maxDateTime =
-        DateTime(1, 1, 1, maximumTime?.hour ?? 23, maximumTime?.minute ?? 59);
+    DateTime initialDateTime = DateTime(
+      1,
+      1,
+      1,
+      initialTimeOfDay.hour,
+      initialTimeOfDay.minute,
+    );
+    DateTime minDateTime = DateTime(
+      1,
+      1,
+      1,
+      minimumTime?.hour ?? 0,
+      minimumTime?.minute ?? 0,
+    );
+    DateTime maxDateTime = DateTime(
+      1,
+      1,
+      1,
+      maximumTime?.hour ?? 23,
+      maximumTime?.minute ?? 59,
+    );
     assert(() {
       developer.log(
-          format(
-              'CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}',
-              initialTimeOfDay,
-              initialDateTime,
-              minDateTime,
-              maxDateTime),
-          name: runtimeType.toString());
+        format(
+          'CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}',
+          initialTimeOfDay,
+          initialDateTime,
+          minDateTime,
+          maxDateTime,
+        ),
+        name: runtimeType.toString(),
+      );
       return true;
     }());
 
@@ -265,40 +309,47 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     // showCupertinoModalPopup is a built-in function of the cupertino library
     await showCupertinoModalPopup<TimeOfDay?>(
-        context: context,
-        builder: (_) => SizedBox(
-              height: 500,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 400,
-                    child: CupertinoDatePicker(
-                        mode: CupertinoDatePickerMode.time,
-                        use24hFormat: false,
-                        initialDateTime: initialDateTime,
-                        minimumDate: minDateTime,
-                        maximumDate: maxDateTime,
-                        onDateTimeChanged: (val) {
-                          pickedTimeOfDay = TimeOfDay.fromDateTime(val);
-                        }),
+      context: context,
+      builder:
+          (_) => SizedBox(
+            height: 500,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 400,
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.time,
+                    use24hFormat: false,
+                    initialDateTime: initialDateTime,
+                    minimumDate: minDateTime,
+                    maximumDate: maxDateTime,
+                    onDateTimeChanged: (val) {
+                      pickedTimeOfDay = TimeOfDay.fromDateTime(val);
+                    },
                   ),
+                ),
 
-                  // Close the modal
-                  CupertinoButton(
-                    child: const Text('OK'),
-                    onPressed: () => Navigator.of(context).pop(),
-                  )
-                ],
-              ),
-            ));
+                // Close the modal
+                CupertinoButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          ),
+    );
     return pickedTimeOfDay;
   }
 
   ///
   /// TODO: Does not actually support min and max time
   ///
-  Future<TimeOfDay?> timePickerMaterial(BuildContext context,
-      TimeOfDay? defaultTime, TimeOfDay? minTime, TimeOfDay? maxTime) {
+  Future<TimeOfDay?> timePickerMaterial(
+    BuildContext context,
+    TimeOfDay? defaultTime,
+    TimeOfDay? minTime,
+    TimeOfDay? maxTime,
+  ) {
     TimeOfDay initialTimeOfDay = defaultTime ?? TimeOfDay.now();
     return showTimePicker(context: context, initialTime: initialTimeOfDay);
   }
@@ -316,31 +367,30 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                 JsonEncoder encoder = const JsonEncoder.withIndent('  ');
                 String prettyprint = encoder.convert(widget.map);
                 showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text(
-                            'JSON (only added in debug mode, you can also turn '
-                            'it off manually by passing showDebugJson = false)'),
-                        content:
-                            SingleChildScrollView(child: Text(prettyprint)),
-                        actions: <Widget>[
-                          Center(
-                            child: TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('Thanks'),
-                            ),
-                          )
-                        ],
-                        contentPadding: const EdgeInsets.all(8.0),
-                      );
-                    });
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text(
+                        'JSON (only added in debug mode, you can also turn '
+                        'it off manually by passing showDebugJson = false)',
+                      ),
+                      content: SingleChildScrollView(child: Text(prettyprint)),
+                      actions: <Widget>[
+                        Center(
+                          child: TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Thanks'),
+                          ),
+                        ),
+                      ],
+                      contentPadding: const EdgeInsets.all(8.0),
+                    );
+                  },
+                );
               },
               child: const Text('Debug show the JSON'),
             ),
-            const Divider(
-              height: 0,
-            ),
+            const Divider(height: 0),
             child,
           ],
         );
@@ -356,10 +406,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       value: this,
       child: InheritedReferenceResolver(
         resolver: _resolver,
-        child: Card(
-          color: backgroundColor,
-          child: child,
-        ),
+        child: Card(color: backgroundColor, child: child),
       ),
     );
   }

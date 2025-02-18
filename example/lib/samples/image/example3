@@ -1,5 +1,5 @@
 {
-  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
   "type": "AdaptiveCard",
   "version": "1.5",
   "body": [
@@ -10,7 +10,7 @@
     },
     {
       "type": "Image",
-      "url": "http://adaptivecards.io/content/cats/1.png",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Creative-Tail-Animal-cat.svg/128px-Creative-Tail-Animal-cat.svg.png",
       "selectAction": {
         "type": "Action.OpenUrl",
         "title": "cool link",

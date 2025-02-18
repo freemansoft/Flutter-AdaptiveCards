@@ -3,10 +3,11 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class FadeAnimation extends StatefulWidget {
-  const FadeAnimation(
-      {super.key,
-      required this.child,
-      this.duration = const Duration(milliseconds: 500)});
+  const FadeAnimation({
+    super.key,
+    required this.child,
+    this.duration = const Duration(milliseconds: 500),
+  });
 
   final Widget child;
   final Duration duration;
@@ -22,8 +23,10 @@ class FadeAnimationState extends State<FadeAnimation>
   @override
   void initState() {
     super.initState();
-    animationController =
-        AnimationController(duration: widget.duration, vsync: this);
+    animationController = AnimationController(
+      duration: widget.duration,
+      vsync: this,
+    );
     animationController.addListener(() {
       if (mounted) {
         setState(() {});
@@ -55,10 +58,7 @@ class FadeAnimationState extends State<FadeAnimation>
   @override
   Widget build(BuildContext context) {
     return animationController.isAnimating
-        ? Opacity(
-            opacity: 1.0 - animationController.value,
-            child: widget.child,
-          )
+        ? Opacity(opacity: 1.0 - animationController.value, child: widget.child)
         : Container();
   }
 }
@@ -176,30 +176,22 @@ Widget loadLabel(String? label, bool isRequired) {
   }
 
   return Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-          padding: const EdgeInsets.only(bottom: 8, top: 0),
-          child: isRequired
+    alignment: Alignment.centerLeft,
+    child: Padding(
+      padding: const EdgeInsets.only(bottom: 8, top: 0),
+      child:
+          isRequired
               ? Text.rich(
-                  TextSpan(
-                    children: [
-                      WidgetSpan(
-                        child: Text(
-                          label,
-                        ),
-                      ),
-                      const WidgetSpan(
-                        child: Text(
-                          '*',
-                          style: TextStyle(),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : Text(
-                  label,
-                )));
+                TextSpan(
+                  children: [
+                    WidgetSpan(child: Text(label)),
+                    const WidgetSpan(child: Text('*', style: TextStyle())),
+                  ],
+                ),
+              )
+              : Text(label),
+    ),
+  );
 }
 
 /// Everyone uses the same scheme for UUID Generation

@@ -138,8 +138,9 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [loadLabel(label, isRequired), widget]),
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [loadLabel(label, isRequired), widget],
+      ),
     );
   }
 
@@ -157,23 +158,17 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
             vertical: 8,
             horizontal: 8,
           ),
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(),
-          ),
+          enabledBorder: const OutlineInputBorder(borderSide: BorderSide()),
           errorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                width: 1,
-              )),
-          focusedErrorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(4)),
-              borderSide: BorderSide(
-                width: 1,
-              )),
-          filled: true,
-          suffixIcon: const Icon(
-            Icons.arrow_drop_down,
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            borderSide: BorderSide(width: 1),
           ),
+          focusedErrorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+            borderSide: BorderSide(width: 1),
+          ),
+          filled: true,
+          suffixIcon: const Icon(Icons.arrow_drop_down),
           hintText: placeholder,
           hintStyle: const TextStyle(),
           errorStyle: const TextStyle(height: 0),
@@ -186,12 +181,10 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           return null;
         },
         onTap: () async {
-          var list = _choices.keys
-              .map((key) => SearchModel(
-                    id: key,
-                    name: _choices[key] ?? '',
-                  ))
-              .toList();
+          var list =
+              _choices.keys
+                  .map((key) => SearchModel(id: key, name: _choices[key] ?? ''))
+                  .toList();
           await widgetState.searchList(list, (dynamic value) {
             setState(() {
               select(value?.id);
@@ -205,60 +198,67 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   /// This is built when multiSelect is false and isCompact is true
   Widget _buildCompact() {
     return Container(
-        padding: const EdgeInsets.all(8),
-        height: 40.0,
-        decoration: BoxDecoration(
-          border: Border.all(),
-          borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-        ),
-        child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
+      padding: const EdgeInsets.all(8),
+      height: 40.0,
+      decoration: BoxDecoration(
+        border: Border.all(),
+        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
           isExpanded: true,
-          icon: const Icon(
-            Icons.arrow_drop_down,
-          ),
+          icon: const Icon(Icons.arrow_drop_down),
           style: const TextStyle(),
-          items: _choices.keys
-              .map((key) => DropdownMenuItem<String>(
-                    value: _choices[key],
-                    child: Text(key),
-                  ))
-              .toList(),
+          items:
+              _choices.keys
+                  .map(
+                    (key) => DropdownMenuItem<String>(
+                      value: _choices[key],
+                      child: Text(key),
+                    ),
+                  )
+                  .toList(),
           onChanged: (value) {
             select(value);
           },
           value: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
-        )));
+        ),
+      ),
+    );
   }
 
   Widget _buildExpandedSingleSelect() {
     return Column(
-      children: _choices.keys.map((key) {
-        return RadioListTile<String>(
-          value: _choices[key]!,
-          onChanged: (value) {
-            select(value);
-          },
-          groupValue:
-              _selectedChoices.contains(_choices[key]) ? _choices[key] : null,
-          title: Text(key),
-        );
-      }).toList(),
+      children:
+          _choices.keys.map((key) {
+            return RadioListTile<String>(
+              value: _choices[key]!,
+              onChanged: (value) {
+                select(value);
+              },
+              groupValue:
+                  _selectedChoices.contains(_choices[key])
+                      ? _choices[key]
+                      : null,
+              title: Text(key),
+            );
+          }).toList(),
     );
   }
 
   Widget _buildExpandedMultiSelect() {
     return Column(
-      children: _choices.keys.map((key) {
-        return CheckboxListTile(
-          controlAffinity: ListTileControlAffinity.leading,
-          value: _selectedChoices.contains(_choices[key]),
-          onChanged: (value) {
-            select(_choices[key]);
-          },
-          title: Text(key),
-        );
-      }).toList(),
+      children:
+          _choices.keys.map((key) {
+            return CheckboxListTile(
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _selectedChoices.contains(_choices[key]),
+              onChanged: (value) {
+                select(_choices[key]);
+              },
+              title: Text(key),
+            );
+          }).toList(),
     );
   }
 
@@ -291,7 +291,8 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     if (style == 'compact' || style == 'filtered') return true;
     if (style == 'expanded') return false;
     throw StateError(
-        'The style of the ChoiceSet needs to be either compact or expanded');
+      'The style of the ChoiceSet needs to be either compact or expanded',
+    );
   }
 
   bool loadFiltered() {

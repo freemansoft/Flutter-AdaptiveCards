@@ -44,8 +44,10 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   @override
   Widget build(BuildContext context) {
     return SeparatorElement(
-        adaptiveMap: adaptiveMap,
-        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+      adaptiveMap: adaptiveMap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
           loadLabel(label, isRequired),
           SizedBox(
             height: 40,
@@ -53,29 +55,28 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
               style: const TextStyle(),
               controller: controller,
               // maxLength: maxLength,
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(maxLength),
-              ],
+              inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
               keyboardType: style,
               maxLines: isMultiline ? null : 1,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4.0)),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 8,
+                ),
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(),
                 ),
                 errorBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(
-                      width: 1,
-                    )),
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                  borderSide: BorderSide(width: 1),
+                ),
                 focusedErrorBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(
-                      width: 1,
-                    )),
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                  borderSide: BorderSide(width: 1),
+                ),
                 filled: true,
                 hintText: placeholder,
                 hintStyle: const TextStyle(),
@@ -89,8 +90,10 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
                 return null;
               },
             ),
-          )
-        ]));
+          ),
+        ],
+      ),
+    );
   }
 
   @override

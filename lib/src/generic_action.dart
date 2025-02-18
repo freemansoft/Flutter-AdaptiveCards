@@ -14,9 +14,10 @@ abstract class GenericAction {
 /// Default actions for onTaps for Action.Submit
 /// Delegates to rawAdaptiveCardState
 class GenericSubmitAction extends GenericAction {
-  GenericSubmitAction(Map<String, dynamic> adaptiveMap,
-      RawAdaptiveCardState rawAdaptiveCardState)
-      : super(adaptiveMap, rawAdaptiveCardState) {
+  GenericSubmitAction(
+    Map<String, dynamic> adaptiveMap,
+    RawAdaptiveCardState rawAdaptiveCardState,
+  ) : super(adaptiveMap, rawAdaptiveCardState) {
     data = adaptiveMap['data'] ?? {};
   }
 
@@ -31,9 +32,10 @@ class GenericSubmitAction extends GenericAction {
 /// Default actions for onTaps for Action.OpenUrl
 /// Delegates to rawAdaptiveCardState
 class GenericActionOpenUrl extends GenericAction {
-  GenericActionOpenUrl(Map<String, dynamic> adaptiveMap,
-      RawAdaptiveCardState rawAdaptiveCardState)
-      : super(adaptiveMap, rawAdaptiveCardState) {
+  GenericActionOpenUrl(
+    Map<String, dynamic> adaptiveMap,
+    RawAdaptiveCardState rawAdaptiveCardState,
+  ) : super(adaptiveMap, rawAdaptiveCardState) {
     url = adaptiveMap['url'];
   }
 

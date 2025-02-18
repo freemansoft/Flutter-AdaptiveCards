@@ -9,8 +9,11 @@ import '../elements/image.dart';
 /// https://adaptivecards.io/explorer/ImageSet.html
 ///
 class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveImageSet(
-      {super.key, required this.adaptiveMap, required this.supportMarkdown});
+  AdaptiveImageSet({
+    super.key,
+    required this.adaptiveMap,
+    required this.supportMarkdown,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
@@ -33,25 +36,28 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
   void initState() {
     super.initState();
 
-    images = List<Map<String, dynamic>>.from(adaptiveMap['images'])
-        .map((child) => AdaptiveImage(
-              adaptiveMap: child,
-              supportMarkdown: widget.supportMarkdown,
-            ))
-        .toList();
+    images =
+        List<Map<String, dynamic>>.from(adaptiveMap['images'])
+            .map(
+              (child) => AdaptiveImage(
+                adaptiveMap: child,
+                supportMarkdown: widget.supportMarkdown,
+              ),
+            )
+            .toList();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     loadSize();
-    backgroundColor = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-            context: context,
-            style: adaptiveMap['style']?.toString(),
-            backgroundImageUrl:
-                adaptiveMap['backgroundImage']?['url']?.toString());
+    backgroundColor = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+      context: context,
+      style: adaptiveMap['style']?.toString(),
+      backgroundImageUrl: adaptiveMap['backgroundImage']?['url']?.toString(),
+    );
   }
 
   @override
@@ -60,16 +66,23 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
       adaptiveMap: adaptiveMap,
       child: Container(
         color: backgroundColor,
-        child: LayoutBuilder(builder: (context, constraints) {
-          return Wrap(
-            //maxCrossAxisExtent: 200.0,
-            children: images
-                .map((img) =>
-                    SizedBox(width: calculateSize(constraints), child: img))
-                .toList(),
-            //shrinkWrap: true,
-          );
-        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Wrap(
+              //maxCrossAxisExtent: 200.0,
+              children:
+                  images
+                      .map(
+                        (img) => SizedBox(
+                          width: calculateSize(constraints),
+                          child: img,
+                        ),
+                      )
+                      .toList(),
+              //shrinkWrap: true,
+            );
+          },
+        ),
       ),
     );
   }
@@ -97,9 +110,9 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
       imageSize = 'stretch';
       return;
     }
-    int size = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveImageSizes(sizeDescription);
+    int size = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveImageSizes(sizeDescription);
     maybeSize = size.toDouble();
   }
 }

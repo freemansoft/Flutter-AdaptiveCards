@@ -31,9 +31,7 @@ class NetworkPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        actions: [
-          aboutPage.aboutButton(context),
-        ],
+        actions: [aboutPage.aboutButton(context)],
       ),
       body: ListView(
         children: <Widget>[
@@ -42,28 +40,52 @@ class NetworkPage extends StatelessWidget {
             url: url,
             onChange: (id, value, state) {
               developer.log(
-                  format('onChange: id: {}, value: {}, state: {}', id, value,
-                      state),
-                  name: runtimeType.toString());
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(format('onChange: id: {}, value: {}, state: {}',
-                      id, value, state))));
+                format(
+                  'onChange: id: {}, value: {}, state: {}',
+                  id,
+                  value,
+                  state,
+                ),
+                name: runtimeType.toString(),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    format(
+                      'onChange: id: {}, value: {}, state: {}',
+                      id,
+                      value,
+                      state,
+                    ),
+                  ),
+                ),
+              );
             },
             onSubmit: (map) {
-              developer.log(format('onSubmit map: {}', map.toString()),
-                  name: runtimeType.toString());
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(format(
+              developer.log(
+                format('onSubmit map: {}', map.toString()),
+                name: runtimeType.toString(),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    format(
                       'onSubmit: No handler found for map: \n {}',
-                      map.toString()))));
+                      map.toString(),
+                    ),
+                  ),
+                ),
+              );
             },
             onOpenUrl: (url) {
-              developer.log(format('onOpenUrl url: {}', url),
-                  name: runtimeType.toString());
+              developer.log(
+                format('onOpenUrl url: {}', url),
+                name: runtimeType.toString(),
+              );
               launchUrl(Uri.parse(url));
             },
             showDebugJson: true, // enable debug in the example app
-          )
+          ),
         ],
       ),
     );

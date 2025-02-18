@@ -39,8 +39,9 @@ void main() {
 
     expect(find.widgetWithText(ElevatedButton, 'OK'), findsOneWidget);
 
-    Widget button =
-        tester.firstWidget(find.widgetWithText(ElevatedButton, 'OK'));
+    Widget button = tester.firstWidget(
+      find.widgetWithText(ElevatedButton, 'OK'),
+    );
 
     await tester.tap(find.widgetWithText(ElevatedButton, 'Comment'));
     await tester.pump();
@@ -54,6 +55,8 @@ void main() {
     expect(find.byWidget(button), findsNothing);
 
     await tester.pump(
-        const Duration(seconds: 1)); // skip past any activity or animation
+      // ignore: require_trailing_commas
+      const Duration(seconds: 1),
+    ); // skip past any activity or animation
   });
 }

@@ -59,42 +59,67 @@ class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
   Widget build(BuildContext context) {
     super.build(context);
     return SelectionArea(
-        child: Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: <Widget>[
-          // We're not using DefaultAdaptiveCardHandlers() here so add our own onXXX() handlers
-          AdaptiveCard.asset(
-            assetPath: widget.assetPath,
-            showDebugJson: true, // enable in the example app
-            supportMarkdown: widget.supportMarkdown,
-            initData: widget.initData,
-            onChange: (id, value, state) {
-              developer.log(
-                  format('onChange: id: {}, value: {}, state: {}', id, value,
-                      state),
-                  name: runtimeType.toString());
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(format('onChange: id: {}, value: {}, state: {}',
-                      id, value, state))));
-            },
-            onSubmit: (map) {
-              developer.log(format('onSubmit map: {}', map.toString()),
-                  name: runtimeType.toString());
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(format(
-                      'onSubmit: No handler found for map: \n {}',
-                      map.toString()))));
-            },
-            onOpenUrl: (url) {
-              developer.log(format('onOpenUrl url: {}', url),
-                  name: runtimeType.toString());
-              launchUrl(Uri.parse(url));
-            },
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            // We're not using DefaultAdaptiveCardHandlers() here so add our own onXXX() handlers
+            AdaptiveCard.asset(
+              assetPath: widget.assetPath,
+              showDebugJson: true, // enable in the example app
+              supportMarkdown: widget.supportMarkdown,
+              initData: widget.initData,
+              onChange: (id, value, state) {
+                developer.log(
+                  format(
+                    'onChange: id: {}, value: {}, state: {}',
+                    id,
+                    value,
+                    state,
+                  ),
+                  name: runtimeType.toString(),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      format(
+                        'onChange: id: {}, value: {}, state: {}',
+                        id,
+                        value,
+                        state,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              onSubmit: (map) {
+                developer.log(
+                  format('onSubmit map: {}', map.toString()),
+                  name: runtimeType.toString(),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      format(
+                        'onSubmit: No handler found for map: \n {}',
+                        map.toString(),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              onOpenUrl: (url) {
+                developer.log(
+                  format('onOpenUrl url: {}', url),
+                  name: runtimeType.toString(),
+                );
+                launchUrl(Uri.parse(url));
+              },
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   @override

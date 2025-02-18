@@ -23,7 +23,7 @@ void main() {
       'type': 'TextBlock',
       'text': 'Adaptive Card design session',
       'size': 'large',
-      'weight': 'bolder'
+      'weight': 'bolder',
     });
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveTextBlock));
@@ -36,9 +36,9 @@ void main() {
         {
           'mimeType': 'video/mp4',
           'url':
-              'https://adaptivecardsblob.blob.core.windows.net/assets/AdaptiveCardsOverviewVideo.mp4'
-        }
-      ]
+              'https://adaptivecardsblob.blob.core.windows.net/assets/AdaptiveCardsOverviewVideo.mp4',
+        },
+      ],
     });
 
     expect(second.runtimeType, equals(AdaptiveMedia));
@@ -57,14 +57,15 @@ void main() {
   });
 
   testWidgets('Removed element', (tester) async {
-    CardRegistry cardRegistry =
-        const CardRegistry(removedElements: ['TextBlock']);
+    CardRegistry cardRegistry = const CardRegistry(
+      removedElements: ['TextBlock'],
+    );
 
     Widget adaptiveElement = cardRegistry.getElement({
       'type': 'TextBlock',
       'text': 'Adaptive Card design session',
       'size': 'large',
-      'weight': 'bolder'
+      'weight': 'bolder',
     });
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
@@ -75,8 +76,9 @@ void main() {
   });
 
   testWidgets('Add element', (tester) async {
-    CardRegistry cardRegistry =
-        CardRegistry(addedElements: {'Test': (map) => _TestAddition()});
+    CardRegistry cardRegistry = CardRegistry(
+      addedElements: {'Test': (map) => _TestAddition()},
+    );
 
     var element = cardRegistry.getElement({'type': 'Test'});
 
@@ -91,8 +93,6 @@ void main() {
 class _TestAddition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Text('Test'),
-    );
+    return const MaterialApp(home: Text('Test'));
   }
 }

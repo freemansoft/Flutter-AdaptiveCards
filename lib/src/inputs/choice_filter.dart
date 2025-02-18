@@ -51,62 +51,68 @@ class ChoiceFilterState extends State<ChoiceFilter> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
-            margin: const EdgeInsets.all(8.0),
-            height: 40,
-            child: TextField(
-              autofocus: true,
-              style: const TextStyle(),
-              controller: _searchController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4.0)),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(),
-                ),
-                filled: true,
-                prefixIcon: const Icon(Icons.search),
-                suffix: _searchController.text.isEmpty
-                    ? null
-                    : IconButton(
+          margin: const EdgeInsets.all(8.0),
+          height: 40,
+          child: TextField(
+            autofocus: true,
+            style: const TextStyle(),
+            controller: _searchController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 8,
+                horizontal: 8,
+              ),
+              enabledBorder: const OutlineInputBorder(borderSide: BorderSide()),
+              filled: true,
+              prefixIcon: const Icon(Icons.search),
+              suffix:
+                  _searchController.text.isEmpty
+                      ? null
+                      : IconButton(
                         icon: const Icon(Icons.cancel),
                         onPressed: () {
                           _searchController.clear();
                           onSearchTextChanged('');
-                        }),
-              ),
-              onChanged: onSearchTextChanged,
-            )),
+                        },
+                      ),
+            ),
+            onChanged: onSearchTextChanged,
+          ),
+        ),
         Expanded(
-          child: _searchResult.isNotEmpty || _searchController.text.isNotEmpty
-              ? ListView.builder(
-                  itemCount: _searchResult.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(_searchResult[index].name),
-                      onTap: () {
-                        Navigator.pop(context);
-                        if (widget.callback != null) {
-                          widget.callback!(_searchResult[index]);
-                        }
-                      },
-                    );
-                  },
-                )
-              : ListView.builder(
-                  itemCount: _data.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
+          child:
+              _searchResult.isNotEmpty || _searchController.text.isNotEmpty
+                  ? ListView.builder(
+                    itemCount: _searchResult.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(_searchResult[index].name),
+                        onTap: () {
+                          Navigator.pop(context);
+                          if (widget.callback != null) {
+                            widget.callback!(_searchResult[index]);
+                          }
+                        },
+                      );
+                    },
+                  )
+                  : ListView.builder(
+                    itemCount: _data.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
                         title: Text(_data[index].name),
                         onTap: () {
                           Navigator.pop(context);
                           if (widget.callback != null) {
                             widget.callback!(_data[index]);
                           }
-                        });
-                  },
-                ),
+                        },
+                      );
+                    },
+                  ),
         ),
       ],
     );

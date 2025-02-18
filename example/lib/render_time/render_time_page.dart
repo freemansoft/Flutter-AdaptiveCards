@@ -24,11 +24,8 @@ class _RenderTimePageState extends State<RenderTimePage> {
             'type': 'Column',
             'width': 'auto',
             'items': [
-              {
-                'type': 'TextBlock',
-                'text': '$i.',
-              }
-            ]
+              {'type': 'TextBlock', 'text': '$i.'},
+            ],
           },
           {
             'type': 'Column',
@@ -37,19 +34,19 @@ class _RenderTimePageState extends State<RenderTimePage> {
                 'type': 'TextBlock',
                 'weight': 'bolder',
                 'text': '$i aaaaaaaaaaaaaaaaaaaaa',
-                'wrap': true
+                'wrap': true,
               },
               {
                 'type': 'TextBlock',
                 'spacing': 'none',
                 'text': '$i bbbbbbbbbbbbbbbbbbbb',
                 'isSubtle': true,
-                'wrap': true
-              }
+                'wrap': true,
+              },
             ],
-            'width': 'stretch'
-          }
-        ]
+            'width': 'stretch',
+          },
+        ],
       });
     }
 

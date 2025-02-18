@@ -32,8 +32,11 @@ class GenericListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    developer.log(format('URLs: {}', urls.toString()),
-        name: runtimeType.toString());
+    developer.log(
+      format('URLs: {}', urls.toString()),
+      // ignore: require_trailing_commas
+      name: runtimeType.toString(),
+    );
     return Scaffold(
       appBar: AppBar(
         leading: homeButtonIfNoHistory(context),
@@ -53,10 +56,7 @@ class GenericListPage extends StatelessWidget {
               initData: initData,
             );
           } else {
-            return DemoAdaptiveCard(
-              assetPath: urls[index],
-              initData: initData,
-            );
+            return DemoAdaptiveCard(assetPath: urls[index], initData: initData);
           }
         },
       ),

@@ -7,9 +7,7 @@ import 'package:format/format.dart';
 ///
 /// All values can also be null, in that case the default is used
 class ReferenceResolver {
-  ReferenceResolver({
-    this.currentStyle,
-  });
+  ReferenceResolver({this.currentStyle});
 
   final String? currentStyle;
 
@@ -26,8 +24,11 @@ class ReferenceResolver {
   /// - attention
   ///
   /// If the color type is 'default' then it picks the standard color for the current style.
-  Color? resolveForegroundColor(
-      {required BuildContext context, String? colorType, bool? isSubtle}) {
+  Color? resolveForegroundColor({
+    required BuildContext context,
+    String? colorType,
+    bool? isSubtle,
+  }) {
     final String subtleOrDefault = isSubtle ?? false ? 'subtle' : 'default';
     // default or emphasis, I think
     final String myStyle = currentStyle ?? 'default';
@@ -78,9 +79,15 @@ class ReferenceResolver {
     }
     assert(() {
       developer.log(
-          format('resolved foreground style:{} color:{} subtle:{} to color:{}',
-              myStyle, colorType, subtleOrDefault, foregroundColor),
-          name: runtimeType.toString());
+        format(
+          'resolved foreground style:{} color:{} subtle:{} to color:{}',
+          myStyle,
+          colorType,
+          subtleOrDefault,
+          foregroundColor,
+        ),
+        name: runtimeType.toString(),
+      );
       return true;
     }());
     return foregroundColor;
@@ -128,9 +135,13 @@ class ReferenceResolver {
 
     assert(() {
       developer.log(
-          format('resolved background style:{} to color:{}', myStyle,
-              backgroundColor),
-          name: runtimeType.toString());
+        format(
+          'resolved background style:{} to color:{}',
+          myStyle,
+          backgroundColor,
+        ),
+        name: runtimeType.toString(),
+      );
       return true;
     }());
 
@@ -161,9 +172,7 @@ class ReferenceResolver {
 
   ReferenceResolver copyWith({String? style}) {
     String myStyle = style ?? 'default';
-    return ReferenceResolver(
-      currentStyle: myStyle,
-    );
+    return ReferenceResolver(currentStyle: myStyle);
   }
 
   /// TODO: hook up to something

@@ -57,14 +57,18 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
   Widget build(BuildContext context) {
     Locale myLocale = Localizations.localeOf(context);
     assert(() {
-      developer.log(format('locale: {}', myLocale),
-          name: runtimeType.toString());
+      developer.log(
+        format('locale: {}', myLocale),
+        name: runtimeType.toString(),
+      );
       return true;
     }());
 
     return SeparatorElement(
-        adaptiveMap: adaptiveMap,
-        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+      adaptiveMap: adaptiveMap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
           loadLabel(label, isRequired),
           SizedBox(
             width: double.infinity,
@@ -75,18 +79,23 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
               controller: controller,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4.0)),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 8,
+                ),
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(),
                 ),
                 errorBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1)),
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                  borderSide: BorderSide(width: 1),
+                ),
                 focusedErrorBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1)),
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                  borderSide: BorderSide(width: 1),
+                ),
                 filled: true,
                 suffixIcon: const Icon(Icons.calendar_today, size: 15),
                 hintText: placeholder,
@@ -102,19 +111,26 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
               },
               onTap: () async {
                 DateTime? result = await widgetState.datePickerForPlatform(
-                    context, selectedDateTime, min, max);
+                  context,
+                  selectedDateTime,
+                  min,
+                  max,
+                );
                 if (result != null) {
                   setState(() {
                     selectedDateTime = result;
-                    controller.text = selectedDateTime == null
-                        ? placeholder
-                        : inputFormat.format(selectedDateTime!);
+                    controller.text =
+                        selectedDateTime == null
+                            ? placeholder
+                            : inputFormat.format(selectedDateTime!);
                   });
                 }
               },
             ),
-          )
-        ]));
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -130,13 +146,16 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
       try {
         setState(() {
           selectedDateTime = inputFormat.parse(map[id]);
-          controller.text = selectedDateTime == null
-              ? placeholder
-              : inputFormat.format(selectedDateTime!);
+          controller.text =
+              selectedDateTime == null
+                  ? placeholder
+                  : inputFormat.format(selectedDateTime!);
         });
       } catch (formatException) {
-        developer.log(format('{}', formatException),
-            name: runtimeType.toString());
+        developer.log(
+          format('{}', formatException),
+          name: runtimeType.toString(),
+        );
       }
     }
   }

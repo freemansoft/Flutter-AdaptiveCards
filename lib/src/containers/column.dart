@@ -9,8 +9,11 @@ import '../generic_action.dart';
 /// https://adaptivecards.io/explorer/Column.html
 ///
 class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveColumn(
-      {super.key, required this.adaptiveMap, required this.supportMarkdown});
+  AdaptiveColumn({
+    super.key,
+    required this.adaptiveMap,
+    required this.supportMarkdown,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
@@ -44,8 +47,10 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     super.initState();
 
     if (adaptiveMap.containsKey('selectAction')) {
-      action = widgetState.cardRegistry
-          .getGenericAction(adaptiveMap['selectAction'], widgetState);
+      action = widgetState.cardRegistry.getGenericAction(
+        adaptiveMap['selectAction'],
+        widgetState,
+      );
     }
     separator = adaptiveMap['separator'] ?? false;
 
@@ -64,8 +69,10 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
         var widthString = toParseWidth.toString();
 
         if (widthString.endsWith('px')) {
-          widthString =
-              widthString.substring(0, widthString.length - 2); // remove px
+          widthString = widthString.substring(
+            0,
+            widthString.length - 2,
+          ); // remove px
           width = int.parse(widthString);
           mode = 'px';
         } else {
@@ -77,11 +84,17 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       mode = 'auto';
     }
 
-    items = adaptiveMap['items'] != null
-        ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((child) {
-            return widgetState.cardRegistry.getElement(child, parentMode: mode);
-          }).toList()
-        : [];
+    items =
+        adaptiveMap['items'] != null
+            ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
+              child,
+            ) {
+              return widgetState.cardRegistry.getElement(
+                child,
+                parentMode: mode,
+              );
+            }).toList()
+            : [];
 
     verticalAlignment = loadVerticalAlignment();
     horizontalAlignment = loadHorizontalAlignment();
@@ -176,23 +189,21 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
         );
       }
     }
-    return const SizedBox(
-      width: 0,
-      height: 0,
-    );
+    return const SizedBox(width: 0, height: 0);
   }
 
   @override
   Widget build(BuildContext context) {
-    double? precedingSpacing = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveSpacing(adaptiveMap['spacing']);
-    var backgroundColor = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-            context: context,
-            style: adaptiveMap['style']?.toString(),
-            backgroundImageUrl: adaptiveMap['backgroundImage']?['url']);
+    double? precedingSpacing = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveSpacing(adaptiveMap['spacing']);
+    var backgroundColor = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+      context: context,
+      style: adaptiveMap['style']?.toString(),
+      backgroundImageUrl: adaptiveMap['backgroundImage']?['url'],
+    );
 
     Widget child = Container(
       alignment: containerHorizontalAlignment,
@@ -215,35 +226,23 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
           onTap: action?.tap,
           child: Padding(
             padding: EdgeInsets.only(left: precedingSpacing ?? 0),
-            child: SeparatorElement(
-              adaptiveMap: adaptiveMap,
-              child: child,
-            ),
+            child: SeparatorElement(adaptiveMap: adaptiveMap, child: child),
           ),
         ),
       ],
     );
 
-    assert(mode == 'auto' ||
-        mode == 'stretch' ||
-        mode == 'weighted' ||
-        mode == 'px');
+    assert(
+      mode == 'auto' || mode == 'stretch' || mode == 'weighted' || mode == 'px',
+    );
     if (mode == 'auto') {
       return Flexible(child: result);
     } else if (mode == 'stretch') {
-      return Expanded(
-        child: result,
-      );
+      return Expanded(child: result);
     } else if (mode == 'weighted') {
-      return Expanded(
-        flex: width,
-        child: result,
-      );
+      return Expanded(flex: width, child: result);
     } else if (mode == 'px') {
-      return SizedBox(
-        width: width.toDouble(),
-        child: result,
-      );
+      return SizedBox(width: width.toDouble(), child: result);
     }
 
     return ChildStyler(adaptiveMap: adaptiveMap, child: result);
