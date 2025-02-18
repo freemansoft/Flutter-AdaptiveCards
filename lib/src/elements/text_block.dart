@@ -15,8 +15,11 @@ import '../utils.dart';
 /// https://adaptivecards.io/explorer/TextBlock.html
 ///
 class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTextBlock(
-      {super.key, required this.adaptiveMap, required this.supportMarkdown});
+  AdaptiveTextBlock({
+    super.key,
+    required this.adaptiveMap,
+    required this.supportMarkdown,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
@@ -72,10 +75,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       textAlign: textAlign,
       softWrap: true,
       overflow: maxLines == 1 ? TextOverflow.ellipsis : null,
-      style: TextStyle(
-        fontWeight: fontWeight,
-        fontSize: fontSize,
-      ),
+      style: TextStyle(fontWeight: fontWeight, fontSize: fontSize),
       maxLines: maxLines,
     );
   }
@@ -104,12 +104,13 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   // Probably want to pass context down the tree, until now -> this
   Color? getColor(BuildContext context) {
-    Color? color = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveForegroundColor(
-            context: context,
-            colorType: adaptiveMap['color'],
-            isSubtle: adaptiveMap['isSubtle']);
+    Color? color = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveForegroundColor(
+      context: context,
+      colorType: adaptiveMap['color'],
+      isSubtle: adaptiveMap['isSubtle'],
+    );
     return color;
   }
 
@@ -151,8 +152,10 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     double? foo = textStyle?.fontSize;
     assert(() {
       if (foo == null) {
-        developer.log(format('Unable to find TextStyle for {}', sizeString),
-            name: runtimeType.toString());
+        developer.log(
+          format('Unable to find TextStyle for {}', sizeString),
+          name: runtimeType.toString(),
+        );
       }
       return true;
     }());
@@ -203,8 +206,11 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   /// TODO Markdown still has some problems
   MarkdownStyleSheet loadMarkdownStyleSheet(BuildContext context) {
     var color = getColor(context);
-    TextStyle style =
-        TextStyle(fontWeight: fontWeight, fontSize: fontSize, color: color);
+    TextStyle style = TextStyle(
+      fontWeight: fontWeight,
+      fontSize: fontSize,
+      color: color,
+    );
 
     return MarkdownStyleSheet(
       a: style,

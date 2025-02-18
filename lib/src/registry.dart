@@ -40,12 +40,13 @@ typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 /// Delete an element even if you have provided it yourself via the [addedElements]
 ///
 class CardRegistry {
-  const CardRegistry(
-      {this.removedElements = const [],
-      this.addedElements = const {},
-      this.addedActions = const {},
-      this.listView = false,
-      this.supportMarkdown = true});
+  const CardRegistry({
+    this.removedElements = const [],
+    this.addedElements = const {},
+    this.addedActions = const {},
+    this.listView = false,
+    this.supportMarkdown = true,
+  });
 
   /// Provide custom elements to use.
   /// When providing an element which is already defined, it is overwritten
@@ -66,28 +67,32 @@ class CardRegistry {
     String stringType = map['type'];
 
     if (removedElements.contains(stringType)) {
-      return AdaptiveUnknown(
-        type: stringType,
-        adaptiveMap: map,
-      );
+      return AdaptiveUnknown(type: stringType, adaptiveMap: map);
     }
 
     if (addedElements.containsKey(stringType)) {
       return addedElements[stringType]!(map);
     } else {
-      return _getBaseElement(map,
-          parentMode: parentMode, supportMarkdown: supportMarkdown);
+      return _getBaseElement(
+        map,
+        parentMode: parentMode,
+        supportMarkdown: supportMarkdown,
+      );
     }
   }
 
   GenericAction? getGenericAction(
-      Map<String, dynamic> map, RawAdaptiveCardState state) {
+    Map<String, dynamic> map,
+    RawAdaptiveCardState state,
+  ) {
     String stringType = map['type'];
 
     switch (stringType) {
       case 'Action.ShowCard':
-        assert(false,
-            'Action.ShowCard can only be used directly by the root card');
+        assert(
+          false,
+          'Action.ShowCard can only be used directly by the root card',
+        );
         return null;
       case 'Action.OpenUrl':
         return GenericActionOpenUrl(map, state);
@@ -105,10 +110,7 @@ class CardRegistry {
     String stringType = map['type'];
 
     if (removedElements.contains(stringType)) {
-      return AdaptiveUnknown(
-        adaptiveMap: map,
-        type: stringType,
-      );
+      return AdaptiveUnknown(adaptiveMap: map, type: stringType);
     }
 
     if (addedActions.containsKey(stringType)) {
@@ -121,17 +123,18 @@ class CardRegistry {
   /// This returns an [AdaptiveElement] with the correct type.
   ///
   /// It looks at the [type] property and decides which object to construct
-  Widget _getBaseElement(Map<String, dynamic> map,
-      {String parentMode = 'stretch', required bool supportMarkdown}) {
+  Widget _getBaseElement(
+    Map<String, dynamic> map, {
+    String parentMode = 'stretch',
+    required bool supportMarkdown,
+  }) {
     String stringType = map['type'];
 
     switch (stringType) {
       case 'Media':
         return AdaptiveMedia(adaptiveMap: map);
       case 'Container':
-        return AdaptiveContainer(
-          adaptiveMap: map,
-        );
+        return AdaptiveContainer(adaptiveMap: map);
       case 'TextBlock':
         return AdaptiveTextBlock(
           adaptiveMap: map,
@@ -140,10 +143,7 @@ class CardRegistry {
       case 'ActionSet':
         return ActionSet(adaptiveMap: map);
       case 'AdaptiveCard':
-        return AdaptiveCardElement(
-          adaptiveMap: map,
-          listView: listView,
-        );
+        return AdaptiveCardElement(adaptiveMap: map, listView: listView);
       case 'ColumnSet':
         return AdaptiveColumnSet(
           adaptiveMap: map,
@@ -156,9 +156,7 @@ class CardRegistry {
           supportMarkdown: supportMarkdown,
         );
       case 'FactSet':
-        return AdaptiveFactSet(
-          adaptiveMap: map,
-        );
+        return AdaptiveFactSet(adaptiveMap: map);
       case 'Table':
         return AdaptiveTable(
           adaptiveMap: map,
@@ -166,55 +164,37 @@ class CardRegistry {
         );
       case 'ImageSet':
         return AdaptiveImageSet(
-            adaptiveMap: map, supportMarkdown: supportMarkdown);
+          adaptiveMap: map,
+          supportMarkdown: supportMarkdown,
+        );
       case 'Input.Text':
         return AdaptiveTextInput(adaptiveMap: map);
       case 'Input.Number':
         return AdaptiveNumberInput(adaptiveMap: map);
       case 'Input.Date':
-        return AdaptiveDateInput(
-          adaptiveMap: map,
-        );
+        return AdaptiveDateInput(adaptiveMap: map);
       case 'Input.Time':
-        return AdaptiveTimeInput(
-          adaptiveMap: map,
-        );
+        return AdaptiveTimeInput(adaptiveMap: map);
       case 'Input.Toggle':
-        return AdaptiveToggle(
-          adaptiveMap: map,
-        );
+        return AdaptiveToggle(adaptiveMap: map);
       case 'Input.ChoiceSet':
-        return AdaptiveChoiceSet(
-          adaptiveMap: map,
-        );
+        return AdaptiveChoiceSet(adaptiveMap: map);
     }
-    return AdaptiveUnknown(
-      adaptiveMap: map,
-      type: stringType,
-    );
+    return AdaptiveUnknown(adaptiveMap: map, type: stringType);
   }
 
-  Widget _getBaseAction(
-    Map<String, dynamic> map,
-  ) {
+  Widget _getBaseAction(Map<String, dynamic> map) {
     String stringType = map['type'];
 
     switch (stringType) {
       case 'Action.ShowCard':
-        return AdaptiveActionShowCard(
-          adaptiveMap: map,
-        );
+        return AdaptiveActionShowCard(adaptiveMap: map);
       case 'Action.OpenUrl':
-        return AdaptiveActionOpenUrl(
-          adaptiveMap: map,
-        );
+        return AdaptiveActionOpenUrl(adaptiveMap: map);
       case 'Action.Submit':
         return AdaptiveActionSubmit(adaptiveMap: map);
     }
-    return AdaptiveUnknown(
-      adaptiveMap: map,
-      type: stringType,
-    );
+    return AdaptiveUnknown(adaptiveMap: map, type: stringType);
   }
 }
 

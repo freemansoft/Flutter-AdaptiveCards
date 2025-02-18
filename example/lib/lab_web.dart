@@ -60,11 +60,7 @@ class MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({
-    super.key,
-    required this.title,
-    required this.aboutPage,
-  });
+  const MyHomePage({super.key, required this.title, required this.aboutPage});
 
   final String title;
   final AboutPage aboutPage;
@@ -72,14 +68,13 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          actions: [
-            aboutPage.aboutButton(context),
-          ],
-        ),
-        body: SelectionArea(
-          child: ListView(children: <Widget>[
+      appBar: AppBar(
+        title: Text(title),
+        actions: [aboutPage.aboutButton(context)],
+      ),
+      body: SelectionArea(
+        child: ListView(
+          children: <Widget>[
             SizedBox(
               height: 32.0,
               child: Center(
@@ -97,16 +92,21 @@ class MyHomePage extends StatelessWidget {
               ),
               onSubmitted: (url) {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NetworkPage(
-                              title: url,
-                              url: url,
-                              aboutPage: aboutPage,
-                            )));
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => NetworkPage(
+                          title: url,
+                          url: url,
+                          aboutPage: aboutPage,
+                        ),
+                  ),
+                );
               },
             ),
-          ]),
-        ));
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -9,11 +9,12 @@ import '../utils.dart';
 /// https://adaptivecards.io/explorer/Image.html
 ///
 class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveImage(
-      {super.key,
-      required this.adaptiveMap,
-      this.parentMode = 'stretch',
-      required this.supportMarkdown});
+  AdaptiveImage({
+    super.key,
+    required this.adaptiveMap,
+    this.parentMode = 'stretch',
+    required this.supportMarkdown,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
@@ -54,28 +55,24 @@ class AdaptiveImageState extends State<AdaptiveImage>
 
     Widget image = AdaptiveTappable(
       adaptiveMap: adaptiveMap,
-      child: Image(
-        image: NetworkImage(url),
-        fit: fit,
-        width: width,
-        height: height,
+      child: Image.network(
+        url,
+        // errorBuilder: (context, error, stacktrace) {
+        //   return Text(
+        //     'Failed to load image: $error.',
+        //   );
+        // },
       ),
     );
 
     if (isPerson) {
-      image = ClipOval(
-        clipper: FullCircleClipper(),
-        child: image,
-      );
+      image = ClipOval(clipper: FullCircleClipper(), child: image);
     }
 
     Widget child;
 
     if (widget.supportMarkdown) {
-      child = Align(
-        alignment: horizontalAlignment,
-        child: image,
-      );
+      child = Align(alignment: horizontalAlignment, child: image);
     } else {
       child = Row(
         mainAxisSize: MainAxisSize.min,
@@ -83,15 +80,13 @@ class AdaptiveImageState extends State<AdaptiveImage>
           (widget.parentMode == 'auto')
               ? Flexible(child: image)
               : Expanded(
-                  child: Align(alignment: horizontalAlignment, child: image))
+                child: Align(alignment: horizontalAlignment, child: image),
+              ),
         ],
       );
     }
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      child: child,
-    );
+    return SeparatorElement(adaptiveMap: adaptiveMap, child: child);
   }
 
   Alignment loadAlignment() {
@@ -124,9 +119,9 @@ class AdaptiveImageState extends State<AdaptiveImage>
 
     int? size;
     if (sizeDescription != 'auto' && sizeDescription != 'stretch') {
-      size = InheritedReferenceResolver.of(context)
-          .resolver
-          .resolveImageSizes(sizeDescription);
+      size = InheritedReferenceResolver.of(
+        context,
+      ).resolver.resolveImageSizes(sizeDescription);
     }
 
     int? width = size;
@@ -135,14 +130,18 @@ class AdaptiveImageState extends State<AdaptiveImage>
     // Overwrite dynamic size if fixed size is given
     if (adaptiveMap['width'] != null) {
       var widthString = adaptiveMap['width'].toString();
-      widthString =
-          widthString.substring(0, widthString.length - 2); // remove px
+      widthString = widthString.substring(
+        0,
+        widthString.length - 2,
+      ); // remove px
       width = int.parse(widthString);
     }
     if (adaptiveMap['height'] != null) {
       var heightString = adaptiveMap['height'].toString();
-      heightString =
-          heightString.substring(0, heightString.length - 2); // remove px
+      heightString = heightString.substring(
+        0,
+        heightString.length - 2,
+      ); // remove px
       height = int.parse(heightString);
     }
 

@@ -28,8 +28,9 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   late String? postUrl;
   late String altText;
 
-  FadeAnimation imageFadeAnim =
-      const FadeAnimation(child: Icon(Icons.play_arrow, size: 100.0));
+  FadeAnimation imageFadeAnim = const FadeAnimation(
+    child: Icon(Icons.play_arrow, size: 100.0),
+  );
 
   @override
   void initState() {
@@ -42,8 +43,9 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   }
 
   Future<void> initializePlayer() async {
-    videoPlayerController =
-        VideoPlayerController.networkUrl(Uri.parse(sourceUrl));
+    videoPlayerController = VideoPlayerController.networkUrl(
+      Uri.parse(sourceUrl),
+    );
 
     await videoPlayerController.initialize();
 
@@ -67,9 +69,7 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   @override
   Widget build(BuildContext context) {
     Widget getVideoPlayer() {
-      return Chewie(
-        controller: controller!,
-      );
+      return Chewie(controller: controller!);
     }
 
     Widget getPlaceholder() {
@@ -77,12 +77,14 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
     }
 
     return SeparatorElement(
-        adaptiveMap: adaptiveMap,
-        child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: AspectRatio(
-              aspectRatio: 3 / 2,
-              child: controller == null ? getPlaceholder() : getVideoPlayer(),
-            )));
+      adaptiveMap: adaptiveMap,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: AspectRatio(
+          aspectRatio: 3 / 2,
+          child: controller == null ? getPlaceholder() : getVideoPlayer(),
+        ),
+      ),
+    );
   }
 }

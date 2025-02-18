@@ -9,8 +9,11 @@ import 'column.dart';
 /// https://adaptivecards.io/explorer/ColumnSet.html
 ///
 class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveColumnSet(
-      {super.key, required this.adaptiveMap, required this.supportMarkdown});
+  AdaptiveColumnSet({
+    super.key,
+    required this.adaptiveMap,
+    required this.supportMarkdown,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
@@ -29,10 +32,15 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   @override
   void initState() {
     super.initState();
-    columns = List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? [])
-        .map((child) => AdaptiveColumn(
-            adaptiveMap: child, supportMarkdown: widget.supportMarkdown))
-        .toList();
+    columns =
+        List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? [])
+            .map(
+              (child) => AdaptiveColumn(
+                adaptiveMap: child,
+                supportMarkdown: widget.supportMarkdown,
+              ),
+            )
+            .toList();
 
     horizontalAlignment = loadHorizontalAlignment();
   }
@@ -40,13 +48,13 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    backgroundColor = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-            context: context,
-            style: adaptiveMap['style']?.toString(),
-            backgroundImageUrl:
-                adaptiveMap['backgroundImage']?['url']?.toString());
+    backgroundColor = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+      context: context,
+      style: adaptiveMap['style']?.toString(),
+      backgroundImageUrl: adaptiveMap['backgroundImage']?['url']?.toString(),
+    );
   }
 
   @override
@@ -65,10 +73,7 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
       adaptiveMap: adaptiveMap,
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
-        child: Container(
-          color: backgroundColor,
-          child: child,
-        ),
+        child: Container(color: backgroundColor, child: child),
       ),
     );
   }

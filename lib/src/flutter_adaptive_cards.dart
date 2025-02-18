@@ -22,9 +22,7 @@ abstract class AdaptiveCardContentProvider {
 
 /// Content provider for getting card specifications from memory
 class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  MemoryAdaptiveCardContentProvider({
-    required this.content,
-  }) : super();
+  MemoryAdaptiveCardContentProvider({required this.content}) : super();
 
   Map<String, dynamic> content;
 
@@ -36,9 +34,7 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 
 /// Content provider for getting card specifications from the Asset tree
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
-  AssetAdaptiveCardContentProvider({
-    required this.path,
-  }) : super();
+  AssetAdaptiveCardContentProvider({required this.path}) : super();
 
   String path;
 
@@ -93,8 +89,8 @@ class AdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(
-          url: url,
-        );
+         url: url,
+       );
 
   AdaptiveCard.asset({
     super.key,
@@ -109,8 +105,8 @@ class AdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = AssetAdaptiveCardContentProvider(
-          path: assetPath,
-        );
+         path: assetPath,
+       );
 
   AdaptiveCard.memory({
     super.key,
@@ -125,8 +121,8 @@ class AdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = MemoryAdaptiveCardContentProvider(
-          content: content,
-        );
+         content: content,
+       );
 
   /// Content provider usually specific to a named constructor
   final AdaptiveCardContentProvider adaptiveCardContentProvider;
@@ -142,7 +138,7 @@ class AdaptiveCard extends StatefulWidget {
 
   /// Environment specific function that knows how to handle state change
   final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
-      onChange;
+  onChange;
 
   /// Environment specific function that knows how to handle submission to remote APIs
   final Function(Map map)? onSubmit;
@@ -180,9 +176,9 @@ class AdaptiveCardState extends State<AdaptiveCard> {
   @override
   void initState() {
     super.initState();
-    widget.adaptiveCardContentProvider
-        .loadAdaptiveCardContent()
-        .then((adaptiveMap) {
+    widget.adaptiveCardContentProvider.loadAdaptiveCardContent().then((
+      adaptiveMap,
+    ) {
       if (mounted) {
         setState(() {
           map = adaptiveMap;
@@ -209,7 +205,9 @@ class AdaptiveCardState extends State<AdaptiveCard> {
         this.cardRegistry = cardRegistry;
       } else {
         this.cardRegistry = CardRegistry(
-            supportMarkdown: widget.supportMarkdown, listView: widget.listView);
+          supportMarkdown: widget.supportMarkdown,
+          listView: widget.listView,
+        );
       }
     }
 
@@ -227,9 +225,13 @@ class AdaptiveCardState extends State<AdaptiveCard> {
         onSubmit = foundOnSubmit;
       } else {
         onSubmit = (it) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content:
-                  Text(format('No handler found for: \n {}', it.toString()))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                format('No handler found for: \n {}', it.toString()),
+              ),
+            ),
+          );
         };
       }
     }
@@ -244,7 +246,8 @@ class AdaptiveCardState extends State<AdaptiveCard> {
       } else {
         onOpenUrl = (it) {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(format('und for: \n {}', it.toString()))));
+            SnackBar(content: Text(format('und for: \n {}', it.toString()))),
+          );
         };
       }
     }

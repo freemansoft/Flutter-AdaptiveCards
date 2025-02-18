@@ -35,13 +35,13 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    backgroundColor = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-            context: context,
-            style: adaptiveMap['style']?.toString(),
-            backgroundImageUrl:
-                adaptiveMap['backgroundImage']?['url']?.toString());
+    backgroundColor = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+      context: context,
+      style: adaptiveMap['style']?.toString(),
+      backgroundImageUrl: adaptiveMap['backgroundImage']?['url']?.toString(),
+    );
   }
 
   @override
@@ -57,25 +57,31 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: facts
-                  .map((fact) => Text(
-                        fact['title'],
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: color),
-                      ))
-                  .toList(),
+              children:
+                  facts
+                      .map(
+                        (fact) => Text(
+                          fact['title'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: color,
+                          ),
+                        ),
+                      )
+                      .toList(),
             ),
-            const SizedBox(
-              width: 8.0,
-            ),
+            const SizedBox(width: 8.0),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: facts
-                  .map((fact) => MarkdownBody(
-                        data: fact['value'],
-                        styleSheet: loadMarkdownStyleSheet(color),
-                      ))
-                  .toList(),
+              children:
+                  facts
+                      .map(
+                        (fact) => MarkdownBody(
+                          data: fact['value'],
+                          styleSheet: loadMarkdownStyleSheet(color),
+                        ),
+                      )
+                      .toList(),
             ),
           ],
         ),
@@ -97,12 +103,13 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
   }
 
   Color? getColor(BuildContext context) {
-    Color? color = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveForegroundColor(
-            context: context,
-            colorType: adaptiveMap['style'],
-            isSubtle: adaptiveMap['isSubtle']);
+    Color? color = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveForegroundColor(
+      context: context,
+      colorType: adaptiveMap['style'],
+      isSubtle: adaptiveMap['isSubtle'],
+    );
 
     return color;
   }

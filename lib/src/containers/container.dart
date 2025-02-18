@@ -19,7 +19,7 @@ class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class AdaptiveContainerState extends State<AdaptiveContainer>
     with AdaptiveElementMixin {
-// TODO implement verticalContentAlignment
+  // TODO implement verticalContentAlignment
   late List<Widget> children;
   late double spacing;
 
@@ -30,8 +30,8 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
     if (adaptiveMap['items'] != null) {
       children =
           List<Map<String, dynamic>>.from(adaptiveMap['items']).map((child) {
-        return widgetState.cardRegistry.getElement(child);
-      }).toList();
+            return widgetState.cardRegistry.getElement(child);
+          }).toList();
     } else {
       children = [];
     }
@@ -40,21 +40,22 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    spacing = InheritedReferenceResolver.of(context)
-            .resolver
-            .resolveSpacing(adaptiveMap['spacing']) ??
+    spacing =
+        InheritedReferenceResolver.of(
+          context,
+        ).resolver.resolveSpacing(adaptiveMap['spacing']) ??
         0.0;
   }
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-            context: context,
-            style: adaptiveMap['style']?.toString(),
-            backgroundImageUrl:
-                adaptiveMap['backgroundImage']?['url']?.toString());
+    var backgroundColor = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+      context: context,
+      style: adaptiveMap['style']?.toString(),
+      backgroundImageUrl: adaptiveMap['backgroundImage']?['url']?.toString(),
+    );
 
     return ChildStyler(
       adaptiveMap: adaptiveMap,
@@ -66,11 +67,11 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
             color: backgroundColor,
             child: Padding(
               // padding: const EdgeInsets.symmetric(vertical: 8.0),
-              padding:
-                  EdgeInsets.symmetric(vertical: spacing, horizontal: spacing),
-              child: Column(
-                children: children.toList(),
+              padding: EdgeInsets.symmetric(
+                vertical: spacing,
+                horizontal: spacing,
               ),
+              child: Column(children: children.toList()),
             ),
           ),
         ),

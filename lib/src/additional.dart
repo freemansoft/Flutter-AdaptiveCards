@@ -11,8 +11,11 @@ class SeparatorElement extends StatefulWidget
 
   final Widget child;
 
-  const SeparatorElement(
-      {super.key, required this.adaptiveMap, required this.child});
+  const SeparatorElement({
+    super.key,
+    required this.adaptiveMap,
+    required this.child,
+  });
 
   @override
   SeparatorElementState createState() => SeparatorElementState();
@@ -26,9 +29,9 @@ class SeparatorElementState extends State<SeparatorElement>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    topSpacing = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveSpacing(adaptiveMap['spacing']);
+    topSpacing = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveSpacing(adaptiveMap['spacing']);
     separator = adaptiveMap['separator'] ?? false;
   }
 
@@ -64,17 +67,16 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
   void initState() {
     super.initState();
     if (adaptiveMap.containsKey('selectAction')) {
-      action = widgetState.cardRegistry
-          .getGenericAction(adaptiveMap['selectAction'], widgetState);
+      action = widgetState.cardRegistry.getGenericAction(
+        adaptiveMap['selectAction'],
+        widgetState,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: action?.tap,
-      child: widget.child,
-    );
+    return InkWell(onTap: action?.tap, child: widget.child);
   }
 }
 
@@ -84,15 +86,18 @@ class ChildStyler extends StatelessWidget {
 
   final Map<String, dynamic> adaptiveMap;
 
-  const ChildStyler(
-      {super.key, required this.child, required this.adaptiveMap});
+  const ChildStyler({
+    super.key,
+    required this.child,
+    required this.adaptiveMap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InheritedReferenceResolver(
-      resolver: InheritedReferenceResolver.of(context)
-          .resolver
-          .copyWith(style: adaptiveMap['style']),
+      resolver: InheritedReferenceResolver.of(
+        context,
+      ).resolver.copyWith(style: adaptiveMap['style']),
       child: child,
     );
   }

@@ -9,13 +9,15 @@ Widget? homeButtonIfNoHistory(BuildContext context) {
   if (Navigator.of(context).canPop()) {
     return null;
   } else {
-    return Builder(builder: (BuildContext context) {
-      return IconButton(
-        icon: const Icon(Icons.home),
-        onPressed: () {
-          Navigator.of(context).pushReplacementNamed('/');
-        },
-      );
-    });
+    return Builder(
+      builder: (BuildContext context) {
+        return IconButton(
+          icon: const Icon(Icons.home),
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed('/');
+          },
+        );
+      },
+    );
   }
 }

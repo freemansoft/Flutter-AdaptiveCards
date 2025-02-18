@@ -39,9 +39,7 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: Center(
         // We're not using DemoAdaptieCard() here so add our own onXXX handlers
         child: AdaptiveCard.asset(
@@ -49,24 +47,48 @@ class MyHomePage extends StatelessWidget {
           assetPath: 'lib/easy_card',
           onChange: (id, value, state) {
             developer.log(
-                format(
-                    'onChange: id: {}, value: {}, state: {}', id, value, state),
-                name: runtimeType.toString());
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(format('onChange: id: {}, value: {}, state: {}',
-                    id, value, state))));
+              format(
+                'onChange: id: {}, value: {}, state: {}',
+                id,
+                value,
+                state,
+              ),
+              name: runtimeType.toString(),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  format(
+                    'onChange: id: {}, value: {}, state: {}',
+                    id,
+                    value,
+                    state,
+                  ),
+                ),
+              ),
+            );
           },
           onSubmit: (map) {
-            developer.log(format('onSubmit map: {}', map.toString()),
-                name: runtimeType.toString());
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(format(
+            developer.log(
+              format('onSubmit map: {}', map.toString()),
+              name: runtimeType.toString(),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  format(
                     'onSubmit: No handler found for map: \n {}',
-                    map.toString()))));
+                    map.toString(),
+                  ),
+                ),
+              ),
+            );
           },
           onOpenUrl: (url) {
-            developer.log(format('onOpenUrl url: {}', url),
-                name: runtimeType.toString());
+            developer.log(
+              format('onOpenUrl url: {}', url),
+              name: runtimeType.toString(),
+            );
             launchUrl(Uri.parse(url));
           },
           // TODO fix this commented out code around CardRegistry

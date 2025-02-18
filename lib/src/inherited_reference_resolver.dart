@@ -5,8 +5,11 @@ import 'reference_resolver.dart';
 class InheritedReferenceResolver extends InheritedWidget {
   final ReferenceResolver resolver;
 
-  const InheritedReferenceResolver(
-      {super.key, required this.resolver, required super.child});
+  const InheritedReferenceResolver({
+    super.key,
+    required this.resolver,
+    required super.child,
+  });
 
   static InheritedReferenceResolver? maybeOf(BuildContext context) {
     return context

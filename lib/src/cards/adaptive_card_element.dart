@@ -14,9 +14,11 @@ import '../elements/actions/show_card.dart';
 /// https://adaptivecards.io/explorer/
 class AdaptiveCardElement extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveCardElement(
-      {Key? key, required this.adaptiveMap, required this.listView})
-      : super(key: UniqueKey());
+  AdaptiveCardElement({
+    Key? key,
+    required this.adaptiveMap,
+    required this.listView,
+  }) : super(key: UniqueKey());
 
   @override
   final Map<String, dynamic> adaptiveMap;
@@ -55,12 +57,14 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     version = adaptiveMap['version'];
     developer.log(
-        format('AdaptiveCardElement: {} version: {}', id, (version ?? '')),
-        name: runtimeType.toString());
+      format('AdaptiveCardElement: {} version: {}', id, (version ?? '')),
+      name: runtimeType.toString(),
+    );
 
-    children = List<Map<String, dynamic>>.from(adaptiveMap['body'])
-        .map((map) => widgetState.cardRegistry.getElement(map))
-        .toList();
+    children =
+        List<Map<String, dynamic>>.from(
+          adaptiveMap['body'],
+        ).map((map) => widgetState.cardRegistry.getElement(map)).toList();
 
     backgroundImage = adaptiveMap['backgroundImage'];
   }
@@ -68,9 +72,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    String stringAxis = InheritedReferenceResolver.of(context)
-        .resolver
-        .resolveOrientation('actionsOrientation');
+    String stringAxis = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveOrientation('actionsOrientation');
     if (stringAxis == 'Horizontal') {
       actionsOrientation = Axis.horizontal;
     } else if (stringAxis == 'Vertical') {
@@ -80,16 +84,25 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
   void loadChildren() {
     if (widget.adaptiveMap.containsKey('actions')) {
-      allActions = List<Map<String, dynamic>>.from(
-              widget.adaptiveMap['actions'])
-          .map((adaptiveMap) => widgetState.cardRegistry.getAction(adaptiveMap))
-          .toList();
+      allActions =
+          List<Map<String, dynamic>>.from(widget.adaptiveMap['actions'])
+              .map(
+                (adaptiveMap) =>
+                    widgetState.cardRegistry.getAction(adaptiveMap),
+              )
+              .toList();
       showCardActions = List<AdaptiveActionShowCard>.from(
-          allActions.whereType<AdaptiveActionShowCard>().toList());
-      cards = List<Widget>.from(showCardActions
-          .map((action) =>
-              widgetState.cardRegistry.getElement(action.adaptiveMap['card']))
-          .toList());
+        allActions.whereType<AdaptiveActionShowCard>().toList(),
+      );
+      cards = List<Widget>.from(
+        showCardActions
+            .map(
+              (action) => widgetState.cardRegistry.getElement(
+                action.adaptiveMap['card'],
+              ),
+            )
+            .toList(),
+      );
     }
   }
 
@@ -101,28 +114,29 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     Widget actionWidget;
     if (actionsOrientation == Axis.vertical) {
-      List<Widget> actionWidgets = allActions.map((action) {
-        return SizedBox(
-          width: double.infinity,
-          child: action,
-        );
-      }).toList();
+      List<Widget> actionWidgets =
+          allActions.map((action) {
+            return SizedBox(width: double.infinity, child: action);
+          }).toList();
 
-      actionWidget = Row(children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: actionWidgets,
+      actionWidget = Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: actionWidgets,
+            ),
           ),
-        )
-      ]);
+        ],
+      );
     } else {
-      List<Widget> actionWidgets = allActions.map((action) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: action,
-        );
-      }).toList();
+      List<Widget> actionWidgets =
+          allActions.map((action) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: action,
+            );
+          }).toList();
 
       actionWidget = Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,25 +151,20 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     Widget result = Container(
       margin: const EdgeInsets.all(8.0),
-      child: widget.listView == true
-          ? ListView(
-              shrinkWrap: true,
-              children: widgetChildren,
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: widgetChildren,
-            ),
+      child:
+          widget.listView == true
+              ? ListView(shrinkWrap: true, children: widgetChildren)
+              : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: widgetChildren,
+              ),
     );
 
     if (backgroundImage != null) {
       result = Stack(
         children: <Widget>[
           Positioned.fill(
-            child: Image.network(
-              backgroundImage!,
-              fit: BoxFit.cover,
-            ),
+            child: Image.network(backgroundImage!, fit: BoxFit.cover),
           ),
           result,
         ],

@@ -3,11 +3,12 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
 class BrightnessSwitch extends StatelessWidget {
-  const BrightnessSwitch(
-      {super.key,
-      required this.themeMode,
-      required this.onThemeModeChanged,
-      required this.flexSchemeData});
+  const BrightnessSwitch({
+    super.key,
+    required this.themeMode,
+    required this.onThemeModeChanged,
+    required this.flexSchemeData,
+  });
   final ThemeMode themeMode;
   final ValueChanged<ThemeMode> onThemeModeChanged;
   final FlexSchemeData flexSchemeData;

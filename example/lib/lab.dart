@@ -26,8 +26,10 @@ void main() {
 /// * `--dart-define=url=lib/activity_update`
 /// * `--dart-define=url=<url>`
 ///
-const resourceUrl =
-    String.fromEnvironment('url', defaultValue: 'lib/easy_card');
+const resourceUrl = String.fromEnvironment(
+  'url',
+  defaultValue: 'lib/easy_card',
+);
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -68,11 +70,7 @@ class MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({
-    super.key,
-    required this.title,
-    required this.aboutPage,
-  });
+  const MyHomePage({super.key, required this.title, required this.aboutPage});
 
   final String title;
   final AboutPage aboutPage;
@@ -80,17 +78,17 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          actions: [
-            aboutPage.aboutButton(context),
-          ],
-        ),
-        body: SelectionArea(
-          child: Center(
-            child: SingleChildScrollView(
-                child: DemoAdaptiveCard(assetPath: resourceUrl)),
+      appBar: AppBar(
+        title: Text(title),
+        actions: [aboutPage.aboutButton(context)],
+      ),
+      body: SelectionArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: DemoAdaptiveCard(assetPath: resourceUrl),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
