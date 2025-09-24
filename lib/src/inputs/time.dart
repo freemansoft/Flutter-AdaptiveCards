@@ -54,7 +54,9 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
             if (result.hour >= min.hour && result.hour <= max.hour) {
               // can't count on context in async
               widgetState.showError(
+                // ignore: use_build_context_synchronously
                 'Time must be after ${context.mounted ? min.format(widgetState.context) : min.toString()}'
+                // ignore: use_build_context_synchronously
                 ' and before ${context.mounted ? max.format(widgetState.context) : max.toString()}',
               );
             } else {
