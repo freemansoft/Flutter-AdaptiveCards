@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated libraries major-versions 9/2025
 - Ipdated for flutter 3.24 9/2025
 - Tested with ios 26 simulator and macos 26.0 9/2025
+- Pointed at https microsoft images which causes CORS issue in web example app 9/2025
 
 ## [0.2.0](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
 
