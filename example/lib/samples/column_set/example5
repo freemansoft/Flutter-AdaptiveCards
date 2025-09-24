@@ -18,7 +18,7 @@
                     "items": [
                         {
                             "type": "Image",
-                            "url": "http://adaptivecards.io/content/cats/1.png",
+                            "url": "https://adaptivecards.io/content/cats/1.png",
                             "size": "small",
                             "horizontalAlignment": "left"
                         }
@@ -31,7 +31,7 @@
                     "items": [
                         {
                             "type": "Image",
-                            "url": "http://adaptivecards.io/content/cats/1.png",
+                            "url": "https://adaptivecards.io/content/cats/1.png",
                             "size": "small",
                             "horizontalAlignment": "center"
                         }
@@ -45,7 +45,7 @@
                     "items": [
                         {
                             "type": "Image",
-                            "url": "http://adaptivecards.io/content/cats/1.png",
+                            "url": "https://adaptivecards.io/content/cats/1.png",
                             "size": "small",
                             "horizontalAlignment": "right"
                         }
@@ -59,7 +59,7 @@
                     "items": [
                         {
                             "type": "Image",
-                            "url": "http://adaptivecards.io/content/cats/1.png",
+                            "url": "https://adaptivecards.io/content/cats/1.png",
                             "size": "large"
                         }
                     ]

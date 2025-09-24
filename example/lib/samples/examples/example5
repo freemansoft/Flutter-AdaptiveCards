@@ -20,15 +20,15 @@
       "images": [
         {
           "type": "Image",
-          "url": "http://adaptivecards.io/content/steak.jpeg"
+          "url": "https://adaptivecards.io/content/steak.jpeg"
         },
         {
           "type": "Image",
-          "url": "http://adaptivecards.io/content/chicken.jpeg"
+          "url": "https://adaptivecards.io/content/chicken.jpeg"
         },
         {
           "type": "Image",
-          "url": "http://adaptivecards.io/content/tofu.jpeg"
+          "url": "https://adaptivecards.io/content/tofu.jpeg"
         }
       ]
     }
