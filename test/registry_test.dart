@@ -36,7 +36,7 @@ void main() {
         {
           'mimeType': 'video/mp4',
           'url':
-              'https://adaptivecardsblob.blob.core.windows.net/assets/AdaptiveCardsOverviewVideo.mp4',
+              'https://cdn.adaptivecards.io/assets/AdaptiveCardsOverviewVideo.mp4',
         },
       ],
     });

@@ -38,12 +38,12 @@ class DemoAdaptiveCard extends StatefulWidget {
   final Map<String, String>? initData;
 
   @override
-  _DemoAdaptiveCardState createState() => _DemoAdaptiveCardState();
+  DemoAdaptiveCardState createState() => DemoAdaptiveCardState();
 }
 
 /// This exists as stateful to support the "show the JSON" function
 /// Note that it means we load the JSON twice, once for this and once for the widget
-class _DemoAdaptiveCardState extends State<DemoAdaptiveCard>
+class DemoAdaptiveCardState extends State<DemoAdaptiveCard>
     with AutomaticKeepAliveClientMixin {
   String jsonFile = '{}';
 

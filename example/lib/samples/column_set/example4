@@ -16,7 +16,7 @@
                     "type": "Column",
                     "width": "stretch",
                     "backgroundImage": {
-                        "url": "https://messagecardplayground.azurewebsites.net/assets/TxP_Background.png"
+                        "url": "https://adaptivecards.io/content/xxTxP_Flight.png"
                     },
                     "items": [
                         {
@@ -36,11 +36,11 @@
                     ]
                 },
                 {
-                    "width": "stretch",
                     "type": "Column",
+                    "width": "stretch",
                     "style": "emphasis",
                     "backgroundImage": {
-                        "url": "https://messagecardplayground.azurewebsites.net/assets/TxP_Background.png"
+                        "url": "https://adaptivecards.io/content/xxTxP_Flight.png"
                     },
                     "items": [
                         {

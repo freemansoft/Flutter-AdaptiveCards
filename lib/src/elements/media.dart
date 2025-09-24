@@ -47,7 +47,12 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
       Uri.parse(sourceUrl),
     );
 
-    await videoPlayerController.initialize();
+    try {
+      await videoPlayerController.initialize();
+    } catch (e) {
+      debugPrint('$sourceUrl $e');
+      rethrow;
+    }
 
     controller = ChewieController(
       aspectRatio: 3 / 2,
