@@ -1,7 +1,7 @@
 name: example
 description: Example of Adaptive Cards.
 homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
-version: 0.2.0
+version: 0.2.1
 
 environment:
   sdk: ^3.7.0
