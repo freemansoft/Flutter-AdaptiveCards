@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:format/format.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../riverpod_providers.dart';
 
 import '../adaptive_mixins.dart';
 import '../additional.dart';
-import '../flutter_raw_adaptive_card.dart';
 import '../utils.dart';
 
 ///
@@ -90,7 +90,9 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       styleSheet: loadMarkdownStyleSheet(context),
       onTapLink: (text, href, title) {
         if (href != null) {
-          var rawAdaptiveCardState = context.watch<RawAdaptiveCardState>();
+          var rawAdaptiveCardState =
+              ProviderScope.containerOf(context, listen: false)
+                  .read(rawAdaptiveCardStateProvider);
           rawAdaptiveCardState.openUrl(href);
         }
       },

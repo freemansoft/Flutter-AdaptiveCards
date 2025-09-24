@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../riverpod_providers.dart';
 
 import '../adaptive_mixins.dart';
 import '../additional.dart';
-import '../cards/adaptive_card_element.dart';
 import '../utils.dart';
 
 ///
@@ -98,7 +98,8 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   @override
   bool checkRequired() {
-    var adaptiveCardElement = context.read<AdaptiveCardElementState>();
+    var adaptiveCardElement = ProviderScope.containerOf(context, listen: false)
+        .read(adaptiveCardElementStateProvider);
     var formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();

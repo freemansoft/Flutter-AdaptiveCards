@@ -1,6 +1,6 @@
 ![AdaptiveCards for Flutter](https://github.com/neohelden/Flutter-AdaptiveCards/raw/master/doc/neohelden-flutter-adaptive-cards-lib.jpg?raw=true "Adaptive Cards for Flutter")
 
-# Adaptive Cards for Flutter
+## Adaptive Cards for Flutter
 
 We decided to build a Flutter implementation of Adaptive Cards because we believe in the future of both technologies. With Flutter, we found an exciting framework for ultra-fast and cross-platform UI development. And with Adaptive Cards, we can combine that with an industry standard for exchanging card content in a structured way. At Neohelden, we're building on both of these technologies with our AI-assistant for business – and you can learn more about why we built this in our [blog-post on the release of our Adaptive Cards in Flutter library](https://neohelden.com/blog/tech/using-adaptive-cards-in-flutter/).
 
@@ -78,13 +78,13 @@ flutter test
 
 and to update the golden files run
 
-```sh
+```bash
 flutter test --update-goldens test/sample_golden_test.dart
 ```
 
 This updates the golden files for the sample cards. Depending on your operating system you might have issues with the font rendering. For the CI / CD setup you need to generate the golden files using a Docker container:
 
-```
+```bash
 # run the following command in the root folder of this project
 docker run -it -v `pwd`:/app cirrusci/flutter:dev bash
 

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
@@ -18,17 +19,18 @@ Widget getSampleForGoldenTest(Key key, String sampleName) {
   );
 }
 
+void configureTestView() {
+  final RenderView renderView = RendererBinding.instance.renderViews.first;
+  renderView.configuration = TestViewConfiguration.fromView(
+    size: const Size(500, 700),
+    view: PlatformDispatcher.instance.implicitView!,
+  );
+}
+
 void main() {
   // Deliver actual images
   setUp(() async {
     HttpOverrides.global = MyTestHttpOverrides();
-    WidgetsBinding
-        .instance
-        .renderView
-        .configuration = TestViewConfiguration.fromView(
-      size: const Size(500, 700),
-      view: PlatformDispatcher.instance.implicitView!,
-    );
 
     // TODO: Delete this commented out code! Or, use https://pub.dev/packages/golden_toolkit
     final fontData = File('assets/fonts/Roboto/Roboto-Regular.ttf')
@@ -57,6 +59,8 @@ void main() {
   });
 
   testWidgets('Golden Sample 1', (tester) async {
+    configureTestView();
+
     ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example1');
 
@@ -94,6 +98,8 @@ void main() {
   /// TODO: This test is a little bogus because the frame looks the same after tapping the buttons
   ///
   testWidgets('Golden Sample 2', (tester) async {
+    configureTestView();
+
     ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example2');
 
@@ -128,6 +134,8 @@ void main() {
   });
 
   testWidgets('Golden Sample 3', (tester) async {
+    configureTestView();
+
     ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example3');
 
@@ -142,6 +150,8 @@ void main() {
   });
 
   testWidgets('Golden Sample 4', (tester) async {
+    configureTestView();
+
     ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example4');
 
@@ -155,6 +165,8 @@ void main() {
   });
 
   testWidgets('Golden Sample 5', (tester) async {
+    configureTestView();
+
     ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example5');
 
@@ -196,6 +208,8 @@ void main() {
   });
   // TODO add other tests
   testWidgets('Golden Sample 14', (tester) async {
+    configureTestView();
+
     ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example14');
 
@@ -211,6 +225,8 @@ void main() {
   });
 
   testWidgets('Golden Sample 16', (tester) async {
+    configureTestView();
+
     ValueKey key = const ValueKey('paint');
     Widget sample = getSampleForGoldenTest(key, 'example16');
 
