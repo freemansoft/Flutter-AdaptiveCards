@@ -10,7 +10,7 @@
     },
     {
       "type": "Media",
-      "poster": "http://adaptivecards.io/content/cats/1.png",
+      "poster": "https://adaptivecards.io/content/cats/1.png",
       "sources": [
         {
           "mimeType": "video/mp4",
