@@ -5,20 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.2](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
+## [0.2.1](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.20...0.2.1)
+
+- Converted provider to riverpod 3 9/2025
+- Updated libraries major-versions 9/2025
+- Ipdated for flutter 3.24 9/2025
+- Tested with ios 26 simulator and macos 26.0 9/2025
+
+## [0.2.0](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
 
 This is a placeholder until someone figures out how to do the release numbers and do releases.
 Mostly because I didn't want this to overlay the 2020 Neohelden version.
 
-- Updated all dependencies to latest as of 7/2023 including  moving to null safe Flutter SDK
 
 ### Merged
 
 ### Commits
 
-## [0.13] pre - various parties
+- Updated all dependencies to latest as of 7/2023 i
+- Moving to null safe Flutter SDK 7/2023
 
-This section should include anthing prior to the 6/2023
+## [0.1.3] pre - various parties
+
+This section should include anything prior to the 6/2023
 
 - Updated may packages including UUID to version 3.0 and others
 

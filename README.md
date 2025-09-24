@@ -103,7 +103,7 @@ There is an expansive example program that demonstrates all Adaptive Cards. See 
 The test use the standard flutter testing mechanism which uses the `FlutterTest` font or the `Ahem` font.
 
 * The tests used to load the Roboto fonts to get an exact match but the line spacing can be off between platforms.
-* I've updated the golden images (again) to use the default testing font.  The line spacing is subtly different so you have to pick a platform for the golden tests which means I've poluted the repo for no reason. <https://github.com/flutter/flutter/issues/2943>
+* I've updated the golden images (again) to use the default testing font.  The line spacing is subtly different so you have to pick a platform for the golden tests which means I've polluted the repo for no reason. <https://github.com/flutter/flutter/issues/2943>
 
 1. Note that the test could upgrade to ebay's golden toolkit that renders fonts.  In that case we could bring back the Roboto fonts. Golden toolkit can show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
 
@@ -153,7 +153,7 @@ This repo has been reformatted and updated using VS Code extensions.  The VS Cod
 
 The Widgets marked with `(*)`are Flutter-AdaptiveCars specific including those build using the `Provider` framework.
 
-```
+```txt
 Demo Adaptive Card*
 ├── Selection Area (copy/paste enable)
 │   └── Padding
@@ -217,13 +217,14 @@ TODO for the example programs moved to [example README](example/README.md)
   * Font line spacing is subtly different between platforms.  You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
   * Using default flutter fonts instead of roboto <https://github.com/flutter/flutter/issues/56383>
     * Could use golden toolkit but it will show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
-  * `example\widget_test.dart` should never be working because we don't have any code that has an increment button and counters.  Probably should be either renamed again to not be picked up., deleted or disabled.
+  * `example\widget_test.dart` is an empty test.
 
 ## ChangeLog
 
 2023 09
 
 * Removed hostconfig - some pieces still to be put together
+* .
   * 3 styles still to be fixed in the resolver
 
 2023 07
@@ -264,7 +265,7 @@ TODO for the example programs moved to [example README](example/README.md)
 
 _________________________________________________________________________
 
-# Repository History
+## Repository History
 
 Everything below this line is from the original README.md
 The referenced GitHub repository has vanished.  Look at the forking train to figure out where the current repository was forked from or look here:

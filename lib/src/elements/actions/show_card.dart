@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../riverpod_providers.dart';
 
 import '../../adaptive_mixins.dart';
-import '../../cards/adaptive_card_element.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.ShowCard.html
 ///
+import '../../cards/adaptive_card_element.dart';
+
 class AdaptiveActionShowCard extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionShowCard({super.key, required this.adaptiveMap});
@@ -26,8 +28,11 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
     Widget card = widgetState.cardRegistry.getElement(adaptiveMap['card']);
 
-    var adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    adaptiveCardElement.registerCard(id, card);
+    var _adaptiveCardElement = ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(adaptiveCardElementStateProvider);
+    _adaptiveCardElement.registerCard(id, card);
   }
 
   @override
@@ -38,9 +43,13 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(title),
-          context.watch<AdaptiveCardElementState>().currentCardId == id
-              ? const Icon(Icons.keyboard_arrow_up)
-              : const Icon(Icons.keyboard_arrow_down),
+          ProviderScope.containerOf(
+                    context,
+                    listen: false,
+                  ).read(adaptiveCardElementStateProvider).currentCardId ==
+                  id
+              ? Icon(Icons.keyboard_arrow_up)
+              : Icon(Icons.keyboard_arrow_down),
         ],
       ),
     );
@@ -48,7 +57,10 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
   @override
   void onTapped() {
-    var adaptiveCardElement = context.read<AdaptiveCardElementState>();
-    adaptiveCardElement.showCard(id);
+    var _adaptiveCardElement = ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(adaptiveCardElementStateProvider);
+    _adaptiveCardElement.showCard(id);
   }
 }

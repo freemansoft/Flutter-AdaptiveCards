@@ -10,7 +10,8 @@ import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:format/format.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'riverpod_providers.dart';
 
 /// Created by `AdaptiveCard` so there is usually only one of these per page.
 ///
@@ -402,8 +403,10 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       style: widget.map['style']?.toString().toLowerCase(),
     );
 
-    return Provider<RawAdaptiveCardState>.value(
-      value: this,
+    return ProviderScope(
+      overrides: [
+        rawAdaptiveCardStateProvider.overrideWithValue(this),
+      ],
       child: InheritedReferenceResolver(
         resolver: _resolver,
         child: Card(color: backgroundColor, child: child),
