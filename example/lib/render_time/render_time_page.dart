@@ -5,10 +5,10 @@ class RenderTimePage extends StatefulWidget {
   const RenderTimePage({super.key});
 
   @override
-  _RenderTimePageState createState() => _RenderTimePageState();
+  RenderTimePageState createState() => RenderTimePageState();
 }
 
-class _RenderTimePageState extends State<RenderTimePage> {
+class RenderTimePageState extends State<RenderTimePage> {
   Map<String, dynamic> content = {};
 
   @override

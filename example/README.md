@@ -96,7 +96,7 @@ Displays an adaptive cardthat you specify a asset location as a command line arg
 
 This snippet assumes you want to test the adaptive card activity_update located in the example's lib directory.
 
-```
+```bash
 cd example
 flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-renderer html
 ```
@@ -111,6 +111,7 @@ flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-
 ## Changelog
 
 2023 09
+
 * hostconfig removed.
 
 2023 07

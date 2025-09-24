@@ -10,7 +10,7 @@ ThemeData lightThemeFrom(FlexScheme usedScheme) {
     subThemesData: const FlexSubThemesData(
       interactionEffects: false,
       tintedDisabledControls: false,
-      useTextTheme: true,
+      useMaterial3Typography: true,
       inputDecoratorBorderType: FlexInputBorderType.underline,
       inputDecoratorUnfocusedBorderIsColored: false,
       tooltipRadius: 4,
@@ -55,7 +55,7 @@ ThemeData darkThemeFrom(FlexScheme usedScheme) {
     subThemesData: const FlexSubThemesData(
       interactionEffects: false,
       tintedDisabledControls: false,
-      useTextTheme: true,
+      useMaterial3Typography: true,
       inputDecoratorBorderType: FlexInputBorderType.underline,
       inputDecoratorUnfocusedBorderIsColored: false,
       tooltipRadius: 4,

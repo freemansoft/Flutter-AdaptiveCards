@@ -91,15 +91,17 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         _selectedChoices.add(map[id]);
 
         controller.text =
-            _selectedChoices.isNotEmpty ? _selectedChoices.single : '';
+            _selectedChoices.isNotEmpty ? _selectedChoices.first : '';
       });
     }
   }
 
   @override
   bool checkRequired() {
-    var adaptiveCardElement = ProviderScope.containerOf(context, listen: false)
-        .read(adaptiveCardElementStateProvider);
+    var adaptiveCardElement = ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(adaptiveCardElementStateProvider);
     var formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
@@ -282,7 +284,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     widgetState.changeValue(id, choice);
     setState(() {
       controller.text =
-          _selectedChoices.isNotEmpty ? _selectedChoices.single : '';
+          _selectedChoices.isNotEmpty ? _selectedChoices.first : '';
     });
   }
 

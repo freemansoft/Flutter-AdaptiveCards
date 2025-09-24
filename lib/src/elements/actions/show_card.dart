@@ -7,7 +7,6 @@ import '../../adaptive_mixins.dart';
 ///
 /// https://adaptivecards.io/explorer/Action.ShowCard.html
 ///
-import '../../cards/adaptive_card_element.dart';
 
 class AdaptiveActionShowCard extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -28,11 +27,11 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
     Widget card = widgetState.cardRegistry.getElement(adaptiveMap['card']);
 
-    var _adaptiveCardElement = ProviderScope.containerOf(
+    var adaptiveCardElement = ProviderScope.containerOf(
       context,
       listen: false,
     ).read(adaptiveCardElementStateProvider);
-    _adaptiveCardElement.registerCard(id, card);
+    adaptiveCardElement.registerCard(id, card);
   }
 
   @override
@@ -57,10 +56,10 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
   @override
   void onTapped() {
-    var _adaptiveCardElement = ProviderScope.containerOf(
+    var adaptiveCardElement = ProviderScope.containerOf(
       context,
       listen: false,
     ).read(adaptiveCardElementStateProvider);
-    _adaptiveCardElement.showCard(id);
+    adaptiveCardElement.showCard(id);
   }
 }
