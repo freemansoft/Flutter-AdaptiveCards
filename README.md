@@ -80,7 +80,7 @@ flowchart
 ## Loading Data into fields outside of the AdaptiveCard JSON
 
 You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will be passed across the AdaptiveCard widget Tree.
-`initData` is demonstrated in the sample app on the `initData` button. `loadData` was in the sample app but was removed and needs to be re-added.
+`initData` is demonstrated in the sample app on the `initData` button overriding values from the JSON. `loadData` was in the sample app but was removed and needs to be re-added.
 
 * `InitData` / `InitInput` can be used for late binding data into a widget tree
   * `initData` injected directly into a widget tree and visited across the tree in `InitInput`

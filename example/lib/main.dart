@@ -312,23 +312,24 @@ class MyAppState extends State<MyApp> {
               aboutPage: aboutPage,
             ),
         'Render Time': (context) => RenderTimePage(),
-        'Network via Assets':
-            (context) => NetworkPage(
+        'Form via Assets':
+            (context) => GenericListPage(
               title: 'ac-qv-faqs via assets',
-              url: 'assets/ac-qv-faqs.json',
+              urls: ['assets/ac-qv-faqs.json'],
               aboutPage: aboutPage,
             ),
-        'initData':
+        'Form with initData':
             (context) => GenericListPage(
               title: 'initData loads name, bookingdate and gender',
               urls: ['assets/ac-qv-faqs.json'],
               aboutPage: aboutPage,
               // this is a bit of a hack.  initData is sent to every AdaptiveCard in the urls list
-              // initData: {
-              //   'fullname': 'minato',
-              //   'bookingdate': '08/05/2023',
-              //   'gender': 'female'
-              // },
+              initData: {
+                'fullname': 'a full name',
+                'phonenumber': '1234567890',
+                'bookingdate': '2023-05-08', // TODO this isn't working
+                'gender': 'female',
+              },
             ),
         'Sample Expense Report':
             (context) => NetworkPage(
@@ -407,7 +408,11 @@ class MyHomePage extends StatelessWidget {
             getRow(context, ['Input.Text', 'Input.Number', 'Input.Date']),
             getRow(context, ['Input.Time', 'Input.Toggle', 'Input.ChoiceSet']),
             Divider(),
-            getRow(context, ['Render Time', 'Network via Assets', 'initData']),
+            getRow(context, [
+              'Render Time',
+              'Form via Assets',
+              'Form with initData',
+            ]),
             Divider(),
             Text(
               'https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5',
