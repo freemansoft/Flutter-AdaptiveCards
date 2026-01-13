@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'utils/test_utils.dart';
 
 Widget getSampleForGoldenTest(Key key, String sampleName) {
-  Widget sample = getWidget(sampleName);
+  Widget sample = getWidget('${sampleName}.json');
 
   return MaterialApp(
     home: RepaintBoundary(
