@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pointed at https microsoft images which causes CORS issue in web example app 9/2025
 - Updated to the current Flutter
 - Migrating all style into the Resolver so that all AdaptiveCard text styles are mapped there. Future create themeing for this
+- Enabling workflow - or at least thinking about it
 
 ## [0.2.0](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
 
