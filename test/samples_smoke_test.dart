@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,8 +16,10 @@ void main() {
     testWidgets('example$i smoke test', (tester) async {
       Widget widget = getWidget('example$i.json');
 
-      // The Video player doesn't work on windows
-      if (!Platform.isWindows) {
+      // The Video player doesn't work on windows or linux
+      // https://pub.dev/packages/video_player
+      // PLatform doesn't have Platform.isWeb
+      if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS || kIsWeb) {
         // This ones pretty big, we need to wrap in in a scrollable
         if (i == 8) {
           widget = SingleChildScrollView(child: IntrinsicHeight(child: widget));
