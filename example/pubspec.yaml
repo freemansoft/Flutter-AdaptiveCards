@@ -53,7 +53,7 @@ flutter:
     - lib/samples/inputs/input_time/
     - lib/samples/inputs/input_toggle/
     - lib/samples/inputs/input_choice_set/
-    - lib/samples/media/example1
+    - lib/samples/media/example1.json
     - lib/samples/examples/
     - lib/samples/table/
 
