@@ -111,6 +111,8 @@ The test use the standard flutter testing mechanism which uses the `FlutterTest`
 
 Compatability changes should be captured in the Changelog section below
 
+* Video player doesn't work on windows because the 3rd party library doesn't support windows fat clients.
+
 This codebase has been updated to support some of the null safety requred for 3.7.0+.  It works with the following version of flutter.
 
 ```powershell
