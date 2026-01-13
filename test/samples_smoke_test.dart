@@ -15,14 +15,17 @@ void main() {
     testWidgets('example$i smoke test', (tester) async {
       Widget widget = getWidget('example$i.json');
 
-      // This ones pretty big, we need to wrap in in a scrollable
-      if (i == 8) {
-        widget = SingleChildScrollView(child: IntrinsicHeight(child: widget));
+      // The Video player doesn't work on windows
+      if (!Platform.isWindows) {
+        // This ones pretty big, we need to wrap in in a scrollable
+        if (i == 8) {
+          widget = SingleChildScrollView(child: IntrinsicHeight(child: widget));
+        }
+        await tester.pumpWidget(widget);
+        await tester.pump(
+          const Duration(seconds: 1),
+        ); // skip past any activity or animation
       }
-      await tester.pumpWidget(widget);
-      await tester.pump(
-        const Duration(seconds: 1),
-      ); // skip past any activity or animation
     });
   }
 }

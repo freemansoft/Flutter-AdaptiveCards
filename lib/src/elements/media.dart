@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
@@ -34,6 +36,12 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   @override
   void initState() {
     super.initState();
+
+    if (Platform.isWindows) {
+      debugPrint(
+        'this will throw an exception because the video player is not supported on windows',
+      );
+    }
 
     postUrl = adaptiveMap['poster'];
     // https://adaptivecards.io/explorer/MediaSource.html
