@@ -15,8 +15,6 @@ jobs:
           channel: 'stable' # Or 'beta' or 'master' depending on your needs
           flutter-version: 3.32.5 # should sync with fvm version
           cache: true
-        with:
-          channel: 'dev'
       - run: dart --version
       - run: flutter --version
       - run: flutter pub get
