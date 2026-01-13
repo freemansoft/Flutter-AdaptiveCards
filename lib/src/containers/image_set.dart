@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/elements/image.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
-import '../elements/image.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ImageSet.html
@@ -36,28 +35,29 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
   void initState() {
     super.initState();
 
-    images =
-        List<Map<String, dynamic>>.from(adaptiveMap['images'])
-            .map(
-              (child) => AdaptiveImage(
-                adaptiveMap: child,
-                supportMarkdown: widget.supportMarkdown,
-              ),
-            )
-            .toList();
+    images = List<Map<String, dynamic>>.from(adaptiveMap['images'])
+        .map(
+          (child) => AdaptiveImage(
+            adaptiveMap: child,
+            supportMarkdown: widget.supportMarkdown,
+          ),
+        )
+        .toList();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     loadSize();
-    backgroundColor = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      context: context,
-      style: adaptiveMap['style']?.toString(),
-      backgroundImageUrl: adaptiveMap['backgroundImage']?['url']?.toString(),
-    );
+    backgroundColor =
+        InheritedReferenceResolver.of(
+          context,
+        ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+          context: context,
+          style: adaptiveMap['style']?.toString(),
+          backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
+              ?.toString(),
+        );
   }
 
   @override
@@ -70,15 +70,14 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
           builder: (context, constraints) {
             return Wrap(
               //maxCrossAxisExtent: 200.0,
-              children:
-                  images
-                      .map(
-                        (img) => SizedBox(
-                          width: calculateSize(constraints),
-                          child: img,
-                        ),
-                      )
-                      .toList(),
+              children: images
+                  .map(
+                    (img) => SizedBox(
+                      width: calculateSize(constraints),
+                      child: img,
+                    ),
+                  )
+                  .toList(),
               //shrinkWrap: true,
             );
           },

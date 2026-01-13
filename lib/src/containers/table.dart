@@ -1,9 +1,8 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:format/format.dart';
-
-import '../adaptive_mixins.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ColumnSet.html

@@ -4,34 +4,32 @@ import 'package:flutter_adaptive_cards/src/elements/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards/src/generic_action.dart';
 
 ///
-/// https://adaptivecards.io/explorer/Action.OpenUrl.html
+/// https://adaptivecards.io/explorer/Action.Execute.html
 ///
-class AdaptiveActionOpenUrl extends StatefulWidget
+class AdaptiveActionExecute extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveActionOpenUrl({super.key, required this.adaptiveMap});
+  AdaptiveActionExecute({super.key, required this.adaptiveMap});
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
-  AdaptiveActionOpenUrlState createState() => AdaptiveActionOpenUrlState();
+  AdaptiveActionExecuteState createState() => AdaptiveActionExecuteState();
 }
 
-class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
+class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
     with AdaptiveActionMixin, AdaptiveElementMixin {
-  late GenericActionOpenUrl action;
-  late String? iconUrl;
+  late GenericExecuteAction action;
 
   @override
   void initState() {
     super.initState();
-
-    action = GenericActionOpenUrl(adaptiveMap, widgetState);
+    // should this use the registry?
+    action = GenericExecuteAction(adaptiveMap, widgetState);
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO IconButtonAction ??
     return IconButtonAction(adaptiveMap: adaptiveMap, onTapped: onTapped);
   }
 

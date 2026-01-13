@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
-import '../utils.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Image.html
@@ -80,8 +79,8 @@ class AdaptiveImageState extends State<AdaptiveImage>
           (widget.parentMode == 'auto')
               ? Flexible(child: image)
               : Expanded(
-                child: Align(alignment: horizontalAlignment, child: image),
-              ),
+                  child: Align(alignment: horizontalAlignment, child: image),
+                ),
         ],
       );
     }

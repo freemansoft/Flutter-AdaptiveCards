@@ -16,6 +16,10 @@
           "type": "Action.Submit"
         },
         {
+          "title": "Action.Execute",
+          "type": "Action.Execute"
+        },
+        {
           "title": "Action.OpenUrl",
           "type": "Action.OpenUrl",
           "url": "https://adaptivecards.io/"

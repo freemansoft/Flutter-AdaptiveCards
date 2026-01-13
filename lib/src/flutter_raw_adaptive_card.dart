@@ -11,7 +11,7 @@ import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:format/format.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'riverpod_providers.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 
 /// Created by `AdaptiveCard` so there is usually only one of these per page.
 ///
@@ -26,11 +26,12 @@ class RawAdaptiveCard extends StatefulWidget {
     this.cardRegistry = const CardRegistry(),
     this.initData,
     this.onChange,
-    required this.onSubmit,
-    required this.onOpenUrl,
+    this.onSubmit,
+    this.onExecute,
+    this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
-  }) : assert(onSubmit != null, onOpenUrl != null);
+  });
 
   final Map<String, dynamic> map;
   final CardRegistry cardRegistry;
@@ -39,6 +40,7 @@ class RawAdaptiveCard extends StatefulWidget {
   final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
   onChange;
   final Function(Map map)? onSubmit;
+  final Function(Map map)? onExecute;
   final Function(String url)? onOpenUrl;
 
   final bool showDebugJson;
@@ -111,6 +113,31 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     }
   }
 
+  /// Executes all the inputs of this adaptive card, does it by recursively
+  /// visiting the elements in the tree
+  void execute(Map map) {
+    bool valid = true;
+
+    void visitor(Element element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveInputMixin) {
+          if ((element.state as AdaptiveInputMixin).checkRequired()) {
+            (element.state as AdaptiveInputMixin).appendInput(map);
+          } else {
+            valid = false;
+          }
+        }
+      }
+      element.visitChildren(visitor);
+    }
+
+    context.visitChildElements(visitor);
+
+    if (widget.onExecute != null && valid) {
+      widget.onExecute!(map);
+    }
+  }
+
   void initInput(Map map) {
     // this code exists in several places
     // but looks like it uses the visitor prior to assignment
@@ -171,11 +198,10 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(6.0)),
         side: BorderSide(),
       ),
-      builder:
-          (BuildContext builder) => SizedBox(
-            height: MediaQuery.of(context).copyWith().size.height / 2,
-            child: ChoiceFilter(data: data, callback: callback),
-          ),
+      builder: (BuildContext builder) => SizedBox(
+        height: MediaQuery.of(context).copyWith().size.height / 2,
+        child: ChoiceFilter(data: data, callback: callback),
+      ),
     );
   }
 
@@ -205,30 +231,29 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     // showCupertinoModalPopup is a built-in function of the cupertino library
     await showCupertinoModalPopup<DateTime?>(
       context: context,
-      builder:
-          (_) => SizedBox(
-            height: 500,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 400,
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.date,
-                    initialDateTime: initialDate,
-                    onDateTimeChanged: (val) {
-                      pickedDate = val;
-                    },
-                  ),
-                ),
-
-                // Close the modal
-                CupertinoButton(
-                  child: const Text('OK'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
+      builder: (_) => SizedBox(
+        height: 500,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 400,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: initialDate,
+                onDateTimeChanged: (val) {
+                  pickedDate = val;
+                },
+              ),
             ),
-          ),
+
+            // Close the modal
+            CupertinoButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      ),
     );
     return pickedDate;
   }
@@ -311,33 +336,32 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     // showCupertinoModalPopup is a built-in function of the cupertino library
     await showCupertinoModalPopup<TimeOfDay?>(
       context: context,
-      builder:
-          (_) => SizedBox(
-            height: 500,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 400,
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.time,
-                    use24hFormat: false,
-                    initialDateTime: initialDateTime,
-                    minimumDate: minDateTime,
-                    maximumDate: maxDateTime,
-                    onDateTimeChanged: (val) {
-                      pickedTimeOfDay = TimeOfDay.fromDateTime(val);
-                    },
-                  ),
-                ),
-
-                // Close the modal
-                CupertinoButton(
-                  child: const Text('OK'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
+      builder: (_) => SizedBox(
+        height: 500,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 400,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                use24hFormat: false,
+                initialDateTime: initialDateTime,
+                minimumDate: minDateTime,
+                maximumDate: maxDateTime,
+                onDateTimeChanged: (val) {
+                  pickedTimeOfDay = TimeOfDay.fromDateTime(val);
+                },
+              ),
             ),
-          ),
+
+            // Close the modal
+            CupertinoButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      ),
     );
     return pickedTimeOfDay;
   }

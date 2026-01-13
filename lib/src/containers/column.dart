@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
-import '../generic_action.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Column.html
@@ -84,17 +83,16 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       mode = 'auto';
     }
 
-    items =
-        adaptiveMap['items'] != null
-            ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
+    items = adaptiveMap['items'] != null
+        ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
+            child,
+          ) {
+            return widgetState.cardRegistry.getElement(
               child,
-            ) {
-              return widgetState.cardRegistry.getElement(
-                child,
-                parentMode: mode,
-              );
-            }).toList()
-            : [];
+              parentMode: mode,
+            );
+          }).toList()
+        : [];
 
     verticalAlignment = loadVerticalAlignment();
     horizontalAlignment = loadHorizontalAlignment();
@@ -197,13 +195,14 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     double? precedingSpacing = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveSpacing(adaptiveMap['spacing']);
-    var backgroundColor = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      context: context,
-      style: adaptiveMap['style']?.toString(),
-      backgroundImageUrl: adaptiveMap['backgroundImage']?['url'],
-    );
+    var backgroundColor =
+        InheritedReferenceResolver.of(
+          context,
+        ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+          context: context,
+          style: adaptiveMap['style']?.toString(),
+          backgroundImageUrl: adaptiveMap['backgroundImage']?['url'],
+        );
 
     Widget child = Container(
       alignment: containerHorizontalAlignment,

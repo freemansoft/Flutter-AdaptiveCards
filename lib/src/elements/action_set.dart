@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../adaptive_mixins.dart';
-import 'actions/open_url.dart';
-import 'actions/show_card.dart';
-import 'actions/submit.dart';
-import 'unknown.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/execute.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/open_url.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/submit.dart';
+import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ActionSet.html
@@ -47,8 +48,9 @@ class ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
       case 'Action.OpenUrl':
         return AdaptiveActionOpenUrl(adaptiveMap: map);
       case 'Action.Submit':
-      case 'Action.Execute':
         return AdaptiveActionSubmit(adaptiveMap: map);
+      case 'Action.Execute':
+        return AdaptiveActionExecute(adaptiveMap: map);
     }
 
     return AdaptiveUnknown(adaptiveMap: map, type: stringType);

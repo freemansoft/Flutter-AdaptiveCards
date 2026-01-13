@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
@@ -14,7 +14,10 @@ Widget getSampleForGoldenTest(Key key, String sampleName) {
   return MaterialApp(
     home: RepaintBoundary(
       key: key,
-      child: Scaffold(appBar: AppBar(), body: Center(child: sample)),
+      child: Scaffold(
+        appBar: AppBar(),
+        body: Center(child: sample),
+      ),
     ),
   );
 }
@@ -48,13 +51,12 @@ void main() {
     final fontData5 = File('assets/fonts/Roboto/Roboto-Thin.ttf')
         .readAsBytes()
         .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontLoader =
-        FontLoader('Roboto')
-          ..addFont(fontData)
-          ..addFont(fontData2)
-          ..addFont(fontData3)
-          ..addFont(fontData4)
-          ..addFont(fontData5);
+    final fontLoader = FontLoader('Roboto')
+      ..addFont(fontData)
+      ..addFont(fontData2)
+      ..addFont(fontData3)
+      ..addFont(fontData4)
+      ..addFont(fontData5);
     await fontLoader.load();
   });
 

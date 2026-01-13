@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../riverpod_providers.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
-import '../utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
@@ -90,8 +89,9 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         _selectedChoices.clear();
         _selectedChoices.add(map[id]);
 
-        controller.text =
-            _selectedChoices.isNotEmpty ? _selectedChoices.first : '';
+        controller.text = _selectedChoices.isNotEmpty
+            ? _selectedChoices.first
+            : '';
       });
     }
   }
@@ -184,10 +184,9 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           return null;
         },
         onTap: () async {
-          var list =
-              _choices.keys
-                  .map((key) => SearchModel(id: key, name: _choices[key] ?? ''))
-                  .toList();
+          var list = _choices.keys
+              .map((key) => SearchModel(id: key, name: _choices[key] ?? ''))
+              .toList();
           await widgetState.searchList(list, (dynamic value) {
             setState(() {
               select(value?.id);
@@ -212,15 +211,14 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down),
           style: const TextStyle(),
-          items:
-              _choices.keys
-                  .map(
-                    (key) => DropdownMenuItem<String>(
-                      value: _choices[key],
-                      child: Text(key),
-                    ),
-                  )
-                  .toList(),
+          items: _choices.keys
+              .map(
+                (key) => DropdownMenuItem<String>(
+                  value: _choices[key],
+                  child: Text(key),
+                ),
+              )
+              .toList(),
           onChanged: (value) {
             select(value);
           },
@@ -232,36 +230,33 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   Widget _buildExpandedSingleSelect() {
     return Column(
-      children:
-          _choices.keys.map((key) {
-            return RadioListTile<String>(
-              value: _choices[key]!,
-              onChanged: (value) {
-                select(value);
-              },
-              groupValue:
-                  _selectedChoices.contains(_choices[key])
-                      ? _choices[key]
-                      : null,
-              title: Text(key),
-            );
-          }).toList(),
+      children: _choices.keys.map((key) {
+        return RadioListTile<String>(
+          value: _choices[key]!,
+          onChanged: (value) {
+            select(value);
+          },
+          groupValue: _selectedChoices.contains(_choices[key])
+              ? _choices[key]
+              : null,
+          title: Text(key),
+        );
+      }).toList(),
     );
   }
 
   Widget _buildExpandedMultiSelect() {
     return Column(
-      children:
-          _choices.keys.map((key) {
-            return CheckboxListTile(
-              controlAffinity: ListTileControlAffinity.leading,
-              value: _selectedChoices.contains(_choices[key]),
-              onChanged: (value) {
-                select(_choices[key]);
-              },
-              title: Text(key),
-            );
-          }).toList(),
+      children: _choices.keys.map((key) {
+        return CheckboxListTile(
+          controlAffinity: ListTileControlAffinity.leading,
+          value: _selectedChoices.contains(_choices[key]),
+          onChanged: (value) {
+            select(_choices[key]);
+          },
+          title: Text(key),
+        );
+      }).toList(),
     );
   }
 
@@ -283,8 +278,9 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
     widgetState.changeValue(id, choice);
     setState(() {
-      controller.text =
-          _selectedChoices.isNotEmpty ? _selectedChoices.first : '';
+      controller.text = _selectedChoices.isNotEmpty
+          ? _selectedChoices.first
+          : '';
     });
   }
 

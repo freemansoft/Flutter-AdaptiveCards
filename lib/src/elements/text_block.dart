@@ -1,15 +1,11 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:format/format.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../riverpod_providers.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
-import '../utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/TextBlock.html
@@ -50,14 +46,26 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   @override
   Widget build(BuildContext context) {
     // should be lazily calculated because styling could have changed
-    horizontalAlignment = loadAlignment();
-    fontSize = loadSize();
-    fontWeight = loadWeight();
-    textAlign = loadTextAlign();
-    maxLines = loadMaxLines();
+    final resolver = InheritedReferenceResolver.of(context).resolver;
+    horizontalAlignment = resolver.resolveAlignment(
+      widget.adaptiveMap['horizontalAlignment'],
+    );
+    fontSize = resolver.resolveSize(
+      context: context,
+      sizeString: widget.adaptiveMap['size'],
+    );
+    fontWeight = resolver.resolveWeight(widget.adaptiveMap['weight']);
+    textAlign = resolver.resolveTextAlign(
+      widget.adaptiveMap['horizontalAlignment'],
+    );
+    maxLines = resolver.resolveMaxLines(
+      wrap: widget.adaptiveMap['wrap'],
+      maxLines: widget.adaptiveMap['maxLines'],
+    );
 
-    var textBody =
-        widget.supportMarkdown ? getMarkdownText(context: context) : getText();
+    var textBody = widget.supportMarkdown
+        ? getMarkdownText(context: context)
+        : getText();
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
@@ -90,9 +98,10 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       styleSheet: loadMarkdownStyleSheet(context),
       onTapLink: (text, href, title) {
         if (href != null) {
-          var rawAdaptiveCardState =
-              ProviderScope.containerOf(context, listen: false)
-                  .read(rawAdaptiveCardStateProvider);
+          var rawAdaptiveCardState = ProviderScope.containerOf(
+            context,
+            listen: false,
+          ).read(rawAdaptiveCardStateProvider);
           rawAdaptiveCardState.openUrl(href);
         }
       },
@@ -106,103 +115,15 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   // Probably want to pass context down the tree, until now -> this
   Color? getColor(BuildContext context) {
-    Color? color = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveForegroundColor(
-      context: context,
-      colorType: adaptiveMap['color'],
-      isSubtle: adaptiveMap['isSubtle'],
-    );
-    return color;
-  }
-
-  FontWeight loadWeight() {
-    String weightString =
-        widget.adaptiveMap['weight']?.toLowerCase() ?? 'default';
-    switch (weightString) {
-      case 'default':
-        return FontWeight.normal;
-      case 'lighter':
-        return FontWeight.w300;
-      case 'bolder':
-        return FontWeight.bold;
-      default:
-        return FontWeight.normal;
-    }
-  }
-
-  double loadSize() {
-    String sizeString = widget.adaptiveMap['size']?.toLowerCase() ?? 'default';
-    TextTheme textTheme = Theme.of(context).textTheme;
-    TextStyle? textStyle;
-    switch (sizeString) {
-      case 'default':
-        textStyle = textTheme.bodyMedium;
-      case 'small':
-        textStyle = textTheme.bodySmall;
-      case 'medium':
-        textStyle = textTheme.bodyMedium;
-      case 'large':
-        textStyle = textTheme.bodyLarge;
-      case 'extraLarge':
-        textStyle = textTheme.titleLarge;
-      default: // in case some invalid value
-        // should log here for debugging
-        textStyle = textTheme.bodyMedium;
-    }
-    // Style might not exist but that seems unlikely
-    double? foo = textStyle?.fontSize;
-    assert(() {
-      if (foo == null) {
-        developer.log(
-          format('Unable to find TextStyle for {}', sizeString),
-          name: runtimeType.toString(),
+    Color? color =
+        InheritedReferenceResolver.of(
+          context,
+        ).resolver.resolveForegroundColor(
+          context: context,
+          colorType: adaptiveMap['color'],
+          isSubtle: adaptiveMap['isSubtle'],
         );
-      }
-      return true;
-    }());
-    return foo ??= 12.0;
-  }
-
-  Alignment loadAlignment() {
-    String alignmentString =
-        widget.adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
-
-    switch (alignmentString) {
-      case 'left':
-        return Alignment.centerLeft;
-      case 'center':
-        return Alignment.center;
-      case 'right':
-        return Alignment.centerRight;
-      default:
-        return Alignment.centerLeft;
-    }
-  }
-
-  TextAlign loadTextAlign() {
-    String alignmentString =
-        widget.adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
-
-    switch (alignmentString) {
-      case 'left':
-        return TextAlign.start;
-      case 'center':
-        return TextAlign.center;
-      case 'right':
-        return TextAlign.right;
-      default:
-        return TextAlign.start;
-    }
-  }
-
-  /// This also takes care of the wrap property, because maxLines = 1 => no wrap
-  int loadMaxLines() {
-    bool wrap = widget.adaptiveMap['wrap'] ?? false;
-    if (!wrap) return 1;
-    // can be null, but that's okay for the text widget.
-    // int cannot be null
-    return widget.adaptiveMap['maxLines'] ?? 1;
+    return color;
   }
 
   /// TODO Markdown still has some problems
