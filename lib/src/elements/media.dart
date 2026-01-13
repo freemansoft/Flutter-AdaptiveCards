@@ -37,7 +37,8 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   void initState() {
     super.initState();
 
-    if (Platform.isWindows) {
+    // https://pub.dev/packages/video_player
+    if (Platform.isWindows || Platform.isLinux) {
       debugPrint(
         'this will throw an exception because the video player is not supported on windows',
       );
