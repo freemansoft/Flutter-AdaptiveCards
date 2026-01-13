@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'choice_set.dart';
+import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 
 class ChoiceFilter extends StatefulWidget {
   const ChoiceFilter({super.key, required this.data, required this.callback});
@@ -68,51 +68,49 @@ class ChoiceFilterState extends State<ChoiceFilter> {
               enabledBorder: const OutlineInputBorder(borderSide: BorderSide()),
               filled: true,
               prefixIcon: const Icon(Icons.search),
-              suffix:
-                  _searchController.text.isEmpty
-                      ? null
-                      : IconButton(
-                        icon: const Icon(Icons.cancel),
-                        onPressed: () {
-                          _searchController.clear();
-                          onSearchTextChanged('');
-                        },
-                      ),
+              suffix: _searchController.text.isEmpty
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.cancel),
+                      onPressed: () {
+                        _searchController.clear();
+                        onSearchTextChanged('');
+                      },
+                    ),
             ),
             onChanged: onSearchTextChanged,
           ),
         ),
         Expanded(
-          child:
-              _searchResult.isNotEmpty || _searchController.text.isNotEmpty
-                  ? ListView.builder(
-                    itemCount: _searchResult.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(_searchResult[index].name),
-                        onTap: () {
-                          Navigator.pop(context);
-                          if (widget.callback != null) {
-                            widget.callback!(_searchResult[index]);
-                          }
-                        },
-                      );
-                    },
-                  )
-                  : ListView.builder(
-                    itemCount: _data.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(_data[index].name),
-                        onTap: () {
-                          Navigator.pop(context);
-                          if (widget.callback != null) {
-                            widget.callback!(_data[index]);
-                          }
-                        },
-                      );
-                    },
-                  ),
+          child: _searchResult.isNotEmpty || _searchController.text.isNotEmpty
+              ? ListView.builder(
+                  itemCount: _searchResult.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_searchResult[index].name),
+                      onTap: () {
+                        Navigator.pop(context);
+                        if (widget.callback != null) {
+                          widget.callback!(_searchResult[index]);
+                        }
+                      },
+                    );
+                  },
+                )
+              : ListView.builder(
+                  itemCount: _data.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_data[index].name),
+                      onTap: () {
+                        Navigator.pop(context);
+                        if (widget.callback != null) {
+                          widget.callback!(_data[index]);
+                        }
+                      },
+                    );
+                  },
+                ),
         ),
       ],
     );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
-
-import 'flutter_raw_adaptive_card.dart';
 
 /// The visitor, the function is called once for every element in the tree
 typedef AdaptiveElementVisitor = void Function(AdaptiveElement element);

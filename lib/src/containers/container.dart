@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Container.html
@@ -28,10 +27,11 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
     super.initState();
 
     if (adaptiveMap['items'] != null) {
-      children =
-          List<Map<String, dynamic>>.from(adaptiveMap['items']).map((child) {
-            return widgetState.cardRegistry.getElement(child);
-          }).toList();
+      children = List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
+        child,
+      ) {
+        return widgetState.cardRegistry.getElement(child);
+      }).toList();
     } else {
       children = [];
     }
@@ -49,13 +49,15 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
 
   @override
   Widget build(BuildContext context) {
-    var backgroundColor = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      context: context,
-      style: adaptiveMap['style']?.toString(),
-      backgroundImageUrl: adaptiveMap['backgroundImage']?['url']?.toString(),
-    );
+    var backgroundColor =
+        InheritedReferenceResolver.of(
+          context,
+        ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+          context: context,
+          style: adaptiveMap['style']?.toString(),
+          backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
+              ?.toString(),
+        );
 
     return ChildStyler(
       adaptiveMap: adaptiveMap,

@@ -1,14 +1,13 @@
 import 'dart:developer' as developer;
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-import 'package:format/format.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../riverpod_providers.dart';
-
-import '../adaptive_mixins.dart';
-import '../elements/actions/show_card.dart';
+import 'package:format/format.dart';
 
 /// The `AdaptiveCard` card type.
 /// This is actually classified under _cards_ and not _elements_ in the taxonomy
@@ -62,10 +61,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       name: runtimeType.toString(),
     );
 
-    children =
-        List<Map<String, dynamic>>.from(
-          adaptiveMap['body'],
-        ).map((map) => widgetState.cardRegistry.getElement(map)).toList();
+    children = List<Map<String, dynamic>>.from(
+      adaptiveMap['body'],
+    ).map((map) => widgetState.cardRegistry.getElement(map)).toList();
 
     backgroundImage = adaptiveMap['backgroundImage'];
   }
@@ -115,10 +113,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     Widget actionWidget;
     if (actionsOrientation == Axis.vertical) {
-      List<Widget> actionWidgets =
-          allActions.map((action) {
-            return SizedBox(width: double.infinity, child: action);
-          }).toList();
+      List<Widget> actionWidgets = allActions.map((action) {
+        return SizedBox(width: double.infinity, child: action);
+      }).toList();
 
       actionWidget = Row(
         children: [
@@ -131,13 +128,12 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
         ],
       );
     } else {
-      List<Widget> actionWidgets =
-          allActions.map((action) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: action,
-            );
-          }).toList();
+      List<Widget> actionWidgets = allActions.map((action) {
+        return Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: action,
+        );
+      }).toList();
 
       actionWidget = Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,13 +148,12 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     Widget result = Container(
       margin: const EdgeInsets.all(8.0),
-      child:
-          widget.listView == true
-              ? ListView(shrinkWrap: true, children: widgetChildren)
-              : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: widgetChildren,
-              ),
+      child: widget.listView == true
+          ? ListView(shrinkWrap: true, children: widgetChildren)
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widgetChildren,
+            ),
     );
 
     if (backgroundImage != null) {

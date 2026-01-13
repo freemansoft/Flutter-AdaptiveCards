@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-
-import '../../adaptive_mixins.dart';
-import '../../generic_action.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/icon_button.dart';
+import 'package:flutter_adaptive_cards/src/generic_action.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.Submit.html
 ///
 class AdaptiveActionSubmit extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveActionSubmit({super.key, required this.adaptiveMap, this.color});
+  AdaptiveActionSubmit({super.key, required this.adaptiveMap});
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  // Native styling
-  final Color? color;
 
   @override
   AdaptiveActionSubmitState createState() => AdaptiveActionSubmitState();
@@ -33,14 +30,7 @@ class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: widget.color, // Background color
-        // minimumSize: const Size.fromHeight(50),
-      ),
-      onPressed: onTapped,
-      child: Text(title, textAlign: TextAlign.center),
-    );
+    return IconButtonAction(adaptiveMap: adaptiveMap, onTapped: onTapped);
   }
 
   @override

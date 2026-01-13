@@ -13,6 +13,7 @@ Widget getWidget(String path) {
     map,
     //onChange: (_) {},
     onSubmit: (_) {},
+    onExecute: (_) {},
     onOpenUrl: (_) {},
     // debug panels don't show in prod so dislable them in the golden images
     showDebugJson: false,

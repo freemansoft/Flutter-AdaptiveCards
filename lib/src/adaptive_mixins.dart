@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'flutter_raw_adaptive_card.dart';
-import 'riverpod_providers.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
   // this is an abstract method that everyone needs to implmenet
@@ -21,8 +20,10 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   void initState() {
     super.initState();
 
-    widgetState = ProviderScope.containerOf(context, listen: false)
-        .read(rawAdaptiveCardStateProvider);
+    widgetState = ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(rawAdaptiveCardStateProvider);
     if (widget.adaptiveMap.containsKey('id')) {
       id = widget.adaptiveMap['id'];
     } else {
@@ -76,7 +77,8 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
 }
 
 mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>
-    on State<T> implements AdaptiveInputMixin<T> {
+    on State<T>
+    implements AdaptiveInputMixin<T> {
   @override
   void initState() {
     super.initState();

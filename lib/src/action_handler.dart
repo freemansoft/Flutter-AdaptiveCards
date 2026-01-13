@@ -6,11 +6,13 @@ class DefaultAdaptiveCardHandlers extends InheritedWidget {
   const DefaultAdaptiveCardHandlers({
     super.key,
     required this.onSubmit,
+    required this.onExecute,
     required this.onOpenUrl,
     required super.child,
   });
 
   final Function(Map map) onSubmit;
+  final Function(Map map) onExecute;
   final Function(String url) onOpenUrl;
 
   static DefaultAdaptiveCardHandlers? of(BuildContext context) {

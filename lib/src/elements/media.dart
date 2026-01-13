@@ -1,10 +1,9 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:video_player/video_player.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
-import '../utils.dart';
 
 /// Implements
 /// * https://adaptivecards.io/explorer/Media.html

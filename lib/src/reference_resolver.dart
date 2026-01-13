@@ -93,6 +93,39 @@ class ReferenceResolver {
     return foregroundColor;
   }
 
+  Color? resolveButtonBackgroundColor({
+    required BuildContext context,
+    required String? style,
+  }) {
+    String myStyle = style ?? 'default';
+
+    Color? backgroundColor;
+
+    switch (myStyle) {
+      case 'default':
+      case 'positive':
+        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+      case 'destructive':
+        backgroundColor = Theme.of(context).colorScheme.errorContainer;
+      default:
+        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+    }
+
+    assert(() {
+      developer.log(
+        format(
+          'resolved background style:{} to color:{}',
+          myStyle,
+          backgroundColor,
+        ),
+        name: runtimeType.toString(),
+      );
+      return true;
+    }());
+
+    return backgroundColor;
+  }
+
   /// Resolves a background color from the host config
   /// Assumes you always want a color call
   ///
@@ -193,5 +226,117 @@ class ReferenceResolver {
   /// "Horizontal" or "Vertical"
   String resolveOrientation(String s) {
     return 'Horizontal';
+  }
+
+  /// Resolves font weight from a string value
+  ///
+  /// Typically one of:
+  /// - default
+  /// - lighter
+  /// - bolder
+  FontWeight resolveWeight(String? weightString) {
+    String weight = weightString?.toLowerCase() ?? 'default';
+    switch (weight) {
+      case 'default':
+        return FontWeight.normal;
+      case 'lighter':
+        return FontWeight.w300;
+      case 'bolder':
+        return FontWeight.bold;
+      default:
+        return FontWeight.normal;
+    }
+  }
+
+  /// Resolves font size from a string value using the theme
+  ///
+  /// Typically one of:
+  /// - default
+  /// - small
+  /// - medium
+  /// - large
+  /// - extraLarge
+  double resolveSize({required BuildContext context, String? sizeString}) {
+    String size = sizeString?.toLowerCase() ?? 'default';
+    TextTheme textTheme = Theme.of(context).textTheme;
+    TextStyle? textStyle;
+    switch (size) {
+      case 'default':
+        textStyle = textTheme.bodyMedium;
+      case 'small':
+        textStyle = textTheme.bodySmall;
+      case 'medium':
+        textStyle = textTheme.bodyMedium;
+      case 'large':
+        textStyle = textTheme.bodyLarge;
+      case 'extralarge':
+        textStyle = textTheme.titleLarge;
+      default: // in case some invalid value
+        // should log here for debugging
+        textStyle = textTheme.bodyMedium;
+    }
+    // Style might not exist but that seems unlikely
+    double? fontSize = textStyle?.fontSize;
+    assert(() {
+      if (fontSize == null) {
+        developer.log(
+          format('Unable to find TextStyle for {}', size),
+          name: runtimeType.toString(),
+        );
+      }
+      return true;
+    }());
+    return fontSize ?? 12.0;
+  }
+
+  /// Resolves horizontal alignment from a string value
+  ///
+  /// Typically one of:
+  /// - left
+  /// - center
+  /// - right
+  Alignment resolveAlignment(String? alignmentString) {
+    String alignment = alignmentString?.toLowerCase() ?? 'left';
+    switch (alignment) {
+      case 'left':
+        return Alignment.centerLeft;
+      case 'center':
+        return Alignment.center;
+      case 'right':
+        return Alignment.centerRight;
+      default:
+        return Alignment.centerLeft;
+    }
+  }
+
+  /// Resolves text alignment from a string value
+  ///
+  /// Typically one of:
+  /// - left
+  /// - center
+  /// - right
+  TextAlign resolveTextAlign(String? alignmentString) {
+    String alignment = alignmentString?.toLowerCase() ?? 'left';
+    switch (alignment) {
+      case 'left':
+        return TextAlign.start;
+      case 'center':
+        return TextAlign.center;
+      case 'right':
+        return TextAlign.right;
+      default:
+        return TextAlign.start;
+    }
+  }
+
+  /// Resolves max lines based on wrap and maxLines values
+  ///
+  /// This also takes care of the wrap property, because maxLines = 1 => no wrap
+  int resolveMaxLines({bool? wrap, int? maxLines}) {
+    bool shouldWrap = wrap ?? false;
+    if (!shouldWrap) return 1;
+    // can be null, but that's okay for the text widget.
+    // int cannot be null
+    return maxLines ?? 1;
   }
 }

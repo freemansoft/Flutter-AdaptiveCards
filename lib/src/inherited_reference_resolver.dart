@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 
 class InheritedReferenceResolver extends InheritedWidget {
   final ReferenceResolver resolver;

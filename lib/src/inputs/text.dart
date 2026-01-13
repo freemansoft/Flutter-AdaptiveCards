@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../riverpod_providers.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
-import '../utils.dart';
 
 ///
 /// httfps://adaptivecards.io/explorer/Input.Text.html
@@ -112,8 +111,10 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
 
   @override
   bool checkRequired() {
-    var adaptiveCardElement = ProviderScope.containerOf(context, listen: false)
-        .read(adaptiveCardElementStateProvider);
+    var adaptiveCardElement = ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(adaptiveCardElementStateProvider);
     var formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();

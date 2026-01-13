@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-
-import 'adaptive_mixins.dart';
-import 'generic_action.dart';
 
 class SeparatorElement extends StatefulWidget
     implements AdaptiveElementWidgetMixin {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 
 /// Element for an unknown type
 ///

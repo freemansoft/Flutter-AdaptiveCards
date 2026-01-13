@@ -12,37 +12,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ipdated for flutter 3.24 9/2025
 - Tested with ios 26 simulator and macos 26.0 9/2025
 - Pointed at https microsoft images which causes CORS issue in web example app 9/2025
+- Updated to the current Flutter
+- Migrating all style into the Resolver so that all AdaptiveCard text styles are mapped there. Future create themeing for this
 
 ## [0.2.0](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
 
 This is a placeholder until someone figures out how to do the release numbers and do releases.
 Mostly because I didn't want this to overlay the 2020 Neohelden version.
 
+### Merged 0.2.0
 
-### Merged
+### Commits 0.2.0
 
-### Commits
-
-- Updated all dependencies to latest as of 7/2023 i
-- Moving to null safe Flutter SDK 7/2023
-
-## [0.1.3] pre - various parties
+## [0.13] pre - various parties
 
 This section should include anything prior to the 6/2023
 
 - Updated may packages including UUID to version 3.0 and others
 
-### Merged
+### Merged 0.1.3
 
-### Commits
+### Commits 0.1.3
 
 ## [0.1.2](https://github.com/neohelden/Flutter-AdaptiveCards/compare/0.1.1...0.1.2) - 2020-12-10
 
-### Merged
+### Merged 0.1.2
 
 - Release 0.1.2 [`#62`](https://github.com/neohelden/Flutter-AdaptiveCards/pull/62)
 
-### Commits
+### Commits 0.1.2
 
 - Update changelog [`faac550`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/faac550e35a9f44dad6fe42d41233d24956ed936)
 - MacOS: Fix network issue [`b6d9bdf`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/b6d9bdf06f620c130a2ba6be16a786c4266d17fe)
@@ -50,11 +48,11 @@ This section should include anything prior to the 6/2023
 
 ## [0.1.1](https://github.com/neohelden/Flutter-AdaptiveCards/compare/0.1.0...0.1.1) - 2020-12-10
 
-### Merged
+### Merged 0.1.1
 
 - Further changes for Release 0.1.0 [`#61`](https://github.com/neohelden/Flutter-AdaptiveCards/pull/61)
 
-### Commits
+### Commits 0.1.1
 
 - Update changelog [`f16168a`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/f16168ac59c3e7b00c7eef5edf6f77bfbc5a8107)
 - Update test files [`da5ee58`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/da5ee5870aae663f8ebc02d760b98ed4529eaef3)
@@ -65,7 +63,7 @@ This section should include anything prior to the 6/2023
 
 ## 0.1.0 - 2020-12-10
 
-### Merged
+### Merged 0.1.0
 
 - Release 0.1.0 [`#60`](https://github.com/neohelden/Flutter-AdaptiveCards/pull/60)
 - Upgrade all dependencies [`#59`](https://github.com/neohelden/Flutter-AdaptiveCards/pull/59)
@@ -88,12 +86,12 @@ This section should include anything prior to the 6/2023
 - Add support for column background image [`#29`](https://github.com/neohelden/Flutter-AdaptiveCards/pull/29)
 - Add support for ActionSet's [`#28`](https://github.com/neohelden/Flutter-AdaptiveCards/pull/28)
 
-### Fixed
+### Fixed 0.1.0
 
 - Fix #18, add example to gallery [`#18`](https://github.com/neohelden/Flutter-AdaptiveCards/issues/18)
 - Update README (close #17) [`#17`](https://github.com/neohelden/Flutter-AdaptiveCards/issues/17)
 
-### Commits
+### Commits 0.1.0
 
 - Initial commit [`a10b911`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/a10b91147fbbb8e2914c0b703f8625dc4b9bdf08)
 - added src with exports, added input.text [`7cedf57`](https://github.com/neohelden/Flutter-AdaptiveCards/commit/7cedf57b1cc92a2fe9c49c8f34a284d35f1749b8)

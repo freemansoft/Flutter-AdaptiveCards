@@ -1,14 +1,13 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../riverpod_providers.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
-import '../utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Date.html
@@ -119,10 +118,9 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
                 if (result != null) {
                   setState(() {
                     selectedDateTime = result;
-                    controller.text =
-                        selectedDateTime == null
-                            ? placeholder
-                            : inputFormat.format(selectedDateTime!);
+                    controller.text = selectedDateTime == null
+                        ? placeholder
+                        : inputFormat.format(selectedDateTime!);
                   });
                 }
               },
@@ -146,10 +144,9 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
       try {
         setState(() {
           selectedDateTime = inputFormat.parse(map[id]);
-          controller.text =
-              selectedDateTime == null
-                  ? placeholder
-                  : inputFormat.format(selectedDateTime!);
+          controller.text = selectedDateTime == null
+              ? placeholder
+              : inputFormat.format(selectedDateTime!);
         });
       } catch (formatException) {
         developer.log(
@@ -162,8 +159,10 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
 
   @override
   bool checkRequired() {
-    var adaptiveCardElement = ProviderScope.containerOf(context, listen: false)
-        .read(adaptiveCardElementStateProvider);
+    var adaptiveCardElement = ProviderScope.containerOf(
+      context,
+      listen: false,
+    ).read(adaptiveCardElementStateProvider);
     var formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();

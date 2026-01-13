@@ -4,35 +4,36 @@ version: 0.2.1
 homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.8.1
 
 dependencies:
-  flutter:
-    sdk: flutter
-
-  # General
-  http: ^1.5.0
-  flutter_riverpod: ^3.0.0
-  uuid: ^4.5.1
-  ## Localization
-  intl: ^0.20.0
-  ## Used for automatic color adjustment for dark theme
-  tinycolor2: ^3.0.1
-
+ 
   # Content
   ## Video player with controls
   chewie: ^1.4.0
-  video_player: ^2.10.0
+  flutter:
+    sdk: flutter
+
   ## Markdown renderer
   flutter_markdown: ^0.7.7+1
+  flutter_riverpod: ^3.0.0
   format: ^1.5.0
+  # General
+  http: ^1.6.0
+  ## Localization
+  intl: ^0.20.2
+
+  # Used for automatic color adjustment for dark theme
+  tinycolor2: ^3.0.1
+  uuid: ^4.5.1
+  video_player: ^2.10.0
 
 dev_dependencies:
+  flutter_lints:
   flutter_test:
     sdk: flutter
-  test: ^1.25.15
   mockito: ^5.4.5
-  flutter_lints:
+  test: ^1.25.15
 
 flutter:
   uses-material-design: true

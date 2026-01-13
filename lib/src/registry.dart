@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 
-import 'cards/adaptive_card_element.dart';
-import 'containers/column_set.dart';
-import 'containers/container.dart';
-import 'containers/fact_set.dart';
-import 'containers/image_set.dart';
-import 'containers/table.dart';
-import 'elements/action_set.dart';
-import 'elements/actions/open_url.dart';
-import 'elements/actions/show_card.dart';
-import 'elements/actions/submit.dart';
-import 'elements/image.dart';
-import 'elements/media.dart';
-import 'elements/text_block.dart';
-import 'elements/unknown.dart';
-import 'flutter_raw_adaptive_card.dart';
-import 'generic_action.dart';
-import 'inputs/choice_set.dart';
-import 'inputs/date.dart';
-import 'inputs/number.dart';
-import 'inputs/text.dart';
-import 'inputs/time.dart';
-import 'inputs/toggle.dart';
+import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
+import 'package:flutter_adaptive_cards/src/containers/column_set.dart';
+import 'package:flutter_adaptive_cards/src/containers/container.dart';
+import 'package:flutter_adaptive_cards/src/containers/fact_set.dart';
+import 'package:flutter_adaptive_cards/src/containers/image_set.dart';
+import 'package:flutter_adaptive_cards/src/containers/table.dart';
+import 'package:flutter_adaptive_cards/src/elements/action_set.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/execute.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/open_url.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/submit.dart';
+import 'package:flutter_adaptive_cards/src/elements/image.dart';
+import 'package:flutter_adaptive_cards/src/elements/media.dart';
+import 'package:flutter_adaptive_cards/src/elements/text_block.dart';
+import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/generic_action.dart';
+import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards/src/inputs/date.dart';
+import 'package:flutter_adaptive_cards/src/inputs/number.dart';
+import 'package:flutter_adaptive_cards/src/inputs/text.dart';
+import 'package:flutter_adaptive_cards/src/inputs/time.dart';
+import 'package:flutter_adaptive_cards/src/inputs/toggle.dart';
 
 typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 
@@ -97,8 +98,9 @@ class CardRegistry {
       case 'Action.OpenUrl':
         return GenericActionOpenUrl(map, state);
       case 'Action.Submit':
-      case 'Action.Execute':
         return GenericSubmitAction(map, state);
+      case 'Action.Execute':
+        return GenericExecuteAction(map, state);
       case 'Action.ToggleVisibility':
         return null;
     }
@@ -193,6 +195,8 @@ class CardRegistry {
         return AdaptiveActionOpenUrl(adaptiveMap: map);
       case 'Action.Submit':
         return AdaptiveActionSubmit(adaptiveMap: map);
+      case 'Action.Execute':
+        return AdaptiveActionExecute(adaptiveMap: map);
     }
     return AdaptiveUnknown(adaptiveMap: map, type: stringType);
   }
@@ -210,8 +214,8 @@ class DefaultCardRegistry extends InheritedWidget {
   final CardRegistry cardRegistry;
 
   static CardRegistry? of(BuildContext context) {
-    DefaultCardRegistry? cardRegistry =
-        context.dependOnInheritedWidgetOfExactType<DefaultCardRegistry>();
+    DefaultCardRegistry? cardRegistry = context
+        .dependOnInheritedWidgetOfExactType<DefaultCardRegistry>();
     if (cardRegistry == null) return null;
     return cardRegistry.cardRegistry;
   }

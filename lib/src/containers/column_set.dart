@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/containers/column.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-
-import '../adaptive_mixins.dart';
-import '../additional.dart';
-import 'column.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ColumnSet.html
@@ -32,15 +31,14 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   @override
   void initState() {
     super.initState();
-    columns =
-        List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? [])
-            .map(
-              (child) => AdaptiveColumn(
-                adaptiveMap: child,
-                supportMarkdown: widget.supportMarkdown,
-              ),
-            )
-            .toList();
+    columns = List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? [])
+        .map(
+          (child) => AdaptiveColumn(
+            adaptiveMap: child,
+            supportMarkdown: widget.supportMarkdown,
+          ),
+        )
+        .toList();
 
     horizontalAlignment = loadHorizontalAlignment();
   }
@@ -48,13 +46,15 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    backgroundColor = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
-      context: context,
-      style: adaptiveMap['style']?.toString(),
-      backgroundImageUrl: adaptiveMap['backgroundImage']?['url']?.toString(),
-    );
+    backgroundColor =
+        InheritedReferenceResolver.of(
+          context,
+        ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+          context: context,
+          style: adaptiveMap['style']?.toString(),
+          backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
+              ?.toString(),
+        );
   }
 
   @override

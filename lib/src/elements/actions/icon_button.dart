@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-import '../../adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
   IconButtonAction({
@@ -32,11 +33,24 @@ class IconButtonActionState extends State<IconButtonAction>
 
   @override
   Widget build(BuildContext context) {
-    Widget result = ElevatedButton(onPressed: onTapped, child: Text(title));
+    final resolver = InheritedReferenceResolver.of(context).resolver;
+    final buttonStyle = ElevatedButton.styleFrom(
+      backgroundColor: resolver.resolveButtonBackgroundColor(
+        context: context,
+        style: adaptiveMap['style'],
+      ),
+    );
+
+    Widget result = ElevatedButton(
+      onPressed: onTapped,
+      style: buttonStyle,
+      child: Text(title),
+    );
 
     if (iconUrl != null) {
       result = ElevatedButton.icon(
         onPressed: onTapped,
+        style: buttonStyle,
         icon: Image.network(iconUrl!, height: 36.0),
         label: Text(title),
       );

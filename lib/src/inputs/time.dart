@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../adaptive_mixins.dart';
-import '../additional.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Time.html

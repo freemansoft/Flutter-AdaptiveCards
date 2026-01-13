@@ -5,12 +5,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_adaptive_cards/src/action_handler.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:format/format.dart';
 import 'package:http/http.dart' as http;
-
-import 'action_handler.dart';
-import 'flutter_raw_adaptive_card.dart';
-import 'registry.dart';
 
 /// Core definition for AdaptiveCardContent providers.
 /// We use specialized versions for each way we get content
@@ -70,6 +69,7 @@ class AdaptiveCard extends StatefulWidget {
     this.initData,
     this.onChange,
     this.onSubmit,
+    this.onExecute,
     this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
@@ -84,6 +84,7 @@ class AdaptiveCard extends StatefulWidget {
     this.initData,
     this.onChange,
     this.onSubmit,
+    this.onExecute,
     this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
@@ -100,6 +101,7 @@ class AdaptiveCard extends StatefulWidget {
     this.initData,
     this.onChange,
     this.onSubmit,
+    this.onExecute,
     this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
@@ -116,6 +118,7 @@ class AdaptiveCard extends StatefulWidget {
     this.initData,
     this.onChange,
     this.onSubmit,
+    this.onExecute,
     this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
@@ -143,6 +146,9 @@ class AdaptiveCard extends StatefulWidget {
   /// Environment specific function that knows how to handle submission to remote APIs
   final Function(Map map)? onSubmit;
 
+  /// Environment specific function that knows how to handle execution to remote APIs
+  final Function(Map map)? onExecute;
+
   /// Environment specific function that knows how to open a URL on this platform
   final Function(String url)? onOpenUrl;
 
@@ -169,6 +175,9 @@ class AdaptiveCardState extends State<AdaptiveCard> {
 
   /// Environment specific function that knows how to handle submission to remote APIs
   Function(Map map)? onSubmit;
+
+  /// Environment specific function that knows how to handle execution to remote APIs
+  Function(Map map)? onExecute;
 
   /// Environment specific function that knows how to open a URL on this platform
   Function(String url)? onOpenUrl;
@@ -236,6 +245,26 @@ class AdaptiveCardState extends State<AdaptiveCard> {
       }
     }
 
+    // Update the onExecute if one is provided or there is one in the DefaultAdapterCardHandlers
+    if (widget.onExecute != null) {
+      onExecute = widget.onExecute;
+    } else {
+      var foundOnExecute = DefaultAdaptiveCardHandlers.of(context)?.onExecute;
+      if (foundOnExecute != null) {
+        onExecute = foundOnExecute;
+      } else {
+        onExecute = (it) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                format('No handler found for: \n {}', it.toString()),
+              ),
+            ),
+          );
+        };
+      }
+    }
+
     // Update the onOpenUrl if one is provided or there is one in the DefaultAdapterCardHandlers
     if (widget.onOpenUrl != null) {
       onOpenUrl = widget.onOpenUrl;
@@ -267,6 +296,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
       onChange: onChange,
       onOpenUrl: onOpenUrl,
       onSubmit: onSubmit,
+      onExecute: onExecute,
       listView: widget.listView,
       showDebugJson: widget.showDebugJson,
     );
