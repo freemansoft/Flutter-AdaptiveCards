@@ -37,7 +37,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
           context: context,
           style: adaptiveMap['style']?.toString(),
           backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
@@ -105,9 +105,9 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     Color? color =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveForegroundColor(
+        ).resolver.resolveContainerForegroundColor(
           context: context,
-          colorType: adaptiveMap['style'],
+          style: adaptiveMap['style'],
           isSubtle: adaptiveMap['isSubtle'],
         );
 

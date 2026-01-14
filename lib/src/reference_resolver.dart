@@ -7,9 +7,10 @@ import 'package:format/format.dart';
 ///
 /// All values can also be null, in that case the default is used
 class ReferenceResolver {
-  ReferenceResolver({this.currentStyle});
+  ReferenceResolver({this.currentContainerStyle});
 
-  final String? currentStyle;
+  // used for locally overriding the default style like in nested containers
+  final String? currentContainerStyle;
 
   /// Resolves a color type from the Theme palette if colorType is null or 'default'
   /// Resovles a color to the host config if colorType is not null and not 'default'
@@ -24,57 +25,52 @@ class ReferenceResolver {
   /// - attention
   ///
   /// If the color type is 'default' then it picks the standard color for the current style.
-  Color? resolveForegroundColor({
+  Color? resolveContainerForegroundColor({
     required BuildContext context,
-    String? colorType,
+    String? style,
     bool? isSubtle,
   }) {
     final String subtleOrDefault = isSubtle ?? false ? 'subtle' : 'default';
-    // default or emphasis, I think
-    final String myStyle = currentStyle ?? 'default';
+    // inherited container style used if this widget is using default
+    // style if passed in and not default
+    // then currentcontainer style if set
+    // else finally default
+    final String myStyle = (style != null && style != 'default')
+        ? style
+        : (currentContainerStyle != null && currentContainerStyle != 'default')
+        ? currentContainerStyle as String
+        : 'default';
 
     Color? foregroundColor;
-    switch (colorType) {
-      // "default" means default for the current style
-      case 'default':
-        {
-          // derive our foreground color from the theme if the color is set to default
 
-          switch (myStyle) {
-            case 'default':
-              foregroundColor =
-                  Theme.of(context).colorScheme.onPrimaryContainer;
-            case 'emphasis':
-              foregroundColor =
-                  Theme.of(context).colorScheme.onSecondaryContainer;
-            case 'good':
-              foregroundColor =
-                  Theme.of(context).colorScheme.onTertiaryContainer;
-            case 'attention':
-            case 'warning:':
-              foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
-            default:
-              foregroundColor =
-                  Theme.of(context).colorScheme.onPrimaryContainer;
-          }
-        }
-      // we can override the default foreground for the current background
-      case 'emphasis':
-        foregroundColor = Theme.of(context).colorScheme.onSecondaryContainer;
-      case 'good':
-        foregroundColor = Theme.of(context).colorScheme.onTertiaryContainer;
-      case 'attention':
-      case 'warning:':
+    // this should be themed and support light and dark
+    // TODO note that contained continers behave differently
+    // https://adaptivecards.io/explorer/Container.html
+    switch (myStyle) {
+      case 'default': // black in demo
+        foregroundColor =
+            Theme.of(context).textTheme.bodySmall?.color ?? Colors.black;
+      case 'dark':
+        foregroundColor =
+            Theme.of(context).textTheme.bodySmall?.color ?? Colors.black;
+      case 'light':
+        foregroundColor = Colors.grey;
+      case 'accent': // blue in demo
+        foregroundColor = Colors.blueAccent;
+      case 'good': // green in demo
+        foregroundColor = Colors.greenAccent;
+      case 'attention': // red in demo
+        foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
+      case 'warning': // orange in demo
         foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
       default:
-        foregroundColor = null;
+      // this was null in some cases to inherit the current text color
+      // foregroundColor = Theme.of(context).colorScheme.onPrimaryContainer;
     }
+
     if (foregroundColor != null && subtleOrDefault == 'subtle') {
-      foregroundColor = Color.fromARGB(
-        foregroundColor.a ~/ 2,
-        foregroundColor.r.toInt(),
-        foregroundColor.g.toInt(),
-        foregroundColor.b.toInt(),
+      foregroundColor = foregroundColor.withValues(
+        alpha: foregroundColor.a * .9,
       );
     }
     assert(() {
@@ -82,7 +78,7 @@ class ReferenceResolver {
         format(
           'resolved foreground style:{} color:{} subtle:{} to color:{}',
           myStyle,
-          colorType,
+          style,
           subtleOrDefault,
           foregroundColor,
         ),
@@ -141,29 +137,37 @@ class ReferenceResolver {
   ///
   /// Maps to surface and primaryContainer or SecondaryContainer
   ///
-  /// Use resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle() if you want no color if nothing specified
+  /// Use resolveContainerBackgroundColorIfNoBackgroundAndNoStyle() if you want no color if nothing specified
 
-  Color? resolveBackgroundColor({
+  Color? resolveContainerBackgroundColor({
     required BuildContext context,
     required String? style,
   }) {
-    String myStyle = style ?? 'default';
+    // style if passed in and not default
+    // then currentcontainer style if set
+    // else finally default
+    final String myStyle = (style != null && style != 'default')
+        ? style
+        : (currentContainerStyle != null)
+        ? currentContainerStyle as String
+        : 'default';
 
     Color? backgroundColor;
 
     switch (myStyle) {
       case 'default':
-      case 'accent':
-        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
       case 'emphasis':
-        backgroundColor = Theme.of(context).colorScheme.secondaryContainer;
-      case 'good':
-        backgroundColor = Theme.of(context).colorScheme.tertiaryContainer;
-      case 'attention':
-      case 'warning:':
+        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+      case 'accent': // blue in demo
+        backgroundColor = Colors.blueAccent;
+      case 'good': // green in demo
+        backgroundColor = Colors.greenAccent;
+      case 'attention': // red in demo
+        backgroundColor = Theme.of(context).colorScheme.errorContainer;
+      case 'warning': // orange in demo
         backgroundColor = Theme.of(context).colorScheme.errorContainer;
       default:
-        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+      //backgroundColor = Theme.of(context).colorScheme.primaryContainer;
     }
 
     assert(() {
@@ -182,14 +186,16 @@ class ReferenceResolver {
   }
 
   ///
-  /// This returns no color if a background image url is provided or if there is no style
+  /// This returns no color
+  /// if a background image url is provided
+  /// or if there is no style in the json
   ///
   /// Style is typically one of the ContainerStyles
   /// - default
   /// - emphasis
   ///
   ///
-  Color? resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle({
+  Color? resolveContainerBackgroundColorIfNoBackgroundAndNoStyle({
     required BuildContext context,
     required String? style,
     required String? backgroundImageUrl,
@@ -200,12 +206,15 @@ class ReferenceResolver {
 
     if (style == null) return null;
 
-    return resolveBackgroundColor(context: context, style: style.toLowerCase());
+    return resolveContainerBackgroundColor(
+      context: context,
+      style: style.toLowerCase(),
+    );
   }
 
   ReferenceResolver copyWith({String? style}) {
     String myStyle = style ?? 'default';
-    return ReferenceResolver(currentStyle: myStyle);
+    return ReferenceResolver(currentContainerStyle: myStyle);
   }
 
   /// TODO: hook up to something
@@ -217,9 +226,18 @@ class ReferenceResolver {
     return intSpacing.toDouble();
   }
 
-  /// TODO: Hook this up to something!
+  /// Should standardize this or look up current zoom
   int resolveImageSizes(String sizeDescription) {
-    return 64;
+    switch (sizeDescription) {
+      case 'small':
+        return 64;
+      case 'medium':
+        return 64;
+      case 'large':
+        return 64;
+      default:
+        return 64;
+    }
   }
 
   ///TODO: hook this up somehow
@@ -234,7 +252,7 @@ class ReferenceResolver {
   /// - default
   /// - lighter
   /// - bolder
-  FontWeight resolveWeight(String? weightString) {
+  FontWeight resolveFontWeight(String? weightString) {
     String weight = weightString?.toLowerCase() ?? 'default';
     switch (weight) {
       case 'default':
@@ -256,7 +274,7 @@ class ReferenceResolver {
   /// - medium
   /// - large
   /// - extraLarge
-  double resolveSize({required BuildContext context, String? sizeString}) {
+  double resolveFontSize({required BuildContext context, String? sizeString}) {
     String size = sizeString?.toLowerCase() ?? 'default';
     TextTheme textTheme = Theme.of(context).textTheme;
     TextStyle? textStyle;
@@ -289,6 +307,21 @@ class ReferenceResolver {
     return fontSize ?? 12.0;
   }
 
+  // Returns a font family name or null if no FontType is specified
+  String? resolveFontType(BuildContext context, String? typeString) {
+    String? type = typeString?.toLowerCase();
+    String? currentFontFamily = DefaultTextStyle.of(context).style.fontFamily;
+    switch (type) {
+      case 'default':
+        return currentFontFamily;
+      case 'monospace':
+        // this is a guess and should come from somewhere
+        return currentFontFamily;
+      default:
+        return currentFontFamily;
+    }
+  }
+
   /// Resolves horizontal alignment from a string value
   ///
   /// Typically one of:
@@ -304,8 +337,73 @@ class ReferenceResolver {
         return Alignment.center;
       case 'right':
         return Alignment.centerRight;
-      default:
+      default: // should this be null to inherit
         return Alignment.centerLeft;
+    }
+  }
+
+  Alignment? resolveContainerAlignment(String? horizontalAlignment) {
+    horizontalAlignment = horizontalAlignment?.toLowerCase() ?? '';
+
+    switch (horizontalAlignment) {
+      case 'left':
+        return Alignment.topLeft;
+      case 'center':
+        return Alignment.topCenter;
+      case 'right':
+        return Alignment.topRight;
+      default:
+        return null;
+    }
+  }
+
+  CrossAxisAlignment resolveHorzontalCrossAxisAlignment(
+    String? horizontalAlignment,
+  ) {
+    horizontalAlignment = horizontalAlignment?.toLowerCase() ?? 'left';
+    switch (horizontalAlignment) {
+      case 'left':
+        return CrossAxisAlignment.start;
+      case 'center':
+        return CrossAxisAlignment.center;
+      case 'right':
+        return CrossAxisAlignment.end;
+      default:
+        return CrossAxisAlignment.start;
+    }
+  }
+
+  MainAxisAlignment resolveVerticalMainAxisAlginment(
+    String? verticalAlignment,
+  ) {
+    verticalAlignment = verticalAlignment?.toLowerCase() ?? 'top';
+
+    switch (verticalAlignment) {
+      case 'top':
+        return MainAxisAlignment.start;
+      case 'center':
+        return MainAxisAlignment.center;
+      case 'bottom':
+        return MainAxisAlignment.end;
+      default:
+        return MainAxisAlignment.start;
+    }
+  }
+
+  MainAxisAlignment resolveHorizontalMainAxisAlginment(
+    String? horizontalAlignment,
+  ) {
+    horizontalAlignment = horizontalAlignment?.toLowerCase() ?? 'top';
+
+    switch (horizontalAlignment) {
+      case 'left':
+        return MainAxisAlignment.start;
+      case 'center':
+        return MainAxisAlignment.center;
+      case 'right':
+        return MainAxisAlignment.end;
+      default:
+        return MainAxisAlignment.start;
     }
   }
 

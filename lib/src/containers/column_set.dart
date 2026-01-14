@@ -39,8 +39,6 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
           ),
         )
         .toList();
-
-    horizontalAlignment = loadHorizontalAlignment();
   }
 
   @override
@@ -49,11 +47,15 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
     backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
           context: context,
           style: adaptiveMap['style']?.toString(),
           backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
               ?.toString(),
+        );
+    horizontalAlignment = InheritedReferenceResolver.of(context).resolver
+        .resolveHorizontalMainAxisAlginment(
+          adaptiveMap['horizontalAlignment'],
         );
   }
 
@@ -76,21 +78,5 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
         child: Container(color: backgroundColor, child: child),
       ),
     );
-  }
-
-  MainAxisAlignment loadHorizontalAlignment() {
-    String horizontalAlignment =
-        adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
-
-    switch (horizontalAlignment) {
-      case 'left':
-        return MainAxisAlignment.start;
-      case 'center':
-        return MainAxisAlignment.center;
-      case 'right':
-        return MainAxisAlignment.end;
-      default:
-        return MainAxisAlignment.start;
-    }
   }
 }

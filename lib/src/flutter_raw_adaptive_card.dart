@@ -9,9 +9,9 @@ import 'package:flutter_adaptive_cards/src/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
-import 'package:format/format.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:format/format.dart';
 
 /// Created by `AdaptiveCard` so there is usually only one of these per page.
 ///
@@ -422,7 +422,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       }
       return true;
     }());
-    var backgroundColor = _resolver.resolveBackgroundColor(
+    var backgroundColor = _resolver.resolveContainerBackgroundColor(
       context: context,
       style: widget.map['style']?.toString().toLowerCase(),
     );
