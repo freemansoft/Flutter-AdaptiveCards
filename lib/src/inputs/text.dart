@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,7 +37,9 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
     isRequired = adaptiveMap['isRequired'] ?? false;
     isMultiline = adaptiveMap['isMultiline'] ?? false;
     maxLength = adaptiveMap['maxLength'] ?? 20;
-    style = loadTextInputType();
+    style = InheritedReferenceResolver.of(
+      context,
+    ).resolver.resolveTextInputType(adaptiveMap['style']);
     controller.text = value;
   }
 
@@ -118,26 +121,5 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
     var formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
-  }
-
-  TextInputType? loadTextInputType() {
-    /// Can be one of the following:
-    /// - 'text'
-    /// - 'tel'
-    /// - 'url'
-    /// - 'email'
-    String style = adaptiveMap['style'] ?? 'text';
-    switch (style) {
-      case 'text':
-        return TextInputType.text;
-      case 'tel':
-        return TextInputType.phone;
-      case 'url':
-        return TextInputType.url;
-      case 'email':
-        return TextInputType.emailAddress;
-      default:
-        return null;
-    }
   }
 }

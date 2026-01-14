@@ -284,6 +284,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     });
   }
 
+  /// JSON Schema definition "ChoiceInputStyle"
   bool loadCompact() {
     if (!adaptiveMap.containsKey('style')) return true;
     String style = adaptiveMap['style'].toString().toLowerCase();
