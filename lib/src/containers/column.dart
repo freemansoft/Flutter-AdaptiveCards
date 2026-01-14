@@ -103,7 +103,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
           adaptiveMap['horizontalAlignment'],
         );
     verticalAlignment = InheritedReferenceResolver.of(context).resolver
-        .resolveVerticalMainAxisAlginment(
+        .resolveVerticalMainAxisContentAlginment(
           adaptiveMap['verticalContentAlignment'],
         );
 
@@ -120,6 +120,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       var backgroundImageUrl = backgroundImage['url'];
       var fillMode = backgroundImage['fillMode'];
 
+      // JSON Schema definition "ImageFillMode"
       BoxFit fit;
       switch (fillMode) {
         case 'RepeatVertically':
@@ -131,6 +132,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
           fit = BoxFit.cover;
       }
 
+      // JSON Schema definition "ImageFillMode"
       ImageRepeat repeat;
       switch (fillMode) {
         case 'RepeatVertically':

@@ -3,15 +3,26 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 
-/// Resolves values based on the host config.
+/// In spec this is resolved via host config.
+/// Here it will eventually be custom style attributes.
 ///
-/// All values can also be null, in that case the default is used
+/// All JSON values can also be null, in that case the default is used or null
+///
+/// https://github.com/microsoft/AdaptiveCards/blob/main/schemas/1.5.0/adaptive-card.json
+///
+/// Styles not implemented as of now
+/// ImageStyle
+/// Spacing
+/// TextBlockStyle
+///
 class ReferenceResolver {
   ReferenceResolver({this.currentContainerStyle});
 
   // used for locally overriding the default style like in nested containers
   final String? currentContainerStyle;
 
+  /// JSON Schema definition "Colors"
+  ///
   /// Resolves a color type from the Theme palette if colorType is null or 'default'
   /// Resovles a color to the host config if colorType is not null and not 'default'
   ///
@@ -44,7 +55,7 @@ class ReferenceResolver {
     Color? foregroundColor;
 
     // this should be themed and support light and dark
-    // TODO note that contained continers behave differently
+    // TODO Contained continers behave differently
     // https://adaptivecards.io/explorer/Container.html
     switch (myStyle) {
       case 'default': // black in demo
@@ -89,6 +100,7 @@ class ReferenceResolver {
     return foregroundColor;
   }
 
+  /// JSON Schema definition "ActionStyle"
   Color? resolveButtonBackgroundColor({
     required BuildContext context,
     required String? style,
@@ -122,6 +134,7 @@ class ReferenceResolver {
     return backgroundColor;
   }
 
+  /// JSON Schema definition "ContainerStyle"
   /// Resolves a background color from the host config
   /// Assumes you always want a color call
   ///
@@ -217,15 +230,37 @@ class ReferenceResolver {
     return ReferenceResolver(currentContainerStyle: myStyle);
   }
 
-  /// TODO: hook up to something
+  /// JSON Schema definition "Spacing"
+  /// Values include
+  /// - default
+  /// - none
+  /// - small
+  /// - medium
+  /// - large
+  /// - extraLarge
+  ///
+  /// TODO: hook up to something to get spacing from theme
   double? resolveSpacing(String? spacing) {
     String mySpacing = spacing ?? 'default';
     if (mySpacing == 'none') return 0.0;
     int? intSpacing = 2;
+    switch (mySpacing) {
+      case 'small':
+        intSpacing = 2;
+      case 'medium':
+        intSpacing = 4;
+      case 'large':
+        intSpacing = 8;
+      case 'extraLarge':
+        intSpacing = 16;
+      default:
+        intSpacing = 2;
+    }
 
     return intSpacing.toDouble();
   }
 
+  /// JSON Schema definition "ImageSize"
   /// Should standardize this or look up current zoom
   int resolveImageSizes(String sizeDescription) {
     switch (sizeDescription) {
@@ -246,6 +281,7 @@ class ReferenceResolver {
     return 'Horizontal';
   }
 
+  /// JSON Schema definition "FontWeight"
   /// Resolves font weight from a string value
   ///
   /// Typically one of:
@@ -266,6 +302,7 @@ class ReferenceResolver {
     }
   }
 
+  /// JSON Schema definition "FontSize"
   /// Resolves font size from a string value using the theme
   ///
   /// Typically one of:
@@ -307,6 +344,7 @@ class ReferenceResolver {
     return fontSize ?? 12.0;
   }
 
+  /// JSON Schema definition "FontType"
   // Returns a font family name or null if no FontType is specified
   String? resolveFontType(BuildContext context, String? typeString) {
     String? type = typeString?.toLowerCase();
@@ -322,6 +360,9 @@ class ReferenceResolver {
     }
   }
 
+  /// JSON Schema definition "HorizontalAlignement" to a specific Flutter type
+  ///
+  /// Schema definition "HorizontalAlignment"
   /// Resolves horizontal alignment from a string value
   ///
   /// Typically one of:
@@ -342,6 +383,13 @@ class ReferenceResolver {
     }
   }
 
+  /// JSON Schema definition "HorizontalAlignment"
+  /// Resolves horizontal alignment from a string value
+  ///
+  /// Typically one of:
+  /// - left
+  /// - center
+  /// - right
   Alignment? resolveContainerAlignment(String? horizontalAlignment) {
     horizontalAlignment = horizontalAlignment?.toLowerCase() ?? '';
 
@@ -357,6 +405,15 @@ class ReferenceResolver {
     }
   }
 
+  /// JSON Schema definition "HorizontalAlignement" to a specific Flutter type
+  ///
+  /// Schema definition "HorizontalAlignment"
+  /// Resolves horizontal alignment from a string value
+  ///
+  /// Typically one of:
+  /// - left
+  /// - center
+  /// - right
   CrossAxisAlignment resolveHorzontalCrossAxisAlignment(
     String? horizontalAlignment,
   ) {
@@ -373,7 +430,23 @@ class ReferenceResolver {
     }
   }
 
-  MainAxisAlignment resolveVerticalMainAxisAlginment(
+  /// JSON Schema definition "VerticalAlignment"
+  ///   Used in Table and Table Row
+  ///   Used in BackgroundImage
+  /// TODO implement resolveVerticalAlginment separately from this
+  ///
+  /// JSON Schema definition "VerticalContentAlignment"
+  ///   Defines how content should be aligned vertically within the container
+  ///
+  /// TODO: add to all containers
+  ///
+  /// Resolves vertical alignment from a string value
+  ///
+  /// Typically one of:
+  /// - top
+  /// - center
+  /// - bottom
+  MainAxisAlignment resolveVerticalMainAxisContentAlginment(
     String? verticalAlignment,
   ) {
     verticalAlignment = verticalAlignment?.toLowerCase() ?? 'top';
@@ -390,10 +463,19 @@ class ReferenceResolver {
     }
   }
 
+  /// JSON Schema definition "HorizontalAlignement" to a specific Flutter type
+  ///
+  /// Schema definition "HorizontalAlignment"
+  /// Resolves horizontal alignment from a string value
+  ///
+  /// Typically one of:
+  /// - left
+  /// - center
+  /// - right
   MainAxisAlignment resolveHorizontalMainAxisAlginment(
     String? horizontalAlignment,
   ) {
-    horizontalAlignment = horizontalAlignment?.toLowerCase() ?? 'top';
+    horizontalAlignment = horizontalAlignment?.toLowerCase() ?? 'left';
 
     switch (horizontalAlignment) {
       case 'left':
@@ -407,6 +489,9 @@ class ReferenceResolver {
     }
   }
 
+  /// JSON Schema definition "HorizontalAlignement" to a specific Flutter type
+  ///
+  /// Schema definition "TextAlign"
   /// Resolves text alignment from a string value
   ///
   /// Typically one of:
@@ -437,4 +522,29 @@ class ReferenceResolver {
     // int cannot be null
     return maxLines ?? 1;
   }
+
+  /// JSON Schema definition "TextInputStyle"
+  TextInputType? resolveTextInputType(String? style) {
+    /// Can be one of the following:
+    /// - 'text'
+    /// - 'tel'
+    /// - 'url'
+    /// - 'email'
+    style = (style != null) ? style.toLowerCase() : 'text';
+    switch (style) {
+      case 'text':
+        return TextInputType.text;
+      case 'tel':
+        return TextInputType.phone;
+      case 'url':
+        return TextInputType.url;
+      case 'email':
+        return TextInputType.emailAddress;
+      default:
+        return null;
+    }
+  }
+
+  /// JSON Schema definition "TextBlockStyle"
+  /// TextBlockStyle not implemented
 }
