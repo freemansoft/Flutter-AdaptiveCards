@@ -93,58 +93,25 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
             );
           }).toList()
         : [];
-
-    verticalAlignment = loadVerticalAlignment();
-    horizontalAlignment = loadHorizontalAlignment();
-    containerHorizontalAlignment = loadHorizontalContainerAlignment();
   }
 
-  MainAxisAlignment loadVerticalAlignment() {
-    String verticalAlignment =
-        adaptiveMap['verticalContentAlignment']?.toLowerCase() ?? 'top';
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    horizontalAlignment = InheritedReferenceResolver.of(context).resolver
+        .resolveHorzontalCrossAxisAlignment(
+          adaptiveMap['horizontalAlignment'],
+        );
+    verticalAlignment = InheritedReferenceResolver.of(context).resolver
+        .resolveVerticalMainAxisAlginment(
+          adaptiveMap['verticalContentAlignment'],
+        );
 
-    switch (verticalAlignment) {
-      case 'top':
-        return MainAxisAlignment.start;
-      case 'center':
-        return MainAxisAlignment.center;
-      case 'bottom':
-        return MainAxisAlignment.end;
-      default:
-        return MainAxisAlignment.start;
-    }
-  }
-
-  CrossAxisAlignment loadHorizontalAlignment() {
-    String horizontalAlignment =
-        adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
-
-    switch (horizontalAlignment) {
-      case 'left':
-        return CrossAxisAlignment.start;
-      case 'center':
-        return CrossAxisAlignment.center;
-      case 'right':
-        return CrossAxisAlignment.end;
-      default:
-        return CrossAxisAlignment.start;
-    }
-  }
-
-  Alignment? loadHorizontalContainerAlignment() {
-    String horizontalAlignment =
-        adaptiveMap['horizontalAlignment']?.toLowerCase() ?? '';
-
-    switch (horizontalAlignment) {
-      case 'left':
-        return Alignment.topLeft;
-      case 'center':
-        return Alignment.topCenter;
-      case 'right':
-        return Alignment.topRight;
-      default:
-        return null;
-    }
+    containerHorizontalAlignment = InheritedReferenceResolver.of(context)
+        .resolver
+        .resolveContainerAlignment(
+          adaptiveMap['horizontalAlignment'],
+        );
   }
 
   Widget _getBackgroundImage(Map element) {
@@ -198,7 +165,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     var backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
           context: context,
           style: adaptiveMap['style']?.toString(),
           backgroundImageUrl: adaptiveMap['backgroundImage']?['url'],

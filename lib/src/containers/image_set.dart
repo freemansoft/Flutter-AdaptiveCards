@@ -52,7 +52,7 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
     backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
           context: context,
           style: adaptiveMap['style']?.toString(),
           backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
@@ -101,12 +101,10 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
 
   void loadSize() {
     String sizeDescription = adaptiveMap['imageSize'] ?? 'auto';
-    if (sizeDescription == 'auto') {
-      imageSize = 'auto';
-      return;
-    }
-    if (sizeDescription == 'stretch') {
-      imageSize = 'stretch';
+    sizeDescription = sizeDescription.toLowerCase();
+    if (sizeDescription == 'auto' || sizeDescription == 'stretch') {
+      imageSize = sizeDescription;
+      maybeSize = null;
       return;
     }
     int size = InheritedReferenceResolver.of(

@@ -27,12 +27,14 @@ class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     with AdaptiveElementMixin {
+  // will be replaced later
   late FontWeight fontWeight = FontWeight.normal;
   late double fontSize = 12;
   late Alignment horizontalAlignment;
   late int maxLines;
   late TextAlign textAlign;
   late String text;
+  late String? fontFamily;
 
   @override
   void initState() {
@@ -40,29 +42,37 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     text = parseTextString(adaptiveMap['text']);
   }
 
-  /*child: */
-
-  // TODO create own widget that parses_basic markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     // should be lazily calculated because styling could have changed
     final resolver = InheritedReferenceResolver.of(context).resolver;
     horizontalAlignment = resolver.resolveAlignment(
       widget.adaptiveMap['horizontalAlignment'],
     );
-    fontSize = resolver.resolveSize(
+    fontSize = resolver.resolveFontSize(
       context: context,
       sizeString: widget.adaptiveMap['size'],
     );
-    fontWeight = resolver.resolveWeight(widget.adaptiveMap['weight']);
+    fontWeight = resolver.resolveFontWeight(widget.adaptiveMap['weight']);
     textAlign = resolver.resolveTextAlign(
       widget.adaptiveMap['horizontalAlignment'],
+    );
+    fontFamily = resolver.resolveFontType(
+      context,
+      widget.adaptiveMap['fontType'],
     );
     maxLines = resolver.resolveMaxLines(
       wrap: widget.adaptiveMap['wrap'],
       maxLines: widget.adaptiveMap['maxLines'],
     );
+  }
 
+  /*child: */
+
+  // TODO create own widget that parses_basic markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
+  @override
+  Widget build(BuildContext context) {
     var textBody = widget.supportMarkdown
         ? getMarkdownText(context: context)
         : getText();
@@ -70,7 +80,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: Align(
-        // TODO IntrinsicWidth finxed a few things, but breaks more
+        // IntrinsicWidth fixed a few things, but breaks more
         alignment: horizontalAlignment,
         child: textBody,
       ),
@@ -83,7 +93,11 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       textAlign: textAlign,
       softWrap: true,
       overflow: maxLines == 1 ? TextOverflow.ellipsis : null,
-      style: TextStyle(fontWeight: fontWeight, fontSize: fontSize),
+      style: TextStyle(
+        fontWeight: fontWeight,
+        fontSize: fontSize,
+        fontFamily: fontFamily,
+      ),
       maxLines: maxLines,
     );
   }
@@ -118,9 +132,9 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     Color? color =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveForegroundColor(
+        ).resolver.resolveContainerForegroundColor(
           context: context,
-          colorType: adaptiveMap['color'],
+          style: adaptiveMap['color'],
           isSubtle: adaptiveMap['isSubtle'],
         );
     return color;

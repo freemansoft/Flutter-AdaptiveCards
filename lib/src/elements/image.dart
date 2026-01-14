@@ -26,15 +26,14 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class AdaptiveImageState extends State<AdaptiveImage>
     with AdaptiveElementMixin {
-  late Alignment horizontalAlignment;
   late bool isPerson;
   double? width;
   double? height;
+  late Alignment horizontalAlignment;
 
   @override
   void initState() {
     super.initState();
-    horizontalAlignment = loadAlignment();
     isPerson = loadIsPerson();
   }
 
@@ -42,6 +41,10 @@ class AdaptiveImageState extends State<AdaptiveImage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     loadSize();
+    horizontalAlignment = InheritedReferenceResolver.of(context).resolver
+        .resolveAlignment(
+          adaptiveMap['horizontalAlignment'],
+        );
   }
 
   @override
@@ -86,21 +89,6 @@ class AdaptiveImageState extends State<AdaptiveImage>
     }
 
     return SeparatorElement(adaptiveMap: adaptiveMap, child: child);
-  }
-
-  Alignment loadAlignment() {
-    String alignmentString =
-        adaptiveMap['horizontalAlignment']?.toLowerCase() ?? 'left';
-    switch (alignmentString) {
-      case 'left':
-        return Alignment.centerLeft;
-      case 'center':
-        return Alignment.center;
-      case 'right':
-        return Alignment.centerRight;
-      default:
-        return Alignment.centerLeft;
-    }
   }
 
   bool loadIsPerson() {

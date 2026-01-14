@@ -21,6 +21,7 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
   // TODO implement verticalContentAlignment
   late List<Widget> children;
   late double spacing;
+  late Color? backgroundColor;
 
   @override
   void initState() {
@@ -45,20 +46,19 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
           context,
         ).resolver.resolveSpacing(adaptiveMap['spacing']) ??
         0.0;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var backgroundColor =
+    backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveBackgroundColorIfNoBackgroundImageAndNoDefaultStyle(
+        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
           context: context,
           style: adaptiveMap['style']?.toString(),
           backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
               ?.toString(),
         );
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return ChildStyler(
       adaptiveMap: adaptiveMap,
       child: AdaptiveTappable(
