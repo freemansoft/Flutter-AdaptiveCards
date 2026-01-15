@@ -77,7 +77,6 @@ class MyAppState extends State<MyApp> {
               title: 'Samples (first is markdownEnabled:false)',
               urls: [
                 'lib/samples/examples/example1.json',
-                'lib/samples/examples/example1.json',
                 'lib/samples/examples/example2.json',
                 'lib/samples/examples/example3.json',
                 'lib/samples/examples/example4.json',
@@ -111,6 +110,13 @@ class MyAppState extends State<MyApp> {
                 true,
                 true,
               ],
+              aboutPage: aboutPage,
+            ),
+        'Global Background Image':
+            (context) => GenericListPage(
+              title: 'Global Background Image',
+              urls: ['lib/samples/examples/example10.json'],
+              supportMarkdowns: [true],
               aboutPage: aboutPage,
             ),
         'TextBlock':
@@ -176,13 +182,14 @@ class MyAppState extends State<MyApp> {
             (context) => GenericListPage(
               title: 'ColumnSet',
               urls: [
+                // layout has bounding issues if too many ListItems
                 'lib/samples/column_set/example1.json',
                 'lib/samples/column_set/example2.json',
                 'lib/samples/column_set/example3.json',
-                // 'lib/samples/column_set/example4.json',
-                'lib/samples/column_set/example5.json',
-                'lib/samples/column_set/example6.json',
-                'lib/samples/column_set/example7.json',
+                'lib/samples/column_set/example4.json',
+                // 'lib/samples/column_set/example5.json',
+                // 'lib/samples/column_set/example6.json',
+                // 'lib/samples/column_set/example7.json',
                 // 'lib/samples/column_set/example8.json',
                 // 'lib/samples/column_set/example9.json',
                 // 'lib/samples/column_set/example10.json',
@@ -452,6 +459,8 @@ class MyHomePage extends StatelessWidget {
             ),
             getRow(context, ['Image', 'ImageSet']),
             getButton(context, 'Media'),
+            Divider(),
+            getButton(context, 'Global Background Image'),
             Divider(),
             getRow(context, [
               'Action.OpenUrl',

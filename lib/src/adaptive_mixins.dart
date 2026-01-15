@@ -40,6 +40,34 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   @override
   int get hashCode => id.hashCode;
+
+  /// Reliable image loader that handles image not found
+  Widget getBackgroundImage(
+    String url, {
+    ImageRepeat repeat = ImageRepeat.noRepeat,
+    BoxFit fit = BoxFit.cover,
+  }) {
+    return Image.network(
+      url,
+      repeat: repeat,
+      fit: fit,
+      errorBuilder: (context, error, stackTrace) {
+        return Icon(Icons.error);
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        // Optional: display a loading indicator while the image is fetching
+        if (loadingProgress == null) return child;
+        return Center(
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                : null,
+          ),
+        );
+      },
+    );
+  }
 }
 
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>

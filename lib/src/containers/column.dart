@@ -114,6 +114,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
         );
   }
 
+  /// Always returns a widget, even if the image is not specified
   Widget _getBackgroundImage(Map element) {
     var backgroundImage = adaptiveMap['backgroundImage'];
     if (backgroundImage != null) {
@@ -149,9 +150,9 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       }
 
       if (backgroundImageUrl != null) {
-        return Image(
+        return getBackgroundImage(
+          backgroundImageUrl,
           repeat: repeat,
-          image: NetworkImage(backgroundImageUrl),
           fit: fit,
         );
       }

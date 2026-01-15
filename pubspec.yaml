@@ -4,7 +4,7 @@ version: 0.2.1
 homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.10.4
 
 dependencies:
 

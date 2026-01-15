@@ -1,6 +1,5 @@
 import 'dart:developer' as developer;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
@@ -160,7 +159,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       result = Stack(
         children: <Widget>[
           Positioned.fill(
-            child: Image.network(backgroundImage!, fit: BoxFit.cover),
+            child: getBackgroundImage(backgroundImage!, fit: BoxFit.cover),
           ),
           result,
         ],
