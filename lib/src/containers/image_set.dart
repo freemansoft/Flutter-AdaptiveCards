@@ -52,11 +52,9 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
     backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
+        ).resolver.resolveContainerBackgroundColor(
           context: context,
           style: adaptiveMap['style']?.toString(),
-          backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
-              ?.toString(),
         );
   }
 

@@ -42,6 +42,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   int get hashCode => id.hashCode;
 
   BoxFit calculateBackgroundImageFit(String? fillMode) {
+    fillMode = fillMode?.toLowerCase();
     switch (fillMode) {
       case 'repeatvertically':
       case 'repeathorizontally':
@@ -53,6 +54,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   }
 
   ImageRepeat calculateBackgroundImageRepeat(String? fillMode) {
+    fillMode = fillMode?.toLowerCase();
     switch (fillMode) {
       case 'repeatvertically':
         return ImageRepeat.repeatY;
@@ -65,7 +67,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     }
   }
 
-  /// Reliable image loader that handles image not found
+  /// Reliable image loader that handles when image not found
+  /// AdaptiveCard, Column, Container, TableCell, Authentication
   Widget getBackgroundImage(
     String url, {
     ImageRepeat repeat = ImageRepeat.noRepeat,
