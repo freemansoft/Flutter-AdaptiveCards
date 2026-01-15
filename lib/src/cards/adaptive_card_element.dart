@@ -41,8 +41,6 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
   late Axis actionsOrientation;
 
-  late String? backgroundImage;
-
   final Map<String, Widget> _registeredCards = {};
   final formKey = GlobalKey<FormState>();
 
@@ -63,8 +61,6 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     children = List<Map<String, dynamic>>.from(
       adaptiveMap['body'],
     ).map((map) => widgetState.cardRegistry.getElement(map)).toList();
-
-    backgroundImage = adaptiveMap['backgroundImage'];
   }
 
   @override
@@ -145,6 +141,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       widgetChildren.add(_registeredCards[currentCardId]!);
     }
 
+    // default to result without a background image
     Widget result = Container(
       margin: const EdgeInsets.all(8.0),
       child: widget.listView == true
@@ -155,17 +152,37 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
             ),
     );
 
-    if (backgroundImage != null) {
+    // this used to work with just a bare url at 'backgroundImage' (0.5?)
+    // but now it must be an object with a 'url' property
+    var backgroundImage = adaptiveMap['backgroundImage'];
+    // JSON Schema definition for BackgroundImage
+    // has properties "url" and "fillMode"
+    if (backgroundImage != null && backgroundImage['url'] != null) {
+      var backgroundImageUrl = backgroundImage['url'];
+      // JSON Schema definition "ImageFillMode"
+      // has values 'cover', 'repeatHorizontally', 'repeatVertically', 'repeat'
+      var fillMode = backgroundImage['fillMode'] != null
+          ? backgroundImage['fillMode'].toString().toLowerCase()
+          : 'cover';
+      BoxFit fit = calculateBackgroundImageFit(fillMode);
+      ImageRepeat repeat = calculateBackgroundImageRepeat(fillMode);
+
+      // wrap result in a stack with the background image
       result = Stack(
         children: <Widget>[
           Positioned.fill(
-            child: getBackgroundImage(backgroundImage!, fit: BoxFit.cover),
+            child: getBackgroundImage(
+              backgroundImageUrl!,
+              fit: fit,
+              repeat: repeat,
+            ),
           ),
           result,
         ],
       );
     }
 
+    // provider always wraps the result object
     return ProviderScope(
       overrides: [
         adaptiveCardElementStateProvider.overrideWithValue(this),

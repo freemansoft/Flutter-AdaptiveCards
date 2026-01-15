@@ -41,6 +41,30 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   @override
   int get hashCode => id.hashCode;
 
+  BoxFit calculateBackgroundImageFit(String? fillMode) {
+    switch (fillMode) {
+      case 'repeatvertically':
+      case 'repeathorizontally':
+      case 'repeat':
+        return BoxFit.none;
+      default:
+        return BoxFit.cover;
+    }
+  }
+
+  ImageRepeat calculateBackgroundImageRepeat(String? fillMode) {
+    switch (fillMode) {
+      case 'repeatvertically':
+        return ImageRepeat.repeatY;
+      case 'repeathorizontally':
+        return ImageRepeat.repeatX;
+      case 'repeat':
+        return ImageRepeat.repeat;
+      default:
+        return ImageRepeat.noRepeat;
+    }
+  }
+
   /// Reliable image loader that handles image not found
   Widget getBackgroundImage(
     String url, {
@@ -109,6 +133,30 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         ? ''
         : adaptiveMap['value'].toString();
     // Subclasses should override update their text controllers etc.
+  }
+
+  BoxFit calculateBackgroundImageFit(String? fillMode) {
+    switch (fillMode) {
+      case 'repeatvertically':
+      case 'repeathorizontally':
+      case 'repeat':
+        return BoxFit.none;
+      default:
+        return BoxFit.cover;
+    }
+  }
+
+  ImageRepeat calculateBackgroundImageRepeat(String? fillMode) {
+    switch (fillMode) {
+      case 'repeatvertically':
+        return ImageRepeat.repeatY;
+      case 'repeathorizontally':
+        return ImageRepeat.repeatX;
+      case 'repeat':
+        return ImageRepeat.repeat;
+      default:
+        return ImageRepeat.noRepeat;
+    }
   }
 }
 
