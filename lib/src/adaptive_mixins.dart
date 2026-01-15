@@ -92,6 +92,40 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
       },
     );
   }
+
+  /// Always returns a widget, even if the image is not specified
+  Widget? getBackgroundImageFromMap(Map element) {
+    // could be string or map
+    if (element['backgroundImage'] is String) {
+      return getBackgroundImage(
+        element['backgroundImage'] as String,
+      );
+    }
+
+    var backgroundImage = element['backgroundImage'];
+    // JSON Schema definition for BackgroundImage
+    // has properties "url" and "fillMode"
+    if (backgroundImage != null && backgroundImage['url'] != null) {
+      var backgroundImageUrl = backgroundImage['url'];
+      // JSON Schema definition "ImageFillMode"
+      // has values 'cover', 'repeatHorizontally', 'repeatVertically', 'repeat'
+      var fillMode = backgroundImage['fillMode'] != null
+          ? backgroundImage['fillMode'].toString().toLowerCase()
+          : 'cover';
+
+      BoxFit fit = calculateBackgroundImageFit(fillMode);
+      ImageRepeat repeat = calculateBackgroundImageRepeat(fillMode);
+
+      return getBackgroundImage(
+        backgroundImageUrl,
+        repeat: repeat,
+        fit: fit,
+      );
+    } else {
+      return null;
+      // return const SizedBox(width: 0, height: 0);
+    }
+  }
 }
 
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>

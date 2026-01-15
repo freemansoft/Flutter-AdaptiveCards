@@ -152,30 +152,15 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
             ),
     );
 
-    // this used to work with just a bare url at 'backgroundImage' (0.5?)
-    // but now it must be an object with a 'url' property
-    var backgroundImage = adaptiveMap['backgroundImage'];
-    // JSON Schema definition for BackgroundImage
-    // has properties "url" and "fillMode"
-    if (backgroundImage != null && backgroundImage['url'] != null) {
-      var backgroundImageUrl = backgroundImage['url'];
-      // JSON Schema definition "ImageFillMode"
-      // has values 'cover', 'repeatHorizontally', 'repeatVertically', 'repeat'
-      var fillMode = backgroundImage['fillMode'] != null
-          ? backgroundImage['fillMode'].toString().toLowerCase()
-          : 'cover';
-      BoxFit fit = calculateBackgroundImageFit(fillMode);
-      ImageRepeat repeat = calculateBackgroundImageRepeat(fillMode);
+    var backgroundImage = getBackgroundImageFromMap(adaptiveMap);
 
+    // replace the result with a stack if there is a background image
+    if (backgroundImage != null) {
       // wrap result in a stack with the background image
       result = Stack(
         children: <Widget>[
           Positioned.fill(
-            child: getBackgroundImage(
-              backgroundImageUrl!,
-              fit: fit,
-              repeat: repeat,
-            ),
+            child: backgroundImage,
           ),
           result,
         ],
