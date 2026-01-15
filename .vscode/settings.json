@@ -1,5 +1,8 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
+  "search.exclude": {
+    "**/.fvm": true
+  },
   "cSpell.words": [
     "bênh",
     "bệnh",
@@ -20,5 +23,6 @@
     "viên",
     "viện",
     "xuất"
-  ]
+  ],
+  "dart.flutterSdkPath": ".fvm/versions/3.38.5"
 }
