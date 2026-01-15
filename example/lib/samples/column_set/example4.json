@@ -20,7 +20,7 @@
                     },
                     "items": [
                         {
-                            "text": "Blue Image",
+                            "text": "Error Loading Image Background",
                             "type": "TextBlock"
                         }
                     ]
@@ -40,11 +40,11 @@
                     "width": "stretch",
                     "style": "emphasis",
                     "backgroundImage": {
-                        "url": "https://adaptivecards.io/content/xxTxP_Flight.png"
+                        "url": "https://adaptivecards.io/content/airplane.png"
                     },
                     "items": [
                         {
-                            "text": "Blue Image",
+                            "text": "Blue Image Background",
                             "type": "TextBlock"
                         }
                     ]
