@@ -1,0 +1,65 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
+
+class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
+  AdaptiveRating({super.key, required this.adaptiveMap});
+
+  @override
+  final Map<String, dynamic> adaptiveMap;
+
+  @override
+  AdaptiveRatingState createState() => AdaptiveRatingState();
+}
+
+class AdaptiveRatingState extends State<AdaptiveRating>
+    with AdaptiveElementMixin {
+  late double value;
+  late double max;
+  late String color;
+  late String size;
+
+  @override
+  void initState() {
+    super.initState();
+    value = (widget.adaptiveMap['value'] ?? 0).toDouble();
+    max = (widget.adaptiveMap['max'] ?? 5).toDouble();
+    color = widget.adaptiveMap['color'] ?? 'neutral';
+    size = widget.adaptiveMap['size'] ?? 'medium';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Color starColor;
+    if (color == 'marigold') {
+      starColor = Colors.orange;
+    } else if (color == 'light') {
+      starColor = Colors.white70;
+    } else {
+      starColor = Colors.grey;
+    }
+
+    double iconSize = size == 'large' ? 24 : 16;
+
+    return SeparatorElement(
+      adaptiveMap: widget.adaptiveMap,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(max.toInt(), (index) {
+          IconData iconData;
+          if (index < value) {
+            iconData = Icons.star;
+          } else {
+            iconData = Icons.star_border;
+          }
+
+          return Icon(
+            iconData,
+            color: starColor,
+            size: iconSize,
+          );
+        }),
+      ),
+    );
+  }
+}

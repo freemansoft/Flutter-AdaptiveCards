@@ -1,0 +1,25 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Rating Examples",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Rating",
+      "value": 3,
+      "max": 5,
+      "color": "marigold"
+    },
+    {
+      "type": "Rating",
+      "value": 4.5,
+      "max": 5,
+      "size": "large",
+      "color": "neutral"
+    }
+  ]
+}

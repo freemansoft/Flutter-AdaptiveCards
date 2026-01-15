@@ -7,10 +7,11 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
- 
+
   # Content
   ## Video player with controls
   chewie: ^1.4.0
+  fl_chart: ^0.68.0
   flutter:
     sdk: flutter
 

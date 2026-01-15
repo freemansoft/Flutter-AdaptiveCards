@@ -56,5 +56,6 @@ flutter:
     - lib/samples/media/example1.json
     - lib/samples/examples/
     - lib/samples/table/
+    - lib/samples/v1.6/
 
 publish_to: none
