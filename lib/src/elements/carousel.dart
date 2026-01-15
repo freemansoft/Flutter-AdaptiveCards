@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
@@ -17,9 +16,7 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
     with AdaptiveElementMixin {
   late List<Map<String, dynamic>> pages;
   late int initialPage;
-  late int? timer;
   late PageController pageController;
-  Timer? autoPlayTimer;
 
   int _currentIndex = 0;
 
@@ -36,28 +33,11 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
     if (initialPage < 0 || initialPage >= pages.length) initialPage = 0;
     _currentIndex = initialPage;
 
-    timer = widget.adaptiveMap['timer']; // in milliseconds
-
     pageController = PageController(initialPage: initialPage);
-
-    if (timer != null && timer! > 0) {
-      autoPlayTimer = Timer.periodic(Duration(milliseconds: timer!), (timer) {
-        if (pageController.hasClients) {
-          // If user is interacting, maybe pause? For MVP we just scroll.
-          int nextPage = (pageController.page!.round() + 1) % pages.length;
-          pageController.animateToPage(
-            nextPage,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeIn,
-          );
-        }
-      });
-    }
   }
 
   @override
   void dispose() {
-    autoPlayTimer?.cancel();
     pageController.dispose();
     super.dispose();
   }
