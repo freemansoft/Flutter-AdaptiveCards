@@ -38,7 +38,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
   // Need to do the separator manually for this class
   // because the flexible needs to be applied to the class above
-  late Widget backgroundImage;
+  late Widget? backgroundImage;
   late bool separator;
 
   @override
@@ -53,7 +53,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     }
     separator = adaptiveMap['separator'] ?? false;
 
-    backgroundImage = _getBackgroundImage(adaptiveMap);
+    backgroundImage = getBackgroundImageFromMap(adaptiveMap);
 
     var toParseWidth = adaptiveMap['width'];
     if (toParseWidth != null) {
@@ -114,32 +114,6 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
         );
   }
 
-  /// Always returns a widget, even if the image is not specified
-  Widget _getBackgroundImage(Map element) {
-    var backgroundImage = adaptiveMap['backgroundImage'];
-    // JSON Schema definition for BackgroundImage
-    // has properties "url" and "fillMode"
-    if (backgroundImage != null && backgroundImage['url'] != null) {
-      var backgroundImageUrl = backgroundImage['url'];
-      // JSON Schema definition "ImageFillMode"
-      // has values 'cover', 'repeatHorizontally', 'repeatVertically', 'repeat'
-      var fillMode = backgroundImage['fillMode'] != null
-          ? backgroundImage['fillMode'].toString().toLowerCase()
-          : 'cover';
-
-      BoxFit fit = calculateBackgroundImageFit(fillMode);
-      ImageRepeat repeat = calculateBackgroundImageRepeat(fillMode);
-
-      return getBackgroundImage(
-        backgroundImageUrl,
-        repeat: repeat,
-        fit: fit,
-      );
-    } else {
-      return const SizedBox(width: 0, height: 0);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     double? precedingSpacing = InheritedReferenceResolver.of(
@@ -170,7 +144,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
     Widget result = Stack(
       children: [
-        backgroundImage,
+        backgroundImage ?? SizedBox.shrink(),
         InkWell(
           onTap: action?.tap,
           child: Padding(
