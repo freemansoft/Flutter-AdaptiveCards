@@ -11,7 +11,7 @@ dependencies:
   # Content
   ## Video player with controls
   chewie: ^1.4.0
-  fl_chart: ^0.70.2
+  fl_chart: 1.0.0 # https://github.com/imaNNeo/fl_chart/issues/1986
   flutter:
     sdk: flutter
 
@@ -34,7 +34,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.4.5
-  test: ^1.25.15
+  #test: ^1.26.3
 
 flutter:
   uses-material-design: true

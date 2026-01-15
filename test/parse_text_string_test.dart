@@ -1,5 +1,5 @@
 import 'package:flutter_adaptive_cards/src/utils.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   void checkIfSameAfterParse(String text) {
