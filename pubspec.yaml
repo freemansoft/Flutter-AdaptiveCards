@@ -11,7 +11,7 @@ dependencies:
   # Content
   ## Video player with controls
   chewie: ^1.4.0
-  fl_chart: ^0.68.0
+  fl_chart: ^0.70.2
   flutter:
     sdk: flutter
 
