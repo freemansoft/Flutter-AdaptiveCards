@@ -182,10 +182,10 @@ class MyAppState extends State<MyApp> {
             (context) => GenericListPage(
               title: 'ColumnSet',
               urls: [
-                // layout has bounding issues if too many ListItems
+                // layout has bounding errors if too many ListItems
                 'lib/samples/column_set/example1.json',
                 'lib/samples/column_set/example2.json',
-                'lib/samples/column_set/example3.json',
+                //'lib/samples/column_set/example3.json',
                 'lib/samples/column_set/example4.json',
                 // 'lib/samples/column_set/example5.json',
                 // 'lib/samples/column_set/example6.json',

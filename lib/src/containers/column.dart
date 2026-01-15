@@ -117,47 +117,27 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
   /// Always returns a widget, even if the image is not specified
   Widget _getBackgroundImage(Map element) {
     var backgroundImage = adaptiveMap['backgroundImage'];
-    if (backgroundImage != null) {
+    // JSON Schema definition for BackgroundImage
+    // has properties "url" and "fillMode"
+    if (backgroundImage != null && backgroundImage['url'] != null) {
       var backgroundImageUrl = backgroundImage['url'];
-      var fillMode = backgroundImage['fillMode'];
-
       // JSON Schema definition "ImageFillMode"
-      BoxFit fit;
-      switch (fillMode) {
-        case 'RepeatVertically':
-        case 'RepeatHorizontally':
-        case 'Repeat':
-          fit = BoxFit.none;
-          break;
-        default:
-          fit = BoxFit.cover;
-      }
+      // has values 'cover', 'repeatHorizontally', 'repeatVertically', 'repeat'
+      var fillMode = backgroundImage['fillMode'] != null
+          ? backgroundImage['fillMode'].toString().toLowerCase()
+          : 'cover';
 
-      // JSON Schema definition "ImageFillMode"
-      ImageRepeat repeat;
-      switch (fillMode) {
-        case 'RepeatVertically':
-          repeat = ImageRepeat.repeatY;
-          break;
-        case 'RepeatHorizontally':
-          repeat = ImageRepeat.repeatX;
-          break;
-        case 'Repeat':
-          repeat = ImageRepeat.repeat;
-          break;
-        default:
-          repeat = ImageRepeat.noRepeat;
-      }
+      BoxFit fit = calculateBackgroundImageFit(fillMode);
+      ImageRepeat repeat = calculateBackgroundImageRepeat(fillMode);
 
-      if (backgroundImageUrl != null) {
-        return getBackgroundImage(
-          backgroundImageUrl,
-          repeat: repeat,
-          fit: fit,
-        );
-      }
+      return getBackgroundImage(
+        backgroundImageUrl,
+        repeat: repeat,
+        fit: fit,
+      );
+    } else {
+      return const SizedBox(width: 0, height: 0);
     }
-    return const SizedBox(width: 0, height: 0);
   }
 
   @override
