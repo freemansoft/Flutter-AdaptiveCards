@@ -50,10 +50,7 @@ class AdaptiveImageState extends State<AdaptiveImage>
   @override
   Widget build(BuildContext context) {
     //TODO add alt text
-    BoxFit fit = BoxFit.contain;
-    if (height != null && width != null) {
-      fit = BoxFit.fill;
-    }
+    if (height != null && width != null) {}
 
     Widget image = AdaptiveTappable(
       adaptiveMap: adaptiveMap,

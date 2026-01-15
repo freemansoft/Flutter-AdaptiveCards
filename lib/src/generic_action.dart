@@ -66,3 +66,15 @@ class GenericActionOpenUrl extends GenericAction {
     }
   }
 }
+
+class GenericActionResetInputs extends GenericAction {
+  GenericActionResetInputs(
+    super.adaptiveMap,
+    super.rawAdaptiveCardState,
+  );
+
+  @override
+  void tap() {
+    rawAdaptiveCardState.resetInputs();
+  }
+}

@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/containers/column_set.dart';
 import 'package:flutter_adaptive_cards/src/containers/container.dart';
 import 'package:flutter_adaptive_cards/src/containers/fact_set.dart';
 import 'package:flutter_adaptive_cards/src/containers/image_set.dart';
 import 'package:flutter_adaptive_cards/src/containers/table.dart';
+import 'package:flutter_adaptive_cards/src/elements/accordion.dart';
 import 'package:flutter_adaptive_cards/src/elements/action_set.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/execute.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/insert_image.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/open_url.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/open_url_dialog.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/popover.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/reset_inputs.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/submit.dart';
+import 'package:flutter_adaptive_cards/src/elements/badge.dart';
+import 'package:flutter_adaptive_cards/src/elements/carousel.dart';
+import 'package:flutter_adaptive_cards/src/elements/charts/bar_chart.dart';
+import 'package:flutter_adaptive_cards/src/elements/charts/line_chart.dart';
+import 'package:flutter_adaptive_cards/src/elements/charts/pie_donut_chart.dart';
+import 'package:flutter_adaptive_cards/src/elements/code_block.dart';
+import 'package:flutter_adaptive_cards/src/elements/compound_button.dart';
 import 'package:flutter_adaptive_cards/src/elements/image.dart';
 import 'package:flutter_adaptive_cards/src/elements/media.dart';
+import 'package:flutter_adaptive_cards/src/elements/progress_bar.dart';
+import 'package:flutter_adaptive_cards/src/elements/progress_ring.dart';
+import 'package:flutter_adaptive_cards/src/elements/rating.dart';
+import 'package:flutter_adaptive_cards/src/elements/tab_set.dart';
 import 'package:flutter_adaptive_cards/src/elements/text_block.dart';
 import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
@@ -103,6 +118,8 @@ class CardRegistry {
         return GenericExecuteAction(map, state);
       case 'Action.ToggleVisibility':
         return null;
+      case 'Action.ResetInputs':
+        return GenericActionResetInputs(map, state);
     }
     assert(false, 'No action found with type $stringType');
     return null;
@@ -181,6 +198,59 @@ class CardRegistry {
         return AdaptiveToggle(adaptiveMap: map);
       case 'Input.ChoiceSet':
         return AdaptiveChoiceSet(adaptiveMap: map);
+
+      // New Elements
+      case 'Badge':
+        return AdaptiveBadge(adaptiveMap: map);
+      case 'Rating':
+      case 'Input.Rating': // Just in case
+        return AdaptiveRating(adaptiveMap: map);
+      case 'CodeBlock':
+        return AdaptiveCodeBlock(adaptiveMap: map);
+      case 'ProgressBar':
+        return AdaptiveProgressBar(adaptiveMap: map);
+      case 'ProgressRing':
+        return AdaptiveProgressRing(adaptiveMap: map);
+      case 'CompoundButton':
+        return AdaptiveCompoundButton(adaptiveMap: map);
+      case 'Carousel':
+        return AdaptiveCarousel(adaptiveMap: map);
+      case 'CarouselPage':
+        return AdaptiveCarouselPage(adaptiveMap: map);
+      case 'Accordion':
+        return AdaptiveAccordion(adaptiveMap: map);
+      case 'TabSet':
+      case 'TabPage': // Fallback if TabPage is used as container or we map it to TabSet
+        // Actually "TabPage" is likely a child. But if user used "Other" for type...
+        // Let's support TabSet as the container.
+        return AdaptiveTabSet(adaptiveMap: map);
+
+      // Charts
+      case 'Chart.Donut':
+        return AdaptivePieChart(adaptiveMap: map, isDonut: true);
+      case 'Chart.Pie':
+        return AdaptivePieChart(adaptiveMap: map, isDonut: false);
+      case 'Chart.Gauge':
+        // Implementing Gauge as Donut for now (or Pie)
+        return AdaptivePieChart(adaptiveMap: map, isDonut: true);
+
+      case 'Chart.Line':
+        return AdaptiveLineChart(adaptiveMap: map);
+
+      case 'Chart.VerticalBar':
+        return AdaptiveBarChart(adaptiveMap: map, type: BarChartType.vertical);
+      case 'Chart.HorizontalBar':
+        return AdaptiveBarChart(
+          adaptiveMap: map,
+          type: BarChartType.horizontal,
+        );
+      case 'Chart.HorizontalBar.Stacked':
+        return AdaptiveBarChart(
+          adaptiveMap: map,
+          type: BarChartType.horizontalStacked,
+        );
+      case 'Chart.VerticalBar.Grouped':
+        return AdaptiveBarChart(adaptiveMap: map, type: BarChartType.grouped);
     }
     return AdaptiveUnknown(adaptiveMap: map, type: stringType);
   }
@@ -197,6 +267,14 @@ class CardRegistry {
         return AdaptiveActionSubmit(adaptiveMap: map);
       case 'Action.Execute':
         return AdaptiveActionExecute(adaptiveMap: map);
+      case 'Action.ResetInputs':
+        return AdaptiveActionResetInputs(adaptiveMap: map);
+      case 'Action.Popover':
+        return AdaptiveActionPopover(adaptiveMap: map);
+      case 'Action.OpenUrlDialog':
+        return AdaptiveActionOpenUrlDialog(adaptiveMap: map); // Custom wrapper
+      case 'Action.InsertImage':
+        return AdaptiveActionInsertImage(adaptiveMap: map);
     }
     return AdaptiveUnknown(adaptiveMap: map, type: stringType);
   }

@@ -74,6 +74,14 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   void loadInput(Map map) {}
 
   bool checkRequired();
+
+  void resetInput() {
+    // Default implementation: reset to initial value
+    value = adaptiveMap['value'].toString() == 'null'
+        ? ''
+        : adaptiveMap['value'].toString();
+    // Subclasses should override update their text controllers etc.
+  }
 }
 
 mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>

@@ -352,6 +352,66 @@ class MyAppState extends State<MyApp> {
                   'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/Agenda.json',
               aboutPage: aboutPage,
             ),
+        'Badge':
+            (context) => GenericListPage(
+              title: 'Badge',
+              urls: ['lib/samples/v1.6/badge.json'],
+              aboutPage: aboutPage,
+            ),
+        'Rating':
+            (context) => GenericListPage(
+              title: 'Rating',
+              urls: ['lib/samples/v1.6/rating.json'],
+              aboutPage: aboutPage,
+            ),
+        'Carousel':
+            (context) => GenericListPage(
+              title: 'Carousel',
+              urls: ['lib/samples/v1.6/carousel.json'],
+              aboutPage: aboutPage,
+            ),
+        'Accordion':
+            (context) => GenericListPage(
+              title: 'Accordion',
+              urls: ['lib/samples/v1.6/accordion.json'],
+              aboutPage: aboutPage,
+            ),
+        'Chart.Donut':
+            (context) => GenericListPage(
+              title: 'Chart.Donut',
+              urls: ['lib/samples/v1.6/chart_donut.json'],
+              aboutPage: aboutPage,
+            ),
+        'Chart.Bar':
+            (context) => GenericListPage(
+              title: 'Chart.Bar',
+              urls: ['lib/samples/v1.6/chart_bar.json'],
+              aboutPage: aboutPage,
+            ),
+        'Actions':
+            (context) => GenericListPage(
+              title: 'Actions',
+              urls: ['lib/samples/v1.6/actions.json'],
+              aboutPage: aboutPage,
+            ),
+        'CodeBlock':
+            (context) => GenericListPage(
+              title: 'CodeBlock',
+              urls: ['lib/samples/v1.6/code_block.json'],
+              aboutPage: aboutPage,
+            ),
+        'ProgressBar':
+            (context) => GenericListPage(
+              title: 'ProgressBar',
+              urls: ['lib/samples/v1.6/progress_bar.json'],
+              aboutPage: aboutPage,
+            ),
+        'ProgressRing':
+            (context) => GenericListPage(
+              title: 'ProgressRing',
+              urls: ['lib/samples/v1.6/progress_ring.json'],
+              aboutPage: aboutPage,
+            ),
       },
     );
   }
@@ -423,6 +483,12 @@ class MyHomePage extends StatelessWidget {
               'Sample Show Card Wizard',
               'Sample Agenda',
             ]),
+            Divider(),
+            Text('1.6 and others', textAlign: TextAlign.center),
+            getRow(context, ['Carousel', 'Accordion']),
+            getRow(context, ['Badge', 'Rating', 'CodeBlock']),
+            getRow(context, ['Chart.Donut', 'Chart.Bar', 'Actions']),
+            getRow(context, ['ProgressBar', 'ProgressRing']),
             Divider(),
             getRow(context, ['Table']),
           ],

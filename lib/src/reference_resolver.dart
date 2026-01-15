@@ -430,6 +430,52 @@ class ReferenceResolver {
     }
   }
 
+  /// Resolves the color for ProgressBar and ProgressRing
+  ///
+  /// Typically one of:
+  /// - good
+  /// - warning
+  /// - attention
+  /// - accent
+  Color? resolveProgressColor({
+    required BuildContext context,
+    required String? color,
+  }) {
+    String? myColor = color?.toLowerCase();
+
+    switch (myColor) {
+      case 'good':
+        return Colors.green;
+      case 'warning':
+        return Colors.orange;
+      case 'attention':
+        return Colors.red;
+      case 'accent':
+        return Colors.blue;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  /// Resolves the size for ProgressRing
+  double resolveProgressSize(String? size) {
+    String? mySize = size?.toLowerCase();
+    switch (mySize) {
+      case 'tiny':
+        return 10.0;
+      case 'small':
+        return 20.0;
+      case 'medium':
+        return 30.0;
+      case 'large':
+        return 40.0;
+      case 'extralarge':
+        return 50.0;
+      default:
+        return 30.0;
+    }
+  }
+
   /// JSON Schema definition "VerticalAlignment"
   ///   Used in Table and Table Row
   ///   Used in BackgroundImage

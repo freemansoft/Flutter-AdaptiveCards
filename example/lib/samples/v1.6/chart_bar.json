@@ -1,0 +1,20 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Horizontal Bar Chart Example",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Chart.HorizontalBar",
+      "data": [
+        { "x": "Category A", "y": 10, "color": "#FF0000" },
+        { "x": "Category B", "y": 25, "color": "#00FF00" },
+        { "x": "Category C", "y": 15, "color": "#0000FF" }
+      ]
+    }
+  ]
+}

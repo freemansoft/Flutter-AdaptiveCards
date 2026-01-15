@@ -1,0 +1,32 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Accordion Example",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Accordion",
+      "items": [
+        {
+          "type": "AccordionPage",
+          "title": "Section 1",
+          "items": [
+             { "type": "TextBlock", "text": "Content of Section 1" }
+          ]
+        },
+        {
+          "type": "AccordionPage",
+          "title": "Section 2",
+          "items": [
+             { "type": "TextBlock", "text": "Content of Section 2" },
+             { "type": "Image", "url": "https://adaptivecards.io/content/cats/3.png" }
+          ]
+        }
+      ]
+    }
+  ]
+}

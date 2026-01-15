@@ -170,6 +170,19 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     context.visitChildElements(visitor);
   }
 
+  void resetInputs() {
+    void visitor(Element element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveInputMixin) {
+          (element.state as AdaptiveInputMixin).resetInput();
+        }
+      }
+      element.visitChildren(visitor);
+    }
+
+    context.visitChildElements(visitor);
+  }
+
   void openUrl(String url) {
     if (widget.onOpenUrl != null) {
       widget.onOpenUrl!(url);
