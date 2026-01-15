@@ -117,19 +117,17 @@ This codebase has been updated to support some of the null safety requred for 3.
 
 ```powershell
 PS C:\dev\flutter> flutter --version
-Flutter 3.10.6 • channel stable • https://github.com/flutter/flutter.git
-Framework • revision f468f3366c (4 days ago) • 2023-07-12 15:19:05 -0700
-Engine • revision cdbeda788a
-Tools • Dart 3.0.6 • DevTools 2.23.1
+Flutter 3.38.5 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision f6ff1529fd (5 weeks ago) • 2025-12-11 11:50:07 -0500
+Engine • hash c108a94d7a8273e112339e6c6833daa06e723a54 (revision 1527ae0ec5) (1 months ago) • 2025-12-11 15:04:31.000Z
+Tools • Dart 3.10.4 • DevTools 2.51.1
 ```
 
-You can move to this version of flutter by:
+You can move to this version of flutter by installing fvm and then:
 
 ```zsh
-cd <flutter-install-directory>
-Flutter channel stable
-Flutter upgrade
-
+fvm install 3.38.5
+#fvm use 3.38.5
 ```
 
 Released Flutter / Dart bundling versions are located here: <https://docs.flutter.dev/release/archive?tab=windows>
