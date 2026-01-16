@@ -38,7 +38,6 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
   // Need to do the separator manually for this class
   // because the flexible needs to be applied to the class above
-  late Widget? backgroundImage;
   late bool separator;
 
   @override
@@ -52,8 +51,6 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       );
     }
     separator = adaptiveMap['separator'] ?? false;
-
-    backgroundImage = getBackgroundImageFromMap(adaptiveMap);
 
     var toParseWidth = adaptiveMap['width'];
     if (toParseWidth != null) {
@@ -142,17 +139,15 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       child = Expanded(child: child);
     }
 
-    Widget result = Stack(
-      children: [
-        backgroundImage ?? SizedBox.shrink(),
-        InkWell(
-          onTap: action?.tap,
-          child: Padding(
-            padding: EdgeInsets.only(left: precedingSpacing ?? 0),
-            child: SeparatorElement(adaptiveMap: adaptiveMap, child: child),
-          ),
+    Widget result = Container(
+      decoration: getDecorationFromMap(adaptiveMap),
+      child: InkWell(
+        onTap: action?.tap,
+        child: Padding(
+          padding: EdgeInsets.only(left: precedingSpacing ?? 0),
+          child: SeparatorElement(adaptiveMap: adaptiveMap, child: child),
         ),
-      ],
+      ),
     );
 
     assert(

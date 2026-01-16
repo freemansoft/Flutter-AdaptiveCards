@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enabling workflow - or at least thinking about it
 - Added Accordion, Badge, Carosel, CodeBlock, ProgressBar, ProgressRing, PieChart, BarChart
 - Added `fvm` for flutter version management - currently 3.38.5
+- BackgroundImage support for Container.  Fixed support for fillMode
 
 ## [0.2.0](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
 

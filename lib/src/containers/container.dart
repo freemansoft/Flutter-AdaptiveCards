@@ -49,11 +49,9 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
     backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
+        ).resolver.resolveContainerBackgroundColor(
           context: context,
           style: adaptiveMap['style']?.toString(),
-          backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
-              ?.toString(),
         );
   }
 
@@ -66,7 +64,9 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
         child: SeparatorElement(
           adaptiveMap: adaptiveMap,
           child: Container(
-            color: backgroundColor,
+            decoration: getDecorationFromMap(adaptiveMap).copyWith(
+              color: backgroundColor,
+            ),
             child: Padding(
               // padding: const EdgeInsets.symmetric(vertical: 8.0),
               padding: EdgeInsets.symmetric(

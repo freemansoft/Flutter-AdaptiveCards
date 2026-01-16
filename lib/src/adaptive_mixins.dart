@@ -68,8 +68,9 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   }
 
   /// Reliable image loader that handles when image not found
+  /// Cards that support background images include
   /// AdaptiveCard, Column, Container, TableCell, Authentication
-  Widget getBackgroundImage(
+  Image getBackgroundImage(
     String url, {
     ImageRepeat repeat = ImageRepeat.noRepeat,
     BoxFit fit = BoxFit.cover,
@@ -96,8 +97,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     );
   }
 
-  /// Always returns a widget, even if the image is not specified
-  Widget? getBackgroundImageFromMap(Map element) {
+  /// JSON schema aware version of getBackgroundImage
+  Image? getBackgroundImageFromMap(Map element) {
     // could be string or map
     if (element['backgroundImage'] is String) {
       return getBackgroundImage(
@@ -128,6 +129,46 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
       return null;
       // return const SizedBox(width: 0, height: 0);
     }
+  }
+
+  /// JSON schema aware BoxDecoration wrapper of getDecorationImageFromMap
+  BoxDecoration getDecorationFromMap(Map element) {
+    var decorationImage = getDecorationImageFromMap(element);
+    return BoxDecoration(
+      image: decorationImage,
+    );
+  }
+
+  /// JSON schema aware DecorationImage wrapper of DecorationImage
+  /// Cards that support background images include
+  /// AdaptiveCard, Column, Container, TableCell, Authentication
+  DecorationImage? getDecorationImageFromMap(Map element) {
+    if (element['backgroundImage'] is String) {
+      return DecorationImage(
+        image: NetworkImage(element['backgroundImage'] as String),
+        fit: BoxFit.cover,
+      );
+    }
+
+    var backgroundImage = element['backgroundImage'];
+    if (backgroundImage != null && backgroundImage['url'] != null) {
+      var backgroundImageUrl = backgroundImage['url'];
+      var fillMode = backgroundImage['fillMode'] != null
+          ? backgroundImage['fillMode'].toString().toLowerCase()
+          : 'cover';
+
+      BoxFit fit = calculateBackgroundImageFit(fillMode);
+      ImageRepeat repeat = calculateBackgroundImageRepeat(fillMode);
+
+      return DecorationImage(
+        image: NetworkImage(backgroundImageUrl),
+        repeat: repeat,
+        fit: fit,
+        // eventually we need an onError here in case it can't be found
+        // or could replace this with a FadeInImage of something local
+      );
+    }
+    return null;
   }
 }
 

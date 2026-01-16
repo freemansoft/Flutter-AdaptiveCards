@@ -5,10 +5,14 @@
   "body": [
     {
       "type": "Container",
+      "backgroundImage": {
+        "url": "https://adaptivecards.io/content/bf-logo.png",
+        "fillMode": "repeat"
+      },
       "items": [
         {
           "type": "TextBlock",
-          "text": "This is some text"
+          "text": "This is some text. There should be a repeating background behind the text and the cat image"
         },
         {
           "type": "Image",
