@@ -44,7 +44,7 @@ class MyHomePage extends StatelessWidget {
         // We're not using DemoAdaptieCard() here so add our own onXXX handlers
         child: AdaptiveCard.asset(
           // loads from the assets directory in the project
-          assetPath: 'lib/easy_card',
+          assetPath: 'lib/test_data/easy_card.json',
           onChange: (id, value, state) {
             developer.log(
               format(

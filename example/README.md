@@ -94,11 +94,11 @@ sequenceDiagram
 
 Displays an adaptive cardthat you specify a asset location as a command line argument. This only works with local Adaptive Card JSON resources. Intended as a debugging tool
 
-This snippet assumes you want to test the adaptive card activity_update located in the example's lib directory.
+This snippet assumes you want to test the adaptive card activity_update.json located in the example's lib/test_data directory.
 
 ```bash
 cd example
-flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-renderer html
+flutter run  --dart-define=url=lib/test_data/activity_update.json lib/lab.dart -d chrome --web-renderer html
 ```
 
 ## Open Items
