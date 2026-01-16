@@ -154,9 +154,10 @@ class MyAppState extends State<MyApp> {
             (context) => GenericListPage(
               title: 'Image',
               urls: [
+                // the wikimedia URL in one of these times out
                 'lib/samples/image/example1.json',
                 'lib/samples/image/example2.json',
-                'lib/samples/image/example3.json',
+                // 'lib/samples/image/example3.json',
                 'lib/samples/image/example4.json',
                 'lib/samples/image/example5.json',
                 'lib/samples/image/example6.json',
@@ -493,13 +494,13 @@ class MyHomePage extends StatelessWidget {
               'Sample Agenda',
             ]),
             Divider(),
+            getRow(context, ['Table']),
+            Divider(),
             Text('1.6 and others', textAlign: TextAlign.center),
             getRow(context, ['Carousel', 'Accordion']),
             getRow(context, ['Badge', 'Rating', 'CodeBlock']),
             getRow(context, ['Chart.Donut', 'Chart.Bar', 'Actions']),
             getRow(context, ['ProgressBar', 'ProgressRing']),
-            Divider(),
-            getRow(context, ['Table']),
           ],
         ),
       ),

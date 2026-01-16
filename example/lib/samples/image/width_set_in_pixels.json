@@ -5,14 +5,14 @@
     "body": [
         {
             "type": "TextBlock",
-            "text": "Width set in pixels"
+            "text": "Width set in pixels 20"
         },
         {
             "type": "Image",
             "url": "https://tse3.mm.bing.net/th?q=African+Wildcat&pid=Api&mkt=en-US&adlt=moderate&t=1",
-            "width": "100px",
+            "width": "20px",
             "selectAction": {
-                "type": "Action.Submit",
+                "type": "Action.Execute",
                 "data": {
                     "image": "cat"
                 }

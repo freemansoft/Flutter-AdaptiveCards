@@ -69,7 +69,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     _adaptiveElement = widget.cardRegistry.getElement(widget.map);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.initData != null) {
+      if (widget.initData != null && widget.initData!.isNotEmpty) {
         initInput(widget.initData!);
       }
     });

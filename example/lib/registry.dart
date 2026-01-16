@@ -84,6 +84,22 @@ class MyHomePage extends StatelessWidget {
               ),
             );
           },
+          onExecute: (map) {
+            developer.log(
+              format('onExecute map: {}', map.toString()),
+              name: runtimeType.toString(),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  format(
+                    'onExecute: No handler found for map: \n {}',
+                    map.toString(),
+                  ),
+                ),
+              ),
+            );
+          },
           onOpenUrl: (url) {
             developer.log(
               format('onOpenUrl url: {}', url),

@@ -1,9 +1,9 @@
-import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
+import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 
 import 'about_page.dart';
 
@@ -85,7 +85,7 @@ class MyHomePage extends StatelessWidget {
       body: SelectionArea(
         child: Center(
           child: SingleChildScrollView(
-            child: DemoAdaptiveCard(assetPath: resourceUrl),
+            child: AdaptiveCard.asset(assetPath: resourceUrl),
           ),
         ),
       ),
