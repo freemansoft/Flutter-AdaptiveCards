@@ -46,12 +46,16 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
           context,
         ).resolver.resolveSpacing(adaptiveMap['spacing']) ??
         0.0;
+    var backgroundImageUrl = resolveBackgroundImage(
+      adaptiveMap['backgroundImage'],
+    )?.url;
     backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveContainerBackgroundColor(
+        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
           context: context,
           style: adaptiveMap['style']?.toString(),
+          backgroundImageUrl: backgroundImageUrl,
         );
   }
 

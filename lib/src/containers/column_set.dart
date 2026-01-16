@@ -44,14 +44,16 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    var backgroundImageUrl = resolveBackgroundImage(
+      adaptiveMap['backgroundImage'],
+    )?.url;
     backgroundColor =
         InheritedReferenceResolver.of(
           context,
         ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
           context: context,
           style: adaptiveMap['style']?.toString(),
-          backgroundImageUrl: adaptiveMap['backgroundImage']?['url']
-              ?.toString(),
+          backgroundImageUrl: backgroundImageUrl,
         );
     horizontalAlignment = InheritedReferenceResolver.of(context).resolver
         .resolveHorizontalMainAxisAlginment(
@@ -75,7 +77,12 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
       adaptiveMap: adaptiveMap,
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
-        child: Container(color: backgroundColor, child: child),
+        child: Container(
+          decoration: getDecorationFromMap(adaptiveMap).copyWith(
+            color: backgroundColor,
+          ),
+          child: child,
+        ),
       ),
     );
   }
