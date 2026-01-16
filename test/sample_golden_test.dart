@@ -35,7 +35,6 @@ void main() {
   setUp(() async {
     HttpOverrides.global = MyTestHttpOverrides();
 
-    // TODO: Delete this commented out code! Or, use https://pub.dev/packages/golden_toolkit
     final fontData = File('assets/fonts/Roboto/Roboto-Regular.ttf')
         .readAsBytes()
         .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
