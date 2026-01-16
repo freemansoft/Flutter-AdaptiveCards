@@ -1,8 +1,9 @@
 import 'dart:developer' as developer;
+import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:format/format.dart';
 
-import 'package:example/loading_adaptive_card.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'about_page.dart';
 import 'nav_support.dart';
@@ -41,23 +42,97 @@ class GenericListPage extends StatelessWidget {
       appBar: AppBar(
         leading: homeButtonIfNoHistory(context),
         title: Text(title),
-        actions: [
-          // add home button to child pages in example app so can hit reload off the home page
-          aboutPage.aboutButton(context),
-        ],
+        // add home button to child pages in example app so can hit reload off the home page
+        actions: [aboutPage.aboutButton(context)],
       ),
       body: ListView.builder(
         itemCount: urls.length,
         itemBuilder: (context, index) {
+          bool thisSupportsMarkdown;
+          String url = urls[index];
           if (supportMarkdowns.length > index + 1) {
-            return DemoAdaptiveCard(
-              assetPath: urls[index],
-              supportMarkdown: supportMarkdowns[index],
-              initData: initData,
-            );
+            thisSupportsMarkdown = supportMarkdowns[index];
           } else {
-            return DemoAdaptiveCard(assetPath: urls[index], initData: initData);
+            thisSupportsMarkdown = true;
           }
+          return SelectionArea(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: <Widget>[
+                  // We're not using DefaultAdaptiveCardHandlers() here so add our own onXXX() handlers
+                  AdaptiveCard.asset(
+                    assetPath: url,
+                    supportMarkdown: thisSupportsMarkdown,
+                    initData: initData,
+                    onChange: (id, value, state) {
+                      developer.log(
+                        format(
+                          'onChange: id: {}, value: {}, state: {}',
+                          id,
+                          value,
+                          state,
+                        ),
+                        name: runtimeType.toString(),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            format(
+                              'onChange: id: {}, value: {}, state: {}',
+                              id,
+                              value,
+                              state,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    onSubmit: (map) {
+                      developer.log(
+                        format('onSubmit map: {}', map.toString()),
+                        name: runtimeType.toString(),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            format(
+                              'onSubmit: No handler found for map: \n {}',
+                              map.toString(),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    onExecute: (map) {
+                      developer.log(
+                        format('onExecute map: {}', map.toString()),
+                        name: runtimeType.toString(),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            format(
+                              'onExecute: No handler found for map: \n {}',
+                              map.toString(),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    onOpenUrl: (url) {
+                      developer.log(
+                        format('onOpenUrl url: {}', url),
+                        name: runtimeType.toString(),
+                      );
+                      launchUrl(Uri.parse(url));
+                    },
+                    showDebugJson: true, // enable debug in the example app
+                  ),
+                ],
+              ),
+            ),
+          );
         },
       ),
     );

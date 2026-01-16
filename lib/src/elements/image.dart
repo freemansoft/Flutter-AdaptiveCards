@@ -50,12 +50,18 @@ class AdaptiveImageState extends State<AdaptiveImage>
   @override
   Widget build(BuildContext context) {
     //TODO add alt text
-    if (height != null && width != null) {}
+    BoxFit fit = BoxFit.contain;
+    if (height != null && width != null) {
+      fit = BoxFit.fill;
+    }
 
     Widget image = AdaptiveTappable(
       adaptiveMap: adaptiveMap,
       child: Image.network(
         url,
+        fit: fit,
+        height: height,
+        width: width,
         // errorBuilder: (context, error, stacktrace) {
         //   return Text(
         //     'Failed to load image: $error.',

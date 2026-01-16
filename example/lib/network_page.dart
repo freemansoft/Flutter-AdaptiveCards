@@ -31,60 +31,82 @@ class NetworkPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        // add home button to child pages in example app so can hit reload off the home page
         actions: [aboutPage.aboutButton(context)],
       ),
       body: ListView(
         children: <Widget>[
           // We're not using DefaultAdaptiveCardHandlers() here so add our own onXXX() handlers
-          AdaptiveCard.network(
-            url: url,
-            onChange: (id, value, state) {
-              developer.log(
-                format(
-                  'onChange: id: {}, value: {}, state: {}',
-                  id,
-                  value,
-                  state,
-                ),
-                name: runtimeType.toString(),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
+          SelectionArea(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: AdaptiveCard.network(
+                url: url,
+                onChange: (id, value, state) {
+                  developer.log(
                     format(
                       'onChange: id: {}, value: {}, state: {}',
                       id,
                       value,
                       state,
                     ),
-                  ),
-                ),
-              );
-            },
-            onSubmit: (map) {
-              developer.log(
-                format('onSubmit map: {}', map.toString()),
-                name: runtimeType.toString(),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    format(
-                      'onSubmit: No handler found for map: \n {}',
-                      map.toString(),
+                    name: runtimeType.toString(),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        format(
+                          'onChange: id: {}, value: {}, state: {}',
+                          id,
+                          value,
+                          state,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
-            },
-            onOpenUrl: (url) {
-              developer.log(
-                format('onOpenUrl url: {}', url),
-                name: runtimeType.toString(),
-              );
-              launchUrl(Uri.parse(url));
-            },
-            showDebugJson: true, // enable debug in the example app
+                  );
+                },
+                onSubmit: (map) {
+                  developer.log(
+                    format('onSubmit map: {}', map.toString()),
+                    name: runtimeType.toString(),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        format(
+                          'onSubmit: No handler found for map: \n {}',
+                          map.toString(),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                onExecute: (map) {
+                  developer.log(
+                    format('onExecute map: {}', map.toString()),
+                    name: runtimeType.toString(),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        format(
+                          'onExecute: No handler found for map: \n {}',
+                          map.toString(),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                onOpenUrl: (url) {
+                  developer.log(
+                    format('onOpenUrl url: {}', url),
+                    name: runtimeType.toString(),
+                  );
+                  launchUrl(Uri.parse(url));
+                },
+                showDebugJson: true, // enable debug in the example app
+              ),
+            ),
           ),
         ],
       ),
