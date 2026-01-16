@@ -3,7 +3,11 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:format/format.dart';
 
-/// In spec this is resolved via host config.
+/// In spec was resolved via host config.
+/// That is no longer true.
+///
+/// Much of this should be theme based in the future with custom theme types.
+///
 /// Here it will eventually be custom style attributes.
 ///
 /// All JSON values can also be null, in that case the default is used or null

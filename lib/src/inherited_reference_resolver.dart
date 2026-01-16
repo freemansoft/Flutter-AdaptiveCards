@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 
+/// This class exists to provide a ReferenceResolver to the widget tree
+/// We use this instead of riverpod because makes it easy to provide
+/// scoped resolvers and to create overides to
+/// do things like override a parent container configuration
 class InheritedReferenceResolver extends InheritedWidget {
+  /// The resolver to provide to the widget tree for resolving configuration
   final ReferenceResolver resolver;
 
   const InheritedReferenceResolver({
