@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,26 +11,13 @@ void main() {
   ) async {
     String? selectedValue;
 
+    var file = File('test/samples/choice_set_radio.json');
+    var map = json.decode(file.readAsStringSync());
+
     Widget widget = MaterialApp(
       home: Scaffold(
         body: RawAdaptiveCard.fromMap(
-          // TODO: Replace with test/samples/choice_set_radio.json file
-          {
-            'type': 'AdaptiveCard',
-            'version': '1.2',
-            'body': [
-              {
-                'type': 'Input.ChoiceSet',
-                'id': 'myChoiceSet',
-                'style': 'expanded',
-                'isMultiSelect': false,
-                'choices': [
-                  {'title': 'Choice 1', 'value': '1'},
-                  {'title': 'Choice 2', 'value': '2'},
-                ],
-              },
-            ],
-          },
+          map,
           onChange: (id, value, state) {
             if (id == 'myChoiceSet') {
               selectedValue = value;
