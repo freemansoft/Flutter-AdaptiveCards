@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveBadge({super.key, required this.adaptiveMap});
@@ -35,33 +36,9 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor;
-    Color textColor;
-
-    // TODO: move these colors to a theme resolver
-    switch (style) {
-      case 'accent':
-        backgroundColor = Colors.blue; // Example color
-        textColor = Colors.white;
-        break;
-      case 'good':
-        backgroundColor = Colors.green;
-        textColor = Colors.white;
-        break;
-      case 'warning':
-        backgroundColor = Colors.orange;
-        textColor = Colors.black;
-        break;
-      case 'attention':
-        backgroundColor = Colors.red;
-        textColor = Colors.white;
-        break;
-      case 'default':
-      default:
-        backgroundColor = Colors.grey; // Example color
-        textColor = Colors.black;
-        break;
-    }
+    final resolver = InheritedReferenceResolver.of(context).resolver;
+    Color backgroundColor = resolver.resolveBadgeBackgroundColor(style);
+    Color textColor = resolver.resolveBadgeForegroundColor(style);
 
     // Resolve subtle vs non-subtle via HostConfig if possible,
     // but for now hardcode based on "style"
@@ -83,7 +60,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
           text!,
           style: TextStyle(
             color: textColor,
-            fontSize: size == 'large' ? 14 : 12,
+            fontSize: resolver.resolveBadgeFontSize(size),
           ),
         ),
       );

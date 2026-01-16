@@ -597,4 +597,49 @@ class ReferenceResolver {
 
   /// JSON Schema definition "TextBlockStyle"
   /// TextBlockStyle not implemented
+
+  /// Resolves the foreground color for a Badge
+  Color resolveBadgeForegroundColor(String? style) {
+    String myStyle = style?.toLowerCase() ?? 'default';
+    switch (myStyle) {
+      case 'accent':
+      case 'good':
+      case 'attention':
+        return Colors.white;
+      case 'warning':
+      case 'default':
+      default:
+        return Colors.black;
+    }
+  }
+
+  /// Resolves the background color for a Badge
+  Color resolveBadgeBackgroundColor(String? style) {
+    String myStyle = style?.toLowerCase() ?? 'default';
+    switch (myStyle) {
+      case 'accent':
+        return Colors.blue;
+      case 'good':
+        return Colors.green;
+      case 'warning':
+        return Colors.orange;
+      case 'attention':
+        return Colors.red;
+      case 'default':
+      default:
+        return Colors.grey;
+    }
+  }
+
+  /// Resolves the font size for a Badge
+  double resolveBadgeFontSize(String? size) {
+    String mySize = size?.toLowerCase() ?? 'medium';
+    switch (mySize) {
+      case 'large':
+        return 14.0;
+      case 'medium':
+      default:
+        return 12.0;
+    }
+  }
 }
