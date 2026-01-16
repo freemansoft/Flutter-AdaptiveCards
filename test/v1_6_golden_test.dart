@@ -58,6 +58,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/v1_6_badge.png'),
     );
+    await tester.pump(const Duration(milliseconds: 100));
   });
 
   testWidgets('Golden Rating', (tester) async {
@@ -71,6 +72,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/v1_6_rating.png'),
     );
+    await tester.pump(const Duration(milliseconds: 100));
   });
 
   testWidgets('Golden Donut', (tester) async {
@@ -84,6 +86,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/v1_6_donut.png'),
     );
+    await tester.pump(const Duration(milliseconds: 100));
   });
 
   testWidgets('Golden Carousel', (tester) async {
@@ -98,6 +101,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/v1_6_carousel.png'),
     );
+    await tester.pump(const Duration(milliseconds: 100));
   });
 
   testWidgets('Golden Accordion', (tester) async {
@@ -111,6 +115,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/v1_6_accordion.png'),
     );
+    await tester.pump(const Duration(milliseconds: 100));
   });
 
   testWidgets('Golden CodeBlock', (tester) async {
@@ -124,6 +129,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/v1_6_code_block.png'),
     );
+    await tester.pump(const Duration(milliseconds: 100));
   });
 
   testWidgets('Golden ProgressBar', (tester) async {
@@ -137,5 +143,6 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/v1_6_progress_bar.png'),
     );
+    await tester.pump(const Duration(milliseconds: 100));
   });
 }
