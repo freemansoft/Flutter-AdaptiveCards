@@ -31,7 +31,6 @@ class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
 
   @override
   Widget build(BuildContext context) {
-    // TODO IconButtonAction ??
     return IconButtonAction(adaptiveMap: adaptiveMap, onTapped: onTapped);
   }
 
