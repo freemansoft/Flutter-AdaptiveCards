@@ -1,0 +1,28 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.2",
+  "body": [
+    {
+      "type": "Input.ChoiceSet",
+      "id": "myChoiceSet",
+      "style": "expanded",
+      "isMultiSelect": false,
+      "choices": [
+        {
+          "title": "Choice 1",
+          "value": "1"
+        },
+        {
+          "title": "Choice 2",
+          "value": "2"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Submit"
+    }
+  ]
+}

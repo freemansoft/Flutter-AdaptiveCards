@@ -229,19 +229,19 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   }
 
   Widget _buildExpandedSingleSelect() {
-    return Column(
-      children: _choices.keys.map((key) {
-        return RadioListTile<String>(
-          value: _choices[key]!,
-          onChanged: (value) {
-            select(value);
-          },
-          groupValue: _selectedChoices.contains(_choices[key])
-              ? _choices[key]
-              : null,
-          title: Text(key),
-        );
-      }).toList(),
+    return RadioGroup<String>(
+      groupValue: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
+      onChanged: (value) {
+        select(value);
+      },
+      child: Column(
+        children: _choices.keys.map((key) {
+          return RadioListTile<String>(
+            value: _choices[key]!,
+            title: Text(key),
+          );
+        }).toList(),
+      ),
     );
   }
 
