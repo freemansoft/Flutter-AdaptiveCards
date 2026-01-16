@@ -129,21 +129,27 @@ class AdaptiveTableState extends State<AdaptiveTable>
       //         col, oneCellItems.length, oneCellItems.toString()),
       //     name: this.runtimeType.toString());
       return TableCell(
-        child: Scrollbar(
-          child: Wrap(
-            children: List<Widget>.generate(oneCellItems.length, (widgetIndex) {
-              developer.log(
-                format(
-                  'onCellItems for index {} : {}',
-                  widgetIndex,
+        // should the container be inside the scrollbar?
+        child: Container(
+          decoration: getDecorationFromMap(rowTableCells[col]),
+          child: Scrollbar(
+            child: Wrap(
+              children: List<Widget>.generate(oneCellItems.length, (
+                widgetIndex,
+              ) {
+                developer.log(
+                  format(
+                    'onCellItems for index {} : {}',
+                    widgetIndex,
+                    oneCellItems[widgetIndex],
+                  ),
+                  name: runtimeType.toString(),
+                );
+                return widgetState.cardRegistry.getElement(
                   oneCellItems[widgetIndex],
-                ),
-                name: runtimeType.toString(),
-              );
-              return widgetState.cardRegistry.getElement(
-                oneCellItems[widgetIndex],
-              );
-            }),
+                );
+              }),
+            ),
           ),
         ),
       );

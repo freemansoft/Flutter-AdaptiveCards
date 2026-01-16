@@ -501,7 +501,11 @@ class MyHomePage extends StatelessWidget {
               'Sample Agenda',
             ]),
             Divider(),
-            getRow(context, ['Sample Flight Update Table', 'Generic Table']),
+            getRow(context, [
+              'Sample Flight Update Table',
+              'Samples',
+              'Generic Table',
+            ]),
             Divider(),
             Text('1.6 and others', textAlign: TextAlign.center),
             getRow(context, ['Carousel', 'Accordion']),

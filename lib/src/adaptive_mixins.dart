@@ -97,78 +97,60 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     );
   }
 
+  /// internal helper to resolve the background image properties from either a string or a map
+  ({String url, BoxFit fit, ImageRepeat repeat})? resolveBackgroundImage(
+    dynamic backgroundImage,
+  ) {
+    if (backgroundImage == null) return null;
+
+    if (backgroundImage is String) {
+      return (
+        url: backgroundImage,
+        fit: BoxFit.cover,
+        repeat: ImageRepeat.noRepeat,
+      );
+    }
+
+    if (backgroundImage is Map && backgroundImage['url'] != null) {
+      var url = backgroundImage['url'];
+      var fillMode = backgroundImage['fillMode']?.toString().toLowerCase();
+
+      return (
+        url: url,
+        fit: calculateBackgroundImageFit(fillMode),
+        repeat: calculateBackgroundImageRepeat(fillMode),
+      );
+    }
+
+    return null;
+  }
+
   /// JSON schema aware version of getBackgroundImage
   Image? getBackgroundImageFromMap(Map element) {
-    // could be string or map
-    if (element['backgroundImage'] is String) {
-      return getBackgroundImage(
-        element['backgroundImage'] as String,
-      );
-    }
+    var props = resolveBackgroundImage(element['backgroundImage']);
+    if (props == null) return null;
 
-    var backgroundImage = element['backgroundImage'];
-    // JSON Schema definition for BackgroundImage
-    // has properties "url" and "fillMode"
-    if (backgroundImage != null && backgroundImage['url'] != null) {
-      var backgroundImageUrl = backgroundImage['url'];
-      // JSON Schema definition "ImageFillMode"
-      // has values 'cover', 'repeatHorizontally', 'repeatVertically', 'repeat'
-      var fillMode = backgroundImage['fillMode'] != null
-          ? backgroundImage['fillMode'].toString().toLowerCase()
-          : 'cover';
-
-      BoxFit fit = calculateBackgroundImageFit(fillMode);
-      ImageRepeat repeat = calculateBackgroundImageRepeat(fillMode);
-
-      return getBackgroundImage(
-        backgroundImageUrl,
-        repeat: repeat,
-        fit: fit,
-      );
-    } else {
-      return null;
-      // return const SizedBox(width: 0, height: 0);
-    }
+    return getBackgroundImage(props.url, repeat: props.repeat, fit: props.fit);
   }
 
   /// JSON schema aware BoxDecoration wrapper of getDecorationImageFromMap
   BoxDecoration getDecorationFromMap(Map element) {
     var decorationImage = getDecorationImageFromMap(element);
-    return BoxDecoration(
-      image: decorationImage,
-    );
+    return BoxDecoration(image: decorationImage);
   }
 
   /// JSON schema aware DecorationImage wrapper of DecorationImage
   /// Cards that support background images include
   /// AdaptiveCard, Column, Container, TableCell, Authentication
   DecorationImage? getDecorationImageFromMap(Map element) {
-    if (element['backgroundImage'] is String) {
-      return DecorationImage(
-        image: NetworkImage(element['backgroundImage'] as String),
-        fit: BoxFit.cover,
-      );
-    }
+    var props = resolveBackgroundImage(element['backgroundImage']);
+    if (props == null) return null;
 
-    var backgroundImage = element['backgroundImage'];
-    if (backgroundImage != null && backgroundImage['url'] != null) {
-      var backgroundImageUrl = backgroundImage['url'];
-      var fillMode = backgroundImage['fillMode'] != null
-          ? backgroundImage['fillMode'].toString().toLowerCase()
-          : 'cover';
-
-      BoxFit fit = calculateBackgroundImageFit(fillMode);
-      ImageRepeat repeat = calculateBackgroundImageRepeat(fillMode);
-
-      return DecorationImage(
-        image: NetworkImage(backgroundImageUrl),
-        repeat: repeat,
-        fit: fit,
-        // eventually we need an onError here in case it can't be found
-        // or could replace this with a FadeInImage of something local
-      );
-    }
-    return null;
+    return DecorationImage(
+      image: NetworkImage(props.url),
+      repeat: props.repeat,
+      fit: props.fit,
+    );
   }
 }
 

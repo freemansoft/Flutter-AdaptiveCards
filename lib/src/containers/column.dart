@@ -116,13 +116,16 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     double? precedingSpacing = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveSpacing(adaptiveMap['spacing']);
+    var backgroundImageUrl = resolveBackgroundImage(
+      adaptiveMap['backgroundImage'],
+    )?.url;
     var backgroundColor =
         InheritedReferenceResolver.of(
           context,
         ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
           context: context,
           style: adaptiveMap['style']?.toString(),
-          backgroundImageUrl: adaptiveMap['backgroundImage']?['url'],
+          backgroundImageUrl: backgroundImageUrl,
         );
 
     Widget child = Container(
