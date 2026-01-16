@@ -10,8 +10,8 @@ import 'about_page.dart';
 ///
 /// This program lets you specify a local or remote adaptive card for viewing.
 /// Intended to be used as  debugging jig
-///
-/// `flutter run  --dart-define=url=lib/activity_update lib/lab.dart -d chrome --web-renderer html --web-port <port> `
+/// cd example
+/// `flutter run  --dart-define=url=lib/test_data/activity_update.json lib/lab.dart -d chrome`
 ///
 void main() {
   // this forces fuchsia on all platforms including ios
@@ -23,12 +23,12 @@ void main() {
 
 ///
 /// Passed in with
-/// * `--dart-define=url=lib/activity_update`
+/// * `--dart-define=url=lib/test_data/activity_update.json`
 /// * `--dart-define=url=<url>`
 ///
 const resourceUrl = String.fromEnvironment(
   'url',
-  defaultValue: 'lib/easy_card',
+  defaultValue: 'lib/test_data/easy_card.json',
 );
 
 class MyApp extends StatefulWidget {
