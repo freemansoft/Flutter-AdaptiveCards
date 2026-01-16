@@ -109,7 +109,8 @@ class AdaptiveTableState extends State<AdaptiveTable>
     List<List<dynamic>> rowCellItems = List<List<dynamic>>.generate(
       rowTableCells.length,
       (rowNum) {
-        return rowTableCells[rowNum]['items'];
+        // some of the samples have empty rows
+        return rowTableCells[rowNum]['items'] ?? [];
       },
     );
     // developer.log(format("rowCellItems: row:{} length:{} - {}", rowNum,

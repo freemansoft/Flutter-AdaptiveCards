@@ -360,6 +360,13 @@ class MyAppState extends State<MyApp> {
                   'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/Agenda.json',
               aboutPage: aboutPage,
             ),
+        'Sample Flight Update Table':
+            (context) => NetworkPage(
+              title: 'Flight Update Table',
+              url:
+                  'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json',
+              aboutPage: aboutPage,
+            ),
         'Badge':
             (context) => GenericListPage(
               title: 'Badge',
@@ -494,7 +501,7 @@ class MyHomePage extends StatelessWidget {
               'Sample Agenda',
             ]),
             Divider(),
-            getRow(context, ['Table']),
+            getRow(context, ['Sample Flight Update Table', 'Generic Table']),
             Divider(),
             Text('1.6 and others', textAlign: TextAlign.center),
             getRow(context, ['Carousel', 'Accordion']),
