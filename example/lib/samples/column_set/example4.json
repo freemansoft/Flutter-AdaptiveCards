@@ -16,7 +16,7 @@
                     "type": "Column",
                     "width": "stretch",
                     "backgroundImage": {
-                        "url": "https://adaptivecards.io/content/xxTxP_Flight.png"
+                        "url": "https://adaptivecards.io/content/airplane.png"
                     },
                     "items": [
                         {
@@ -28,9 +28,27 @@
                 {
                     "width": "stretch",
                     "type": "Column",
+                    "backgroundImage": {
+                        "url": "https://adaptivecards.io/content/airplane.png",
+                        "fillMode": "repeatHorizontally"
+                    },
                     "items": [
                         {
-                            "text": "White",
+                            "text": "background repeat horizontally",
+                            "type": "TextBlock"
+                        }
+                    ]
+                },
+                {
+                    "width": "stretch",
+                    "type": "Column",
+                    "backgroundImage": {
+                        "url": "https://adaptivecards.io/content/airplane.png",
+                        "fillMode": "repeatVertically"
+                    },
+                    "items": [
+                        {
+                            "text": "background repeat vertically \\\nbackground repeat vertically \\\nbackground repeat vertically \\\nbackground repeat vertically",
                             "type": "TextBlock"
                         }
                     ]
@@ -40,11 +58,12 @@
                     "width": "stretch",
                     "style": "emphasis",
                     "backgroundImage": {
-                        "url": "https://adaptivecards.io/content/airplane.png"
+                        "url": "https://adaptivecards.io/content/airplane.png",
+                        "fillMode": "repeat"
                     },
                     "items": [
                         {
-                            "text": "Blue Image Background",
+                            "text": "backround repeat x and y \\\nbackround repeat x and y \\\nbackround repeat x and y \\\nbackround repeat x and y",
                             "type": "TextBlock"
                         }
                     ]

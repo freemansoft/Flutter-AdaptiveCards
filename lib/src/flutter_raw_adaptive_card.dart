@@ -413,14 +413,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                         'it off manually by passing showDebugJson = false)',
                       ),
                       content: SingleChildScrollView(child: Text(prettyprint)),
-                      actions: <Widget>[
-                        Center(
-                          child: TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Thanks'),
-                          ),
-                        ),
-                      ],
                       contentPadding: const EdgeInsets.all(8.0),
                     );
                   },
