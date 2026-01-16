@@ -483,7 +483,6 @@ class ReferenceResolver {
   /// JSON Schema definition "VerticalAlignment"
   ///   Used in Table and Table Row
   ///   Used in BackgroundImage
-  /// TODO implement resolveVerticalAlginment separately from this
   ///
   /// JSON Schema definition "VerticalContentAlignment"
   ///   Defines how content should be aligned vertically within the container
