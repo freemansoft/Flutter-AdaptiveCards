@@ -2,59 +2,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Examples App - Current",
+      "name": "Widgetbook - Current",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
-      "cwd": "${workspaceFolder}/example",
+      "cwd": "${workspaceFolder}/widgetbook",
       "program": "lib/main.dart",
       "args": []
     },
     {
-      "name": "Examples App - Web",
+      "name": "Widgetbook - Web",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
-      "cwd": "${workspaceFolder}/example",
+      "cwd": "${workspaceFolder}/widgetbook",
       "program": "lib/main.dart",
-      "args": [
-        "-d",
-        "chrome",
-        "--web-port",
-        "3000"
-      ]
-    },
-    {
-      "name": "Example lab assets Web",
-      "type": "dart",
-      "request": "launch",
-      "flutterMode": "debug",
-      "cwd": "${workspaceFolder}/example",
-      "program": "lib/lab.dart",
-      "args": [
-        "-d",
-        "chrome",
-        "--web-renderer",
-        "html",
-        "--web-port",
-        "3000"
-      ]
-    },
-    {
-      "name": "Example lab_web Web",
-      "type": "dart",
-      "request": "launch",
-      "flutterMode": "debug",
-      "cwd": "${workspaceFolder}/example",
-      "program": "lib/lab_web.dart",
-      "args": [
-        "-d",
-        "chrome",
-        "--web-renderer",
-        "html",
-        "--web-port",
-        "3000"
-      ]
-    },
+      "args": ["-d", "chrome", "--web-port", "3000"]
+    }
   ]
 }
