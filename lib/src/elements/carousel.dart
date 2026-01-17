@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCarousel({super.key, required this.adaptiveMap});
@@ -152,7 +153,6 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
   Widget build(BuildContext context) {
     bool showBorder = widget.adaptiveMap['showBorder'] == true;
     bool roundedCorners = widget.adaptiveMap['roundedCorners'] == true;
-    String? style = widget.adaptiveMap['style'];
 
     // Resolve background color based on style
     // We can use ReferenceResolver logic or simple map for now.
@@ -160,15 +160,11 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     // We can assume InheritedReferenceResolver is present.
     // But specific container logic might be needed.
 
-    Color? backgroundColor;
-    if (style != null) {
-      // Basic mapping
-      if (style == 'emphasis') backgroundColor = Colors.grey.shade100;
-      if (style == 'good') backgroundColor = Colors.green.shade50;
-      if (style == 'attention') backgroundColor = Colors.red.shade50;
-      if (style == 'warning') backgroundColor = Colors.amber.shade50;
-      if (style == 'accent') backgroundColor = Colors.blue.shade50;
-    }
+    Color? backgroundColor = InheritedReferenceResolver.of(context).resolver
+        .resolveContainerBackgroundColor(
+          context: context,
+          style: widget.adaptiveMap['style'],
+        );
 
     BoxDecoration? decoration;
     if (showBorder || backgroundColor != null) {

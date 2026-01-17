@@ -11,13 +11,21 @@
       "args": []
     },
     {
+      // Sections with images may fail in chrome because of HTTPS CORS issues
+      // Use --disable-web-security to disable CORS
       "name": "Widgetbook - Web",
       "type": "dart",
       "request": "launch",
       "flutterMode": "debug",
       "cwd": "${workspaceFolder}/widgetbook",
       "program": "lib/main.dart",
-      "args": ["-d", "chrome", "--web-port", "3000"]
+      "args": [
+        "--web-browser-flag=--disable-web-security",
+        "-d",
+        "chrome",
+        "--web-port",
+        "3000"
+      ]
     }
   ]
 }
