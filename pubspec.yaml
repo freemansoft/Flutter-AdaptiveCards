@@ -7,10 +7,10 @@ environment:
   sdk: ^3.10.4
 
 dependencies:
-
   # Content
-  ## Video player with controls
-  chewie: ^1.4.0
+  # Video player with controls - Android, IOS, MACOS, WEB https://pub.dev/packages/chewie
+  # Could investigate video_player_media_kit - Android, IOS, LINUX, MACOS, Web, WINDOWS
+  chewie: ^1.13.0
   fl_chart: 1.0.0 # https://github.com/imaNNeo/fl_chart/issues/1986
   flutter:
     sdk: flutter

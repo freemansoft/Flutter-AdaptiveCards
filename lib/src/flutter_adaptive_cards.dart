@@ -12,6 +12,8 @@ import 'package:format/format.dart';
 import 'package:http/http.dart' as http;
 
 /// Core definition for AdaptiveCardContent providers.
+/// The class that loads the json map for the card.
+///
 /// We use specialized versions for each way we get content
 abstract class AdaptiveCardContentProvider {
   AdaptiveCardContentProvider();

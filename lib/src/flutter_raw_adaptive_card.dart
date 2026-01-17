@@ -16,8 +16,8 @@ import 'package:format/format.dart';
 /// Created by `AdaptiveCard` so there is usually only one of these per page.
 ///
 class RawAdaptiveCard extends StatefulWidget {
-  /// This widget takes a [map] (which usually is just a json decoded string) and
-  /// displays in natively.
+  /// This widget takes a [map] (which usually is just a json decoded string)
+  /// and displays in natively.
   ///
   /// Additionally a host config needs to be provided for styling.
   const RawAdaptiveCard.fromMap(
