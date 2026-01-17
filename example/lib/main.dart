@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:example/render_time/render_time_page.dart';
 import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
@@ -90,7 +92,8 @@ class MyAppState extends State<MyApp> {
                 'lib/samples/examples/example12.json',
                 'lib/samples/examples/example13.json',
                 'lib/samples/examples/example14.json',
-                'lib/samples/examples/example15.json',
+                // windows does not support video
+                if (!Platform.isWindows) 'lib/samples/examples/example15.json',
               ],
               supportMarkdowns: [
                 false,

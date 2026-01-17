@@ -50,7 +50,7 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
     backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
+        ).resolver.resolveContainerBackgroundColorIfNoBackgroundImage(
           context: context,
           style: adaptiveMap['style']?.toString(),
           backgroundImageUrl: backgroundImageUrl,

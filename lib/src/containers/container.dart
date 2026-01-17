@@ -52,7 +52,7 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
     backgroundColor =
         InheritedReferenceResolver.of(
           context,
-        ).resolver.resolveContainerBackgroundColorIfNoBackgroundAndNoStyle(
+        ).resolver.resolveContainerBackgroundColorIfNoBackgroundImage(
           context: context,
           style: adaptiveMap['style']?.toString(),
           backgroundImageUrl: backgroundImageUrl,
