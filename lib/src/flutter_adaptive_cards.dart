@@ -33,6 +33,18 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   }
 }
 
+/// Content provider for getting card specifications from a JSON string
+class JsonAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
+  JsonAdaptiveCardContentProvider({required this.jsonString}) : super();
+
+  String jsonString;
+
+  @override
+  Future<Map<String, dynamic>> loadAdaptiveCardContent() async {
+    return json.decode(jsonString);
+  }
+}
+
 /// Content provider for getting card specifications from the Asset tree
 class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
   AssetAdaptiveCardContentProvider({required this.path}) : super();
@@ -127,6 +139,23 @@ class AdaptiveCard extends StatefulWidget {
     this.supportMarkdown = true,
   }) : adaptiveCardContentProvider = MemoryAdaptiveCardContentProvider(
          content: content,
+       );
+
+  AdaptiveCard.json({
+    super.key,
+    this.placeholder,
+    this.cardRegistry,
+    required String jsonString,
+    this.initData,
+    this.onChange,
+    this.onSubmit,
+    this.onExecute,
+    this.onOpenUrl,
+    this.listView = false,
+    this.showDebugJson = true,
+    this.supportMarkdown = true,
+  }) : adaptiveCardContentProvider = JsonAdaptiveCardContentProvider(
+         jsonString: jsonString,
        );
 
   /// Content provider usually specific to a named constructor

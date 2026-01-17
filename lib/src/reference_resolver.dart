@@ -71,9 +71,9 @@ class ReferenceResolver {
       case 'light':
         foregroundColor = Colors.grey;
       case 'accent': // blue in demo
-        foregroundColor = Colors.blueAccent;
+        foregroundColor = Colors.blue;
       case 'good': // green in demo
-        foregroundColor = Colors.greenAccent;
+        foregroundColor = Colors.green;
       case 'attention': // red in demo
         foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
       case 'warning': // orange in demo
@@ -173,8 +173,9 @@ class ReferenceResolver {
 
     switch (myStyle) {
       case 'default':
-      case 'emphasis':
         backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+      case 'emphasis':
+        backgroundColor = Colors.grey.shade200;
       case 'accent': // blue in demo
         backgroundColor = Colors.blueAccent;
       case 'good': // green in demo

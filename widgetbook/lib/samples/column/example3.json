@@ -11,7 +11,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "No Style"
+              "text": "Column no style"
             }
           ]
         },
@@ -21,20 +21,22 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Column is default - no container"
+              "text": "Column is default"
             },
             {
               "type": "Container",
+              "separator": true,
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": "Column default - Container no Style"
+                  "text": "Column default - Container no style"
                 }
               ]
             },
             {
               "type": "Container",
               "style": "emphasis",
+              "separator": true,
               "items": [
                 {
                   "type": "TextBlock",
@@ -45,6 +47,7 @@
             {
               "type": "Container",
               "style": "good",
+              "separator": true,
               "items": [
                 {
                   "type": "TextBlock",
@@ -55,6 +58,7 @@
             {
               "type": "Container",
               "style": "attention",
+              "separator": true,
               "items": [
                 {
                   "type": "TextBlock",
@@ -67,6 +71,7 @@
         {
           "type": "Column",
           "style": "emphasis",
+          "separator": true,
           "items": [
             {
               "type": "TextBlock",
@@ -77,27 +82,51 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": "Container no style"
+                  "text": "Column emphasis - Container no style"
                 }
               ]
             },
             {
               "type": "Container",
               "style": "default",
+              "separator": true,
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": "Container default style"
+                  "text": "Column emphasis - Container default style"
                 }
               ]
             },
             {
               "type": "Container",
               "style": "emphasis",
+              "separator": true,
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": "Container emphasis style"
+                  "text": "Column emphasis - Container emphasis style"
+                }
+              ]
+            },
+            {
+              "type": "Container",
+              "style": "good",
+              "separator": true,
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Column default - Container good style"
+                }
+              ]
+            },
+            {
+              "type": "Container",
+              "style": "attention",
+              "separator": true,
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Column default - Container attention style"
                 }
               ]
             }
