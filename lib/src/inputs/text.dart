@@ -54,7 +54,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
           SizedBox(
             height: 40,
             child: TextFormField(
-              style: const TextStyle(),
+              style: TextStyle(),
               controller: controller,
               // maxLength: maxLength,
               inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
@@ -80,7 +80,15 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
                   borderSide: BorderSide(width: 1),
                 ),
                 filled: true,
+                fillColor:
+                    InheritedReferenceResolver.of(
+                      context,
+                    ).resolver.resolveInputBackgroundColor(
+                      context: context,
+                      style: null,
+                    ),
                 hintText: placeholder,
+                // required or box will exist even though field is hidden or half height
                 hintStyle: const TextStyle(),
                 errorStyle: const TextStyle(height: 0),
               ),

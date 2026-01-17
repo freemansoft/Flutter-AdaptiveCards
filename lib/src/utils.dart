@@ -179,17 +179,16 @@ Widget loadLabel(String? label, bool isRequired) {
     alignment: Alignment.centerLeft,
     child: Padding(
       padding: const EdgeInsets.only(bottom: 8, top: 0),
-      child:
-          isRequired
-              ? Text.rich(
-                TextSpan(
-                  children: [
-                    WidgetSpan(child: Text(label)),
-                    const WidgetSpan(child: Text('*', style: TextStyle())),
-                  ],
-                ),
-              )
-              : Text(label),
+      child: isRequired
+          ? Text.rich(
+              TextSpan(
+                children: [
+                  WidgetSpan(child: Text(label)),
+                  const WidgetSpan(child: Text('*', style: TextStyle())),
+                ],
+              ),
+            )
+          : Text(label),
     ),
   );
 }

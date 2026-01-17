@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -173,6 +174,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           filled: true,
           suffixIcon: const Icon(Icons.arrow_drop_down),
           hintText: placeholder,
+          // required or box will exist even though field is hidden or half height
           hintStyle: const TextStyle(),
           errorStyle: const TextStyle(height: 0),
         ),
@@ -210,7 +212,23 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         child: DropdownButton<String>(
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down),
-          style: const TextStyle(),
+          style: TextStyle(
+            // TODO: this is not right - should have a different function
+            color:
+                InheritedReferenceResolver.of(
+                  context,
+                ).resolver.resolveContainerForegroundColor(
+                  context: context,
+                  style: null,
+                ),
+            backgroundColor:
+                InheritedReferenceResolver.of(
+                  context,
+                ).resolver.resolveInputBackgroundColor(
+                  context: context,
+                  style: null,
+                ),
+          ),
           items: _choices.keys
               .map(
                 (key) => DropdownMenuItem<String>(
