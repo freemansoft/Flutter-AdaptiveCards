@@ -58,7 +58,9 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
     try {
       await videoPlayerController.initialize();
     } catch (e) {
-      debugPrint('$sourceUrl $e');
+      debugPrint(
+        'video not supported on this platform: $sourceUrl $e',
+      );
       rethrow;
     }
 

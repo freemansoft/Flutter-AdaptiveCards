@@ -182,7 +182,7 @@ class ReferenceResolver {
       case 'attention': // red in demo
         backgroundColor = Theme.of(context).colorScheme.errorContainer;
       case 'warning': // orange in demo
-        backgroundColor = Theme.of(context).colorScheme.errorContainer;
+        backgroundColor = Colors.orangeAccent;
       default:
       //backgroundColor = Theme.of(context).colorScheme.primaryContainer;
     }
@@ -205,14 +205,18 @@ class ReferenceResolver {
   ///
   /// This returns no color
   /// if a background image url is provided
-  /// or if there is no style in the json
+  /// or no style provided. makes it transparent to background of containing
   ///
   /// Style is typically one of the ContainerStyles
   /// - default
   /// - emphasis
+  /// - accent
+  /// - good
+  /// - attention
+  /// - warning
   ///
   ///
-  Color? resolveContainerBackgroundColorIfNoBackgroundAndNoStyle({
+  Color? resolveContainerBackgroundColorIfNoBackgroundImage({
     required BuildContext context,
     required String? style,
     required String? backgroundImageUrl,
@@ -221,6 +225,7 @@ class ReferenceResolver {
       return null;
     }
 
+    // containers could be transparent
     if (style == null) return null;
 
     return resolveContainerBackgroundColor(
