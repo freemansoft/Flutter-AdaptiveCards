@@ -5,7 +5,7 @@
     "body": [
         {
             "type": "Input.Text",
-            "placeholder": " ",
+            "placeholder": "Enter your full name",
             "label": "Full Name",
             "id": "fullname",
             "isRequired": true,
@@ -13,7 +13,7 @@
         },
         {
             "type": "Input.Text",
-            "placeholder": " ",
+            "placeholder": "Enter your phone number",
             "label": "Phone Number",
             "isRequired": true,
             "id": "phonenumber",
@@ -21,6 +21,7 @@
         },
         {
             "type": "Input.Date",
+            "placeholder": "Enter your booking date",
             "id": "bookingdate",
             "label": "Booking Date",
             "isRequired": true,
@@ -69,7 +70,7 @@
         },
         {
             "type": "Input.Text",
-            "placeholder": " ",
+            "placeholder": "Enter the reason for your visit",
             "label": "Reason",
             "isMultiline": true,
             "id": "reason"
@@ -80,6 +81,10 @@
             "actions": [
                 {
                     "type": "Action.Execute",
+                    "title": "Cancel Registration"
+                },
+                {
+                    "type": "Action.Submit",
                     "title": "Register"
                 }
             ]

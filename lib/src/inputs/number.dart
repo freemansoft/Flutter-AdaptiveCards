@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,7 +79,15 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
                   borderSide: const BorderSide(),
                 ),
                 filled: true,
+                fillColor:
+                    InheritedReferenceResolver.of(
+                      context,
+                    ).resolver.resolveInputBackgroundColor(
+                      context: context,
+                      style: null,
+                    ),
                 hintText: placeholder,
+                // required or box will exist even though field is hidden or half height
                 hintStyle: const TextStyle(),
                 errorStyle: const TextStyle(height: 0),
               ),

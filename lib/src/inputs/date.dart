@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -96,8 +97,16 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
                   borderSide: BorderSide(width: 1),
                 ),
                 filled: true,
+                fillColor:
+                    InheritedReferenceResolver.of(
+                      context,
+                    ).resolver.resolveInputBackgroundColor(
+                      context: context,
+                      style: null,
+                    ),
                 suffixIcon: const Icon(Icons.calendar_today, size: 15),
                 hintText: placeholder,
+                // required or box will exist even though field is hidden or half height
                 hintStyle: const TextStyle(),
                 errorStyle: const TextStyle(height: 0),
               ),

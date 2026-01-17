@@ -18,7 +18,12 @@ class WidgetbookApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Widgetbook.material(
       directories: directories,
-      addons: [ViewportAddon(Viewports.all)],
+      addons: [ViewportAddon(Viewports.all), SemanticsAddon()],
+      // to see snackbar messages. Maybe should use some other way to do this?
+      appBuilder: (context, child) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(body: Material(child: child)),
+      ),
     );
   }
 }

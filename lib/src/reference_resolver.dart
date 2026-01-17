@@ -203,6 +203,15 @@ class ReferenceResolver {
     return backgroundColor;
   }
 
+  /// Calling from text fields and drop downs, etc
+  /// Input fields use the same background colors as containers
+  Color? resolveInputBackgroundColor({
+    required BuildContext context,
+    required String? style,
+  }) {
+    return resolveContainerBackgroundColor(context: context, style: style);
+  }
+
   ///
   /// This returns no color
   /// if a background image url is provided

@@ -173,7 +173,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         ? ''
         : adaptiveMap['value'].toString();
 
-    placeholder = widget.adaptiveMap['placeholder'] ?? '';
+    placeholder = adaptiveMap['placeholder'] ?? '';
   }
 
   /// Input cards implement this to copy their state **to** the map
