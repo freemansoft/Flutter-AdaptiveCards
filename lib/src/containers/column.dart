@@ -113,7 +113,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
   @override
   Widget build(BuildContext context) {
-    double? precedingSpacing = InheritedReferenceResolver.of(
+    double? preceedingSpacing = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveSpacing(adaptiveMap['spacing']);
     var backgroundImageUrl = resolveBackgroundImage(
@@ -128,44 +128,51 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
           backgroundImageUrl: backgroundImageUrl,
         );
 
-    Widget child = Container(
-      alignment: containerHorizontalAlignment,
-      color: backgroundColor,
-      child: Column(
-        crossAxisAlignment: horizontalAlignment,
-        mainAxisAlignment: verticalAlignment,
-        children: [...items.map((it) => it)],
-      ),
-    );
-
-    if (!widget.supportMarkdown) {
-      child = Expanded(child: child);
-    }
-
-    Widget result = Container(
-      decoration: getDecorationFromMap(adaptiveMap),
+    Widget child = SeparatorElement(
+      adaptiveMap: adaptiveMap,
       child: InkWell(
         onTap: action?.tap,
-        child: Padding(
-          padding: EdgeInsets.only(left: precedingSpacing ?? 0),
-          child: SeparatorElement(adaptiveMap: adaptiveMap, child: child),
+        child: Container(
+          // we need this container to be the same size as the row element
+          // so that all the columns are the same height
+          alignment: containerHorizontalAlignment,
+          padding: EdgeInsets.only(left: preceedingSpacing ?? 0),
+          decoration: getDecorationFromMap(
+            adaptiveMap,
+            backgroundColor: backgroundColor,
+          ),
+          child: ChildStyler(
+            adaptiveMap: adaptiveMap,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: horizontalAlignment,
+              mainAxisAlignment: verticalAlignment,
+              children: [...items.map((it) => it)],
+            ),
+          ),
         ),
       ),
     );
 
+    // Why is this here if we could have another expanded below?
+    if (!widget.supportMarkdown) {
+      child = Expanded(child: child);
+    }
+
+    var result = child;
     assert(
       mode == 'auto' || mode == 'stretch' || mode == 'weighted' || mode == 'px',
     );
     if (mode == 'auto') {
-      return Flexible(child: result);
+      result = Flexible(child: child);
     } else if (mode == 'stretch') {
-      return Expanded(child: result);
+      result = Expanded(child: child);
     } else if (mode == 'weighted') {
-      return Expanded(flex: width, child: result);
+      result = Expanded(flex: width, child: child);
     } else if (mode == 'px') {
-      return SizedBox(width: width.toDouble(), child: result);
+      result = SizedBox(width: width.toDouble(), child: child);
     }
 
-    return ChildStyler(adaptiveMap: adaptiveMap, child: result);
+    return result;
   }
 }
