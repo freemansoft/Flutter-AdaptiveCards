@@ -134,9 +134,9 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   }
 
   /// JSON schema aware BoxDecoration wrapper of getDecorationImageFromMap
-  BoxDecoration getDecorationFromMap(Map element) {
+  BoxDecoration getDecorationFromMap(Map element, {Color? backgroundColor}) {
     var decorationImage = getDecorationImageFromMap(element);
-    return BoxDecoration(image: decorationImage);
+    return BoxDecoration(image: decorationImage, color: backgroundColor);
   }
 
   /// JSON schema aware DecorationImage wrapper of DecorationImage

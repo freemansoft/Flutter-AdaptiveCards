@@ -36,13 +36,17 @@ class SeparatorElementState extends State<SeparatorElement>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        separator ? Divider(height: topSpacing) : SizedBox(height: topSpacing),
-        widget.child,
-      ],
-    );
+    if (!separator) {
+      return widget.child;
+    } else {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Divider(height: topSpacing),
+          widget.child,
+        ],
+      );
+    }
   }
 }
 

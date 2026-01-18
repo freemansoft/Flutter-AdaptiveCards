@@ -5,8 +5,8 @@
     "body": [
         {
             "type": "TextBlock",
-            "text": "Horizontal alignment center",
-            "size": "extraLarge"
+            "text": "Buttons in columns aligned center",
+            "size": "large"
         },
         {
             "type": "ColumnSet",

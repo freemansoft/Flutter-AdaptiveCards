@@ -68,8 +68,9 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
         child: SeparatorElement(
           adaptiveMap: adaptiveMap,
           child: Container(
-            decoration: getDecorationFromMap(adaptiveMap).copyWith(
-              color: backgroundColor,
+            decoration: getDecorationFromMap(
+              adaptiveMap,
+              backgroundColor: backgroundColor,
             ),
             child: Padding(
               // padding: const EdgeInsets.symmetric(vertical: 8.0),

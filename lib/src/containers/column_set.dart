@@ -78,8 +78,9 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
         child: Container(
-          decoration: getDecorationFromMap(adaptiveMap).copyWith(
-            color: backgroundColor,
+          decoration: getDecorationFromMap(
+            adaptiveMap,
+            backgroundColor: backgroundColor,
           ),
           child: child,
         ),
