@@ -15,13 +15,14 @@ void main() {
     final containerFinder = find.byWidgetPredicate(
       (widget) =>
           widget is Container &&
+          widget.decoration != null &&
           widget.decoration is BoxDecoration &&
           (widget.decoration as BoxDecoration).image != null,
     );
 
     expect(containerFinder, findsOneWidget);
     final container = tester.widget<Container>(containerFinder);
-    final decoration = container.decoration as BoxDecoration;
+    final decoration = container.decoration! as BoxDecoration;
     final decorationImage = decoration.image!;
 
     expect(decorationImage.image, isA<NetworkImage>());
@@ -46,7 +47,7 @@ void main() {
 
     expect(containerFinder, findsOneWidget);
     final container = tester.widget<Container>(containerFinder);
-    final decoration = container.decoration as BoxDecoration;
+    final decoration = container.decoration! as BoxDecoration;
     final decorationImage = decoration.image!;
 
     expect(decorationImage.image, isA<NetworkImage>());

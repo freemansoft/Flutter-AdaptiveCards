@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_single_quotes
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
@@ -28,7 +26,7 @@ class IconButtonActionState extends State<IconButtonAction>
   @override
   void initState() {
     super.initState();
-    iconUrl = adaptiveMap["iconUrl"];
+    iconUrl = adaptiveMap['iconUrl'] as String?;
   }
 
   @override
@@ -51,7 +49,7 @@ class IconButtonActionState extends State<IconButtonAction>
       result = ElevatedButton.icon(
         onPressed: onTapped,
         style: buttonStyle,
-        icon: Image.network(iconUrl!, height: 36.0),
+        icon: Image.network(iconUrl!, height: 36),
         label: Text(title),
       );
     }

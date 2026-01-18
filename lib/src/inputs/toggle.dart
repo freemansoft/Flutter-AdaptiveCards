@@ -29,10 +29,10 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
   void initState() {
     super.initState();
 
-    valueOff = adaptiveMap['valueOff'] ?? 'false';
-    valueOn = adaptiveMap['valueOn'] ?? 'true';
+    valueOff = adaptiveMap['valueOff']?.toString().toLowerCase() ?? 'false';
+    valueOn = adaptiveMap['valueOn']?.toString().toLowerCase() ?? 'true';
     boolValue = value == valueOn;
-    title = adaptiveMap['title'] ?? '';
+    title = adaptiveMap['title']?.toString() ?? '';
   }
 
   @override
@@ -66,7 +66,9 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
   void initInput(Map map) {
     if (map[id] != null) {
       setState(() {
-        boolValue = map[id];
+        if (map[id] != null) {
+          boolValue = map[id] as bool;
+        }
       });
     }
   }

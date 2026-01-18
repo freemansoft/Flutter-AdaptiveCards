@@ -30,7 +30,7 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   late String altText;
 
   FadeAnimation imageFadeAnim = const FadeAnimation(
-    child: Icon(Icons.play_arrow, size: 100.0),
+    child: Icon(Icons.play_arrow, size: 100),
   );
 
   @override
@@ -44,9 +44,9 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
       );
     }
 
-    postUrl = adaptiveMap['poster'];
+    postUrl = adaptiveMap['poster']?.toString();
     // https://adaptivecards.io/explorer/MediaSource.html
-    sourceUrl = adaptiveMap['sources'][0]['url'];
+    sourceUrl = adaptiveMap['sources'][0]['url']?.toString() ?? '';
     initializePlayer();
   }
 

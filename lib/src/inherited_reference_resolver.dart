@@ -7,14 +7,14 @@ import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 /// scoped resolvers and to create overides to
 /// do things like override a parent container configuration
 class InheritedReferenceResolver extends InheritedWidget {
-  /// The resolver to provide to the widget tree for resolving configuration
-  final ReferenceResolver resolver;
-
   const InheritedReferenceResolver({
     super.key,
     required this.resolver,
     required super.child,
   });
+
+  /// The resolver to provide to the widget tree for resolving configuration
+  final ReferenceResolver resolver;
 
   static InheritedReferenceResolver? maybeOf(BuildContext context) {
     return context

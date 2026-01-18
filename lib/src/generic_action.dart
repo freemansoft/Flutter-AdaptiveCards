@@ -4,7 +4,7 @@ import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 abstract class GenericAction {
   GenericAction(this.adaptiveMap, this.rawAdaptiveCardState);
 
-  String? get title => adaptiveMap['title'];
+  String? get title => adaptiveMap['title'] as String?;
   final Map<String, dynamic> adaptiveMap;
   final RawAdaptiveCardState rawAdaptiveCardState;
 
@@ -18,7 +18,7 @@ class GenericSubmitAction extends GenericAction {
     Map<String, dynamic> adaptiveMap,
     RawAdaptiveCardState rawAdaptiveCardState,
   ) : super(adaptiveMap, rawAdaptiveCardState) {
-    data = adaptiveMap['data'] ?? {};
+    data = adaptiveMap['data'] as Map<String, dynamic>? ?? {};
   }
 
   late Map<String, dynamic> data;
@@ -36,7 +36,7 @@ class GenericExecuteAction extends GenericAction {
     Map<String, dynamic> adaptiveMap,
     RawAdaptiveCardState rawAdaptiveCardState,
   ) : super(adaptiveMap, rawAdaptiveCardState) {
-    data = adaptiveMap['data'] ?? {};
+    data = adaptiveMap['data'] as Map<String, dynamic>? ?? {};
   }
 
   late Map<String, dynamic> data;
@@ -54,7 +54,7 @@ class GenericActionOpenUrl extends GenericAction {
     Map<String, dynamic> adaptiveMap,
     RawAdaptiveCardState rawAdaptiveCardState,
   ) : super(adaptiveMap, rawAdaptiveCardState) {
-    url = adaptiveMap['url'];
+    url = adaptiveMap['url'] as String?;
   }
 
   late String? url;

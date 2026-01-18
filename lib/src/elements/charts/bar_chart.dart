@@ -3,6 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 
+///
+/// https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar
+/// https://adaptivecards.microsoft.com/?topic=Chart.VerticalBar
+///
+/// https://adaptivecards.microsoft.com/?topic=BarChartDataValue
+/// https://adaptivecards.microsoft.com/?topic=VerticalBarChartDataValue///
+/// https://adaptivecards.microsoft.com/?topic=HorizontalBarChartDataValue
+///
 enum BarChartType {
   vertical,
   horizontal,
@@ -35,18 +43,16 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
   }
 
   void _parseData() {
-    // Assumption: data is a list of objects.
-    // Each object has `x` (label), `y` (value), `series` (optional, for grouping/stacking), `color`
-    var data = widget.adaptiveMap['data'];
+    final data = widget.adaptiveMap['data'];
     barGroups = [];
+    maxY = 10; // Default safety
+    if (data is! List) return;
     maxY = 0;
 
-    if (data is! List) return;
-
     // We need to group data by X coordinate (category)
-    Map<String, List<Map<String, dynamic>>> groupedData = {};
-    for (var item in data) {
-      String x = item['x']?.toString() ?? item['title'] ?? 'Unknown';
+    final Map<String, List<Map<String, dynamic>>> groupedData = {};
+    for (final item in data) {
+      final String x = item['x']?.toString() ?? 'Unknown';
       if (!groupedData.containsKey(x)) {
         groupedData[x] = [];
       }
@@ -55,24 +61,24 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
 
     int xIndex = 0;
     groupedData.forEach((key, items) {
-      List<BarChartRodData> rods = [];
+      final List<BarChartRodData> rods = [];
       double currentYSum = 0;
 
       // For Stacked, we need to handle "fromY" and "toY" or just stack logicaly?
       // fl_chart supports rodStackItems? No, it supports `BarChartRodData` having `rodStackItems`.
       // If Stacked, we create ONE rod per group, with multiple rodStackItems.
 
-      bool isStacked =
+      final bool isStacked =
           widget.type == BarChartType.stacked ||
           widget.type == BarChartType.horizontalStacked;
 
       if (isStacked) {
-        List<BarChartRodStackItem> stackItems = [];
+        final List<BarChartRodStackItem> stackItems = [];
         double runningSum = 0;
-        for (var item in items) {
-          double val = (item['value'] ?? item['y'] ?? 0).toDouble();
-          String? colorStr = item['color'];
-          Color color = _parseColor(colorStr) ?? Colors.blue; // rotation?
+        for (final item in items) {
+          final double val = (item['y'] as num? ?? 0).toDouble();
+          final String? colorStr = item['color'] as String?;
+          final Color color = _parseColor(colorStr) ?? Colors.blue; // rotation?
 
           stackItems.add(
             BarChartRodStackItem(runningSum, runningSum + val, color),
@@ -95,17 +101,17 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
         // Grouped (or simple)
         // Multiple rods side by side (if Grouped) or just one rod (simple)
         // If "Grouped", typically multiple series show up as multiple bars for same X.
-        for (var item in items) {
-          double val = (item['value'] ?? item['y'] ?? 0).toDouble();
+        for (final item in items) {
+          final double val = (item['y'] as num? ?? 0).toDouble();
           if (val > maxY) maxY = val;
-          String? colorStr = item['color'];
-          Color color = _parseColor(colorStr) ?? Colors.blue;
+          final String? colorStr = item['color'] as String?;
+          final Color color = _parseColor(colorStr) ?? Colors.blue;
 
           rods.add(
             BarChartRodData(
               toY: val,
               color: color,
-              width: 16, // Todo make configurable
+              width: 16, // TODO(username): make configurable
               borderRadius: BorderRadius.circular(2),
             ),
           );
@@ -127,23 +133,36 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
     maxY *= 1.2; // padding
   }
 
+  // TODO(username): Add support for AdaptiveCards named colors
+  // https://adaptivecards.microsoft.com/?topic=VerticalBarChartDataValue
   Color? _parseColor(String? colorStr) {
     if (colorStr == null) return null;
     // Basic hex parsing
-    colorStr = colorStr.replaceAll('#', '');
-    if (colorStr.length == 6) {
-      return Color(int.parse('FF$colorStr', radix: 16));
+    final myColorStr = colorStr.replaceAll('#', '');
+    if (myColorStr.length == 6) {
+      return Color(int.parse('FF$myColorStr', radix: 16));
     }
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isHorizontal =
+    final bool isHorizontal =
         widget.type == BarChartType.horizontal ||
         widget.type == BarChartType.horizontalStacked;
 
-    Widget chart = SeparatorElement(
+    final sideTitles = SideTitles(
+      showTitles: true,
+      getTitlesWidget: (val, meta) {
+        return Text(
+          val.isFinite ? val.toInt().toString() : '',
+          style: const TextStyle(fontSize: 10),
+        );
+      },
+    );
+    final axisTitles = AxisTitles(sideTitles: sideTitles);
+
+    final Widget chart = SeparatorElement(
       adaptiveMap: widget.adaptiveMap,
       child: SizedBox(
         height: 250,
@@ -154,18 +173,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
             alignment: BarChartAlignment.spaceAround,
             titlesData: FlTitlesData(
               show: true,
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (val, meta) {
-                    // MVP hack:
-                    return Text(
-                      val.toInt().toString(),
-                      style: TextStyle(fontSize: 10),
-                    ); // TODO mapping
-                  },
-                ),
-              ),
+              bottomTitles: axisTitles,
             ),
             // For horizontal, rotation is handled by RotatedBox
           ),
@@ -179,6 +187,6 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
     return chart;
   }
 
-  // TODO: Implement Rotation wrapper for Horizontal Bar Chart if fl_chart doesn't support it natively yet.
+  // TODO(username): Implement Rotation wrapper for Horizontal Bar Chart if fl_chart doesn't support it natively yet.
   // Or use `LineChart` for vertical only?
 }

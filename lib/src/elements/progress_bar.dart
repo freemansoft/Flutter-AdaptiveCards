@@ -27,9 +27,9 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
     // percent is usually 0-100 in AC, LinearProgressIndicator takes 0.0-1.0
     // If value is missing, percent is null -> indeterminate
     if (widget.adaptiveMap.containsKey('value')) {
-      var val = widget.adaptiveMap['value'];
+      final val = widget.adaptiveMap['value'];
       if (val != null) {
-        percent = val.toDouble() / 100.0;
+        percent = (val as num).toDouble() / 100.0;
         if (percent! < 0) percent = 0;
         if (percent! > 1) percent = 1;
       }
@@ -43,7 +43,7 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    var colorString = widget.adaptiveMap['color']?.toString();
+    final colorString = widget.adaptiveMap['color']?.toString();
     progressColor = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveProgressColor(context: context, color: colorString);
@@ -72,7 +72,7 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
       );
     }
 
-    var content = progressBar;
+    final content = progressBar;
 
     if (separator) {
       // Separator implies top spacing/line.

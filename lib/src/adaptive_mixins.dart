@@ -25,7 +25,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
       listen: false,
     ).read(rawAdaptiveCardStateProvider);
     if (widget.adaptiveMap.containsKey('id')) {
-      id = widget.adaptiveMap['id'];
+      id = widget.adaptiveMap['id'] as String;
     } else {
       id = UUIDGenerator().getId();
     }
@@ -42,8 +42,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   int get hashCode => id.hashCode;
 
   BoxFit calculateBackgroundImageFit(String? fillMode) {
-    fillMode = fillMode?.toLowerCase();
-    switch (fillMode) {
+    final myFillMode = fillMode?.toLowerCase();
+    switch (myFillMode) {
       case 'repeatvertically':
       case 'repeathorizontally':
       case 'repeat':
@@ -54,8 +54,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   }
 
   ImageRepeat calculateBackgroundImageRepeat(String? fillMode) {
-    fillMode = fillMode?.toLowerCase();
-    switch (fillMode) {
+    final myFillMode = fillMode?.toLowerCase();
+    switch (myFillMode) {
       case 'repeatvertically':
         return ImageRepeat.repeatY;
       case 'repeathorizontally':
@@ -80,7 +80,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
       repeat: repeat,
       fit: fit,
       errorBuilder: (context, error, stackTrace) {
-        return Icon(Icons.error);
+        return const Icon(Icons.error);
       },
       loadingBuilder: (context, child, loadingProgress) {
         // Optional: display a loading indicator while the image is fetching
@@ -112,8 +112,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     }
 
     if (backgroundImage is Map && backgroundImage['url'] != null) {
-      var url = backgroundImage['url'];
-      var fillMode = backgroundImage['fillMode']?.toString().toLowerCase();
+      final url = backgroundImage['url'];
+      final fillMode = backgroundImage['fillMode']?.toString().toLowerCase();
 
       return (
         url: url,
@@ -127,7 +127,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   /// JSON schema aware version of getBackgroundImage
   Image? getBackgroundImageFromMap(Map element) {
-    var props = resolveBackgroundImage(element['backgroundImage']);
+    final props = resolveBackgroundImage(element['backgroundImage']);
     if (props == null) return null;
 
     return getBackgroundImage(props.url, repeat: props.repeat, fit: props.fit);
@@ -135,7 +135,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   /// JSON schema aware BoxDecoration wrapper of getDecorationImageFromMap
   BoxDecoration getDecorationFromMap(Map element, {Color? backgroundColor}) {
-    var decorationImage = getDecorationImageFromMap(element);
+    final decorationImage = getDecorationImageFromMap(element);
     return BoxDecoration(image: decorationImage, color: backgroundColor);
   }
 
@@ -143,7 +143,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   /// Cards that support background images include
   /// AdaptiveCard, Column, Container, TableCell, Authentication
   DecorationImage? getDecorationImageFromMap(Map element) {
-    var props = resolveBackgroundImage(element['backgroundImage']);
+    final props = resolveBackgroundImage(element['backgroundImage']);
     if (props == null) return null;
 
     return DecorationImage(
@@ -156,7 +156,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
-  String get title => widget.adaptiveMap['title'] ?? '';
+  String get title => widget.adaptiveMap['title'] as String? ?? '';
 
   void onTapped();
 }
@@ -173,7 +173,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         ? ''
         : adaptiveMap['value'].toString();
 
-    placeholder = adaptiveMap['placeholder'] ?? '';
+    placeholder = adaptiveMap['placeholder'] as String? ?? '';
   }
 
   /// Input cards implement this to copy their state **to** the map

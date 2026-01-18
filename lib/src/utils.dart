@@ -27,12 +27,13 @@ class FadeAnimationState extends State<FadeAnimation>
       duration: widget.duration,
       vsync: this,
     );
-    animationController.addListener(() {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    animationController.forward(from: 0.0);
+    animationController
+      ..addListener(() {
+        if (mounted) {
+          setState(() {});
+        }
+      })
+      ..forward(from: 0);
   }
 
   @override
@@ -45,7 +46,7 @@ class FadeAnimationState extends State<FadeAnimation>
   void didUpdateWidget(FadeAnimation oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.child != widget.child) {
-      animationController.forward(from: 0.0);
+      animationController.forward(from: 0);
     }
   }
 
@@ -67,16 +68,15 @@ String firstCharacterToLowerCase(String s) =>
     s.isNotEmpty ? s[0].toLowerCase() + s.substring(1) : '';
 
 class Tuple<A, B> {
+  Tuple(this.a, this.b);
   final A a;
   final B b;
-
-  Tuple(this.a, this.b);
 }
 
 class FullCircleClipper extends CustomClipper<Rect> {
   @override
   Rect getClip(Size size) {
-    return Rect.fromLTWH(0.0, 0.0, size.width, size.height);
+    return Rect.fromLTWH(0, 0, size.width, size.height);
   }
 
   @override
@@ -95,7 +95,7 @@ Color? parseColor(String? colorValue) {
   }
 }
 
-String getDayOfMonthSuffix(final int n) {
+String getDayOfMonthSuffix(int n) {
   assert(n >= 1 && n <= 31, 'illegal day of month: $n');
   if (n >= 11 && n <= 13) {
     return 'th';
@@ -113,17 +113,18 @@ String getDayOfMonthSuffix(final int n) {
 }
 
 /// Parses a given text string to property handle DATE() and TIME()
-/// TODO this needs a bunch of tests
+// TODO(username): this needs a bunch of tests
 String parseTextString(String text) {
+  // ignore: unnecessary_raw_strings
   return text.replaceAllMapped(RegExp(r'{{.*}}'), (match) {
-    String? res = match.group(0);
+    final String? res = match.group(0);
     String? input = res?.substring(2, res.length - 2);
     input = input?.replaceAll(' ', '');
 
-    String? type = input?.substring(0, 4);
+    final String? type = input?.substring(0, 4);
     if (type == 'DATE') {
-      String? dateFunction = input?.substring(5, input.length - 1);
-      List<String> items = dateFunction?.split(',') ?? [];
+      final String? dateFunction = input?.substring(5, input.length - 1);
+      final List<String> items = dateFunction?.split(',') ?? [];
       if (items.length == 1) {
         items.add('COMPACT');
       }
@@ -131,9 +132,9 @@ String parseTextString(String text) {
       // Wrong format
       if (items.length != 2) return res ?? '';
 
-      DateTime? dateTime = DateTime.tryParse(items[0]);
+      final DateTime? dateTime = DateTime.tryParse(items[0]);
 
-      // TODO use locale
+      // TODO(username): use locale
       DateFormat dateFormat;
 
       if (dateTime == null) return res ?? '';
@@ -155,11 +156,11 @@ String parseTextString(String text) {
         return res ?? '';
       }
     } else if (type == 'TIME') {
-      String? time = input?.substring(5, input.length - 1);
-      DateTime? dateTime = DateTime.tryParse(time ?? '');
+      final String? time = input?.substring(5, input.length - 1);
+      final DateTime? dateTime = DateTime.tryParse(time ?? '');
       if (dateTime == null) return res ?? '';
 
-      DateFormat dateFormat = DateFormat('jm');
+      final DateFormat dateFormat = DateFormat('jm');
 
       return dateFormat.format(dateTime);
     } else {
@@ -170,7 +171,7 @@ String parseTextString(String text) {
   });
 }
 
-Widget loadLabel(String? label, bool isRequired) {
+Widget loadLabel({String? label, bool isRequired = false}) {
   if (label == null) {
     return const SizedBox();
   }
@@ -195,8 +196,6 @@ Widget loadLabel(String? label, bool isRequired) {
 
 /// Everyone uses the same scheme for UUID Generation
 class UUIDGenerator {
-  static final UUIDGenerator _instance = UUIDGenerator._internal();
-
   /// We use a factory which returns the singleton
   factory UUIDGenerator() {
     return _instance;
@@ -206,6 +205,7 @@ class UUIDGenerator {
   UUIDGenerator._internal() {
     uuid = const Uuid();
   }
+  static final UUIDGenerator _instance = UUIDGenerator._internal();
 
   late final Uuid uuid;
 

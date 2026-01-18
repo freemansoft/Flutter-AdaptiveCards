@@ -5,16 +5,15 @@ import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class SeparatorElement extends StatefulWidget
     implements AdaptiveElementWidgetMixin {
-  @override
-  final Map<String, dynamic> adaptiveMap;
-
-  final Widget child;
-
   const SeparatorElement({
     super.key,
     required this.adaptiveMap,
     required this.child,
   });
+  @override
+  final Map<String, dynamic> adaptiveMap;
+
+  final Widget child;
 
   @override
   SeparatorElementState createState() => SeparatorElementState();
@@ -31,7 +30,7 @@ class SeparatorElementState extends State<SeparatorElement>
     topSpacing = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveSpacing(adaptiveMap['spacing']);
-    separator = adaptiveMap['separator'] ?? false;
+    separator = adaptiveMap['separator'] as bool? ?? false;
   }
 
   @override
@@ -85,15 +84,14 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
 
 /// Used in some containers to change the style from there on down
 class ChildStyler extends StatelessWidget {
-  final Widget child;
-
-  final Map<String, dynamic> adaptiveMap;
-
   const ChildStyler({
     super.key,
     required this.child,
     required this.adaptiveMap,
   });
+  final Widget child;
+
+  final Map<String, dynamic> adaptiveMap;
 
   @override
   Widget build(BuildContext context) {

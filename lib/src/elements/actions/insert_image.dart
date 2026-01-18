@@ -28,7 +28,7 @@ class AdaptiveActionInsertImageState extends State<AdaptiveActionInsertImage>
   void onTapped() {
     // Placeholder logic
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('Action.InsertImage triggered (Not fully implemented)'),
       ),
     );

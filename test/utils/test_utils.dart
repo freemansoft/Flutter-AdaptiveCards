@@ -138,9 +138,10 @@ class TransparentImage {
 }
 
 Widget getWidget(String path) {
-  var file = File('test/samples/$path');
-  var map = json.decode(file.readAsStringSync());
-  Widget adaptiveCard = RawAdaptiveCard.fromMap(
+  final File file = File('test/samples/$path');
+  final Map<String, dynamic> map =
+      json.decode(file.readAsStringSync()) as Map<String, dynamic>;
+  final Widget adaptiveCard = RawAdaptiveCard.fromMap(
     map,
     //onChange: (_) {},
     onSubmit: (_) {},

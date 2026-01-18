@@ -18,7 +18,7 @@ class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class AdaptiveContainerState extends State<AdaptiveContainer>
     with AdaptiveElementMixin {
-  // TODO implement verticalContentAlignment
+  // TODO(username): implement verticalContentAlignment
   late List<Widget> children;
   late double spacing;
   late Color? backgroundColor;
@@ -46,7 +46,7 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
           context,
         ).resolver.resolveSpacing(adaptiveMap['spacing']) ??
         0.0;
-    var backgroundImageUrl = resolveBackgroundImage(
+    final backgroundImageUrl = resolveBackgroundImage(
       adaptiveMap['backgroundImage'],
     )?.url;
     backgroundColor =

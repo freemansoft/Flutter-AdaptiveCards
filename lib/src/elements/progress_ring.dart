@@ -28,9 +28,9 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
   void initState() {
     super.initState();
     if (widget.adaptiveMap.containsKey('value')) {
-      var val = widget.adaptiveMap['value'];
+      final val = widget.adaptiveMap['value'];
       if (val != null) {
-        percent = val.toDouble() / 100.0;
+        percent = (val as num).toDouble() / 100.0;
         if (percent! < 0) percent = 0;
         if (percent! > 1) percent = 1;
       }
@@ -38,11 +38,11 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
       percent = null;
     }
 
-    color = widget.adaptiveMap['color'];
-    size = (widget.adaptiveMap['size'] ?? 'medium').toLowerCase();
+    color = widget.adaptiveMap['color'] as String?;
+    size = (widget.adaptiveMap['size'] as String? ?? 'medium').toLowerCase();
 
-    label = widget.adaptiveMap['label'];
-    labelPosition = (widget.adaptiveMap['labelPosition'] ?? 'Above')
+    label = widget.adaptiveMap['label'] as String?;
+    labelPosition = (widget.adaptiveMap['labelPosition'] as String? ?? 'Above')
         .toLowerCase();
     // "Above" is default? JSON says "Above (default)" in label text, but let's assume Above.
     // Spec says default is likely Top/Above?
@@ -55,11 +55,11 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    var colorString = widget.adaptiveMap['color']?.toString();
+    final colorString = widget.adaptiveMap['color'] as String?;
     progressColor = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveProgressColor(context: context, color: colorString);
-    var sizeString = widget.adaptiveMap['size']?.toString();
+    final sizeString = widget.adaptiveMap['size'] as String?;
     sizePx = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveProgressSize(sizeString);
@@ -71,7 +71,7 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
     double stroke = sizePx / 10.0;
     if (stroke < 2) stroke = 2;
 
-    Widget ring = SizedBox(
+    final Widget ring = SizedBox(
       width: sizePx,
       height: sizePx,
       child: CircularProgressIndicator(
@@ -85,31 +85,31 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
     Widget content = ring;
 
     if (label != null && label!.isNotEmpty) {
-      Widget labelWidget = Text(label!);
+      final Widget labelWidget = Text(label!);
 
       if (labelPosition == 'above') {
         content = Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
-          children: [labelWidget, SizedBox(height: 4), ring],
+          children: [labelWidget, const SizedBox(height: 4), ring],
         );
       } else if (labelPosition == 'below') {
         content = Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
-          children: [ring, SizedBox(height: 4), labelWidget],
+          children: [ring, const SizedBox(height: 4), labelWidget],
         );
       } else if (labelPosition == 'left') {
         content = Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
-          children: [labelWidget, SizedBox(width: 8), ring],
+          children: [labelWidget, const SizedBox(width: 8), ring],
         );
       } else if (labelPosition == 'right') {
         content = Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
-          children: [ring, SizedBox(width: 8), labelWidget],
+          children: [ring, const SizedBox(width: 8), labelWidget],
         );
       } else {
         // Default above

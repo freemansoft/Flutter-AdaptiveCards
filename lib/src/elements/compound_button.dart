@@ -22,9 +22,9 @@ class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
   @override
   void initState() {
     super.initState();
-    title = widget.adaptiveMap['title'] ?? '';
-    description = widget.adaptiveMap['description'];
-    iconUrl = widget.adaptiveMap['iconUrl'];
+    title = widget.adaptiveMap['title']?.toString() ?? '';
+    description = widget.adaptiveMap['description']?.toString();
+    iconUrl = widget.adaptiveMap['iconUrl']?.toString();
   }
 
   @override
@@ -33,13 +33,13 @@ class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
       adaptiveMap: widget.adaptiveMap,
       child: ElevatedButton(
         onPressed: () {
-          // TODO: What does it do? Usually triggers an action or is part of an input?
+          // TODO(username): What does it do? Usually triggers an action or is part of an input?
           // If it's an "Element" it might be static or act like a button?
           // If it has selectAction, we should handle it.
           // For now, no-op or check for selectAction.
         },
         style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           alignment: Alignment.centerLeft,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
@@ -47,7 +47,7 @@ class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
           children: [
             if (iconUrl != null) ...[
               Image.network(iconUrl!, width: 40, height: 40),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
             ],
             Expanded(
               child: Column(
@@ -56,7 +56,10 @@ class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                   if (description != null)
                     Text(

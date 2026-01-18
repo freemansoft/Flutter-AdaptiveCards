@@ -44,7 +44,7 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    var backgroundImageUrl = resolveBackgroundImage(
+    final backgroundImageUrl = resolveBackgroundImage(
       adaptiveMap['backgroundImage'],
     )?.url;
     backgroundColor =

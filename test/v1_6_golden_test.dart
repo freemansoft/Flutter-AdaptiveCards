@@ -11,7 +11,7 @@ import 'utils/test_utils.dart';
 // Helper to load widget from our v1.6 samples
 Widget getSampleForGoldenTest(Key key, String sampleName) {
   // getWidget expects path relative to test/samples/
-  Widget sample = getWidget('v1.6/$sampleName.json');
+  final Widget sample = getWidget('v1.6/$sampleName.json');
 
   return MaterialApp(
     home: RepaintBoundary(
@@ -25,11 +25,11 @@ Widget getSampleForGoldenTest(Key key, String sampleName) {
 }
 
 void configureTestView() {
-  final RenderView renderView = RendererBinding.instance.renderViews.first;
-  renderView.configuration = TestViewConfiguration.fromView(
-    size: const Size(500, 700),
-    view: PlatformDispatcher.instance.implicitView!,
-  );
+  RendererBinding.instance.renderViews.first.configuration =
+      TestViewConfiguration.fromView(
+        size: const Size(500, 700),
+        view: PlatformDispatcher.instance.implicitView!,
+      );
 }
 
 void main() {
@@ -47,8 +47,8 @@ void main() {
 
   testWidgets('Golden Badge', (tester) async {
     configureTestView();
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'badge');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'badge');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -63,8 +63,8 @@ void main() {
 
   testWidgets('Golden Rating', (tester) async {
     configureTestView();
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'rating');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'rating');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -77,8 +77,8 @@ void main() {
 
   testWidgets('Golden Donut', (tester) async {
     configureTestView();
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'chart_donut');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'chart_donut');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -91,8 +91,8 @@ void main() {
 
   testWidgets('Golden Carousel', (tester) async {
     configureTestView();
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'carousel');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'carousel');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
     // Carousel has autoplay, pump might need time
@@ -106,8 +106,8 @@ void main() {
 
   testWidgets('Golden Accordion', (tester) async {
     configureTestView();
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'accordion');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'accordion');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -120,8 +120,8 @@ void main() {
 
   testWidgets('Golden CodeBlock', (tester) async {
     configureTestView();
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'code_block');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'code_block');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -134,8 +134,8 @@ void main() {
 
   testWidgets('Golden ProgressBar', (tester) async {
     configureTestView();
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'progress_bar');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'progress_bar');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 

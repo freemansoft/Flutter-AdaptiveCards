@@ -33,10 +33,10 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    label = adaptiveMap['label'];
-    isRequired = adaptiveMap['isRequired'] ?? false;
-    isMultiline = adaptiveMap['isMultiline'] ?? false;
-    maxLength = adaptiveMap['maxLength'] ?? 20;
+    label = adaptiveMap['label']?.toString();
+    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
+    isMultiline = adaptiveMap['isMultiline'] as bool? ?? false;
+    maxLength = adaptiveMap['maxLength'] as int? ?? 20;
     style = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveTextInputType(adaptiveMap['style']);
@@ -50,11 +50,11 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          loadLabel(label, isRequired),
+          loadLabel(label: label, isRequired: isRequired),
           SizedBox(
             height: 40,
             child: TextFormField(
-              style: TextStyle(),
+              style: const TextStyle(),
               controller: controller,
               // maxLength: maxLength,
               inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
@@ -62,7 +62,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
               maxLines: isMultiline ? null : 1,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 8,
@@ -115,18 +115,18 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   void initInput(Map map) {
     if (map[id] != null) {
       setState(() {
-        controller.text = map[id];
+        controller.text = map[id] as String;
       });
     }
   }
 
   @override
   bool checkRequired() {
-    var adaptiveCardElement = ProviderScope.containerOf(
+    final adaptiveCardElement = ProviderScope.containerOf(
       context,
       listen: false,
     ).read(adaptiveCardElementStateProvider);
-    var formKey = adaptiveCardElement.formKey;
+    final formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
   }

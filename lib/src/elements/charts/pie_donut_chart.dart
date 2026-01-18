@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 
+///
+/// https://adaptivecards.microsoft.com/?topic=Chart.Pie
+/// https://adaptivecards.microsoft.com/?topic=Chart.Donut
+///
 class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptivePieChart({
     super.key,
@@ -33,14 +37,16 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
     // The user linked samples. I don't have them but standard chart data usually has values, labels, colors.
 
     // Let's assume a "data" property which is a List.
-    var data = widget.adaptiveMap['data'];
+    final data = widget.adaptiveMap['data'];
     sections = [];
 
     if (data is List) {
-      for (var item in data) {
-        double value = (item['value'] ?? item['y'] ?? 0).toDouble();
-        String title = item['title'] ?? item['x'] ?? '';
-        String? colorStr = item['color'];
+      for (final item in data) {
+        final double value = (item['value'] as num? ?? item['y'] as num? ?? 0)
+            .toDouble();
+        final String title =
+            item['title']?.toString() ?? item['x']?.toString() ?? '';
+        String? colorStr = item['color']?.toString();
         Color color = Colors.blue;
         if (colorStr != null) {
           // Basic hex parsing - improving later
@@ -56,7 +62,7 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
             title: title,
             color: color,
             radius: widget.isDonut ? 50 : 100,
-            titleStyle: TextStyle(
+            titleStyle: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
               color: Colors.white,

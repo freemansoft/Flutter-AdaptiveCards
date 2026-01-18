@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'utils/test_utils.dart';
 
 Widget getSampleForGoldenTest(Key key, String sampleName) {
-  Widget sample = getWidget('$sampleName.json');
+  final Widget sample = getWidget('$sampleName.json');
 
   return MaterialApp(
     home: RepaintBoundary(
@@ -23,11 +23,11 @@ Widget getSampleForGoldenTest(Key key, String sampleName) {
 }
 
 void configureTestView() {
-  final RenderView renderView = RendererBinding.instance.renderViews.first;
-  renderView.configuration = TestViewConfiguration.fromView(
-    size: const Size(500, 700),
-    view: PlatformDispatcher.instance.implicitView!,
-  );
+  RendererBinding.instance.renderViews.first.configuration =
+      TestViewConfiguration.fromView(
+        size: const Size(500, 700),
+        view: PlatformDispatcher.instance.implicitView!,
+      );
 }
 
 void main() {
@@ -62,8 +62,8 @@ void main() {
   testWidgets('Golden Sample 1', (tester) async {
     configureTestView();
 
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'example1');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'example1');
 
     //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample), key: key,))));
     await tester.pumpWidget(sample);
@@ -95,14 +95,14 @@ void main() {
     );
   });
 
-  ///
-  /// TODO: This test is a little bogus because the frame looks the same after tapping the buttons
-  ///
+  //
+  // TODO(username): This test is a little bogus because the frame looks the same after tapping the buttons
+  //
   testWidgets('Golden Sample 2', (tester) async {
     configureTestView();
 
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'example2');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'example2');
 
     //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample), key: key,))));
     await tester.pumpWidget(sample);
@@ -137,8 +137,8 @@ void main() {
   testWidgets('Golden Sample 3', (tester) async {
     configureTestView();
 
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'example3');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'example3');
 
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
@@ -153,8 +153,8 @@ void main() {
   testWidgets('Golden Sample 4', (tester) async {
     configureTestView();
 
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'example4');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'example4');
 
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
@@ -168,8 +168,8 @@ void main() {
   testWidgets('Golden Sample 5', (tester) async {
     configureTestView();
 
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'example5');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'example5');
 
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
@@ -207,12 +207,12 @@ void main() {
       matchesGoldenFile('gold_files/sample5-tofu.png'),
     );
   });
-  // TODO add other tests
+  // TODO(username): add other tests
   testWidgets('Golden Sample 14', (tester) async {
     configureTestView();
 
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'example14');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'example14');
 
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
@@ -228,8 +228,8 @@ void main() {
   testWidgets('Golden Sample 16', (tester) async {
     configureTestView();
 
-    ValueKey key = const ValueKey('paint');
-    Widget sample = getSampleForGoldenTest(key, 'example16');
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'example16');
 
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();

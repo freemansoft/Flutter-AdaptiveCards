@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_element.dart';
 import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/containers/column_set.dart';
 import 'package:flutter_adaptive_cards/src/containers/container.dart';
@@ -80,7 +81,7 @@ class CardRegistry {
   final bool listView;
 
   Widget getElement(Map<String, dynamic> map, {String parentMode = 'stretch'}) {
-    String stringType = map['type'];
+    final String stringType = map['type'] as String;
 
     if (removedElements.contains(stringType)) {
       return AdaptiveUnknown(type: stringType, adaptiveMap: map);
@@ -101,7 +102,7 @@ class CardRegistry {
     Map<String, dynamic> map,
     RawAdaptiveCardState state,
   ) {
-    String stringType = map['type'];
+    final String stringType = map['type'] as String;
 
     switch (stringType) {
       case 'Action.ShowCard':
@@ -126,7 +127,7 @@ class CardRegistry {
   }
 
   Widget getAction(Map<String, dynamic> map) {
-    String stringType = map['type'];
+    final String stringType = map['type'] as String;
 
     if (removedElements.contains(stringType)) {
       return AdaptiveUnknown(adaptiveMap: map, type: stringType);
@@ -141,13 +142,13 @@ class CardRegistry {
 
   /// This returns an [AdaptiveElement] with the correct type.
   ///
-  /// It looks at the [type] property and decides which object to construct
+  /// It looks at the 'type' property and decides which object to construct
   Widget _getBaseElement(
     Map<String, dynamic> map, {
     String parentMode = 'stretch',
     required bool supportMarkdown,
   }) {
-    String stringType = map['type'];
+    final String stringType = map['type'] as String;
 
     switch (stringType) {
       case 'Media':
@@ -256,7 +257,7 @@ class CardRegistry {
   }
 
   Widget _getBaseAction(Map<String, dynamic> map) {
-    String stringType = map['type'];
+    final String stringType = map['type'] as String;
 
     switch (stringType) {
       case 'Action.ShowCard':
@@ -292,7 +293,7 @@ class DefaultCardRegistry extends InheritedWidget {
   final CardRegistry cardRegistry;
 
   static CardRegistry? of(BuildContext context) {
-    DefaultCardRegistry? cardRegistry = context
+    final DefaultCardRegistry? cardRegistry = context
         .dependOnInheritedWidgetOfExactType<DefaultCardRegistry>();
     if (cardRegistry == null) return null;
     return cardRegistry.cardRegistry;

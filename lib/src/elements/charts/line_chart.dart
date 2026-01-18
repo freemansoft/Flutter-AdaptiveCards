@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 
+///
+/// https://adaptivecards.microsoft.com/?topic=Chart.Line
+///
 class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveLineChart({super.key, required this.adaptiveMap});
 
@@ -28,32 +31,38 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
   }
 
   void _parseData() {
-    var data = widget.adaptiveMap['data'];
+    final data = widget.adaptiveMap['data'];
     lineBarsData = [];
 
-    // Auto-scale
+    // Auto-scale defaults
+    minY = 0;
+    maxY = 10;
+    minX = 0;
+    maxX = 10;
+
+    if (data is! List || data.isEmpty) return;
+
+    // Reset for actual data
     minY = double.infinity;
     maxY = double.negativeInfinity;
     minX = double.infinity;
     maxX = double.negativeInfinity;
 
-    if (data is! List) return;
+    final Map<String, List<FlSpot>> seriesSpots = {};
+    final Map<String, Color> seriesColors = {};
 
-    // Assuming data is flattened points with series info?
-    // Or data is list of series?
-    // Let's assume generic "points" structure: [{x: 0, y: 10, series: "A"}, {x: 1, y: 12, series: "A"}]
-
-    Map<String, List<FlSpot>> seriesSpots = {};
-    Map<String, Color> seriesColors = {};
-
-    for (var item in data) {
-      // x must be numeric for LineChart usually, or we index it?
-      // If x is categorical string, mapping needed.
+    for (final item in data) {
       // Assuming numeric X for LineChart for now.
-      double x = (item['x'] ?? 0).toDouble();
-      double y = (item['y'] ?? item['value'] ?? 0).toDouble();
-      String series = item['series'] ?? 'Default';
-      String? colorStr = item['color'];
+      // If x is a string, it will be handled as 0 due to toDouble() fallback?
+      // Actually toDouble() on a string will throw.
+      final dynamic rawX = item['x'] ?? 0;
+      final double x = (rawX is num) ? rawX.toDouble() : 0.0;
+
+      final dynamic rawY = item['y'] ?? item['value'] ?? 0;
+      final double y = (rawY is num) ? rawY.toDouble() : 0.0;
+
+      final String series = item['series']?.toString() ?? 'Default';
+      final String? colorStr = item['color']?.toString();
 
       if (x < minX) minX = x;
       if (x > maxX) maxX = x;
@@ -63,7 +72,7 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
       if (!seriesSpots.containsKey(series)) {
         seriesSpots[series] = [];
         if (colorStr != null) {
-          Color? c = _parseColor(colorStr);
+          final Color? c = _parseColor(colorStr);
           if (c != null) seriesColors[series] = c;
         }
       }
@@ -74,6 +83,10 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
     if (maxX == double.negativeInfinity) maxX = 10;
     if (minY == double.infinity) minY = 0;
     if (maxY == double.negativeInfinity) maxY = 10;
+
+    // Ensure range > 0
+    if (maxX == minX) maxX += 1;
+    if (maxY == minY) maxY += 1;
 
     // Padding
     double yRange = maxY - minY;
@@ -92,7 +105,7 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
           color: seriesColors[series] ?? Colors.blue,
           barWidth: 3,
           isStrokeCapRound: true,
-          dotData: FlDotData(show: false),
+          dotData: const FlDotData(show: false),
           belowBarData: BarAreaData(show: false),
         ),
       );
@@ -101,9 +114,9 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
 
   Color? _parseColor(String? colorStr) {
     if (colorStr == null) return null;
-    colorStr = colorStr.replaceAll('#', '');
-    if (colorStr.length == 6) {
-      return Color(int.parse('FF$colorStr', radix: 16));
+    final myColorStr = colorStr.replaceAll('#', '');
+    if (myColorStr.length == 6) {
+      return Color(int.parse('FF$myColorStr', radix: 16));
     }
     return null;
   }
@@ -121,14 +134,14 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
             maxX: maxX,
             minY: minY,
             maxY: maxY,
-            titlesData: FlTitlesData(
+            titlesData: const FlTitlesData(
               show: true,
               rightTitles: AxisTitles(
                 sideTitles: SideTitles(showTitles: false),
               ),
               topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
-            gridData: FlGridData(show: true),
+            gridData: const FlGridData(show: true),
             borderData: FlBorderData(
               show: true,
               border: Border.all(color: const Color(0xff37434d), width: 1),

@@ -70,10 +70,10 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   /*child: */
 
-  // TODO create own widget that parses_basic markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
+  // TODOcreate own widget that parses_basic markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
   Widget build(BuildContext context) {
-    var textBody = widget.supportMarkdown
+    final textBody = widget.supportMarkdown
         ? getMarkdownText(context: context)
         : getText();
 
@@ -104,7 +104,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   Widget getMarkdownText({required BuildContext context}) {
     return MarkdownBody(
-      // TODO the markdown library does currently not support max lines
+      // TODOthe markdown library does currently not support max lines
       // As markdown support is more important than maxLines right now
       // this is in here.
       //maxLines: maxLines,
@@ -112,11 +112,10 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       styleSheet: loadMarkdownStyleSheet(context),
       onTapLink: (text, href, title) {
         if (href != null) {
-          var rawAdaptiveCardState = ProviderScope.containerOf(
+          ProviderScope.containerOf(
             context,
             listen: false,
-          ).read(rawAdaptiveCardStateProvider);
-          rawAdaptiveCardState.openUrl(href);
+          ).read(rawAdaptiveCardStateProvider).openUrl(href);
         }
       },
     );
@@ -129,7 +128,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   // Probably want to pass context down the tree, until now -> this
   Color? getColor(BuildContext context) {
-    Color? color =
+    final Color? color =
         InheritedReferenceResolver.of(
           context,
         ).resolver.resolveContainerForegroundColor(
@@ -140,10 +139,10 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     return color;
   }
 
-  /// TODO Markdown still has some problems
+  // TODOMarkdown still has some problems
   MarkdownStyleSheet loadMarkdownStyleSheet(BuildContext context) {
-    var color = getColor(context);
-    TextStyle style = TextStyle(
+    final color = getColor(context);
+    final TextStyle style = TextStyle(
       fontWeight: fontWeight,
       fontSize: fontSize,
       color: color,

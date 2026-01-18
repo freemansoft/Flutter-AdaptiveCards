@@ -50,9 +50,9 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
         widgetState,
       );
     }
-    separator = adaptiveMap['separator'] ?? false;
+    separator = adaptiveMap['separator'] as bool? ?? false;
 
-    var toParseWidth = adaptiveMap['width'];
+    final toParseWidth = adaptiveMap['width'];
     if (toParseWidth != null) {
       if (toParseWidth == 'auto') {
         mode = 'auto';
@@ -113,13 +113,13 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
   @override
   Widget build(BuildContext context) {
-    double? preceedingSpacing = InheritedReferenceResolver.of(
+    final double? preceedingSpacing = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveSpacing(adaptiveMap['spacing']);
-    var backgroundImageUrl = resolveBackgroundImage(
+    final backgroundImageUrl = resolveBackgroundImage(
       adaptiveMap['backgroundImage'],
     )?.url;
-    var backgroundColor =
+    final backgroundColor =
         InheritedReferenceResolver.of(
           context,
         ).resolver.resolveContainerBackgroundColorIfNoBackgroundImage(
@@ -162,6 +162,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     var result = child;
     assert(
       mode == 'auto' || mode == 'stretch' || mode == 'weighted' || mode == 'px',
+      'Invalid mode: $mode',
     );
     if (mode == 'auto') {
       result = Flexible(child: child);

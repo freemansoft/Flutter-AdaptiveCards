@@ -18,8 +18,8 @@ void main() {
   setUp(() {});
 
   testWidgets('Basic types return', (tester) async {
-    CardRegistry cardRegistry = const CardRegistry();
-    Widget adaptiveElement = cardRegistry.getElement({
+    const CardRegistry cardRegistry = CardRegistry();
+    final Widget adaptiveElement = cardRegistry.getElement({
       'type': 'TextBlock',
       'text': 'Adaptive Card design session',
       'size': 'large',
@@ -28,7 +28,7 @@ void main() {
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveTextBlock));
 
-    Widget second = cardRegistry.getElement({
+    final Widget second = cardRegistry.getElement({
       'type': 'Media',
       'poster':
           'https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png',
@@ -45,23 +45,23 @@ void main() {
   });
 
   testWidgets('Unknown element', (tester) async {
-    CardRegistry cardRegistry = const CardRegistry();
+    const CardRegistry cardRegistry = CardRegistry();
 
-    Widget adaptiveElement = cardRegistry.getElement({'type': 'NoType'});
+    final Widget adaptiveElement = cardRegistry.getElement({'type': 'NoType'});
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
 
-    AdaptiveUnknown unknown = adaptiveElement as AdaptiveUnknown;
+    final AdaptiveUnknown unknown = adaptiveElement as AdaptiveUnknown;
 
     expect(unknown.type, equals('NoType'));
   });
 
   testWidgets('Removed element', (tester) async {
-    CardRegistry cardRegistry = const CardRegistry(
+    const CardRegistry cardRegistry = CardRegistry(
       removedElements: ['TextBlock'],
     );
 
-    Widget adaptiveElement = cardRegistry.getElement({
+    final Widget adaptiveElement = cardRegistry.getElement({
       'type': 'TextBlock',
       'text': 'Adaptive Card design session',
       'size': 'large',
@@ -70,17 +70,17 @@ void main() {
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
 
-    AdaptiveUnknown unknown = adaptiveElement as AdaptiveUnknown;
+    final AdaptiveUnknown unknown = adaptiveElement as AdaptiveUnknown;
 
     expect(unknown.type, equals('TextBlock'));
   });
 
   testWidgets('Add element', (tester) async {
-    CardRegistry cardRegistry = CardRegistry(
+    final CardRegistry cardRegistry = CardRegistry(
       addedElements: {'Test': (map) => _TestAddition()},
     );
 
-    var element = cardRegistry.getElement({'type': 'Test'});
+    final element = cardRegistry.getElement({'type': 'Test'});
 
     expect(element.runtimeType, equals(_TestAddition));
 

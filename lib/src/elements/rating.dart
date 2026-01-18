@@ -22,10 +22,10 @@ class AdaptiveRatingState extends State<AdaptiveRating>
   @override
   void initState() {
     super.initState();
-    value = (widget.adaptiveMap['value'] ?? 0).toDouble();
-    max = (widget.adaptiveMap['max'] ?? 5).toDouble();
-    color = widget.adaptiveMap['color'] ?? 'neutral';
-    size = widget.adaptiveMap['size'] ?? 'medium';
+    value = (widget.adaptiveMap['value'] as num? ?? 0).toDouble();
+    max = (widget.adaptiveMap['max'] as num? ?? 5).toDouble();
+    color = widget.adaptiveMap['color'] as String? ?? 'neutral';
+    size = widget.adaptiveMap['size'] as String? ?? 'medium';
   }
 
   @override
@@ -39,7 +39,7 @@ class AdaptiveRatingState extends State<AdaptiveRating>
       starColor = Colors.grey;
     }
 
-    double iconSize = size == 'large' ? 24 : 16;
+    final double iconSize = size == 'large' ? 24 : 16;
 
     return SeparatorElement(
       adaptiveMap: widget.adaptiveMap,

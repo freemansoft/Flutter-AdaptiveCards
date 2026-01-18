@@ -104,22 +104,32 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
-        name: 'ChartBar',
+        name: 'Charts',
         useCases: [
           _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
+            name: 'Bar Horizontal (crashes)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ChartBarHorizontal,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Bar Vertical',
             builder:
                 _widgetbook_workspace_adaptive_cards_use_cases.buildV16ChartBar,
           ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
-        name: 'ChartDonut',
-        useCases: [
           _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
+            name: 'Donut',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildV16ChartDonut,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Line',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ChartLine,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Pie',
+            builder:
+                _widgetbook_workspace_adaptive_cards_use_cases.buildV16Chart,
           ),
         ],
       ),

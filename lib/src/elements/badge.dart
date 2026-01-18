@@ -25,20 +25,20 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
   @override
   void initState() {
     super.initState();
-    text = widget.adaptiveMap['text'];
-    iconUrl = widget.adaptiveMap['iconUrl'];
-    style = widget.adaptiveMap['style']?.toLowerCase() ?? 'default';
-    size = widget.adaptiveMap['size']?.toLowerCase() ?? 'medium';
-    tooltip = widget.adaptiveMap['tooltip'];
+    text = widget.adaptiveMap['text'] as String?;
+    iconUrl = widget.adaptiveMap['iconUrl'] as String?;
+    style = widget.adaptiveMap['style']?.toString().toLowerCase() ?? 'default';
+    size = widget.adaptiveMap['size']?.toString().toLowerCase() ?? 'medium';
+    tooltip = widget.adaptiveMap['tooltip'] as String?;
     iconAlignment =
-        widget.adaptiveMap['iconAlignment']?.toLowerCase() ?? 'left';
+        widget.adaptiveMap['iconAlignment']?.toString().toLowerCase() ?? 'left';
   }
 
   @override
   Widget build(BuildContext context) {
     final resolver = InheritedReferenceResolver.of(context).resolver;
-    Color backgroundColor = resolver.resolveBadgeBackgroundColor(style);
-    Color textColor = resolver.resolveBadgeForegroundColor(style);
+    final Color backgroundColor = resolver.resolveBadgeBackgroundColor(style);
+    final Color textColor = resolver.resolveBadgeForegroundColor(style);
 
     // Resolve subtle vs non-subtle via HostConfig if possible,
     // but for now hardcode based on "style"
@@ -48,10 +48,10 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
       iconWidget = Image.network(iconUrl!, height: 16, width: 16);
     }
 
-    List<Widget> children = [];
+    final List<Widget> children = [];
     if (iconAlignment == 'left' && iconWidget != null) {
       children.add(iconWidget);
-      if (text != null) children.add(SizedBox(width: 4));
+      if (text != null) children.add(const SizedBox(width: 4));
     }
 
     if (text != null) {
@@ -67,7 +67,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     }
 
     if (iconAlignment == 'right' && iconWidget != null) {
-      if (text != null) children.add(SizedBox(width: 4));
+      if (text != null) children.add(const SizedBox(width: 4));
       children.add(iconWidget);
     }
 
@@ -76,7 +76,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12), // Pill shape
       ),
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: children,
@@ -84,7 +84,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     );
 
     if (tooltip != null) {
-      badge = Tooltip(message: tooltip!, child: badge);
+      badge = Tooltip(message: tooltip, child: badge);
     }
 
     return SeparatorElement(

@@ -28,19 +28,19 @@ class ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
   @override
   void initState() {
     super.initState();
-    List actionMaps = adaptiveMap['actions'];
-    for (var action in actionMaps) {
+    final List actionMaps = adaptiveMap['actions'] as List<dynamic>? ?? [];
+    for (final action in actionMaps) {
       actions.add(_getAction(action));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(spacing: 8.0, children: actions);
+    return Wrap(spacing: 8, children: actions);
   }
 
   Widget _getAction(Map<String, dynamic> map) {
-    String stringType = map['type'];
+    final String stringType = map['type']?.toString() ?? 'Unknown';
 
     switch (stringType) {
       case 'Action.ShowCard':

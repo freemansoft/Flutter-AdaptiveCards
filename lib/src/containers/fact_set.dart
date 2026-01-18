@@ -45,7 +45,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
 
   @override
   Widget build(BuildContext context) {
-    var color = getColor(context);
+    final color = getColor(context);
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
@@ -68,7 +68,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
                   )
                   .toList(),
             ),
-            const SizedBox(width: 8.0),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: facts
@@ -87,7 +87,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
   }
 
   MarkdownStyleSheet loadMarkdownStyleSheet(Color? color) {
-    TextStyle style = TextStyle(color: color);
+    final TextStyle style = TextStyle(color: color);
 
     return MarkdownStyleSheet(
       a: style,
@@ -100,7 +100,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
   }
 
   Color? getColor(BuildContext context) {
-    Color? color =
+    final Color? color =
         InheritedReferenceResolver.of(
           context,
         ).resolver.resolveContainerForegroundColor(
