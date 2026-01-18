@@ -22,7 +22,7 @@ class AdaptiveActionOpenUrlDialogState
   @override
   void initState() {
     super.initState();
-    url = widget.adaptiveMap['url'];
+    url = adaptiveMap['url'] as String?;
   }
 
   @override
@@ -41,18 +41,18 @@ class AdaptiveActionOpenUrlDialogState
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('Open URL'),
+            title: const Text('Open URL'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('This action would open:'),
-                Text(url!, style: TextStyle(color: Colors.blue)),
+                const Text('This action would open:'),
+                Text(url!, style: const TextStyle(color: Colors.blue)),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('Close'),
+                child: const Text('Close'),
               ),
               TextButton(
                 onPressed: () {
@@ -60,7 +60,7 @@ class AdaptiveActionOpenUrlDialogState
                   widgetState.openUrl(url!);
                   Navigator.pop(context);
                 },
-                child: Text('Open'),
+                child: const Text('Open'),
               ),
             ],
           );

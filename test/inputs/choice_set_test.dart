@@ -11,16 +11,17 @@ void main() {
   ) async {
     String? selectedValue;
 
-    var file = File('test/samples/choice_set_radio.json');
-    var map = json.decode(file.readAsStringSync());
+    final File file = File('test/samples/choice_set_radio.json');
+    final Map<String, dynamic> map =
+        json.decode(file.readAsStringSync()) as Map<String, dynamic>;
 
-    Widget widget = MaterialApp(
+    final Widget widget = MaterialApp(
       home: Scaffold(
         body: RawAdaptiveCard.fromMap(
           map,
           onChange: (id, value, state) {
             if (id == 'myChoiceSet') {
-              selectedValue = value;
+              selectedValue = value as String?;
             }
           },
         ),

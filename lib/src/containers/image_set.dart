@@ -91,21 +91,21 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
     if (images.length >= 5) {
       return constraints.maxWidth / 5;
     } else if (images.isEmpty) {
-      return 0.0;
+      return 0;
     } else {
       return constraints.maxWidth / images.length;
     }
   }
 
   void loadSize() {
-    String sizeDescription = adaptiveMap['imageSize'] ?? 'auto';
+    String sizeDescription = adaptiveMap['imageSize']?.toString() ?? 'auto';
     sizeDescription = sizeDescription.toLowerCase();
     if (sizeDescription == 'auto' || sizeDescription == 'stretch') {
       imageSize = sizeDescription;
       maybeSize = null;
       return;
     }
-    int size = InheritedReferenceResolver.of(
+    final int size = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveImageSizes(sizeDescription);
     maybeSize = size.toDouble();

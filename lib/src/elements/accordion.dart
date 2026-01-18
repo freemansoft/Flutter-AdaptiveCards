@@ -21,7 +21,7 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
     super.initState();
     // Support "items" or "pages" or whatever the schema uses.
     // User mentioned AccordionPage, so likely items are type AccordionPage.
-    var rawItems = widget.adaptiveMap['items'] ?? widget.adaptiveMap['pages'];
+    final rawItems = widget.adaptiveMap['items'] ?? widget.adaptiveMap['pages'];
     items = [];
     if (rawItems is List) {
       items = List<Map<String, dynamic>>.from(rawItems);
@@ -30,7 +30,7 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
 
   @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) return SizedBox.shrink();
+    if (items.isEmpty) return const SizedBox.shrink();
 
     return SeparatorElement(
       adaptiveMap: widget.adaptiveMap,
@@ -38,7 +38,7 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
         children: items.map((itemMap) {
           // Each item should be an AccordionPage (or similar)
           // We extract title and content from it.
-          String title = itemMap['title'] ?? 'Untitled';
+          final String title = itemMap['title']?.toString() ?? 'Untitled';
 
           // The content of the page is likely in 'items' or 'body' of the AccordionPage
           // OR the AccordionPage itself is to be rendered?
@@ -49,11 +49,11 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
           // But AccordionPage might just be a data holder for Accordion.
 
           // Let's assume AccordionPage has 'items' (list of elements).
-          List<Widget> children = [];
-          var contentItems = itemMap['items'] ?? itemMap['body'];
+          final List<Widget> children = [];
+          final contentItems = itemMap['items'] ?? itemMap['body'];
           if (contentItems is List) {
-            for (var c in contentItems) {
-              var el = widgetState.cardRegistry.getElement(c);
+            for (final c in contentItems) {
+              final el = widgetState.cardRegistry.getElement(c);
               children.add(el);
             }
           }

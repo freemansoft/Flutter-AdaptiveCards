@@ -27,7 +27,7 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
   void initState() {
     super.initState();
     // Assuming 'tabs' property holds list of TabPage
-    var tabList =
+    final tabList =
         widget.adaptiveMap['tabs'] ?? widget.adaptiveMap['items']; // Fallback
     tabs = [];
     if (tabList is List) {
@@ -44,7 +44,7 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
 
   @override
   Widget build(BuildContext context) {
-    if (tabs.isEmpty) return SizedBox.shrink();
+    if (tabs.isEmpty) return const SizedBox.shrink();
 
     return SeparatorElement(
       adaptiveMap: widget.adaptiveMap,
@@ -53,7 +53,7 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
         children: [
           TabBar(
             controller: _tabController,
-            labelColor: Colors.black, // TODO context theme
+            labelColor: Colors.black, // TODO(username): context theme
             tabs: tabs.map((t) => Tab(text: t['title'] ?? 'Tab')).toList(),
           ),
           SizedBox(
@@ -68,11 +68,11 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
               controller: _tabController,
               children: tabs.map((t) {
                 // Parse body of the tab
-                List<Widget> children = [];
-                var contentItems = t['items'] ?? t['body'];
+                final List<Widget> children = [];
+                final contentItems = t['items'] ?? t['body'];
                 if (contentItems is List) {
-                  for (var c in contentItems) {
-                    var el = widgetState.cardRegistry.getElement(c);
+                  for (final c in contentItems) {
+                    final el = widgetState.cardRegistry.getElement(c);
                     children.add(el);
                   }
                 }

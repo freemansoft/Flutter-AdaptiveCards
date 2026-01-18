@@ -33,7 +33,7 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
 
   TimeOfDay? parseTime(String? time) {
     if (time == null || time.isEmpty) return null;
-    List<String> times = time.split(':');
+    final List<String> times = time.split(':');
     assert(times.length == 2, 'Invalid TimeOfDay format');
     return TimeOfDay(hour: int.parse(times[0]), minute: int.parse(times[1]));
   }
@@ -44,7 +44,7 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
       adaptiveMap: adaptiveMap,
       child: ElevatedButton(
         onPressed: () async {
-          TimeOfDay? result = await widgetState.timePickerForPlatform(
+          final TimeOfDay? result = await widgetState.timePickerForPlatform(
             context,
             selectedTime,
             min,
@@ -54,8 +54,10 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
             if (result.hour >= min.hour && result.hour <= max.hour) {
               // can't count on context in async
               widgetState.showError(
+                // old code
                 // ignore: use_build_context_synchronously
                 'Time must be after ${context.mounted ? min.format(widgetState.context) : min.toString()}'
+                // old code
                 // ignore: use_build_context_synchronously
                 ' and before ${context.mounted ? max.format(widgetState.context) : max.toString()}',
               );

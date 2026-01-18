@@ -1,7 +1,8 @@
 import 'dart:developer' as developer;
+
+import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:format/format.dart';
-import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// A simplified page widget for Widgetbook that displays a single AdaptiveCard
@@ -11,23 +12,22 @@ import 'package:url_launcher/url_launcher.dart';
 /// - Displays a single card (not a list)
 /// - No Scaffold/AppBar (Widgetbook provides its own chrome)
 class GenericPage extends StatelessWidget {
-  final String url;
-  final bool supportMarkdown;
-  final Map<String, String> initData;
-
   const GenericPage({
     super.key,
     required this.url,
     this.supportMarkdown = true,
     this.initData = const {},
   });
+  final String url;
+  final bool supportMarkdown;
+  final Map<String, String> initData;
 
   @override
   Widget build(BuildContext context) {
     developer.log(format('URL: {}', url), name: runtimeType.toString());
     return SelectionArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         child: AdaptiveCard.asset(
           assetPath: url,
           supportMarkdown: supportMarkdown,

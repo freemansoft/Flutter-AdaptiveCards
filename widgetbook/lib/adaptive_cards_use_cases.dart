@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/generic_page.dart';
+import 'package:widgetbook_workspace/network_page.dart';
 import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
-
-import 'generic_page.dart';
-import 'network_page.dart';
 
 // =============================================================================
 // Remember to run `dart run build_runner build -d` to update the widgetbook
@@ -812,29 +811,52 @@ Widget buildV16Accordion(BuildContext context) {
 }
 
 // =============================================================================
-// V1.6 Components - Chart.Donut
+// V1.6 Components - Charts
 // =============================================================================
 
 @widgetbook.UseCase(
-  name: 'Example 1',
-  type: widget_types.ChartDonut,
+  name: 'Donut',
+  type: widget_types.Charts,
   path: '[Components]',
 )
 Widget buildV16ChartDonut(BuildContext context) {
   return const GenericPage(url: 'lib/samples/v1.6/chart_donut.json');
 }
 
-// =============================================================================
-// V1.6 Components - Chart.Bar
-// =============================================================================
+@widgetbook.UseCase(
+  name: 'Pie',
+  type: widget_types.Charts,
+  path: '[Components]',
+)
+Widget buildV16Chart(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.6/chart_pie.json');
+}
 
 @widgetbook.UseCase(
-  name: 'Example 1',
-  type: widget_types.ChartBar,
+  name: 'Bar Vertical',
+  type: widget_types.Charts,
   path: '[Components]',
 )
 Widget buildV16ChartBar(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/v1.6/chart_bar.json');
+  return const GenericPage(url: 'lib/samples/v1.6/chart_bar_vertical.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Bar Horizontal (crashes)',
+  type: widget_types.Charts,
+  path: '[Components]',
+)
+Widget buildV16ChartBarHorizontal(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.6/chart_bar_horizontal.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Line',
+  type: widget_types.Charts,
+  path: '[Components]',
+)
+Widget buildV16ChartLine(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.6/chart_line.json');
 }
 
 // =============================================================================

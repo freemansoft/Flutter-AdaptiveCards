@@ -66,8 +66,11 @@ class AdaptiveTableState extends State<AdaptiveTable>
   }
 
   MainAxisAlignment loadHorizontalAlignment() {
-    String horizontalAlignment =
-        adaptiveMap['horizontalCellContentAlignment']?.toLowerCase() ?? 'left';
+    final String horizontalAlignment =
+        adaptiveMap['horizontalCellContentAlignment']
+            ?.toString()
+            .toLowerCase() ??
+        'left';
 
     switch (horizontalAlignment) {
       case 'left':
@@ -98,38 +101,39 @@ class AdaptiveTableState extends State<AdaptiveTable>
     //  name: runtimeType.toString());
 
     // All the table cell markup in this row [cell, cell, cell]
-    List<Map<String, dynamic>> rowTableCells = List<Map<String, dynamic>>.from(
-      row['cells'],
-    );
+    final List<Map<String, dynamic>> rowTableCells =
+        List<Map<String, dynamic>>.from(
+          row['cells'],
+        );
     //developer.log(format("rowTableCells: row:{} length:{} - {} ", rowNum,
     //    rowTableCells.length, rowTableCells.toString()),
     //      name: runtimeType.toString());
 
     // The row markup contains a [TableCells[items]]
-    List<List<dynamic>> rowCellItems = List<List<dynamic>>.generate(
+    final List<List<dynamic>> rowCellItems = List<List<dynamic>>.generate(
       rowTableCells.length,
       (rowNum) {
         // some of the samples have empty rows
-        return rowTableCells[rowNum]['items'] ?? [];
+        return rowTableCells[rowNum]['items'] as List<dynamic>? ?? [];
       },
     );
     // developer.log(format("rowCellItems: row:{} length:{} - {}", rowNum,
     //    rowCellItems.length, rowCellItems.toString()),
     //      name: runtimeType.toString());
 
-    List<TableCell> tableCells = List<TableCell>.generate(rowCellItems.length, (
+    final List<TableCell>
+    tableCells = List<TableCell>.generate(rowCellItems.length, (
       col,
     ) {
-      List<Map<String, dynamic>> oneCellItems = List<Map<String, dynamic>>.from(
-        rowCellItems[col],
-      );
-      // TableCell(Widget([Widget])) A TableCell contains a Widget that contains an arbitrary number of widgets
+      final List<Map<String, dynamic>> oneCellItems =
+          List<Map<String, dynamic>>.from(
+            rowCellItems[col],
+          );
       // developer.log(
       //     format("oneCellItems: row:{} col:{} widgets in cell:{} - {}", rowNum,
       //         col, oneCellItems.length, oneCellItems.toString()),
       //     name: this.runtimeType.toString());
       return TableCell(
-        // should the container be inside the scrollbar?
         child: Container(
           decoration: getDecorationFromMap(rowTableCells[col]),
           child: Scrollbar(

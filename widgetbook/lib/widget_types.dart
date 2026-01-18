@@ -173,16 +173,9 @@ class Accordion extends StatelessWidget {
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
-/// Stub for 'Chart.Donut' route (v1.6)
-class ChartDonut extends StatelessWidget {
-  const ChartDonut({super.key});
-  @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
-}
-
-/// Stub for 'Chart.Bar' route (v1.6)
-class ChartBar extends StatelessWidget {
-  const ChartBar({super.key});
+/// Stub for 'Charts' Char.Donut, Char.Bar, Char.Line route (v1.6)
+class Charts extends StatelessWidget {
+  const Charts({super.key});
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();
 }

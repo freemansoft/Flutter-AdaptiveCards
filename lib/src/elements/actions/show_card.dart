@@ -25,13 +25,14 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
   void initState() {
     super.initState();
 
-    Widget card = widgetState.cardRegistry.getElement(adaptiveMap['card']);
+    final Widget card = widgetState.cardRegistry.getElement(
+      adaptiveMap['card'],
+    );
 
-    var adaptiveCardElement = ProviderScope.containerOf(
+    ProviderScope.containerOf(
       context,
       listen: false,
-    ).read(adaptiveCardElementStateProvider);
-    adaptiveCardElement.registerCard(id, card);
+    ).read(adaptiveCardElementStateProvider).registerCard(id, card);
   }
 
   @override
@@ -51,13 +52,14 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(title),
-          ProviderScope.containerOf(
-                    context,
-                    listen: false,
-                  ).read(adaptiveCardElementStateProvider).currentCardId ==
-                  id
-              ? Icon(Icons.keyboard_arrow_up)
-              : Icon(Icons.keyboard_arrow_down),
+          if (ProviderScope.containerOf(
+                context,
+                listen: false,
+              ).read(adaptiveCardElementStateProvider).currentCardId ==
+              id)
+            const Icon(Icons.keyboard_arrow_up)
+          else
+            const Icon(Icons.keyboard_arrow_down),
         ],
       ),
     );
@@ -65,10 +67,9 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
   @override
   void onTapped() {
-    var adaptiveCardElement = ProviderScope.containerOf(
+    ProviderScope.containerOf(
       context,
       listen: false,
-    ).read(adaptiveCardElementStateProvider);
-    adaptiveCardElement.showCard(id);
+    ).read(adaptiveCardElementStateProvider).showCard(id);
   }
 }

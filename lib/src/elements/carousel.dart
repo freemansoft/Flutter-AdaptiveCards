@@ -24,13 +24,13 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
   @override
   void initState() {
     super.initState();
-    var pagesList = widget.adaptiveMap['pages'];
+    final pagesList = widget.adaptiveMap['pages'];
     if (pagesList is List) {
       pages = List<Map<String, dynamic>>.from(pagesList);
     } else {
       pages = [];
     }
-    initialPage = widget.adaptiveMap['initialPage'] ?? 0;
+    initialPage = widget.adaptiveMap['initialPage'] as int? ?? 0;
     if (initialPage < 0 || initialPage >= pages.length) initialPage = 0;
     _currentIndex = initialPage;
 
@@ -52,14 +52,14 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
   void _goToPage(int index) {
     pageController.animateToPage(
       index,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (pages.isEmpty) return SizedBox.shrink();
+    if (pages.isEmpty) return const SizedBox.shrink();
 
     // The implementation needs to render the pages AND the controls.
     // The previous implementation used a SeparatorElement. We should probably keep that.
@@ -78,7 +78,7 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
               onPageChanged: _onPageChanged,
               itemCount: pages.length,
               itemBuilder: (context, index) {
-                var pageContent = pages[index];
+                final pageContent = pages[index];
                 // We expect pageContent to likely be type: CarouselPage
                 // But it could be any element if the JSON is weak.
                 // If it is CarouselPage, the Registry will pick it up (if we register it).
@@ -87,7 +87,7 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
               },
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           // Carousel Controls
           _buildControls(),
         ],
@@ -101,14 +101,14 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(pages.length, (index) {
-        bool isSelected = index == _currentIndex;
+        final bool isSelected = index == _currentIndex;
         return GestureDetector(
           onTap: () => _goToPage(index),
           child: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            margin: EdgeInsets.symmetric(horizontal: 4),
+            duration: const Duration(milliseconds: 300),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
             width: isSelected ? 24.0 : 8.0, // Bar width vs Dot width
-            height: 8.0,
+            height: 8,
             decoration: BoxDecoration(
               color: isSelected
                   ? Theme.of(context).primaryColor
@@ -141,9 +141,9 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
   void initState() {
     super.initState();
     children = [];
-    var items = widget.adaptiveMap['items']; // Content is in "items"
+    final items = widget.adaptiveMap['items']; // Content is in "items"
     if (items is List) {
-      for (var item in items) {
+      for (final item in items) {
         children.add(widgetState.cardRegistry.getElement(item));
       }
     }
@@ -151,8 +151,8 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
 
   @override
   Widget build(BuildContext context) {
-    bool showBorder = widget.adaptiveMap['showBorder'] == true;
-    bool roundedCorners = widget.adaptiveMap['roundedCorners'] == true;
+    final bool showBorder = widget.adaptiveMap['showBorder'] == true;
+    final bool roundedCorners = widget.adaptiveMap['roundedCorners'] == true;
 
     // Resolve background color based on style
     // We can use ReferenceResolver logic or simple map for now.
@@ -160,7 +160,8 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     // We can assume InheritedReferenceResolver is present.
     // But specific container logic might be needed.
 
-    Color? backgroundColor = InheritedReferenceResolver.of(context).resolver
+    final Color? backgroundColor = InheritedReferenceResolver.of(context)
+        .resolver
         .resolveContainerBackgroundColor(
           context: context,
           style: widget.adaptiveMap['style'],
@@ -171,13 +172,13 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
       decoration = BoxDecoration(
         color: backgroundColor,
         border: showBorder ? Border.all(color: Colors.grey.shade300) : null,
-        borderRadius: roundedCorners ? BorderRadius.circular(8.0) : null,
+        borderRadius: roundedCorners ? BorderRadius.circular(8) : null,
       );
     }
 
     return Container(
       decoration: decoration,
-      padding: EdgeInsets.all(12), // Some padding for the page content
+      padding: const EdgeInsets.all(12), // Some padding for the page content
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: children,

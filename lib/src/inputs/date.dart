@@ -37,8 +37,8 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
   void initState() {
     super.initState();
 
-    label = adaptiveMap['label'];
-    isRequired = adaptiveMap['isRequired'] ?? false;
+    label = adaptiveMap['label'] as String?;
+    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
     try {
       // set the value from the card as the current selected
       selectedDateTime = inputFormat.parse(value);
@@ -48,6 +48,8 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
       if (adaptiveMap.containsKey('max')) {
         max = inputFormat.parse(adaptiveMap['max']);
       }
+      // catch them all
+      // ignore: avoid_catches_without_on_clauses
     } catch (formatException) {
       // what should we do here?
     }
@@ -55,7 +57,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
 
   @override
   Widget build(BuildContext context) {
-    Locale myLocale = Localizations.localeOf(context);
+    final Locale myLocale = Localizations.localeOf(context);
     assert(() {
       developer.log(
         format('locale: {}', myLocale),
@@ -69,7 +71,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          loadLabel(label, isRequired),
+          loadLabel(label: label, isRequired: isRequired),
           SizedBox(
             width: double.infinity,
             height: 40,
@@ -79,7 +81,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
               controller: controller,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 8,
@@ -118,12 +120,13 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
                 return null;
               },
               onTap: () async {
-                DateTime? result = await widgetState.datePickerForPlatform(
-                  context,
-                  selectedDateTime,
-                  min,
-                  max,
-                );
+                final DateTime? result = await widgetState
+                    .datePickerForPlatform(
+                      context,
+                      selectedDateTime,
+                      min,
+                      max,
+                    );
                 if (result != null) {
                   setState(() {
                     selectedDateTime = result;
@@ -157,6 +160,8 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
               ? placeholder
               : inputFormat.format(selectedDateTime!);
         });
+        // catch them all
+        // ignore: avoid_catches_without_on_clauses
       } catch (formatException) {
         developer.log(
           format('{}', formatException),
@@ -168,11 +173,11 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
 
   @override
   bool checkRequired() {
-    var adaptiveCardElement = ProviderScope.containerOf(
+    final adaptiveCardElement = ProviderScope.containerOf(
       context,
       listen: false,
     ).read(adaptiveCardElementStateProvider);
-    var formKey = adaptiveCardElement.formKey;
+    final formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
   }

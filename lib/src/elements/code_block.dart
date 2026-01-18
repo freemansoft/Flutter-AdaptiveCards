@@ -3,11 +3,12 @@ import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 
 /// https://adaptivecards.microsoft.com/?topic=CodeBlock
-/// No contract available
-/// TODO: Language specific syntax highlighting would be nice,
-/// but is complex without external deps like flutter_highlight
-/// TODO: Support collapse to specific number of lines
 ///
+/// No contract available
+// TODO(username): Language specific syntax highlighting would be nice,
+// but is complex without external deps like flutter_highlight
+// TODO(username): Support collapse to specific number of lines
+//
 class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCodeBlock({super.key, required this.adaptiveMap});
 
@@ -27,15 +28,15 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
   @override
   void initState() {
     super.initState();
-    codeSnippet = widget.adaptiveMap['code'] ?? '';
-    language = widget.adaptiveMap['language'];
-    startLineNumber = widget.adaptiveMap['startLineNumber'] ?? 1;
+    codeSnippet = widget.adaptiveMap['code']?.toString() ?? '';
+    language = widget.adaptiveMap['language']?.toString();
+    startLineNumber = widget.adaptiveMap['startLineNumber'] as int? ?? 1;
   }
 
   @override
   Widget build(BuildContext context) {
-    var lines = codeSnippet.split('\n');
-    var lineNumbers = StringBuffer();
+    final lines = codeSnippet.split('\n');
+    final lineNumbers = StringBuffer();
     for (var i = 0; i < lines.length; i++) {
       lineNumbers.writeln('${startLineNumber + i}');
     }
@@ -45,7 +46,7 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
     // they should be in the same scrollable.
     // To match height, we use the same Text Style.
 
-    var textStyle = TextStyle(
+    const textStyle = TextStyle(
       fontFamily: 'Courier',
       fontFeatures: [FontFeature.tabularFigures()],
       fontSize: 14,
@@ -61,7 +62,7 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
           borderRadius: BorderRadius.circular(4),
           border: Border.all(color: Theme.of(context).colorScheme.outline),
         ),
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -73,7 +74,7 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
                 style: textStyle.copyWith(color: Colors.grey),
                 textAlign: TextAlign.right,
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               // Code
               SelectableText(
                 codeSnippet,

@@ -3,12 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   void checkIfSameAfterParse(String text) {
-    String result = parseTextString(text);
+    final String result = parseTextString(text);
     expect(result, equals(text));
   }
 
   void checkCorrectTransform(String text, String result) {
-    String toTest = parseTextString(text);
+    final String toTest = parseTextString(text);
     expect(toTest, equals(result));
   }
 
@@ -35,7 +35,7 @@ void main() {
       '{{DATE(2017-02-14T06:00Z, SHORT)}}',
       'Tue, Feb 14th, 2017',
     );
-    // TODO add locale to test
+    // TODO(username): add locale to test
     checkCorrectTransform('{{DATE(2017-02-14T06:00Z, COMPACT)}}', '2/14/2017');
     checkCorrectTransform('{{DATE(2017-02-14T06:00Z)}}', '2/14/2017');
     checkCorrectTransform(

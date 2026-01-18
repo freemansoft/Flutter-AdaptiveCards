@@ -53,13 +53,13 @@ class ReferenceResolver {
     final String myStyle = (style != null && style != 'default')
         ? style
         : (currentContainerStyle != null && currentContainerStyle != 'default')
-        ? currentContainerStyle as String
+        ? currentContainerStyle!
         : 'default';
 
     Color? foregroundColor;
 
     // this should be themed and support light and dark
-    // TODO Contained continers behave differently
+    // TODO(username): Contained continers behave differently
     // https://adaptivecards.io/explorer/Container.html
     switch (myStyle) {
       case 'default': // black in demo
@@ -109,7 +109,7 @@ class ReferenceResolver {
     required BuildContext context,
     required String? style,
   }) {
-    String myStyle = style ?? 'default';
+    final String myStyle = style ?? 'default';
 
     Color? backgroundColor;
 
@@ -166,7 +166,7 @@ class ReferenceResolver {
     final String myStyle = (style != null && style != 'default')
         ? style
         : (currentContainerStyle != null)
-        ? currentContainerStyle as String
+        ? currentContainerStyle!
         : 'default';
 
     Color? backgroundColor;
@@ -245,7 +245,7 @@ class ReferenceResolver {
   }
 
   ReferenceResolver copyWith({String? style}) {
-    String myStyle = style ?? 'default';
+    final String myStyle = style ?? 'default';
     return ReferenceResolver(currentContainerStyle: myStyle);
   }
 
@@ -258,10 +258,10 @@ class ReferenceResolver {
   /// - large
   /// - extraLarge
   ///
-  /// TODO: hook up to something to get spacing from theme
+  // TODO(username): hook up to something to get spacing from theme
   double? resolveSpacing(String? spacing) {
-    String mySpacing = spacing ?? 'default';
-    if (mySpacing == 'none') return 0.0;
+    final String mySpacing = spacing ?? 'default';
+    if (mySpacing == 'none') return 0;
     int? intSpacing = 2;
     switch (mySpacing) {
       case 'small':
@@ -294,8 +294,8 @@ class ReferenceResolver {
     }
   }
 
-  ///TODO: hook this up somehow
-  /// "Horizontal" or "Vertical"
+  // TODO(username): hook this up somehow
+  // "Horizontal" or "Vertical"
   String resolveOrientation(String s) {
     return 'Horizontal';
   }
@@ -308,7 +308,7 @@ class ReferenceResolver {
   /// - lighter
   /// - bolder
   FontWeight resolveFontWeight(String? weightString) {
-    String weight = weightString?.toLowerCase() ?? 'default';
+    final String weight = weightString?.toLowerCase() ?? 'default';
     switch (weight) {
       case 'default':
         return FontWeight.normal;
@@ -331,8 +331,8 @@ class ReferenceResolver {
   /// - large
   /// - extraLarge
   double resolveFontSize({required BuildContext context, String? sizeString}) {
-    String size = sizeString?.toLowerCase() ?? 'default';
-    TextTheme textTheme = Theme.of(context).textTheme;
+    final String size = sizeString?.toLowerCase() ?? 'default';
+    final TextTheme textTheme = Theme.of(context).textTheme;
     TextStyle? textStyle;
     switch (size) {
       case 'default':
@@ -350,7 +350,7 @@ class ReferenceResolver {
         textStyle = textTheme.bodyMedium;
     }
     // Style might not exist but that seems unlikely
-    double? fontSize = textStyle?.fontSize;
+    final double? fontSize = textStyle?.fontSize;
     assert(() {
       if (fontSize == null) {
         developer.log(
@@ -366,8 +366,10 @@ class ReferenceResolver {
   /// JSON Schema definition "FontType"
   // Returns a font family name or null if no FontType is specified
   String? resolveFontType(BuildContext context, String? typeString) {
-    String? type = typeString?.toLowerCase();
-    String? currentFontFamily = DefaultTextStyle.of(context).style.fontFamily;
+    final String? type = typeString?.toLowerCase();
+    final String? currentFontFamily = DefaultTextStyle.of(
+      context,
+    ).style.fontFamily;
     switch (type) {
       case 'default':
         return currentFontFamily;
@@ -389,7 +391,7 @@ class ReferenceResolver {
   /// - center
   /// - right
   Alignment resolveAlignment(String? alignmentString) {
-    String alignment = alignmentString?.toLowerCase() ?? 'left';
+    final String alignment = alignmentString?.toLowerCase() ?? 'left';
     switch (alignment) {
       case 'left':
         return Alignment.centerLeft;
@@ -410,9 +412,10 @@ class ReferenceResolver {
   /// - center
   /// - right
   Alignment? resolveContainerAlignment(String? horizontalAlignment) {
-    horizontalAlignment = horizontalAlignment?.toLowerCase() ?? '';
+    final String myHorizontalAlignment =
+        horizontalAlignment?.toLowerCase() ?? '';
 
-    switch (horizontalAlignment) {
+    switch (myHorizontalAlignment) {
       case 'left':
         return Alignment.topLeft;
       case 'center':
@@ -436,8 +439,9 @@ class ReferenceResolver {
   CrossAxisAlignment resolveHorzontalCrossAxisAlignment(
     String? horizontalAlignment,
   ) {
-    horizontalAlignment = horizontalAlignment?.toLowerCase() ?? 'left';
-    switch (horizontalAlignment) {
+    final String myHorizontalAlignment =
+        horizontalAlignment?.toLowerCase() ?? 'left';
+    switch (myHorizontalAlignment) {
       case 'left':
         return CrossAxisAlignment.start;
       case 'center':
@@ -460,7 +464,7 @@ class ReferenceResolver {
     required BuildContext context,
     required String? color,
   }) {
-    String? myColor = color?.toLowerCase();
+    final String? myColor = color?.toLowerCase();
 
     switch (myColor) {
       case 'good':
@@ -478,20 +482,20 @@ class ReferenceResolver {
 
   /// Resolves the size for ProgressRing
   double resolveProgressSize(String? size) {
-    String? mySize = size?.toLowerCase();
+    final String? mySize = size?.toLowerCase();
     switch (mySize) {
       case 'tiny':
-        return 10.0;
+        return 10;
       case 'small':
-        return 20.0;
+        return 20;
       case 'medium':
-        return 30.0;
+        return 30;
       case 'large':
-        return 40.0;
+        return 40;
       case 'extralarge':
-        return 50.0;
+        return 50;
       default:
-        return 30.0;
+        return 30;
     }
   }
 
@@ -502,7 +506,7 @@ class ReferenceResolver {
   /// JSON Schema definition "VerticalContentAlignment"
   ///   Defines how content should be aligned vertically within the container
   ///
-  /// TODO: add to all containers
+  // TODO(username): add to all containers
   ///
   /// Resolves vertical alignment from a string value
   ///
@@ -513,9 +517,10 @@ class ReferenceResolver {
   MainAxisAlignment resolveVerticalMainAxisContentAlginment(
     String? verticalAlignment,
   ) {
-    verticalAlignment = verticalAlignment?.toLowerCase() ?? 'top';
+    final String myVerticalAlignment =
+        verticalAlignment?.toLowerCase() ?? 'top';
 
-    switch (verticalAlignment) {
+    switch (myVerticalAlignment) {
       case 'top':
         return MainAxisAlignment.start;
       case 'center':
@@ -539,9 +544,10 @@ class ReferenceResolver {
   MainAxisAlignment resolveHorizontalMainAxisAlginment(
     String? horizontalAlignment,
   ) {
-    horizontalAlignment = horizontalAlignment?.toLowerCase() ?? 'left';
+    final String myHorizontalAlignment =
+        horizontalAlignment?.toLowerCase() ?? 'left';
 
-    switch (horizontalAlignment) {
+    switch (myHorizontalAlignment) {
       case 'left':
         return MainAxisAlignment.start;
       case 'center':
@@ -563,7 +569,7 @@ class ReferenceResolver {
   /// - center
   /// - right
   TextAlign resolveTextAlign(String? alignmentString) {
-    String alignment = alignmentString?.toLowerCase() ?? 'left';
+    final String alignment = alignmentString?.toLowerCase() ?? 'left';
     switch (alignment) {
       case 'left':
         return TextAlign.start;
@@ -580,7 +586,7 @@ class ReferenceResolver {
   ///
   /// This also takes care of the wrap property, because maxLines = 1 => no wrap
   int resolveMaxLines({bool? wrap, int? maxLines}) {
-    bool shouldWrap = wrap ?? false;
+    final bool shouldWrap = wrap ?? false;
     if (!shouldWrap) return 1;
     // can be null, but that's okay for the text widget.
     // int cannot be null
@@ -594,8 +600,8 @@ class ReferenceResolver {
     /// - 'tel'
     /// - 'url'
     /// - 'email'
-    style = (style != null) ? style.toLowerCase() : 'text';
-    switch (style) {
+    final String myStyle = (style != null) ? style.toLowerCase() : 'text';
+    switch (myStyle) {
       case 'text':
         return TextInputType.text;
       case 'tel':
@@ -614,7 +620,7 @@ class ReferenceResolver {
 
   /// Resolves the foreground color for a Badge
   Color resolveBadgeForegroundColor(String? style) {
-    String myStyle = style?.toLowerCase() ?? 'default';
+    final String myStyle = style?.toLowerCase() ?? 'default';
     switch (myStyle) {
       case 'accent':
       case 'good':
@@ -629,7 +635,7 @@ class ReferenceResolver {
 
   /// Resolves the background color for a Badge
   Color resolveBadgeBackgroundColor(String? style) {
-    String myStyle = style?.toLowerCase() ?? 'default';
+    final String myStyle = style?.toLowerCase() ?? 'default';
     switch (myStyle) {
       case 'accent':
         return Colors.blue;
@@ -647,13 +653,13 @@ class ReferenceResolver {
 
   /// Resolves the font size for a Badge
   double resolveBadgeFontSize(String? size) {
-    String mySize = size?.toLowerCase() ?? 'medium';
+    final String mySize = size?.toLowerCase() ?? 'medium';
     switch (mySize) {
       case 'large':
-        return 14.0;
+        return 14;
       case 'medium':
       default:
-        return 12.0;
+        return 12;
     }
   }
 }

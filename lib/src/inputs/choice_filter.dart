@@ -28,15 +28,13 @@ class ChoiceFilterState extends State<ChoiceFilter> {
   }
 
   void onSearchTextChanged(String text) async {
-    setState(() {
-      _searchResult.clear();
-    });
+    setState(_searchResult.clear);
 
     if (text.isEmpty) {
       return;
     }
 
-    for (var item in _data) {
+    for (final item in _data) {
       if (item.name.toLowerCase().contains(text.toLowerCase())) {
         setState(() {
           _searchResult.add(item);
@@ -51,7 +49,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Container(
-          margin: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.all(8),
           height: 40,
           child: TextField(
             autofocus: true,
@@ -59,7 +57,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
             controller: _searchController,
             decoration: InputDecoration(
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(4),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 8,
@@ -90,9 +88,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
                       title: Text(_searchResult[index].name),
                       onTap: () {
                         Navigator.pop(context);
-                        if (widget.callback != null) {
-                          widget.callback!(_searchResult[index]);
-                        }
+                        widget.callback?.call(_searchResult[index]);
                       },
                     );
                   },
@@ -104,9 +100,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
                       title: Text(_data[index].name),
                       onTap: () {
                         Navigator.pop(context);
-                        if (widget.callback != null) {
-                          widget.callback!(_data[index]);
-                        }
+                        widget.callback?.call(_data[index]);
                       },
                     );
                   },

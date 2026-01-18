@@ -35,12 +35,12 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   void initState() {
     super.initState();
 
-    label = adaptiveMap['label'];
-    isRequired = adaptiveMap['isRequired'] ?? false;
+    label = adaptiveMap['label']?.toString();
+    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
 
     controller.text = value;
-    min = adaptiveMap['min'];
-    max = adaptiveMap['max'];
+    min = adaptiveMap['min'] as int? ?? 0;
+    max = adaptiveMap['max'] as int? ?? 100;
   }
 
   @override
@@ -50,7 +50,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          loadLabel(label, isRequired),
+          loadLabel(label: label, isRequired: isRequired),
           SizedBox(
             height: 40,
             child: TextFormField(
@@ -59,7 +59,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
               inputFormatters: [
                 TextInputFormatter.withFunction((oldVal, newVal) {
                   if (newVal.text == '') return newVal;
-                  int newNumber = int.parse(newVal.text);
+                  final int newNumber = int.parse(newVal.text);
                   if (newNumber >= min && newNumber <= max) return newVal;
                   return oldVal;
                 }),
@@ -68,7 +68,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
               decoration: InputDecoration(
                 // labelText: placeholder,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
                   vertical: 8,
@@ -113,17 +113,17 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      controller.text = map[id];
+      controller.text = map[id].toString();
     }
   }
 
   @override
   bool checkRequired() {
-    var adaptiveCardElement = ProviderScope.containerOf(
+    final adaptiveCardElement = ProviderScope.containerOf(
       context,
       listen: false,
     ).read(adaptiveCardElementStateProvider);
-    var formKey = adaptiveCardElement.formKey;
+    final formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
   }

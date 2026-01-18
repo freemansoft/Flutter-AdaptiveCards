@@ -7,13 +7,28 @@
 
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
-include: package:flutter_lints/flutter.yaml
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  errors:
+    # key: on widget is not named but is usually first by convention
+    always_put_required_named_parameters_first: ignore
+    # ignored because some comments are longer than 80 lines_longer_than_80_chars:
+    # formatter will fix long code
+    lines_longer_than_80_chars: ignore
+    # I like local variable types for clarity
+    omit_local_variable_types: ignore
+    public_member_api_docs: ignore
+    avoid_redundant_argument_values: ignore
+    # seems to work for logging
+    no_runtimeType_toString: ignore
 
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
   # included above or to enable additional rules. A list of all available lints
-  # and their documentation is published at https://dart.dev/lints.
+  # and their documentation is published at
+  # https://dart-lang.github.io/linter/lints/index.html.
   #
   # Instead of disabling a lint rule for the entire project in the
   # section below, it can also be suppressed for a single line of code
@@ -22,7 +37,14 @@ linter:
   # producing the lint.
   rules:
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    # prefer_single_quotes: true # Uncomment to enable the `prefer_single_quotes` rule
+    # require_trailing_commas: true
+    #prefer_relative_imports: false
+    always_use_package_imports: true
+    directives_ordering: true
+    sort_pub_dependencies: true
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+formatter:
+  trailing_commas: preserve

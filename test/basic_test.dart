@@ -12,11 +12,11 @@ void main() {
   });
 
   testWidgets('Activity Update test', (tester) async {
-    Widget widget = getWidget('example1.json');
+    final Widget widget = getWidget('example1.json');
 
     await tester.pumpWidget(widget);
 
-    // TODO: Why don't these finds for text work like the objects do?
+    // TODO(username): Why don't these finds for text work like the objects do?
 
     // At the top and at assigned to:
     // expect(find.text('Matt Hidinger'), findsNWidgets(2));
@@ -39,7 +39,7 @@ void main() {
 
     expect(find.widgetWithText(ElevatedButton, 'OK'), findsOneWidget);
 
-    Widget button = tester.firstWidget(
+    final Widget button = tester.firstWidget(
       find.widgetWithText(ElevatedButton, 'OK'),
     );
 
@@ -55,8 +55,9 @@ void main() {
     expect(find.byWidget(button), findsNothing);
 
     await tester.pump(
-      // ignore: require_trailing_commas
-      const Duration(seconds: 1),
+      const Duration(
+        seconds: 1,
+      ),
     ); // skip past any activity or animation
   });
 }

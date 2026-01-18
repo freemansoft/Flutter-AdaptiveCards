@@ -21,7 +21,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
   void initState() {
     super.initState();
     // 'card' property contains the Adaptive Card to show
-    card = widget.adaptiveMap['card'];
+    card = widget.adaptiveMap['card'] as Map<String, dynamic>? ?? {};
   }
 
   @override
@@ -36,7 +36,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
       builder: (context) {
         return Dialog(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 400, maxHeight: 600),
+            constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
             child: SingleChildScrollView(
               child: widgetState.cardRegistry.getElement(card!),
             ),

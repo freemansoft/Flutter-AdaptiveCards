@@ -10,10 +10,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
 ///
 class SearchModel {
+  SearchModel({required this.id, required this.name});
   final String id;
   final String name;
-
-  SearchModel({required this.id, required this.name});
 
   ///this method will prevent the override of toString
   String modelAsString() {
@@ -59,19 +58,21 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   void initState() {
     super.initState();
 
-    label = adaptiveMap['label'];
-    isRequired = adaptiveMap['isRequired'] ?? false;
+    label = adaptiveMap['label'] as String?;
+    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
 
     if (adaptiveMap['choices'] != null) {
+      final choices = adaptiveMap['choices'] as List<dynamic>;
+
       /// https://adaptivecards.io/explorer/Input.Choice.html
-      for (Map map in adaptiveMap['choices']) {
+      for (final dynamic map in choices) {
         _choices[map['title']] = map['value'].toString();
       }
     }
 
     isFiltered = loadFiltered();
     isCompact = loadCompact();
-    isMultiSelect = adaptiveMap['isMultiSelect'] ?? false;
+    isMultiSelect = adaptiveMap['isMultiSelect'] as bool? ?? false;
 
     if (value.isNotEmpty) {
       _selectedChoices.addAll(value.split(','));
@@ -87,8 +88,9 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   void initInput(Map map) {
     if (map[id] != null) {
       setState(() {
-        _selectedChoices.clear();
-        _selectedChoices.add(map[id]);
+        _selectedChoices
+          ..clear()
+          ..add(map[id]);
 
         controller.text = _selectedChoices.isNotEmpty
             ? _selectedChoices.first
@@ -99,11 +101,11 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   @override
   bool checkRequired() {
-    var adaptiveCardElement = ProviderScope.containerOf(
+    final adaptiveCardElement = ProviderScope.containerOf(
       context,
       listen: false,
     ).read(adaptiveCardElementStateProvider);
-    var formKey = adaptiveCardElement.formKey;
+    final formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
   }
@@ -143,7 +145,10 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       adaptiveMap: adaptiveMap,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: [loadLabel(label, isRequired), widget],
+        children: [
+          loadLabel(label: label, isRequired: isRequired),
+          widget,
+        ],
       ),
     );
   }
@@ -157,7 +162,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         style: const TextStyle(),
         controller: controller,
         decoration: InputDecoration(
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(4.0)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
           contentPadding: const EdgeInsets.symmetric(
             vertical: 8,
             horizontal: 8,
@@ -186,7 +191,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           return null;
         },
         onTap: () async {
-          var list = _choices.keys
+          final list = _choices.keys
               .map((key) => SearchModel(id: key, name: _choices[key] ?? ''))
               .toList();
           await widgetState.searchList(list, (dynamic value) {
@@ -203,17 +208,17 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   Widget _buildCompact() {
     return Container(
       padding: const EdgeInsets.all(8),
-      height: 40.0,
+      height: 40,
       decoration: BoxDecoration(
         border: Border.all(),
-        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down),
           style: TextStyle(
-            // TODO: this is not right - should have a different function
+            // TODO(username): this is not right - should have a different function
             color:
                 InheritedReferenceResolver.of(
                   context,
@@ -237,9 +242,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
                 ),
               )
               .toList(),
-          onChanged: (value) {
-            select(value);
-          },
+          onChanged: select,
           value: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
         ),
       ),
@@ -249,9 +252,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   Widget _buildExpandedSingleSelect() {
     return RadioGroup<String>(
       groupValue: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
-      onChanged: (value) {
-        select(value);
-      },
+      onChanged: select,
       child: Column(
         children: _choices.keys.map((key) {
           return RadioListTile<String>(
@@ -305,7 +306,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   /// JSON Schema definition "ChoiceInputStyle"
   bool loadCompact() {
     if (!adaptiveMap.containsKey('style')) return true;
-    String style = adaptiveMap['style'].toString().toLowerCase();
+    final String style = adaptiveMap['style'].toString().toLowerCase();
     if (style == 'compact' || style == 'filtered') return true;
     if (style == 'expanded') return false;
     throw StateError(

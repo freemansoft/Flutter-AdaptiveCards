@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 
 /// The visitor, the function is called once for every element in the tree
@@ -26,7 +27,7 @@ typedef AdaptiveElementVisitor = void Function(AdaptiveElement element);
 /// child 1 child2
 /// --------------------------------------------------------------------
 ///
-/// The [resolver] is a handy wrapper around the theming and styling, which makes accessing
+/// The [ReferenceResolver] is a handy wrapper around the theming and styling, which makes accessing
 /// it easier.
 ///
 /// The [widgetState] provides access to flutter specific implementations.
@@ -57,7 +58,7 @@ abstract class AdaptiveElement {
   /// Each mixin has the opportunity to add something to the widget hierarchy.
   ///
   /// An example:
-  /// ```
+  /// ```dart
   /// @override
   /// Widget generateWidget() {
   ///  assert(separator != null, 'Did you forget to call loadSeperator in this class?');
@@ -81,7 +82,7 @@ abstract class AdaptiveElement {
 
   void loadId() {
     if (adaptiveMap.containsKey('id')) {
-      id = adaptiveMap['id'];
+      id = adaptiveMap['id'].toString();
     } else {
       id = UUIDGenerator().getId();
     }
@@ -98,6 +99,8 @@ abstract class AdaptiveElement {
   }
 
   @override
+  // shouldn't override for unless marked @immutable but leaving for backward compatibility
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is AdaptiveElement &&
@@ -105,5 +108,7 @@ abstract class AdaptiveElement {
           id == other.id;
 
   @override
+  // shouldn't override for unless marked @immutable but leaving for backward compatibility
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
   int get hashCode => id.hashCode;
 }

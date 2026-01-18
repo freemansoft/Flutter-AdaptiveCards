@@ -49,7 +49,6 @@ class AdaptiveImageState extends State<AdaptiveImage>
 
   @override
   Widget build(BuildContext context) {
-    //TODO add alt text
     BoxFit fit = BoxFit.contain;
     if (height != null && width != null) {
       fit = BoxFit.fill;
@@ -59,6 +58,7 @@ class AdaptiveImageState extends State<AdaptiveImage>
       adaptiveMap: adaptiveMap,
       child: Image.network(
         url,
+        semanticLabel: adaptiveMap['altText']?.toString(),
         fit: fit,
         height: height,
         width: width,
@@ -82,11 +82,12 @@ class AdaptiveImageState extends State<AdaptiveImage>
       child = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          (widget.parentMode == 'auto')
-              ? Flexible(child: image)
-              : Expanded(
-                  child: Align(alignment: horizontalAlignment, child: image),
-                ),
+          if (widget.parentMode == 'auto')
+            Flexible(child: image)
+          else
+            Expanded(
+              child: Align(alignment: horizontalAlignment, child: image),
+            ),
         ],
       );
     }
@@ -101,10 +102,10 @@ class AdaptiveImageState extends State<AdaptiveImage>
     return true;
   }
 
-  String get url => adaptiveMap['url'];
+  String get url => adaptiveMap['url']?.toString() ?? '';
 
   void loadSize() {
-    String sizeDescription = adaptiveMap['size'] ?? 'auto';
+    String sizeDescription = adaptiveMap['size']?.toString() ?? 'auto';
     sizeDescription = sizeDescription.toLowerCase();
 
     int? size;

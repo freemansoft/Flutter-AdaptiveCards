@@ -208,7 +208,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     await showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(6.0)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(6)),
         side: BorderSide(),
       ),
       builder: (BuildContext builder) => SizedBox(
@@ -238,7 +238,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     DateTime? min,
     DateTime? max,
   ) async {
-    DateTime initialDate = value ?? DateTime.now();
+    final DateTime initialDate = value ?? DateTime.now();
     DateTime? pickedDate = initialDate;
 
     // showCupertinoModalPopup is a built-in function of the cupertino library
@@ -278,7 +278,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     DateTime? min,
     DateTime? max,
   ) {
-    DateTime initialDate = value ?? DateTime.now();
+    final DateTime initialDate = value ?? DateTime.now();
     return showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -307,23 +307,23 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     TimeOfDay? minimumTime,
     TimeOfDay? maximumTime,
   ) async {
-    TimeOfDay initialTimeOfDay = defaultTime ?? TimeOfDay.now();
+    final TimeOfDay initialTimeOfDay = defaultTime ?? TimeOfDay.now();
     // the picker requires a DateTime but won't be carried forward in the results
-    DateTime initialDateTime = DateTime(
+    final DateTime initialDateTime = DateTime(
       1,
       1,
       1,
       initialTimeOfDay.hour,
       initialTimeOfDay.minute,
     );
-    DateTime minDateTime = DateTime(
+    final DateTime minDateTime = DateTime(
       1,
       1,
       1,
       minimumTime?.hour ?? 0,
       minimumTime?.minute ?? 0,
     );
-    DateTime maxDateTime = DateTime(
+    final DateTime maxDateTime = DateTime(
       1,
       1,
       1,
@@ -388,7 +388,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     TimeOfDay? minTime,
     TimeOfDay? maxTime,
   ) {
-    TimeOfDay initialTimeOfDay = defaultTime ?? TimeOfDay.now();
+    final TimeOfDay initialTimeOfDay = defaultTime ?? TimeOfDay.now();
     return showTimePicker(context: context, initialTime: initialTimeOfDay);
   }
 
@@ -402,8 +402,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
           children: <Widget>[
             TextButton(
               onPressed: () {
-                JsonEncoder encoder = const JsonEncoder.withIndent('  ');
-                String prettyprint = encoder.convert(widget.map);
+                final JsonEncoder encoder = const JsonEncoder.withIndent('  ');
+                final String prettyprint = encoder.convert(widget.map);
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -412,8 +412,10 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                         'JSON (only added in debug mode, you can also turn '
                         'it off manually by passing showDebugJson = false)',
                       ),
-                      content: SingleChildScrollView(child: Text(prettyprint)),
-                      contentPadding: const EdgeInsets.all(8.0),
+                      content: SingleChildScrollView(
+                        child: SelectableText(prettyprint),
+                      ),
+                      contentPadding: const EdgeInsets.all(8),
                     );
                   },
                 );
@@ -427,7 +429,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       }
       return true;
     }());
-    var backgroundColor = _resolver.resolveContainerBackgroundColor(
+    final backgroundColor = _resolver.resolveContainerBackgroundColor(
       context: context,
       style: widget.map['style']?.toString().toLowerCase(),
     );

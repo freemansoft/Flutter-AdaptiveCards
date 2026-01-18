@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-// This file does not exist yet,
-// it will be generated in the next step
-import 'main.directories.g.dart';
+// If this file does not exist yet, it will be generated in build runner
+import 'package:widgetbook_workspace/main.directories.g.dart';
 
 void main() {
   runApp(const WidgetbookApp());
@@ -21,6 +21,12 @@ class WidgetbookApp extends StatelessWidget {
       addons: [ViewportAddon(Viewports.all), SemanticsAddon()],
       // to see snackbar messages. Maybe should use some other way to do this?
       appBuilder: (context, child) => MaterialApp(
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en', 'US'), Locale('vi', '')],
         debugShowCheckedModeBanner: false,
         home: Scaffold(body: Material(child: child)),
       ),

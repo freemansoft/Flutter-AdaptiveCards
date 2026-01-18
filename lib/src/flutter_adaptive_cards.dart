@@ -1,5 +1,3 @@
-library;
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -16,13 +14,11 @@ import 'package:http/http.dart' as http;
 ///
 /// We use specialized versions for each way we get content
 abstract class AdaptiveCardContentProvider {
-  AdaptiveCardContentProvider();
-
   Future<Map<String, dynamic>> loadAdaptiveCardContent();
 }
 
 /// Content provider for getting card specifications from memory
-class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
+class MemoryAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   MemoryAdaptiveCardContentProvider({required this.content}) : super();
 
   Map<String, dynamic> content;
@@ -34,40 +30,42 @@ class MemoryAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
 }
 
 /// Content provider for getting card specifications from a JSON string
-class JsonAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
+class JsonAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   JsonAdaptiveCardContentProvider({required this.jsonString}) : super();
 
   String jsonString;
 
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() async {
-    return json.decode(jsonString);
+    return json.decode(jsonString) as Map<String, dynamic>;
   }
 }
 
 /// Content provider for getting card specifications from the Asset tree
-class AssetAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
+class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   AssetAdaptiveCardContentProvider({required this.path}) : super();
 
   String path;
 
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() async {
-    return json.decode(await rootBundle.loadString(path));
+    return json.decode(await rootBundle.loadString(path))
+        as Map<String, dynamic>;
   }
 }
 
 /// Content provider for getting card specifications from a network resource
-class NetworkAdaptiveCardContentProvider extends AdaptiveCardContentProvider {
+class NetworkAdaptiveCardContentProvider
+    implements AdaptiveCardContentProvider {
   NetworkAdaptiveCardContentProvider({required this.url}) : super();
 
   String url;
 
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() async {
-    var body = (await http.get(Uri.parse(url))).bodyBytes;
+    final body = (await http.get(Uri.parse(url))).bodyBytes;
 
-    return json.decode(utf8.decode(body));
+    return json.decode(utf8.decode(body)) as Map<String, dynamic>;
   }
 }
 
@@ -240,7 +238,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     if (widget.cardRegistry != null) {
       cardRegistry = widget.cardRegistry!;
     } else {
-      CardRegistry? cardRegistry = DefaultCardRegistry.of(context);
+      final CardRegistry? cardRegistry = DefaultCardRegistry.of(context);
       if (cardRegistry != null) {
         this.cardRegistry = cardRegistry;
       } else {
@@ -260,7 +258,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     if (widget.onSubmit != null) {
       onSubmit = widget.onSubmit;
     } else {
-      var foundOnSubmit = DefaultAdaptiveCardHandlers.of(context)?.onSubmit;
+      final foundOnSubmit = DefaultAdaptiveCardHandlers.of(context)?.onSubmit;
       if (foundOnSubmit != null) {
         onSubmit = foundOnSubmit;
       } else {
@@ -280,7 +278,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     if (widget.onExecute != null) {
       onExecute = widget.onExecute;
     } else {
-      var foundOnExecute = DefaultAdaptiveCardHandlers.of(context)?.onExecute;
+      final foundOnExecute = DefaultAdaptiveCardHandlers.of(context)?.onExecute;
       if (foundOnExecute != null) {
         onExecute = foundOnExecute;
       } else {
@@ -300,7 +298,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     if (widget.onOpenUrl != null) {
       onOpenUrl = widget.onOpenUrl;
     } else {
-      var foundOpenUrl = DefaultAdaptiveCardHandlers.of(context)?.onOpenUrl;
+      final foundOpenUrl = DefaultAdaptiveCardHandlers.of(context)?.onOpenUrl;
       if (foundOpenUrl != null) {
         onOpenUrl = foundOpenUrl;
       } else {

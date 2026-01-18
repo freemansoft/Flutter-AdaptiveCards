@@ -17,7 +17,7 @@ class AdaptiveCardElement extends StatefulWidget
     Key? key,
     required this.adaptiveMap,
     required this.listView,
-  }) : super(key: UniqueKey());
+  }) : super(key: key ?? UniqueKey());
 
   @override
   final Map<String, dynamic> adaptiveMap;
@@ -52,9 +52,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   void initState() {
     super.initState();
 
-    version = adaptiveMap['version'];
+    version = adaptiveMap['version']?.toString();
     developer.log(
-      format('AdaptiveCardElement: {} version: {}', id, (version ?? '')),
+      format('AdaptiveCardElement: {} version: {}', id, version ?? ''),
       name: runtimeType.toString(),
     );
 
@@ -66,7 +66,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    String stringAxis = InheritedReferenceResolver.of(
+    final String stringAxis = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveOrientation('actionsOrientation');
     if (stringAxis == 'Horizontal') {
@@ -104,11 +104,13 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   Widget build(BuildContext context) {
     loadChildren();
 
-    List<Widget> widgetChildren = children.map((element) => element).toList();
+    final List<Widget> widgetChildren = children
+        .map((element) => element)
+        .toList();
 
     Widget actionWidget;
     if (actionsOrientation == Axis.vertical) {
-      List<Widget> actionWidgets = allActions.map((action) {
+      final List<Widget> actionWidgets = allActions.map((action) {
         return SizedBox(width: double.infinity, child: action);
       }).toList();
 
@@ -123,7 +125,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
         ],
       );
     } else {
-      List<Widget> actionWidgets = allActions.map((action) {
+      final List<Widget> actionWidgets = allActions.map((action) {
         return Padding(
           padding: const EdgeInsets.only(right: 8),
           child: action,
@@ -143,8 +145,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     // default to result without a background image
     Widget result = Container(
-      margin: const EdgeInsets.all(8.0),
-      child: widget.listView == true
+      margin: const EdgeInsets.all(8),
+      child: widget.listView
           ? ListView(shrinkWrap: true, children: widgetChildren)
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +154,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
             ),
     );
 
-    var backgroundImage = getBackgroundImageFromMap(adaptiveMap);
+    final backgroundImage = getBackgroundImageFromMap(adaptiveMap);
 
     // replace the result with a stack if there is a background image
     if (backgroundImage != null) {
