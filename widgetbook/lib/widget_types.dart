@@ -68,27 +68,6 @@ class ActionSet extends StatelessWidget {
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
-/// Stub for 'Action.OpenUrl' route
-class ActionOpenUrl extends StatelessWidget {
-  const ActionOpenUrl({super.key});
-  @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
-}
-
-/// Stub for 'Action.Submit' route
-class ActionSubmit extends StatelessWidget {
-  const ActionSubmit({super.key});
-  @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
-}
-
-/// Stub for 'Action.ShowCard' route
-class ActionShowCard extends StatelessWidget {
-  const ActionShowCard({super.key});
-  @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
-}
-
 /// Stub for 'Input.Text' route
 class InputText extends StatelessWidget {
   const InputText({super.key});

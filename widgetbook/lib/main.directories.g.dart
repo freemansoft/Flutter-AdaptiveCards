@@ -29,21 +29,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
-        name: 'ActionOpenUrl',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildActionOpenUrlExample1,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 2',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildActionOpenUrlExample2,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
         name: 'ActionSet',
         useCases: [
           _widgetbook.WidgetbookUseCase(
@@ -54,30 +39,35 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
-        name: 'ActionShowCard',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildActionShowCardExample1,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
-        name: 'ActionSubmit',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildActionSubmitExample1,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
         name: 'Actions',
         useCases: [
           _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
+            name: 'Action.Execute Example 1',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionExecuteExample1,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Action.OpenUrl Example 1',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionOpenUrlExample1,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Action.OpenUrl Example 2',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionOpenUrlExample2,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Action.ShowCard Example 1',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionShowCardExample1,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Action.Submit Example 1',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionSubmitExample1,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Actions.Popover Actions.Reset',
             builder:
                 _widgetbook_workspace_adaptive_cards_use_cases.buildV16Actions,
           ),

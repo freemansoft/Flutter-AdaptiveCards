@@ -17,7 +17,7 @@ void main() {
           widget is Container &&
           widget.decoration != null &&
           widget.decoration is BoxDecoration &&
-          (widget.decoration as BoxDecoration).image != null,
+          (widget.decoration! as BoxDecoration).image != null,
     );
 
     expect(containerFinder, findsOneWidget);
@@ -42,7 +42,7 @@ void main() {
       (widget) =>
           widget is Container &&
           widget.decoration is BoxDecoration &&
-          (widget.decoration as BoxDecoration).image != null,
+          (widget.decoration! as BoxDecoration).image != null,
     );
 
     expect(containerFinder, findsOneWidget);

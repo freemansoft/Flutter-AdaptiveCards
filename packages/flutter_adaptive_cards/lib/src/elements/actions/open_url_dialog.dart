@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/icon_button.dart';
@@ -37,34 +39,36 @@ class AdaptiveActionOpenUrlDialogState
   void onTapped() {
     if (url != null) {
       // Show dialog with URL
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Open URL'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('This action would open:'),
-                Text(url!, style: const TextStyle(color: Colors.blue)),
+      unawaited(
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Open URL'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('This action would open:'),
+                  Text(url!, style: const TextStyle(color: Colors.blue)),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Actually open it?
+                    widgetState.openUrl(url!);
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Open'),
+                ),
               ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Actually open it?
-                  widgetState.openUrl(url!);
-                  Navigator.pop(context);
-                },
-                child: const Text('Open'),
-              ),
-            ],
-          );
-        },
+            );
+          },
+        ),
       );
     }
   }
