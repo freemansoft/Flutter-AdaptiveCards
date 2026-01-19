@@ -1,3 +1,4 @@
+import 'package:accessibility_tools/accessibility_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:widgetbook/widgetbook.dart';
@@ -18,7 +19,31 @@ class WidgetbookApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Widgetbook.material(
       directories: directories,
-      addons: [ViewportAddon(Viewports.all), SemanticsAddon()],
+      addons: [
+        // DeviceFrame AddOn deprecated in favor of ViewportAddon
+        ViewportAddon(Viewports.all),
+        SemanticsAddon(),
+        MaterialThemeAddon(
+          themes: [
+            WidgetbookTheme(
+              name: 'Light',
+              data: ThemeData.light(),
+            ),
+            WidgetbookTheme(
+              name: 'Dark',
+              data: ThemeData.dark(),
+            ),
+          ],
+        ),
+        // Accessibility AddOn deprecated in favor of BuilderAddon/AccessibilityTools
+        BuilderAddon(
+          name: 'Accessibility',
+          builder: (context, child) => AccessibilityTools(
+            child: child,
+          ),
+        ),
+        AlignmentAddon(),
+      ],
       // to see snackbar messages. Maybe should use some other way to do this?
       appBuilder: (context, child) => MaterialApp(
         localizationsDelegates: const [
