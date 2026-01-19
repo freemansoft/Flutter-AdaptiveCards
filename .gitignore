@@ -4,10 +4,6 @@
 # transient docs used to drive AI code generation
 .requirements/
 
-flutter_adaptive_cards.iml
-# golden tests
-test/failures/
-
 
 # Partially from https://github.com/flutter/flutter/blob/master/packages/flutter_tools/templates/app/.gitignore.tmpl
 # from https://github.com/github/gitignore/blob/main/Flutter.gitignore
