@@ -1,0 +1,39 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Badge Examples",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Badge",
+      "text": "Default Badge",
+      "style": "default"
+    },
+    {
+      "type": "Badge",
+      "text": "Accent Badge",
+      "style": "accent",
+      "iconUrl": "https://adaptivecards.io/content/cats/1.png",
+      "iconAlignment": "left"
+    },
+    {
+      "type": "Badge",
+      "text": "Good Badge",
+      "style": "good"
+    },
+    {
+      "type": "Badge",
+      "text": "Warning Badge",
+      "style": "warning"
+    },
+    {
+      "type": "Badge",
+      "text": "Attention Badge",
+      "style": "attention"
+    }
+  ]
+}
