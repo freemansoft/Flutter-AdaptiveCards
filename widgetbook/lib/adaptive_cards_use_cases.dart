@@ -587,8 +587,8 @@ Widget buildActionSetExample1(BuildContext context) {
 // =============================================================================
 
 @widgetbook.UseCase(
-  name: 'Example 1',
-  type: widget_types.ActionOpenUrl,
+  name: 'Action.OpenUrl Example 1',
+  type: widget_types.Actions,
   path: '[Components]',
 )
 Widget buildActionOpenUrlExample1(BuildContext context) {
@@ -596,8 +596,8 @@ Widget buildActionOpenUrlExample1(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Example 2',
-  type: widget_types.ActionOpenUrl,
+  name: 'Action.OpenUrl Example 2',
+  type: widget_types.Actions,
   path: '[Components]',
 )
 Widget buildActionOpenUrlExample2(BuildContext context) {
@@ -609,8 +609,8 @@ Widget buildActionOpenUrlExample2(BuildContext context) {
 // =============================================================================
 
 @widgetbook.UseCase(
-  name: 'Example 1',
-  type: widget_types.ActionSubmit,
+  name: 'Action.Submit Example 1',
+  type: widget_types.Actions,
   path: '[Components]',
 )
 Widget buildActionSubmitExample1(BuildContext context) {
@@ -618,12 +618,25 @@ Widget buildActionSubmitExample1(BuildContext context) {
 }
 
 // =============================================================================
+// ACTION SUBMIT Component
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Action.Execute Example 1',
+  type: widget_types.Actions,
+  path: '[Components]',
+)
+Widget buildActionExecuteExample1(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/action_execute/example1.json');
+}
+
+// =============================================================================
 // ACTION SHOW CARD Component
 // =============================================================================
 
 @widgetbook.UseCase(
-  name: 'Example 1',
-  type: widget_types.ActionShowCard,
+  name: 'Action.ShowCard Example 1',
+  type: widget_types.Actions,
   path: '[Components]',
 )
 Widget buildActionShowCardExample1(BuildContext context) {
@@ -864,12 +877,12 @@ Widget buildV16ChartLine(BuildContext context) {
 // =============================================================================
 
 @widgetbook.UseCase(
-  name: 'Example 1',
+  name: 'Actions.Popover Actions.Reset',
   type: widget_types.Actions,
   path: '[Components]',
 )
 Widget buildV16Actions(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/v1.6/actions.json');
+  return const GenericPage(url: 'lib/samples/v1.6/action.json');
 }
 
 // =============================================================================

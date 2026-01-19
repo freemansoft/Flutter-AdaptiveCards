@@ -304,7 +304,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
       } else {
         onOpenUrl = (it) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(format('und for: \n {}', it.toString()))),
+            SnackBar(content: Text(format('und for: \n {}', it))),
           );
         };
       }

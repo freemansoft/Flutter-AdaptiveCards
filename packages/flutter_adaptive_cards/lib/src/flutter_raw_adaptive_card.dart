@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
 
@@ -205,7 +206,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     List<SearchModel>? data,
     Function(dynamic value) callback,
   ) async {
-    await showModalBottomSheet(
+    await showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(6)),
@@ -402,9 +403,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
           children: <Widget>[
             TextButton(
               onPressed: () {
-                final JsonEncoder encoder = const JsonEncoder.withIndent('  ');
+                const JsonEncoder encoder = JsonEncoder.withIndent('  ');
                 final String prettyprint = encoder.convert(widget.map);
-                showDialog(
+                unawaited(showDialog<void>(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
@@ -418,7 +419,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
                       contentPadding: const EdgeInsets.all(8),
                     );
                   },
-                );
+                ));
               },
               child: const Text('Debug show the JSON'),
             ),

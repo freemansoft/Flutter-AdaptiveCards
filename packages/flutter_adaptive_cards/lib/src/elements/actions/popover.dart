@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -25,20 +27,22 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
   }
 
   @override
-  void onTapped() {
+  Future<void> onTapped() async {
     if (card == null) return;
 
     // Show popover (Dialog or PopupMenu or Overlay)
     // Using a Dialog for simplicity as "Popover" usually implies a temporary view.
     // Ideally we assume an anchor, but simpler implementation:
-    showDialog(
+    await showDialog<void>(
       context: context,
       builder: (context) {
         return Dialog(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
             child: SingleChildScrollView(
-              child: widgetState.cardRegistry.getElement(card!),
+              child: RawAdaptiveCard.fromMap(
+                card!,
+              ),
             ),
           ),
         );
@@ -48,9 +52,18 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
 
   @override
   Widget build(BuildContext context) {
+    final resolver = InheritedReferenceResolver.of(context).resolver;
+
     return SeparatorElement(
       adaptiveMap: widget.adaptiveMap,
       child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: resolver.resolveButtonBackgroundColor(
+            context: context,
+            style: adaptiveMap['style'],
+          ),
+          // minimumSize: const Size.fromHeight(50),
+        ),
         onPressed: onTapped,
         child: Text(title),
       ),

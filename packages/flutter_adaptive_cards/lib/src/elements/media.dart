@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:chewie/chewie.dart';
@@ -47,7 +48,7 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
     postUrl = adaptiveMap['poster']?.toString();
     // https://adaptivecards.io/explorer/MediaSource.html
     sourceUrl = adaptiveMap['sources'][0]['url']?.toString() ?? '';
-    initializePlayer();
+    unawaited(initializePlayer());
   }
 
   Future<void> initializePlayer() async {
@@ -76,7 +77,7 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
   @override
   void dispose() {
-    videoPlayerController.dispose();
+    unawaited(videoPlayerController.dispose());
     controller?.dispose();
     super.dispose();
   }

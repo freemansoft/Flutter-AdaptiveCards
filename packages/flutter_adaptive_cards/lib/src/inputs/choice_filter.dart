@@ -27,7 +27,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
     }
   }
 
-  void onSearchTextChanged(String text) async {
+  Future<void> onSearchTextChanged(String text) async {
     setState(_searchResult.clear);
 
     if (text.isEmpty) {
