@@ -1,0 +1,58 @@
+{
+	"choiceSetInputValueSeparator": ",",
+	"supportsInteractivity": true,
+	"spacing": {
+		"small": 3,
+		"default": 8,
+		"medium": 20,
+		"large": 30,
+		"extraLarge": 40,
+		"padding": 10
+	},
+	"separator": {
+		"lineThickness": 1,
+		"lineColor": "#EEEEEE"
+	},
+	"imageSizes": {
+		"small": 40,
+		"medium": 80,
+		"large": 160
+	},
+	"actions": {
+		"maxActions": 5,
+		"spacing": "default",
+		"buttonSpacing": 10,
+		"showCard": {
+			"actionMode": "Inline",
+			"inlineTopMargin": 16,
+			"style": "emphasis"
+		},
+		"preExpandSingleShowCardAction": false,
+		"actionsOrientation": "Horizontal",
+		"actionAlignment": "left"
+	},
+	"adaptiveCard": {
+		"allowCustomStyle": false
+	},
+	"imageSet": {
+		"imageSize": "medium",
+		"maxImageHeight": 100
+	},
+	"factSet": {
+		"title": {
+			"size": "default",
+			"color": "default",
+			"isSubtle": false,
+			"weight": "bolder",
+			"warp": true
+		},
+		"value": {
+			"size": "default",
+			"color": "default",
+			"isSubtle": false,
+			"weight": "default",
+			"warp": true
+		},
+		"spacing": 10
+	}
+}

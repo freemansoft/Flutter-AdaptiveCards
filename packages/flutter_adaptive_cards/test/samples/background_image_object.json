@@ -1,0 +1,19 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "backgroundImage": {
+        "url": "https://adaptivecards.io/content/airplane.png",
+        "fillMode": "repeat"
+      },
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Card with object background image"
+        }
+      ]
+    }
+  ]
+}
