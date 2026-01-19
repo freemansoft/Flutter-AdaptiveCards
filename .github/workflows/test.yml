@@ -15,6 +15,8 @@ jobs:
           channel: 'stable' # Or 'beta' or 'master' depending on your needs
           flutter-version: 3.38.5 # should sync with fvm version
           cache: true
+
+      # this relies on the new flutter 3.6.0 workspace feature
       - run: dart --version
       - run: flutter --version
       - run: flutter pub get
@@ -28,6 +30,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: adaptive_cards_golden_test_failures # Name for the artifact
-          path: test/failures # The path where Flutter saves failure images (adjust if different in your project)
+          path: packages/flutter_adaptive_cards/test/failures # The path where Flutter saves failure images (adjust if different in your project)
           retention-days: 7 # Optional: how long to keep the artifact
-        working-directory: ./packages/flutter_adaptive_cards
