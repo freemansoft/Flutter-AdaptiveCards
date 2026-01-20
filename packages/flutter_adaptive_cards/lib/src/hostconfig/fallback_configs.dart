@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/badge_styles_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/container_styles_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/font_color_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/font_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/foreground_colors_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
@@ -210,5 +211,11 @@ class FallbackConfigs {
     small: 32,
     medium: 64,
     large: 120,
+  );
+
+  static final FontWeightsConfig fontWeightsConfig = FontWeightsConfig(
+    lighter: FontWeight.w200.value,
+    defaultWeight: FontWeight.normal.value,
+    bolder: FontWeight.bold.value,
   );
 }

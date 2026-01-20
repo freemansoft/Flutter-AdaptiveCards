@@ -325,8 +325,7 @@ class ReferenceResolver {
   /// - bolder
   FontWeight resolveFontWeight(String? weightString) {
     final String weight = weightString?.toLowerCase() ?? 'default';
-    final config = getFontWeightsConfig();
-    if (config == null) return FontWeight.w400;
+    final config = getFontWeightsConfig() ?? FallbackConfigs.fontWeightsConfig;
     int weightValue;
     switch (weight) {
       case 'lighter':
