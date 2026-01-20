@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class FontSizesConfig {
   FontSizesConfig({
     required this.small,
@@ -33,9 +35,9 @@ class FontWeightsConfig {
 
   factory FontWeightsConfig.fromJson(Map<String, dynamic> json) {
     return FontWeightsConfig(
-      lighter: json['lighter'] as int? ?? 200,
-      defaultWeight: json['default'] as int? ?? 400,
-      bolder: json['bolder'] as int? ?? 800,
+      lighter: json['lighter'] as int? ?? FontWeight.w200.value,
+      defaultWeight: json['default'] as int? ?? FontWeight.normal.value,
+      bolder: json['bolder'] as int? ?? FontWeight.bold.value,
     );
   }
 
