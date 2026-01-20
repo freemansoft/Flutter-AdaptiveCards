@@ -2,6 +2,19 @@
 
 This project is a Flutter implementation of the Adaptive Cards specification. The Adaptive Cards project was originally developed by Microsoft and is now an open source project. You can find more information about Adaptive Cards at https://adaptivecards.io/. This particular implementation is a fork of the original project that was created to add support for Flutter. This project is not affiliated with Microsoft. The project was originally created by Neohelden.
 
+## The default branch has been renamed!
+
+master is now named main
+
+If you have a local clone, you can update it by running the following commands.
+
+```
+git branch -m master main
+git fetch origin
+git branch -u origin/main main
+git remote set-head origin -a
+```
+
 ## Getting Started
 
 1. You can view demonstrations of this implementation by running the [Widgetbook](widgetbook)
