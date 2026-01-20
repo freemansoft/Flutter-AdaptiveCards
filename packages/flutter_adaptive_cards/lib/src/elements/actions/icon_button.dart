@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
@@ -43,18 +44,24 @@ class IconButtonActionState extends State<IconButtonAction>
       ),
     );
 
-    Widget result = ElevatedButton(
-      onPressed: onTapped,
-      style: buttonStyle,
-      child: Text(title),
+    Widget result = SeparatorElement(
+      adaptiveMap: adaptiveMap,
+      child: ElevatedButton(
+        onPressed: onTapped,
+        style: buttonStyle,
+        child: Text(title),
+      ),
     );
 
     if (iconUrl != null) {
-      result = ElevatedButton.icon(
-        onPressed: onTapped,
-        style: buttonStyle,
-        icon: Image.network(iconUrl!, height: 36),
-        label: Text(title),
+      result = SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        child: ElevatedButton.icon(
+          onPressed: onTapped,
+          style: buttonStyle,
+          icon: Image.network(iconUrl!, height: 36),
+          label: Text(title),
+        ),
       );
     }
     return result;

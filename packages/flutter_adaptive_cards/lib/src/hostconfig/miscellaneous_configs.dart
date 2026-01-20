@@ -74,7 +74,7 @@ class SpacingsConfig {
   /// - large
   /// - extraLarge
   ///
-  static double? resolveSpacing(SpacingsConfig? config, String? spacing) {
+  static double resolveSpacing(SpacingsConfig? config, String? spacing) {
     final String mySpacing = spacing ?? 'default';
     // special case created by someone
     if (mySpacing == 'none') return 0;

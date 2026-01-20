@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:format/format.dart';
 
 ///
@@ -51,17 +52,20 @@ class AdaptiveTableState extends State<AdaptiveTable>
 
   @override
   Widget build(BuildContext context) {
-    return Table(
-      border: TableBorder.all(),
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      defaultColumnWidth: const FlexColumnWidth(),
-      // column width should be picked up from the columns["width"]
-      // columnWidths: const <int, TableColumnWidth>{
-      //   1: FlexColumnWidth(),
-      //   2: FlexColumnWidth(),
-      //   3: FlexColumnWidth(),
-      // },
-      children: generateTableRows(rows),
+    return SeparatorElement(
+      adaptiveMap: adaptiveMap,
+      child: Table(
+        border: TableBorder.all(),
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        defaultColumnWidth: const FlexColumnWidth(),
+        // column width should be picked up from the columns["width"]
+        // columnWidths: const <int, TableColumnWidth>{
+        //   1: FlexColumnWidth(),
+        //   2: FlexColumnWidth(),
+        //   3: FlexColumnWidth(),
+        // },
+        children: generateTableRows(rows),
+      ),
     );
   }
 

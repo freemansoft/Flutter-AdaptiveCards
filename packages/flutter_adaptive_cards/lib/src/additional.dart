@@ -23,7 +23,7 @@ class SeparatorElement extends StatefulWidget
 
 class SeparatorElementState extends State<SeparatorElement>
     with AdaptiveElementMixin {
-  late double? topSpacing;
+  late double topSpacing;
   late bool separator;
 
   @override
@@ -42,7 +42,10 @@ class SeparatorElementState extends State<SeparatorElement>
   @override
   Widget build(BuildContext context) {
     if (!separator) {
-      return widget.child;
+      return Container(
+        padding: EdgeInsets.only(top: topSpacing),
+        child: widget.child,
+      );
     } else {
       final resolver = InheritedReferenceResolver.of(context).resolver;
       final separatorConfig = resolver.getSeparatorConfig();
