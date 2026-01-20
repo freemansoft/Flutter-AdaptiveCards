@@ -37,10 +37,6 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
   GenericAction? action;
 
-  // Need to do the separator manually for this class
-  // because the flexible needs to be applied to the class above
-  late bool separator;
-
   @override
   void initState() {
     super.initState();
@@ -51,7 +47,6 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
         widgetState,
       );
     }
-    separator = adaptiveMap['separator'] as bool? ?? false;
 
     final toParseWidth = adaptiveMap['width'];
     if (toParseWidth != null) {

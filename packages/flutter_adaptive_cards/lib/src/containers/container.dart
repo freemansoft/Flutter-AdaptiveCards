@@ -42,14 +42,12 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    spacing =
-        SpacingsConfig.resolveSpacing(
-          InheritedReferenceResolver.of(
-            context,
-          ).resolver.getSpacingsConfig(),
-          adaptiveMap['spacing'],
-        ) ??
-        0;
+    spacing = SpacingsConfig.resolveSpacing(
+      InheritedReferenceResolver.of(
+        context,
+      ).resolver.getSpacingsConfig(),
+      adaptiveMap['spacing'],
+    );
     final backgroundImageUrl = resolveBackgroundImage(
       adaptiveMap['backgroundImage'],
     )?.url;

@@ -199,12 +199,10 @@ Widget loadLabel({
     labelConfig?.weight ?? 'default',
   );
 
-  final double bottomPadding =
-      SpacingsConfig.resolveSpacing(
-        resolver.getSpacingsConfig(),
-        inputsConfig?.label.inputSpacing,
-      ) ??
-      8;
+  final double bottomPadding = SpacingsConfig.resolveSpacing(
+    resolver.getSpacingsConfig(),
+    inputsConfig?.label.inputSpacing,
+  );
 
   return Align(
     alignment: Alignment.centerLeft,
@@ -267,12 +265,10 @@ Widget loadErrorMessage({
   final FontWeight fontWeight = resolver.resolveFontWeight(
     errorMessageConfig?.weight ?? 'default',
   );
-  final double topPadding =
-      SpacingsConfig.resolveSpacing(
-        resolver.getSpacingsConfig(),
-        errorMessageConfig?.spacing,
-      ) ??
-      8;
+  final double topPadding = SpacingsConfig.resolveSpacing(
+    resolver.getSpacingsConfig(),
+    errorMessageConfig?.spacing,
+  );
 
   return Align(
     alignment: Alignment.centerLeft,
