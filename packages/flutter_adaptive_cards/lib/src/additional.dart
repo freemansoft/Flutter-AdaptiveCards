@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/generic_action.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/utils.dart';
 
 class SeparatorElement extends StatefulWidget
     implements AdaptiveElementWidgetMixin {
@@ -27,9 +29,13 @@ class SeparatorElementState extends State<SeparatorElement>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    topSpacing = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveSpacing(adaptiveMap['spacing']);
+    topSpacing = SpacingsConfig.resolveSpacing(
+      InheritedReferenceResolver.of(
+        context,
+      ).resolver.getSpacingsConfig(),
+      adaptiveMap['spacing'],
+    );
+
     separator = adaptiveMap['separator'] as bool? ?? false;
   }
 
@@ -38,10 +44,18 @@ class SeparatorElementState extends State<SeparatorElement>
     if (!separator) {
       return widget.child;
     } else {
+      final resolver = InheritedReferenceResolver.of(context).resolver;
+      final separatorConfig = resolver.getSeparatorConfig();
+      final color = parseHexColor(separatorConfig?.lineColor);
+
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Divider(height: topSpacing),
+          Divider(
+            height: topSpacing,
+            thickness: separatorConfig?.lineThickness.toDouble(),
+            color: color,
+          ),
           widget.child,
         ],
       );

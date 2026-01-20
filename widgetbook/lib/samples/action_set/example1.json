@@ -6,6 +6,12 @@
     {
       "type": "TextBlock",
       "text": "ActionSet example",
+      "wrap": true,
+      "horizontalAlignment": "center"
+    },
+    {
+      "type": "TextBlock",
+      "text": "positive, destructive, default, default",
       "wrap": true
     },
     {
@@ -13,11 +19,13 @@
       "actions": [
         {
           "title": "Action.Submit",
-          "type": "Action.Submit"
+          "type": "Action.Submit",
+          "style": "positive"
         },
         {
           "title": "Action.Execute",
-          "type": "Action.Execute"
+          "type": "Action.Execute",
+          "style": "destructive"
         },
         {
           "title": "Action.OpenUrl",

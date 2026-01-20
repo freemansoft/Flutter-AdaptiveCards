@@ -253,86 +253,7 @@ final directories = <_widgetbook.WidgetbookNode>[
           ),
         ],
       ),
-      _widgetbook.WidgetbookComponent(
-        name: 'Examples',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample1,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 10',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample10,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 11',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample11,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 12',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample12,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 13',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample13,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 14',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample14,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 15 (Video)',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample15,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 2',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample2,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 3',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample3,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 4',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample4,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 5',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample5,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 6',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample6,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 7',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample7,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 8',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample8,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 9',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample9,
-          ),
-        ],
-      ),
+
       _widgetbook.WidgetbookComponent(
         name: 'FactSet',
         useCases: [
@@ -582,6 +503,86 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildTextBlockExample9,
           ),
         ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Uncategorized',
+    children: [
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 1',
+        builder:
+            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample1,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 10',
+        builder: _widgetbook_workspace_adaptive_cards_use_cases
+            .buildSamplesExample10,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 11',
+        builder: _widgetbook_workspace_adaptive_cards_use_cases
+            .buildSamplesExample11,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 12',
+        builder: _widgetbook_workspace_adaptive_cards_use_cases
+            .buildSamplesExample12,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 13',
+        builder: _widgetbook_workspace_adaptive_cards_use_cases
+            .buildSamplesExample13,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 14',
+        builder: _widgetbook_workspace_adaptive_cards_use_cases
+            .buildSamplesExample14,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 15 (Video)',
+        builder: _widgetbook_workspace_adaptive_cards_use_cases
+            .buildSamplesExample15,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 2',
+        builder:
+            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample2,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 3',
+        builder:
+            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample3,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 4',
+        builder:
+            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample4,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 5',
+        builder:
+            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample5,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 6',
+        builder:
+            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample6,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 7',
+        builder:
+            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample7,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 8',
+        builder:
+            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample8,
+      ),
+      _widgetbook.WidgetbookUseCase(
+        name: 'Example 9',
+        builder:
+            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample9,
       ),
     ],
   ),

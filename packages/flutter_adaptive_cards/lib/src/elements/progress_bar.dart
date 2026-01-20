@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class AdaptiveProgressBar extends StatefulWidget
@@ -44,9 +45,12 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
   void didChangeDependencies() {
     super.didChangeDependencies();
     final colorString = widget.adaptiveMap['color']?.toString();
-    progressColor = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveProgressColor(context: context, color: colorString);
+    progressColor = ProgressColorsConfig.resolveProgressColor(
+      config: InheritedReferenceResolver.of(
+        context,
+      ).resolver.getProgressColorConfig(),
+      color: colorString,
+    );
   }
 
   @override
@@ -73,23 +77,6 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
     }
 
     final content = progressBar;
-
-    if (separator) {
-      // Separator implies top spacing/line.
-      // Adaptive cards separator is usually handled by SeparatorElement somewhat,
-      // but if we need explicit line:
-      // However, usually `separator: true` in AC means "draw a line before this element".
-      // SeparatorElement (wrapper) usually handles spacing. Does it handle line?
-      // Let's check SeparatorElement implementation usage.
-      // Looking at other files, SeparatorElement takes `adaptiveMap`.
-      // If SeparatorElement handles it, we are good. If not, we might need to Column it.
-      // But looking at SeparatorElement source (from memory/context), it adds spacing.
-      // Explicit separator line might be needed if SeparatorElement doesn't draw it.
-      // In Flutter Adaptive Cards, usually `separator: true` adds spacing + optional divider?
-      // Let's assume SeparatorElement handles the logic or we trust the framework's existing mixin.
-      // But user specifically asked "The ProgressBar supports the 'separator' property which is a leading separator".
-      // We will ensure SeparatorElement is used, which we are.
-    }
 
     return SeparatorElement(
       adaptiveMap: widget.adaptiveMap,

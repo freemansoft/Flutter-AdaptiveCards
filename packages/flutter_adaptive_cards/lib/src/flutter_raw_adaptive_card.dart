@@ -5,6 +5,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
@@ -21,9 +22,9 @@ class RawAdaptiveCard extends StatefulWidget {
   /// and displays in natively.
   ///
   /// Additionally a host config needs to be provided for styling.
-  const RawAdaptiveCard.fromMap(
-    this.map, {
+  const RawAdaptiveCard.fromMap({
     super.key,
+    required this.map,
     this.cardRegistry = const CardRegistry(),
     this.initData,
     this.onChange,
@@ -32,9 +33,11 @@ class RawAdaptiveCard extends StatefulWidget {
     this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
+    required this.hostConfig,
   });
 
   final Map<String, dynamic> map;
+  final HostConfig hostConfig;
   final CardRegistry cardRegistry;
   final Map? initData;
 
@@ -63,7 +66,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void initState() {
     super.initState();
 
-    _resolver = ReferenceResolver();
+    _resolver = ReferenceResolver(hostConfig: widget.hostConfig);
 
     cardRegistry = widget.cardRegistry;
 
@@ -78,7 +81,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
   @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
-    _resolver = ReferenceResolver();
+    _resolver = ReferenceResolver(hostConfig: widget.hostConfig);
     _adaptiveElement = widget.cardRegistry.getElement(widget.map);
     super.didUpdateWidget(oldWidget);
   }
@@ -186,13 +189,13 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
   void openUrl(String url) {
     if (widget.onOpenUrl != null) {
-      widget.onOpenUrl!(url);
+      widget.onOpenUrl?.call(url);
     }
   }
 
   void changeValue(String id, dynamic value) {
     if (widget.onChange != null) {
-      widget.onChange!(id, value, this);
+      widget.onChange?.call(id, value, this);
     }
   }
 
@@ -405,21 +408,23 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
               onPressed: () {
                 const JsonEncoder encoder = JsonEncoder.withIndent('  ');
                 final String prettyprint = encoder.convert(widget.map);
-                unawaited(showDialog<void>(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text(
-                        'JSON (only added in debug mode, you can also turn '
-                        'it off manually by passing showDebugJson = false)',
-                      ),
-                      content: SingleChildScrollView(
-                        child: SelectableText(prettyprint),
-                      ),
-                      contentPadding: const EdgeInsets.all(8),
-                    );
-                  },
-                ));
+                unawaited(
+                  showDialog<void>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text(
+                          'JSON (only added in debug mode, you can also turn '
+                          'it off manually by passing showDebugJson = false)',
+                        ),
+                        content: SingleChildScrollView(
+                          child: SelectableText(prettyprint),
+                        ),
+                        contentPadding: const EdgeInsets.all(8),
+                      );
+                    },
+                  ),
+                );
               },
               child: const Text('Debug show the JSON'),
             ),
@@ -431,7 +436,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       return true;
     }());
     final backgroundColor = _resolver.resolveContainerBackgroundColor(
-      context: context,
       style: widget.map['style']?.toString().toLowerCase(),
     );
 

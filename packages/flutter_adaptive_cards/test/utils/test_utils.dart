@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
 import 'package:mockito/mockito.dart';
 
 class MyTestHttpOverrides extends HttpOverrides {
@@ -142,13 +143,14 @@ Widget getWidget(String path) {
   final Map<String, dynamic> map =
       json.decode(file.readAsStringSync()) as Map<String, dynamic>;
   final Widget adaptiveCard = RawAdaptiveCard.fromMap(
-    map,
+    map: map,
     //onChange: (_) {},
     onSubmit: (_) {},
     onExecute: (_) {},
     onOpenUrl: (_) {},
     // debug panels don't show in prod so dislable them in the golden images
     showDebugJson: false,
+    hostConfig: HostConfig(),
   );
 
   return MaterialApp(

@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
@@ -53,6 +51,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   late bool isMultiSelect;
 
   TextEditingController controller = TextEditingController();
+  bool stateHasError = false;
 
   @override
   void initState() {
@@ -101,13 +100,16 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   @override
   bool checkRequired() {
-    final adaptiveCardElement = ProviderScope.containerOf(
-      context,
-      listen: false,
-    ).read(adaptiveCardElementStateProvider);
-    final formKey = adaptiveCardElement.formKey;
-
-    return formKey.currentState!.validate();
+    if (isRequired && value.isEmpty) {
+      setState(() {
+        stateHasError = true;
+      });
+      return false;
+    }
+    setState(() {
+      stateHasError = false;
+    });
+    return true;
   }
 
   @override
@@ -124,7 +126,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   @override
   Widget build(BuildContext context) {
-    Widget widget;
+    late Widget widget;
     if (isFiltered) {
       widget = _buildFiltered();
     } else if (isCompact) {
@@ -146,8 +148,17 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          loadLabel(label: label, isRequired: isRequired),
+          loadLabel(
+            context: context,
+            label: label,
+            isRequired: isRequired,
+          ),
           widget,
+          loadErrorMessage(
+            context: context,
+            errorMessage: errorMessage,
+            stateHasError: stateHasError,
+          ),
         ],
       ),
     );
@@ -223,7 +234,6 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
                 InheritedReferenceResolver.of(
                   context,
                 ).resolver.resolveContainerForegroundColor(
-                  context: context,
                   style: null,
                 ),
             backgroundColor:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 ///
@@ -42,10 +43,13 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
   void didChangeDependencies() {
     super.didChangeDependencies();
     spacing =
-        InheritedReferenceResolver.of(
-          context,
-        ).resolver.resolveSpacing(adaptiveMap['spacing']) ??
-        0.0;
+        SpacingsConfig.resolveSpacing(
+          InheritedReferenceResolver.of(
+            context,
+          ).resolver.getSpacingsConfig(),
+          adaptiveMap['spacing'],
+        ) ??
+        0;
     final backgroundImageUrl = resolveBackgroundImage(
       adaptiveMap['backgroundImage'],
     )?.url;

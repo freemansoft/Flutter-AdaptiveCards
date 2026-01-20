@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/generic_action.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 ///
@@ -113,9 +114,12 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
   @override
   Widget build(BuildContext context) {
-    final double? preceedingSpacing = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveSpacing(adaptiveMap['spacing']);
+    final double? preceedingSpacing = SpacingsConfig.resolveSpacing(
+      InheritedReferenceResolver.of(
+        context,
+      ).resolver.getSpacingsConfig(),
+      adaptiveMap['spacing'],
+    );
     final backgroundImageUrl = resolveBackgroundImage(
       adaptiveMap['backgroundImage'],
     )?.url;

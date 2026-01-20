@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:format/format.dart';
 import 'package:http/http.dart' as http;
@@ -86,6 +87,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    required this.hostConfig,
   });
 
   AdaptiveCard.network({
@@ -101,6 +103,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    required this.hostConfig,
   }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(
          url: url,
        );
@@ -118,6 +121,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    required this.hostConfig,
   }) : adaptiveCardContentProvider = AssetAdaptiveCardContentProvider(
          path: assetPath,
        );
@@ -135,6 +139,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    required this.hostConfig,
   }) : adaptiveCardContentProvider = MemoryAdaptiveCardContentProvider(
          content: content,
        );
@@ -152,6 +157,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    required this.hostConfig,
   }) : adaptiveCardContentProvider = JsonAdaptiveCardContentProvider(
          jsonString: jsonString,
        );
@@ -184,6 +190,7 @@ class AdaptiveCard extends StatefulWidget {
   final bool showDebugJson;
   final bool supportMarkdown;
   final bool listView;
+  final HostConfig hostConfig;
 
   @override
   AdaptiveCardState createState() => AdaptiveCardState();
@@ -319,7 +326,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     }
 
     return RawAdaptiveCard.fromMap(
-      map!,
+      map: map!,
       cardRegistry: cardRegistry,
       initData: initData,
       onChange: onChange,
@@ -328,6 +335,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
       onExecute: onExecute,
       listView: widget.listView,
       showDebugJson: widget.showDebugJson,
+      hostConfig: widget.hostConfig,
     );
   }
 }

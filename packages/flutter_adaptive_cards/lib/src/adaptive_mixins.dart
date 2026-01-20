@@ -165,6 +165,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   late String value;
   late String placeholder;
+  late String? errorMessage;
 
   @override
   void initState() {
@@ -174,6 +175,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         : adaptiveMap['value'].toString();
 
     placeholder = adaptiveMap['placeholder'] as String? ?? '';
+    errorMessage = adaptiveMap['errorMessage'] as String?;
   }
 
   /// Input cards implement this to copy their state **to** the map

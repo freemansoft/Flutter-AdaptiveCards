@@ -1,6 +1,21 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/actions_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/adaptive_card_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/badge_styles_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/container_styles_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/fact_set_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/fallback_configs.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/font_color_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/font_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/image_set_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/image_sizes_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/inputs_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/text_style_config.dart';
 import 'package:format/format.dart';
 
 /// In spec was resolved via host config.
@@ -20,10 +35,40 @@ import 'package:format/format.dart';
 /// TextBlockStyle
 ///
 class ReferenceResolver {
-  ReferenceResolver({this.currentContainerStyle});
+  ReferenceResolver({
+    this.currentContainerStyle,
+    required this.hostConfig,
+  });
 
-  // used for locally overriding the default style like in nested containers
+  ReferenceResolver._({
+    this.currentContainerStyle,
+    required this.hostConfig,
+  });
+
+  /// Locally used for containers
   final String? currentContainerStyle;
+
+  final HostConfig hostConfig;
+
+  HostConfig getHostConfig() => hostConfig;
+  ImageSetConfig? getImageSetConfig() => hostConfig.imageSet;
+  ActionsConfig? getActionsConfig() => hostConfig.actions;
+  AdaptiveCardConfig? getAdaptiveCardConfig() => hostConfig.adaptiveCard;
+  ContainerStylesConfig? getContainerStylesConfig() =>
+      hostConfig.containerStyles;
+  FactSetConfig? getFactSetConfig() => hostConfig.factSet;
+  FontSizesConfig? getFontSizesConfig() => hostConfig.fontSizes;
+  FontWeightsConfig? getFontWeightsConfig() => hostConfig.fontWeights;
+  ImageSizesConfig? getImageSizesConfig() => hostConfig.imageSizes;
+  InputsConfig? getInputsConfig() => hostConfig.inputs;
+  MediaConfig? getMediaConfig() => hostConfig.media;
+  SeparatorConfig? getSeparatorConfig() => hostConfig.separator;
+  SpacingsConfig? getSpacingsConfig() => hostConfig.spacing;
+  TextBlockConfig? getTextBlockConfig() => hostConfig.textBlock;
+  TextStylesConfig? getTextStylesConfig() => hostConfig.textStyles;
+  BadgeStylesConfig? getBadgeStylesConfig() => hostConfig.badgeStyles;
+  ProgressSizesConfig? getProgressSizesConfig() => hostConfig.progressSizes;
+  ProgressColorsConfig? getProgressColorConfig() => hostConfig.progressColors;
 
   /// JSON Schema definition "Colors"
   ///
@@ -41,7 +86,6 @@ class ReferenceResolver {
   ///
   /// If the color type is 'default' then it picks the standard color for the current style.
   Color? resolveContainerForegroundColor({
-    required BuildContext context,
     String? style,
     bool? isSubtle,
   }) {
@@ -57,37 +101,20 @@ class ReferenceResolver {
         : 'default';
 
     Color? foregroundColor;
+    // Use the container styles to find the correct foreground color registry
+    final ContainerStyleConfig? containerStyle =
+        (currentContainerStyle?.toLowerCase() == 'emphasis')
+        ? getContainerStylesConfig()?.emphasis
+        : getContainerStylesConfig()?.defaultStyle;
 
-    // this should be themed and support light and dark
-    // TODO(username): Contained continers behave differently
-    // https://adaptivecards.io/explorer/Container.html
-    switch (myStyle) {
-      case 'default': // black in demo
-        foregroundColor =
-            Theme.of(context).textTheme.bodySmall?.color ?? Colors.black;
-      case 'dark':
-        foregroundColor =
-            Theme.of(context).textTheme.bodySmall?.color ?? Colors.black;
-      case 'light':
-        foregroundColor = Colors.grey;
-      case 'accent': // blue in demo
-        foregroundColor = Colors.blue;
-      case 'good': // green in demo
-        foregroundColor = Colors.green;
-      case 'attention': // red in demo
-        foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
-      case 'warning': // orange in demo
-        foregroundColor = Theme.of(context).colorScheme.onErrorContainer;
-      default:
-      // this was null in some cases to inherit the current text color
-      // foregroundColor = Theme.of(context).colorScheme.onPrimaryContainer;
-    }
+    final FontColorConfig colorConfig =
+        containerStyle?.foregroundColors.fontColorConfig(myStyle) ??
+        FallbackConfigs.containerStylesConfig.defaultStyle.foregroundColors
+            .fontColorConfig(myStyle);
+    foregroundColor = (isSubtle ?? false)
+        ? colorConfig.subtleColor
+        : colorConfig.defaultColor;
 
-    if (foregroundColor != null && subtleOrDefault == 'subtle') {
-      foregroundColor = foregroundColor.withValues(
-        alpha: foregroundColor.a * .9,
-      );
-    }
     assert(() {
       developer.log(
         format(
@@ -102,40 +129,6 @@ class ReferenceResolver {
       return true;
     }());
     return foregroundColor;
-  }
-
-  /// JSON Schema definition "ActionStyle"
-  Color? resolveButtonBackgroundColor({
-    required BuildContext context,
-    required String? style,
-  }) {
-    final String myStyle = style ?? 'default';
-
-    Color? backgroundColor;
-
-    switch (myStyle) {
-      case 'default':
-      case 'positive':
-        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
-      case 'destructive':
-        backgroundColor = Theme.of(context).colorScheme.errorContainer;
-      default:
-        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
-    }
-
-    assert(() {
-      developer.log(
-        format(
-          'resolved background style:{} to color:{}',
-          myStyle,
-          backgroundColor,
-        ),
-        name: runtimeType.toString(),
-      );
-      return true;
-    }());
-
-    return backgroundColor;
   }
 
   /// JSON Schema definition "ContainerStyle"
@@ -157,7 +150,6 @@ class ReferenceResolver {
   /// Use resolveContainerBackgroundColorIfNoBackgroundAndNoStyle() if you want no color if nothing specified
 
   Color? resolveContainerBackgroundColor({
-    required BuildContext context,
     required String? style,
   }) {
     // style if passed in and not default
@@ -171,21 +163,16 @@ class ReferenceResolver {
 
     Color? backgroundColor;
 
-    switch (myStyle) {
-      case 'default':
-        backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+    switch (myStyle.toLowerCase()) {
       case 'emphasis':
-        backgroundColor = Colors.grey.shade200;
-      case 'accent': // blue in demo
-        backgroundColor = Colors.blueAccent;
-      case 'good': // green in demo
-        backgroundColor = Colors.greenAccent;
-      case 'attention': // red in demo
-        backgroundColor = Theme.of(context).colorScheme.errorContainer;
-      case 'warning': // orange in demo
-        backgroundColor = Colors.orangeAccent;
+        backgroundColor =
+            getContainerStylesConfig()?.emphasis.backgroundColor ??
+            FallbackConfigs.containerStylesConfig.emphasis.backgroundColor;
+      case 'default':
       default:
-      //backgroundColor = Theme.of(context).colorScheme.primaryContainer;
+        backgroundColor =
+            getContainerStylesConfig()?.defaultStyle.backgroundColor ??
+            FallbackConfigs.containerStylesConfig.defaultStyle.backgroundColor;
     }
 
     assert(() {
@@ -203,13 +190,85 @@ class ReferenceResolver {
     return backgroundColor;
   }
 
+  /// There is no host config for action style :-(
+  /// JSON Schema definition "ActionStyle"
+  Color? resolveButtonBackgroundColor({
+    required BuildContext context,
+    required String? style,
+  }) {
+    final String myStyle = style ?? 'default';
+
+    Color? backgroundColor;
+
+    switch (myStyle) {
+      case 'default':
+        backgroundColor = Theme.of(context).colorScheme.primary;
+      case 'positive':
+        backgroundColor = Theme.of(context).colorScheme.secondary;
+      case 'destructive':
+        backgroundColor = Theme.of(context).colorScheme.error;
+      default:
+        backgroundColor = Theme.of(context).colorScheme.primary;
+    }
+
+    assert(() {
+      developer.log(
+        format(
+          'resolved background style:{} to color:{}',
+          myStyle,
+          backgroundColor,
+        ),
+        name: runtimeType.toString(),
+      );
+      return true;
+    }());
+
+    return backgroundColor;
+  }
+
+  /// There is no host config for action style :-(
+  /// JSON Schema definition "ActionStyle"
+  Color? resolveButtonForegroundColor({
+    required BuildContext context,
+    required String? style,
+  }) {
+    final String myStyle = style ?? 'default';
+
+    Color? foregroundColor;
+
+    switch (myStyle) {
+      case 'default':
+        foregroundColor = Theme.of(context).colorScheme.onPrimary;
+      case 'positive':
+        foregroundColor = Theme.of(context).colorScheme.onSecondary;
+      case 'destructive':
+        foregroundColor = Theme.of(context).colorScheme.onError;
+      default:
+        foregroundColor = Theme.of(context).colorScheme.onPrimary;
+    }
+
+    assert(() {
+      developer.log(
+        format(
+          'resolved foreground style:{} to color:{}',
+          myStyle,
+          foregroundColor,
+        ),
+        name: runtimeType.toString(),
+      );
+      return true;
+    }());
+
+    return foregroundColor;
+  }
+
   /// Calling from text fields and drop downs, etc
   /// Input fields use the same background colors as containers
   Color? resolveInputBackgroundColor({
     required BuildContext context,
     required String? style,
   }) {
-    return resolveContainerBackgroundColor(context: context, style: style);
+    return resolveContainerBackgroundColor(style: style);
   }
 
   ///
@@ -239,59 +298,16 @@ class ReferenceResolver {
     if (style == null) return null;
 
     return resolveContainerBackgroundColor(
-      context: context,
       style: style.toLowerCase(),
     );
   }
 
   ReferenceResolver copyWith({String? style}) {
     final String myStyle = style ?? 'default';
-    return ReferenceResolver(currentContainerStyle: myStyle);
-  }
-
-  /// JSON Schema definition "Spacing"
-  /// Values include
-  /// - default
-  /// - none
-  /// - small
-  /// - medium
-  /// - large
-  /// - extraLarge
-  ///
-  // TODO(username): hook up to something to get spacing from theme
-  double? resolveSpacing(String? spacing) {
-    final String mySpacing = spacing ?? 'default';
-    if (mySpacing == 'none') return 0;
-    int? intSpacing = 2;
-    switch (mySpacing) {
-      case 'small':
-        intSpacing = 2;
-      case 'medium':
-        intSpacing = 4;
-      case 'large':
-        intSpacing = 8;
-      case 'extraLarge':
-        intSpacing = 16;
-      default:
-        intSpacing = 2;
-    }
-
-    return intSpacing.toDouble();
-  }
-
-  /// JSON Schema definition "ImageSize"
-  /// Should standardize this or look up current zoom
-  int resolveImageSizes(String sizeDescription) {
-    switch (sizeDescription) {
-      case 'small':
-        return 64;
-      case 'medium':
-        return 64;
-      case 'large':
-        return 64;
-      default:
-        return 64;
-    }
+    return ReferenceResolver._(
+      currentContainerStyle: myStyle,
+      hostConfig: hostConfig,
+    );
   }
 
   // TODO(username): hook this up somehow
@@ -309,16 +325,29 @@ class ReferenceResolver {
   /// - bolder
   FontWeight resolveFontWeight(String? weightString) {
     final String weight = weightString?.toLowerCase() ?? 'default';
+    final config = getFontWeightsConfig();
+    if (config == null) return FontWeight.w400;
+    int weightValue;
     switch (weight) {
-      case 'default':
-        return FontWeight.normal;
       case 'lighter':
-        return FontWeight.w300;
+        weightValue = config.lighter;
       case 'bolder':
-        return FontWeight.bold;
+        weightValue = config.bolder;
+      case 'default':
       default:
-        return FontWeight.normal;
+        weightValue = config.defaultWeight;
     }
+
+    // Map integer weight to Flutter FontWeight
+    if (weightValue <= 100) return FontWeight.w100;
+    if (weightValue <= 200) return FontWeight.w200;
+    if (weightValue <= 300) return FontWeight.w300;
+    if (weightValue <= 400) return FontWeight.w400;
+    if (weightValue <= 500) return FontWeight.w500;
+    if (weightValue <= 600) return FontWeight.w600;
+    if (weightValue <= 700) return FontWeight.w700;
+    if (weightValue <= 800) return FontWeight.w800;
+    return FontWeight.w900;
   }
 
   /// JSON Schema definition "FontSize"
@@ -332,35 +361,23 @@ class ReferenceResolver {
   /// - extraLarge
   double resolveFontSize({required BuildContext context, String? sizeString}) {
     final String size = sizeString?.toLowerCase() ?? 'default';
-    final TextTheme textTheme = Theme.of(context).textTheme;
-    TextStyle? textStyle;
+    final config = getFontSizesConfig();
+    if (config == null) return 14;
+    int sizeValue;
     switch (size) {
-      case 'default':
-        textStyle = textTheme.bodyMedium;
       case 'small':
-        textStyle = textTheme.bodySmall;
+        sizeValue = config.small;
       case 'medium':
-        textStyle = textTheme.bodyMedium;
+        sizeValue = config.medium;
       case 'large':
-        textStyle = textTheme.bodyLarge;
+        sizeValue = config.large;
       case 'extralarge':
-        textStyle = textTheme.titleLarge;
-      default: // in case some invalid value
-        // should log here for debugging
-        textStyle = textTheme.bodyMedium;
+        sizeValue = config.extraLarge;
+      case 'default':
+      default:
+        sizeValue = config.defaultSize;
     }
-    // Style might not exist but that seems unlikely
-    final double? fontSize = textStyle?.fontSize;
-    assert(() {
-      if (fontSize == null) {
-        developer.log(
-          format('Unable to find TextStyle for {}', size),
-          name: runtimeType.toString(),
-        );
-      }
-      return true;
-    }());
-    return fontSize ?? 12.0;
+    return sizeValue.toDouble();
   }
 
   /// JSON Schema definition "FontType"
@@ -450,52 +467,6 @@ class ReferenceResolver {
         return CrossAxisAlignment.end;
       default:
         return CrossAxisAlignment.start;
-    }
-  }
-
-  /// Resolves the color for ProgressBar and ProgressRing
-  ///
-  /// Typically one of:
-  /// - good
-  /// - warning
-  /// - attention
-  /// - accent
-  Color? resolveProgressColor({
-    required BuildContext context,
-    required String? color,
-  }) {
-    final String? myColor = color?.toLowerCase();
-
-    switch (myColor) {
-      case 'good':
-        return Colors.green;
-      case 'warning':
-        return Colors.orange;
-      case 'attention':
-        return Colors.red;
-      case 'accent':
-        return Colors.blue;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  /// Resolves the size for ProgressRing
-  double resolveProgressSize(String? size) {
-    final String? mySize = size?.toLowerCase();
-    switch (mySize) {
-      case 'tiny':
-        return 10;
-      case 'small':
-        return 20;
-      case 'medium':
-        return 30;
-      case 'large':
-        return 40;
-      case 'extralarge':
-        return 50;
-      default:
-        return 30;
     }
   }
 
@@ -593,64 +564,10 @@ class ReferenceResolver {
     return maxLines ?? 1;
   }
 
-  /// JSON Schema definition "TextInputStyle"
-  TextInputType? resolveTextInputType(String? style) {
-    /// Can be one of the following:
-    /// - 'text'
-    /// - 'tel'
-    /// - 'url'
-    /// - 'email'
-    final String myStyle = (style != null) ? style.toLowerCase() : 'text';
-    switch (myStyle) {
-      case 'text':
-        return TextInputType.text;
-      case 'tel':
-        return TextInputType.phone;
-      case 'url':
-        return TextInputType.url;
-      case 'email':
-        return TextInputType.emailAddress;
-      default:
-        return null;
-    }
-  }
-
   /// JSON Schema definition "TextBlockStyle"
   /// TextBlockStyle not implemented
 
-  /// Resolves the foreground color for a Badge
-  Color resolveBadgeForegroundColor(String? style) {
-    final String myStyle = style?.toLowerCase() ?? 'default';
-    switch (myStyle) {
-      case 'accent':
-      case 'good':
-      case 'attention':
-        return Colors.white;
-      case 'warning':
-      case 'default':
-      default:
-        return Colors.black;
-    }
-  }
-
-  /// Resolves the background color for a Badge
-  Color resolveBadgeBackgroundColor(String? style) {
-    final String myStyle = style?.toLowerCase() ?? 'default';
-    switch (myStyle) {
-      case 'accent':
-        return Colors.blue;
-      case 'good':
-        return Colors.green;
-      case 'warning':
-        return Colors.orange;
-      case 'attention':
-        return Colors.red;
-      case 'default':
-      default:
-        return Colors.grey;
-    }
-  }
-
+  /// still here until we create a config for it
   /// Resolves the font size for a Badge
   double resolveBadgeFontSize(String? size) {
     final String mySize = size?.toLowerCase() ?? 'medium';

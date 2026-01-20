@@ -77,12 +77,20 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
         ? getMarkdownText(context: context)
         : getText();
 
+    final isHeading =
+        adaptiveMap['style']?.toString().toLowerCase() == 'heading';
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: Align(
-        // IntrinsicWidth fixed a few things, but breaks more
-        alignment: horizontalAlignment,
-        child: textBody,
+      child: Semantics(
+        header: isHeading,
+        // Heading level doesn't have a direct field in Semantics,
+        // but we can potentially use custom semantics if needed.
+        child: Align(
+          // IntrinsicWidth fixed a few things, but breaks more
+          alignment: horizontalAlignment,
+          child: textBody,
+        ),
       ),
     );
   }
@@ -132,7 +140,6 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
         InheritedReferenceResolver.of(
           context,
         ).resolver.resolveContainerForegroundColor(
-          context: context,
           style: adaptiveMap['color'],
           isSubtle: adaptiveMap['isSubtle'],
         );

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 /// Implements
@@ -38,14 +40,16 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
         InheritedReferenceResolver.of(
           context,
         ).resolver.resolveContainerBackgroundColor(
-          context: context,
           style: adaptiveMap['style']?.toString(),
         );
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = getColor(context);
+    final ReferenceResolver resolver = InheritedReferenceResolver.of(
+      context,
+    ).resolver;
+    final FactSetConfig? factSetConfig = resolver.getFactSetConfig();
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
@@ -58,27 +62,61 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: facts
                   .map(
-                    (fact) => Text(
-                      fact['title'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: color,
+                    (fact) => ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth:
+                            factSetConfig?.title.maxWidth != null &&
+                                factSetConfig!.title.maxWidth > 0
+                            ? factSetConfig.title.maxWidth.toDouble()
+                            : double.infinity,
+                      ),
+                      child: Text(
+                        fact['title'],
+                        softWrap: factSetConfig?.title.wrap ?? true,
+                        style: TextStyle(
+                          fontWeight: resolver.resolveFontWeight(
+                            factSetConfig?.title.weight ?? 'default',
+                          ),
+                          fontSize: resolver.resolveFontSize(
+                            context: context,
+                            sizeString: factSetConfig?.title.size ?? 'normal',
+                          ),
+                          color: resolver.resolveContainerForegroundColor(
+                            style: factSetConfig?.title.color,
+                            isSubtle: factSetConfig?.title.isSubtle,
+                          ),
+                        ),
                       ),
                     ),
                   )
                   .toList(),
             ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: facts
-                  .map(
-                    (fact) => MarkdownBody(
-                      data: fact['value'],
-                      styleSheet: loadMarkdownStyleSheet(color),
-                    ),
-                  )
-                  .toList(),
+            SizedBox(width: factSetConfig?.spacing.toDouble() ?? 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: facts
+                    .map(
+                      (fact) => ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth:
+                              factSetConfig?.value.maxWidth != null &&
+                                  factSetConfig!.value.maxWidth > 0
+                              ? factSetConfig.value.maxWidth.toDouble()
+                              : double.infinity,
+                        ),
+                        child: MarkdownBody(
+                          data: fact['value'],
+                          styleSheet: loadMarkdownStyleSheet(
+                            resolver: resolver,
+                            context: context,
+                            factSetTextConfig: factSetConfig?.value,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
           ],
         ),
@@ -86,8 +124,28 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     );
   }
 
-  MarkdownStyleSheet loadMarkdownStyleSheet(Color? color) {
-    final TextStyle style = TextStyle(color: color);
+  MarkdownStyleSheet loadMarkdownStyleSheet({
+    required ReferenceResolver resolver,
+    required BuildContext context,
+    required FactSetTextConfig? factSetTextConfig,
+  }) {
+    final Color? color = resolver.resolveContainerForegroundColor(
+      style: factSetTextConfig?.color,
+      isSubtle: factSetTextConfig?.isSubtle,
+    );
+    final FontWeight weight = resolver.resolveFontWeight(
+      factSetTextConfig?.weight,
+    );
+    final double fontSize = resolver.resolveFontSize(
+      context: context,
+      sizeString: factSetTextConfig?.size,
+    );
+
+    final TextStyle style = TextStyle(
+      color: color,
+      fontWeight: weight,
+      fontSize: fontSize,
+    );
 
     return MarkdownStyleSheet(
       a: style,
@@ -97,18 +155,5 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
       strong: style.copyWith(fontWeight: FontWeight.bold),
       p: style,
     );
-  }
-
-  Color? getColor(BuildContext context) {
-    final Color? color =
-        InheritedReferenceResolver.of(
-          context,
-        ).resolver.resolveContainerForegroundColor(
-          context: context,
-          style: adaptiveMap['style'],
-          isSubtle: adaptiveMap['isSubtle'],
-        );
-
-    return color;
   }
 }

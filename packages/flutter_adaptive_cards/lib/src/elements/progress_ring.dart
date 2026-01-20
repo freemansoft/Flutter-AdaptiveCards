@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class AdaptiveProgressRing extends StatefulWidget
@@ -56,13 +57,21 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
   void didChangeDependencies() {
     super.didChangeDependencies();
     final colorString = widget.adaptiveMap['color'] as String?;
-    progressColor = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveProgressColor(context: context, color: colorString);
+    progressColor = ProgressColorsConfig.resolveProgressColor(
+      config: InheritedReferenceResolver.of(
+        context,
+      ).resolver.getProgressColorConfig(),
+      color: colorString,
+    );
     final sizeString = widget.adaptiveMap['size'] as String?;
-    sizePx = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveProgressSize(sizeString);
+    sizePx =
+        ProgressSizesConfig.resolveProgressSize(
+          InheritedReferenceResolver.of(
+            context,
+          ).resolver.getProgressSizesConfig(),
+          sizeString,
+        ) ??
+        30;
   }
 
   @override

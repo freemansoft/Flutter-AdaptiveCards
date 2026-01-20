@@ -13,13 +13,14 @@
             {
               "type": "Column",
               "width": "auto",
+              "separator": true,
               "items": [
                 {
                   "type": "Image",
                   "url": "https://adaptivecards.io/content/cats/3.png",
                   "size": "medium"
                 },
-                  {
+                {
                   "type": "TextBlock",
                   "text": "SHADES",
                   "horizontalAlignment": "center",

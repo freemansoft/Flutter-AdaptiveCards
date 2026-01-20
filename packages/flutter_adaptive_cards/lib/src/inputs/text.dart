@@ -37,11 +37,12 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
     isRequired = adaptiveMap['isRequired'] as bool? ?? false;
     isMultiline = adaptiveMap['isMultiline'] as bool? ?? false;
     maxLength = adaptiveMap['maxLength'] as int? ?? 20;
-    style = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveTextInputType(adaptiveMap['style']);
+    style = resolveTextInputType(adaptiveMap['style']);
     controller.text = value;
+    stateHasError = false;
   }
+
+  bool stateHasError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          loadLabel(label: label, isRequired: isRequired),
+          loadLabel(context: context, label: label, isRequired: isRequired),
           SizedBox(
             height: 40,
             child: TextFormField(
@@ -95,11 +96,22 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
               validator: (value) {
                 if (!isRequired) return null;
                 if (value == null || value.isEmpty) {
+                  setState(() {
+                    stateHasError = true;
+                  });
                   return '';
                 }
+                setState(() {
+                  stateHasError = false;
+                });
                 return null;
               },
             ),
+          ),
+          loadErrorMessage(
+            context: context,
+            errorMessage: errorMessage,
+            stateHasError: stateHasError,
           ),
         ],
       ),
@@ -129,5 +141,27 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
     final formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
+  }
+
+  /// JSON Schema definition "TextInputStyle"
+  TextInputType? resolveTextInputType(String? style) {
+    /// Can be one of the following:
+    /// - 'text'
+    /// - 'tel'
+    /// - 'url'
+    /// - 'email'
+    final String myStyle = (style != null) ? style.toLowerCase() : 'text';
+    switch (myStyle) {
+      case 'text':
+        return TextInputType.text;
+      case 'tel':
+        return TextInputType.phone;
+      case 'url':
+        return TextInputType.url;
+      case 'email':
+        return TextInputType.emailAddress;
+      default:
+        return null;
+    }
   }
 }
