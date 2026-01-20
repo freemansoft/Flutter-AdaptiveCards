@@ -25,6 +25,7 @@ class AdaptiveNumberInput extends StatefulWidget
 class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin {
   TextEditingController controller = TextEditingController();
+  bool stateHasError = false;
 
   String? label;
   late bool isRequired;
@@ -39,6 +40,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     isRequired = adaptiveMap['isRequired'] as bool? ?? false;
 
     controller.text = value;
+    stateHasError = false;
     min = adaptiveMap['min'] as int? ?? 0;
     max = adaptiveMap['max'] as int? ?? 100;
   }
@@ -50,7 +52,11 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          loadLabel(label: label, isRequired: isRequired),
+          loadLabel(
+            context: context,
+            label: label,
+            isRequired: isRequired,
+          ),
           SizedBox(
             height: 40,
             child: TextFormField(
@@ -94,11 +100,22 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
               validator: (value) {
                 if (!isRequired) return null;
                 if (value == null || value.isEmpty) {
+                  setState(() {
+                    stateHasError = true;
+                  });
                   return '';
                 }
+                setState(() {
+                  stateHasError = false;
+                });
                 return null;
               },
             ),
+          ),
+          loadErrorMessage(
+            context: context,
+            errorMessage: errorMessage,
+            stateHasError: stateHasError,
           ),
         ],
       ),

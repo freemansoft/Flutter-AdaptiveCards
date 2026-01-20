@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -83,7 +85,7 @@ class FullCircleClipper extends CustomClipper<Rect> {
   bool shouldReclip(CustomClipper<Rect> oldClipper) => false;
 }
 
-Color? parseColor(String? colorValue) {
+Color? parseHexColor(String? colorValue) {
   if (colorValue == null) return null;
   // No alpha
   if (colorValue.length == 7) {
@@ -170,25 +172,120 @@ String parseTextString(String text) {
   });
 }
 
-Widget loadLabel({String? label, bool isRequired = false}) {
+Widget loadLabel({
+  required BuildContext context,
+  String? label,
+  bool isRequired = false,
+}) {
   if (label == null) {
     return const SizedBox();
   }
 
+  final resolver = InheritedReferenceResolver.of(context).resolver;
+  final inputsConfig = resolver.getInputsConfig();
+  final labelConfig = isRequired
+      ? inputsConfig?.label.requiredInputs
+      : inputsConfig?.label.optionalInputs;
+
+  final color = resolver.resolveContainerForegroundColor(
+    style: labelConfig?.color ?? 'default',
+    isSubtle: labelConfig?.isSubtle ?? false,
+  );
+  final double fontSize = resolver.resolveFontSize(
+    context: context,
+    sizeString: labelConfig?.size ?? 'default',
+  );
+  final FontWeight fontWeight = resolver.resolveFontWeight(
+    labelConfig?.weight ?? 'default',
+  );
+
+  final double bottomPadding =
+      SpacingsConfig.resolveSpacing(
+        resolver.getSpacingsConfig(),
+        inputsConfig?.label.inputSpacing,
+      ) ??
+      8;
+
   return Align(
     alignment: Alignment.centerLeft,
     child: Padding(
-      padding: const EdgeInsets.only(bottom: 8, top: 0),
-      child: isRequired
-          ? Text.rich(
-              TextSpan(
-                children: [
-                  WidgetSpan(child: Text(label)),
-                  const WidgetSpan(child: Text('*', style: TextStyle())),
-                ],
+      padding: EdgeInsets.only(bottom: bottomPadding, top: 0),
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: label,
+              style: TextStyle(
+                color: color,
+                fontSize: fontSize,
+                fontWeight: fontWeight,
               ),
-            )
-          : Text(label),
+            ),
+            if (labelConfig?.suffix.isNotEmpty ?? false)
+              TextSpan(
+                text: labelConfig?.suffix,
+                style: TextStyle(
+                  color: color,
+                  fontSize: fontSize,
+                  fontWeight: fontWeight,
+                ),
+              ),
+            if (isRequired)
+              const TextSpan(
+                text: ' *',
+                // TODO(username): fix this color to be looked up from ReferenceResolver
+                style: TextStyle(color: Colors.red),
+              ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+Widget loadErrorMessage({
+  required BuildContext context,
+  String? errorMessage,
+  bool stateHasError = false,
+}) {
+  if (errorMessage == null || !stateHasError) {
+    return const SizedBox();
+  }
+
+  final resolver = InheritedReferenceResolver.of(context).resolver;
+  final inputsConfig = resolver.getInputsConfig();
+  final errorMessageConfig = inputsConfig?.errorMessage;
+
+  final color = resolver.resolveContainerForegroundColor(
+    style: 'attention', // Error messages usually use attention colo
+    isSubtle: false,
+  );
+  final double fontSize = resolver.resolveFontSize(
+    context: context,
+    sizeString: errorMessageConfig?.size,
+  );
+  final FontWeight fontWeight = resolver.resolveFontWeight(
+    errorMessageConfig?.weight ?? 'default',
+  );
+  final double topPadding =
+      SpacingsConfig.resolveSpacing(
+        resolver.getSpacingsConfig(),
+        errorMessageConfig?.spacing,
+      ) ??
+      8;
+
+  return Align(
+    alignment: Alignment.centerLeft,
+    child: Padding(
+      padding: EdgeInsets.only(top: topPadding, bottom: 0),
+      child: Text(
+        errorMessage,
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+        ),
+      ),
     ),
   );
 }

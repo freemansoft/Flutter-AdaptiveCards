@@ -41,7 +41,10 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
             constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
             child: SingleChildScrollView(
               child: RawAdaptiveCard.fromMap(
-                card!,
+                map: card!,
+                hostConfig: InheritedReferenceResolver.of(
+                  context,
+                ).resolver.getHostConfig(),
               ),
             ),
           ),
@@ -59,6 +62,10 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: resolver.resolveButtonBackgroundColor(
+            context: context,
+            style: adaptiveMap['style'],
+          ),
+          foregroundColor: resolver.resolveButtonForegroundColor(
             context: context,
             style: adaptiveMap['style'],
           ),

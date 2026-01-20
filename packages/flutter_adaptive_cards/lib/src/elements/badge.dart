@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/badge_styles_config.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/fallback_configs.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/font_color_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
@@ -18,6 +21,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
   late String? text;
   late String? iconUrl;
   late String style;
+  late String appearance;
   late String size;
   late String? tooltip;
   late String iconAlignment;
@@ -28,6 +32,8 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     text = widget.adaptiveMap['text'] as String?;
     iconUrl = widget.adaptiveMap['iconUrl'] as String?;
     style = widget.adaptiveMap['style']?.toString().toLowerCase() ?? 'default';
+    appearance =
+        widget.adaptiveMap['appearance']?.toString().toLowerCase() ?? 'filled';
     size = widget.adaptiveMap['size']?.toString().toLowerCase() ?? 'medium';
     tooltip = widget.adaptiveMap['tooltip'] as String?;
     iconAlignment =
@@ -37,8 +43,20 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
   @override
   Widget build(BuildContext context) {
     final resolver = InheritedReferenceResolver.of(context).resolver;
-    final Color backgroundColor = resolver.resolveBadgeBackgroundColor(style);
-    final Color textColor = resolver.resolveBadgeForegroundColor(style);
+    final Color backgroundColor =
+        resolveBadgeBackgroundColor(
+          badgeStyles: resolver.getBadgeStylesConfig(),
+          colorStyle: style,
+          appearance: appearance,
+        ) ??
+        Colors.grey;
+    final Color textColor =
+        resolveBadgeForegroundColor(
+          badgeStyles: resolver.getBadgeStylesConfig(),
+          colorStyle: style,
+          appearance: appearance,
+        ) ??
+        Colors.black;
 
     // Resolve subtle vs non-subtle via HostConfig if possible,
     // but for now hardcode based on "style"
@@ -91,5 +109,48 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
       adaptiveMap: widget.adaptiveMap,
       child: badge,
     );
+  }
+
+  /// Resolves the foreground color for a Badge
+  Color? resolveBadgeForegroundColor({
+    BadgeStylesConfig? badgeStyles,
+    String? colorStyle,
+    String? appearance,
+    bool? isSubtle,
+  }) {
+    final myBadgeStyles =
+        badgeStyles ?? FallbackConfigs.fallbackBadgeStylesConfig;
+
+    final String myColorStyle = colorStyle ?? 'default';
+    final BadgeStyleConfig badgeStyle = (appearance?.toLowerCase() == 'tint')
+        ? myBadgeStyles.tint
+        : myBadgeStyles.filled;
+    final FontColorConfig colorConfig = badgeStyle.foregroundColors
+        .fontColorConfig(myColorStyle);
+    final Color foregroundColor = (isSubtle ?? false)
+        ? colorConfig.subtleColor
+        : colorConfig.defaultColor;
+
+    return foregroundColor;
+  }
+
+  /// Resolves the background color for a Badge
+  Color? resolveBadgeBackgroundColor({
+    BadgeStylesConfig? badgeStyles,
+    String? colorStyle,
+    String? appearance,
+  }) {
+    final myBadgeStyles =
+        badgeStyles ?? FallbackConfigs.fallbackBadgeStylesConfig;
+
+    final String myColorStyle = colorStyle ?? 'default';
+    final BadgeStyleConfig badgeStyle = (appearance?.toLowerCase() == 'tint')
+        ? myBadgeStyles.tint
+        : myBadgeStyles.filled;
+    final FontColorConfig colorConfig = badgeStyle.backgroundColors
+        .fontColorConfig(myColorStyle);
+    final Color backgroundColor = colorConfig.defaultColor;
+
+    return backgroundColor;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 
@@ -110,9 +111,12 @@ class AdaptiveImageState extends State<AdaptiveImage>
 
     int? size;
     if (sizeDescription != 'auto' && sizeDescription != 'stretch') {
-      size = InheritedReferenceResolver.of(
-        context,
-      ).resolver.resolveImageSizes(sizeDescription);
+      size = ImageSizesConfig.resolveImageSizes(
+        InheritedReferenceResolver.of(
+          context,
+        ).resolver.getImageSizesConfig(),
+        sizeDescription,
+      );
     }
 
     int? width = size;

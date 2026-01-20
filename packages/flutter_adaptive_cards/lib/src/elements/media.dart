@@ -5,6 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:video_player/video_player.dart';
 
@@ -38,6 +39,9 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   void initState() {
     super.initState();
 
+    final resolver = InheritedReferenceResolver.of(context).resolver;
+    final mediaConfig = resolver.getMediaConfig();
+
     // https://pub.dev/packages/video_player
     if (Platform.isWindows || Platform.isLinux) {
       debugPrint(
@@ -45,9 +49,15 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
       );
     }
 
-    postUrl = adaptiveMap['poster']?.toString();
+    String? postUrl =
+        adaptiveMap['poster']?.toString() ?? mediaConfig?.defaultPoster;
+    if (postUrl != null && postUrl.isEmpty) postUrl = null;
+
     // https://adaptivecards.io/explorer/MediaSource.html
     sourceUrl = adaptiveMap['sources'][0]['url']?.toString() ?? '';
+
+    // We could use mediaConfig.allowInlinePlayback to decide whether to initialize player
+    // but for now we'll respect it as a hint for the UI if needed.
     unawaited(initializePlayer());
   }
 

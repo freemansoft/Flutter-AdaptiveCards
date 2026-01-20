@@ -167,7 +167,6 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     final Color? backgroundColor = InheritedReferenceResolver.of(context)
         .resolver
         .resolveContainerBackgroundColor(
-          context: context,
           style: widget.adaptiveMap['style'],
         );
 

@@ -32,6 +32,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
   DateTime? max;
   final inputFormat = DateFormat('yyyy-MM-dd');
   TextEditingController controller = TextEditingController();
+  bool stateHasError = false;
 
   @override
   void initState() {
@@ -71,7 +72,11 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          loadLabel(label: label, isRequired: isRequired),
+          loadLabel(
+            context: context,
+            label: label,
+            isRequired: isRequired,
+          ),
           SizedBox(
             width: double.infinity,
             height: 40,
@@ -115,8 +120,14 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
               validator: (value) {
                 if (!isRequired) return null;
                 if (value == null || value.isEmpty) {
+                  setState(() {
+                    stateHasError = true;
+                  });
                   return '';
                 }
+                setState(() {
+                  stateHasError = false;
+                });
                 return null;
               },
               onTap: () async {
@@ -137,6 +148,11 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
                 }
               },
             ),
+          ),
+          loadErrorMessage(
+            context: context,
+            errorMessage: errorMessage,
+            stateHasError: stateHasError,
           ),
         ],
       ),

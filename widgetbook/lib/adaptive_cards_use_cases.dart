@@ -27,7 +27,7 @@ Widget buildSamplesExample1(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 2',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample2(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example2.json');
@@ -36,7 +36,7 @@ Widget buildSamplesExample2(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 3',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample3(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example3.json');
@@ -45,7 +45,7 @@ Widget buildSamplesExample3(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 4',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample4(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example4.json');
@@ -54,7 +54,7 @@ Widget buildSamplesExample4(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 5',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample5(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example5.json');
@@ -63,7 +63,7 @@ Widget buildSamplesExample5(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 6',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample6(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example6.json');
@@ -72,7 +72,7 @@ Widget buildSamplesExample6(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 7',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample7(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example7.json');
@@ -81,7 +81,7 @@ Widget buildSamplesExample7(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 8',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample8(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example8.json');
@@ -90,7 +90,7 @@ Widget buildSamplesExample8(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 9',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample9(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example9.json');
@@ -99,7 +99,7 @@ Widget buildSamplesExample9(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 10',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample10(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example10.json');
@@ -108,7 +108,7 @@ Widget buildSamplesExample10(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 11',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample11(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example11.json');
@@ -117,7 +117,7 @@ Widget buildSamplesExample11(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 12',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample12(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example12.json');
@@ -126,7 +126,7 @@ Widget buildSamplesExample12(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 13',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample13(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example13.json');
@@ -135,7 +135,7 @@ Widget buildSamplesExample13(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 14',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample14(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example14.json');
@@ -145,7 +145,7 @@ Widget buildSamplesExample14(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 15 (Video)',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Examples]',
 )
 Widget buildSamplesExample15(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example15.json');

@@ -18,7 +18,7 @@ class AdaptiveCardsWidgetbookHome extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.displaySmall,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Text(
               'New',
               textAlign: TextAlign.center,
@@ -38,7 +38,7 @@ class AdaptiveCardsWidgetbookHome extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Text(
               'Legacy',
               textAlign: TextAlign.center,
@@ -63,7 +63,7 @@ class AdaptiveCardsWidgetbookHome extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Text(
               'This repository',
               textAlign: TextAlign.center,

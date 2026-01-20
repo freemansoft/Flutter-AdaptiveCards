@@ -1,74 +1,91 @@
 {
-    "type": "AdaptiveCard",
-    "version": "1.5",
-    "body": [
-        {
-            "type": "TextBlock",
-            "text": "ProgressBar styles",
-            "wrap": true,
-            "size": "Large",
-            "weight": "Bolder"
-        },
-        {
-            "type": "ProgressBar"
-        },
-        {
-            "type": "TextBlock",
-            "text": "Indeterminate",
-            "spacing": "ExtraSmall",
-            "size": "Small"
-        },
-        {
-            "type": "ProgressBar",
-            "value": 20,
-            "separator": true,
-            "spacing": "ExtraLarge"
-        },
-        {
-            "type": "TextBlock",
-            "text": "Accent",
-            "color": "Accent",
-            "spacing": "ExtraSmall",
-            "size": "Small"
-        },
-        {
-            "type": "ProgressBar",
-            "color": "Good",
-            "value": 40,
-            "spacing": "Large"
-        },
-        {
-            "type": "TextBlock",
-            "text": "Attention",
-            "color": "Attention",
-            "spacing": "ExtraSmall",
-            "size": "Small"
-        },
-        {
-            "type": "ProgressBar",
-            "color": "Attention",
-            "value": 60,
-            "spacing": "Large"
-        },
-        {
-            "type": "TextBlock",
-            "text": "Warning",
-            "color": "Warning",
-            "spacing": "ExtraSmall",
-            "size": "Small"
-        },
-        {
-            "type": "ProgressBar",
-            "color": "Attention",
-            "value": 80,
-            "spacing": "Large"
-        },
-        {
-            "type": "TextBlock",
-            "text": "Attention",
-            "color": "Attention",
-            "spacing": "ExtraSmall",
-            "size": "Small"
-        }
-    ]
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "ProgressBar styles",
+      "wrap": true,
+      "size": "Large",
+      "weight": "Bolder"
+    },
+    {
+      "type": "TextBlock",
+      "text": " "
+    },
+    {
+      "type": "ProgressBar"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Indeterminate",
+      "spacing": "ExtraSmall",
+      "size": "Small"
+    },
+    {
+      "type": "TextBlock",
+      "text": " "
+    },
+    {
+      "type": "ProgressBar",
+      "value": 20,
+      "color": "Accent",
+      "separator": true,
+      "spacing": "ExtraLarge"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Accent",
+      "color": "Accent",
+      "spacing": "ExtraSmall",
+      "size": "Small"
+    },
+    {
+      "type": "TextBlock",
+      "text": " "
+    },
+    {
+      "type": "ProgressBar",
+      "color": "Good",
+      "value": 40,
+      "spacing": "Large"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Good",
+      "color": "Good",
+      "spacing": "ExtraSmall",
+      "size": "Small"
+    },
+    {
+      "type": "TextBlock",
+      "text": " "
+    },
+    {
+      "type": "ProgressBar",
+      "color": "Warning",
+      "value": 60,
+      "spacing": "Large"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Warning",
+      "color": "Warning",
+      "spacing": "ExtraSmall",
+      "size": "Small"
+    },
+    {
+      "type": "ProgressBar",
+      "color": "Attention",
+      "value": 80,
+      "spacing": "Large"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Attention",
+      "color": "Attention",
+      "spacing": "ExtraSmall",
+      "size": "Small"
+    }
+  ]
 }

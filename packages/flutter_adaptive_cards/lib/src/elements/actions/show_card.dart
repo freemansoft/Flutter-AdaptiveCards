@@ -46,6 +46,10 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
           context: context,
           style: adaptiveMap['style'],
         ),
+        foregroundColor: resolver.resolveButtonForegroundColor(
+          context: context,
+          style: adaptiveMap['style'],
+        ),
         // minimumSize: const Size.fromHeight(50),
       ),
       child: Row(

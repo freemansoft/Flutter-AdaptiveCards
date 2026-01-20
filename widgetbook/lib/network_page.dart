@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
@@ -81,8 +82,9 @@ class NetworkPage extends StatelessWidget {
               format('onOpenUrl url: {}', url),
               name: runtimeType.toString(),
             );
-            launchUrl(Uri.parse(url));
+            unawaited(launchUrl(Uri.parse(url)));
           },
+          hostConfig: HostConfig(),
           showDebugJson: true,
         ),
       ),

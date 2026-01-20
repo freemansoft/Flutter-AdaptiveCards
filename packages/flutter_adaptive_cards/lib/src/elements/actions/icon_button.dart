@@ -37,6 +37,10 @@ class IconButtonActionState extends State<IconButtonAction>
         context: context,
         style: adaptiveMap['style'],
       ),
+      foregroundColor: resolver.resolveButtonForegroundColor(
+        context: context,
+        style: adaptiveMap['style'],
+      ),
     );
 
     Widget result = ElevatedButton(

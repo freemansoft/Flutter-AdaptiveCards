@@ -53,7 +53,6 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
         InheritedReferenceResolver.of(
           context,
         ).resolver.resolveContainerBackgroundColor(
-          context: context,
           style: adaptiveMap['style']?.toString(),
         );
   }
@@ -105,9 +104,11 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
       maybeSize = null;
       return;
     }
-    final int size = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveImageSizes(sizeDescription);
+    final int size =
+        InheritedReferenceResolver.of(
+          context,
+        ).resolver.getImageSetConfig()?.imageSize(sizeDescription) ??
+        20;
     maybeSize = size.toDouble();
   }
 }
