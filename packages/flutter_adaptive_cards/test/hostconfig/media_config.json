@@ -1,0 +1,5 @@
+{
+  "defaultPoster": "https://example.com/poster.jpg",
+  "playButton": "https://example.com/play.png",
+  "allowInlinePlayback": false
+}

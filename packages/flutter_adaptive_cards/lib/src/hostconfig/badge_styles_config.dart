@@ -12,12 +12,16 @@ class BadgeStyleConfig {
     BadgeStyleConfig? defaults,
   }) {
     return BadgeStyleConfig(
-      backgroundColors: ForegroundColorsConfig.fromJson(
-        json['backgroundColors'] ?? defaults?.backgroundColors ?? {},
-      ),
-      foregroundColors: ForegroundColorsConfig.fromJson(
-        json['foregroundColors'] ?? defaults?.foregroundColors ?? {},
-      ),
+      backgroundColors: json['backgroundColors'] is Map<String, dynamic>
+          ? ForegroundColorsConfig.fromJson(
+              json['backgroundColors'] as Map<String, dynamic>,
+            )
+          : defaults?.backgroundColors ?? ForegroundColorsConfig.fromJson({}),
+      foregroundColors: json['foregroundColors'] is Map<String, dynamic>
+          ? ForegroundColorsConfig.fromJson(
+              json['foregroundColors'] as Map<String, dynamic>,
+            )
+          : defaults?.foregroundColors ?? ForegroundColorsConfig.fromJson({}),
     );
   }
 

@@ -1,0 +1,30 @@
+{
+  "default": {
+    "default": "#FF111111",
+    "subtle": "#B2111111"
+  },
+  "accent": {
+    "default": "#FF222222",
+    "subtle": "#B2222222"
+  },
+  "dark": {
+    "default": "#FF333333",
+    "subtle": "#B2333333"
+  },
+  "light": {
+    "default": "#FF444444",
+    "subtle": "#B2444444"
+  },
+  "good": {
+    "default": "#FF555555",
+    "subtle": "#B2555555"
+  },
+  "warning": {
+    "default": "#FF666666",
+    "subtle": "#B2666666"
+  },
+  "attention": {
+    "default": "#FF777777",
+    "subtle": "#B2777777"
+  }
+}

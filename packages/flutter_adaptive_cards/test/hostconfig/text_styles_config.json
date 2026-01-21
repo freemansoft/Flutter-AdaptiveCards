@@ -1,0 +1,16 @@
+{
+  "heading": {
+    "weight": "bolder",
+    "size": "extraLarge",
+    "color": "accent",
+    "fontType": "default",
+    "isSubtle": false
+  },
+  "columnHeader": {
+    "weight": "normal",
+    "size": "medium",
+    "color": "default",
+    "fontType": "monospace",
+    "isSubtle": true
+  }
+}

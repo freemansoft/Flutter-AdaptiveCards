@@ -1,0 +1,7 @@
+{
+  "good": "#FF112233",
+  "warning": "#FF445566",
+  "attention": "#FF778899",
+  "accent": "#FFAABBCC",
+  "default": "#FFDDEEFF"
+}

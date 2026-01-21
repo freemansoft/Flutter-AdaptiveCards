@@ -1,0 +1,20 @@
+{
+  "default": {
+    "backgroundColor": "#FFBBBBBB",
+    "foregroundColors": {
+      "default": {
+        "default": "#FF111111",
+        "subtle": "#B2111111"
+      }
+    }
+  },
+  "emphasis": {
+    "backgroundColor": "#FFCCCCCC",
+    "foregroundColors": {
+      "accent": {
+        "default": "#FF222222",
+        "subtle": "#B2222222"
+      }
+    }
+  }
+}

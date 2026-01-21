@@ -1,0 +1,30 @@
+{
+  "filled": {
+    "backgroundColors": {
+      "default": {
+        "default": "#FF111111",
+        "subtle": "#B2111111"
+      }
+    },
+    "foregroundColors": {
+      "accent": {
+        "default": "#FF222222",
+        "subtle": "#B2222222"
+      }
+    }
+  },
+  "tint": {
+    "backgroundColors": {
+      "good": {
+        "default": "#FF333333",
+        "subtle": "#B2333333"
+      }
+    },
+    "foregroundColors": {
+      "warning": {
+        "default": "#FF444444",
+        "subtle": "#B2444444"
+      }
+    }
+  }
+}
