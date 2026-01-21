@@ -165,7 +165,7 @@ class AdaptiveCard extends StatefulWidget {
   /// Content provider usually specific to a named constructor
   final AdaptiveCardContentProvider adaptiveCardContentProvider;
 
-  /// Shown while asynch oloading is happening
+  /// Shown while asynchronous loading is happening
   final Widget? placeholder;
 
   /// Used to convert card type strings into Card instances
@@ -190,6 +190,8 @@ class AdaptiveCard extends StatefulWidget {
   final bool showDebugJson;
   final bool supportMarkdown;
   final bool listView;
+
+  /// HostConfig for this card stack - describes string to color, etc. mappings
   final HostConfig hostConfig;
 
   @override
