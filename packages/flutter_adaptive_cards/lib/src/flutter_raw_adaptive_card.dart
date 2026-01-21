@@ -384,8 +384,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   ///
-  /// TODO: Does not actually support min and max time
   ///
+  // TODO(username): Does not actually support min and max time
   Future<TimeOfDay?> timePickerMaterial(
     BuildContext context,
     TimeOfDay? defaultTime,
