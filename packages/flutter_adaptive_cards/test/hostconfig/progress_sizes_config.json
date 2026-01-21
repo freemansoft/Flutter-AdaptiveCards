@@ -1,0 +1,8 @@
+{
+  "tiny": 12,
+  "small": 22,
+  "medium": 32,
+  "large": 42,
+  "extraLarge": 52,
+  "default": 22
+}

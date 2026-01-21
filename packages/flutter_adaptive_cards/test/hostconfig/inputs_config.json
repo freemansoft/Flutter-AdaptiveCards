@@ -1,0 +1,24 @@
+{
+  "label": {
+    "inputSpacing": "large",
+    "requiredInputs": {
+      "color": "attention",
+      "isSubtle": true,
+      "size": "small",
+      "suffix": "*",
+      "weight": "bolder"
+    },
+    "optionalInputs": {
+      "color": "good",
+      "isSubtle": false,
+      "size": "default",
+      "suffix": " (optional)",
+      "weight": "lighter"
+    }
+  },
+  "errorMessage": {
+    "size": "medium",
+    "spacing": "small",
+    "weight": "normal"
+  }
+}

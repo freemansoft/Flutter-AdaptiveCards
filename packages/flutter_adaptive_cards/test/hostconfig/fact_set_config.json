@@ -1,0 +1,21 @@
+{
+  "title": {
+    "size": "large",
+    "weight": "bolder",
+    "color": "accent",
+    "fontType": "monospace",
+    "isSubtle": true,
+    "wrap": false,
+    "maxWidth": 200
+  },
+  "value": {
+    "size": "small",
+    "weight": "lighter",
+    "color": "good",
+    "fontType": "default",
+    "isSubtle": false,
+    "wrap": true,
+    "maxWidth": 100
+  },
+  "spacing": 15
+}

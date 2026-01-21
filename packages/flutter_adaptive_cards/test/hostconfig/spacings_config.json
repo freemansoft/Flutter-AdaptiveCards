@@ -1,0 +1,8 @@
+{
+  "small": 5,
+  "default": 10,
+  "medium": 25,
+  "large": 35,
+  "extraLarge": 45,
+  "padding": 25
+}
