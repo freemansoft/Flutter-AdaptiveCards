@@ -4,4 +4,5 @@ environment:
   sdk: ^3.10.4
 workspace:
   - packages/flutter_adaptive_cards
+  - packages/flutter_adaptive_template
   - widgetbook

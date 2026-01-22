@@ -1,0 +1,81 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Microsoft Corporation",
+          "size": "Medium",
+          "wrap": true
+        },
+        {
+          "type": "TextBlock",
+          "text": "Nasdaq Global Select: MSFT",
+          "size": "Default",
+          "isSubtle": true,
+          "spacing": "small",
+          "wrap": true
+        },
+        {
+          "type": "TextBlock",
+          "text": ", SHORT)}} )}}"
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "spacing": "None",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": 128.9,
+                  "size": "ExtraLarge"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "▼ USD 2.69 ()",
+                  "color": "attention",
+                  "spacing": "None"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "FactSet",
+                  "facts": [
+                    {
+                      "title": "Open",
+                      "value": 127.42
+                    },
+                    {
+                      "title": "High",
+                      "value": 129.43
+                    },
+                    {
+                      "title": "Low",
+                      "value": 127.25
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

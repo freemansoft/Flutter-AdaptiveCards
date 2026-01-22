@@ -1,0 +1,82 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "size": "Medium",
+      "weight": "Bolder",
+      "text": "[Issue]: [Spelling error in the README file](https://api.github.com/repos/Codertocat/Hello-World/issues/1)"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Image",
+              "style": "Person",
+              "url": "https://avatars1.githubusercontent.com/u/21031067?v=4",
+              "size": "Small"
+            }
+          ],
+          "width": "auto"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "TextBlock",
+              "weight": "Bolder",
+              "text": "Codertocat",
+              "wrap": true
+            },
+            {
+              "type": "TextBlock",
+              "spacing": "None",
+              "text": "Created {{DATE(2019-05-15T15:20:18Z,SHORT)}}",
+              "isSubtle": true,
+              "wrap": true
+            }
+          ],
+          "width": "stretch"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "It looks like you accidently spelled 'commit' with two 't's.",
+      "wrap": true
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        {
+          "title": "Repository:",
+          "value": "[Codertocat/Hello-World](https://api.github.com/repos/Codertocat/Hello-World)"
+        },
+        {
+          "title": "Issue:",
+          "value": "[Issue: 444500041]:  [Spelling error in the README file](https://api.github.com/repos/Codertocat/Hello-World)"
+        },
+        {
+          "title": "State:",
+          "value": "open"
+        },
+        {
+          "title": "Assigned to:",
+          "value": "Codertocat"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "View Issue",
+      "url": "(https://api.github.com/repos/Codertocat/Hello-World/issues/1)"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0"
+}
