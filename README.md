@@ -27,6 +27,9 @@ git remote set-head origin -a
 1. You can view demonstrations of this implementation by running the [Widgetbook](widgetbook)
 1. The actual library is in [packages/flutter_adaptive_cards](packages/flutter_adaptive_cards/README.md)
    The changelog is in [packages/flutter_adaptive_cards/CHANGELOG.md](packages/flutter_adaptive_cards/CHANGELOG.md)
+1. [Adaptive Expressions reference](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions?view=azure-bot-service-4.0)
+1. [Adaptive Cards Template reference](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/card-templates)
+
 
 
 ## Platform Support
