@@ -44,3 +44,11 @@ git remote set-head origin -a
 ## Configuration via HostConfig
 
 HostConfig is a JSON object that contains configuration options for the Adaptive Card renderer. It is used to control the appearance and behavior of the Adaptive Card renderer. It is passed to the AdaptiveCard widget as a parameter. The HostConfig is optional and if not provided, the Fallback HostConfig will be used.  In cases where a partial HostConfig is provided the Fallback subgraph will be used for the missing json objects.  This means you can provide a partial HostConfig and only override the Entities you want to change. All of the primitive properties in a specific HostConfig Entity are required. Fallback is at the entitiy level.
+
+## Defects
+
+Many!
+
+- styling not finished
+- adaptive expressions prbuilt functions are not all implemented. https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions?view=azure-bot-service-4.0
+   - https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/text-features may not all be implemented

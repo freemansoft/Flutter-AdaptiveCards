@@ -1,0 +1,42 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.2",
+  "body": [
+    {
+      "type": "Container",
+      "backgroundImage": {
+        "url": "https://s3-media0.fl.yelpcdn.com/assets/public/yelp_og_image.seo_metadata.yji-f9149736ad8d1b00fe04bcb018398e6a.png",
+        "verticalAlignment": "Center"
+      },
+      "bleed": true,
+      "minHeight": "200px",
+      "items": []
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": null
+        },
+        {
+          "type": "TextBlock",
+          "text": "Yelp",
+          "weight": "Bolder"
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "People use Yelp to search for everything from the city's tastiest burger to the most renowned cardiologist. What will you uncover in your neighborhood?",
+      "wrap": true,
+      "maxLines": 3
+    }
+  ],
+  "minHeight": "150px",
+  "selectAction": {
+    "type": "Action.OpenUrl",
+    "url": "http://yelp.com"
+  }
+}

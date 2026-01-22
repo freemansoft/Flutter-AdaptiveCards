@@ -1,0 +1,1 @@
+Icons are no longer available that existed when this sample was created
