@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
 void main() {
-  final dir = Directory('test/microsoft_template_examples');
+  final dir = Directory('test/ms_template_samples');
   if (!dir.existsSync()) {
     // If not running from package root, might be nested?
     // Usually flutter test runs from package root.
@@ -19,7 +19,7 @@ void main() {
       .whereType<File>()
       .where((f) => f.path.endsWith('_data.json'));
 
-  group('Validate Microsoft Template Examples', () {
+  group('Validate Microsoft Template Samples', () {
     for (final dataFile in dataFiles) {
       final baseName = p
           .basenameWithoutExtension(dataFile.path)
