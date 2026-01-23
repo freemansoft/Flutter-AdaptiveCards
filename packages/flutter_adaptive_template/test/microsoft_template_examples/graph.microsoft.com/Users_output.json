@@ -1,0 +1,969 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "@odata.type": "#microsoft.graph.group",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Conf Room Adams"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": null,
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "Adams@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Adele Vance"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "18/2111",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "AdeleV@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "MOD Administrator"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": null,
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "admin@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Alex Wilber"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "131/1104",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "AlexW@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Allan Deyoung"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "24/1106",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "AllanD@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Conf Room Baker"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": null,
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "Baker@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Ben Walters"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "19/3123",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "BenW@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Brian Johnson (TAILSPIN)"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": null,
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "BrianJ@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Christie Cline"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "131/2105",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "ChristieC@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Conf Room Crystal"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": null,
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "Crystal@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Debra Berger"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "18/2107",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "DebraB@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Diego Siciliani"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "14/1108",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "DiegoS@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Emily Braun"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "97/2302",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "EmilyB@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Enrico Cattaneo"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "14/1102",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "EnricoC@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Grady Archie"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "19/2109",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "GradyA@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Henrietta Mueller"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "18/1106",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "HenriettaM@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Conf Room Hood"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": null,
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "Hood@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Irvin Sayers"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "19/2106",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "IrvinS@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Isaiah Langer"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "20/1101",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "IsaiahL@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Johanna Lorenz"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "23/2102",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "JohannaL@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Joni Sherman"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "20/1109",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "JoniS@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Lee Gu"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "23/3101",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "LeeG@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Lidia Holloway"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "20/2107",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "LidiaH@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Lynne Robbins"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "20/1104",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "LynneR@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Megan Bowen"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "12/1110",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "MeganB@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Miriam Graham"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "131/2103",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "MiriamG@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Nestor Wilke"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "36/2121",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "NestorW@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Patti Fernandez"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "15/1102",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "PattiF@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Pradeep Gupta"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "98/2202",
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "PradeepG@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Conf Room Rainier"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": null,
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "Rainier@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "weight": "Bolder",
+          "text": "Conf Room Stevens"
+        },
+        {
+          "type": "Container",
+          "spacing": "Small",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": null,
+              "spacing": "None"
+            },
+            {
+              "type": "TextBlock",
+              "text": "Stevens@M365x214355.onmicrosoft.com",
+              "spacing": "None"
+            }
+          ]
+        },
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}

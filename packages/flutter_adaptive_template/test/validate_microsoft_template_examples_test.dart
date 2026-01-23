@@ -27,7 +27,10 @@ void main() {
 
       test('Example: $baseName', () {
         // 1. Template
-        final templatePath = dataFile.path.replaceAll('_data.json', '.json');
+        final templatePath = dataFile.path.replaceAll(
+          '_data.json',
+          '_template.json',
+        );
         final templateFile = File(templatePath);
         if (!templateFile.existsSync()) {
           fail('Template file not found: $templatePath');

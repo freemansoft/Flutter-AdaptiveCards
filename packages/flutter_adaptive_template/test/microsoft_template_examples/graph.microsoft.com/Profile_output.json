@@ -1,0 +1,39 @@
+{
+  "type": "AdaptiveCard",
+  "@odata.type": "#microsoft.graph.user",
+  "body": [
+    {
+      "type": "TextBlock",
+      "size": "large",
+      "weight": "bolder",
+      "text": "Megan Bowen"
+    },
+    {
+      "type": "FactSet",
+      "facts": [
+        {
+          "title": "Given name",
+          "value": "Megan"
+        },
+        {
+          "title": "Surname",
+          "value": "Bowen"
+        },
+        {
+          "title": "Job title",
+          "value": "Auditor"
+        },
+        {
+          "title": "Office location",
+          "value": "12/1110"
+        },
+        {
+          "title": "Email",
+          "value": "MeganB@M365x214355.onmicrosoft.com"
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0"
+}

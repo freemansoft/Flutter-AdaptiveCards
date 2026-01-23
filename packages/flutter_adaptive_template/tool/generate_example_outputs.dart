@@ -18,7 +18,10 @@ void main() {
   for (final dataFile in dataFiles) {
     if (dataFile.path.endsWith('_output.json')) continue;
 
-    final templatePath = dataFile.path.replaceAll('_data.json', '.json');
+    final templatePath = dataFile.path.replaceAll(
+      '_data.json',
+      '_template.json',
+    );
     final templateFile = File(templatePath);
 
     if (!templateFile.existsSync()) {

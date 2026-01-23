@@ -1,0 +1,658 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "@odata.type": "#microsoft.graph.message",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "MyAnalytics",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "MyAnalytics | Focus Edition",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2019-08-01T06:23:20Z, COMPACT)}} {{TIME(2019-08-01T06:23:20Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "MyAnalytics\r\n\r\nDiscover your habits. Work smarter.\r\n\r\nFor your eyes only\r\n\r\nLearn more >\r\n\r\n\r\n\r\nWelcome back, Megan Bowen!\r\n\r\nEach week, this email will give you an in-depth look at one of your work patterns\r\n\r\n\r\nFocus   Wellbeing       Network         Co",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAHi4GJzAAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "MyAnalytics",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "MyAnalytics | Your past week",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2018-09-10T23:47:53Z, COMPACT)}} {{TIME(2018-09-10T23:47:53Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "September 2–8, 2018\r\n\r\n\r\nHi Megan Bowen,\r\n\r\nMyAnalytics helps you spend your time on the people and things that matter.\r\n\r\n\r\n\r\n\r\nProtect time for your work\r\n\r\n\r\nMinimize unproductive collaboration\r\n\r\n\r\nStrengthen important relationships",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAEMOXaXAAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Michael Mainer",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "Really",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2018-09-10T21:52:35Z, COMPACT)}} {{TIME(2018-09-10T21:52:35Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAEMOXaWAAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Microsoft Planner",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "You have late tasks!",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2018-09-09T16:29:42Z, COMPACT)}} {{TIME(2018-09-09T16:29:42Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "Hi Megan,\r\n\r\nYou have 4 tasks due in Microsoft Planner.\r\n\r\n\r\nLate\r\n\r\n9/2/2018\r\n\r\nNorthwind HR Training Video Part I\r\n\r\n\r\nVideo Production\r\n\r\n\r\n9/2/2018\r\n\r\nFeature request: Tint Control\r\n\r\n\r\nIT\r\n\r\n\r\n9/2/2018\r\n\r\nLaunch Event Advertising\r\n\r\n\r\nMar",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAEMOXaVAAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Microsoft Planner",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "You have late tasks!",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2018-09-04T18:15:17Z, COMPACT)}} {{TIME(2018-09-04T18:15:17Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "Hi Megan,\r\n\r\nYou have 5 tasks due in Microsoft Planner.\r\n\r\n\r\nLate\r\n\r\n9/2/2018\r\n\r\nNorthwind HR Training Video Part I\r\n\r\n\r\nVideo Production\r\n\r\n\r\n8/28/2018\r\n\r\nSearch Optimization\r\n\r\n\r\nMarketing\r\n\r\n\r\n9/2/2018\r\n\r\nFeature request: Tint Control",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAEI9qxaAAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Microsoft Planner",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "You have late tasks!",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2018-09-03T16:58:35Z, COMPACT)}} {{TIME(2018-09-03T16:58:35Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "Hi Megan,\r\n\r\nYou have 5 tasks due in Microsoft Planner.\r\n\r\n\r\nLate\r\n\r\n9/2/2018\r\n\r\nNorthwind HR Training Video Part I\r\n\r\n\r\nVideo Production\r\n\r\n\r\n8/28/2018\r\n\r\nSearch Optimization\r\n\r\n\r\nMarketing\r\n\r\n\r\n9/2/2018\r\n\r\nFeature request: Tint Control",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAEGsRt8AAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Microsoft Planner",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "You have late tasks!",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2018-09-02T16:35:18Z, COMPACT)}} {{TIME(2018-09-02T16:35:18Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "Hi Megan,\r\n\r\nYou have 5 tasks due in Microsoft Planner.\r\n\r\n\r\nLate\r\n\r\n8/28/2018\r\n\r\nSearch Optimization\r\n\r\n\r\nMarketing\r\n\r\n\r\nDue Today\r\n\r\n9/2/2018\r\n\r\nNorthwind HR Training Video Part I\r\n\r\n\r\nVideo Production\r\n\r\n\r\n9/2/2018\r\n\r\nFeature request: Tint ",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAEGsRt7AAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Microsoft Planner",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "You have late tasks!",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2018-09-01T16:32:01Z, COMPACT)}} {{TIME(2018-09-01T16:32:01Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "Hi Megan,\r\n\r\nYou have 5 tasks due in Microsoft Planner.\r\n\r\n\r\nLate\r\n\r\n8/28/2018\r\n\r\nSearch Optimization\r\n\r\n\r\nMarketing\r\n\r\n\r\nUpcoming\r\n\r\n9/2/2018\r\n\r\nNorthwind HR Training Video Part I\r\n\r\n\r\nVideo Production\r\n\r\n\r\n9/2/2018\r\n\r\nFeature request: Tint C",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAEGsRt6AAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Microsoft Planner",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "You have late tasks!",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2018-08-29T17:18:48Z, COMPACT)}} {{TIME(2018-08-29T17:18:48Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "Hi Megan,\r\n\r\nYou have 5 tasks due in Microsoft Planner.\r\n\r\n\r\nLate\r\n\r\n8/28/2018\r\n\r\nSearch Optimization\r\n\r\n\r\nMarketing\r\n\r\n\r\nUpcoming\r\n\r\n9/2/2018\r\n\r\nNorthwind HR Training Video Part I\r\n\r\n\r\nVideo Production\r\n\r\n\r\n9/2/2018\r\n\r\nFeature request: Tint C",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAEESyp5AAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Microsoft Planner",
+                  "size": "Medium",
+                  "weight": "bolder"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "You have tasks due today!",
+                  "spacing": "None",
+                  "size": "Small",
+                  "weight": "bolder"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": " ❗ ",
+                  "horizontalAlignment": "Right"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "{{DATE(2018-08-28T16:15:10Z, COMPACT)}} {{TIME(2018-08-28T16:15:10Z)}}",
+                  "spacing": "None",
+                  "size": "Small"
+                }
+              ],
+              "verticalContentAlignment": "Center"
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "Hi Megan,\r\n\r\nYou have 5 tasks due in Microsoft Planner.\r\n\r\n\r\nDue Today\r\n\r\n8/28/2018\r\n\r\nSearch Optimization\r\n\r\n\r\nMarketing\r\n\r\n\r\nUpcoming\r\n\r\n9/2/2018\r\n\r\nNorthwind HR Training Video Part I\r\n\r\n\r\nVideo Production\r\n\r\n\r\n9/2/2018\r\n\r\nFeature request: T",
+          "isVisible": false,
+          "size": "Small",
+          "isSubtle": true
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open email",
+              "url": "https://outlook.office365.com/owa/?ItemID=AAMkAGVmMDEzMTM4LTZmYWUtNDdkNC1hMDZiLTU1OGY5OTZhYmY4OABGAAAAAAAiQ8W967B7TKBjgx9rVEURBwAiIsqMbYjsT5e%2FT7KzowPTAAAAAAEMAAAiIsqMbYjsT5e%2FT7KzowPTAAEESyp4AAA%3D&exvsurl=1&viewmodel=ReadMessageItem"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}
