@@ -1,0 +1,37 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "@odata.type": "#microsoft.graph.site",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "Engineering Excellence",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Let's store our notes on how we can make this company and its services, better.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Open site",
+              "url": "https://m365x214355.sharepoint.com/ee"
+            }
+          ]
+        }
+      ],
+      "separator": true
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}

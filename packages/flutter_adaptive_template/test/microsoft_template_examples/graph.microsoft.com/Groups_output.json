@@ -1,0 +1,498 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "@odata.type": "#microsoft.graph.group",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": []
+        }
+      ],
+      "separator": true
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}
