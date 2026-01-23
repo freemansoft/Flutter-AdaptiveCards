@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 
 void main() {
   final dir = Directory(
-    'packages/flutter_adaptive_template/test/microsoft_template_examples',
+    'packages/flutter_adaptive_template/test/ms_template_examples',
   );
   if (!dir.existsSync()) {
     print('Directory not found: ${dir.path}');
