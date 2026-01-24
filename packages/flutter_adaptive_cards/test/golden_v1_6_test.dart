@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/popover.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
@@ -142,6 +143,35 @@ void main() {
     await expectLater(
       find.byKey(key),
       matchesGoldenFile('gold_files/v1_6_progress_bar.png'),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+  });
+
+  testWidgets('Golden Popover', (tester) async {
+    configureTestView();
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'popover');
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    // Tap the button
+    await tester.tap(find.text('Show Popover'));
+    await tester.pumpAndSettle();
+
+    // Verify text in popover
+    expect(find.text('This is a popover!'), findsOneWidget);
+
+    // Capture the whole MaterialApp to include the Dialog overlay
+
+    // appears the they are top to bottom.
+    // Not sure whey we have a MaterialApp for the dialog.
+    await expectLater(
+      find.byType(AdaptivePopoverContainer),
+      matchesGoldenFile('gold_files/v1_6_popover_dialog.png'),
+    );
+    await expectLater(
+      find.byType(MaterialApp).last,
+      matchesGoldenFile('gold_files/v1_6_popover_base.png'),
     );
     await tester.pump(const Duration(milliseconds: 100));
   });

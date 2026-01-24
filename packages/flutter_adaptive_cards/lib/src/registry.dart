@@ -117,11 +117,20 @@ class CardRegistry {
         return GenericSubmitAction(map, state);
       case 'Action.Execute':
         return GenericExecuteAction(map, state);
+      case 'Action.ResetInputs':
+        return GenericActionResetInputs(map, state);
+      case 'Action.OpenUrlDialog':
+        assert(false, 'Action.OpenUrlDialog is not supported');
+        return null;
       case 'Action.ToggleVisibility':
         assert(false, 'Action.ToggleVisibility is not supported');
         return null;
-      case 'Action.ResetInputs':
-        return GenericActionResetInputs(map, state);
+      case 'Action.InsertImage':
+        assert(false, 'Action.InsertImage is not supported');
+        return null;
+      case 'Action.Popup':
+        assert(false, 'Action.Popup is not supported');
+        return null;
       default:
         assert(false, 'No action found with type $stringType');
         return null;

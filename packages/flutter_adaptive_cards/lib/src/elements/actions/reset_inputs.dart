@@ -20,9 +20,14 @@ class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
   late GenericActionResetInputs action;
 
   @override
-  void initState() {
-    super.initState();
-    action = GenericActionResetInputs(adaptiveMap, widgetState);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    action =
+        widgetState.cardRegistry.getGenericAction(
+              adaptiveMap,
+              widgetState,
+            )!
+            as GenericActionResetInputs;
   }
 
   @override

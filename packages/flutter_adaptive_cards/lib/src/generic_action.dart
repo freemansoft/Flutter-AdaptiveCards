@@ -1,6 +1,10 @@
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
-/// The root default actions for onTaps for Action.Submit and Action.OpenUrl
+/// Generic actions forward to the RawAdaptiveCardState
+/// functions that are specific to the action type
+///
+/// The root default beahvior for onTaps in for all actions
+/// Each action type has its own implementation
 abstract class GenericAction {
   GenericAction(this.adaptiveMap, this.rawAdaptiveCardState);
 

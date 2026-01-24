@@ -22,10 +22,14 @@ class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
   late GenericSubmitAction action;
 
   @override
-  void initState() {
-    super.initState();
-    // should this use the registry?
-    action = GenericSubmitAction(adaptiveMap, widgetState);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    action =
+        widgetState.cardRegistry.getGenericAction(
+              adaptiveMap,
+              widgetState,
+            )!
+            as GenericSubmitAction;
   }
 
   @override

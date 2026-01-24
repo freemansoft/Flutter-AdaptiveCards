@@ -138,6 +138,9 @@ class TransparentImage {
   ];
 }
 
+///
+/// Helper function to get a widget from a path prefixed with test/samples/
+///
 Widget getWidget(String path) {
   final File file = File('test/samples/$path');
   final Map<String, dynamic> map =
@@ -148,7 +151,8 @@ Widget getWidget(String path) {
     onSubmit: (_) {},
     onExecute: (_) {},
     onOpenUrl: (_) {},
-    // debug panels don't show in prod so dislable them in the golden images
+    // debug "show json" panes don't show in prod
+    // so dislable them in the golden images
     showDebugJson: false,
     hostConfig: HostConfig(),
   );

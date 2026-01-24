@@ -22,10 +22,14 @@ class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
   late GenericExecuteAction action;
 
   @override
-  void initState() {
-    super.initState();
-    // should this use the registry?
-    action = GenericExecuteAction(adaptiveMap, widgetState);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    action =
+        widgetState.cardRegistry.getGenericAction(
+              adaptiveMap,
+              widgetState,
+            )!
+            as GenericExecuteAction;
   }
 
   @override
