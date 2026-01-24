@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrated to widgetbook 1.0.0 and deleted example app. This lost the lab and lab_web utilities
 - Added hostconfig objects and integrated them and fallback hostconfig into the AdaptiveCard widgets.
 - Addeed SVG support for images - but not background images
+- Added Inline in-memory image support - png
 
 ## [0.2.0](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
 
