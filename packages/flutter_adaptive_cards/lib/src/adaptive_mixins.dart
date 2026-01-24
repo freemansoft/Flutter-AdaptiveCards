@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
-import 'package:flutter_adaptive_cards/src/utils.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
