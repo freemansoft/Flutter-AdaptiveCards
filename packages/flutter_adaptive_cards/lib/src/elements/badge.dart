@@ -5,6 +5,7 @@ import 'package:flutter_adaptive_cards/src/hostconfig/badge_styles_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/font_color_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 
 class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveBadge({super.key, required this.adaptiveMap});
@@ -63,7 +64,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
 
     Widget? iconWidget;
     if (iconUrl != null) {
-      iconWidget = Image.network(iconUrl!, height: 16, width: 16);
+      iconWidget = AdaptiveImageUtils.getImage(iconUrl!, height: 16, width: 16);
     }
 
     final List<Widget> children = [];

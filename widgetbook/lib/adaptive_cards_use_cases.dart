@@ -27,7 +27,7 @@ Widget buildSamplesExample1(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 2',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample2(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example2.json');
@@ -36,7 +36,7 @@ Widget buildSamplesExample2(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 3',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample3(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example3.json');
@@ -45,7 +45,7 @@ Widget buildSamplesExample3(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 4',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample4(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example4.json');
@@ -54,7 +54,7 @@ Widget buildSamplesExample4(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 5',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample5(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example5.json');
@@ -63,7 +63,7 @@ Widget buildSamplesExample5(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 6',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample6(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example6.json');
@@ -72,7 +72,7 @@ Widget buildSamplesExample6(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 7',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample7(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example7.json');
@@ -81,7 +81,7 @@ Widget buildSamplesExample7(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 8',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample8(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example8.json');
@@ -90,7 +90,7 @@ Widget buildSamplesExample8(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 9',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample9(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example9.json');
@@ -99,7 +99,7 @@ Widget buildSamplesExample9(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 10',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample10(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example10.json');
@@ -108,7 +108,7 @@ Widget buildSamplesExample10(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 11',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample11(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example11.json');
@@ -117,7 +117,7 @@ Widget buildSamplesExample11(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 12',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample12(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example12.json');
@@ -126,7 +126,7 @@ Widget buildSamplesExample12(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 13',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample13(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example13.json');
@@ -135,7 +135,7 @@ Widget buildSamplesExample13(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 14',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample14(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example14.json');
@@ -145,7 +145,7 @@ Widget buildSamplesExample14(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Example 15 (Video)',
   type: widget_types.Examples,
-  path: '[Examples]',
+  path: '[Other]',
 )
 Widget buildSamplesExample15(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example15.json');
@@ -931,7 +931,7 @@ Widget buildV16ProgressRing(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Expense Report',
   type: widget_types.Microsoft15,
-  path: '[Remote]',
+  path: '[Other]',
 )
 Widget buildNetworkExpenseReport(BuildContext context) {
   return const NetworkPage(
@@ -943,7 +943,7 @@ Widget buildNetworkExpenseReport(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Show Card Wizard',
   type: widget_types.Microsoft15,
-  path: '[Remote]',
+  path: '[Other]',
 )
 Widget buildNetworkShowCardWizard(BuildContext context) {
   return const NetworkPage(
@@ -955,7 +955,7 @@ Widget buildNetworkShowCardWizard(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Agenda',
   type: widget_types.Microsoft15,
-  path: '[Remote]',
+  path: '[Other]',
 )
 Widget buildNetworkAgenda(BuildContext context) {
   return const NetworkPage(
@@ -967,7 +967,7 @@ Widget buildNetworkAgenda(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Flight Update Table',
   type: widget_types.Microsoft15,
-  path: '[Remote]',
+  path: '[Other]',
 )
 Widget buildNetworkFlightUpdateTable(BuildContext context) {
   return const NetworkPage(
@@ -977,13 +977,152 @@ Widget buildNetworkFlightUpdateTable(BuildContext context) {
 }
 
 // =============================================================================
+// Github PNP Samples
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Benefits',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpBenefits(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-benefits.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Cafe',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpCafe(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/pnp_templates/ac-qv-cafe.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Calendar Team Calendar',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpCalendarTeamCalendar(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-calendar-team-calendar.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Create Ticket Helpdesk',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpCreateTicketHelpdesk(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-create-ticket-helpdesk.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Event',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpEvent(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/pnp_templates/ac-qv-event.json');
+}
+
+@widgetbook.UseCase(
+  name: 'FAQs',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpFaqs(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/pnp_templates/ac-qv-faqs.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Form Vaccination',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpFormVaccination(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-form-vaccination.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Holidays',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpHolidays(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-holidays.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Inventory',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpInventory(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-inventory.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Praise Others',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpPraiseOthers(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-praise-others.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Product Image Carousel',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpProductImageCarousel(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-product-image-carousel.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Table Payslip',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpTablePayslip(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-table-payslip.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Timeoff',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpTimeoff(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/pnp_templates/ac-qv-timeoff.json');
+}
+
+// =============================================================================
 // FORMS Component (assets-based)
 // =============================================================================
 
 @widgetbook.UseCase(
   name: 'Form via Assets',
   type: widget_types.Forms,
-  path: '[Forms]',
+  path: '[Other]',
 )
 Widget buildFormViaAssets(BuildContext context) {
   return const GenericPage(url: 'assets/ac-qv-faqs.json');
@@ -992,7 +1131,7 @@ Widget buildFormViaAssets(BuildContext context) {
 @widgetbook.UseCase(
   name: 'Form with initData',
   type: widget_types.Forms,
-  path: '[Forms]',
+  path: '[Other]',
 )
 Widget buildFormWithInitData(BuildContext context) {
   return const GenericPage(

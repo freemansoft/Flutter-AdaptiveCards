@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
@@ -70,30 +71,14 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   /// Reliable image loader that handles when image not found
   /// Cards that support background images include
   /// AdaptiveCard, Column, Container, TableCell, Authentication
-  Image getBackgroundImage(
+  Widget getBackgroundImage(
     String url, {
     ImageRepeat repeat = ImageRepeat.noRepeat,
     BoxFit fit = BoxFit.cover,
   }) {
-    return Image.network(
+    return AdaptiveImageUtils.getImage(
       url,
-      repeat: repeat,
       fit: fit,
-      errorBuilder: (context, error, stackTrace) {
-        return const Icon(Icons.error);
-      },
-      loadingBuilder: (context, child, loadingProgress) {
-        // Optional: display a loading indicator while the image is fetching
-        if (loadingProgress == null) return child;
-        return Center(
-          child: CircularProgressIndicator(
-            value: loadingProgress.expectedTotalBytes != null
-                ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                : null,
-          ),
-        );
-      },
     );
   }
 
@@ -126,7 +111,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   }
 
   /// JSON schema aware version of getBackgroundImage
-  Image? getBackgroundImageFromMap(Map element) {
+  Widget? getBackgroundImageFromMap(Map element) {
     final props = resolveBackgroundImage(element['backgroundImage']);
     if (props == null) return null;
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 
 class AdaptiveCompoundButton extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -46,7 +47,7 @@ class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
         child: Row(
           children: [
             if (iconUrl != null) ...[
-              Image.network(iconUrl!, width: 40, height: 40),
+              AdaptiveImageUtils.getImage(iconUrl!, width: 40, height: 40),
               const SizedBox(width: 12),
             ],
             Expanded(

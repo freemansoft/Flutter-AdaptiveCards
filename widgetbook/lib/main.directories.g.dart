@@ -253,7 +253,16 @@ final directories = <_widgetbook.WidgetbookNode>[
           ),
         ],
       ),
-
+      _widgetbook.WidgetbookComponent(
+        name: 'Examples',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 1',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample1,
+          ),
+        ],
+      ),
       _widgetbook.WidgetbookComponent(
         name: 'FactSet',
         useCases: [
@@ -507,88 +516,83 @@ final directories = <_widgetbook.WidgetbookNode>[
     ],
   ),
   _widgetbook.WidgetbookCategory(
-    name: 'Uncategorized',
+    name: 'Other',
     children: [
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 1',
-        builder:
-            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample1,
+      _widgetbook.WidgetbookComponent(
+        name: 'Examples',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 10',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample10,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 11',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample11,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 12',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample12,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 13',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample13,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 14',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample14,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 15 (Video)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample15,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 2',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample2,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 3',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample3,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 4',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample4,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 5',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample5,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 6',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample6,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 7',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample7,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 8',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample8,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 9',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample9,
+          ),
+        ],
       ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 10',
-        builder: _widgetbook_workspace_adaptive_cards_use_cases
-            .buildSamplesExample10,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 11',
-        builder: _widgetbook_workspace_adaptive_cards_use_cases
-            .buildSamplesExample11,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 12',
-        builder: _widgetbook_workspace_adaptive_cards_use_cases
-            .buildSamplesExample12,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 13',
-        builder: _widgetbook_workspace_adaptive_cards_use_cases
-            .buildSamplesExample13,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 14',
-        builder: _widgetbook_workspace_adaptive_cards_use_cases
-            .buildSamplesExample14,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 15 (Video)',
-        builder: _widgetbook_workspace_adaptive_cards_use_cases
-            .buildSamplesExample15,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 2',
-        builder:
-            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample2,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 3',
-        builder:
-            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample3,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 4',
-        builder:
-            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample4,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 5',
-        builder:
-            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample5,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 6',
-        builder:
-            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample6,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 7',
-        builder:
-            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample7,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 8',
-        builder:
-            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample8,
-      ),
-      _widgetbook.WidgetbookUseCase(
-        name: 'Example 9',
-        builder:
-            _widgetbook_workspace_adaptive_cards_use_cases.buildSamplesExample9,
-      ),
-    ],
-  ),
-  _widgetbook.WidgetbookCategory(
-    name: 'Forms',
-    children: [
       _widgetbook.WidgetbookComponent(
         name: 'Forms',
         useCases: [
@@ -604,11 +608,76 @@ final directories = <_widgetbook.WidgetbookNode>[
           ),
         ],
       ),
-    ],
-  ),
-  _widgetbook.WidgetbookCategory(
-    name: 'Remote',
-    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'GitHubPNPSamples',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Benefits',
+            builder:
+                _widgetbook_workspace_adaptive_cards_use_cases.buildPnpBenefits,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Cafe',
+            builder:
+                _widgetbook_workspace_adaptive_cards_use_cases.buildPnpCafe,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Calendar Team Calendar',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildPnpCalendarTeamCalendar,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Create Ticket Helpdesk',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildPnpCreateTicketHelpdesk,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Event',
+            builder:
+                _widgetbook_workspace_adaptive_cards_use_cases.buildPnpEvent,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'FAQs',
+            builder:
+                _widgetbook_workspace_adaptive_cards_use_cases.buildPnpFaqs,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Form Vaccination',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildPnpFormVaccination,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Holidays',
+            builder:
+                _widgetbook_workspace_adaptive_cards_use_cases.buildPnpHolidays,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Inventory',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildPnpInventory,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Praise Others',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildPnpPraiseOthers,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Product Image Carousel',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildPnpProductImageCarousel,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Table Payslip',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildPnpTablePayslip,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Timeoff',
+            builder:
+                _widgetbook_workspace_adaptive_cards_use_cases.buildPnpTimeoff,
+          ),
+        ],
+      ),
       _widgetbook.WidgetbookComponent(
         name: 'Microsoft15',
         useCases: [

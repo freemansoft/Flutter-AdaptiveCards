@@ -39,7 +39,9 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   @override
   void initState() {
     super.initState();
-    text = parseTextString(adaptiveMap['text']);
+    text = parseTextString(
+      adaptiveMap['text'] ?? '',
+    ); // text block with no text
   }
 
   @override

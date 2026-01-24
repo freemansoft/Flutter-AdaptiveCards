@@ -90,4 +90,5 @@ flutter:
     - lib/samples/media/
     - lib/samples/table/
     - lib/samples/v1.6/
+    - lib/samples/pnp_templates/
     - assets/
