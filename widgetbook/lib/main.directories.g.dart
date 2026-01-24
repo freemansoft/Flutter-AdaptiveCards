@@ -612,6 +612,11 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'GitHubPNPSamples',
         useCases: [
           _widgetbook.WidgetbookUseCase(
+            name: 'Airport Passengers (inline images)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildPnpAirportPassengers,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Benefits',
             builder:
                 _widgetbook_workspace_adaptive_cards_use_cases.buildPnpBenefits,

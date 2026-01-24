@@ -3,7 +3,7 @@ import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-import 'package:flutter_adaptive_cards/src/utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 class SeparatorElement extends StatefulWidget
     implements AdaptiveElementWidgetMixin {

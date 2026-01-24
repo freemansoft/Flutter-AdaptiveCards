@@ -118,12 +118,14 @@ class CardRegistry {
       case 'Action.Execute':
         return GenericExecuteAction(map, state);
       case 'Action.ToggleVisibility':
+        assert(false, 'Action.ToggleVisibility is not supported');
         return null;
       case 'Action.ResetInputs':
         return GenericActionResetInputs(map, state);
+      default:
+        assert(false, 'No action found with type $stringType');
+        return null;
     }
-    assert(false, 'No action found with type $stringType');
-    return null;
   }
 
   Widget getAction(Map<String, dynamic> map) {
@@ -274,10 +276,15 @@ class CardRegistry {
         return AdaptiveActionPopover(adaptiveMap: map);
       case 'Action.OpenUrlDialog':
         return AdaptiveActionOpenUrlDialog(adaptiveMap: map); // Custom wrapper
+      case 'Action.ToggleVisibility':
+        assert(false, 'Action.ToggleVisibility is not supported');
+        return AdaptiveUnknown(adaptiveMap: map, type: stringType);
       case 'Action.InsertImage':
         return AdaptiveActionInsertImage(adaptiveMap: map);
+      default:
+        assert(false, 'No action found with type $stringType');
+        return AdaptiveUnknown(adaptiveMap: map, type: stringType);
     }
-    return AdaptiveUnknown(adaptiveMap: map, type: stringType);
   }
 }
 

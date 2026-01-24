@@ -48,6 +48,6 @@ HostConfig is a JSON object that contains configuration options for the Adaptive
 
 Many!
 
-- styling not finished
+- See [Defects](packages/flutter_adaptive_cards/README.md#defects)
 - https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/text-features may not all be implemented
 -

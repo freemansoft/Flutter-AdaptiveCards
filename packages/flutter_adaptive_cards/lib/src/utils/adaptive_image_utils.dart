@@ -41,4 +41,12 @@ class AdaptiveImageUtils {
       );
     }
   }
+
+  static ImageProvider getImageProvider(String url) {
+    if (url.startsWith('data:image/') && url.contains('base64,')) {
+      final String base64String = url.split('base64,')[1];
+      return MemoryImage(base64Decode(base64String));
+    }
+    return NetworkImage(url);
+  }
 }

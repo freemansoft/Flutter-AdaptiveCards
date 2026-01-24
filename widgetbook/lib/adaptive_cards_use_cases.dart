@@ -981,6 +981,17 @@ Widget buildNetworkFlightUpdateTable(BuildContext context) {
 // =============================================================================
 
 @widgetbook.UseCase(
+  name: 'Airport Passengers (inline images)',
+  type: widget_types.GitHubPNPSamples,
+  path: '[Other]',
+)
+Widget buildPnpAirportPassengers(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/pnp_templates/ac-qv-airport-passengers.json',
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Benefits',
   type: widget_types.GitHubPNPSamples,
   path: '[Other]',

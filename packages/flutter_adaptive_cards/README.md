@@ -211,14 +211,11 @@ TODO for the example programs moved to [example README](example/README.md)
   - None identified
   - Note: [`Input.Choice`](https://adaptivecards.io/explorer/Input.Choice.html) currently implemented as a map in [`ChoiceSet`](https://adaptivecards.io/explorer/Input.ChoiceSet.html)
 - Actions\_ missing implementations and features
-  - Add [`Action.ToggleVisibility`](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) - currently implemented as `no-op` along with its' associated [`TargetElement`](https://adaptivecards.io/explorer/TargetElement.html)
-  - [`Action.Execute`](https://adaptivecards.io/explorer/Action.Execute.html) and [`Action.Submit`](https://adaptivecards.io/explorer/Action.Submit.html) are currently both mapped to `AdaptiveActionSubmit` in `action_set.dart`. Their behavior should possibly be different.
+  - [`Action.ToggleVisibility`](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) not implemented - currently implemented as `no-op` along with its' associated[`TargetElement`](https://adaptivecards.io/explorer/TargetElement.html) - it will assert when in debug mode
 - _Tests_
-  - findText for Text doesn't seem to be working so commented out in `basic_test.dart`
   - Font line spacing is subtly different between platforms. You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
   - Using default flutter fonts instead of roboto <https://github.com/flutter/flutter/issues/56383>
-    - Could use golden toolkit but it will show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
-  - `example\widget_test.dart` is an empty test.
+  - Golden toolkit but it will show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
 
 ## ChangeLog
 
@@ -277,7 +274,7 @@ The referenced GitHub repository has vanished. Look at the forking train to figu
 1. <https://github.com/rodydavis/Flutter-AdaptiveCards> the original but possibly from the no longer here repo
 1. <https://github.com/neohelden/Flutter-AdaptiveCards>
 
-********************************\_********************************...
+**\*\***\*\***\*\***\*\*\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\*\*\***\*\***\*\***\*\***...
 
 # Adaptive Cards for Flutter
 

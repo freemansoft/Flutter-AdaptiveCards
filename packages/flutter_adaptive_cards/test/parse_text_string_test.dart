@@ -1,4 +1,4 @@
-import 'package:flutter_adaptive_cards/src/utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

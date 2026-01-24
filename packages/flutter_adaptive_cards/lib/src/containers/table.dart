@@ -92,9 +92,25 @@ class AdaptiveTableState extends State<AdaptiveTable>
   /// Generates all the Table rows for the table [TableRow[TableCell[Widget]]]
   ///
   List<TableRow> generateTableRows(List<Map<String, dynamic>> rows) {
-    return List<TableRow>.generate(rows.length, (rowNum) {
+    final allRows = List<TableRow>.generate(rows.length, (rowNum) {
       return generateTableRowWidgets(rows[rowNum]);
     });
+    // this code should assert that all rows have the same number of columns
+    assert(() {
+      final firstRow = allRows.first;
+      final expectedColumnCount = firstRow.children.length;
+
+      for (int i = 0; i < allRows.length; i++) {
+        final row = allRows[i];
+        assert(
+          row.children.length == expectedColumnCount,
+          'Row $i has ${row.children.length} columns, expected $expectedColumnCount',
+        );
+      }
+      return true;
+    }());
+
+    return allRows;
   }
 
   ///
