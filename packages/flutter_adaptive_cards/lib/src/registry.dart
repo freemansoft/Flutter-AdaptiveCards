@@ -80,7 +80,10 @@ class CardRegistry {
 
   final bool listView;
 
-  Widget getElement(Map<String, dynamic> map, {String parentMode = 'stretch'}) {
+  Widget getElement({
+    required Map<String, dynamic> map,
+    String parentMode = 'stretch',
+  }) {
     final String stringType = map['type'] as String;
 
     if (removedElements.contains(stringType)) {
@@ -91,17 +94,17 @@ class CardRegistry {
       return addedElements[stringType]!(map);
     } else {
       return _getBaseElement(
-        map,
+        map: map,
         parentMode: parentMode,
         supportMarkdown: supportMarkdown,
       );
     }
   }
 
-  GenericAction? getGenericAction(
-    Map<String, dynamic> map,
-    RawAdaptiveCardState state,
-  ) {
+  GenericAction? getGenericAction({
+    required Map<String, dynamic> map,
+    required RawAdaptiveCardState state,
+  }) {
     final String stringType = map['type'] as String;
 
     switch (stringType) {
@@ -112,13 +115,25 @@ class CardRegistry {
         );
         return null;
       case 'Action.OpenUrl':
-        return GenericActionOpenUrl(map, state);
+        return GenericActionOpenUrl(
+          adaptiveMap: map,
+          rawAdaptiveCardState: state,
+        );
       case 'Action.Submit':
-        return GenericSubmitAction(map, state);
+        return GenericSubmitAction(
+          adaptiveMap: map,
+          rawAdaptiveCardState: state,
+        );
       case 'Action.Execute':
-        return GenericExecuteAction(map, state);
+        return GenericExecuteAction(
+          adaptiveMap: map,
+          rawAdaptiveCardState: state,
+        );
       case 'Action.ResetInputs':
-        return GenericActionResetInputs(map, state);
+        return GenericActionResetInputs(
+          adaptiveMap: map,
+          rawAdaptiveCardState: state,
+        );
       case 'Action.OpenUrlDialog':
         assert(false, 'Action.OpenUrlDialog is not supported');
         return null;
@@ -137,7 +152,7 @@ class CardRegistry {
     }
   }
 
-  Widget getAction(Map<String, dynamic> map) {
+  Widget getAction({required Map<String, dynamic> map}) {
     final String stringType = map['type'] as String;
 
     if (removedElements.contains(stringType)) {
@@ -148,14 +163,14 @@ class CardRegistry {
       return addedActions[stringType]!(map);
     }
 
-    return _getBaseAction(map);
+    return _getActionWidget(map: map);
   }
 
   /// This returns an [AdaptiveElement] with the correct type.
   ///
   /// It looks at the 'type' property and decides which object to construct
-  Widget _getBaseElement(
-    Map<String, dynamic> map, {
+  Widget _getBaseElement({
+    required Map<String, dynamic> map,
     String parentMode = 'stretch',
     required bool supportMarkdown,
   }) {
@@ -267,7 +282,7 @@ class CardRegistry {
     return AdaptiveUnknown(adaptiveMap: map, type: stringType);
   }
 
-  Widget _getBaseAction(Map<String, dynamic> map) {
+  Widget _getActionWidget({required Map<String, dynamic> map}) {
     final String stringType = map['type'] as String;
 
     switch (stringType) {

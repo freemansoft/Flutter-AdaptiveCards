@@ -1,4 +1,9 @@
+///
+/// Used for finding scoped styling that defined in hostconfig -
+/// mapps strings in json to reguilar values
+///
 class Resolver {
+  ///
   static dynamic resolve(dynamic data, String path) {
     if (data == null) return null;
     if (path.isEmpty || path == '.') return data;

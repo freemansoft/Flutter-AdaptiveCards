@@ -60,7 +60,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
     children = List<Map<String, dynamic>>.from(
       adaptiveMap['body'],
-    ).map((map) => widgetState.cardRegistry.getElement(map)).toList();
+    ).map((map) => widgetState.cardRegistry.getElement(map: map)).toList();
   }
 
   @override
@@ -82,7 +82,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
           List<Map<String, dynamic>>.from(widget.adaptiveMap['actions'])
               .map(
                 (adaptiveMap) =>
-                    widgetState.cardRegistry.getAction(adaptiveMap),
+                    widgetState.cardRegistry.getAction(map: adaptiveMap),
               )
               .toList();
       showCardActions = List<AdaptiveActionShowCard>.from(
@@ -92,7 +92,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
         showCardActions
             .map(
               (action) => widgetState.cardRegistry.getElement(
-                action.adaptiveMap['card'],
+                map: action.adaptiveMap['card'],
               ),
             )
             .toList(),

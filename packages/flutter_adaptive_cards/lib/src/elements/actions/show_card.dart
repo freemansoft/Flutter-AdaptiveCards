@@ -27,7 +27,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
     super.initState();
 
     final Widget card = widgetState.cardRegistry.getElement(
-      adaptiveMap['card'],
+      map: adaptiveMap['card'],
     );
 
     ProviderScope.containerOf(

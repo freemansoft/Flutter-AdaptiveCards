@@ -18,10 +18,10 @@ abstract class GenericAction {
 /// Default actions for onTaps for Action.Submit
 /// Delegates to rawAdaptiveCardState
 class GenericSubmitAction extends GenericAction {
-  GenericSubmitAction(
-    Map<String, dynamic> adaptiveMap,
-    RawAdaptiveCardState rawAdaptiveCardState,
-  ) : super(adaptiveMap, rawAdaptiveCardState) {
+  GenericSubmitAction({
+    required Map<String, dynamic> adaptiveMap,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  }) : super(adaptiveMap, rawAdaptiveCardState) {
     data = adaptiveMap['data'] as Map<String, dynamic>? ?? {};
   }
 
@@ -36,10 +36,10 @@ class GenericSubmitAction extends GenericAction {
 /// Default actions for onTaps for Action.Execute
 /// Delegates to rawAdaptiveCardState
 class GenericExecuteAction extends GenericAction {
-  GenericExecuteAction(
-    Map<String, dynamic> adaptiveMap,
-    RawAdaptiveCardState rawAdaptiveCardState,
-  ) : super(adaptiveMap, rawAdaptiveCardState) {
+  GenericExecuteAction({
+    required Map<String, dynamic> adaptiveMap,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  }) : super(adaptiveMap, rawAdaptiveCardState) {
     data = adaptiveMap['data'] as Map<String, dynamic>? ?? {};
   }
 
@@ -54,10 +54,10 @@ class GenericExecuteAction extends GenericAction {
 /// Default actions for onTaps for Action.OpenUrl
 /// Delegates to rawAdaptiveCardState
 class GenericActionOpenUrl extends GenericAction {
-  GenericActionOpenUrl(
-    Map<String, dynamic> adaptiveMap,
-    RawAdaptiveCardState rawAdaptiveCardState,
-  ) : super(adaptiveMap, rawAdaptiveCardState) {
+  GenericActionOpenUrl({
+    required Map<String, dynamic> adaptiveMap,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  }) : super(adaptiveMap, rawAdaptiveCardState) {
     url = adaptiveMap['url'] as String?;
   }
 
@@ -72,10 +72,10 @@ class GenericActionOpenUrl extends GenericAction {
 }
 
 class GenericActionResetInputs extends GenericAction {
-  GenericActionResetInputs(
-    super.adaptiveMap,
-    super.rawAdaptiveCardState,
-  );
+  GenericActionResetInputs({
+    required Map<String, dynamic> adaptiveMap,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  }) : super(adaptiveMap, rawAdaptiveCardState);
 
   @override
   void tap() {

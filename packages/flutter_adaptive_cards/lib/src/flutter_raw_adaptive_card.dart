@@ -15,7 +15,8 @@ import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 
-/// Created by `AdaptiveCard` so there is usually only one of these per page.
+/// Created as a child of `AdaptiveCard`
+/// There is usually only one of these per page. (One per AdaptiveCard tree)
 ///
 class RawAdaptiveCard extends StatefulWidget {
   /// This widget takes a [map] (which usually is just a json decoded string)
@@ -70,7 +71,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     cardRegistry = widget.cardRegistry;
 
-    _adaptiveElement = widget.cardRegistry.getElement(widget.map);
+    _adaptiveElement = widget.cardRegistry.getElement(map: widget.map);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.initData != null && widget.initData!.isNotEmpty) {
@@ -82,7 +83,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
     _resolver = ReferenceResolver(hostConfig: widget.hostConfig);
-    _adaptiveElement = widget.cardRegistry.getElement(widget.map);
+    _adaptiveElement = widget.cardRegistry.getElement(map: widget.map);
     super.didUpdateWidget(oldWidget);
   }
 

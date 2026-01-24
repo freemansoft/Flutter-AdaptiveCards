@@ -84,7 +84,8 @@ void main() {
       final result = template.expand(data);
       final resultJson = json.decode(result);
 
-      // Expected: The Container should NOT have $data anymore, and its item should have resolved text
+      // Expected: The Container should NOT have $data anymore,
+      // and its item should have resolved text
       expect(resultJson['type'], 'Container');
       expect(resultJson.containsKey(r'$data'), false);
       expect(resultJson['items'][0]['items'][0]['text'], 'Matt');

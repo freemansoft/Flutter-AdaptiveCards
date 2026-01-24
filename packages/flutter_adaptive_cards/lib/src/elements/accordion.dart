@@ -53,7 +53,7 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
           final contentItems = itemMap['items'] ?? itemMap['body'];
           if (contentItems is List) {
             for (final c in contentItems) {
-              final el = widgetState.cardRegistry.getElement(c);
+              final el = widgetState.cardRegistry.getElement(map: c);
               children.add(el);
             }
           }

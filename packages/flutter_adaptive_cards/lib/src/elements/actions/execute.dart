@@ -26,8 +26,8 @@ class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
     super.didChangeDependencies();
     action =
         widgetState.cardRegistry.getGenericAction(
-              adaptiveMap,
-              widgetState,
+              map: adaptiveMap,
+              state: widgetState,
             )!
             as GenericExecuteAction;
   }
