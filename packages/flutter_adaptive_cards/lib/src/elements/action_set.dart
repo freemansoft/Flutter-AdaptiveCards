@@ -82,14 +82,18 @@ class ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
     switch (stringType) {
       case 'Action.ShowCard':
         return AdaptiveActionShowCard(adaptiveMap: map);
+      case 'Action.ToggleVisibility':
+        assert(false, 'Action.ToggleVisibility is not supported');
+        return AdaptiveUnknown(adaptiveMap: map, type: stringType);
       case 'Action.OpenUrl':
         return AdaptiveActionOpenUrl(adaptiveMap: map);
       case 'Action.Submit':
         return AdaptiveActionSubmit(adaptiveMap: map);
       case 'Action.Execute':
         return AdaptiveActionExecute(adaptiveMap: map);
+      default:
+        assert(false, 'No action found with type $stringType');
+        return AdaptiveUnknown(adaptiveMap: map, type: stringType);
     }
-
-    return AdaptiveUnknown(adaptiveMap: map, type: stringType);
   }
 }

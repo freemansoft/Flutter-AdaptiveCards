@@ -82,6 +82,11 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     );
   }
 
+  /// Reliable image provider loader that handles base64 and network images
+  ImageProvider getBackgroundImageProvider(String url) {
+    return AdaptiveImageUtils.getImageProvider(url);
+  }
+
   /// internal helper to resolve the background image properties from either a string or a map
   ({String url, BoxFit fit, ImageRepeat repeat})? resolveBackgroundImage(
     dynamic backgroundImage,
@@ -132,7 +137,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     if (props == null) return null;
 
     return DecorationImage(
-      image: NetworkImage(props.url),
+      image: getBackgroundImageProvider(props.url),
       repeat: props.repeat,
       fit: props.fit,
     );
