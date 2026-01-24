@@ -7,6 +7,7 @@ import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 import 'package:video_player/video_player.dart';
 
 /// Implements
@@ -99,7 +100,9 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
     }
 
     Widget getPlaceholder() {
-      return postUrl != null ? Image.network(postUrl!) : Container();
+      return postUrl != null
+          ? AdaptiveImageUtils.getImage(postUrl!)
+          : Container();
     }
 
     return SeparatorElement(

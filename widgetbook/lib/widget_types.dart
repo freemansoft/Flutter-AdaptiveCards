@@ -194,6 +194,13 @@ class Microsoft15 extends StatelessWidget {
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
+/// Stub for Github pnp Samples
+class GitHubPNPSamples extends StatelessWidget {
+  const GitHubPNPSamples({super.key});
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
+
 /// Stub for 'Form via Assets' and 'Form with initData' routes
 class Forms extends StatelessWidget {
   const Forms({super.key});

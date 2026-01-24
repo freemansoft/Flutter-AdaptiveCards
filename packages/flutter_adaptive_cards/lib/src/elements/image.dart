@@ -4,6 +4,7 @@ import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Image.html
@@ -57,17 +58,11 @@ class AdaptiveImageState extends State<AdaptiveImage>
 
     Widget image = AdaptiveTappable(
       adaptiveMap: adaptiveMap,
-      child: Image.network(
+      child: AdaptiveImageUtils.getImage(
         url,
-        semanticLabel: adaptiveMap['altText']?.toString(),
         fit: fit,
         height: height,
         width: width,
-        // errorBuilder: (context, error, stacktrace) {
-        //   return Text(
-        //     'Failed to load image: $error.',
-        //   );
-        // },
       ),
     );
 
