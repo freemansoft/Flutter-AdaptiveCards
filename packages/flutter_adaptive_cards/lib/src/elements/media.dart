@@ -40,26 +40,31 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   void initState() {
     super.initState();
 
-    final resolver = InheritedReferenceResolver.of(context).resolver;
-    final mediaConfig = resolver.getMediaConfig();
+    // https://adaptivecards.io/explorer/MediaSource.html
+    sourceUrl = adaptiveMap['sources'][0]['url']?.toString() ?? '';
 
     // https://pub.dev/packages/video_player
     if (Platform.isWindows || Platform.isLinux) {
       debugPrint(
-        'this will throw an exception because the video player is not supported on windows',
+        'this will throw an `init() has not been implemented` exception'
+        ' because the video player is not supported on some platforms',
       );
     }
-
-    String? postUrl =
-        adaptiveMap['poster']?.toString() ?? mediaConfig?.defaultPoster;
-    if (postUrl != null && postUrl.isEmpty) postUrl = null;
-
-    // https://adaptivecards.io/explorer/MediaSource.html
-    sourceUrl = adaptiveMap['sources'][0]['url']?.toString() ?? '';
 
     // We could use mediaConfig.allowInlinePlayback to decide whether to initialize player
     // but for now we'll respect it as a hint for the UI if needed.
     unawaited(initializePlayer());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final resolver = InheritedReferenceResolver.of(context).resolver;
+    final mediaConfig = resolver.getMediaConfig();
+
+    postUrl = adaptiveMap['poster']?.toString() ?? mediaConfig?.defaultPoster;
+    if (postUrl != null && postUrl!.isEmpty) postUrl = null;
   }
 
   Future<void> initializePlayer() async {

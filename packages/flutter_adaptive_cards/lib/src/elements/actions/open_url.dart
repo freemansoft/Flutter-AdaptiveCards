@@ -23,10 +23,14 @@ class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
   late String? iconUrl;
 
   @override
-  void initState() {
-    super.initState();
-
-    action = GenericActionOpenUrl(adaptiveMap, widgetState);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    action =
+        widgetState.cardRegistry.getGenericAction(
+              adaptiveMap,
+              widgetState,
+            )!
+            as GenericActionOpenUrl;
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 
 class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -18,12 +19,20 @@ class AdaptiveActionPopover extends StatefulWidget
 class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
     with AdaptiveActionMixin, AdaptiveElementMixin {
   late Map<String, dynamic>? card;
+  // used to inherit the parent's host config
+  late ReferenceResolver popupParentResolver;
 
   @override
   void initState() {
     super.initState();
     // 'card' property contains the Adaptive Card to show
     card = widget.adaptiveMap['card'] as Map<String, dynamic>? ?? {};
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    popupParentResolver = InheritedReferenceResolver.of(context).resolver;
   }
 
   @override
@@ -40,11 +49,11 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
             child: SingleChildScrollView(
-              child: RawAdaptiveCard.fromMap(
-                map: card!,
-                hostConfig: InheritedReferenceResolver.of(
-                  context,
-                ).resolver.getHostConfig(),
+              child: AdaptivePopoverContainer(
+                child: RawAdaptiveCard.fromMap(
+                  map: card!,
+                  hostConfig: popupParentResolver.getHostConfig(),
+                ),
               ),
             ),
           ),
@@ -57,6 +66,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
   Widget build(BuildContext context) {
     final resolver = InheritedReferenceResolver.of(context).resolver;
 
+    // TODO: implement the correct styling
     return SeparatorElement(
       adaptiveMap: widget.adaptiveMap,
       child: ElevatedButton(
@@ -75,5 +85,17 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
         child: Text(title),
       ),
     );
+  }
+}
+
+/// used for widget tree analysis and testing
+class AdaptivePopoverContainer extends StatelessWidget {
+  const AdaptivePopoverContainer({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return child;
   }
 }
