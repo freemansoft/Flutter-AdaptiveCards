@@ -170,7 +170,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
                   name: runtimeType.toString(),
                 );
                 return widgetState.cardRegistry.getElement(
-                  oneCellItems[widgetIndex],
+                  map: oneCellItems[widgetIndex],
                 );
               }),
             ),

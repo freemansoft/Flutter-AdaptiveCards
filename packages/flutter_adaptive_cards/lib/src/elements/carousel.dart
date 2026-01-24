@@ -87,7 +87,7 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
                 // But it could be any element if the JSON is weak.
                 // If it is CarouselPage, the Registry will pick it up (if we register it).
 
-                return widgetState.cardRegistry.getElement(pageContent);
+                return widgetState.cardRegistry.getElement(map: pageContent);
               },
             ),
           ),
@@ -148,7 +148,7 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     final items = widget.adaptiveMap['items']; // Content is in "items"
     if (items is List) {
       for (final item in items) {
-        children.add(widgetState.cardRegistry.getElement(item));
+        children.add(widgetState.cardRegistry.getElement(map: item));
       }
     }
   }

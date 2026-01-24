@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
 void main() {
@@ -31,7 +32,7 @@ void main() {
         jsonMap.remove(r'$sampleData');
 
         // Write back template
-        final encoder = JsonEncoder.withIndent('  ');
+        const encoder = JsonEncoder.withIndent('  ');
         file.writeAsStringSync(encoder.convert(jsonMap));
 
         // Write data file
@@ -45,10 +46,10 @@ void main() {
 
         File(dataFilePath).writeAsStringSync(encoder.convert(sampleData));
 
-        print('Processed: ${file.path} -> Created: $dataFilePath');
+        debugPrint('Processed: ${file.path} -> Created: $dataFilePath');
       }
     } catch (e) {
-      print('Error processing ${file.path}: $e');
+      debugPrint('Error processing ${file.path}: $e');
     }
   }
 }

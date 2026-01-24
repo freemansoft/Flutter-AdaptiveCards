@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_template/flutter_adaptive_template.dart';
 
 void main() {
@@ -11,10 +12,10 @@ void main() {
 
   for (final dir in directories) {
     if (!dir.existsSync()) {
-      print('Directory not found: ${dir.path}');
+      debugPrint('Directory not found: ${dir.path}');
       continue;
     }
-    print('Processing directory: ${dir.path}');
+    debugPrint('Processing directory: ${dir.path}');
 
     final dataFiles = dir
         .listSync(recursive: true)
@@ -31,7 +32,7 @@ void main() {
       final templateFile = File(templatePath);
 
       if (!templateFile.existsSync()) {
-        print('Template not found for ${dataFile.path}');
+        debugPrint('Template not found for ${dataFile.path}');
         continue;
       }
 
@@ -46,7 +47,7 @@ void main() {
 
         // Formatting the result to be readable
         final resultJson = json.decode(result);
-        final encoder = JsonEncoder.withIndent('  ');
+        const encoder = JsonEncoder.withIndent('  ');
         final outputContent = encoder.convert(resultJson);
 
         final outputPath = dataFile.path.replaceAll(
@@ -55,10 +56,10 @@ void main() {
         );
         File(outputPath).writeAsStringSync(outputContent);
 
-        print('Generated output: $outputPath');
+        debugPrint('Generated output: $outputPath');
       } catch (e) {
-        print('Error processing ${dataFile.path}: $e');
-        print(e);
+        debugPrint('Error processing ${dataFile.path}: $e');
+        debugPrint(e.toString());
       }
     }
   }

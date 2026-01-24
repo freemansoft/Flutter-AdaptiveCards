@@ -43,8 +43,8 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
     if (adaptiveMap.containsKey('selectAction')) {
       action = widgetState.cardRegistry.getGenericAction(
-        adaptiveMap['selectAction'],
-        widgetState,
+        map: adaptiveMap['selectAction'],
+        state: widgetState,
       );
     }
 
@@ -81,7 +81,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
             child,
           ) {
             return widgetState.cardRegistry.getElement(
-              child,
+              map: child,
               parentMode: mode,
             );
           }).toList()

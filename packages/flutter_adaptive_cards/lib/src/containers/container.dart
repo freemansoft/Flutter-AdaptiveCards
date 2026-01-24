@@ -32,7 +32,7 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
       children = List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
         child,
       ) {
-        return widgetState.cardRegistry.getElement(child);
+        return widgetState.cardRegistry.getElement(map: child);
       }).toList();
     } else {
       children = [];

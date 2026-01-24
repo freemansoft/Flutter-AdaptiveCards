@@ -19,27 +19,31 @@ void main() {
 
   testWidgets('Basic types return', (tester) async {
     const CardRegistry cardRegistry = CardRegistry();
-    final Widget adaptiveElement = cardRegistry.getElement({
-      'type': 'TextBlock',
-      'text': 'Adaptive Card design session',
-      'size': 'large',
-      'weight': 'bolder',
-    });
+    final Widget adaptiveElement = cardRegistry.getElement(
+      map: {
+        'type': 'TextBlock',
+        'text': 'Adaptive Card design session',
+        'size': 'large',
+        'weight': 'bolder',
+      },
+    );
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveTextBlock));
 
-    final Widget second = cardRegistry.getElement({
-      'type': 'Media',
-      'poster':
-          'https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png',
-      'sources': [
-        {
-          'mimeType': 'video/mp4',
-          'url':
-              'https://cdn.adaptivecards.io/assets/AdaptiveCardsOverviewVideo.mp4',
-        },
-      ],
-    });
+    final Widget second = cardRegistry.getElement(
+      map: {
+        'type': 'Media',
+        'poster':
+            'https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png',
+        'sources': [
+          {
+            'mimeType': 'video/mp4',
+            'url':
+                'https://cdn.adaptivecards.io/assets/AdaptiveCardsOverviewVideo.mp4',
+          },
+        ],
+      },
+    );
 
     expect(second.runtimeType, equals(AdaptiveMedia));
   });
@@ -47,7 +51,9 @@ void main() {
   testWidgets('Unknown element', (tester) async {
     const CardRegistry cardRegistry = CardRegistry();
 
-    final Widget adaptiveElement = cardRegistry.getElement({'type': 'NoType'});
+    final Widget adaptiveElement = cardRegistry.getElement(
+      map: {'type': 'NoType'},
+    );
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
 
@@ -61,12 +67,14 @@ void main() {
       removedElements: ['TextBlock'],
     );
 
-    final Widget adaptiveElement = cardRegistry.getElement({
-      'type': 'TextBlock',
-      'text': 'Adaptive Card design session',
-      'size': 'large',
-      'weight': 'bolder',
-    });
+    final Widget adaptiveElement = cardRegistry.getElement(
+      map: {
+        'type': 'TextBlock',
+        'text': 'Adaptive Card design session',
+        'size': 'large',
+        'weight': 'bolder',
+      },
+    );
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
 
@@ -80,7 +88,7 @@ void main() {
       addedElements: {'Test': (map) => _TestAddition()},
     );
 
-    final element = cardRegistry.getElement({'type': 'Test'});
+    final element = cardRegistry.getElement(map: {'type': 'Test'});
 
     expect(element.runtimeType, equals(_TestAddition));
 

@@ -87,8 +87,8 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
     super.initState();
     if (adaptiveMap.containsKey('selectAction')) {
       action = widgetState.cardRegistry.getGenericAction(
-        adaptiveMap['selectAction'],
-        widgetState,
+        map: adaptiveMap['selectAction'],
+        state: widgetState,
       );
     }
   }
