@@ -109,7 +109,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
   @override
   Widget build(BuildContext context) {
-    final double? preceedingSpacing = SpacingsConfig.resolveSpacing(
+    final double preceedingSpacing = SpacingsConfig.resolveSpacing(
       InheritedReferenceResolver.of(
         context,
       ).resolver.getSpacingsConfig(),
@@ -135,7 +135,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
           // we need this container to be the same size as the row element
           // so that all the columns are the same height
           alignment: containerHorizontalAlignment,
-          padding: EdgeInsets.only(left: preceedingSpacing ?? 0),
+          padding: EdgeInsets.only(left: preceedingSpacing),
           decoration: getDecorationFromMap(
             adaptiveMap,
             backgroundColor: backgroundColor,

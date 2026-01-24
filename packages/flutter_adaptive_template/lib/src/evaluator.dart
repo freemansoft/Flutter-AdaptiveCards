@@ -1,7 +1,16 @@
+// JSON conversion can be a lot of things so it is dynamic
+// ignore_for_file: strict_raw_type
+
 import 'dart:convert';
 import 'package:flutter_adaptive_template/src/resolver.dart';
 
+/// template expression evaluator
 class Evaluator {
+  /// create a new evaluator
+  Evaluator(this._rootData) {
+    _dataStack.add(_rootData);
+    _scopeStack.add({r'$root': _rootData});
+  }
   final Map<String, dynamic> _rootData;
 
   // Stack of data contexts. The last one is the current '$data'.
@@ -11,11 +20,7 @@ class Evaluator {
   // $index, $root, etc.
   final List<Map<String, dynamic>> _scopeStack = [];
 
-  Evaluator(this._rootData) {
-    _dataStack.add(_rootData);
-    _scopeStack.add({'\$root': _rootData});
-  }
-
+  /// expand the template
   String expand(Map<String, dynamic> template) {
     // 1. Traverse and expand
     final result = _expandValue(template);
@@ -36,13 +41,14 @@ class Evaluator {
 
   dynamic _expandString(String value) {
     // Check for expression syntax ${...}
-    // This is a simplified regex, might need a proper parser for nested braces etc.
+    // Is a simplified regex, might need a proper parser for nested braces etc.
     // For now, let's assume simple cases or match the full string.
 
     final pattern = RegExp(r'\$\{(.*?)\}');
     final matches = pattern.allMatches(value);
 
-    // If exact match "${expression}", return the evaluated value (can be object, list, etc)
+    // If exact match "${expression}",
+    //  return the evaluated value (can be object, list, etc)
     if (matches.length == 1) {
       final match = matches.first;
       if (match.start == 0 && match.end == value.length) {
@@ -59,7 +65,7 @@ class Evaluator {
 
   dynamic _expandList(List value) {
     final expandedList = <dynamic>[];
-    for (var item in value) {
+    for (final item in value) {
       // Handle array iteration if needed here or in map expansion?
       // Actually, $data on an element repeats that element.
       // But if 'item' is just a string, expand it.
@@ -103,14 +109,16 @@ class Evaluator {
 
       if (newData is List) {
         // Repeater!
+        // I like types for readability
+        // ignore: omit_local_variable_types
         final List<dynamic> resultList = [];
         final originalTemplateWithoutData = Map<String, dynamic>.from(value);
         originalTemplateWithoutData.remove(r'$data');
 
         var index = 0;
-        for (var item in newData) {
+        for (final item in newData) {
           _dataStack.add(item);
-          _scopeStack.add({'\$root': _rootData, '\$index': index});
+          _scopeStack.add({r'$root': _rootData, r'$index': index});
 
           final expandedItem = _expandMapObject(originalTemplateWithoutData);
           if (expandedItem != null) {
@@ -125,7 +133,7 @@ class Evaluator {
       } else {
         // Scope change
         _dataStack.add(newData);
-        _scopeStack.add({'\$root': _rootData}); // index not available?
+        _scopeStack.add({r'$root': _rootData}); // index not available?
         pushedScope = true;
       }
     }
@@ -168,14 +176,14 @@ class Evaluator {
       if (!condition) return null;
     }
 
-    for (var entry in value.entries) {
+    for (final entry in value.entries) {
       if (entry.key == r'$data' || entry.key == r'$when') continue;
 
       final key =
           entry.key; // Keys can also be templated? "Implicitly binds..."
       // Spec says: "${<property>}": "Implicitly binds..."
 
-      // TODO: Key expansion? For now assuming static keys.
+      // TODO(username): Key expansion? For now assuming static keys.
 
       final expandedVal = _expandValue(entry.value);
       newMap[key as String] = expandedVal;
@@ -184,12 +192,12 @@ class Evaluator {
   }
 
   dynamic _evaluateExpression(String expression) {
-    var expr = expression.trim();
+    final expr = expression.trim();
 
     // 1. Literal Strings
     if ((expr.startsWith("'") && expr.endsWith("'")) ||
         (expr.startsWith('"') && expr.endsWith('"'))) {
-      if (expr.length < 2) return "";
+      if (expr.length < 2) return '';
       return expr.substring(1, expr.length - 1);
     }
 
@@ -238,9 +246,9 @@ class Evaluator {
 
       // Known functions
       if (funcName == 'json' || funcName == 'if') {
-        int balance = 0;
-        int closeParen = -1;
-        for (int i = openParen; i < expr.length; i++) {
+        var balance = 0;
+        var closeParen = -1;
+        for (var i = openParen; i < expr.length; i++) {
           if (expr[i] == '(') balance++;
           if (expr[i] == ')') balance--;
           if (balance == 0) {
@@ -279,10 +287,11 @@ class Evaluator {
           // Resolve remaining path if any
           if (after.isNotEmpty) {
             String? p;
-            if (after.startsWith('.'))
+            if (after.startsWith('.')) {
               p = after.substring(1);
-            else if (after.startsWith('['))
+            } else if (after.startsWith('[')) {
               p = after;
+            }
 
             if (p != null) {
               return Resolver.resolve(result, p);
