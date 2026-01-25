@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
@@ -27,10 +28,16 @@ class SearchModel {
 }
 
 class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveChoiceSet({super.key, required this.adaptiveMap});
+  AdaptiveChoiceSet({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveChoiceSetState createState() => AdaptiveChoiceSetState();
@@ -145,6 +152,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

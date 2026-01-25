@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
 /// https://adaptivecards.microsoft.com/?topic=CodeBlock
 ///
@@ -10,10 +11,17 @@ import 'package:flutter_adaptive_cards/src/additional.dart';
 // TODO(username): Support collapse to specific number of lines
 //
 class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveCodeBlock({super.key, required this.adaptiveMap});
+  AdaptiveCodeBlock({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveCodeBlockState createState() => AdaptiveCodeBlockState();
@@ -28,9 +36,9 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
   @override
   void initState() {
     super.initState();
-    codeSnippet = widget.adaptiveMap['code']?.toString() ?? '';
-    language = widget.adaptiveMap['language']?.toString();
-    startLineNumber = widget.adaptiveMap['startLineNumber'] as int? ?? 1;
+    codeSnippet = adaptiveMap['code']?.toString() ?? '';
+    language = adaptiveMap['language']?.toString();
+    startLineNumber = adaptiveMap['startLineNumber'] as int? ?? 1;
   }
 
   @override
@@ -54,7 +62,8 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
     );
 
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(

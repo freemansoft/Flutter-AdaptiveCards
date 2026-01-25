@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:format/format.dart';
 
 ///
@@ -17,11 +18,16 @@ class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTable({
     super.key,
     required this.adaptiveMap,
+    required this.widgetState,
     required this.supportMarkdown,
   });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
+
   final bool supportMarkdown;
 
   @override
@@ -54,6 +60,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
   Widget build(BuildContext context) {
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Table(
         border: TableBorder.all(),
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -171,6 +178,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
                 );
                 return widgetState.cardRegistry.getElement(
                   map: oneCellItems[widgetIndex],
+                  widgetState: widgetState,
                 );
               }),
             ),

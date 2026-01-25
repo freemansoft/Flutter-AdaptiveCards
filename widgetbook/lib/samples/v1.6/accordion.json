@@ -10,20 +10,33 @@
     },
     {
       "type": "Accordion",
+      "id": "theAccordion",
       "items": [
         {
           "type": "AccordionPage",
           "title": "Section 1",
           "items": [
-             { "type": "TextBlock", "text": "Content of Section 1" }
+            {
+              "type": "TextBlock",
+              "text": "Content of Section 1",
+              "id": "section1TextBlock"
+            }
           ]
         },
         {
           "type": "AccordionPage",
           "title": "Section 2",
           "items": [
-             { "type": "TextBlock", "text": "Content of Section 2" },
-             { "type": "Image", "url": "https://adaptivecards.io/content/cats/3.png" }
+            {
+              "type": "TextBlock",
+              "text": "Content of Section 2",
+              "id": "section2TextBlock"
+            },
+            {
+              "type": "Image",
+              "url": "https://adaptivecards.io/content/cats/3.png",
+              "id": "section2Image"
+            }
           ]
         }
       ]

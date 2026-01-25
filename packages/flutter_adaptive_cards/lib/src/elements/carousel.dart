@@ -3,13 +3,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveCarousel({super.key, required this.adaptiveMap});
+  AdaptiveCarousel({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveCarouselState createState() => AdaptiveCarouselState();
@@ -26,13 +34,13 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
   @override
   void initState() {
     super.initState();
-    final pagesList = widget.adaptiveMap['pages'];
+    final pagesList = adaptiveMap['pages'];
     if (pagesList is List) {
       pages = List<Map<String, dynamic>>.from(pagesList);
     } else {
       pages = [];
     }
-    initialPage = widget.adaptiveMap['initialPage'] as int? ?? 0;
+    initialPage = adaptiveMap['initialPage'] as int? ?? 0;
     if (initialPage < 0 || initialPage >= pages.length) initialPage = 0;
     _currentIndex = initialPage;
 
@@ -69,7 +77,8 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
     // The previous implementation used a SeparatorElement. We should probably keep that.
 
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Column(
         mainAxisSize: MainAxisSize.min, // Wrap content
         children: [
@@ -87,7 +96,10 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
                 // But it could be any element if the JSON is weak.
                 // If it is CarouselPage, the Registry will pick it up (if we register it).
 
-                return widgetState.cardRegistry.getElement(map: pageContent);
+                return widgetState.cardRegistry.getElement(
+                  map: pageContent,
+                  widgetState: widgetState,
+                );
               },
             ),
           ),
@@ -128,10 +140,17 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
 
 class AdaptiveCarouselPage extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveCarouselPage({super.key, required this.adaptiveMap});
+  AdaptiveCarouselPage({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveCarouselPageState createState() => AdaptiveCarouselPageState();
@@ -145,18 +164,23 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
   void initState() {
     super.initState();
     children = [];
-    final items = widget.adaptiveMap['items']; // Content is in "items"
+    final items = adaptiveMap['items']; // Content is in "items"
     if (items is List) {
       for (final item in items) {
-        children.add(widgetState.cardRegistry.getElement(map: item));
+        children.add(
+          widgetState.cardRegistry.getElement(
+            map: item,
+            widgetState: widgetState,
+          ),
+        );
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool showBorder = widget.adaptiveMap['showBorder'] == true;
-    final bool roundedCorners = widget.adaptiveMap['roundedCorners'] == true;
+    final bool showBorder = adaptiveMap['showBorder'] == true;
+    final bool roundedCorners = adaptiveMap['roundedCorners'] == true;
 
     // Resolve background color based on style
     // We can use ReferenceResolver logic or simple map for now.
@@ -167,7 +191,7 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     final Color? backgroundColor = InheritedReferenceResolver.of(context)
         .resolver
         .resolveContainerBackgroundColor(
-          style: widget.adaptiveMap['style'],
+          style: adaptiveMap['style'],
         );
 
     BoxDecoration? decoration;

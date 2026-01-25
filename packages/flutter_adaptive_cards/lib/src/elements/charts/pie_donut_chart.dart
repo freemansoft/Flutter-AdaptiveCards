@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
 ///
 /// https://adaptivecards.microsoft.com/?topic=Chart.Pie
@@ -11,11 +12,14 @@ class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptivePieChart({
     super.key,
     required this.adaptiveMap,
+    required this.widgetState,
     this.isDonut = false,
   });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+  @override
+  final RawAdaptiveCardState widgetState;
   final bool isDonut;
 
   @override
@@ -37,7 +41,7 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
     // The user linked samples. I don't have them but standard chart data usually has values, labels, colors.
 
     // Let's assume a "data" property which is a List.
-    final data = widget.adaptiveMap['data'];
+    final data = adaptiveMap['data'];
     sections = [];
 
     if (data is List) {
@@ -76,7 +80,8 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
   @override
   Widget build(BuildContext context) {
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: SizedBox(
         height: 200,
         child: PieChart(

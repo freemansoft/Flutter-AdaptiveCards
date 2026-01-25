@@ -1,50 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
-class SeparatorElement extends StatefulWidget
-    implements AdaptiveElementWidgetMixin {
+class SeparatorElement extends StatelessWidget {
   const SeparatorElement({
     super.key,
     required this.adaptiveMap,
+    required this.widgetState,
     required this.child,
   });
-  @override
+
   final Map<String, dynamic> adaptiveMap;
+
+  final RawAdaptiveCardState widgetState;
 
   final Widget child;
 
   @override
-  SeparatorElementState createState() => SeparatorElementState();
-}
-
-class SeparatorElementState extends State<SeparatorElement>
-    with AdaptiveElementMixin {
-  late double topSpacing;
-  late bool separator;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    topSpacing = SpacingsConfig.resolveSpacing(
+  Widget build(BuildContext context) {
+    final topSpacing = SpacingsConfig.resolveSpacing(
       InheritedReferenceResolver.of(
         context,
       ).resolver.getSpacingsConfig(),
       adaptiveMap['spacing'],
     );
 
-    separator = adaptiveMap['separator'] as bool? ?? false;
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    final separator = adaptiveMap['separator'] as bool? ?? false;
     if (!separator) {
       return Container(
         padding: EdgeInsets.only(top: topSpacing),
-        child: widget.child,
+        child: child,
       );
     } else {
       final resolver = InheritedReferenceResolver.of(context).resolver;
@@ -59,7 +48,7 @@ class SeparatorElementState extends State<SeparatorElement>
             thickness: separatorConfig?.lineThickness.toDouble(),
             color: color,
           ),
-          widget.child,
+          child,
         ],
       );
     }
@@ -67,12 +56,20 @@ class SeparatorElementState extends State<SeparatorElement>
 }
 
 class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTappable({super.key, required this.child, required this.adaptiveMap});
+  AdaptiveTappable({
+    super.key,
+    required this.child,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   final Widget child;
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveTappableState createState() => AdaptiveTappableState();
@@ -85,6 +82,7 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
   @override
   void initState() {
     super.initState();
+    // The selectAction could be anyone of the action types
     if (adaptiveMap.containsKey('selectAction')) {
       action = widgetState.cardRegistry.getGenericAction(
         map: adaptiveMap['selectAction'],

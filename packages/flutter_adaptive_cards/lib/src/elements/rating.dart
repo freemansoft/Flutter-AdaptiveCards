@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
 class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveRating({super.key, required this.adaptiveMap});
+  AdaptiveRating({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveRatingState createState() => AdaptiveRatingState();
@@ -22,10 +29,10 @@ class AdaptiveRatingState extends State<AdaptiveRating>
   @override
   void initState() {
     super.initState();
-    value = (widget.adaptiveMap['value'] as num? ?? 0).toDouble();
-    max = (widget.adaptiveMap['max'] as num? ?? 5).toDouble();
-    color = widget.adaptiveMap['color'] as String? ?? 'neutral';
-    size = widget.adaptiveMap['size'] as String? ?? 'medium';
+    value = (adaptiveMap['value'] as num? ?? 0).toDouble();
+    max = (adaptiveMap['max'] as num? ?? 5).toDouble();
+    color = adaptiveMap['color'] as String? ?? 'neutral';
+    size = adaptiveMap['size'] as String? ?? 'medium';
   }
 
   @override
@@ -42,7 +49,8 @@ class AdaptiveRatingState extends State<AdaptiveRating>
     final double iconSize = size == 'large' ? 24 : 16;
 
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: List.generate(max.toInt(), (index) {

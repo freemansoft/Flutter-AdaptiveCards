@@ -18,7 +18,7 @@ void main() {
   setUp(() {});
 
   testWidgets('Basic types return', (tester) async {
-    const CardRegistry cardRegistry = CardRegistry();
+    const CardTypeRegistry cardRegistry = CardTypeRegistry();
     final Widget adaptiveElement = cardRegistry.getElement(
       map: {
         'type': 'TextBlock',
@@ -26,6 +26,7 @@ void main() {
         'size': 'large',
         'weight': 'bolder',
       },
+      widgetState: MockAdaptiveCardState(),
     );
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveTextBlock));
@@ -43,16 +44,18 @@ void main() {
           },
         ],
       },
+      widgetState: MockAdaptiveCardState(),
     );
 
     expect(second.runtimeType, equals(AdaptiveMedia));
   });
 
   testWidgets('Unknown element', (tester) async {
-    const CardRegistry cardRegistry = CardRegistry();
+    const CardTypeRegistry cardRegistry = CardTypeRegistry();
 
     final Widget adaptiveElement = cardRegistry.getElement(
       map: {'type': 'NoType'},
+      widgetState: MockAdaptiveCardState(),
     );
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
@@ -63,7 +66,7 @@ void main() {
   });
 
   testWidgets('Removed element', (tester) async {
-    const CardRegistry cardRegistry = CardRegistry(
+    const CardTypeRegistry cardRegistry = CardTypeRegistry(
       removedElements: ['TextBlock'],
     );
 
@@ -74,6 +77,7 @@ void main() {
         'size': 'large',
         'weight': 'bolder',
       },
+      widgetState: MockAdaptiveCardState(),
     );
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
@@ -84,11 +88,14 @@ void main() {
   });
 
   testWidgets('Add element', (tester) async {
-    final CardRegistry cardRegistry = CardRegistry(
+    final CardTypeRegistry cardRegistry = CardTypeRegistry(
       addedElements: {'Test': (map) => _TestAddition()},
     );
 
-    final element = cardRegistry.getElement(map: {'type': 'Test'});
+    final element = cardRegistry.getElement(
+      map: {'type': 'Test'},
+      widgetState: MockAdaptiveCardState(),
+    );
 
     expect(element.runtimeType, equals(_TestAddition));
 

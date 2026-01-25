@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
@@ -8,10 +9,17 @@ import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 /// https://adaptivecards.io/explorer/Container.html
 ///
 class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveContainer({super.key, required this.adaptiveMap});
+  AdaptiveContainer({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveContainerState createState() => AdaptiveContainerState();
@@ -32,7 +40,10 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
       children = List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
         child,
       ) {
-        return widgetState.cardRegistry.getElement(map: child);
+        return widgetState.cardRegistry.getElement(
+          map: child,
+          widgetState: widgetState,
+        );
       }).toList();
     } else {
       children = [];
@@ -67,8 +78,10 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
       adaptiveMap: adaptiveMap,
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
         child: SeparatorElement(
           adaptiveMap: adaptiveMap,
+          widgetState: widgetState,
           child: Container(
             decoration: getDecorationFromMap(
               adaptiveMap,

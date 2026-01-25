@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class AdaptiveProgressBar extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveProgressBar({super.key, required this.adaptiveMap});
+  AdaptiveProgressBar({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveProgressBarState createState() => AdaptiveProgressBarState();
@@ -27,8 +35,8 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
     super.initState();
     // percent is usually 0-100 in AC, LinearProgressIndicator takes 0.0-1.0
     // If value is missing, percent is null -> indeterminate
-    if (widget.adaptiveMap.containsKey('value')) {
-      final val = widget.adaptiveMap['value'];
+    if (adaptiveMap.containsKey('value')) {
+      final val = adaptiveMap['value'];
       if (val != null) {
         percent = (val as num).toDouble() / 100.0;
         if (percent! < 0) percent = 0;
@@ -38,13 +46,13 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
       percent = null;
     }
 
-    separator = widget.adaptiveMap['separator'] == true;
+    separator = adaptiveMap['separator'] == true;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final colorString = widget.adaptiveMap['color']?.toString();
+    final colorString = adaptiveMap['color']?.toString();
     progressColor = ProgressColorsConfig.resolveProgressColor(
       config: InheritedReferenceResolver.of(
         context,
@@ -79,7 +87,8 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
     final content = progressBar;
 
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: content,
     );
   }

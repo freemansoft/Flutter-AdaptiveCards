@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards/src/adaptive_element.dart';
 import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/containers/column_set.dart';
 import 'package:flutter_adaptive_cards/src/containers/container.dart';
@@ -56,8 +55,8 @@ typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 ///
 /// Delete an element even if you have provided it yourself via the [addedElements]
 ///
-class CardRegistry {
-  const CardRegistry({
+class CardTypeRegistry {
+  const CardTypeRegistry({
     this.removedElements = const [],
     this.addedElements = const {},
     this.addedActions = const {},
@@ -80,14 +79,22 @@ class CardRegistry {
 
   final bool listView;
 
+  ///
+  /// Gets an element from the type registry based on the 'type' property of the map
+  ///
   Widget getElement({
     required Map<String, dynamic> map,
+    required RawAdaptiveCardState widgetState,
     String parentMode = 'stretch',
   }) {
     final String stringType = map['type'] as String;
 
     if (removedElements.contains(stringType)) {
-      return AdaptiveUnknown(type: stringType, adaptiveMap: map);
+      return AdaptiveUnknown(
+        type: stringType,
+        adaptiveMap: map,
+        widgetState: widgetState,
+      );
     }
 
     if (addedElements.containsKey(stringType)) {
@@ -95,12 +102,16 @@ class CardRegistry {
     } else {
       return _getBaseElement(
         map: map,
+        widgetState: widgetState,
         parentMode: parentMode,
         supportMarkdown: supportMarkdown,
       );
     }
   }
 
+  ///
+  /// Gets an action from the action type registry based on the 'type' property of the map
+  ///
   GenericAction? getGenericAction({
     required Map<String, dynamic> map,
     required RawAdaptiveCardState state,
@@ -152,18 +163,25 @@ class CardRegistry {
     }
   }
 
-  Widget getAction({required Map<String, dynamic> map}) {
+  Widget getAction({
+    required Map<String, dynamic> map,
+    required RawAdaptiveCardState state,
+  }) {
     final String stringType = map['type'] as String;
 
     if (removedElements.contains(stringType)) {
-      return AdaptiveUnknown(adaptiveMap: map, type: stringType);
+      return AdaptiveUnknown(
+        adaptiveMap: map,
+        widgetState: state,
+        type: stringType,
+      );
     }
 
     if (addedActions.containsKey(stringType)) {
       return addedActions[stringType]!(map);
     }
 
-    return _getActionWidget(map: map);
+    return _getActionWidget(map: map, widgetState: state);
   }
 
   /// This returns an [AdaptiveElement] with the correct type.
@@ -171,6 +189,7 @@ class CardRegistry {
   /// It looks at the 'type' property and decides which object to construct
   Widget _getBaseElement({
     required Map<String, dynamic> map,
+    required RawAdaptiveCardState widgetState,
     String parentMode = 'stretch',
     required bool supportMarkdown,
   }) {
@@ -178,136 +197,206 @@ class CardRegistry {
 
     switch (stringType) {
       case 'Media':
-        return AdaptiveMedia(adaptiveMap: map);
+        return AdaptiveMedia(adaptiveMap: map, widgetState: widgetState);
       case 'Container':
-        return AdaptiveContainer(adaptiveMap: map);
+        return AdaptiveContainer(adaptiveMap: map, widgetState: widgetState);
       case 'TextBlock':
         return AdaptiveTextBlock(
           adaptiveMap: map,
+          widgetState: widgetState,
           supportMarkdown: supportMarkdown,
         );
       case 'ActionSet':
-        return ActionSet(adaptiveMap: map);
+        return ActionSet(adaptiveMap: map, widgetState: widgetState);
       case 'AdaptiveCard':
-        return AdaptiveCardElement(adaptiveMap: map, listView: listView);
+        return AdaptiveCardElement(
+          adaptiveMap: map,
+          widgetState: widgetState,
+          listView: listView,
+        );
       case 'ColumnSet':
         return AdaptiveColumnSet(
           adaptiveMap: map,
+          widgetState: widgetState,
           supportMarkdown: supportMarkdown,
         );
       case 'Image':
         return AdaptiveImage(
           adaptiveMap: map,
+          widgetState: widgetState,
           parentMode: parentMode,
           supportMarkdown: supportMarkdown,
         );
       case 'FactSet':
-        return AdaptiveFactSet(adaptiveMap: map);
+        return AdaptiveFactSet(adaptiveMap: map, widgetState: widgetState);
       case 'Table':
         return AdaptiveTable(
           adaptiveMap: map,
+          widgetState: widgetState,
           supportMarkdown: supportMarkdown,
         );
       case 'ImageSet':
         return AdaptiveImageSet(
           adaptiveMap: map,
+          widgetState: widgetState,
           supportMarkdown: supportMarkdown,
         );
       case 'Input.Text':
-        return AdaptiveTextInput(adaptiveMap: map);
+        return AdaptiveTextInput(adaptiveMap: map, widgetState: widgetState);
       case 'Input.Number':
-        return AdaptiveNumberInput(adaptiveMap: map);
+        return AdaptiveNumberInput(adaptiveMap: map, widgetState: widgetState);
       case 'Input.Date':
-        return AdaptiveDateInput(adaptiveMap: map);
+        return AdaptiveDateInput(adaptiveMap: map, widgetState: widgetState);
       case 'Input.Time':
-        return AdaptiveTimeInput(adaptiveMap: map);
+        return AdaptiveTimeInput(adaptiveMap: map, widgetState: widgetState);
       case 'Input.Toggle':
-        return AdaptiveToggle(adaptiveMap: map);
+        return AdaptiveToggle(adaptiveMap: map, widgetState: widgetState);
       case 'Input.ChoiceSet':
-        return AdaptiveChoiceSet(adaptiveMap: map);
+        return AdaptiveChoiceSet(adaptiveMap: map, widgetState: widgetState);
 
       // New Elements
       case 'Badge':
-        return AdaptiveBadge(adaptiveMap: map);
+        return AdaptiveBadge(adaptiveMap: map, widgetState: widgetState);
       case 'Rating':
       case 'Input.Rating': // Just in case
-        return AdaptiveRating(adaptiveMap: map);
+        return AdaptiveRating(adaptiveMap: map, widgetState: widgetState);
       case 'CodeBlock':
-        return AdaptiveCodeBlock(adaptiveMap: map);
+        return AdaptiveCodeBlock(adaptiveMap: map, widgetState: widgetState);
       case 'ProgressBar':
-        return AdaptiveProgressBar(adaptiveMap: map);
+        return AdaptiveProgressBar(adaptiveMap: map, widgetState: widgetState);
       case 'ProgressRing':
-        return AdaptiveProgressRing(adaptiveMap: map);
+        return AdaptiveProgressRing(adaptiveMap: map, widgetState: widgetState);
       case 'CompoundButton':
-        return AdaptiveCompoundButton(adaptiveMap: map);
+        return AdaptiveCompoundButton(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       case 'Carousel':
-        return AdaptiveCarousel(adaptiveMap: map);
+        return AdaptiveCarousel(adaptiveMap: map, widgetState: widgetState);
       case 'CarouselPage':
-        return AdaptiveCarouselPage(adaptiveMap: map);
+        return AdaptiveCarouselPage(adaptiveMap: map, widgetState: widgetState);
       case 'Accordion':
-        return AdaptiveAccordion(adaptiveMap: map);
+        return AdaptiveAccordion(adaptiveMap: map, widgetState: widgetState);
       case 'TabSet':
       case 'TabPage': // Fallback if TabPage is used as container or we map it to TabSet
         // Actually "TabPage" is likely a child. But if user used "Other" for type...
         // Let's support TabSet as the container.
-        return AdaptiveTabSet(adaptiveMap: map);
+        return AdaptiveTabSet(adaptiveMap: map, widgetState: widgetState);
 
       // Charts
       case 'Chart.Donut':
-        return AdaptivePieChart(adaptiveMap: map, isDonut: true);
+        return AdaptivePieChart(
+          adaptiveMap: map,
+          isDonut: true,
+          widgetState: widgetState,
+        );
       case 'Chart.Pie':
-        return AdaptivePieChart(adaptiveMap: map, isDonut: false);
+        return AdaptivePieChart(
+          adaptiveMap: map,
+          isDonut: false,
+          widgetState: widgetState,
+        );
       case 'Chart.Gauge':
         // Implementing Gauge as Donut for now (or Pie)
-        return AdaptivePieChart(adaptiveMap: map, isDonut: true);
+        return AdaptivePieChart(
+          adaptiveMap: map,
+          isDonut: true,
+          widgetState: widgetState,
+        );
 
       case 'Chart.Line':
-        return AdaptiveLineChart(adaptiveMap: map);
+        return AdaptiveLineChart(adaptiveMap: map, widgetState: widgetState);
 
       case 'Chart.VerticalBar':
-        return AdaptiveBarChart(adaptiveMap: map, type: BarChartType.vertical);
+        return AdaptiveBarChart(
+          adaptiveMap: map,
+          type: BarChartType.vertical,
+          widgetState: widgetState,
+        );
       case 'Chart.HorizontalBar':
         return AdaptiveBarChart(
           adaptiveMap: map,
+          widgetState: widgetState,
           type: BarChartType.horizontal,
         );
       case 'Chart.HorizontalBar.Stacked':
         return AdaptiveBarChart(
           adaptiveMap: map,
+          widgetState: widgetState,
           type: BarChartType.horizontalStacked,
         );
       case 'Chart.VerticalBar.Grouped':
-        return AdaptiveBarChart(adaptiveMap: map, type: BarChartType.grouped);
+        return AdaptiveBarChart(
+          adaptiveMap: map,
+          widgetState: widgetState,
+          type: BarChartType.grouped,
+        );
     }
-    return AdaptiveUnknown(adaptiveMap: map, type: stringType);
+    return AdaptiveUnknown(
+      adaptiveMap: map,
+      widgetState: widgetState,
+      type: stringType,
+    );
   }
 
-  Widget _getActionWidget({required Map<String, dynamic> map}) {
+  Widget _getActionWidget({
+    required Map<String, dynamic> map,
+    required RawAdaptiveCardState widgetState,
+  }) {
     final String stringType = map['type'] as String;
 
     switch (stringType) {
       case 'Action.ShowCard':
-        return AdaptiveActionShowCard(adaptiveMap: map);
+        return AdaptiveActionShowCard(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       case 'Action.OpenUrl':
-        return AdaptiveActionOpenUrl(adaptiveMap: map);
+        return AdaptiveActionOpenUrl(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       case 'Action.Submit':
-        return AdaptiveActionSubmit(adaptiveMap: map);
+        return AdaptiveActionSubmit(adaptiveMap: map, widgetState: widgetState);
       case 'Action.Execute':
-        return AdaptiveActionExecute(adaptiveMap: map);
+        return AdaptiveActionExecute(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       case 'Action.ResetInputs':
-        return AdaptiveActionResetInputs(adaptiveMap: map);
+        return AdaptiveActionResetInputs(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       case 'Action.Popover':
-        return AdaptiveActionPopover(adaptiveMap: map);
+        return AdaptiveActionPopover(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       case 'Action.OpenUrlDialog':
-        return AdaptiveActionOpenUrlDialog(adaptiveMap: map); // Custom wrapper
+        return AdaptiveActionOpenUrlDialog(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        ); // Custom wrapper
       case 'Action.ToggleVisibility':
         assert(false, 'Action.ToggleVisibility is not supported');
-        return AdaptiveUnknown(adaptiveMap: map, type: stringType);
+        return AdaptiveUnknown(
+          adaptiveMap: map,
+          widgetState: widgetState,
+          type: stringType,
+        );
       case 'Action.InsertImage':
-        return AdaptiveActionInsertImage(adaptiveMap: map);
+        return AdaptiveActionInsertImage(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       default:
         assert(false, 'No action found with type $stringType');
-        return AdaptiveUnknown(adaptiveMap: map, type: stringType);
+        return AdaptiveUnknown(
+          adaptiveMap: map,
+          widgetState: widgetState,
+          type: stringType,
+        );
     }
   }
 }
@@ -321,9 +410,9 @@ class DefaultCardRegistry extends InheritedWidget {
   });
 
   /// Used to convert card type strings into Card instances
-  final CardRegistry cardRegistry;
+  final CardTypeRegistry cardRegistry;
 
-  static CardRegistry? of(BuildContext context) {
+  static CardTypeRegistry? of(BuildContext context) {
     final DefaultCardRegistry? cardRegistry = context
         .dependOnInheritedWidgetOfExactType<DefaultCardRegistry>();
     if (cardRegistry == null) return null;

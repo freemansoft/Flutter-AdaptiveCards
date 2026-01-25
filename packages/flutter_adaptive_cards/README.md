@@ -186,7 +186,7 @@ Demo Adaptive Card*
 
 Taken from the example App
 
-## Open TODO items
+## Open TODO and open issues and bugs defects items
 
 TODO for the example programs moved to [example README](example/README.md)
 
@@ -216,6 +216,8 @@ TODO for the example programs moved to [example README](example/README.md)
   - Font line spacing is subtly different between platforms. You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
   - Using default flutter fonts instead of roboto <https://github.com/flutter/flutter/issues/56383>
   - Golden toolkit but it will show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
+- Action.OpenUrlDialog is not impelemnted correctly. It should fetch another URL and display the adaptive card returned in a dialog
+- resetInputs() needs to be overridden in every input field. The current implementation wipes out the json values of the input fields instead of putting those back overwriting any changes made by the user.
 
 ## ChangeLog
 

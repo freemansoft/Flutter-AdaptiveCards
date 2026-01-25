@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 
@@ -9,11 +10,15 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
   IconButtonAction({
     super.key,
     required this.adaptiveMap,
+    required this.widgetState,
     required this.onTapped,
   });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   final VoidCallback onTapped;
 
@@ -47,6 +52,7 @@ class IconButtonActionState extends State<IconButtonAction>
 
     Widget result = SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: ElevatedButton(
         onPressed: onTapped,
         style: buttonStyle,
@@ -57,6 +63,7 @@ class IconButtonActionState extends State<IconButtonAction>
     if (iconUrl != null) {
       result = SeparatorElement(
         adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
         child: ElevatedButton.icon(
           onPressed: onTapped,
           style: buttonStyle,

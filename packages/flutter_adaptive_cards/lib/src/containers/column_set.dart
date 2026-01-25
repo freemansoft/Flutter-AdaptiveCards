@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/containers/column.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 ///
@@ -11,11 +12,16 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveColumnSet({
     super.key,
     required this.adaptiveMap,
+    required this.widgetState,
     required this.supportMarkdown,
   });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
+
   final bool supportMarkdown;
 
   @override
@@ -35,6 +41,7 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
         .map(
           (child) => AdaptiveColumn(
             adaptiveMap: child,
+            widgetState: widgetState,
             supportMarkdown: widget.supportMarkdown,
           ),
         )
@@ -75,8 +82,10 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
         child: Container(
           decoration: getDecorationFromMap(
             adaptiveMap,

@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
 ///
 /// https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar
@@ -21,11 +22,18 @@ enum BarChartType {
 }
 
 class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveBarChart({super.key, required this.adaptiveMap, required this.type});
+  AdaptiveBarChart({
+    super.key,
+    required this.adaptiveMap,
+    required this.type,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
   final BarChartType type;
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveBarChartState createState() => AdaptiveBarChartState();
@@ -43,7 +51,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
   }
 
   void _parseData() {
-    final data = widget.adaptiveMap['data'];
+    final data = adaptiveMap['data'];
     barGroups = [];
     maxY = 10; // Default safety
     if (data is! List) return;
@@ -163,7 +171,8 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
     final axisTitles = AxisTitles(sideTitles: sideTitles);
 
     final Widget chart = SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: SizedBox(
         height: 250,
         child: BarChart(

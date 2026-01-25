@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
@@ -11,10 +12,17 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 /// https://adaptivecards.io/explorer/Fact.html
 ///
 class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveFactSet({super.key, required this.adaptiveMap});
+  AdaptiveFactSet({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveFactSetState createState() => AdaptiveFactSetState();
@@ -53,6 +61,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Container(
         color: backgroundColor,
         child: Row(

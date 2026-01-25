@@ -6,6 +6,7 @@ import 'package:flutter_adaptive_cards/src/elements/actions/open_url.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/submit.dart';
 import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 ///
@@ -14,10 +15,13 @@ import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 /// This class is described as a _Container_ in the docs but is located in elements for some reason
 ///
 class ActionSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  ActionSet({super.key, required this.adaptiveMap});
+  ActionSet({super.key, required this.adaptiveMap, required this.widgetState});
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   ActionSetState createState() => ActionSetState();
@@ -81,19 +85,36 @@ class ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
 
     switch (stringType) {
       case 'Action.ShowCard':
-        return AdaptiveActionShowCard(adaptiveMap: map);
+        return AdaptiveActionShowCard(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       case 'Action.ToggleVisibility':
         assert(false, 'Action.ToggleVisibility is not supported');
-        return AdaptiveUnknown(adaptiveMap: map, type: stringType);
+        return AdaptiveUnknown(
+          adaptiveMap: map,
+          widgetState: widgetState,
+          type: stringType,
+        );
       case 'Action.OpenUrl':
-        return AdaptiveActionOpenUrl(adaptiveMap: map);
+        return AdaptiveActionOpenUrl(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       case 'Action.Submit':
-        return AdaptiveActionSubmit(adaptiveMap: map);
+        return AdaptiveActionSubmit(adaptiveMap: map, widgetState: widgetState);
       case 'Action.Execute':
-        return AdaptiveActionExecute(adaptiveMap: map);
+        return AdaptiveActionExecute(
+          adaptiveMap: map,
+          widgetState: widgetState,
+        );
       default:
         assert(false, 'No action found with type $stringType');
-        return AdaptiveUnknown(adaptiveMap: map, type: stringType);
+        return AdaptiveUnknown(
+          adaptiveMap: map,
+          widgetState: widgetState,
+          type: stringType,
+        );
     }
   }
 }

@@ -3,6 +3,9 @@ import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
+// TODO(username): This class is no longer used, supplanted by the mixins.
+// retained here to remember the way we can use visitors
+
 /// The visitor, the function is called once for every element in the tree
 typedef AdaptiveElementVisitor = void Function(AdaptiveElement element);
 

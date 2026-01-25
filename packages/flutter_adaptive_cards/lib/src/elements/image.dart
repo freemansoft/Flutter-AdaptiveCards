@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -13,12 +14,17 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImage({
     super.key,
     required this.adaptiveMap,
+    required this.widgetState,
     this.parentMode = 'stretch',
     required this.supportMarkdown,
   });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
+
   final String parentMode;
   final bool supportMarkdown;
 
@@ -58,6 +64,7 @@ class AdaptiveImageState extends State<AdaptiveImage>
 
     Widget image = AdaptiveTappable(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: AdaptiveImageUtils.getImage(
         url,
         fit: fit,
@@ -88,7 +95,11 @@ class AdaptiveImageState extends State<AdaptiveImage>
       );
     }
 
-    return SeparatorElement(adaptiveMap: adaptiveMap, child: child);
+    return SeparatorElement(
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
+      child: child,
+    );
   }
 
   bool loadIsPerson() {
