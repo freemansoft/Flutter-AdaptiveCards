@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -13,10 +14,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ignore_for_file: unnecessary_const
 class AdaptiveNumberInput extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveNumberInput({super.key, required this.adaptiveMap});
+  AdaptiveNumberInput({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveNumberInputState createState() => AdaptiveNumberInputState();
@@ -49,6 +57,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   Widget build(BuildContext context) {
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

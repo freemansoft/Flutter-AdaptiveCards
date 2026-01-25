@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/elements/image.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 ///
@@ -11,11 +12,16 @@ class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImageSet({
     super.key,
     required this.adaptiveMap,
+    required this.widgetState,
     required this.supportMarkdown,
   });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
+
   final bool supportMarkdown;
 
   @override
@@ -39,6 +45,7 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
         .map(
           (child) => AdaptiveImage(
             adaptiveMap: child,
+            widgetState: widgetState,
             supportMarkdown: widget.supportMarkdown,
           ),
         )
@@ -61,6 +68,7 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
   Widget build(BuildContext context) {
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Container(
         color: backgroundColor,
         child: LayoutBuilder(

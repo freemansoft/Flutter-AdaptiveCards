@@ -2,34 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
-import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
   // this is an abstract method that everyone needs to implmenet
   Map<String, dynamic> get adaptiveMap;
+  RawAdaptiveCardState get widgetState;
 }
 
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   late String id;
 
-  late RawAdaptiveCardState widgetState;
+  RawAdaptiveCardState get widgetState => widget.widgetState;
 
   Map<String, dynamic> get adaptiveMap => widget.adaptiveMap;
 
   @override
   void initState() {
     super.initState();
-
-    widgetState = ProviderScope.containerOf(
-      context,
-      listen: false,
-    ).read(rawAdaptiveCardStateProvider);
-    if (widget.adaptiveMap.containsKey('id')) {
-      id = widget.adaptiveMap['id'] as String;
+    if (adaptiveMap.containsKey('id')) {
+      id = adaptiveMap['id'] as String;
     } else {
-      id = UUIDGenerator().getId();
+      // this is required because we use id for equality checks
+      id = UniqueKey().toString();
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // only register cards with IDs so we can target them
+    if (adaptiveMap.containsKey('id')) {
+      // register cards with IDs so we can target them
+      // At one time this was only used for showCard
+      // TODO(username): We don't have a good way to unregister cards see dispose()
+      ProviderScope.containerOf(
+        context,
+        listen: false,
+      ).read(adaptiveCardElementStateProvider).registerCard(id, widget);
+    } else {
+      // a lot of them don't have ids
+      //debugPrint('No ID found for ${widget.runtimeType}');
+    }
+  }
+
+  @override
+  void dispose() {
+    // this doesn't work because ProviderScope is already unmounted here
+    // ProviderScope.containerOf(
+    //   context,
+    //   listen: false,
+    // ).read(adaptiveCardElementStateProvider).unregisterCard(id);
+    super.dispose();
   }
 
   @override
@@ -146,7 +170,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
-  String get title => widget.adaptiveMap['title'] as String? ?? '';
+  String get title => adaptiveMap['title'] as String? ?? '';
 
   void onTapped();
 }
@@ -177,6 +201,8 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   /// Input card types implement this as a way of changing their state, currently only choice_set
   void loadInput(Map map) {}
 
+  /// this is a prototype that is overridden by the input fields
+  /// to check if they are required and there is a value
   bool checkRequired();
 
   void resetInput() {

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/TextBlock.html
@@ -14,11 +13,14 @@ class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextBlock({
     super.key,
     required this.adaptiveMap,
+    required this.widgetState,
     required this.supportMarkdown,
   });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+  @override
+  final RawAdaptiveCardState widgetState;
   final bool supportMarkdown;
 
   @override
@@ -50,23 +52,23 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     // should be lazily calculated because styling could have changed
     final resolver = InheritedReferenceResolver.of(context).resolver;
     horizontalAlignment = resolver.resolveAlignment(
-      widget.adaptiveMap['horizontalAlignment'],
+      adaptiveMap['horizontalAlignment'],
     );
     fontSize = resolver.resolveFontSize(
       context: context,
-      sizeString: widget.adaptiveMap['size'],
+      sizeString: adaptiveMap['size'],
     );
-    fontWeight = resolver.resolveFontWeight(widget.adaptiveMap['weight']);
+    fontWeight = resolver.resolveFontWeight(adaptiveMap['weight']);
     textAlign = resolver.resolveTextAlign(
-      widget.adaptiveMap['horizontalAlignment'],
+      adaptiveMap['horizontalAlignment'],
     );
     fontFamily = resolver.resolveFontType(
       context,
-      widget.adaptiveMap['fontType'],
+      adaptiveMap['fontType'],
     );
     maxLines = resolver.resolveMaxLines(
-      wrap: widget.adaptiveMap['wrap'],
-      maxLines: widget.adaptiveMap['maxLines'],
+      wrap: adaptiveMap['wrap'],
+      maxLines: adaptiveMap['maxLines'],
     );
   }
 
@@ -84,6 +86,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Semantics(
         header: isHeading,
         // Heading level doesn't have a direct field in Semantics,
@@ -122,10 +125,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       styleSheet: loadMarkdownStyleSheet(context),
       onTapLink: (text, href, title) {
         if (href != null) {
-          ProviderScope.containerOf(
-            context,
-            listen: false,
-          ).read(rawAdaptiveCardStateProvider).openUrl(href);
+          widgetState.openUrl(href);
         }
       },
     );

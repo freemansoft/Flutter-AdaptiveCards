@@ -11,10 +11,10 @@ import 'package:flutter_adaptive_cards/src/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
-import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 
+/// The working root of an adaptive card tree when operating against the tree
+///
 /// Created as a child of `AdaptiveCard`
 /// There is usually only one of these per page. (One per AdaptiveCard tree)
 ///
@@ -26,7 +26,7 @@ class RawAdaptiveCard extends StatefulWidget {
   const RawAdaptiveCard.fromMap({
     super.key,
     required this.map,
-    this.cardRegistry = const CardRegistry(),
+    this.cardRegistry = const CardTypeRegistry(),
     this.initData,
     this.onChange,
     this.onSubmit,
@@ -39,7 +39,7 @@ class RawAdaptiveCard extends StatefulWidget {
 
   final Map<String, dynamic> map;
   final HostConfig hostConfig;
-  final CardRegistry cardRegistry;
+  final CardTypeRegistry cardRegistry;
   final Map? initData;
 
   final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
@@ -58,7 +58,7 @@ class RawAdaptiveCard extends StatefulWidget {
 class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   // Wrapper around the host config
   late ReferenceResolver _resolver;
-  late CardRegistry cardRegistry;
+  late CardTypeRegistry cardRegistry;
 
   // The root element that is loaded from the map
   late Widget _adaptiveElement;
@@ -71,7 +71,10 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     cardRegistry = widget.cardRegistry;
 
-    _adaptiveElement = widget.cardRegistry.getElement(map: widget.map);
+    _adaptiveElement = widget.cardRegistry.getElement(
+      map: widget.map,
+      widgetState: this,
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.initData != null && widget.initData!.isNotEmpty) {
@@ -83,7 +86,10 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
     _resolver = ReferenceResolver(hostConfig: widget.hostConfig);
-    _adaptiveElement = widget.cardRegistry.getElement(map: widget.map);
+    _adaptiveElement = widget.cardRegistry.getElement(
+      map: widget.map,
+      widgetState: this,
+    );
     super.didUpdateWidget(oldWidget);
   }
 
@@ -98,6 +104,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void submit(Map map) {
     bool valid = true;
 
+    // Recursively visits all inputs and determines if all the inputs are valid
     void visitor(Element element) {
       if (element is StatefulElement) {
         if (element.state is AdaptiveInputMixin) {
@@ -114,6 +121,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     context.visitChildElements(visitor);
 
     if (widget.onSubmit != null && valid) {
+      // invoke the in injected onSubmit
       widget.onSubmit!(map);
     }
   }
@@ -123,6 +131,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void execute(Map map) {
     bool valid = true;
 
+    // Recursively visits all inputs and determines if all the inputs are valid
     void visitor(Element element) {
       if (element is StatefulElement) {
         if (element.state is AdaptiveInputMixin) {
@@ -139,6 +148,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     context.visitChildElements(visitor);
 
     if (widget.onExecute != null && valid) {
+      // invoke the in injected onSubmit
       widget.onExecute!(map);
     }
   }
@@ -175,6 +185,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     context.visitChildElements(visitor);
   }
 
+  /// note: Individual element type classes must implement resetInput on their controlers or whatever
+  /// the default behavior is coded in a mixin and is "bad"
   void resetInputs() {
     void visitor(Element element) {
       if (element is StatefulElement) {
@@ -440,14 +452,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       style: widget.map['style']?.toString().toLowerCase(),
     );
 
-    return ProviderScope(
-      overrides: [
-        rawAdaptiveCardStateProvider.overrideWithValue(this),
-      ],
-      child: InheritedReferenceResolver(
-        resolver: _resolver,
-        child: Card(color: backgroundColor, child: child),
-      ),
+    return InheritedReferenceResolver(
+      resolver: _resolver,
+      child: Card(color: backgroundColor, child: child),
     );
   }
 }

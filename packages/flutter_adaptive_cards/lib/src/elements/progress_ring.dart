@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 
 class AdaptiveProgressRing extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveProgressRing({super.key, required this.adaptiveMap});
+  AdaptiveProgressRing({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveProgressRingState createState() => AdaptiveProgressRingState();
@@ -28,8 +35,8 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
   @override
   void initState() {
     super.initState();
-    if (widget.adaptiveMap.containsKey('value')) {
-      final val = widget.adaptiveMap['value'];
+    if (adaptiveMap.containsKey('value')) {
+      final val = adaptiveMap['value'];
       if (val != null) {
         percent = (val as num).toDouble() / 100.0;
         if (percent! < 0) percent = 0;
@@ -39,11 +46,11 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
       percent = null;
     }
 
-    color = widget.adaptiveMap['color'] as String?;
-    size = (widget.adaptiveMap['size'] as String? ?? 'medium').toLowerCase();
+    color = adaptiveMap['color'] as String?;
+    size = (adaptiveMap['size'] as String? ?? 'medium').toLowerCase();
 
-    label = widget.adaptiveMap['label'] as String?;
-    labelPosition = (widget.adaptiveMap['labelPosition'] as String? ?? 'Above')
+    label = adaptiveMap['label'] as String?;
+    labelPosition = (adaptiveMap['labelPosition'] as String? ?? 'Above')
         .toLowerCase();
     // "Above" is default? JSON says "Above (default)" in label text, but let's assume Above.
     // Spec says default is likely Top/Above?
@@ -56,14 +63,14 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final colorString = widget.adaptiveMap['color'] as String?;
+    final colorString = adaptiveMap['color'] as String?;
     progressColor = ProgressColorsConfig.resolveProgressColor(
       config: InheritedReferenceResolver.of(
         context,
       ).resolver.getProgressColorConfig(),
       color: colorString,
     );
-    final sizeString = widget.adaptiveMap['size'] as String?;
+    final sizeString = adaptiveMap['size'] as String?;
     sizePx =
         ProgressSizesConfig.resolveProgressSize(
           InheritedReferenceResolver.of(
@@ -129,7 +136,8 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
     }
 
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: content,
     );
   }

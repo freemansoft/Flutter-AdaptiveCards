@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/badge_styles_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/font_color_config.dart';
@@ -8,10 +9,17 @@ import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 
 class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveBadge({super.key, required this.adaptiveMap});
+  AdaptiveBadge({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveBadgeState createState() => AdaptiveBadgeState();
@@ -30,15 +38,15 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
   @override
   void initState() {
     super.initState();
-    text = widget.adaptiveMap['text'] as String?;
-    iconUrl = widget.adaptiveMap['iconUrl'] as String?;
-    style = widget.adaptiveMap['style']?.toString().toLowerCase() ?? 'default';
+    text = adaptiveMap['text'] as String?;
+    iconUrl = adaptiveMap['iconUrl'] as String?;
+    style = adaptiveMap['style']?.toString().toLowerCase() ?? 'default';
     appearance =
-        widget.adaptiveMap['appearance']?.toString().toLowerCase() ?? 'filled';
-    size = widget.adaptiveMap['size']?.toString().toLowerCase() ?? 'medium';
-    tooltip = widget.adaptiveMap['tooltip'] as String?;
+        adaptiveMap['appearance']?.toString().toLowerCase() ?? 'filled';
+    size = adaptiveMap['size']?.toString().toLowerCase() ?? 'medium';
+    tooltip = adaptiveMap['tooltip'] as String?;
     iconAlignment =
-        widget.adaptiveMap['iconAlignment']?.toString().toLowerCase() ?? 'left';
+        adaptiveMap['iconAlignment']?.toString().toLowerCase() ?? 'left';
   }
 
   @override
@@ -107,7 +115,8 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     }
 
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: badge,
     );
   }

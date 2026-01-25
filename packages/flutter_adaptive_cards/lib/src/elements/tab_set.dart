@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart'
+    show RawAdaptiveCardState;
 
 // Assuming there is a container (TabSet?) that holds TabPages.
 // If "TabPage" is the valid element mentioned by user, then likely there is a parent "TabSet".
@@ -9,10 +11,16 @@ import 'package:flutter_adaptive_cards/src/additional.dart';
 // I will implement "AdaptiveTabSet" which looks for "TabPage" items.
 
 class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTabSet({super.key, required this.adaptiveMap});
+  AdaptiveTabSet({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveTabSetState createState() => AdaptiveTabSetState();
@@ -27,8 +35,7 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
   void initState() {
     super.initState();
     // Assuming 'tabs' property holds list of TabPage
-    final tabList =
-        widget.adaptiveMap['tabs'] ?? widget.adaptiveMap['items']; // Fallback
+    final tabList = adaptiveMap['tabs'] ?? adaptiveMap['items']; // Fallback
     tabs = [];
     if (tabList is List) {
       tabs = List<Map<String, dynamic>>.from(tabList);
@@ -47,7 +54,8 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
     if (tabs.isEmpty) return const SizedBox.shrink();
 
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -72,7 +80,10 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
                 final contentItems = t['items'] ?? t['body'];
                 if (contentItems is List) {
                   for (final c in contentItems) {
-                    final el = widgetState.cardRegistry.getElement(map: c);
+                    final el = widgetState.cardRegistry.getElement(
+                      map: c,
+                      widgetState: widgetState,
+                    );
                     children.add(el);
                   }
                 }

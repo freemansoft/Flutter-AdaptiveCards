@@ -2,13 +2,16 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 
-/// The `AdaptiveCard` card type.
+/// The implementation of the `AdaptiveCard` card type.
+///
 /// This is actually classified under _cards_ and not _elements_ in the taxonomy
 /// https://adaptivecards.io/explorer/
 class AdaptiveCardElement extends StatefulWidget
@@ -16,11 +19,14 @@ class AdaptiveCardElement extends StatefulWidget
   AdaptiveCardElement({
     Key? key,
     required this.adaptiveMap,
+    required this.widgetState,
     required this.listView,
   }) : super(key: key ?? UniqueKey());
 
   @override
   final Map<String, dynamic> adaptiveMap;
+  @override
+  final RawAdaptiveCardState widgetState;
   final bool listView;
 
   @override
@@ -44,8 +50,39 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   final Map<String, Widget> _registeredCards = {};
   final formKey = GlobalKey<FormState>();
 
-  void registerCard(String id, Widget it) {
-    _registeredCards[id] = it;
+  void registerCard(String registrationId, Widget it) {
+    // this is a hack because it was hard to make this a generic widget
+    // had the same problem with Selectable but made it a stateless widget
+    if (it is AdaptiveTappable) {
+      return;
+    }
+    _registeredCards[registrationId] = it;
+    assert(() {
+      developer.log(
+        format('Registered card with id:{} type:{}', registrationId, it),
+        name: runtimeType.toString(),
+      );
+      return true;
+    }());
+  }
+
+  /// Unregister a card from the registry so we don't refer to it after it's been disposed
+  void unregisterCard(
+    String registrationId,
+  ) {
+    if (_registeredCards.containsKey(registrationId)) {
+      _registeredCards.remove(registrationId);
+      assert(() {
+        developer.log(
+          format(
+            'Unregistered card with id:{} ',
+            registrationId,
+          ),
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+    }
   }
 
   @override
@@ -53,14 +90,22 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     super.initState();
 
     version = adaptiveMap['version']?.toString();
-    developer.log(
-      format('AdaptiveCardElement: {} version: {}', id, version ?? ''),
-      name: runtimeType.toString(),
-    );
+    // developer.log(
+    //   format('AdaptiveCardElement: {} version: {}', id, version ?? ''),
+    //   name: runtimeType.toString(),
+    // );
 
-    children = List<Map<String, dynamic>>.from(
-      adaptiveMap['body'],
-    ).map((map) => widgetState.cardRegistry.getElement(map: map)).toList();
+    children =
+        List<Map<String, dynamic>>.from(
+              adaptiveMap['body'],
+            )
+            .map(
+              (map) => widgetState.cardRegistry.getElement(
+                map: map,
+                widgetState: widgetState,
+              ),
+            )
+            .toList();
   }
 
   @override
@@ -77,14 +122,15 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   }
 
   void loadChildren() {
-    if (widget.adaptiveMap.containsKey('actions')) {
-      allActions =
-          List<Map<String, dynamic>>.from(widget.adaptiveMap['actions'])
-              .map(
-                (adaptiveMap) =>
-                    widgetState.cardRegistry.getAction(map: adaptiveMap),
-              )
-              .toList();
+    if (adaptiveMap.containsKey('actions')) {
+      allActions = List<Map<String, dynamic>>.from(adaptiveMap['actions'])
+          .map(
+            (adaptiveMap) => widgetState.cardRegistry.getAction(
+              map: adaptiveMap,
+              state: widgetState,
+            ),
+          )
+          .toList();
       showCardActions = List<AdaptiveActionShowCard>.from(
         allActions.whereType<AdaptiveActionShowCard>().toList(),
       );
@@ -93,6 +139,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
             .map(
               (action) => widgetState.cardRegistry.getElement(
                 map: action.adaptiveMap['card'],
+                widgetState: widgetState,
               ),
             )
             .toList(),

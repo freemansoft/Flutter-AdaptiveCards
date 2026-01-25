@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -14,10 +15,17 @@ import 'package:intl/intl.dart';
 /// https://adaptivecards.io/explorer/Input.Date.html
 ///
 class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveDateInput({super.key, required this.adaptiveMap});
+  AdaptiveDateInput({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveDateInputState createState() => AdaptiveDateInputState();
@@ -69,6 +77,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

@@ -78,7 +78,7 @@ class AdaptiveCard extends StatefulWidget {
     super.key,
     required this.adaptiveCardContentProvider,
     this.placeholder,
-    this.cardRegistry = const CardRegistry(),
+    this.cardRegistry = const CardTypeRegistry(),
     this.initData,
     this.onChange,
     this.onSubmit,
@@ -169,7 +169,7 @@ class AdaptiveCard extends StatefulWidget {
   final Widget? placeholder;
 
   /// Used to convert card type strings into Card instances
-  final CardRegistry? cardRegistry;
+  final CardTypeRegistry? cardRegistry;
 
   /// data that may be copied into `Input` cards to replace their templated state
   final Map? initData;
@@ -206,7 +206,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
   /// data that may be copied into `Input` cards to replace their templated state
   Map? initData;
 
-  late CardRegistry cardRegistry;
+  late CardTypeRegistry cardRegistry;
 
   /// Environment specific function that knows how to handle state change
   Function(String id, dynamic value, RawAdaptiveCardState cardState)? onChange;
@@ -247,11 +247,11 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     if (widget.cardRegistry != null) {
       cardRegistry = widget.cardRegistry!;
     } else {
-      final CardRegistry? cardRegistry = DefaultCardRegistry.of(context);
+      final CardTypeRegistry? cardRegistry = DefaultCardRegistry.of(context);
       if (cardRegistry != null) {
         this.cardRegistry = cardRegistry;
       } else {
-        this.cardRegistry = CardRegistry(
+        this.cardRegistry = CardTypeRegistry(
           supportMarkdown: widget.supportMarkdown,
           listView: widget.listView,
         );

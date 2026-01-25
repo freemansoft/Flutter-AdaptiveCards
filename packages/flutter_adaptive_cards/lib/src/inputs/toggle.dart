@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Toggle.html
 ///
 class AdaptiveToggle extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveToggle({super.key, required this.adaptiveMap});
+  AdaptiveToggle({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveToggleState createState() => AdaptiveToggleState();
@@ -39,6 +47,7 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
   Widget build(BuildContext context) {
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Row(
         children: <Widget>[
           Switch(

@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
 class AdaptiveAccordion extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveAccordion({super.key, required this.adaptiveMap});
+  AdaptiveAccordion({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveAccordionState createState() => AdaptiveAccordionState();
@@ -21,7 +29,7 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
     super.initState();
     // Support "items" or "pages" or whatever the schema uses.
     // User mentioned AccordionPage, so likely items are type AccordionPage.
-    final rawItems = widget.adaptiveMap['items'] ?? widget.adaptiveMap['pages'];
+    final rawItems = adaptiveMap['items'] ?? adaptiveMap['pages'];
     items = [];
     if (rawItems is List) {
       items = List<Map<String, dynamic>>.from(rawItems);
@@ -33,10 +41,12 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
     if (items.isEmpty) return const SizedBox.shrink();
 
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: Column(
         children: items.map((itemMap) {
           // Each item should be an AccordionPage (or similar)
+          // Probably should have created an AccordianPage class
           // We extract title and content from it.
           final String title = itemMap['title']?.toString() ?? 'Untitled';
 
@@ -53,7 +63,10 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
           final contentItems = itemMap['items'] ?? itemMap['body'];
           if (contentItems is List) {
             for (final c in contentItems) {
-              final el = widgetState.cardRegistry.getElement(map: c);
+              final el = widgetState.cardRegistry.getElement(
+                map: c,
+                widgetState: widgetState,
+              );
               children.add(el);
             }
           }

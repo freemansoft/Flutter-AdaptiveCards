@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,10 +12,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveActionShowCard extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveActionShowCard({super.key, required this.adaptiveMap});
+  AdaptiveActionShowCard({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveActionShowCardState createState() => AdaptiveActionShowCardState();
@@ -28,6 +36,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
     final Widget card = widgetState.cardRegistry.getElement(
       map: adaptiveMap['card'],
+      widgetState: widgetState,
     );
 
     ProviderScope.containerOf(
@@ -42,6 +51,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: ElevatedButton(
         onPressed: onTapped,
         style: ElevatedButton.styleFrom(

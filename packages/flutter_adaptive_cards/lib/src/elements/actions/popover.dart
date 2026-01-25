@@ -7,10 +7,17 @@ import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 
 class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveActionPopover({super.key, required this.adaptiveMap});
+  AdaptiveActionPopover({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveActionPopoverState createState() => AdaptiveActionPopoverState();
@@ -26,7 +33,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
   void initState() {
     super.initState();
     // 'card' property contains the Adaptive Card to show
-    card = widget.adaptiveMap['card'] as Map<String, dynamic>? ?? {};
+    card = adaptiveMap['card'] as Map<String, dynamic>? ?? {};
   }
 
   @override
@@ -68,7 +75,8 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
 
     // TODO: implement the correct styling
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: resolver.resolveButtonBackgroundColor(

@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 
 class AdaptiveCompoundButton extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveCompoundButton({super.key, required this.adaptiveMap});
+  AdaptiveCompoundButton({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveCompoundButtonState createState() => AdaptiveCompoundButtonState();
@@ -23,15 +31,16 @@ class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
   @override
   void initState() {
     super.initState();
-    title = widget.adaptiveMap['title']?.toString() ?? '';
-    description = widget.adaptiveMap['description']?.toString();
-    iconUrl = widget.adaptiveMap['iconUrl']?.toString();
+    title = adaptiveMap['title']?.toString() ?? '';
+    description = adaptiveMap['description']?.toString();
+    iconUrl = adaptiveMap['iconUrl']?.toString();
   }
 
   @override
   Widget build(BuildContext context) {
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: ElevatedButton(
         onPressed: () {
           // TODO(username): What does it do? Usually triggers an action or is part of an input?

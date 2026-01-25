@@ -2,15 +2,22 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
 ///
 /// https://adaptivecards.microsoft.com/?topic=Chart.Line
 ///
 class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveLineChart({super.key, required this.adaptiveMap});
+  AdaptiveLineChart({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveLineChartState createState() => AdaptiveLineChartState();
@@ -31,7 +38,7 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
   }
 
   void _parseData() {
-    final data = widget.adaptiveMap['data'];
+    final data = adaptiveMap['data'];
     lineBarsData = [];
 
     // Auto-scale defaults
@@ -124,7 +131,8 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
   @override
   Widget build(BuildContext context) {
     return SeparatorElement(
-      adaptiveMap: widget.adaptiveMap,
+      adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: SizedBox(
         height: 250,
         child: LineChart(

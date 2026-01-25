@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
 /// Element for an unknown type
 ///
@@ -10,11 +11,17 @@ import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 ///
 /// In debug mode these contain an error message describing the problem.
 class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveUnknown({super.key, required this.adaptiveMap, required this.type});
+  AdaptiveUnknown({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+    required this.type,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
+  @override
+  final RawAdaptiveCardState widgetState;
   final String type;
 
   @override
@@ -29,9 +36,11 @@ class AdaptiveUnknownState extends State<AdaptiveUnknown>
 
     // Only do this in debug mode
     assert(() {
-      result = ErrorWidget('Type ${widget.type} not found. \n\n'
-          'Because of this, a portion of the tree was dropped: \n'
-          '$adaptiveMap');
+      result = ErrorWidget(
+        'Type ${widget.type} not found. \n\n'
+        'Because of this, a portion of the tree was dropped: \n'
+        '$adaptiveMap',
+      );
 
       return true;
     }());

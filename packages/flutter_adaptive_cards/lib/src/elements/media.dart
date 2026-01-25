@@ -5,19 +5,27 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:video_player/video_player.dart';
 
 /// Implements
 /// * https://adaptivecards.io/explorer/Media.html
 /// * https://adaptivecards.io/explorer/MediaSource.html
 class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveMedia({super.key, required this.adaptiveMap});
+  AdaptiveMedia({
+    super.key,
+    required this.adaptiveMap,
+    required this.widgetState,
+  });
 
   @override
   final Map<String, dynamic> adaptiveMap;
+
+  @override
+  final RawAdaptiveCardState widgetState;
 
   @override
   AdaptiveMediaState createState() => AdaptiveMediaState();
@@ -112,6 +120,7 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
+      widgetState: widgetState,
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: AspectRatio(
