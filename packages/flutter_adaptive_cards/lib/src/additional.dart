@@ -91,6 +91,13 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
     }
   }
 
+  /// Tappable is an element because of some context required
+  /// But it really isn't something we operate against so we just generate an id
+  @override
+  String loadId() {
+    return UUIDGenerator().getId();
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(onTap: action?.tap, child: widget.child);
