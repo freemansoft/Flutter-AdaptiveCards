@@ -261,6 +261,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     // showCupertinoModalPopup is a built-in function of the cupertino library
     await showCupertinoModalPopup<DateTime?>(
       context: context,
+      useRootNavigator: false, // see if this fixes the pop
+      //barrierColor: Theme.of(context).colorScheme.surfaceContainer,
       builder: (_) => SizedBox(
         height: 500,
         child: Column(
@@ -279,7 +281,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
             // Close the modal
             CupertinoButton(
               child: const Text('OK'),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         ),

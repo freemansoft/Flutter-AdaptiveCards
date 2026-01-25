@@ -1,8 +1,12 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:format/format.dart';
 
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
   // this is an abstract method that everyone needs to implmenet
@@ -20,12 +24,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   @override
   void initState() {
     super.initState();
-    if (adaptiveMap.containsKey('id')) {
-      id = adaptiveMap['id'] as String;
-    } else {
-      // this is required because we use id for equality checks
-      id = UniqueKey().toString();
-    }
+    id = loadId();
   }
 
   @override
@@ -46,14 +45,13 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     }
   }
 
-  @override
-  void dispose() {
-    // this doesn't work because ProviderScope is already unmounted here
-    // ProviderScope.containerOf(
-    //   context,
-    //   listen: false,
-    // ).read(adaptiveCardElementStateProvider).unregisterCard(id);
-    super.dispose();
+  /// Can override this if need to special process the id
+  String loadId() {
+    if (adaptiveMap.containsKey('id')) {
+      return adaptiveMap['id'].toString();
+    } else {
+      return UUIDGenerator().getId();
+    }
   }
 
   @override
@@ -206,10 +204,30 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   bool checkRequired();
 
   void resetInput() {
-    // Default implementation: reset to initial value
-    value = adaptiveMap['value'].toString() == 'null'
-        ? ''
-        : adaptiveMap['value'].toString();
+    // Default implementation: reset to initial value to the map value
+    if (adaptiveMap.containsKey('value')) {
+      assert(() {
+        developer.log(
+          format(
+            'resetting value to {} string for {}',
+            adaptiveMap['value'],
+            id,
+          ),
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+      value = adaptiveMap['value'].toString();
+    } else {
+      assert(() {
+        developer.log(
+          format('resetting value to empty string for {}', id),
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+      value = ''; // default value for inputs that don't have one
+    }
     // Subclasses should override update their text controllers etc.
   }
 }
