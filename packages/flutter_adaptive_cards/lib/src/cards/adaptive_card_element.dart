@@ -7,6 +7,7 @@ import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 
@@ -17,11 +18,10 @@ import 'package:format/format.dart';
 class AdaptiveCardElement extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveCardElement({
-    Key? key,
     required this.adaptiveMap,
     required this.widgetState,
     required this.listView,
-  }) : super(key: key ?? UniqueKey()) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

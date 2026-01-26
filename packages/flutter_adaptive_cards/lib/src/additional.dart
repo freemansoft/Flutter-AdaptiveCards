@@ -57,11 +57,10 @@ class SeparatorElement extends StatelessWidget {
 
 class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTappable({
-    super.key,
     required this.child,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -81,7 +80,7 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   /// Tappable is an element because of some context required
   /// But it really isn't something we operate against so we just generate an id
-  @override
+  /// Should get picked up even though we import utils.
   String loadId(Map aMap) {
     return UUIDGenerator().getId();
   }

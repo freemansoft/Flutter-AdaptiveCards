@@ -286,6 +286,26 @@ Widget loadErrorMessage({
   );
 }
 
+/// ids are generated if they aren't specified in the 'id' property
+bool idIsNatural(Map aMap) {
+  return aMap.containsKey('id');
+}
+
+/// Can override this if need to special process the id
+String loadId(Map aMap) {
+  if (aMap.containsKey('id')) {
+    return aMap['id'].toString();
+  } else {
+    // if no id is specified, use the hashcode of the map
+    // only thing we can do for cards that don't have id properties or provided ids
+    return '${aMap['type']}-${aMap.hashCode}';
+  }
+}
+
+ValueKey<String> generateWidgetKey(Map aMap) {
+  return ValueKey(loadId(aMap));
+}
+
 /// Everyone uses the same scheme for UUID Generation
 class UUIDGenerator {
   /// We use a factory which returns the singleton

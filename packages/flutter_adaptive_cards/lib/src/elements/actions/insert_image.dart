@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 class AdaptiveActionInsertImage extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionInsertImage({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

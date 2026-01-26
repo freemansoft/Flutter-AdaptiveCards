@@ -4,14 +4,14 @@ import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 class AdaptiveProgressBar extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveProgressBar({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
   @override

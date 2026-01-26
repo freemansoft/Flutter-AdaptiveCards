@@ -29,10 +29,9 @@ class SearchModel {
 
 class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveChoiceSet({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

@@ -7,13 +7,13 @@ import 'package:flutter_adaptive_cards/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/font_color_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveBadge({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

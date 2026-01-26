@@ -8,7 +8,7 @@ void main() {
     'packages/flutter_adaptive_template/test/ms_template_examples',
   );
   if (!dir.existsSync()) {
-    print('Directory not found: ${dir.path}');
+    debugPrint('Directory not found: ${dir.path}');
     return;
   }
 

@@ -4,19 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
-///
-/// https://adaptivecards.io/explorer/Action.OpenUrlDialog.html
-/// TODO(username): Not implemented correctly.
+//
+// https://adaptivecards.io/explorer/Action.OpenUrlDialog.html
+// TODO(username): Not implemented correctly.
 /// It should fetch a card set from the URL
 /// and display the adaptive card returned in a dialog
 class AdaptiveActionOpenUrlDialog extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionOpenUrlDialog({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

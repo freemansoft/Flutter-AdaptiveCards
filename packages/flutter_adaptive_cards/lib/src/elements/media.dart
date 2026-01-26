@@ -16,10 +16,9 @@ import 'package:video_player/video_player.dart';
 /// * https://adaptivecards.io/explorer/MediaSource.html
 class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveMedia({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

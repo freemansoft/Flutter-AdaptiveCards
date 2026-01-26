@@ -13,10 +13,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextInput({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

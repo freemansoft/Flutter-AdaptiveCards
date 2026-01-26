@@ -4,17 +4,17 @@ import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/containers/column.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ColumnSet.html
 ///
 class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveColumnSet({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
     required this.supportMarkdown,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart'
-    show RawAdaptiveCardState;
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 // Assuming there is a container (TabSet?) that holds TabPages.
 // If "TabPage" is the valid element mentioned by user, then likely there is a parent "TabSet".
@@ -12,10 +12,9 @@ import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart'
 
 class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTabSet({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

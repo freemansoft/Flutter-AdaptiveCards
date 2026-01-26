@@ -4,17 +4,17 @@ import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/elements/image.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ImageSet.html
 ///
 class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImageSet({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
     required this.supportMarkdown,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

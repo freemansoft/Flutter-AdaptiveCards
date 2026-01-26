@@ -4,14 +4,14 @@ import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionPopover({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -78,7 +78,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
   Widget build(BuildContext context) {
     final resolver = InheritedReferenceResolver.of(context).resolver;
 
-    // TODO: implement the correct styling
+    // TODO(username): implement the correct styling
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       widgetState: widgetState,
