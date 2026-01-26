@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added hostconfig objects and integrated them and fallback hostconfig into the AdaptiveCard widgets.
 - Addeed SVG support for images - but not background images
 - Added Inline in-memory image support - png
+- All elements have repeatable id values if not specified in the json (hashcode(adaptiveMap))
+-
 
 ## [0.2.0](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
 

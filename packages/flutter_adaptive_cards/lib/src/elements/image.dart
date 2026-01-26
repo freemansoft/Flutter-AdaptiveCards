@@ -4,8 +4,8 @@ import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Image.html
@@ -17,13 +17,18 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
     required this.widgetState,
     this.parentMode = 'stretch',
     required this.supportMarkdown,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
 
   final String parentMode;
   final bool supportMarkdown;

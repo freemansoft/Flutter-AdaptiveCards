@@ -16,12 +16,18 @@ class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
     required this.adaptiveMap,
     required this.widgetState,
     required this.type,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
+
   final String type;
 
   @override

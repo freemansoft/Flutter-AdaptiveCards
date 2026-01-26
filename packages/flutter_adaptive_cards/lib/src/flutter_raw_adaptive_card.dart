@@ -56,9 +56,11 @@ class RawAdaptiveCard extends StatefulWidget {
 }
 
 class RawAdaptiveCardState extends State<RawAdaptiveCard> {
-  // Wrapper around the host config
+  ///.  Wrapper around the host config
   late ReferenceResolver _resolver;
-  late CardTypeRegistry cardRegistry;
+
+  /// Type to card class registry
+  late CardTypeRegistry cardTypeRegistry;
 
   // The root element that is loaded from the map
   late Widget _adaptiveElement;
@@ -69,7 +71,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     _resolver = ReferenceResolver(hostConfig: widget.hostConfig);
 
-    cardRegistry = widget.cardRegistry;
+    cardTypeRegistry = widget.cardRegistry;
 
     _adaptiveElement = widget.cardRegistry.getElement(
       map: widget.map,

@@ -11,13 +11,17 @@ class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
     super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
   final RawAdaptiveCardState widgetState;
+  @override
+  late final String id;
 
   @override
   AdaptiveCarouselState createState() => AdaptiveCarouselState();
@@ -96,7 +100,7 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
                 // But it could be any element if the JSON is weak.
                 // If it is CarouselPage, the Registry will pick it up (if we register it).
 
-                return widgetState.cardRegistry.getElement(
+                return widgetState.cardTypeRegistry.getElement(
                   map: pageContent,
                   widgetState: widgetState,
                 );
@@ -153,6 +157,9 @@ class AdaptiveCarouselPage extends StatefulWidget
   final RawAdaptiveCardState widgetState;
 
   @override
+  late final String id;
+
+  @override
   AdaptiveCarouselPageState createState() => AdaptiveCarouselPageState();
 }
 
@@ -168,7 +175,7 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     if (items is List) {
       for (final item in items) {
         children.add(
-          widgetState.cardRegistry.getElement(
+          widgetState.cardTypeRegistry.getElement(
             map: item,
             widgetState: widgetState,
           ),

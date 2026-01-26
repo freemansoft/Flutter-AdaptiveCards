@@ -20,13 +20,18 @@ class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
     required this.adaptiveMap,
     required this.widgetState,
     required this.supportMarkdown,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
 
   final bool supportMarkdown;
 
@@ -176,7 +181,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
                   ),
                   name: runtimeType.toString(),
                 );
-                return widgetState.cardRegistry.getElement(
+                return widgetState.cardTypeRegistry.getElement(
                   map: oneCellItems[widgetIndex],
                   widgetState: widgetState,
                 );

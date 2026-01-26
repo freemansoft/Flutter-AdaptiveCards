@@ -10,13 +10,19 @@ class AdaptiveActionResetInputs extends StatefulWidget
     super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
+
   AdaptiveActionResetInputsState createState() =>
       AdaptiveActionResetInputsState();
 }
@@ -29,7 +35,7 @@ class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
   void didChangeDependencies() {
     super.didChangeDependencies();
     action =
-        widgetState.cardRegistry.getGenericAction(
+        widgetState.cardTypeRegistry.getGenericAction(
               map: adaptiveMap,
               state: widgetState,
             )!

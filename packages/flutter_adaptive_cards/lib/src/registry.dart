@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_element.dart';
 import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/containers/column_set.dart';
 import 'package:flutter_adaptive_cards/src/containers/container.dart';

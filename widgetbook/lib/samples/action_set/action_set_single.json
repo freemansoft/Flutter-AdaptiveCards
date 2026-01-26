@@ -16,6 +16,7 @@
     },
     {
       "type": "ActionSet",
+      "id": "actionSet1",
       "actions": [
         {
           "title": "Action.Submit",

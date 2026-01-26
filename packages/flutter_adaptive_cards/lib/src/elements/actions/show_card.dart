@@ -1,10 +1,14 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:format/format.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.ShowCard.html
@@ -16,7 +20,9 @@ class AdaptiveActionShowCard extends StatefulWidget
     super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
@@ -25,24 +31,48 @@ class AdaptiveActionShowCard extends StatefulWidget
   final RawAdaptiveCardState widgetState;
 
   @override
+  late final String id;
+
+  @override
   AdaptiveActionShowCardState createState() => AdaptiveActionShowCardState();
 }
 
 class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
     with AdaptiveActionMixin, AdaptiveElementMixin {
+  String targetCardId = '';
+
   @override
   void initState() {
     super.initState();
 
-    final Widget card = widgetState.cardRegistry.getElement(
+    // we cache the show card widget because it isn't in the tree if hidden (not visible)
+    // should this be in didChangeDependencies instead?
+    final Widget targetCard = widgetState.cardTypeRegistry.getElement(
       map: adaptiveMap['card'],
       widgetState: widgetState,
     );
+    if (targetCard is AdaptiveCardElement) {
+      targetCardId = targetCard.id;
+      assert(() {
+        developer.log(
+          format(
+            'targetCard for {} has id {} built for {}',
+            id,
+            targetCard.id,
+            targetCard,
+          ),
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+    }
 
     ProviderScope.containerOf(
-      context,
-      listen: false,
-    ).read(adaptiveCardElementStateProvider).registerCard(id, card);
+          context,
+          listen: false,
+        )
+        .read(adaptiveCardElementStateProvider)
+        .registerCard(targetCardId, targetCard);
   }
 
   @override
@@ -88,6 +118,6 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
     ProviderScope.containerOf(
       context,
       listen: false,
-    ).read(adaptiveCardElementStateProvider).showCard(id);
+    ).read(adaptiveCardElementStateProvider).showCard(targetCardId);
   }
 }

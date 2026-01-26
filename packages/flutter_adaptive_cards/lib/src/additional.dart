@@ -61,7 +61,9 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
     required this.child,
     required this.adaptiveMap,
     required this.widgetState,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   final Widget child;
 
@@ -72,7 +74,17 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   final RawAdaptiveCardState widgetState;
 
   @override
+  late final String id;
+
+  @override
   AdaptiveTappableState createState() => AdaptiveTappableState();
+
+  /// Tappable is an element because of some context required
+  /// But it really isn't something we operate against so we just generate an id
+  @override
+  String loadId(Map aMap) {
+    return UUIDGenerator().getId();
+  }
 }
 
 class AdaptiveTappableState extends State<AdaptiveTappable>
@@ -84,18 +96,11 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
     super.initState();
     // The selectAction could be anyone of the action types
     if (adaptiveMap.containsKey('selectAction')) {
-      action = widgetState.cardRegistry.getGenericAction(
+      action = widgetState.cardTypeRegistry.getGenericAction(
         map: adaptiveMap['selectAction'],
         state: widgetState,
       );
     }
-  }
-
-  /// Tappable is an element because of some context required
-  /// But it really isn't something we operate against so we just generate an id
-  @override
-  String loadId() {
-    return UUIDGenerator().getId();
   }
 
   @override

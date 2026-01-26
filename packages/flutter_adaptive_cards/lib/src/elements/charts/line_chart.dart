@@ -20,6 +20,9 @@ class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   final RawAdaptiveCardState widgetState;
 
   @override
+  late final String id;
+
+  @override
   AdaptiveLineChartState createState() => AdaptiveLineChartState();
 }
 
