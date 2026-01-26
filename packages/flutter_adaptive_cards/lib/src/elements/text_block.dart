@@ -11,11 +11,10 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 ///
 class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextBlock({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
     required this.supportMarkdown,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

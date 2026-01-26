@@ -3,6 +3,7 @@ import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/generic_action.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.Execute.html
@@ -10,10 +11,9 @@ import 'package:flutter_adaptive_cards/src/generic_action.dart';
 class AdaptiveActionExecute extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionExecute({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

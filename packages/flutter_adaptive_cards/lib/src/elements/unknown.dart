@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 /// Element for an unknown type
 ///
@@ -12,11 +13,10 @@ import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 /// In debug mode these contain an error message describing the problem.
 class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveUnknown({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
     required this.type,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

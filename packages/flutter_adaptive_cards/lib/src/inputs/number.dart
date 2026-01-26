@@ -15,10 +15,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveNumberInput extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveNumberInput({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

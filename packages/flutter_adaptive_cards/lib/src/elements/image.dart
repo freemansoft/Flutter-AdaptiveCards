@@ -12,12 +12,11 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 ///
 class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImage({
-    super.key,
     required this.adaptiveMap,
     required this.widgetState,
     this.parentMode = 'stretch',
     required this.supportMarkdown,
-  }) {
+  }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
