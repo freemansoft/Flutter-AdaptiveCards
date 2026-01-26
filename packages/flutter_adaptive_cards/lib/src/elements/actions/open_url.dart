@@ -13,13 +13,18 @@ class AdaptiveActionOpenUrl extends StatefulWidget
     super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
 
   @override
   AdaptiveActionOpenUrlState createState() => AdaptiveActionOpenUrlState();
@@ -34,7 +39,7 @@ class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
   void didChangeDependencies() {
     super.didChangeDependencies();
     action =
-        widgetState.cardRegistry.getGenericAction(
+        widgetState.cardTypeRegistry.getGenericAction(
               map: adaptiveMap,
               state: widgetState,
             )!

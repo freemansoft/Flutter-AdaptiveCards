@@ -15,7 +15,7 @@ import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
 @widgetbook.UseCase(
   name: 'Example 1',
   type: widget_types.Examples,
-  path: '[Components]',
+  path: '[Other]',
 )
 Widget buildSamplesExample1(BuildContext context) {
   return const GenericPage(
@@ -574,12 +574,25 @@ Widget buildImageSetExample2(BuildContext context) {
 // =============================================================================
 
 @widgetbook.UseCase(
-  name: 'Example 1',
+  name: 'Single Action Set',
   type: widget_types.ActionSet,
   path: '[Components]',
 )
-Widget buildActionSetExample1(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/action_set/example1.json');
+Widget buildActionSetSingle(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/action_set/action_set_single.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Two Action Set',
+  type: widget_types.ActionSet,
+  path: '[Components]',
+)
+Widget buildActionSetDouble(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/action_set/action_set_double.json',
+  );
 }
 
 // =============================================================================

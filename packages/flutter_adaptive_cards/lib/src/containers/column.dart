@@ -15,12 +15,18 @@ class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
     required this.adaptiveMap,
     required this.widgetState,
     required this.supportMarkdown,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
+
   final bool supportMarkdown;
 
   @override
@@ -46,7 +52,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     super.initState();
 
     if (adaptiveMap.containsKey('selectAction')) {
-      action = widgetState.cardRegistry.getGenericAction(
+      action = widgetState.cardTypeRegistry.getGenericAction(
         map: adaptiveMap['selectAction'],
         state: widgetState,
       );
@@ -84,7 +90,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
         ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
             child,
           ) {
-            return widgetState.cardRegistry.getElement(
+            return widgetState.cardTypeRegistry.getElement(
               map: child,
               widgetState: widgetState,
               parentMode: mode,

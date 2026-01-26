@@ -13,13 +13,18 @@ class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
     super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
 
   @override
   AdaptiveContainerState createState() => AdaptiveContainerState();
@@ -40,7 +45,7 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
       children = List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
         child,
       ) {
-        return widgetState.cardRegistry.getElement(
+        return widgetState.cardTypeRegistry.getElement(
           map: child,
           widgetState: widgetState,
         );

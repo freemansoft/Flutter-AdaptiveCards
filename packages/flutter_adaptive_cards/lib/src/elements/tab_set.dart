@@ -15,12 +15,17 @@ class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
     super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
 
   @override
   AdaptiveTabSetState createState() => AdaptiveTabSetState();
@@ -80,7 +85,7 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
                 final contentItems = t['items'] ?? t['body'];
                 if (contentItems is List) {
                   for (final c in contentItems) {
-                    final el = widgetState.cardRegistry.getElement(
+                    final el = widgetState.cardTypeRegistry.getElement(
                       map: c,
                       widgetState: widgetState,
                     );

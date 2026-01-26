@@ -8,12 +8,17 @@ class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
     super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
 
   @override
   AdaptiveRatingState createState() => AdaptiveRatingState();

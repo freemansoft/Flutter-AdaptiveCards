@@ -32,9 +32,14 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'ActionSet',
         useCases: [
           _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
+            name: 'Single Action Set',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildActionSetExample1,
+                .buildActionSetSingle,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Two Action Set',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionSetDouble,
           ),
         ],
       ),
@@ -250,16 +255,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Example 5',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildContainerExample5,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
-        name: 'Examples',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample1,
           ),
         ],
       ),
@@ -521,6 +516,11 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookComponent(
         name: 'Examples',
         useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 1',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample1,
+          ),
           _widgetbook.WidgetbookUseCase(
             name: 'Example 10',
             builder: _widgetbook_workspace_adaptive_cards_use_cases

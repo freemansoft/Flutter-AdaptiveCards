@@ -31,9 +31,12 @@ class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   final Map<String, dynamic> adaptiveMap;
-  final BarChartType type;
   @override
   final RawAdaptiveCardState widgetState;
+  @override
+  late final String id;
+
+  final BarChartType type;
 
   @override
   AdaptiveBarChartState createState() => AdaptiveBarChartState();

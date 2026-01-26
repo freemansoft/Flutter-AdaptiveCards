@@ -14,13 +14,18 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
     required this.adaptiveMap,
     required this.widgetState,
     required this.supportMarkdown,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
 
   final bool supportMarkdown;
 

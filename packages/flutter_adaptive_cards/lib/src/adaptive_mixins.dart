@@ -4,34 +4,59 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
-import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 
+// Mixin for widgets that are adaptive elements- widget and not state
+
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
   // this is an abstract method that everyone needs to implmenet
+
+  /// implementers will need to provide the adaptive map
   Map<String, dynamic> get adaptiveMap;
+
+  /// implementers will need to provide the widget state
   RawAdaptiveCardState get widgetState;
+
+  /// implementers will need to provide the id
+  String get id;
+
+  /// ids are generated if they aren't specified in the 'id' property
+  bool idIsNatural() {
+    return adaptiveMap.containsKey('id');
+  }
+
+  /// Can override this if need to special process the id
+  String loadId(Map aMap) {
+    if (aMap.containsKey('id')) {
+      return aMap['id'].toString();
+    } else {
+      // if no id is specified, use the hashcode of the map
+      // only thing we can do for cards that don't have id properties or provided ids
+      return '${aMap['type']}-${aMap.hashCode}';
+    }
+  }
 }
 
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
-  late String id;
+  String get id => widget.id;
 
   RawAdaptiveCardState get widgetState => widget.widgetState;
 
   Map<String, dynamic> get adaptiveMap => widget.adaptiveMap;
 
+  bool get idIsNatural => widget.idIsNatural();
+
   @override
   void initState() {
     super.initState();
-    id = loadId();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // only register cards with IDs so we can target them
-    if (adaptiveMap.containsKey('id')) {
+    if (idIsNatural) {
       // register cards with IDs so we can target them
       // At one time this was only used for showCard
       // TODO(username): We don't have a good way to unregister cards see dispose()
@@ -42,15 +67,6 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     } else {
       // a lot of them don't have ids
       //debugPrint('No ID found for ${widget.runtimeType}');
-    }
-  }
-
-  /// Can override this if need to special process the id
-  String loadId() {
-    if (adaptiveMap.containsKey('id')) {
-      return adaptiveMap['id'].toString();
-    } else {
-      return UUIDGenerator().getId();
     }
   }
 

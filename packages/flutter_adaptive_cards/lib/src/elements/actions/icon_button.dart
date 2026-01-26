@@ -12,13 +12,18 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
     required this.adaptiveMap,
     required this.widgetState,
     required this.onTapped,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
 
   final VoidCallback onTapped;
 

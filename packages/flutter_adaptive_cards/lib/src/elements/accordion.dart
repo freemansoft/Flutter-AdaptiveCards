@@ -8,13 +8,18 @@ class AdaptiveAccordion extends StatefulWidget with AdaptiveElementWidgetMixin {
     super.key,
     required this.adaptiveMap,
     required this.widgetState,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
 
   @override
   AdaptiveAccordionState createState() => AdaptiveAccordionState();
@@ -63,7 +68,7 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
           final contentItems = itemMap['items'] ?? itemMap['body'];
           if (contentItems is List) {
             for (final c in contentItems) {
-              final el = widgetState.cardRegistry.getElement(
+              final el = widgetState.cardTypeRegistry.getElement(
                 map: c,
                 widgetState: widgetState,
               );

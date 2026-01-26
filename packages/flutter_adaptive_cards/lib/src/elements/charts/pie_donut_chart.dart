@@ -20,6 +20,10 @@ class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   final Map<String, dynamic> adaptiveMap;
   @override
   final RawAdaptiveCardState widgetState;
+
+  @override
+  late final String id;
+
   final bool isDonut;
 
   @override
