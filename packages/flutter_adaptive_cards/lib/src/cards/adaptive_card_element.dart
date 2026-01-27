@@ -43,7 +43,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   String? version;
 
   /// The current card that is being shown via a showCard action
-  String? currentCardId;
+  /// A subtype of Widget!
+  AdaptiveCardElement? currentCard;
 
   late List<Widget> bodyChildren;
 
@@ -220,11 +221,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     }
     widgetChildren.add(actionWidget);
 
-    if (currentCardId != null) {
-      final foundCard = _registeredCards[currentCardId];
-      if (foundCard != null) {
-        widgetChildren.add(foundCard);
-      }
+    if (currentCard != null) {
+      widgetChildren.add(currentCard!);
     }
 
     // default to result without a background image
@@ -263,11 +261,13 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   }
 
   /// This is called when an [AdaptiveActionShowCard] triggers it.
-  void showCard(String id) {
-    if (currentCardId == id) {
-      currentCardId = null;
+  void showCard(AdaptiveCardElement card) {
+    // relies on identity check
+    if (currentCard == card) {
+      // essentially hide/show (toggle) behavior
+      currentCard = null;
     } else {
-      currentCardId = id;
+      currentCard = card;
     }
     setState(() {});
   }

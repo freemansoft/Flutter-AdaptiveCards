@@ -39,7 +39,7 @@ class AdaptiveActionShowCard extends StatefulWidget
 
 class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
     with AdaptiveActionMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
-  String targetCardId = '';
+  AdaptiveCardElement? targetCard;
 
   @override
   void initState() {
@@ -47,34 +47,46 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
     // we cache the show card widget because it isn't in the tree if hidden (not visible)
     // should this be in didChangeDependencies instead?
-    final Widget targetCard = widgetState.cardTypeRegistry.getElement(
+    final Widget possibleTargetCard = widgetState.cardTypeRegistry.getElement(
       map: adaptiveMap['card'],
       widgetState: widgetState,
     );
-    if (targetCard is AdaptiveCardElement) {
-      targetCardId = targetCard.id;
+    if (possibleTargetCard is AdaptiveCardElement) {
+      targetCard = possibleTargetCard;
+      // this feels like a hack because it should have gotten called when created
+      // do we need it because dependenciesDidChange doesn't get called so the mixin doesn't fire?
+      ProviderScope.containerOf(
+            context,
+            listen: false,
+          )
+          .read(adaptiveCardElementStateProvider)
+          .registerCardWidget(targetCard!.id, targetCard!);
       assert(() {
         developer.log(
           format(
             'targetCard for {} has id {} built for {}',
             id,
-            targetCard.id,
-            targetCard,
+            possibleTargetCard.id,
+            possibleTargetCard,
+          ),
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+    } else if (possibleTargetCard is AdaptiveElementWidgetMixin) {
+      // we have a card but not the mandatory type
+      assert(() {
+        developer.log(
+          format(
+            'target card Time must be AdaptiveCardElement for {} built for {}',
+            id,
+            possibleTargetCard,
           ),
           name: runtimeType.toString(),
         );
         return true;
       }());
     }
-
-    // this feels like a hack.
-    // do we need it because dependenciesDidChange doesn't get called so the mixin doesn't fire?
-    ProviderScope.containerOf(
-          context,
-          listen: false,
-        )
-        .read(adaptiveCardElementStateProvider)
-        .registerCardWidget(targetCardId, targetCard);
   }
 
   @override
@@ -103,11 +115,12 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(title),
+              // chevron state based on if our card being shown
               if (ProviderScope.containerOf(
                     context,
                     listen: false,
-                  ).read(adaptiveCardElementStateProvider).currentCardId ==
-                  id)
+                  ).read(adaptiveCardElementStateProvider).currentCard !=
+                  targetCard)
                 const Icon(Icons.keyboard_arrow_up)
               else
                 const Icon(Icons.keyboard_arrow_down),
@@ -120,9 +133,11 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
   @override
   void onTapped() {
-    ProviderScope.containerOf(
-      context,
-      listen: false,
-    ).read(adaptiveCardElementStateProvider).showCard(targetCardId);
+    if (targetCard != null) {
+      ProviderScope.containerOf(
+        context,
+        listen: false,
+      ).read(adaptiveCardElementStateProvider).showCard(targetCard!);
+    }
   }
 }
