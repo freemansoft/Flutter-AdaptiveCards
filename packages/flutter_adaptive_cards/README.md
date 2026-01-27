@@ -218,6 +218,9 @@ TODO for the example programs moved to [example README](example/README.md)
   - Golden toolkit but it will show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
 - Action.OpenUrlDialog is not impelemnted correctly. It should fetch another URL and display the adaptive card returned in a dialog
 - resetInputs() needs to be overridden in every input field that needs something other than '' when no value was set in the json.
+- mandatory inputs checks may not include all inputs because possible overrides may not be implement
+- Visitors are at the raw adaptive card level meaning all adaptive cards and their children are in scope. All forms are impacted at that level.
+- The raw_adaptive_card is global to all sub AdaptiveCardElement instances.  reference resolver operates at this level
 
 ## ChangeLog
 
