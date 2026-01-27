@@ -16,6 +16,7 @@ import 'package:flutter_adaptive_cards/src/elements/actions/popover.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/reset_inputs.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/submit.dart';
+import 'package:flutter_adaptive_cards/src/elements/actions/toggle_visibility.dart';
 import 'package:flutter_adaptive_cards/src/elements/badge.dart';
 import 'package:flutter_adaptive_cards/src/elements/carousel.dart';
 import 'package:flutter_adaptive_cards/src/elements/charts/bar_chart.dart';
@@ -150,8 +151,10 @@ class CardTypeRegistry {
         assert(false, 'Action.OpenUrlDialog is not supported');
         return null;
       case 'Action.ToggleVisibility':
-        assert(false, 'Action.ToggleVisibility is not supported');
-        return null;
+        return GenericActionToggleVisibility(
+          adaptiveMap: map,
+          rawAdaptiveCardState: state,
+        );
       case 'Action.InsertImage':
         assert(false, 'Action.InsertImage is not supported');
         return null;
@@ -380,11 +383,9 @@ class CardTypeRegistry {
           widgetState: widgetState,
         ); // Custom wrapper
       case 'Action.ToggleVisibility':
-        assert(false, 'Action.ToggleVisibility is not supported');
-        return AdaptiveUnknown(
+        return AdaptiveActionToggleVisibility(
           adaptiveMap: map,
           widgetState: widgetState,
-          type: stringType,
         );
       case 'Action.InsertImage':
         return AdaptiveActionInsertImage(

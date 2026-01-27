@@ -82,3 +82,37 @@ class GenericActionResetInputs extends GenericAction {
     rawAdaptiveCardState.resetInputs();
   }
 }
+
+class GenericActionToggleVisibility extends GenericAction {
+  GenericActionToggleVisibility({
+    required Map<String, dynamic> adaptiveMap,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  }) : super(adaptiveMap, rawAdaptiveCardState);
+
+  @override
+  void tap() {
+    late List<String> targetElementIds;
+
+    // Toggle visibility for each target element
+    // Parse targetElements - can be a list of strings or TargetElement objects
+    final targetElements =
+        adaptiveMap['targetElements'] as List<dynamic>? ?? [];
+    targetElementIds = [];
+
+    for (final element in targetElements) {
+      if (element is String) {
+        // Simple string ID
+        targetElementIds.add(element);
+      } else if (element is Map<String, dynamic>) {
+        // TargetElement object with elementId property
+        final elementId = element['elementId'] as String?;
+        if (elementId != null) {
+          targetElementIds.add(elementId);
+        }
+      }
+    }
+    for (final elementId in targetElementIds) {
+      rawAdaptiveCardState.toggleVisibility(id: elementId);
+    }
+  }
+}
