@@ -230,4 +230,139 @@ void main() {
       expect(find.text('Toggle Element 2'), findsNothing);
     },
   );
+
+  testWidgets('Action.ToggleVisibility toggles visibility of target elements', (
+    WidgetTester tester,
+  ) async {
+    // Create a card with elements and an Action.ToggleVisibility action
+    final Map<String, dynamic> cardMap = {
+      'type': 'AdaptiveCard',
+      'version': '1.4',
+      'body': [
+        {
+          'type': 'TextBlock',
+          'id': 'target1',
+          'text': 'Target Element 1',
+          'isVisible': true,
+        },
+        {
+          'type': 'TextBlock',
+          'id': 'target2',
+          'text': 'Target Element 2',
+          'isVisible': false,
+        },
+        {
+          'type': 'TextBlock',
+          'id': 'target3',
+          'text': 'Target Element 3',
+          'isVisible': true,
+        },
+      ],
+      'actions': [
+        {
+          'type': 'Action.ToggleVisibility',
+          'title': 'Toggle Elements',
+          'targetElements': ['target1', 'target2'],
+        },
+      ],
+    };
+
+    final Widget widget = MaterialApp(
+      home: RawAdaptiveCard.fromMap(
+        map: cardMap,
+        hostConfig: HostConfig(),
+      ),
+    );
+
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
+
+    // Verify initial state: target1 visible, target2 hidden, target3 visible
+    expect(find.text('Target Element 1'), findsOneWidget);
+    expect(find.text('Target Element 2'), findsNothing);
+    expect(find.text('Target Element 3'), findsOneWidget);
+
+    // Find and tap the ToggleVisibility action button
+    final toggleButtonFinder = find.widgetWithText(ElevatedButton, 'Toggle Elements');
+    expect(toggleButtonFinder, findsOneWidget);
+
+    await tester.tap(toggleButtonFinder);
+    await tester.pumpAndSettle();
+
+    // After toggle: target1 should be hidden, target2 should be visible, target3 unchanged
+    expect(find.text('Target Element 1'), findsNothing);
+    expect(find.text('Target Element 2'), findsOneWidget);
+    expect(find.text('Target Element 3'), findsOneWidget);
+
+    // Tap again to toggle back
+    await tester.tap(toggleButtonFinder);
+    await tester.pumpAndSettle();
+
+    // After second toggle: target1 visible again, target2 hidden again
+    expect(find.text('Target Element 1'), findsOneWidget);
+    expect(find.text('Target Element 2'), findsNothing);
+    expect(find.text('Target Element 3'), findsOneWidget);
+  });
+
+  testWidgets(
+    'Action.ToggleVisibility handles TargetElement objects with elementId',
+    (
+      WidgetTester tester,
+    ) async {
+      // Create a card with elements and an Action.ToggleVisibility using TargetElement objects
+      final Map<String, dynamic> cardMap = {
+        'type': 'AdaptiveCard',
+        'version': '1.4',
+        'body': [
+          {
+            'type': 'TextBlock',
+            'id': 'elem1',
+            'text': 'Element 1',
+            'isVisible': true,
+          },
+          {
+            'type': 'TextBlock',
+            'id': 'elem2',
+            'text': 'Element 2',
+            'isVisible': false,
+          },
+        ],
+        'actions': [
+          {
+            'type': 'Action.ToggleVisibility',
+            'title': 'Toggle',
+            'targetElements': [
+              {'elementId': 'elem1'},
+              {'elementId': 'elem2'},
+            ],
+          },
+        ],
+      };
+
+      final Widget widget = MaterialApp(
+        home: RawAdaptiveCard.fromMap(
+          map: cardMap,
+          hostConfig: HostConfig(),
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+      await tester.pumpAndSettle();
+
+      // Verify initial state
+      expect(find.text('Element 1'), findsOneWidget);
+      expect(find.text('Element 2'), findsNothing);
+
+      // Tap the toggle button
+      final toggleButtonFinder = find.widgetWithText(ElevatedButton, 'Toggle');
+      expect(toggleButtonFinder, findsOneWidget);
+
+      await tester.tap(toggleButtonFinder);
+      await tester.pumpAndSettle();
+
+      // After toggle: both should be toggled
+      expect(find.text('Element 1'), findsNothing);
+      expect(find.text('Element 2'), findsOneWidget);
+    },
+  );
 }
