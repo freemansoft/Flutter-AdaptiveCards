@@ -113,6 +113,8 @@ class Evaluator {
         // ignore: omit_local_variable_types
         final List<dynamic> resultList = [];
         final originalTemplateWithoutData = Map<String, dynamic>.from(value);
+        // more readable
+        // ignore: cascade_invocations
         originalTemplateWithoutData.remove(r'$data');
 
         var index = 0;
