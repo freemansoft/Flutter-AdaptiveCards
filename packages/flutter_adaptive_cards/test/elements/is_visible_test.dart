@@ -147,4 +147,87 @@ void main() {
     expect(find.text('Element 1'), findsNothing);
     expect(find.text('Element 2'), findsOneWidget);
   });
+
+  testWidgets(
+    'RawAdaptiveCardState.toggleVisibility can toggle element visibility',
+    (
+      WidgetTester tester,
+    ) async {
+      // Create a card with two TextBlock elements
+      final Map<String, dynamic> cardMap = {
+        'type': 'AdaptiveCard',
+        'version': '1.4',
+        'body': [
+          {
+            'type': 'TextBlock',
+            'id': 'toggle1',
+            'text': 'Toggle Element 1',
+            'isVisible': true,
+          },
+          {
+            'type': 'TextBlock',
+            'id': 'toggle2',
+            'text': 'Toggle Element 2',
+            'isVisible': false,
+          },
+        ],
+      };
+
+      final Widget widget = MaterialApp(
+        home: RawAdaptiveCard.fromMap(
+          map: cardMap,
+          hostConfig: HostConfig(),
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+      await tester.pumpAndSettle();
+
+      // Verify initial state: toggle1 visible, toggle2 hidden
+      expect(find.text('Toggle Element 1'), findsOneWidget);
+      expect(find.text('Toggle Element 2'), findsNothing);
+
+      // Get the RawAdaptiveCardState
+      final rawAdaptiveCardFinder = find.byType(RawAdaptiveCard);
+      expect(rawAdaptiveCardFinder, findsOneWidget);
+
+      final RawAdaptiveCardState cardState = tester.state<RawAdaptiveCardState>(
+        rawAdaptiveCardFinder,
+      );
+
+      // Toggle toggle1 (should hide it)
+      // clearer for test
+      // ignore: cascade_invocations
+      cardState.toggleVisibility(id: 'toggle1');
+      await tester.pumpAndSettle();
+
+      // Verify toggle1 is now hidden, toggle2 still hidden
+      expect(find.text('Toggle Element 1'), findsNothing);
+      expect(find.text('Toggle Element 2'), findsNothing);
+
+      // Toggle toggle2 (should show it)
+      cardState.toggleVisibility(id: 'toggle2');
+      await tester.pumpAndSettle();
+
+      // Verify toggle1 still hidden, toggle2 now visible
+      expect(find.text('Toggle Element 1'), findsNothing);
+      expect(find.text('Toggle Element 2'), findsOneWidget);
+
+      // Toggle toggle1 again (should show it)
+      cardState.toggleVisibility(id: 'toggle1');
+      await tester.pumpAndSettle();
+
+      // Verify both are now visible
+      expect(find.text('Toggle Element 1'), findsOneWidget);
+      expect(find.text('Toggle Element 2'), findsOneWidget);
+
+      // Toggle toggle2 again (should hide it)
+      cardState.toggleVisibility(id: 'toggle2');
+      await tester.pumpAndSettle();
+
+      // Verify toggle1 visible, toggle2 hidden
+      expect(find.text('Toggle Element 1'), findsOneWidget);
+      expect(find.text('Toggle Element 2'), findsNothing);
+    },
+  );
 }

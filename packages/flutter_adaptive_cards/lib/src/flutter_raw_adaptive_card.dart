@@ -242,6 +242,48 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     }());
   }
 
+  /// blind visibility flipping
+  void toggleVisibility({required String id}) {
+    State<StatefulWidget>? foundElementState;
+    bool? newVisibility;
+
+    // Recursively visits all inputs and determines if all the inputs are valid
+    void visitor(Element element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveElementMixin) {
+          if ((element.state as AdaptiveElementMixin).id == id) {
+            foundElementState = element.state;
+            (element.state as AdaptiveVisibilityMixin).setIsVisible(
+              visible: !(element.state as AdaptiveVisibilityMixin).isVisible,
+            );
+            newVisibility =
+                (element.state as AdaptiveVisibilityMixin).isVisible;
+          }
+        }
+      }
+      if (foundElementState == null) {
+        element.visitChildren(visitor);
+      }
+    }
+
+    if (foundElementState == null) {
+      context.visitChildElements(visitor);
+    }
+
+    assert(() {
+      developer.log(
+        format(
+          'toggled visibility to {} on {} {}',
+          newVisibility ?? 'nan',
+          id,
+          foundElementState,
+        ),
+        name: runtimeType.toString(),
+      );
+      return true;
+    }());
+  }
+
   void openUrl(String url) {
     if (widget.onOpenUrl != null) {
       widget.onOpenUrl?.call(url);
