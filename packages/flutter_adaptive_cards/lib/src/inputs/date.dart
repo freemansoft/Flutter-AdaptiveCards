@@ -36,7 +36,7 @@ class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveDateInputState extends State<AdaptiveDateInput>
-    with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin {
+    with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin, AdaptiveVisibilityMixin {
   String? label;
   late bool isRequired;
   DateTime? selectedDateTime;
@@ -79,95 +79,98 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
       return true;
     }());
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          loadLabel(
-            context: context,
-            label: label,
-            isRequired: isRequired,
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 40,
-            child: TextFormField(
-              readOnly: true,
-              style: const TextStyle(),
-              controller: controller,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 8,
-                ),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(),
-                ),
-                errorBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                  borderSide: BorderSide(width: 1),
-                ),
-                focusedErrorBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                  borderSide: BorderSide(width: 1),
-                ),
-                filled: true,
-                fillColor:
-                    InheritedReferenceResolver.of(
-                      context,
-                    ).resolver.resolveInputBackgroundColor(
-                      context: context,
-                      style: null,
-                    ),
-                suffixIcon: const Icon(Icons.calendar_today, size: 15),
-                hintText: placeholder,
-                // required or box will exist even though field is hidden or half height
-                hintStyle: const TextStyle(),
-                errorStyle: const TextStyle(height: 0),
-              ),
-              validator: (value) {
-                if (!isRequired) return null;
-                if (value == null || value.isEmpty) {
-                  setState(() {
-                    stateHasError = true;
-                  });
-                  return '';
-                }
-                setState(() {
-                  stateHasError = false;
-                });
-                return null;
-              },
-              onTap: () async {
-                final DateTime? result = await widgetState
-                    .datePickerForPlatform(
-                      context,
-                      selectedDateTime,
-                      min,
-                      max,
-                    );
-                if (result != null) {
-                  setState(() {
-                    selectedDateTime = result;
-                    controller.text = selectedDateTime == null
-                        ? placeholder
-                        : inputFormat.format(selectedDateTime!);
-                  });
-                }
-              },
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            loadLabel(
+              context: context,
+              label: label,
+              isRequired: isRequired,
             ),
-          ),
-          loadErrorMessage(
-            context: context,
-            errorMessage: errorMessage,
-            stateHasError: stateHasError,
-          ),
-        ],
+            SizedBox(
+              width: double.infinity,
+              height: 40,
+              child: TextFormField(
+                readOnly: true,
+                style: const TextStyle(),
+                controller: controller,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 8,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(),
+                  ),
+                  errorBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(width: 1),
+                  ),
+                  focusedErrorBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(width: 1),
+                  ),
+                  filled: true,
+                  fillColor:
+                      InheritedReferenceResolver.of(
+                        context,
+                      ).resolver.resolveInputBackgroundColor(
+                        context: context,
+                        style: null,
+                      ),
+                  suffixIcon: const Icon(Icons.calendar_today, size: 15),
+                  hintText: placeholder,
+                  // required or box will exist even though field is hidden or half height
+                  hintStyle: const TextStyle(),
+                  errorStyle: const TextStyle(height: 0),
+                ),
+                validator: (value) {
+                  if (!isRequired) return null;
+                  if (value == null || value.isEmpty) {
+                    setState(() {
+                      stateHasError = true;
+                    });
+                    return '';
+                  }
+                  setState(() {
+                    stateHasError = false;
+                  });
+                  return null;
+                },
+                onTap: () async {
+                  final DateTime? result = await widgetState
+                      .datePickerForPlatform(
+                        context,
+                        selectedDateTime,
+                        min,
+                        max,
+                      );
+                  if (result != null) {
+                    setState(() {
+                      selectedDateTime = result;
+                      controller.text = selectedDateTime == null
+                          ? placeholder
+                          : inputFormat.format(selectedDateTime!);
+                    });
+                  }
+                },
+              ),
+            ),
+            loadErrorMessage(
+              context: context,
+              errorMessage: errorMessage,
+              stateHasError: stateHasError,
+            ),
+          ],
+        ),
       ),
     );
   }

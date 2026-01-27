@@ -25,7 +25,7 @@ class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveRatingState extends State<AdaptiveRating>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late double value;
   late double max;
   late String color;
@@ -53,25 +53,28 @@ class AdaptiveRatingState extends State<AdaptiveRating>
 
     final double iconSize = size == 'large' ? 24 : 16;
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(max.toInt(), (index) {
-          IconData iconData;
-          if (index < value) {
-            iconData = Icons.star;
-          } else {
-            iconData = Icons.star_border;
-          }
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(max.toInt(), (index) {
+            IconData iconData;
+            if (index < value) {
+              iconData = Icons.star;
+            } else {
+              iconData = Icons.star_border;
+            }
 
-          return Icon(
-            iconData,
-            color: starColor,
-            size: iconSize,
-          );
-        }),
+            return Icon(
+              iconData,
+              color: starColor,
+              size: iconSize,
+            );
+          }),
+        ),
       ),
     );
   }

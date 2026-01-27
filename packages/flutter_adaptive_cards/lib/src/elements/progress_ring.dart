@@ -28,7 +28,7 @@ class AdaptiveProgressRing extends StatefulWidget
 }
 
 class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   double? percent;
   late String? color;
   late String size;
@@ -140,10 +140,13 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
       }
     }
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: content,
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: content,
+      ),
     );
   }
 }

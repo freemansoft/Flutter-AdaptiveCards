@@ -202,6 +202,46 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     context.visitChildElements(visitor);
   }
 
+  /// Sets the visibility of any widget whose state has a id that matches
+  /// visiting the elements in the tree
+  void setIsVisible({required String id, required bool isVisible}) {
+    State<StatefulWidget>? foundElementState;
+
+    // Recursively visits all inputs and determines if all the inputs are valid
+    void visitor(Element element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveElementMixin) {
+          if ((element.state as AdaptiveElementMixin).id == id) {
+            foundElementState = element.state;
+            (element.state as AdaptiveVisibilityMixin).setIsVisible(
+              visible: isVisible,
+            );
+          }
+        }
+      }
+      if (foundElementState == null) {
+        element.visitChildren(visitor);
+      }
+    }
+
+    if (foundElementState == null) {
+      context.visitChildElements(visitor);
+    }
+
+    assert(() {
+      developer.log(
+        format(
+          'setVisibility {} on {} {}',
+          isVisible,
+          id,
+          foundElementState,
+        ),
+        name: runtimeType.toString(),
+      );
+      return true;
+    }());
+  }
+
   void openUrl(String url) {
     if (widget.onOpenUrl != null) {
       widget.onOpenUrl?.call(url);

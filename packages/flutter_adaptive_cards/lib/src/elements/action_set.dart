@@ -32,7 +32,8 @@ class ActionSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   ActionSetState createState() => ActionSetState();
 }
 
-class ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
+class ActionSetState extends State<ActionSet>
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   List<Widget> activeActions = [];
 
   @override
@@ -63,17 +64,20 @@ class ActionSetState extends State<ActionSet> with AdaptiveElementMixin {
     final resolver = InheritedReferenceResolver.of(context).resolver;
     final actionsConfig = resolver.getActionsConfig();
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Wrap(
-        spacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
-        runSpacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
-        direction: actionsConfig?.actionsOrientation.toLowerCase() == 'vertical'
-            ? Axis.vertical
-            : Axis.horizontal,
-        alignment: _getWrapAlignment(actionsConfig?.actionAlignment ?? 'left'),
-        children: activeActions,
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Wrap(
+          spacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
+          runSpacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
+          direction: actionsConfig?.actionsOrientation.toLowerCase() == 'vertical'
+              ? Axis.vertical
+              : Axis.horizontal,
+          alignment: _getWrapAlignment(actionsConfig?.actionAlignment ?? 'left'),
+          children: activeActions,
+        ),
       ),
     );
   }

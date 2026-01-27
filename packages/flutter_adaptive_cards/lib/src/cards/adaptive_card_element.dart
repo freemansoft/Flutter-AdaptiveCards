@@ -58,17 +58,17 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
   late Axis actionsOrientation;
 
-  /// Cards that exist under the AdaptiveCardElement by ID
-  final Map<String, Widget> _registeredCards = {};
-
   /// Support only one form per AdaptiveCardElement
   final formKey = GlobalKey<FormState>();
+
+  /// Cards that exist under the AdaptiveCardElement by ID
+  final Map<String, Widget> _registeredCards = {};
 
   /// Register a card to the registry so we can refer to it later
   /// We want all cards that have a user provided id to be registered
   /// We also register the adaptive Card element itself because showCard
   /// actions target an AdaptiveCardElement which does not have an id
-  void registerCard(String registrationId, Widget it) {
+  void registerCardWidget(String registrationId, Widget it) {
     // this is a hack because it was hard to make this a generic widget
     // had the same problem with Selectable but made it a stateless widget
     if (it is AdaptiveTappable) {
@@ -85,7 +85,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   }
 
   /// Unregister a card from the registry so we don't refer to it after it's been disposed
-  void unregisterCard(
+  void unregisterCardWidget(
     String registrationId,
   ) {
     if (_registeredCards.containsKey(registrationId)) {

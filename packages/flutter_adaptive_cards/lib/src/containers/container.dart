@@ -31,7 +31,7 @@ class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveContainerState extends State<AdaptiveContainer>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   // TODO(username): implement verticalContentAlignment
   late List<Widget> children;
   late double spacing;
@@ -79,26 +79,29 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
 
   @override
   Widget build(BuildContext context) {
-    return ChildStyler(
-      adaptiveMap: adaptiveMap,
-      child: AdaptiveTappable(
+    return Visibility(
+      visible: isVisible,
+      child: ChildStyler(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
-        child: SeparatorElement(
+        child: AdaptiveTappable(
           adaptiveMap: adaptiveMap,
           widgetState: widgetState,
-          child: Container(
-            decoration: getDecorationFromMap(
-              adaptiveMap,
-              backgroundColor: backgroundColor,
-            ),
-            child: Padding(
-              // padding: const EdgeInsets.symmetric(vertical: 8.0),
-              padding: EdgeInsets.symmetric(
-                vertical: spacing,
-                horizontal: spacing,
+          child: SeparatorElement(
+            adaptiveMap: adaptiveMap,
+            widgetState: widgetState,
+            child: Container(
+              decoration: getDecorationFromMap(
+                adaptiveMap,
+                backgroundColor: backgroundColor,
               ),
-              child: Column(children: children.toList()),
+              child: Padding(
+                // padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: EdgeInsets.symmetric(
+                  vertical: spacing,
+                  horizontal: spacing,
+                ),
+                child: Column(children: children.toList()),
+              ),
             ),
           ),
         ),

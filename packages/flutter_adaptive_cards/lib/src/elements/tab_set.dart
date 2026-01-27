@@ -31,7 +31,7 @@ class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTabSetState extends State<AdaptiveTabSet>
-    with AdaptiveElementMixin, TickerProviderStateMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, TickerProviderStateMixin {
   late List<Map<String, dynamic>> tabs;
   late TabController _tabController;
 
@@ -57,45 +57,48 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
   Widget build(BuildContext context) {
     if (tabs.isEmpty) return const SizedBox.shrink();
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TabBar(
-            controller: _tabController,
-            labelColor: Colors.black, // TODO(username): context theme
-            tabs: tabs.map((t) => Tab(text: t['title'] ?? 'Tab')).toList(),
-          ),
-          SizedBox(
-            // TabBarView needs constrained height or expanded.
-            // Adaptive Cards usually flow.
-            // We can measure content or use a fixed height // layout builder?
-            // "Expandable" tab view is tricky.
-            // For MVP: Fixed height or resizing wrapper.
-            // I'll use a constrained height for now (same as Carousel MVP issue)
-            height: 400,
-            child: TabBarView(
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TabBar(
               controller: _tabController,
-              children: tabs.map((t) {
-                // Parse body of the tab
-                final List<Widget> children = [];
-                final contentItems = t['items'] ?? t['body'];
-                if (contentItems is List) {
-                  for (final c in contentItems) {
-                    final el = widgetState.cardTypeRegistry.getElement(
-                      map: c,
-                      widgetState: widgetState,
-                    );
-                    children.add(el);
-                  }
-                }
-                return SingleChildScrollView(child: Column(children: children));
-              }).toList(),
+              labelColor: Colors.black, // TODO(username): context theme
+              tabs: tabs.map((t) => Tab(text: t['title'] ?? 'Tab')).toList(),
             ),
-          ),
-        ],
+            SizedBox(
+              // TabBarView needs constrained height or expanded.
+              // Adaptive Cards usually flow.
+              // We can measure content or use a fixed height // layout builder?
+              // "Expandable" tab view is tricky.
+              // For MVP: Fixed height or resizing wrapper.
+              // I'll use a constrained height for now (same as Carousel MVP issue)
+              height: 400,
+              child: TabBarView(
+                controller: _tabController,
+                children: tabs.map((t) {
+                  // Parse body of the tab
+                  final List<Widget> children = [];
+                  final contentItems = t['items'] ?? t['body'];
+                  if (contentItems is List) {
+                    for (final c in contentItems) {
+                      final el = widgetState.cardTypeRegistry.getElement(
+                        map: c,
+                        widgetState: widgetState,
+                      );
+                      children.add(el);
+                    }
+                  }
+                  return SingleChildScrollView(child: Column(children: children));
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

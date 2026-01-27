@@ -30,7 +30,7 @@ class AdaptiveTimeInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
-    with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin {
+    with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin, AdaptiveVisibilityMixin {
   late TimeOfDay? selectedTime;
   late TimeOfDay min;
   late TimeOfDay max;
@@ -53,43 +53,46 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
 
   @override
   Widget build(BuildContext context) {
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: ElevatedButton(
-        onPressed: () async {
-          final TimeOfDay? result = await widgetState.timePickerForPlatform(
-            context,
-            selectedTime,
-            min,
-            max,
-          );
-          if (result != null) {
-            if (result.hour >= min.hour && result.hour <= max.hour) {
-              // can't count on context in async
-              widgetState.showError(
-                // old code
-                // ignore: use_build_context_synchronously
-                'Time must be after ${context.mounted ? min.format(widgetState.context) : min.toString()}'
-                // old code
-                // ignore: use_build_context_synchronously
-                ' and before ${context.mounted ? max.format(widgetState.context) : max.toString()}',
-              );
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: ElevatedButton(
+          onPressed: () async {
+            final TimeOfDay? result = await widgetState.timePickerForPlatform(
+              context,
+              selectedTime,
+              min,
+              max,
+            );
+            if (result != null) {
+              if (result.hour >= min.hour && result.hour <= max.hour) {
+                // can't count on context in async
+                widgetState.showError(
+                  // old code
+                  // ignore: use_build_context_synchronously
+                  'Time must be after ${context.mounted ? min.format(widgetState.context) : min.toString()}'
+                  // old code
+                  // ignore: use_build_context_synchronously
+                  ' and before ${context.mounted ? max.format(widgetState.context) : max.toString()}',
+                );
+              } else {
+                setState(() {
+                  selectedTime = result;
+                });
+              }
             } else {
               setState(() {
                 selectedTime = result;
               });
             }
-          } else {
-            setState(() {
-              selectedTime = result;
-            });
-          }
-        },
-        child: Text(
-          selectedTime == null
-              ? placeholder
-              : selectedTime!.format(widgetState.context),
+          },
+          child: Text(
+            selectedTime == null
+                ? placeholder
+                : selectedTime!.format(widgetState.context),
+          ),
         ),
       ),
     );

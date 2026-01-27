@@ -46,7 +46,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
       ProviderScope.containerOf(
         context,
         listen: false,
-      ).read(adaptiveCardElementStateProvider).registerCard(id, widget);
+      ).read(adaptiveCardElementStateProvider).registerCardWidget(id, widget);
     } else {
       // a lot of them don't have ids
       //debugPrint('No ID found for ${widget.runtimeType}');
@@ -237,5 +237,36 @@ mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>
   @override
   void initState() {
     super.initState();
+  }
+}
+
+mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
+    implements AdaptiveElementMixin<T> {
+  late bool isVisible;
+
+  @override
+  void initState() {
+    super.initState();
+    // Parse isVisible from adaptiveMap
+    // Handle: 'true'/'false' strings, boolean, null/absent (default true)
+    final isVisibleValue = adaptiveMap['isVisible'];
+    if (isVisibleValue == null) {
+      isVisible = true;
+    } else if (isVisibleValue is bool) {
+      isVisible = isVisibleValue;
+    } else if (isVisibleValue is String) {
+      isVisible = isVisibleValue.toLowerCase() == 'true';
+    } else {
+      isVisible = true; // default
+    }
+  }
+
+  /// Update visibility and trigger rebuild
+  void setIsVisible({required bool visible}) {
+    if (isVisible != visible) {
+      setState(() {
+        isVisible = visible;
+      });
+    }
   }
 }

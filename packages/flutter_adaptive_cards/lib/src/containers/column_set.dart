@@ -34,7 +34,7 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   List<AdaptiveColumn>? columns;
   MainAxisAlignment? horizontalAlignment;
   Color? backgroundColor;
@@ -85,18 +85,21 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
       child = IntrinsicHeight(child: child);
     }
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: AdaptiveTappable(
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         widgetState: widgetState,
-        child: Container(
-          decoration: getDecorationFromMap(
-            adaptiveMap,
-            backgroundColor: backgroundColor,
+        child: AdaptiveTappable(
+          adaptiveMap: adaptiveMap,
+          widgetState: widgetState,
+          child: Container(
+            decoration: getDecorationFromMap(
+              adaptiveMap,
+              backgroundColor: backgroundColor,
+            ),
+            child: child,
           ),
-          child: child,
         ),
       ),
     );

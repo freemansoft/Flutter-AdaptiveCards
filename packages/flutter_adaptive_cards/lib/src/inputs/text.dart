@@ -33,7 +33,7 @@ class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTextInputState extends State<AdaptiveTextInput>
-    with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin {
+    with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
   TextEditingController controller = TextEditingController();
 
   String? label;
@@ -58,75 +58,78 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
 
   @override
   Widget build(BuildContext context) {
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          loadLabel(context: context, label: label, isRequired: isRequired),
-          SizedBox(
-            height: 40,
-            child: TextFormField(
-              style: const TextStyle(),
-              controller: controller,
-              // maxLength: maxLength,
-              inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
-              keyboardType: style,
-              maxLines: isMultiline ? null : 1,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4),
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            loadLabel(context: context, label: label, isRequired: isRequired),
+            SizedBox(
+              height: 40,
+              child: TextFormField(
+                style: const TextStyle(),
+                controller: controller,
+                // maxLength: maxLength,
+                inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
+                keyboardType: style,
+                maxLines: isMultiline ? null : 1,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 8,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(),
+                  ),
+                  errorBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(width: 1),
+                  ),
+                  focusedErrorBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                    borderSide: BorderSide(width: 1),
+                  ),
+                  filled: true,
+                  fillColor:
+                      InheritedReferenceResolver.of(
+                        context,
+                      ).resolver.resolveInputBackgroundColor(
+                        context: context,
+                        style: null,
+                      ),
+                  hintText: placeholder,
+                  // required or box will exist even though field is hidden or half height
+                  hintStyle: const TextStyle(),
+                  errorStyle: const TextStyle(height: 0),
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 8,
-                ),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(),
-                ),
-                errorBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                  borderSide: BorderSide(width: 1),
-                ),
-                focusedErrorBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                  borderSide: BorderSide(width: 1),
-                ),
-                filled: true,
-                fillColor:
-                    InheritedReferenceResolver.of(
-                      context,
-                    ).resolver.resolveInputBackgroundColor(
-                      context: context,
-                      style: null,
-                    ),
-                hintText: placeholder,
-                // required or box will exist even though field is hidden or half height
-                hintStyle: const TextStyle(),
-                errorStyle: const TextStyle(height: 0),
-              ),
-              validator: (value) {
-                if (!isRequired) return null;
-                if (value == null || value.isEmpty) {
+                validator: (value) {
+                  if (!isRequired) return null;
+                  if (value == null || value.isEmpty) {
+                    setState(() {
+                      stateHasError = true;
+                    });
+                    return '';
+                  }
                   setState(() {
-                    stateHasError = true;
+                    stateHasError = false;
                   });
-                  return '';
-                }
-                setState(() {
-                  stateHasError = false;
-                });
-                return null;
-              },
+                  return null;
+                },
+              ),
             ),
-          ),
-          loadErrorMessage(
-            context: context,
-            errorMessage: errorMessage,
-            stateHasError: stateHasError,
-          ),
-        ],
+            loadErrorMessage(
+              context: context,
+              errorMessage: errorMessage,
+              stateHasError: stateHasError,
+            ),
+          ],
+        ),
       ),
     );
   }

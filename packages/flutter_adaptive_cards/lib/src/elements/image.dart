@@ -37,7 +37,7 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveImageState extends State<AdaptiveImage>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late bool isPerson;
   double? width;
   double? height;
@@ -99,10 +99,13 @@ class AdaptiveImageState extends State<AdaptiveImage>
       );
     }
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: child,
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: child,
+      ),
     );
   }
 
