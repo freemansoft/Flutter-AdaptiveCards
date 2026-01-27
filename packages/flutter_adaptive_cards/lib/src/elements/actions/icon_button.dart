@@ -32,7 +32,7 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class IconButtonActionState extends State<IconButtonAction>
-    with AdaptiveActionMixin, AdaptiveElementMixin {
+    with AdaptiveActionMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late String? iconUrl;
 
   @override
@@ -55,25 +55,31 @@ class IconButtonActionState extends State<IconButtonAction>
       ),
     );
 
-    Widget result = SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: ElevatedButton(
-        onPressed: onTapped,
-        style: buttonStyle,
-        child: Text(title),
+    Widget result = Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: ElevatedButton(
+          onPressed: onTapped,
+          style: buttonStyle,
+          child: Text(title),
+        ),
       ),
     );
 
     if (iconUrl != null) {
-      result = SeparatorElement(
-        adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
-        child: ElevatedButton.icon(
-          onPressed: onTapped,
-          style: buttonStyle,
-          icon: AdaptiveImageUtils.getImage(iconUrl!, height: 36),
-          label: Text(title),
+      result = Visibility(
+        visible: isVisible,
+        child: SeparatorElement(
+          adaptiveMap: adaptiveMap,
+          widgetState: widgetState,
+          child: ElevatedButton.icon(
+            onPressed: onTapped,
+            style: buttonStyle,
+            icon: AdaptiveImageUtils.getImage(iconUrl!, height: 36),
+            label: Text(title),
+          ),
         ),
       );
     }

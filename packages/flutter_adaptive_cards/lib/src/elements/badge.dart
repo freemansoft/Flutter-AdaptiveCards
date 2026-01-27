@@ -31,7 +31,7 @@ class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveBadgeState extends State<AdaptiveBadge>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late String? text;
   late String? iconUrl;
   late String style;
@@ -119,10 +119,13 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
       badge = Tooltip(message: tooltip, child: badge);
     }
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: badge,
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: badge,
+      ),
     );
   }
 

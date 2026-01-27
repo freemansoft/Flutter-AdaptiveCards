@@ -30,7 +30,7 @@ class AdaptiveToggle extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveToggleState extends State<AdaptiveToggle>
-    with AdaptiveInputMixin, AdaptiveElementMixin {
+    with AdaptiveInputMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
   bool boolValue = false;
 
   late String valueOff;
@@ -50,23 +50,26 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
 
   @override
   Widget build(BuildContext context) {
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Row(
-        children: <Widget>[
-          Switch(
-            value: boolValue,
-            onChanged: (newValue) {
-              setState(() {
-                boolValue = newValue;
-              });
-            },
-          ),
-          Expanded(
-            child: Text(title),
-          ),
-        ],
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Row(
+          children: <Widget>[
+            Switch(
+              value: boolValue,
+              onChanged: (newValue) {
+                setState(() {
+                  boolValue = newValue;
+                });
+              },
+            ),
+            Expanded(
+              child: Text(title),
+            ),
+          ],
+        ),
       ),
     );
   }

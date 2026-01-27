@@ -28,7 +28,7 @@ class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveCarouselState extends State<AdaptiveCarousel>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late List<Map<String, dynamic>> pages;
   late int initialPage;
   late PageController pageController;
@@ -80,37 +80,40 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
     // The implementation needs to render the pages AND the controls.
     // The previous implementation used a SeparatorElement. We should probably keep that.
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Column(
-        mainAxisSize: MainAxisSize.min, // Wrap content
-        children: [
-          // Carousel Content
-          SizedBox(
-            height:
-                400, // Still fixed height for now as pages might be flexible
-            child: PageView.builder(
-              controller: pageController,
-              onPageChanged: _onPageChanged,
-              itemCount: pages.length,
-              itemBuilder: (context, index) {
-                final pageContent = pages[index];
-                // We expect pageContent to likely be type: CarouselPage
-                // But it could be any element if the JSON is weak.
-                // If it is CarouselPage, the Registry will pick it up (if we register it).
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Wrap content
+          children: [
+            // Carousel Content
+            SizedBox(
+              height:
+                  400, // Still fixed height for now as pages might be flexible
+              child: PageView.builder(
+                controller: pageController,
+                onPageChanged: _onPageChanged,
+                itemCount: pages.length,
+                itemBuilder: (context, index) {
+                  final pageContent = pages[index];
+                  // We expect pageContent to likely be type: CarouselPage
+                  // But it could be any element if the JSON is weak.
+                  // If it is CarouselPage, the Registry will pick it up (if we register it).
 
-                return widgetState.cardTypeRegistry.getElement(
-                  map: pageContent,
-                  widgetState: widgetState,
-                );
-              },
+                  return widgetState.cardTypeRegistry.getElement(
+                    map: pageContent,
+                    widgetState: widgetState,
+                  );
+                },
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          // Carousel Controls
-          _buildControls(),
-        ],
+            const SizedBox(height: 8),
+            // Carousel Controls
+            _buildControls(),
+          ],
+        ),
       ),
     );
   }

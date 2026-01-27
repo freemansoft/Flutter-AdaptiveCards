@@ -40,7 +40,7 @@ class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTableState extends State<AdaptiveTable>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late List<Map<String, dynamic>> columns;
   late List<Map<String, dynamic>> rows;
 
@@ -63,20 +63,23 @@ class AdaptiveTableState extends State<AdaptiveTable>
 
   @override
   Widget build(BuildContext context) {
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Table(
-        border: TableBorder.all(),
-        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-        defaultColumnWidth: const FlexColumnWidth(),
-        // column width should be picked up from the columns["width"]
-        // columnWidths: const <int, TableColumnWidth>{
-        //   1: FlexColumnWidth(),
-        //   2: FlexColumnWidth(),
-        //   3: FlexColumnWidth(),
-        // },
-        children: generateTableRows(rows),
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Table(
+          border: TableBorder.all(),
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+          defaultColumnWidth: const FlexColumnWidth(),
+          // column width should be picked up from the columns["width"]
+          // columnWidths: const <int, TableColumnWidth>{
+          //   1: FlexColumnWidth(),
+          //   2: FlexColumnWidth(),
+          //   3: FlexColumnWidth(),
+          // },
+          children: generateTableRows(rows),
+        ),
       ),
     );
   }

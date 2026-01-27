@@ -33,7 +33,7 @@ class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late String codeSnippet;
   late String? language;
   late int startLineNumber;
@@ -66,35 +66,38 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
       height: 1.2, // Fixed height to ensure alignment
     );
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: Theme.of(context).colorScheme.outline),
-        ),
-        padding: const EdgeInsets.all(8),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Line Numbers
-              SelectableText(
-                lineNumbers.toString(),
-                style: textStyle.copyWith(color: Colors.grey),
-                textAlign: TextAlign.right,
-              ),
-              const SizedBox(width: 12),
-              // Code
-              SelectableText(
-                codeSnippet,
-                style: textStyle,
-              ),
-            ],
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
+          ),
+          padding: const EdgeInsets.all(8),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Line Numbers
+                SelectableText(
+                  lineNumbers.toString(),
+                  style: textStyle.copyWith(color: Colors.grey),
+                  textAlign: TextAlign.right,
+                ),
+                const SizedBox(width: 12),
+                // Code
+                SelectableText(
+                  codeSnippet,
+                  style: textStyle,
+                ),
+              ],
+            ),
           ),
         ),
       ),

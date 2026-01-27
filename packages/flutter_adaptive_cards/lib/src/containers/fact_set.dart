@@ -34,7 +34,7 @@ class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveFactSetState extends State<AdaptiveFactSet>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late List<Map> facts;
   Color? backgroundColor;
 
@@ -64,75 +64,78 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     ).resolver;
     final FactSetConfig? factSetConfig = resolver.getFactSetConfig();
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Container(
-        color: backgroundColor,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: facts
-                  .map(
-                    (fact) => ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth:
-                            factSetConfig?.title.maxWidth != null &&
-                                factSetConfig!.title.maxWidth > 0
-                            ? factSetConfig.title.maxWidth.toDouble()
-                            : double.infinity,
-                      ),
-                      child: Text(
-                        fact['title'],
-                        softWrap: factSetConfig?.title.wrap ?? true,
-                        style: TextStyle(
-                          fontWeight: resolver.resolveFontWeight(
-                            factSetConfig?.title.weight ?? 'default',
-                          ),
-                          fontSize: resolver.resolveFontSize(
-                            context: context,
-                            sizeString: factSetConfig?.title.size ?? 'normal',
-                          ),
-                          color: resolver.resolveContainerForegroundColor(
-                            style: factSetConfig?.title.color,
-                            isSubtle: factSetConfig?.title.isSubtle,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-            SizedBox(width: factSetConfig?.spacing.toDouble() ?? 10),
-            Expanded(
-              child: Column(
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Container(
+          color: backgroundColor,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: facts
                     .map(
                       (fact) => ConstrainedBox(
                         constraints: BoxConstraints(
                           maxWidth:
-                              factSetConfig?.value.maxWidth != null &&
-                                  factSetConfig!.value.maxWidth > 0
-                              ? factSetConfig.value.maxWidth.toDouble()
+                              factSetConfig?.title.maxWidth != null &&
+                                  factSetConfig!.title.maxWidth > 0
+                              ? factSetConfig.title.maxWidth.toDouble()
                               : double.infinity,
                         ),
-                        child: MarkdownBody(
-                          data: fact['value'],
-                          styleSheet: loadMarkdownStyleSheet(
-                            resolver: resolver,
-                            context: context,
-                            factSetTextConfig: factSetConfig?.value,
+                        child: Text(
+                          fact['title'],
+                          softWrap: factSetConfig?.title.wrap ?? true,
+                          style: TextStyle(
+                            fontWeight: resolver.resolveFontWeight(
+                              factSetConfig?.title.weight ?? 'default',
+                            ),
+                            fontSize: resolver.resolveFontSize(
+                              context: context,
+                              sizeString: factSetConfig?.title.size ?? 'normal',
+                            ),
+                            color: resolver.resolveContainerForegroundColor(
+                              style: factSetConfig?.title.color,
+                              isSubtle: factSetConfig?.title.isSubtle,
+                            ),
                           ),
                         ),
                       ),
                     )
                     .toList(),
               ),
-            ),
-          ],
+              SizedBox(width: factSetConfig?.spacing.toDouble() ?? 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: facts
+                      .map(
+                        (fact) => ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth:
+                                factSetConfig?.value.maxWidth != null &&
+                                    factSetConfig!.value.maxWidth > 0
+                                ? factSetConfig.value.maxWidth.toDouble()
+                                : double.infinity,
+                          ),
+                          child: MarkdownBody(
+                            data: fact['value'],
+                            styleSheet: loadMarkdownStyleSheet(
+                              resolver: resolver,
+                              context: context,
+                              factSetTextConfig: factSetConfig?.value,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

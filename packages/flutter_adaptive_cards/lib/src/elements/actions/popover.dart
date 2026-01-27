@@ -29,7 +29,7 @@ class AdaptiveActionPopover extends StatefulWidget
 }
 
 class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
-    with AdaptiveActionMixin, AdaptiveElementMixin {
+    with AdaptiveActionMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late Map<String, dynamic>? card;
   // used to inherit the parent's host config
   late ReferenceResolver popupParentResolver;
@@ -79,23 +79,26 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
     final resolver = InheritedReferenceResolver.of(context).resolver;
 
     // TODO(username): implement the correct styling
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: resolver.resolveButtonBackgroundColor(
-            context: context,
-            style: adaptiveMap['style'],
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: resolver.resolveButtonBackgroundColor(
+              context: context,
+              style: adaptiveMap['style'],
+            ),
+            foregroundColor: resolver.resolveButtonForegroundColor(
+              context: context,
+              style: adaptiveMap['style'],
+            ),
+            // minimumSize: const Size.fromHeight(50),
           ),
-          foregroundColor: resolver.resolveButtonForegroundColor(
-            context: context,
-            style: adaptiveMap['style'],
-          ),
-          // minimumSize: const Size.fromHeight(50),
+          onPressed: onTapped,
+          child: Text(title),
         ),
-        onPressed: onTapped,
-        child: Text(title),
       ),
     );
   }

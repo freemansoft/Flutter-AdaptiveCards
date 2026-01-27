@@ -34,7 +34,7 @@ class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveImageSetState extends State<AdaptiveImageSet>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late List<AdaptiveImage> images;
 
   late String imageSize;
@@ -71,26 +71,29 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
 
   @override
   Widget build(BuildContext context) {
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Container(
-        color: backgroundColor,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Wrap(
-              //maxCrossAxisExtent: 200.0,
-              children: images
-                  .map(
-                    (img) => SizedBox(
-                      width: calculateSize(constraints),
-                      child: img,
-                    ),
-                  )
-                  .toList(),
-              //shrinkWrap: true,
-            );
-          },
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Container(
+          color: backgroundColor,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Wrap(
+                //maxCrossAxisExtent: 200.0,
+                children: images
+                    .map(
+                      (img) => SizedBox(
+                        width: calculateSize(constraints),
+                        child: img,
+                      ),
+                    )
+                    .toList(),
+                //shrinkWrap: true,
+              );
+            },
+          ),
         ),
       ),
     );

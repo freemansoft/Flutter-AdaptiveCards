@@ -33,7 +33,7 @@ class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   // will be replaced later
   late FontWeight fontWeight = FontWeight.normal;
   late double fontSize = 12;
@@ -89,17 +89,20 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     final isHeading =
         adaptiveMap['style']?.toString().toLowerCase() == 'heading';
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Semantics(
-        header: isHeading,
-        // Heading level doesn't have a direct field in Semantics,
-        // but we can potentially use custom semantics if needed.
-        child: Align(
-          // IntrinsicWidth fixed a few things, but breaks more
-          alignment: horizontalAlignment,
-          child: textBody,
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Semantics(
+          header: isHeading,
+          // Heading level doesn't have a direct field in Semantics,
+          // but we can potentially use custom semantics if needed.
+          child: Align(
+            // IntrinsicWidth fixed a few things, but breaks more
+            alignment: horizontalAlignment,
+            child: textBody,
+          ),
         ),
       ),
     );

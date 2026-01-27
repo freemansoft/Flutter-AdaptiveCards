@@ -34,7 +34,7 @@ class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveColumnState extends State<AdaptiveColumn>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late List<Widget> items;
 
   /// Can be "auto", "stretch" or "weighted"
@@ -138,27 +138,30 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
           backgroundImageUrl: backgroundImageUrl,
         );
 
-    Widget child = SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: InkWell(
-        onTap: action?.tap,
-        child: Container(
-          // we need this container to be the same size as the row element
-          // so that all the columns are the same height
-          alignment: containerHorizontalAlignment,
-          padding: EdgeInsets.only(left: preceedingSpacing),
-          decoration: getDecorationFromMap(
-            adaptiveMap,
-            backgroundColor: backgroundColor,
-          ),
-          child: ChildStyler(
-            adaptiveMap: adaptiveMap,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: horizontalAlignment,
-              mainAxisAlignment: verticalAlignment,
-              children: [...items.map((it) => it)],
+    Widget child = Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: InkWell(
+          onTap: action?.tap,
+          child: Container(
+            // we need this container to be the same size as the row element
+            // so that all the columns are the same height
+            alignment: containerHorizontalAlignment,
+            padding: EdgeInsets.only(left: preceedingSpacing),
+            decoration: getDecorationFromMap(
+              adaptiveMap,
+              backgroundColor: backgroundColor,
+            ),
+            child: ChildStyler(
+              adaptiveMap: adaptiveMap,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: horizontalAlignment,
+                mainAxisAlignment: verticalAlignment,
+                children: [...items.map((it) => it)],
+              ),
             ),
           ),
         ),

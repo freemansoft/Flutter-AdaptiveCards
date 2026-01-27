@@ -28,7 +28,7 @@ class AdaptiveProgressBar extends StatefulWidget
 }
 
 class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   double? percent;
   late String? color;
   late bool separator;
@@ -90,10 +90,13 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
 
     final content = progressBar;
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: content,
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: content,
+      ),
     );
   }
 }

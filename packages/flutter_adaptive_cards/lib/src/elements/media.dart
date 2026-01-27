@@ -36,7 +36,7 @@ class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveMediaState extends State<AdaptiveMedia>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late VideoPlayerController videoPlayerController;
   ChewieController? controller;
 
@@ -122,14 +122,17 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
           : Container();
     }
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: AspectRatio(
-          aspectRatio: 3 / 2,
-          child: controller == null ? getPlaceholder() : getVideoPlayer(),
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: AspectRatio(
+            aspectRatio: 3 / 2,
+            child: controller == null ? getPlaceholder() : getVideoPlayer(),
+          ),
         ),
       ),
     );

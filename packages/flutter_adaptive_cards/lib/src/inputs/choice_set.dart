@@ -48,7 +48,7 @@ class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
-    with AdaptiveInputMixin, AdaptiveElementMixin {
+    with AdaptiveInputMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
   // Map from title to value
   final Map<String, String> _choices = {};
 
@@ -154,24 +154,27 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       }
     }
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          loadLabel(
-            context: context,
-            label: label,
-            isRequired: isRequired,
-          ),
-          widget,
-          loadErrorMessage(
-            context: context,
-            errorMessage: errorMessage,
-            stateHasError: stateHasError,
-          ),
-        ],
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        widgetState: widgetState,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            loadLabel(
+              context: context,
+              label: label,
+              isRequired: isRequired,
+            ),
+            widget,
+            loadErrorMessage(
+              context: context,
+              errorMessage: errorMessage,
+              stateHasError: stateHasError,
+            ),
+          ],
+        ),
       ),
     );
   }
