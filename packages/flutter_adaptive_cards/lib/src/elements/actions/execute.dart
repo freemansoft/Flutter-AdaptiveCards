@@ -33,7 +33,7 @@ class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
   void didChangeDependencies() {
     super.didChangeDependencies();
     action =
-        cardTypeRegistry.getGenericAction(
+        actionTypeRegistry.getActionForType(
               map: adaptiveMap,
             )!
             as GenericExecuteAction;
@@ -49,6 +49,9 @@ class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
 
   @override
   void onTapped() {
-    action.tap(rawRootCardWidgetState);
+    action.tap(
+      context: context,
+      rawAdaptiveCardState: rawRootCardWidgetState,
+    );
   }
 }

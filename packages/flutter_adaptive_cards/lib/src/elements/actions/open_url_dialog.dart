@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/icon_button.dart';
+import 'package:flutter_adaptive_cards/src/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 //
@@ -33,11 +34,22 @@ class AdaptiveActionOpenUrlDialogState
     extends State<AdaptiveActionOpenUrlDialog>
     with AdaptiveActionMixin, AdaptiveElementMixin {
   late String? url;
+  late GenericActionOpenUrl action;
 
   @override
   void initState() {
     super.initState();
     url = adaptiveMap['url'] as String?;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    action =
+        actionTypeRegistry.getActionForType(
+              map: adaptiveMap,
+            )!
+            as GenericActionOpenUrlDialog;
   }
 
   @override
@@ -73,7 +85,10 @@ class AdaptiveActionOpenUrlDialogState
                 TextButton(
                   onPressed: () {
                     // Actually open it?
-                    rawRootCardWidgetState.openUrl(url!);
+                    action.tap(
+                      context: context,
+                      rawAdaptiveCardState: rawRootCardWidgetState,
+                    );
                     Navigator.pop(context);
                   },
                   child: const Text('Open'),

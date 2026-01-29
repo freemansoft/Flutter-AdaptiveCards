@@ -1,4 +1,11 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/action_handler.dart';
+import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:format/format.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Generic actions forward to the RawAdaptiveCardState
 /// functions that are specific to the action type
@@ -11,7 +18,10 @@ abstract class GenericAction {
   String? get title => adaptiveMap['title'] as String?;
   final Map<String, dynamic> adaptiveMap;
 
-  void tap(RawAdaptiveCardState rawAdaptiveCardState);
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  });
 }
 
 /// Default actions for onTaps for Action.Submit
@@ -26,8 +36,42 @@ class GenericSubmitAction extends GenericAction {
   late Map<String, dynamic> data;
 
   @override
-  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
-    rawAdaptiveCardState.submit(data);
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  }) {
+    bool valid = true;
+
+    // Recursively visits all inputs and determines if all the inputs are valid
+    void visitor(Element element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveInputMixin) {
+          if ((element.state as AdaptiveInputMixin).checkRequired()) {
+            (element.state as AdaptiveInputMixin).appendInput(data);
+          } else {
+            valid = false;
+          }
+        }
+      }
+      element.visitChildren(visitor);
+    }
+
+    context.visitChildElements(visitor);
+    if (valid) {
+      final foo = InheritedAdaptiveCardHandlers.of(context);
+      foo != null
+          ? foo.onSubmit(data)
+          : ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  format(
+                    'No custom handler found for onSubmit: \n {}',
+                    data.toString(),
+                  ),
+                ),
+              ),
+            );
+    }
   }
 }
 
@@ -43,13 +87,49 @@ class GenericExecuteAction extends GenericAction {
   late Map<String, dynamic> data;
 
   @override
-  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
-    rawAdaptiveCardState.execute(data);
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  }) {
+    bool valid = true;
+
+    // Recursively visits all inputs and determines if all the inputs are valid
+    void visitor(Element element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveInputMixin) {
+          if ((element.state as AdaptiveInputMixin).checkRequired()) {
+            (element.state as AdaptiveInputMixin).appendInput(data);
+          } else {
+            valid = false;
+          }
+        }
+      }
+      element.visitChildren(visitor);
+    }
+
+    context.visitChildElements(visitor);
+    if (valid) {
+      final foo = InheritedAdaptiveCardHandlers.of(context);
+      foo != null
+          ? foo.onExecute(data)
+          : ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  format(
+                    'No custom handler found for onExecute: \n {}',
+                    data.toString(),
+                  ),
+                ),
+              ),
+            );
+    }
   }
 }
 
 /// Default actions for onTaps for Action.OpenUrl
 /// Delegates to rawAdaptiveCardState
+/// Assumes url is provided in the adaptiveMap
+/// Can be overridden by altUrl in tap() - little ugly
 class GenericActionOpenUrl extends GenericAction {
   GenericActionOpenUrl({
     required Map<String, dynamic> adaptiveMap,
@@ -60,11 +140,42 @@ class GenericActionOpenUrl extends GenericAction {
   late String? url;
 
   @override
-  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
-    if (url != null) {
-      rawAdaptiveCardState.openUrl(url!);
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+    String? altUrl,
+  }) {
+    final String? urlToOpen = altUrl ?? url;
+    if (urlToOpen != null) {
+      final foo = InheritedAdaptiveCardHandlers.of(context);
+      if (foo != null) {
+        foo.onOpenUrl(urlToOpen);
+      } else {
+        unawaited(launchUrl(Uri.parse(urlToOpen)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              format(
+                'No custom handler found for onOpenUrl: \n {} {} {}',
+                url ?? '',
+                altUrl ?? '',
+                urlToOpen,
+              ),
+            ),
+          ),
+        );
+        // probably should log that there is no valid url
+      }
     }
   }
+}
+
+/// Default actions for onTaps for Action.OpenUrlDialog
+/// Exists to support possible webview in future
+class GenericActionOpenUrlDialog extends GenericActionOpenUrl {
+  GenericActionOpenUrlDialog({
+    required super.adaptiveMap,
+  });
 }
 
 class GenericActionResetInputs extends GenericAction {
@@ -73,8 +184,20 @@ class GenericActionResetInputs extends GenericAction {
   }) : super(adaptiveMap);
 
   @override
-  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
-    rawAdaptiveCardState.resetInputs();
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  }) {
+    void visitor(Element element) {
+      if (element is StatefulElement) {
+        if (element.state is AdaptiveInputMixin) {
+          (element.state as AdaptiveInputMixin).resetInput();
+        }
+      }
+      element.visitChildren(visitor);
+    }
+
+    context.visitChildElements(visitor);
   }
 }
 
@@ -84,7 +207,10 @@ class GenericActionToggleVisibility extends GenericAction {
   }) : super(adaptiveMap);
 
   @override
-  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+  }) {
     late List<String> targetElementIds;
 
     // Toggle visibility for each target element
