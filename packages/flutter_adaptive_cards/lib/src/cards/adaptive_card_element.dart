@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -19,7 +18,6 @@ class AdaptiveCardElement extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveCardElement({
     required this.adaptiveMap,
-    required this.widgetState,
     required this.listView,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -27,8 +25,6 @@ class AdaptiveCardElement extends StatefulWidget
 
   @override
   final Map<String, dynamic> adaptiveMap;
-  @override
-  final RawAdaptiveCardState widgetState;
   @override
   late final String id;
 
@@ -113,23 +109,21 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     //   format('AdaptiveCardElement: {} version: {}', id, version ?? ''),
     //   name: runtimeType.toString(),
     // );
-
-    bodyChildren =
-        List<Map<String, dynamic>>.from(
-              adaptiveMap['body'],
-            )
-            .map(
-              (map) => widgetState.cardTypeRegistry.getElement(
-                map: map,
-                widgetState: widgetState,
-              ),
-            )
-            .toList();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    bodyChildren =
+        List<Map<String, dynamic>>.from(
+              adaptiveMap['body'],
+            )
+            .map(
+              (map) => cardTypeRegistry.getElement(
+                map: map,
+              ),
+            )
+            .toList();
     final String stringAxis = InheritedReferenceResolver.of(
       context,
     ).resolver.resolveOrientation('actionsOrientation');
@@ -147,9 +141,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       activeActions =
           List<Map<String, dynamic>>.from(adaptiveMap['actions'] ?? [])
               .map(
-                (adaptiveMap) => widgetState.cardTypeRegistry.getAction(
+                (adaptiveMap) => cardTypeRegistry.getAction(
                   map: adaptiveMap,
-                  state: widgetState,
                 ),
               )
               .toList();
@@ -159,10 +152,11 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       showCardTargetElements = List<AdaptiveCardElement>.from(
         showCardActions
             .map(
-              (action) => widgetState.cardTypeRegistry.getElement(
-                map: action.adaptiveMap['card'],
-                widgetState: widgetState,
-              ),
+              (action) =>
+                  cardTypeRegistry.getElement(
+                        map: action.adaptiveMap['card'],
+                      )
+                      as AdaptiveCardElement,
             )
             .toList(),
       );
@@ -251,7 +245,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       );
     }
 
-    // provider always wraps the result object
+    // provider is scoped to the AdaptiveCardElement
     return ProviderScope(
       overrides: [
         adaptiveCardElementStateProvider.overrideWithValue(this),

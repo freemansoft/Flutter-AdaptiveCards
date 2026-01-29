@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 /// Element for an unknown type
@@ -14,7 +13,6 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveUnknown({
     required this.adaptiveMap,
-    required this.widgetState,
     required this.type,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -22,8 +20,6 @@ class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   final Map<String, dynamic> adaptiveMap;
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;

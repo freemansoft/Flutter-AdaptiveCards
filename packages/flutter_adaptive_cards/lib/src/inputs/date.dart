@@ -3,7 +3,6 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -17,16 +16,12 @@ import 'package:intl/intl.dart';
 class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveDateInput({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -36,7 +31,11 @@ class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveDateInputState extends State<AdaptiveDateInput>
-    with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin, AdaptiveVisibilityMixin {
+    with
+        AdaptiveTextualInputMixin,
+        AdaptiveElementMixin,
+        AdaptiveInputMixin,
+        AdaptiveVisibilityMixin {
   String? label;
   late bool isRequired;
   DateTime? selectedDateTime;
@@ -83,7 +82,6 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -146,7 +144,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
                   return null;
                 },
                 onTap: () async {
-                  final DateTime? result = await widgetState
+                  final DateTime? result = await rawRootCardWidgetState
                       .datePickerForPlatform(
                         context,
                         selectedDateTime,

@@ -7,6 +7,8 @@ import 'package:flutter_adaptive_cards/src/action_handler.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 import 'package:http/http.dart' as http;
 
@@ -247,10 +249,13 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     if (widget.cardRegistry != null) {
       cardRegistry = widget.cardRegistry!;
     } else {
-      final CardTypeRegistry? cardRegistry = DefaultCardRegistry.of(context);
+      final CardTypeRegistry? cardRegistry = ProviderScope.containerOf(
+        context,
+      ).read(cardTypeRegistryProvider);
       if (cardRegistry != null) {
         this.cardRegistry = cardRegistry;
       } else {
+        // fallback behavior if non in the provider scope
         this.cardRegistry = CardTypeRegistry(
           supportMarkdown: widget.supportMarkdown,
           listView: widget.listView,
@@ -267,7 +272,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     if (widget.onSubmit != null) {
       onSubmit = widget.onSubmit;
     } else {
-      final foundOnSubmit = DefaultAdaptiveCardHandlers.of(context)?.onSubmit;
+      final foundOnSubmit = InheritedAdaptiveCardHandlers.of(context)?.onSubmit;
       if (foundOnSubmit != null) {
         onSubmit = foundOnSubmit;
       } else {
@@ -287,7 +292,9 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     if (widget.onExecute != null) {
       onExecute = widget.onExecute;
     } else {
-      final foundOnExecute = DefaultAdaptiveCardHandlers.of(context)?.onExecute;
+      final foundOnExecute = InheritedAdaptiveCardHandlers.of(
+        context,
+      )?.onExecute;
       if (foundOnExecute != null) {
         onExecute = foundOnExecute;
       } else {
@@ -307,13 +314,33 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     if (widget.onOpenUrl != null) {
       onOpenUrl = widget.onOpenUrl;
     } else {
-      final foundOpenUrl = DefaultAdaptiveCardHandlers.of(context)?.onOpenUrl;
+      final foundOpenUrl = InheritedAdaptiveCardHandlers.of(context)?.onOpenUrl;
       if (foundOpenUrl != null) {
         onOpenUrl = foundOpenUrl;
       } else {
         onOpenUrl = (it) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(format('und for: \n {}', it))),
+          );
+        };
+      }
+    }
+
+    // Update the onChange if one is provided or there is one in the DefaultAdapterCardHandlers
+    if (widget.onChange != null) {
+      onChange = widget.onChange;
+    } else {
+      final foundOnChange = InheritedAdaptiveCardHandlers.of(context)?.onChange;
+      if (foundOnChange != null) {
+        onChange = foundOnChange;
+      } else {
+        onChange = (it, value, cardState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                format('No handler found for: \n {}', it),
+              ),
+            ),
           );
         };
       }

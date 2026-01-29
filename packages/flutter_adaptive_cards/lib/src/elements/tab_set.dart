@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 // Assuming there is a container (TabSet?) that holds TabPages.
@@ -13,15 +12,12 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTabSet({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -31,7 +27,10 @@ class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTabSetState extends State<AdaptiveTabSet>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin, TickerProviderStateMixin {
+    with
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        TickerProviderStateMixin {
   late List<Map<String, dynamic>> tabs;
   late TabController _tabController;
 
@@ -61,7 +60,6 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -86,14 +84,16 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
                   final contentItems = t['items'] ?? t['body'];
                   if (contentItems is List) {
                     for (final c in contentItems) {
-                      final el = widgetState.cardTypeRegistry.getElement(
-                        map: c,
-                        widgetState: widgetState,
-                      );
+                      final el = rawRootCardWidgetState.cardTypeRegistry
+                          .getElement(
+                            map: c,
+                          );
                       children.add(el);
                     }
                   }
-                  return SingleChildScrollView(child: Column(children: children));
+                  return SingleChildScrollView(
+                    child: Column(children: children),
+                  );
                 }).toList(),
               ),
             ),

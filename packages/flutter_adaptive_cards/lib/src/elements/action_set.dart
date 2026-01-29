@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
@@ -14,16 +13,12 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class ActionSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   ActionSet({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -51,9 +46,8 @@ class ActionSetState extends State<ActionSet>
 
     activeActions.addAll(
       List<Map<String, dynamic>>.from(limitedActionMaps).map(
-        (adaptiveMap) => widgetState.cardTypeRegistry.getAction(
+        (adaptiveMap) => cardTypeRegistry.getAction(
           map: adaptiveMap,
-          state: widgetState,
         ),
       ),
     );
@@ -68,14 +62,16 @@ class ActionSetState extends State<ActionSet>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: Wrap(
           spacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
           runSpacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
-          direction: actionsConfig?.actionsOrientation.toLowerCase() == 'vertical'
+          direction:
+              actionsConfig?.actionsOrientation.toLowerCase() == 'vertical'
               ? Axis.vertical
               : Axis.horizontal,
-          alignment: _getWrapAlignment(actionsConfig?.actionAlignment ?? 'left'),
+          alignment: _getWrapAlignment(
+            actionsConfig?.actionAlignment ?? 'left',
+          ),
           children: activeActions,
         ),
       ),

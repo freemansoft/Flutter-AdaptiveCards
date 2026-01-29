@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
@@ -13,7 +12,6 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveColumn({
     required this.adaptiveMap,
-    required this.widgetState,
     required this.supportMarkdown,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -21,8 +19,6 @@ class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   final Map<String, dynamic> adaptiveMap;
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -51,13 +47,6 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
   void initState() {
     super.initState();
 
-    if (adaptiveMap.containsKey('selectAction')) {
-      action = widgetState.cardTypeRegistry.getGenericAction(
-        map: adaptiveMap['selectAction'],
-        state: widgetState,
-      );
-    }
-
     final toParseWidth = adaptiveMap['width'];
     if (toParseWidth != null) {
       if (toParseWidth == 'auto') {
@@ -85,23 +74,28 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     } else {
       mode = 'auto';
     }
-
-    items = adaptiveMap['items'] != null
-        ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
-            child,
-          ) {
-            return widgetState.cardTypeRegistry.getElement(
-              map: child,
-              widgetState: widgetState,
-              parentMode: mode,
-            );
-          }).toList()
-        : [];
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    if (adaptiveMap.containsKey('selectAction')) {
+      action = cardTypeRegistry.getGenericAction(
+        map: adaptiveMap['selectAction'],
+      );
+    }
+
+    items = adaptiveMap['items'] != null
+        ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
+            child,
+          ) {
+            return cardTypeRegistry.getElement(
+              map: child,
+              parentMode: mode,
+            );
+          }).toList()
+        : [];
     horizontalAlignment = InheritedReferenceResolver.of(context).resolver
         .resolveHorzontalCrossAxisAlignment(
           adaptiveMap['horizontalAlignment'],
@@ -142,9 +136,8 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: InkWell(
-          onTap: action?.tap,
+          onTap: () => action?.tap(rawRootCardWidgetState),
           child: Container(
             // we need this container to be the same size as the row element
             // so that all the columns are the same height

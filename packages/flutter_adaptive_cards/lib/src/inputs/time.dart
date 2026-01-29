@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 ///
@@ -11,16 +10,12 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveTimeInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTimeInput({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -30,7 +25,11 @@ class AdaptiveTimeInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
-    with AdaptiveTextualInputMixin, AdaptiveElementMixin, AdaptiveInputMixin, AdaptiveVisibilityMixin {
+    with
+        AdaptiveTextualInputMixin,
+        AdaptiveElementMixin,
+        AdaptiveInputMixin,
+        AdaptiveVisibilityMixin {
   late TimeOfDay? selectedTime;
   late TimeOfDay min;
   late TimeOfDay max;
@@ -57,25 +56,25 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: ElevatedButton(
           onPressed: () async {
-            final TimeOfDay? result = await widgetState.timePickerForPlatform(
-              context,
-              selectedTime,
-              min,
-              max,
-            );
+            final TimeOfDay? result = await rawRootCardWidgetState
+                .timePickerForPlatform(
+                  context,
+                  selectedTime,
+                  min,
+                  max,
+                );
             if (result != null) {
               if (result.hour >= min.hour && result.hour <= max.hour) {
                 // can't count on context in async
-                widgetState.showError(
+                rawRootCardWidgetState.showError(
                   // old code
                   // ignore: use_build_context_synchronously
-                  'Time must be after ${context.mounted ? min.format(widgetState.context) : min.toString()}'
+                  'Time must be after ${context.mounted ? min.format(rawRootCardWidgetState.context) : min.toString()}'
                   // old code
                   // ignore: use_build_context_synchronously
-                  ' and before ${context.mounted ? max.format(widgetState.context) : max.toString()}',
+                  ' and before ${context.mounted ? max.format(rawRootCardWidgetState.context) : max.toString()}',
                 );
               } else {
                 setState(() {
@@ -91,7 +90,7 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
           child: Text(
             selectedTime == null
                 ? placeholder
-                : selectedTime!.format(widgetState.context),
+                : selectedTime!.format(rawRootCardWidgetState.context),
           ),
         ),
       ),

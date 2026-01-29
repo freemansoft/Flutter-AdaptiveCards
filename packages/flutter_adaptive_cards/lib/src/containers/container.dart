@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -12,16 +11,12 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveContainer({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -38,26 +33,19 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
   late Color? backgroundColor;
 
   @override
-  void initState() {
-    super.initState();
-
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     if (adaptiveMap['items'] != null) {
       children = List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
         child,
       ) {
-        return widgetState.cardTypeRegistry.getElement(
+        return cardTypeRegistry.getElement(
           map: child,
-          widgetState: widgetState,
         );
       }).toList();
     } else {
       children = [];
     }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
     spacing = SpacingsConfig.resolveSpacing(
       InheritedReferenceResolver.of(
         context,
@@ -85,10 +73,8 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
         adaptiveMap: adaptiveMap,
         child: AdaptiveTappable(
           adaptiveMap: adaptiveMap,
-          widgetState: widgetState,
           child: SeparatorElement(
             adaptiveMap: adaptiveMap,
-            widgetState: widgetState,
             child: Container(
               decoration: getDecorationFromMap(
                 adaptiveMap,

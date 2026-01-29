@@ -2,7 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 ///
@@ -26,15 +25,12 @@ class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveBarChart({
     required this.adaptiveMap,
     required this.type,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-  @override
-  final RawAdaptiveCardState widgetState;
   @override
   late final String id;
 
@@ -177,7 +173,6 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
 
     final Widget chart = SeparatorElement(
       adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
       child: SizedBox(
         height: 250,
         child: BarChart(

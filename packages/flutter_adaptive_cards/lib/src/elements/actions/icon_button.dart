@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -10,7 +9,6 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
   IconButtonAction({
     required this.adaptiveMap,
-    required this.widgetState,
     required this.onTapped,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -18,9 +16,6 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -59,7 +54,6 @@ class IconButtonActionState extends State<IconButtonAction>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: ElevatedButton(
           onPressed: onTapped,
           style: buttonStyle,
@@ -73,7 +67,6 @@ class IconButtonActionState extends State<IconButtonAction>
         visible: isVisible,
         child: SeparatorElement(
           adaptiveMap: adaptiveMap,
-          widgetState: widgetState,
           child: ElevatedButton.icon(
             onPressed: onTapped,
             style: buttonStyle,

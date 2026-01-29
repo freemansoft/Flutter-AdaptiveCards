@@ -3,14 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCarousel({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
@@ -18,8 +16,6 @@ class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   final Map<String, dynamic> adaptiveMap;
 
-  @override
-  final RawAdaptiveCardState widgetState;
   @override
   late final String id;
 
@@ -84,7 +80,6 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: Column(
           mainAxisSize: MainAxisSize.min, // Wrap content
           children: [
@@ -102,9 +97,8 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
                   // But it could be any element if the JSON is weak.
                   // If it is CarouselPage, the Registry will pick it up (if we register it).
 
-                  return widgetState.cardTypeRegistry.getElement(
+                  return cardTypeRegistry.getElement(
                     map: pageContent,
-                    widgetState: widgetState,
                   );
                 },
               ),
@@ -150,14 +144,10 @@ class AdaptiveCarouselPage extends StatefulWidget
   AdaptiveCarouselPage({
     super.key,
     required this.adaptiveMap,
-    required this.widgetState,
   });
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -178,9 +168,8 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     if (items is List) {
       for (final item in items) {
         children.add(
-          widgetState.cardTypeRegistry.getElement(
+          cardTypeRegistry.getElement(
             map: item,
-            widgetState: widgetState,
           ),
         );
       }

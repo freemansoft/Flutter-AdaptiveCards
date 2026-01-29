@@ -32,7 +32,6 @@ import 'package:flutter_adaptive_cards/src/elements/rating.dart';
 import 'package:flutter_adaptive_cards/src/elements/tab_set.dart';
 import 'package:flutter_adaptive_cards/src/elements/text_block.dart';
 import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards/src/inputs/date.dart';
@@ -86,7 +85,6 @@ class CardTypeRegistry {
   ///
   Widget getElement({
     required Map<String, dynamic> map,
-    required RawAdaptiveCardState widgetState,
     String parentMode = 'stretch',
   }) {
     final String stringType = map['type'] as String;
@@ -95,7 +93,6 @@ class CardTypeRegistry {
       return AdaptiveUnknown(
         type: stringType,
         adaptiveMap: map,
-        widgetState: widgetState,
       );
     }
 
@@ -104,7 +101,6 @@ class CardTypeRegistry {
     } else {
       return _getBaseElement(
         map: map,
-        widgetState: widgetState,
         parentMode: parentMode,
         supportMarkdown: supportMarkdown,
       );
@@ -116,7 +112,6 @@ class CardTypeRegistry {
   ///
   GenericAction? getGenericAction({
     required Map<String, dynamic> map,
-    required RawAdaptiveCardState state,
   }) {
     final String stringType = map['type'] as String;
 
@@ -130,22 +125,18 @@ class CardTypeRegistry {
       case 'Action.OpenUrl':
         return GenericActionOpenUrl(
           adaptiveMap: map,
-          rawAdaptiveCardState: state,
         );
       case 'Action.Submit':
         return GenericSubmitAction(
           adaptiveMap: map,
-          rawAdaptiveCardState: state,
         );
       case 'Action.Execute':
         return GenericExecuteAction(
           adaptiveMap: map,
-          rawAdaptiveCardState: state,
         );
       case 'Action.ResetInputs':
         return GenericActionResetInputs(
           adaptiveMap: map,
-          rawAdaptiveCardState: state,
         );
       case 'Action.OpenUrlDialog':
         assert(false, 'Action.OpenUrlDialog is not supported');
@@ -153,7 +144,6 @@ class CardTypeRegistry {
       case 'Action.ToggleVisibility':
         return GenericActionToggleVisibility(
           adaptiveMap: map,
-          rawAdaptiveCardState: state,
         );
       case 'Action.InsertImage':
         assert(false, 'Action.InsertImage is not supported');
@@ -169,14 +159,12 @@ class CardTypeRegistry {
 
   Widget getAction({
     required Map<String, dynamic> map,
-    required RawAdaptiveCardState state,
   }) {
     final String stringType = map['type'] as String;
 
     if (removedElements.contains(stringType)) {
       return AdaptiveUnknown(
         adaptiveMap: map,
-        widgetState: state,
         type: stringType,
       );
     }
@@ -185,7 +173,7 @@ class CardTypeRegistry {
       return addedActions[stringType]!(map);
     }
 
-    return _getActionWidget(map: map, widgetState: state);
+    return _getActionWidget(map: map);
   }
 
   /// This returns an [AdaptiveElement] with the correct type.
@@ -193,7 +181,6 @@ class CardTypeRegistry {
   /// It looks at the 'type' property and decides which object to construct
   Widget _getBaseElement({
     required Map<String, dynamic> map,
-    required RawAdaptiveCardState widgetState,
     String parentMode = 'stretch',
     required bool supportMarkdown,
   }) {
@@ -201,151 +188,135 @@ class CardTypeRegistry {
 
     switch (stringType) {
       case 'Media':
-        return AdaptiveMedia(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveMedia(adaptiveMap: map);
       case 'Container':
-        return AdaptiveContainer(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveContainer(adaptiveMap: map);
       case 'TextBlock':
         return AdaptiveTextBlock(
           adaptiveMap: map,
-          widgetState: widgetState,
           supportMarkdown: supportMarkdown,
         );
       case 'ActionSet':
-        return ActionSet(adaptiveMap: map, widgetState: widgetState);
+        return ActionSet(adaptiveMap: map);
       case 'AdaptiveCard':
         return AdaptiveCardElement(
           adaptiveMap: map,
-          widgetState: widgetState,
           listView: listView,
         );
       case 'ColumnSet':
         return AdaptiveColumnSet(
           adaptiveMap: map,
-          widgetState: widgetState,
           supportMarkdown: supportMarkdown,
         );
       case 'Image':
         return AdaptiveImage(
           adaptiveMap: map,
-          widgetState: widgetState,
           parentMode: parentMode,
           supportMarkdown: supportMarkdown,
         );
       case 'FactSet':
-        return AdaptiveFactSet(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveFactSet(adaptiveMap: map);
       case 'Table':
         return AdaptiveTable(
           adaptiveMap: map,
-          widgetState: widgetState,
           supportMarkdown: supportMarkdown,
         );
       case 'ImageSet':
         return AdaptiveImageSet(
           adaptiveMap: map,
-          widgetState: widgetState,
           supportMarkdown: supportMarkdown,
         );
       case 'Input.Text':
-        return AdaptiveTextInput(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveTextInput(adaptiveMap: map);
       case 'Input.Number':
-        return AdaptiveNumberInput(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveNumberInput(adaptiveMap: map);
       case 'Input.Date':
-        return AdaptiveDateInput(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveDateInput(adaptiveMap: map);
       case 'Input.Time':
-        return AdaptiveTimeInput(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveTimeInput(adaptiveMap: map);
       case 'Input.Toggle':
-        return AdaptiveToggle(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveToggle(adaptiveMap: map);
       case 'Input.ChoiceSet':
-        return AdaptiveChoiceSet(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveChoiceSet(adaptiveMap: map);
 
       // New Elements
       case 'Badge':
-        return AdaptiveBadge(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveBadge(adaptiveMap: map);
       case 'Rating':
       case 'Input.Rating': // Just in case
-        return AdaptiveRating(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveRating(adaptiveMap: map);
       case 'CodeBlock':
-        return AdaptiveCodeBlock(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveCodeBlock(adaptiveMap: map);
       case 'ProgressBar':
-        return AdaptiveProgressBar(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveProgressBar(adaptiveMap: map);
       case 'ProgressRing':
-        return AdaptiveProgressRing(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveProgressRing(adaptiveMap: map);
       case 'CompoundButton':
         return AdaptiveCompoundButton(
           adaptiveMap: map,
-          widgetState: widgetState,
         );
       case 'Carousel':
-        return AdaptiveCarousel(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveCarousel(adaptiveMap: map);
       case 'CarouselPage':
-        return AdaptiveCarouselPage(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveCarouselPage(adaptiveMap: map);
       case 'Accordion':
-        return AdaptiveAccordion(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveAccordion(adaptiveMap: map);
       case 'TabSet':
       case 'TabPage': // Fallback if TabPage is used as container or we map it to TabSet
         // Actually "TabPage" is likely a child. But if user used "Other" for type...
         // Let's support TabSet as the container.
-        return AdaptiveTabSet(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveTabSet(adaptiveMap: map);
 
       // Charts
       case 'Chart.Donut':
         return AdaptivePieChart(
           adaptiveMap: map,
           isDonut: true,
-          widgetState: widgetState,
         );
       case 'Chart.Pie':
         return AdaptivePieChart(
           adaptiveMap: map,
           isDonut: false,
-          widgetState: widgetState,
         );
       case 'Chart.Gauge':
         // Implementing Gauge as Donut for now (or Pie)
         return AdaptivePieChart(
           adaptiveMap: map,
           isDonut: true,
-          widgetState: widgetState,
         );
 
       case 'Chart.Line':
-        return AdaptiveLineChart(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveLineChart(adaptiveMap: map);
 
       case 'Chart.VerticalBar':
         return AdaptiveBarChart(
           adaptiveMap: map,
           type: BarChartType.vertical,
-          widgetState: widgetState,
         );
       case 'Chart.HorizontalBar':
         return AdaptiveBarChart(
           adaptiveMap: map,
-          widgetState: widgetState,
           type: BarChartType.horizontal,
         );
       case 'Chart.HorizontalBar.Stacked':
         return AdaptiveBarChart(
           adaptiveMap: map,
-          widgetState: widgetState,
           type: BarChartType.horizontalStacked,
         );
       case 'Chart.VerticalBar.Grouped':
         return AdaptiveBarChart(
           adaptiveMap: map,
-          widgetState: widgetState,
           type: BarChartType.grouped,
         );
     }
     return AdaptiveUnknown(
       adaptiveMap: map,
-      widgetState: widgetState,
       type: stringType,
     );
   }
 
   Widget _getActionWidget({
     required Map<String, dynamic> map,
-    required RawAdaptiveCardState widgetState,
   }) {
     final String stringType = map['type'] as String;
 
@@ -353,74 +324,43 @@ class CardTypeRegistry {
       case 'Action.ShowCard':
         return AdaptiveActionShowCard(
           adaptiveMap: map,
-          widgetState: widgetState,
         );
       case 'Action.OpenUrl':
         return AdaptiveActionOpenUrl(
           adaptiveMap: map,
-          widgetState: widgetState,
         );
       case 'Action.Submit':
-        return AdaptiveActionSubmit(adaptiveMap: map, widgetState: widgetState);
+        return AdaptiveActionSubmit(adaptiveMap: map);
       case 'Action.Execute':
         return AdaptiveActionExecute(
           adaptiveMap: map,
-          widgetState: widgetState,
         );
       case 'Action.ResetInputs':
         return AdaptiveActionResetInputs(
           adaptiveMap: map,
-          widgetState: widgetState,
         );
       case 'Action.Popover':
         return AdaptiveActionPopover(
           adaptiveMap: map,
-          widgetState: widgetState,
         );
       case 'Action.OpenUrlDialog':
         return AdaptiveActionOpenUrlDialog(
           adaptiveMap: map,
-          widgetState: widgetState,
         ); // Custom wrapper
       case 'Action.ToggleVisibility':
         return AdaptiveActionToggleVisibility(
           adaptiveMap: map,
-          widgetState: widgetState,
         );
       case 'Action.InsertImage':
         return AdaptiveActionInsertImage(
           adaptiveMap: map,
-          widgetState: widgetState,
         );
       default:
         assert(false, 'No action found with type $stringType');
         return AdaptiveUnknown(
           adaptiveMap: map,
-          widgetState: widgetState,
           type: stringType,
         );
     }
   }
-}
-
-/// Used to find the current CardRegistry
-class DefaultCardRegistry extends InheritedWidget {
-  const DefaultCardRegistry({
-    super.key,
-    required this.cardRegistry,
-    required super.child,
-  });
-
-  /// Used to convert card type strings into Card instances
-  final CardTypeRegistry cardRegistry;
-
-  static CardTypeRegistry? of(BuildContext context) {
-    final DefaultCardRegistry? cardRegistry = context
-        .dependOnInheritedWidgetOfExactType<DefaultCardRegistry>();
-    if (cardRegistry == null) return null;
-    return cardRegistry.cardRegistry;
-  }
-
-  @override
-  bool updateShouldNotify(DefaultCardRegistry oldWidget) => oldWidget != this;
 }

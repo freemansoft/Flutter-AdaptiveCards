@@ -10,16 +10,12 @@ class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionPopover({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -83,7 +79,6 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: resolver.resolveButtonBackgroundColor(
