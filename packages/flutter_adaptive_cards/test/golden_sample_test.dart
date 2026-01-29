@@ -8,19 +8,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
 
+// Helper to load widget from a subdirectory of samples
+// Not needed here
 Widget getSampleForGoldenTest(Key key, String sampleName) {
-  final Widget sample = getWidget('$sampleName.json');
-
-  return MaterialApp(
-    home: RepaintBoundary(
-      key: key,
-      child: Scaffold(
-        // the title is required if snackpbar activates otherwise no scope
-        appBar: AppBar(title: Text(sampleName)),
-        body: Center(child: sample),
-      ),
-    ),
-  );
+  return getWidget(path: '$sampleName.json', key: key);
 }
 
 void configureTestView() {

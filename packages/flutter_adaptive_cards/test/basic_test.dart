@@ -12,7 +12,7 @@ void main() {
   });
 
   testWidgets('Activity Update test', (tester) async {
-    final Widget widget = getWidget('example1.json');
+    final Widget widget = getWidget(path: 'example1.json');
 
     await tester.pumpWidget(widget);
 

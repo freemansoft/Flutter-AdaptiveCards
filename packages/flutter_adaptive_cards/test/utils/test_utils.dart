@@ -141,7 +141,9 @@ class TransparentImage {
 ///
 /// Helper function to get a widget from a path prefixed with test/samples/
 ///
-Widget getWidget(String path) {
+/// Optionally provide a key to wrap the returned widget in a RepaintBoundary with that key
+/// primarily used for golden tests regions
+Widget getWidget({required String path, Key? key}) {
   final File file = File('test/samples/$path');
   final Map<String, dynamic> map =
       json.decode(file.readAsStringSync()) as Map<String, dynamic>;
@@ -155,7 +157,17 @@ Widget getWidget(String path) {
     hostConfig: HostConfig(),
   );
 
+  // return MaterialApp(
+  //   home: adaptiveCard,
+  // );
+
   return MaterialApp(
-    home: adaptiveCard,
+    home: Scaffold(
+      appBar: AppBar(title: Text(path)),
+      body: RepaintBoundary(
+        key: key,
+        child: Center(child: adaptiveCard),
+      ),
+    ),
   );
 }
