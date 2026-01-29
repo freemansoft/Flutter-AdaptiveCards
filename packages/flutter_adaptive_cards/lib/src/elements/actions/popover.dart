@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
@@ -43,8 +45,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
     popupParentResolver = InheritedReferenceResolver.of(context).resolver;
   }
 
-  @override
-  Future<void> onTapped() async {
+  Future<void> onTapped(BuildContext context) async {
     if (card == null) return;
 
     // Show popover (Dialog or PopupMenu or Overlay)
@@ -91,7 +92,9 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
             ),
             // minimumSize: const Size.fromHeight(50),
           ),
-          onPressed: onTapped,
+          onPressed: () {
+            unawaited(onTapped(context));
+          },
           child: Text(title),
         ),
       ),

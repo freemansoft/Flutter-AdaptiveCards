@@ -43,15 +43,12 @@ class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
   Widget build(BuildContext context) {
     return IconButtonAction(
       adaptiveMap: adaptiveMap,
-      onTapped: onTapped,
-    );
-  }
-
-  @override
-  void onTapped() {
-    action.tap(
-      context: context,
-      rawAdaptiveCardState: rawRootCardWidgetState,
+      onTapped: (BuildContext context) {
+        action.tap(
+          context: context,
+          rawAdaptiveCardState: rawRootCardWidgetState,
+        );
+      },
     );
   }
 }
