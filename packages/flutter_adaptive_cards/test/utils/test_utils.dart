@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
 import 'package:mockito/mockito.dart';
@@ -170,4 +171,29 @@ Widget getWidget({required String path, Key? key}) {
       ),
     ),
   );
+}
+
+Future<void> loadFontsForTest() async {
+  final fontData = File('assets/fonts/Roboto/Roboto-Regular.ttf')
+      .readAsBytes()
+      .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+  final fontData2 = File('assets/fonts/Roboto/Roboto-Bold.ttf')
+      .readAsBytes()
+      .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+  final fontData3 = File('assets/fonts/Roboto/Roboto-Light.ttf')
+      .readAsBytes()
+      .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+  final fontData4 = File('assets/fonts/Roboto/Roboto-Medium.ttf')
+      .readAsBytes()
+      .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+  final fontData5 = File('assets/fonts/Roboto/Roboto-Thin.ttf')
+      .readAsBytes()
+      .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
+  final fontLoader = FontLoader('Roboto')
+    ..addFont(fontData)
+    ..addFont(fontData2)
+    ..addFont(fontData3)
+    ..addFont(fontData4)
+    ..addFont(fontData5);
+  await fontLoader.load();
 }

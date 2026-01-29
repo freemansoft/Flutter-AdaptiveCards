@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/popover.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,8 +12,6 @@ import 'utils/test_utils.dart';
 Widget getSampleForGoldenTest(Key key, String sampleName) {
   // getWidget expects path relative to test/samples/
   return getWidget(path: 'v1.6/$sampleName.json', key: key);
-
-
 }
 
 void configureTestView() {
@@ -29,13 +26,7 @@ void main() {
   setUp(() async {
     HttpOverrides.global = MyTestHttpOverrides();
 
-    // Load fonts (copied from sample_golden_test.dart)
-    final fontData = File('assets/fonts/Roboto/Roboto-Regular.ttf')
-        .readAsBytes()
-        .then((bytes) => ByteData.view(Uint8List.fromList(bytes).buffer));
-    final fontLoader = FontLoader('Roboto')..addFont(fontData);
-    // Add other weights if needed, sticking to Regular for now or minimal set
-    await fontLoader.load();
+    await loadFontsForTest();
   });
 
   testWidgets('Golden Badge', (tester) async {

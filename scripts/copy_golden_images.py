@@ -44,11 +44,13 @@ def target_name(src_name: str) -> str:
     # remove `_testImage` occurrences
     new_stem = _TESTIMAGE_RE.sub("", stem, count=1)
 
-    # collapse multiple spaces and multiple underscores, and remove leading/trailing
+    # collapse multiple spaces and multiple underscores,
+    # and remove leading/trailing
     new_stem = re.sub(r"\s+", " ", new_stem).strip()
     new_stem = re.sub(r"_+", "_", new_stem)
 
-    # if the stem ends with an underscore or space because of the removal, strip it
+    # if the stem ends with an underscore or space because of the removal,
+    #  strip it
     new_stem = new_stem.rstrip(" _")
 
     return f"{new_stem}{suffix}"
