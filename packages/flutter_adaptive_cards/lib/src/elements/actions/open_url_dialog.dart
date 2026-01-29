@@ -56,48 +56,45 @@ class AdaptiveActionOpenUrlDialogState
   Widget build(BuildContext context) {
     return IconButtonAction(
       adaptiveMap: adaptiveMap,
-      onTapped: onTapped,
+      onTapped: (BuildContext context) {
+        if (url != null) {
+          // Show dialog with URL
+          unawaited(
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Open URL'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('This action would open:'),
+                      Text(url!, style: const TextStyle(color: Colors.blue)),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Close'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // Actually open it?
+                        action.tap(
+                          context: context,
+                          rawAdaptiveCardState: rawRootCardWidgetState,
+                        );
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Open'),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        }
+      },
     );
-  }
-
-  @override
-  void onTapped() {
-    if (url != null) {
-      // Show dialog with URL
-      unawaited(
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Open URL'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('This action would open:'),
-                  Text(url!, style: const TextStyle(color: Colors.blue)),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Close'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // Actually open it?
-                    action.tap(
-                      context: context,
-                      rawAdaptiveCardState: rawRootCardWidgetState,
-                    );
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Open'),
-                ),
-              ],
-            );
-          },
-        ),
-      );
-    }
   }
 }

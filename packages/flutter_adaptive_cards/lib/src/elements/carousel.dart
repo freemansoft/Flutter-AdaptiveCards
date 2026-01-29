@@ -161,8 +161,7 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
   late List<Widget> children;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
     children = [];
     final items = adaptiveMap['items']; // Content is in "items"
     if (items is List) {
@@ -174,6 +173,7 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
         );
       }
     }
+    super.didChangeDependencies();
   }
 
   @override

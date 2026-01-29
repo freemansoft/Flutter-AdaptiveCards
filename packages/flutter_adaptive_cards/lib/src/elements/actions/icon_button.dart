@@ -20,7 +20,7 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
-  final VoidCallback onTapped;
+  final void Function(BuildContext context) onTapped;
 
   @override
   IconButtonActionState createState() => IconButtonActionState();
@@ -55,7 +55,8 @@ class IconButtonActionState extends State<IconButtonAction>
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: ElevatedButton(
-          onPressed: onTapped,
+          onPressed: () => widget.onTapped(context),
+
           style: buttonStyle,
           child: Text(title),
         ),
@@ -68,7 +69,7 @@ class IconButtonActionState extends State<IconButtonAction>
         child: SeparatorElement(
           adaptiveMap: adaptiveMap,
           child: ElevatedButton.icon(
-            onPressed: onTapped,
+            onPressed: () => widget.onTapped(context),
             style: buttonStyle,
             icon: AdaptiveImageUtils.getImage(iconUrl!, height: 36),
             label: Text(title),
@@ -79,6 +80,5 @@ class IconButtonActionState extends State<IconButtonAction>
     return result;
   }
 
-  @override
-  void onTapped() => widget.onTapped();
+
 }

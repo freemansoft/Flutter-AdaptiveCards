@@ -355,9 +355,7 @@ class ActionTypeRegistry {
         return GenericActionResetInputs(
           adaptiveMap: map,
         );
-      case 'Action.OpenUrlDialog':
-        assert(false, 'Action.OpenUrlDialog is not supported');
-        return null;
+
       case 'Action.ToggleVisibility':
         return GenericActionToggleVisibility(
           adaptiveMap: map,

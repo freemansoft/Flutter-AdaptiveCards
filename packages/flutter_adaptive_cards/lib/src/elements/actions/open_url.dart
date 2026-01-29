@@ -44,15 +44,12 @@ class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
   Widget build(BuildContext context) {
     return IconButtonAction(
       adaptiveMap: adaptiveMap,
-      onTapped: onTapped,
-    );
-  }
-
-  @override
-  void onTapped() {
-    action.tap(
-      context: context,
-      rawAdaptiveCardState: rawRootCardWidgetState,
+      onTapped: (BuildContext context) {
+        action.tap(
+          context: context,
+          rawAdaptiveCardState: rawRootCardWidgetState,
+        );
+      },
     );
   }
 }

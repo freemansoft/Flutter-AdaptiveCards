@@ -28,17 +28,15 @@ class AdaptiveActionInsertImageState extends State<AdaptiveActionInsertImage>
   Widget build(BuildContext context) {
     return IconButtonAction(
       adaptiveMap: adaptiveMap,
-      onTapped: onTapped,
-    );
-  }
-
-  @override
-  void onTapped() {
-    // Placeholder logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Action.InsertImage triggered (Not fully implemented)'),
-      ),
+      onTapped: (BuildContext context) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Action.InsertImage triggered (Not fully implemented)',
+            ),
+          ),
+        );
+      },
     );
   }
 }

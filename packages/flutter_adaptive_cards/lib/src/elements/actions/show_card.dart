@@ -84,7 +84,11 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: ElevatedButton(
-          onPressed: onTapped,
+          onPressed: () {
+            if (targetCard != null) {
+              adaptiveCardElementState.showCard(targetCard!);
+            }
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: resolver.resolveButtonBackgroundColor(
               context: context,
@@ -110,12 +114,5 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
         ),
       ),
     );
-  }
-
-  @override
-  void onTapped() {
-    if (targetCard != null) {
-      adaptiveCardElementState.showCard(targetCard!);
-    }
   }
 }

@@ -33,7 +33,7 @@
     },
     {
       "type": "Input.ChoiceSet",
-      "id": "myColor",
+      "id": "myColor1",
       "style": "compact",
       "isMultiSelect": false,
       "value": "1",
