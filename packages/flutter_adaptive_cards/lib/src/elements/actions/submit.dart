@@ -33,7 +33,7 @@ class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
   void didChangeDependencies() {
     super.didChangeDependencies();
     action =
-        rawRootCardWidgetState.cardTypeRegistry.getGenericAction(
+        cardTypeRegistry.getGenericAction(
               map: adaptiveMap,
             )!
             as GenericSubmitAction;

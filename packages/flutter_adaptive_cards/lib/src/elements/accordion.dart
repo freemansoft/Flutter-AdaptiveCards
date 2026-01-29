@@ -64,7 +64,7 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
             final contentItems = itemMap['items'] ?? itemMap['body'];
             if (contentItems is List) {
               for (final c in contentItems) {
-                final el = rawRootCardWidgetState.cardTypeRegistry.getElement(
+                final el = cardTypeRegistry.getElement(
                   map: c,
                 );
                 children.add(el);

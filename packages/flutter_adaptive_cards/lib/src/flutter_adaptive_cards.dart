@@ -7,8 +7,6 @@ import 'package:flutter_adaptive_cards/src/action_handler.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
-import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 import 'package:http/http.dart' as http;
 
@@ -95,7 +93,7 @@ class AdaptiveCard extends StatefulWidget {
   AdaptiveCard.network({
     super.key,
     this.placeholder,
-    this.cardRegistry,
+    this.cardRegistry = const CardTypeRegistry(),
     required String url,
     this.initData,
     this.onChange,
@@ -113,7 +111,7 @@ class AdaptiveCard extends StatefulWidget {
   AdaptiveCard.asset({
     super.key,
     this.placeholder,
-    this.cardRegistry,
+    this.cardRegistry = const CardTypeRegistry(),
     required String assetPath,
     this.initData,
     this.onChange,
@@ -131,7 +129,7 @@ class AdaptiveCard extends StatefulWidget {
   AdaptiveCard.memory({
     super.key,
     this.placeholder,
-    this.cardRegistry,
+    this.cardRegistry = const CardTypeRegistry(),
     required Map<String, dynamic> content,
     this.initData,
     this.onChange,
@@ -149,7 +147,7 @@ class AdaptiveCard extends StatefulWidget {
   AdaptiveCard.json({
     super.key,
     this.placeholder,
-    this.cardRegistry,
+    this.cardRegistry = const CardTypeRegistry(),
     required String jsonString,
     this.initData,
     this.onChange,
@@ -171,7 +169,7 @@ class AdaptiveCard extends StatefulWidget {
   final Widget? placeholder;
 
   /// Used to convert card type strings into Card instances
-  final CardTypeRegistry? cardRegistry;
+  final CardTypeRegistry cardRegistry;
 
   /// data that may be copied into `Input` cards to replace their templated state
   final Map? initData;
@@ -207,8 +205,6 @@ class AdaptiveCardState extends State<AdaptiveCard> {
 
   /// data that may be copied into `Input` cards to replace their templated state
   Map? initData;
-
-  late CardTypeRegistry cardRegistry;
 
   /// Environment specific function that knows how to handle state change
   Function(String id, dynamic value, RawAdaptiveCardState cardState)? onChange;
@@ -246,22 +242,6 @@ class AdaptiveCardState extends State<AdaptiveCard> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (widget.cardRegistry != null) {
-      cardRegistry = widget.cardRegistry!;
-    } else {
-      final CardTypeRegistry? cardRegistry = ProviderScope.containerOf(
-        context,
-      ).read(cardTypeRegistryProvider);
-      if (cardRegistry != null) {
-        this.cardRegistry = cardRegistry;
-      } else {
-        // fallback behavior if non in the provider scope
-        this.cardRegistry = CardTypeRegistry(
-          supportMarkdown: widget.supportMarkdown,
-          listView: widget.listView,
-        );
-      }
-    }
 
     // Update the onChange if one is provided
     if (widget.onChange != null) {
@@ -356,7 +336,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
 
     return RawAdaptiveCard.fromMap(
       map: map!,
-      cardRegistry: cardRegistry,
+      cardTypeRegistry: widget.cardRegistry,
       initData: initData,
       onChange: onChange,
       onOpenUrl: onOpenUrl,

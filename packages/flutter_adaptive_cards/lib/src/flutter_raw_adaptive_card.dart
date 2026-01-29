@@ -28,7 +28,7 @@ class RawAdaptiveCard extends StatefulWidget {
   const RawAdaptiveCard.fromMap({
     super.key,
     required this.map,
-    this.cardRegistry = const CardTypeRegistry(),
+    this.cardTypeRegistry = const CardTypeRegistry(),
     this.initData,
     this.onChange,
     this.onSubmit,
@@ -41,7 +41,7 @@ class RawAdaptiveCard extends StatefulWidget {
 
   final Map<String, dynamic> map;
   final HostConfig hostConfig;
-  final CardTypeRegistry cardRegistry;
+  final CardTypeRegistry cardTypeRegistry;
   final Map? initData;
 
   final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
@@ -61,9 +61,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   ///.  Wrapper around the host config
   late ReferenceResolver _resolver;
 
-  /// Type to card class registry
-  late CardTypeRegistry cardTypeRegistry;
-
   // The root element that is loaded from the map
   late Widget _adaptiveElement;
 
@@ -73,9 +70,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     _resolver = ReferenceResolver(hostConfig: widget.hostConfig);
 
-    cardTypeRegistry = widget.cardRegistry;
-
-    _adaptiveElement = widget.cardRegistry.getElement(
+    _adaptiveElement = widget.cardTypeRegistry.getElement(
       map: widget.map,
     );
 
@@ -89,7 +84,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
     _resolver = ReferenceResolver(hostConfig: widget.hostConfig);
-    _adaptiveElement = widget.cardRegistry.getElement(
+    _adaptiveElement = widget.cardTypeRegistry.getElement(
       map: widget.map,
     );
     super.didUpdateWidget(oldWidget);
@@ -541,7 +536,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     return ProviderScope(
       overrides: [
         rawAdaptiveCardStateProvider.overrideWithValue(this),
-        cardTypeRegistryProvider.overrideWithValue(cardTypeRegistry),
+        cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
       ],
       child: InheritedReferenceResolver(
         resolver: _resolver,

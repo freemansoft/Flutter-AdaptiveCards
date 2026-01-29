@@ -5,9 +5,7 @@ import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 
 ///
@@ -37,25 +35,17 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
   AdaptiveCardElement? targetCard;
 
   @override
-  void initState() {
-    super.initState();
-
+  void didChangeDependencies() {
     // we cache the show card widget because it isn't in the tree if hidden (not visible)
     // should this be in didChangeDependencies instead?
-    final Widget possibleTargetCard = rawRootCardWidgetState.cardTypeRegistry
-        .getElement(
-          map: adaptiveMap['card'],
-        );
+    final Widget possibleTargetCard = cardTypeRegistry.getElement(
+      map: adaptiveMap['card'],
+    );
     if (possibleTargetCard is AdaptiveCardElement) {
       targetCard = possibleTargetCard;
       // this feels like a hack because it should have gotten called when created
       // do we need it because dependenciesDidChange doesn't get called so the mixin doesn't fire?
-      ProviderScope.containerOf(
-            context,
-            listen: false,
-          )
-          .read(adaptiveCardElementStateProvider)
-          .registerCardWidget(targetCard!.id, targetCard!);
+      adaptiveCardElementState.registerCardWidget(targetCard!.id, targetCard!);
       assert(() {
         developer.log(
           format(
@@ -82,6 +72,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
         return true;
       }());
     }
+    super.didChangeDependencies();
   }
 
   @override
@@ -110,11 +101,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
             children: <Widget>[
               Text(title),
               // chevron state based on if our card being shown
-              if (ProviderScope.containerOf(
-                    context,
-                    listen: false,
-                  ).read(adaptiveCardElementStateProvider).currentCard !=
-                  targetCard)
+              if (adaptiveCardElementState.currentCard != targetCard)
                 const Icon(Icons.keyboard_arrow_up)
               else
                 const Icon(Icons.keyboard_arrow_down),
@@ -128,10 +115,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
   @override
   void onTapped() {
     if (targetCard != null) {
-      ProviderScope.containerOf(
-        context,
-        listen: false,
-      ).read(adaptiveCardElementStateProvider).showCard(targetCard!);
+      adaptiveCardElementState.showCard(targetCard!);
     }
   }
 }

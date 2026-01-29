@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
-import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 
@@ -203,10 +201,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
 
   @override
   bool checkRequired() {
-    final adaptiveCardElement = ProviderScope.containerOf(
-      context,
-      listen: false,
-    ).read(adaptiveCardElementStateProvider);
+    final adaptiveCardElement = adaptiveCardElementState;
     final formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();

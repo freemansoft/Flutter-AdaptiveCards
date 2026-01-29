@@ -31,7 +31,7 @@ class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
   void didChangeDependencies() {
     super.didChangeDependencies();
     action =
-        rawRootCardWidgetState.cardTypeRegistry.getGenericAction(
+        cardTypeRegistry.getGenericAction(
               map: adaptiveMap,
             )!
             as GenericActionResetInputs;
