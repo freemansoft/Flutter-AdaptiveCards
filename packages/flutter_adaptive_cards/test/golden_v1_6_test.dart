@@ -12,17 +12,9 @@ import 'utils/test_utils.dart';
 // Helper to load widget from our v1.6 samples
 Widget getSampleForGoldenTest(Key key, String sampleName) {
   // getWidget expects path relative to test/samples/
-  final Widget sample = getWidget('v1.6/$sampleName.json');
+  return getWidget(path: 'v1.6/$sampleName.json', key: key);
 
-  return MaterialApp(
-    home: RepaintBoundary(
-      key: key,
-      child: Scaffold(
-        appBar: AppBar(title: Text(sampleName)),
-        body: Center(child: sample),
-      ),
-    ),
-  );
+
 }
 
 void configureTestView() {

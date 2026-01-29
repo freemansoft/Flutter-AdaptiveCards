@@ -22,7 +22,7 @@ void main() {
   // 16 should be testable
   for (int i = 1; i <= 14; i++) {
     testWidgets('example$i smoke test', (tester) async {
-      Widget widget = getWidget('example$i.json');
+      Widget widget = getWidget(path: 'example$i.json');
 
       // This ones pretty big, we need to wrap in in a scrollable
       if (i == 8) {
