@@ -15,6 +15,7 @@ Widget getSampleForGoldenTest(Key key, String sampleName) {
     home: RepaintBoundary(
       key: key,
       child: Scaffold(
+        // the title is required if snackpbar activates otherwise no scope
         appBar: AppBar(title: Text(sampleName)),
         body: Center(child: sample),
       ),
