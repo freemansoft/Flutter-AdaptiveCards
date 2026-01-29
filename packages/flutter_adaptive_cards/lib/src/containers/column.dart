@@ -81,7 +81,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     super.didChangeDependencies();
 
     if (adaptiveMap.containsKey('selectAction')) {
-      action = cardTypeRegistry.getGenericAction(
+      action = actionTypeRegistry.getActionForType(
         map: adaptiveMap['selectAction'],
       );
     }
@@ -137,7 +137,10 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: InkWell(
-          onTap: () => action?.tap(rawRootCardWidgetState),
+          onTap: () => action?.tap(
+            context: context,
+            rawAdaptiveCardState: rawRootCardWidgetState,
+          ),
           child: Container(
             // we need this container to be the same size as the row element
             // so that all the columns are the same height

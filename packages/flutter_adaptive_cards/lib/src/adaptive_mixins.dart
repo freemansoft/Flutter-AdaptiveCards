@@ -33,6 +33,9 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   CardTypeRegistry get cardTypeRegistry =>
       ProviderScope.containerOf(context).read(cardTypeRegistryProvider);
 
+  ActionTypeRegistry get actionTypeRegistry =>
+      ProviderScope.containerOf(context).read(actionTypeRegistryProvider);
+
   AdaptiveCardElementState get adaptiveCardElementState =>
       ProviderScope.containerOf(context).read(adaptiveCardElementStateProvider);
 

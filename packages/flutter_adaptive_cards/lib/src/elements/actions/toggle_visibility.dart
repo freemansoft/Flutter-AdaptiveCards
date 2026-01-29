@@ -35,7 +35,7 @@ class AdaptiveActionToggleVisibilityState
   void didChangeDependencies() {
     super.didChangeDependencies();
     action =
-        cardTypeRegistry.getGenericAction(
+        actionTypeRegistry.getActionForType(
               map: adaptiveMap,
             )!
             as GenericActionToggleVisibility;
@@ -51,6 +51,9 @@ class AdaptiveActionToggleVisibilityState
 
   @override
   void onTapped() {
-    action.tap(rawRootCardWidgetState);
+    action.tap(
+      context: context,
+      rawAdaptiveCardState: rawRootCardWidgetState,
+    );
   }
 }

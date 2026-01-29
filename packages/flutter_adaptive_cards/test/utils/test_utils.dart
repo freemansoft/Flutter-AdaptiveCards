@@ -148,9 +148,7 @@ Widget getWidget(String path) {
   final Widget adaptiveCard = RawAdaptiveCard.fromMap(
     map: map,
     //onChange: (_) {},
-    onSubmit: (_) {},
-    onExecute: (_) {},
-    onOpenUrl: (_) {},
+
     // debug "show json" panes don't show in prod
     // so dislable them in the golden images
     showDebugJson: false,

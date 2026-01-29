@@ -29,11 +29,9 @@ class RawAdaptiveCard extends StatefulWidget {
     super.key,
     required this.map,
     this.cardTypeRegistry = const CardTypeRegistry(),
+    this.actionTypeRegistry = const ActionTypeRegistry(),
     this.initData,
     this.onChange,
-    this.onSubmit,
-    this.onExecute,
-    this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
     required this.hostConfig,
@@ -42,13 +40,11 @@ class RawAdaptiveCard extends StatefulWidget {
   final Map<String, dynamic> map;
   final HostConfig hostConfig;
   final CardTypeRegistry cardTypeRegistry;
+  final ActionTypeRegistry actionTypeRegistry;
   final Map? initData;
 
   final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
   onChange;
-  final Function(Map map)? onSubmit;
-  final Function(Map map)? onExecute;
-  final Function(String url)? onOpenUrl;
 
   final bool showDebugJson;
   final bool listView;
@@ -96,60 +92,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     setState(() {});
   }
 
-  /// Submits all the inputs of this adaptive card, does it by recursively
-  /// visiting the elements in the tree
-  void submit(Map map) {
-    bool valid = true;
-
-    // Recursively visits all inputs and determines if all the inputs are valid
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveInputMixin) {
-          if ((element.state as AdaptiveInputMixin).checkRequired()) {
-            (element.state as AdaptiveInputMixin).appendInput(map);
-          } else {
-            valid = false;
-          }
-        }
-      }
-      element.visitChildren(visitor);
-    }
-
-    context.visitChildElements(visitor);
-
-    if (widget.onSubmit != null && valid) {
-      // invoke the in injected onSubmit
-      widget.onSubmit!(map);
-    }
-  }
-
-  /// Executes all the inputs of this adaptive card, does it by recursively
-  /// visiting the elements in the tree
-  void execute(Map map) {
-    bool valid = true;
-
-    // Recursively visits all inputs and determines if all the inputs are valid
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveInputMixin) {
-          if ((element.state as AdaptiveInputMixin).checkRequired()) {
-            (element.state as AdaptiveInputMixin).appendInput(map);
-          } else {
-            valid = false;
-          }
-        }
-      }
-      element.visitChildren(visitor);
-    }
-
-    context.visitChildElements(visitor);
-
-    if (widget.onExecute != null && valid) {
-      // invoke the in injected onSubmit
-      widget.onExecute!(map);
-    }
-  }
-
   void initInput(Map map) {
     // this code exists in several places
     // but looks like it uses the visitor prior to assignment
@@ -174,21 +116,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
           if ((element.state as AdaptiveInputMixin).id == id) {
             (element.state as AdaptiveInputMixin).loadInput(map);
           }
-        }
-      }
-      element.visitChildren(visitor);
-    }
-
-    context.visitChildElements(visitor);
-  }
-
-  /// note: Individual element type classes must implement resetInput on their controlers or whatever
-  /// the default behavior is coded in a mixin and is "bad"
-  void resetInputs() {
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveInputMixin) {
-          (element.state as AdaptiveInputMixin).resetInput();
         }
       }
       element.visitChildren(visitor);
@@ -277,12 +204,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       );
       return true;
     }());
-  }
-
-  void openUrl(String url) {
-    if (widget.onOpenUrl != null) {
-      widget.onOpenUrl?.call(url);
-    }
   }
 
   void changeValue(String id, dynamic value) {
@@ -537,6 +458,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       overrides: [
         rawAdaptiveCardStateProvider.overrideWithValue(this),
         cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
+        actionTypeRegistryProvider.overrideWithValue(
+          widget.actionTypeRegistry,
+        ),
       ],
       child: InheritedReferenceResolver(
         resolver: _resolver,

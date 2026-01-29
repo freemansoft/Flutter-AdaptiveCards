@@ -107,56 +107,6 @@ class CardTypeRegistry {
     }
   }
 
-  ///
-  /// Gets an action from the action type registry based on the 'type' property of the map
-  ///
-  GenericAction? getGenericAction({
-    required Map<String, dynamic> map,
-  }) {
-    final String stringType = map['type'] as String;
-
-    switch (stringType) {
-      case 'Action.ShowCard':
-        assert(
-          false,
-          'Action.ShowCard can only be used directly by the root card',
-        );
-        return null;
-      case 'Action.OpenUrl':
-        return GenericActionOpenUrl(
-          adaptiveMap: map,
-        );
-      case 'Action.Submit':
-        return GenericSubmitAction(
-          adaptiveMap: map,
-        );
-      case 'Action.Execute':
-        return GenericExecuteAction(
-          adaptiveMap: map,
-        );
-      case 'Action.ResetInputs':
-        return GenericActionResetInputs(
-          adaptiveMap: map,
-        );
-      case 'Action.OpenUrlDialog':
-        assert(false, 'Action.OpenUrlDialog is not supported');
-        return null;
-      case 'Action.ToggleVisibility':
-        return GenericActionToggleVisibility(
-          adaptiveMap: map,
-        );
-      case 'Action.InsertImage':
-        assert(false, 'Action.InsertImage is not supported');
-        return null;
-      case 'Action.Popup':
-        assert(false, 'Action.Popup is not supported');
-        return null;
-      default:
-        assert(false, 'No action found with type $stringType');
-        return null;
-    }
-  }
-
   Widget getAction({
     required Map<String, dynamic> map,
   }) {
@@ -361,6 +311,66 @@ class CardTypeRegistry {
           adaptiveMap: map,
           type: stringType,
         );
+    }
+  }
+}
+
+/// Finds the action processor for a given action type
+class ActionTypeRegistry {
+  const ActionTypeRegistry();
+
+  ///
+  /// Gets an action from the action type registry
+  /// based on the 'type' property of the map
+  ///
+  GenericAction? getActionForType({
+    required Map<String, dynamic> map,
+  }) {
+    final String stringType = map['type'] as String;
+
+    switch (stringType) {
+      case 'Action.ShowCard':
+        assert(
+          false,
+          'Action.ShowCard can only be used directly by the root card',
+        );
+        return null;
+      case 'Action.OpenUrl':
+        return GenericActionOpenUrl(
+          adaptiveMap: map,
+        );
+      case 'Action.OpenUrlDialog':
+        return GenericActionOpenUrlDialog(
+          adaptiveMap: map,
+        );
+      case 'Action.Submit':
+        return GenericSubmitAction(
+          adaptiveMap: map,
+        );
+      case 'Action.Execute':
+        return GenericExecuteAction(
+          adaptiveMap: map,
+        );
+      case 'Action.ResetInputs':
+        return GenericActionResetInputs(
+          adaptiveMap: map,
+        );
+      case 'Action.OpenUrlDialog':
+        assert(false, 'Action.OpenUrlDialog is not supported');
+        return null;
+      case 'Action.ToggleVisibility':
+        return GenericActionToggleVisibility(
+          adaptiveMap: map,
+        );
+      case 'Action.InsertImage':
+        assert(false, 'Action.InsertImage is not supported');
+        return null;
+      case 'Action.Popup':
+        assert(false, 'Action.Popup is not supported');
+        return null;
+      default:
+        assert(false, 'No action found with type $stringType');
+        return null;
     }
   }
 }

@@ -31,7 +31,7 @@ class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
   void didChangeDependencies() {
     super.didChangeDependencies();
     action =
-        cardTypeRegistry.getGenericAction(
+        actionTypeRegistry.getActionForType(
               map: adaptiveMap,
             )!
             as GenericActionResetInputs;
@@ -47,6 +47,9 @@ class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
 
   @override
   void onTapped() {
-    action.tap(rawRootCardWidgetState);
+    action.tap(
+      context: context,
+      rawAdaptiveCardState: rawRootCardWidgetState,
+    );
   }
 }

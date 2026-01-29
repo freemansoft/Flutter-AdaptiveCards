@@ -79,11 +79,9 @@ class AdaptiveCard extends StatefulWidget {
     required this.adaptiveCardContentProvider,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
+    this.actionTypeRegistry = const ActionTypeRegistry(),
     this.initData,
     this.onChange,
-    this.onSubmit,
-    this.onExecute,
-    this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
@@ -94,12 +92,10 @@ class AdaptiveCard extends StatefulWidget {
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
+    this.actionTypeRegistry = const ActionTypeRegistry(),
     required String url,
     this.initData,
     this.onChange,
-    this.onSubmit,
-    this.onExecute,
-    this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
@@ -112,12 +108,10 @@ class AdaptiveCard extends StatefulWidget {
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
+    this.actionTypeRegistry = const ActionTypeRegistry(),
     required String assetPath,
     this.initData,
     this.onChange,
-    this.onSubmit,
-    this.onExecute,
-    this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
@@ -130,12 +124,10 @@ class AdaptiveCard extends StatefulWidget {
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
+    this.actionTypeRegistry = const ActionTypeRegistry(),
     required Map<String, dynamic> content,
     this.initData,
     this.onChange,
-    this.onSubmit,
-    this.onExecute,
-    this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
@@ -148,12 +140,10 @@ class AdaptiveCard extends StatefulWidget {
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
+    this.actionTypeRegistry = const ActionTypeRegistry(),
     required String jsonString,
     this.initData,
     this.onChange,
-    this.onSubmit,
-    this.onExecute,
-    this.onOpenUrl,
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
@@ -171,21 +161,15 @@ class AdaptiveCard extends StatefulWidget {
   /// Used to convert card type strings into Card instances
   final CardTypeRegistry cardRegistry;
 
+  /// Used to convert card type strings into Card instances
+  final ActionTypeRegistry actionTypeRegistry;
+
   /// data that may be copied into `Input` cards to replace their templated state
   final Map? initData;
 
   /// Environment specific function that knows how to handle state change
   final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
   onChange;
-
-  /// Environment specific function that knows how to handle submission to remote APIs
-  final Function(Map map)? onSubmit;
-
-  /// Environment specific function that knows how to handle execution to remote APIs
-  final Function(Map map)? onExecute;
-
-  /// Environment specific function that knows how to open a URL on this platform
-  final Function(String url)? onOpenUrl;
 
   final bool showDebugJson;
   final bool supportMarkdown;
@@ -249,64 +233,6 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     }
 
     // Update the onChange if one is provided or there is one in the DefaultAdapterCardHandlers
-    if (widget.onSubmit != null) {
-      onSubmit = widget.onSubmit;
-    } else {
-      final foundOnSubmit = InheritedAdaptiveCardHandlers.of(context)?.onSubmit;
-      if (foundOnSubmit != null) {
-        onSubmit = foundOnSubmit;
-      } else {
-        onSubmit = (it) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                format('No handler found for: \n {}', it.toString()),
-              ),
-            ),
-          );
-        };
-      }
-    }
-
-    // Update the onExecute if one is provided or there is one in the DefaultAdapterCardHandlers
-    if (widget.onExecute != null) {
-      onExecute = widget.onExecute;
-    } else {
-      final foundOnExecute = InheritedAdaptiveCardHandlers.of(
-        context,
-      )?.onExecute;
-      if (foundOnExecute != null) {
-        onExecute = foundOnExecute;
-      } else {
-        onExecute = (it) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                format('No handler found for: \n {}', it.toString()),
-              ),
-            ),
-          );
-        };
-      }
-    }
-
-    // Update the onOpenUrl if one is provided or there is one in the DefaultAdapterCardHandlers
-    if (widget.onOpenUrl != null) {
-      onOpenUrl = widget.onOpenUrl;
-    } else {
-      final foundOpenUrl = InheritedAdaptiveCardHandlers.of(context)?.onOpenUrl;
-      if (foundOpenUrl != null) {
-        onOpenUrl = foundOpenUrl;
-      } else {
-        onOpenUrl = (it) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(format('und for: \n {}', it))),
-          );
-        };
-      }
-    }
-
-    // Update the onChange if one is provided or there is one in the DefaultAdapterCardHandlers
     if (widget.onChange != null) {
       onChange = widget.onChange;
     } else {
@@ -318,7 +244,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                format('No handler found for: \n {}', it),
+                format('No custom handler found for onchange: \n {}', it),
               ),
             ),
           );
@@ -337,11 +263,9 @@ class AdaptiveCardState extends State<AdaptiveCard> {
     return RawAdaptiveCard.fromMap(
       map: map!,
       cardTypeRegistry: widget.cardRegistry,
+      actionTypeRegistry: widget.actionTypeRegistry,
       initData: initData,
       onChange: onChange,
-      onOpenUrl: onOpenUrl,
-      onSubmit: onSubmit,
-      onExecute: onExecute,
       listView: widget.listView,
       showDebugJson: widget.showDebugJson,
       hostConfig: widget.hostConfig,

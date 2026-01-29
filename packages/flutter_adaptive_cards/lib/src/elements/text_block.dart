@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -39,6 +40,8 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   late String text;
   late String? fontFamily;
 
+  late GenericActionOpenUrl action;
+
   @override
   void initState() {
     super.initState();
@@ -50,6 +53,12 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // gag me with a hack - the api is built against a type key in a map
+    action =
+        actionTypeRegistry.getActionForType(
+              map: {'type': 'Action.OpenUrl', 'url': ''},
+            )!
+            as GenericActionOpenUrl;
     // should be lazily calculated because styling could have changed
     final resolver = InheritedReferenceResolver.of(context).resolver;
     horizontalAlignment = resolver.resolveAlignment(
@@ -128,7 +137,11 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       styleSheet: loadMarkdownStyleSheet(context),
       onTapLink: (text, href, title) {
         if (href != null) {
-          rawRootCardWidgetState.openUrl(href);
+          action.tap(
+            context: context,
+            rawAdaptiveCardState: rawRootCardWidgetState,
+            altUrl: href,
+          );
         }
       },
     );

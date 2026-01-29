@@ -35,3 +35,11 @@ final cardTypeRegistryProvider = Provider<CardTypeRegistry>((
     'cardTypeRegistry must be overridden',
   );
 });
+
+final actionTypeRegistryProvider = Provider<ActionTypeRegistry>((
+  ref,
+) {
+  throw UnimplementedError(
+    'cardTypeRegistry must be overridden',
+  );
+});

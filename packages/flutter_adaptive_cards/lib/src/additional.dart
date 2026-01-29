@@ -87,7 +87,7 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
     super.didChangeDependencies();
     // The selectAction could be anyone of the action types
     if (adaptiveMap.containsKey('selectAction')) {
-      action = cardTypeRegistry.getGenericAction(
+      action = actionTypeRegistry.getActionForType(
         map: adaptiveMap['selectAction'],
       );
     }
@@ -96,7 +96,10 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => action?.tap(rawRootCardWidgetState),
+      onTap: () => action?.tap(
+        context: context,
+        rawAdaptiveCardState: rawRootCardWidgetState,
+      ),
       child: widget.child,
     );
   }

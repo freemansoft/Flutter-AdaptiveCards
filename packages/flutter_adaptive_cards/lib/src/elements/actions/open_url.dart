@@ -34,7 +34,7 @@ class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
   void didChangeDependencies() {
     super.didChangeDependencies();
     action =
-        cardTypeRegistry.getGenericAction(
+        actionTypeRegistry.getActionForType(
               map: adaptiveMap,
             )!
             as GenericActionOpenUrl;
@@ -50,6 +50,9 @@ class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
 
   @override
   void onTapped() {
-    action.tap(rawRootCardWidgetState);
+    action.tap(
+      context: context,
+      rawAdaptiveCardState: rawRootCardWidgetState,
+    );
   }
 }
