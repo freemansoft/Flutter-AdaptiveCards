@@ -15,7 +15,7 @@ Widget getSampleForGoldenTest(Key key, String sampleName) {
     home: RepaintBoundary(
       key: key,
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(title: Text(sampleName)),
         body: Center(child: sample),
       ),
     ),

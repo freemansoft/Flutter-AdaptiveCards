@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:format/format.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,7 +26,7 @@ abstract class GenericAction {
 }
 
 /// Default actions for onTaps for Action.Submit
-/// Delegates to rawAdaptiveCardState
+/// Expects there to be supplementary data in 'data' property
 class GenericSubmitAction extends GenericAction {
   GenericSubmitAction({
     required Map<String, dynamic> adaptiveMap,
@@ -33,6 +34,7 @@ class GenericSubmitAction extends GenericAction {
     data = adaptiveMap['data'] as Map<String, dynamic>? ?? {};
   }
 
+  /// We should copy this data before modifying it
   late Map<String, dynamic> data;
 
   @override
@@ -56,7 +58,9 @@ class GenericSubmitAction extends GenericAction {
       element.visitChildren(visitor);
     }
 
+    // wrong context here. We need the context of the nearest ancestor AdaptiveCardElement
     context.visitChildElements(visitor);
+
     if (valid) {
       final foo = InheritedAdaptiveCardHandlers.of(context);
       foo != null
@@ -76,7 +80,7 @@ class GenericSubmitAction extends GenericAction {
 }
 
 /// Default actions for onTaps for Action.Execute
-/// Delegates to rawAdaptiveCardState
+/// Expects there to be supplementary data in 'data' property
 class GenericExecuteAction extends GenericAction {
   GenericExecuteAction({
     required Map<String, dynamic> adaptiveMap,
@@ -84,6 +88,7 @@ class GenericExecuteAction extends GenericAction {
     data = adaptiveMap['data'] as Map<String, dynamic>? ?? {};
   }
 
+  /// We should copy this data before modifying it
   late Map<String, dynamic> data;
 
   @override
@@ -107,7 +112,9 @@ class GenericExecuteAction extends GenericAction {
       element.visitChildren(visitor);
     }
 
+    // wrong context here. We need the context of the nearest ancestor AdaptiveCardElement
     context.visitChildElements(visitor);
+
     if (valid) {
       final foo = InheritedAdaptiveCardHandlers.of(context);
       foo != null
