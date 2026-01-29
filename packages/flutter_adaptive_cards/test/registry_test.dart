@@ -26,7 +26,6 @@ void main() {
         'size': 'large',
         'weight': 'bolder',
       },
-      widgetState: MockAdaptiveCardState(),
     );
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveTextBlock));
@@ -44,7 +43,6 @@ void main() {
           },
         ],
       },
-      widgetState: MockAdaptiveCardState(),
     );
 
     expect(second.runtimeType, equals(AdaptiveMedia));
@@ -55,7 +53,6 @@ void main() {
 
     final Widget adaptiveElement = cardRegistry.getElement(
       map: {'type': 'NoType'},
-      widgetState: MockAdaptiveCardState(),
     );
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
@@ -77,7 +74,6 @@ void main() {
         'size': 'large',
         'weight': 'bolder',
       },
-      widgetState: MockAdaptiveCardState(),
     );
 
     expect(adaptiveElement.runtimeType, equals(AdaptiveUnknown));
@@ -94,7 +90,6 @@ void main() {
 
     final element = cardRegistry.getElement(
       map: {'type': 'Test'},
-      widgetState: MockAdaptiveCardState(),
     );
 
     expect(element.runtimeType, equals(_TestAddition));

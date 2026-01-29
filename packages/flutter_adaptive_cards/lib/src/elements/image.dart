@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
@@ -13,7 +12,6 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImage({
     required this.adaptiveMap,
-    required this.widgetState,
     this.parentMode = 'stretch',
     required this.supportMarkdown,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
@@ -22,9 +20,6 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -68,7 +63,6 @@ class AdaptiveImageState extends State<AdaptiveImage>
 
     Widget image = AdaptiveTappable(
       adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
       child: AdaptiveImageUtils.getImage(
         url,
         fit: fit,
@@ -103,7 +97,6 @@ class AdaptiveImageState extends State<AdaptiveImage>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: child,
       ),
     );

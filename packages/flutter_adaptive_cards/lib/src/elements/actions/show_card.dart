@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -19,16 +18,12 @@ class AdaptiveActionShowCard extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionShowCard({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -47,10 +42,10 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
     // we cache the show card widget because it isn't in the tree if hidden (not visible)
     // should this be in didChangeDependencies instead?
-    final Widget possibleTargetCard = widgetState.cardTypeRegistry.getElement(
-      map: adaptiveMap['card'],
-      widgetState: widgetState,
-    );
+    final Widget possibleTargetCard = rawRootCardWidgetState.cardTypeRegistry
+        .getElement(
+          map: adaptiveMap['card'],
+        );
     if (possibleTargetCard is AdaptiveCardElement) {
       targetCard = possibleTargetCard;
       // this feels like a hack because it should have gotten called when created
@@ -97,7 +92,6 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: ElevatedButton(
           onPressed: onTapped,
           style: ElevatedButton.styleFrom(

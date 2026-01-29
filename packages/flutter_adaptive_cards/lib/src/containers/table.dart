@@ -3,7 +3,6 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:format/format.dart';
 
@@ -18,7 +17,6 @@ import 'package:format/format.dart';
 class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTable({
     required this.adaptiveMap,
-    required this.widgetState,
     required this.supportMarkdown,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -26,9 +24,6 @@ class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -67,7 +62,6 @@ class AdaptiveTableState extends State<AdaptiveTable>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: Table(
           border: TableBorder.all(),
           defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -184,9 +178,8 @@ class AdaptiveTableState extends State<AdaptiveTable>
                   ),
                   name: runtimeType.toString(),
                 );
-                return widgetState.cardTypeRegistry.getElement(
+                return cardTypeRegistry.getElement(
                   map: oneCellItems[widgetIndex],
-                  widgetState: widgetState,
                 );
               }),
             ),

@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 class AdaptiveAccordion extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveAccordion({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -49,7 +44,6 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: Column(
           children: items.map((itemMap) {
             // Each item should be an AccordionPage (or similar)
@@ -70,9 +64,8 @@ class AdaptiveAccordionState extends State<AdaptiveAccordion>
             final contentItems = itemMap['items'] ?? itemMap['body'];
             if (contentItems is List) {
               for (final c in contentItems) {
-                final el = widgetState.cardTypeRegistry.getElement(
+                final el = rawRootCardWidgetState.cardTypeRegistry.getElement(
                   map: c,
-                  widgetState: widgetState,
                 );
                 children.add(el);
               }

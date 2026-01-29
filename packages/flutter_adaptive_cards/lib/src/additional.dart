@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
@@ -10,13 +9,10 @@ class SeparatorElement extends StatelessWidget {
   const SeparatorElement({
     super.key,
     required this.adaptiveMap,
-    required this.widgetState,
     required this.child,
   });
 
   final Map<String, dynamic> adaptiveMap;
-
-  final RawAdaptiveCardState widgetState;
 
   final Widget child;
 
@@ -59,7 +55,6 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTappable({
     required this.child,
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
@@ -68,9 +63,6 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -91,20 +83,22 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
   GenericAction? action;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     // The selectAction could be anyone of the action types
     if (adaptiveMap.containsKey('selectAction')) {
-      action = widgetState.cardTypeRegistry.getGenericAction(
+      action = cardTypeRegistry.getGenericAction(
         map: adaptiveMap['selectAction'],
-        state: widgetState,
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(onTap: action?.tap, child: widget.child);
+    return InkWell(
+      onTap: () => action?.tap(rawRootCardWidgetState),
+      child: widget.child,
+    );
   }
 }
 

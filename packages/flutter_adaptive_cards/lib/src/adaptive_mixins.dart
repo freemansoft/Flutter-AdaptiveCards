@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -16,9 +17,6 @@ mixin AdaptiveElementWidgetMixin on StatefulWidget {
   /// implementers will need to provide the adaptive map
   Map<String, dynamic> get adaptiveMap;
 
-  /// implementers will need to provide the widget state
-  RawAdaptiveCardState get widgetState;
-
   /// implementers will need to provide the id
   String get id;
 }
@@ -26,7 +24,13 @@ mixin AdaptiveElementWidgetMixin on StatefulWidget {
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   String get id => widget.id;
 
-  RawAdaptiveCardState get widgetState => widget.widgetState;
+  RawAdaptiveCardState get rawRootCardWidgetState => ProviderScope.containerOf(
+    context,
+    listen: false,
+  ).read(rawAdaptiveCardStateProvider);
+
+  CardTypeRegistry get cardTypeRegistry =>
+      ProviderScope.containerOf(context).read(cardTypeRegistryProvider);
 
   Map<String, dynamic> get adaptiveMap => widget.adaptiveMap;
 

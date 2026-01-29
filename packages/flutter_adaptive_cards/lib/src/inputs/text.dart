@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -14,16 +13,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextInput({
     required this.adaptiveMap,
-    required this.widgetState,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
   final Map<String, dynamic> adaptiveMap;
-
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -33,7 +28,11 @@ class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTextInputState extends State<AdaptiveTextInput>
-    with AdaptiveTextualInputMixin, AdaptiveInputMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with
+        AdaptiveTextualInputMixin,
+        AdaptiveInputMixin,
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin {
   TextEditingController controller = TextEditingController();
 
   String? label;
@@ -62,7 +61,6 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        widgetState: widgetState,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [

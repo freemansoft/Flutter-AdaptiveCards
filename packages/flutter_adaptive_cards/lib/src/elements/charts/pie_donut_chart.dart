@@ -2,7 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 
 ///
@@ -12,7 +11,6 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptivePieChart({
     required this.adaptiveMap,
-    required this.widgetState,
     this.isDonut = false,
   }) : super(key: generateWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -20,8 +18,6 @@ class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   final Map<String, dynamic> adaptiveMap;
-  @override
-  final RawAdaptiveCardState widgetState;
 
   @override
   late final String id;
@@ -87,7 +83,6 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
   Widget build(BuildContext context) {
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      widgetState: widgetState,
       child: SizedBox(
         height: 200,
         child: PieChart(

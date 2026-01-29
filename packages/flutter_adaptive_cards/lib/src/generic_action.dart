@@ -6,13 +6,12 @@ import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 /// The root default beahvior for onTaps in for all actions
 /// Each action type has its own implementation
 abstract class GenericAction {
-  GenericAction(this.adaptiveMap, this.rawAdaptiveCardState);
+  GenericAction(this.adaptiveMap);
 
   String? get title => adaptiveMap['title'] as String?;
   final Map<String, dynamic> adaptiveMap;
-  final RawAdaptiveCardState rawAdaptiveCardState;
 
-  void tap();
+  void tap(RawAdaptiveCardState rawAdaptiveCardState);
 }
 
 /// Default actions for onTaps for Action.Submit
@@ -20,15 +19,14 @@ abstract class GenericAction {
 class GenericSubmitAction extends GenericAction {
   GenericSubmitAction({
     required Map<String, dynamic> adaptiveMap,
-    required RawAdaptiveCardState rawAdaptiveCardState,
-  }) : super(adaptiveMap, rawAdaptiveCardState) {
+  }) : super(adaptiveMap) {
     data = adaptiveMap['data'] as Map<String, dynamic>? ?? {};
   }
 
   late Map<String, dynamic> data;
 
   @override
-  void tap() {
+  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
     rawAdaptiveCardState.submit(data);
   }
 }
@@ -38,15 +36,14 @@ class GenericSubmitAction extends GenericAction {
 class GenericExecuteAction extends GenericAction {
   GenericExecuteAction({
     required Map<String, dynamic> adaptiveMap,
-    required RawAdaptiveCardState rawAdaptiveCardState,
-  }) : super(adaptiveMap, rawAdaptiveCardState) {
+  }) : super(adaptiveMap) {
     data = adaptiveMap['data'] as Map<String, dynamic>? ?? {};
   }
 
   late Map<String, dynamic> data;
 
   @override
-  void tap() {
+  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
     rawAdaptiveCardState.execute(data);
   }
 }
@@ -56,15 +53,14 @@ class GenericExecuteAction extends GenericAction {
 class GenericActionOpenUrl extends GenericAction {
   GenericActionOpenUrl({
     required Map<String, dynamic> adaptiveMap,
-    required RawAdaptiveCardState rawAdaptiveCardState,
-  }) : super(adaptiveMap, rawAdaptiveCardState) {
+  }) : super(adaptiveMap) {
     url = adaptiveMap['url'] as String?;
   }
 
   late String? url;
 
   @override
-  void tap() {
+  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
     if (url != null) {
       rawAdaptiveCardState.openUrl(url!);
     }
@@ -74,11 +70,10 @@ class GenericActionOpenUrl extends GenericAction {
 class GenericActionResetInputs extends GenericAction {
   GenericActionResetInputs({
     required Map<String, dynamic> adaptiveMap,
-    required RawAdaptiveCardState rawAdaptiveCardState,
-  }) : super(adaptiveMap, rawAdaptiveCardState);
+  }) : super(adaptiveMap);
 
   @override
-  void tap() {
+  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
     rawAdaptiveCardState.resetInputs();
   }
 }
@@ -86,11 +81,10 @@ class GenericActionResetInputs extends GenericAction {
 class GenericActionToggleVisibility extends GenericAction {
   GenericActionToggleVisibility({
     required Map<String, dynamic> adaptiveMap,
-    required RawAdaptiveCardState rawAdaptiveCardState,
-  }) : super(adaptiveMap, rawAdaptiveCardState);
+  }) : super(adaptiveMap);
 
   @override
-  void tap() {
+  void tap(RawAdaptiveCardState rawAdaptiveCardState) {
     late List<String> targetElementIds;
 
     // Toggle visibility for each target element
