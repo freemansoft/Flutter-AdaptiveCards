@@ -84,10 +84,9 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
                   final contentItems = t['items'] ?? t['body'];
                   if (contentItems is List) {
                     for (final c in contentItems) {
-                      final el = rawRootCardWidgetState.cardTypeRegistry
-                          .getElement(
-                            map: c,
-                          );
+                      final el = cardTypeRegistry.getElement(
+                        map: c,
+                      );
                       children.add(el);
                     }
                   }

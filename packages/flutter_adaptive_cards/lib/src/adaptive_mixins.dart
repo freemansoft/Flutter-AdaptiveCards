@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
@@ -31,6 +32,9 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   CardTypeRegistry get cardTypeRegistry =>
       ProviderScope.containerOf(context).read(cardTypeRegistryProvider);
+
+  AdaptiveCardElementState get adaptiveCardElementState =>
+      ProviderScope.containerOf(context).read(adaptiveCardElementStateProvider);
 
   Map<String, dynamic> get adaptiveMap => widget.adaptiveMap;
 
