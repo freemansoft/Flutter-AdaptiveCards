@@ -52,6 +52,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
           margin: const EdgeInsets.all(8),
           height: 40,
           child: TextField(
+            key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
             autofocus: true,
             style: const TextStyle(),
             controller: _searchController,

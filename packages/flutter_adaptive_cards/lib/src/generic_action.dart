@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/action_handler.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -58,8 +59,14 @@ class GenericSubmitAction extends GenericAction {
       element.visitChildren(visitor);
     }
 
-    // wrong context here. We need the context of the nearest ancestor AdaptiveCardElement
-    context.visitChildElements(visitor);
+    // We need the context of the nearest ancestor AdaptiveCardElement
+    ProviderScope.containerOf(
+          context,
+        )
+        .read(adaptiveCardElementStateProvider)
+        .context
+        .visitChildElements(visitor);
+    //context.visitChildElements(visitor);
 
     if (valid) {
       final foo = InheritedAdaptiveCardHandlers.of(context);
@@ -112,8 +119,14 @@ class GenericExecuteAction extends GenericAction {
       element.visitChildren(visitor);
     }
 
-    // wrong context here. We need the context of the nearest ancestor AdaptiveCardElement
-    context.visitChildElements(visitor);
+    // We need the context of the nearest ancestor AdaptiveCardElement
+    ProviderScope.containerOf(
+          context,
+        )
+        .read(adaptiveCardElementStateProvider)
+        .context
+        .visitChildElements(visitor);
+    //context.visitChildElements(visitor);
 
     if (valid) {
       final foo = InheritedAdaptiveCardHandlers.of(context);
@@ -204,7 +217,14 @@ class GenericActionResetInputs extends GenericAction {
       element.visitChildren(visitor);
     }
 
-    context.visitChildElements(visitor);
+    // We need the context of the nearest ancestor AdaptiveCardElement
+    ProviderScope.containerOf(
+          context,
+        )
+        .read(adaptiveCardElementStateProvider)
+        .context
+        .visitChildElements(visitor);
+    //context.visitChildElements(visitor);
   }
 }
 

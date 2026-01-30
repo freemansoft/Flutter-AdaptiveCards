@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/inputs/date.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
@@ -30,13 +31,18 @@ void main() {
     expect(find.byType(Image), findsOneWidget);
 
     // The two buttons "Set due date" and "Comment"
+    // other card is hidden
     expect(find.byType(ElevatedButton), findsNWidgets(2));
+    expect(find.byType(AdaptiveDateInput), findsNWidgets(0));
 
     expect(find.widgetWithText(ElevatedButton, 'Set due date'), findsOneWidget);
-
     await tester.tap(find.widgetWithText(ElevatedButton, 'Set due date'));
     await tester.pump();
-
+    // should make this field appear
+    expect(find.byType(AdaptiveDateInput), findsNWidgets(1));
+    final textFieldFinder = find.byKey(const ValueKey('dueDate_input'));
+    expect(textFieldFinder, findsOneWidget);
+    // TODO(username): set the value and verify the submitted json includes it
     expect(find.widgetWithText(ElevatedButton, 'OK'), findsOneWidget);
 
     final Widget button = tester.firstWidget(
@@ -45,7 +51,6 @@ void main() {
 
     await tester.tap(find.widgetWithText(ElevatedButton, 'Comment'));
     await tester.pump();
-
     expect(find.byType(ElevatedButton), findsNWidgets(3));
 
     expect(find.widgetWithText(ElevatedButton, 'OK'), findsOneWidget);

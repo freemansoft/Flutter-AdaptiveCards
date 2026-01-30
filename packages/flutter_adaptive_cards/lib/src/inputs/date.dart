@@ -92,6 +92,9 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
               width: double.infinity,
               height: 40,
               child: TextFormField(
+                key: ValueKey(
+                  '${(widget.key! as ValueKey<String>).value}_input',
+                ),
                 readOnly: true,
                 style: const TextStyle(),
                 controller: controller,
