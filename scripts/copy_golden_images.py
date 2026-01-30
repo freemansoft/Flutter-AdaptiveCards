@@ -19,6 +19,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
+from typing import Iterable
 
 # We'll match `_testImage` case-insensitively anywhere in the filename (before
 # the extension) and remove it. This handles names with spaces and mixed-case
@@ -26,31 +27,29 @@ from pathlib import Path
 _TESTIMAGE_RE = re.compile(r"(?i)_testimage")
 
 
-def find_pngs(src: Path, recursive: bool):
+def find_pngs(src: Path, recursive: bool) -> Iterable[Path]:
+    """Return an iterator of PNG files in ``src``.
+
+    The pattern is case-insensitive for the extension and supports recursive
+    search when ``recursive`` is True.
+    """
     pattern = "*.[pP][nN][gG]"
-    if recursive:
-        return src.rglob(pattern)
-    return src.glob(pattern)
+    return src.rglob(pattern) if recursive else src.glob(pattern)
 
 
 def target_name(src_name: str) -> str:
-    # Preserve the original suffix (case preserved), but remove the first
-    # occurrence of `_testImage` (case-insensitive) from the stem. Then tidy
-    # up whitespace/underscores that may be left behind.
-    p = Path(src_name)
-    suffix = p.suffix  # includes the dot
+    """Return the filename after removing one `_testImage` from the stem.
+
+    Preserves the original extension and collapses redundant spaces or
+    underscores produced by the removal.
+    """
+    path_obj = Path(src_name)
+    suffix = path_obj.suffix
     stem = src_name[: -len(suffix)] if suffix else src_name
 
-    # remove `_testImage` occurrences
     new_stem = _TESTIMAGE_RE.sub("", stem, count=1)
-
-    # collapse multiple spaces and multiple underscores,
-    # and remove leading/trailing
     new_stem = re.sub(r"\s+", " ", new_stem).strip()
     new_stem = re.sub(r"_+", "_", new_stem)
-
-    # if the stem ends with an underscore or space because of the removal,
-    #  strip it
     new_stem = new_stem.rstrip(" _")
 
     return f"{new_stem}{suffix}"
@@ -58,7 +57,11 @@ def target_name(src_name: str) -> str:
 
 def copy_and_rename(
     src: Path, dst: Path, recursive: bool = True, dry_run: bool = False
-):
+) -> int:
+    """Copy matching PNG files from ``src`` to ``dst`` with renames.
+
+    Returns zero on success or a non-zero status code otherwise.
+    """
     files = list(find_pngs(src, recursive))
     if not files:
         print(f"No PNG files found in {src} (recursive={recursive})")
@@ -68,20 +71,22 @@ def copy_and_rename(
     copied = 0
     skipped = 0
 
-    for f in files:
-        name = f.name
-        # only operate on names that contain `_testImage` (case-insensitive)
+    for file_path in files:
+        name = file_path.name
         if not _TESTIMAGE_RE.search(name):
             skipped += 1
             continue
+
         new_name = target_name(name)
         target_path = dst / new_name
+
         if dry_run:
-            print(f"[dry-run] {f} -> {target_path}")
+            print(f"[dry-run] {file_path} -> {target_path}")
             copied += 1
             continue
-        shutil.copy2(f, target_path)
-        print(f"{f} -> {target_path}")
+
+        shutil.copy2(file_path, target_path)
+        print(f"{file_path} -> {target_path}")
         copied += 1
 
     print(f"Completed. Copied: {copied}. Skipped (no match): {skipped}.")
