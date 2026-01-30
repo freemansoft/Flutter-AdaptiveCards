@@ -94,6 +94,20 @@ def copy_and_rename(
 
 
 def parse_args():
+    """
+    Parses command-line arguments for copying and renaming golden PNG images.
+
+    Returns:
+        argparse.Namespace:
+            Parsed command-line arguments with the following attributes:
+            src (Path): Source directory to search for PNG files.
+            dst (Path): Target directory to copy and rename PNG files.
+            recursive (bool):
+                Whether to search directories recursively (default: True).
+            dry_run (bool):
+            If True,
+            only show what would be copied without performing any operations.
+    """
     p = argparse.ArgumentParser(
         description="Copy golden PNGs and remove _testImage in names"
     )
@@ -119,6 +133,18 @@ def parse_args():
 
 
 def main():
+    """
+    Main entry point for the script that copies and renames golden images.
+
+    Parses command-line arguments to get source and destination directories,
+    validates that the source directory exists,
+    and executes the copy and rename operation.
+    Returns appropriate exit codes for success or various error conditions.
+
+    Returns:
+        int: Exit code - 0 for success, 2 if source directory is invalid,
+             3 if an error occurs during copy operation.
+    """
     args = parse_args()
     src: Path = args.src
     dst: Path = args.dst
