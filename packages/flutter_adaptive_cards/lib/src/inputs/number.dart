@@ -71,6 +71,9 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
             SizedBox(
               height: 40,
               child: TextFormField(
+                key: ValueKey(
+                  '${(widget.key! as ValueKey<String>).value}_input',
+                ),
                 style: const TextStyle(),
                 keyboardType: TextInputType.number,
                 inputFormatters: [

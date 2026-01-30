@@ -57,6 +57,7 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: ElevatedButton(
+          key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
           onPressed: () async {
             final TimeOfDay? result = await rawRootCardWidgetState
                 .timePickerForPlatform(

@@ -179,6 +179,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       width: double.infinity,
       height: 40,
       child: TextFormField(
+        key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
         readOnly: true,
         style: const TextStyle(),
         controller: controller,
@@ -236,6 +237,8 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
+          key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
+
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down),
           style: TextStyle(
@@ -257,6 +260,9 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           items: _choices.keys
               .map(
                 (key) => DropdownMenuItem<String>(
+                  key: ValueKey(
+                    '${(widget.key! as ValueKey<String>).value}_input_$key',
+                  ),
                   value: _choices[key],
                   child: Text(key),
                 ),
@@ -271,11 +277,15 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   Widget _buildExpandedSingleSelect() {
     return RadioGroup<String>(
+      key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
       groupValue: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
       onChanged: select,
       child: Column(
         children: _choices.keys.map((key) {
           return RadioListTile<String>(
+            key: ValueKey(
+              '${(widget.key! as ValueKey<String>).value}_input_$key',
+            ),
             value: _choices[key]!,
             title: Text(key),
           );
@@ -288,6 +298,8 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     return Column(
       children: _choices.keys.map((key) {
         return CheckboxListTile(
+          key: ValueKey('${(widget.key! as ValueKey).value}_input_$key'),
+
           controlAffinity: ListTileControlAffinity.leading,
           value: _selectedChoices.contains(_choices[key]),
           onChanged: (value) {

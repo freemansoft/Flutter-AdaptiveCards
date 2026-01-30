@@ -52,6 +52,7 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
         child: Row(
           children: <Widget>[
             Switch(
+              key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
               value: boolValue,
               onChanged: (newValue) {
                 setState(() {
