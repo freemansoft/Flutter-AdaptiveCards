@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards/src/actions/action_handler.dart';
+import 'package:flutter_adaptive_cards/src/actions/action_type_registry.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
@@ -79,7 +80,7 @@ class AdaptiveCard extends StatefulWidget {
     required this.adaptiveCardContentProvider,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
-    this.actionTypeRegistry = const ActionTypeRegistry(),
+    this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     this.initData,
     this.onChange,
     this.listView = false,
@@ -92,7 +93,7 @@ class AdaptiveCard extends StatefulWidget {
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
-    this.actionTypeRegistry = const ActionTypeRegistry(),
+    this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     required String url,
     this.initData,
     this.onChange,
@@ -108,7 +109,7 @@ class AdaptiveCard extends StatefulWidget {
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
-    this.actionTypeRegistry = const ActionTypeRegistry(),
+    this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     required String assetPath,
     this.initData,
     this.onChange,
@@ -124,7 +125,7 @@ class AdaptiveCard extends StatefulWidget {
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
-    this.actionTypeRegistry = const ActionTypeRegistry(),
+    this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     required Map<String, dynamic> content,
     this.initData,
     this.onChange,
@@ -140,7 +141,7 @@ class AdaptiveCard extends StatefulWidget {
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
-    this.actionTypeRegistry = const ActionTypeRegistry(),
+    this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     required String jsonString,
     this.initData,
     this.onChange,

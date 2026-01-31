@@ -47,6 +47,7 @@ class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
         action.tap(
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,
+          adaptiveMap: adaptiveMap,
         );
       },
     );

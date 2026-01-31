@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/actions/action_type_registry.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
@@ -29,7 +30,7 @@ class RawAdaptiveCard extends StatefulWidget {
     super.key,
     required this.map,
     this.cardTypeRegistry = const CardTypeRegistry(),
-    this.actionTypeRegistry = const ActionTypeRegistry(),
+    this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     this.initData,
     this.onChange,
     this.listView = false,

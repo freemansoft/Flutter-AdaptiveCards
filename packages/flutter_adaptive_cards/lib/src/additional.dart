@@ -99,6 +99,7 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
       onTap: () => action?.tap(
         context: context,
         rawAdaptiveCardState: rawRootCardWidgetState,
+        adaptiveMap: adaptiveMap,
       ),
       child: widget.child,
     );

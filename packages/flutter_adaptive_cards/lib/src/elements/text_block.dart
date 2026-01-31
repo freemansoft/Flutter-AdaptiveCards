@@ -142,6 +142,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
           action.tap(
             context: context,
             rawAdaptiveCardState: rawRootCardWidgetState,
+            adaptiveMap: adaptiveMap,
             altUrl: href,
           );
         }

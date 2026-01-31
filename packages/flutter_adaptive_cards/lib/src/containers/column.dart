@@ -140,6 +140,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
           onTap: () => action?.tap(
             context: context,
             rawAdaptiveCardState: rawRootCardWidgetState,
+            adaptiveMap: adaptiveMap,
           ),
           child: Container(
             // we need this container to be the same size as the row element

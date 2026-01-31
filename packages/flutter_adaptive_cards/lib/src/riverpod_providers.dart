@@ -1,3 +1,4 @@
+import 'package:flutter_adaptive_cards/src/actions/action_type_registry.dart';
 import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';

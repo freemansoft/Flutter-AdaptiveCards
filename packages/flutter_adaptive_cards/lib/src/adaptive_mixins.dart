@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards/src/actions/action_type_registry.dart';
 import 'package:flutter_adaptive_cards/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
@@ -179,7 +180,6 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   String get title => adaptiveMap['title'] as String? ?? '';
-
 }
 
 mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
