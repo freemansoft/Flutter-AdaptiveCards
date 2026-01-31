@@ -47,6 +47,7 @@ class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
         action.tap(
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,
+          adaptiveMap: adaptiveMap,
         );
       },
     );

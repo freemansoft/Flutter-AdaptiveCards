@@ -48,6 +48,7 @@ class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
         action.tap(
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,
+          adaptiveMap: adaptiveMap,
         );
       },
     );

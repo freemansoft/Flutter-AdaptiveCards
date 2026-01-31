@@ -83,6 +83,7 @@ class AdaptiveActionOpenUrlDialogState
                         action.tap(
                           context: context,
                           rawAdaptiveCardState: rawRootCardWidgetState,
+                          adaptiveMap: adaptiveMap,
                         );
                         Navigator.pop(context);
                       },

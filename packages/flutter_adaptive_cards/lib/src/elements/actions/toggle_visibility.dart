@@ -49,6 +49,7 @@ class AdaptiveActionToggleVisibilityState
         action.tap(
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,
+          adaptiveMap: adaptiveMap,
         );
       },
     );

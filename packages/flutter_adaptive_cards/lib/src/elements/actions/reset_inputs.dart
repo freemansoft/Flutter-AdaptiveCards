@@ -45,6 +45,7 @@ class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
         action.tap(
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,
+          adaptiveMap: adaptiveMap,
         );
       },
     );
