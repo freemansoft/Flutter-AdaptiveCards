@@ -13,7 +13,7 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class ActionSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   ActionSet({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

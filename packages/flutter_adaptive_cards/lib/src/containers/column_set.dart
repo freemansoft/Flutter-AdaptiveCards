@@ -12,7 +12,7 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveColumnSet({
     required this.adaptiveMap,
     required this.supportMarkdown,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

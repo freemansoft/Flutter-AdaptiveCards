@@ -302,8 +302,18 @@ String loadId(Map aMap) {
   }
 }
 
-ValueKey<String> generateWidgetKey(Map aMap) {
-  return ValueKey(loadId(aMap));
+/// generate the widget key for the adaptive widget
+ValueKey<String> generateAdaptiveWidgetKey(Map aMap) {
+  return ValueKey('${loadId(aMap)}_adaptive');
+}
+
+/// generate the widget key for the actual input element
+ValueKey<String> generateWidgetKey(Map aMap, {String? suffix}) {
+  final String id = loadId(aMap);
+  if (suffix != null) {
+    return ValueKey('${id}_$suffix');
+  }
+  return ValueKey(id);
 }
 
 /// Everyone uses the same scheme for UUID Generation

@@ -220,8 +220,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
   Future<void> searchList(
     List<SearchModel>? data,
-    Function(dynamic value) callback,
-  ) async {
+    Function(dynamic value) callback, {
+    String? inputId,
+  }) async {
     await showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -230,7 +231,11 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       ),
       builder: (BuildContext builder) => SizedBox(
         height: MediaQuery.of(context).copyWith().size.height / 2,
-        child: ChoiceFilter(data: data, callback: callback),
+        child: ChoiceFilter(
+          key: inputId != null ? ValueKey(inputId) : null,
+          data: data,
+          callback: callback,
+        ),
       ),
     );
   }

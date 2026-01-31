@@ -40,7 +40,7 @@ void main() {
     await tester.pump();
     // should make this field appear
     expect(find.byType(AdaptiveDateInput), findsNWidgets(1));
-    final textFieldFinder = find.byKey(const ValueKey('dueDate_input'));
+    final textFieldFinder = find.byKey(const ValueKey('dueDate'));
     expect(textFieldFinder, findsOneWidget);
     // TODO(username): set the value and verify the submitted json includes it
     expect(find.widgetWithText(ElevatedButton, 'OK'), findsOneWidget);

@@ -43,7 +43,7 @@ void main() {
       matchesGoldenFile('gold_files/v1_6_badge.png'),
     );
     await tester.pump(const Duration(milliseconds: 100));
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden Rating', (tester) async {
     configureTestView();
@@ -57,7 +57,7 @@ void main() {
       matchesGoldenFile('gold_files/v1_6_rating.png'),
     );
     await tester.pump(const Duration(milliseconds: 100));
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden Donut', (tester) async {
     configureTestView();
@@ -71,7 +71,7 @@ void main() {
       matchesGoldenFile('gold_files/v1_6_donut.png'),
     );
     await tester.pump(const Duration(milliseconds: 100));
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden Carousel', (tester) async {
     configureTestView();
@@ -86,7 +86,7 @@ void main() {
       matchesGoldenFile('gold_files/v1_6_carousel.png'),
     );
     await tester.pump(const Duration(milliseconds: 100));
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden Accordion', (tester) async {
     configureTestView();
@@ -100,7 +100,7 @@ void main() {
       matchesGoldenFile('gold_files/v1_6_accordion.png'),
     );
     await tester.pump(const Duration(milliseconds: 100));
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden CodeBlock', (tester) async {
     configureTestView();
@@ -114,7 +114,7 @@ void main() {
       matchesGoldenFile('gold_files/v1_6_code_block.png'),
     );
     await tester.pump(const Duration(milliseconds: 100));
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden ProgressBar', (tester) async {
     configureTestView();
@@ -128,7 +128,7 @@ void main() {
       matchesGoldenFile('gold_files/v1_6_progress_bar.png'),
     );
     await tester.pump(const Duration(milliseconds: 100));
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden Popover', (tester) async {
     configureTestView();
@@ -157,5 +157,5 @@ void main() {
       matchesGoldenFile('gold_files/v1_6_popover_base.png'),
     );
     await tester.pump(const Duration(milliseconds: 100));
-  });
+  }, tags: ['golden']);
 }

@@ -10,7 +10,7 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
   IconButtonAction({
     required this.adaptiveMap,
     required this.onTapped,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -79,6 +79,4 @@ class IconButtonActionState extends State<IconButtonAction>
     }
     return result;
   }
-
-
 }

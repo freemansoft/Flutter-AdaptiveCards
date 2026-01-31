@@ -11,7 +11,7 @@ class AdaptiveActionOpenUrl extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionOpenUrl({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

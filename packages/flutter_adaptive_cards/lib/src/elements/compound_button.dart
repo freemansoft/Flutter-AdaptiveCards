@@ -8,7 +8,7 @@ class AdaptiveCompoundButton extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveCompoundButton({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

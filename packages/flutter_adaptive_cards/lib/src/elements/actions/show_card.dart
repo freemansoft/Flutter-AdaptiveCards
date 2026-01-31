@@ -16,7 +16,7 @@ class AdaptiveActionShowCard extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionShowCard({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

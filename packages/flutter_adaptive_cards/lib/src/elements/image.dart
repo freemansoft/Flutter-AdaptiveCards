@@ -14,7 +14,7 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
     required this.adaptiveMap,
     this.parentMode = 'stretch',
     required this.supportMarkdown,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

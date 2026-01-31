@@ -29,7 +29,7 @@ class SearchModel {
 class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveChoiceSet({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -179,7 +179,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       width: double.infinity,
       height: 40,
       child: TextFormField(
-        key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
+        key: generateWidgetKey(adaptiveMap),
         readOnly: true,
         style: const TextStyle(),
         controller: controller,
@@ -220,7 +220,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
             setState(() {
               select(value?.id);
             });
-          });
+          }, inputId: id);
         },
       ),
     );
@@ -237,7 +237,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
+          key: generateWidgetKey(adaptiveMap),
 
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down),
@@ -260,9 +260,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           items: _choices.keys
               .map(
                 (key) => DropdownMenuItem<String>(
-                  key: ValueKey(
-                    '${(widget.key! as ValueKey<String>).value}_input_$key',
-                  ),
+                  key: generateWidgetKey(adaptiveMap, suffix: key),
                   value: _choices[key],
                   child: Text(key),
                 ),
@@ -277,15 +275,14 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   Widget _buildExpandedSingleSelect() {
     return RadioGroup<String>(
-      key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
+      key: ValueKey(widget.id),
       groupValue: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
       onChanged: select,
       child: Column(
         children: _choices.keys.map((key) {
           return RadioListTile<String>(
-            key: ValueKey(
-              '${(widget.key! as ValueKey<String>).value}_input_$key',
-            ),
+            key: generateWidgetKey(adaptiveMap, suffix: key),
+
             value: _choices[key]!,
             title: Text(key),
           );
@@ -298,7 +295,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     return Column(
       children: _choices.keys.map((key) {
         return CheckboxListTile(
-          key: ValueKey('${(widget.key! as ValueKey).value}_input_$key'),
+          key: generateWidgetKey(adaptiveMap, suffix: key),
 
           controlAffinity: ListTileControlAffinity.leading,
           value: _selectedChoices.contains(_choices[key]),

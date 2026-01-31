@@ -13,7 +13,7 @@ class AdaptiveNumberInput extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveNumberInput({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -71,9 +71,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
             SizedBox(
               height: 40,
               child: TextFormField(
-                key: ValueKey(
-                  '${(widget.key! as ValueKey<String>).value}_input',
-                ),
+                key: generateWidgetKey(adaptiveMap),
                 style: const TextStyle(),
                 keyboardType: TextInputType.number,
                 inputFormatters: [

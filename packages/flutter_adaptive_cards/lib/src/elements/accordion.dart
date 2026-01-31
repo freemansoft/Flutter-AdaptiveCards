@@ -6,7 +6,7 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveAccordion extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveAccordion({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

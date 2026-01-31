@@ -11,7 +11,7 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextInput({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -66,9 +66,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
             SizedBox(
               height: 40,
               child: TextFormField(
-                key: ValueKey(
-                  '${(widget.key! as ValueKey<String>).value}_input',
-                ),
+                key: generateWidgetKey(adaptiveMap),
                 style: const TextStyle(),
                 controller: controller,
                 // maxLength: maxLength,

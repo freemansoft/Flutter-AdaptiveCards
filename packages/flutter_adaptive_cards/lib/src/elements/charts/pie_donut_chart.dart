@@ -12,7 +12,7 @@ class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptivePieChart({
     required this.adaptiveMap,
     this.isDonut = false,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

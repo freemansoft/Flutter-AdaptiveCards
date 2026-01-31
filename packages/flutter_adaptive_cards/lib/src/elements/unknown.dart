@@ -14,7 +14,7 @@ class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveUnknown({
     required this.adaptiveMap,
     required this.type,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

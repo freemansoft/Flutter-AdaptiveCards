@@ -9,7 +9,7 @@ class AdaptiveProgressRing extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveProgressRing({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

@@ -6,7 +6,7 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveRating({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

@@ -7,7 +7,7 @@ class AdaptiveActionInsertImage extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionInsertImage({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

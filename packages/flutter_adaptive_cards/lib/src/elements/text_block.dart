@@ -13,7 +13,7 @@ class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextBlock({
     required this.adaptiveMap,
     required this.supportMarkdown,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -114,6 +114,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   Widget getText() {
     return Text(
+      key: generateWidgetKey(adaptiveMap),
       text,
       textAlign: textAlign,
       softWrap: true,
@@ -129,6 +130,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   Widget getMarkdownText({required BuildContext context}) {
     return MarkdownBody(
+      key: generateWidgetKey(adaptiveMap),
       // TODOthe markdown library does currently not support max lines
       // As markdown support is more important than maxLines right now
       // this is in here.
