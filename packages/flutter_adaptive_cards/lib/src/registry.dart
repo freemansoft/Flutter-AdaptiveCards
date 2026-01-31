@@ -32,7 +32,7 @@ import 'package:flutter_adaptive_cards/src/elements/rating.dart';
 import 'package:flutter_adaptive_cards/src/elements/tab_set.dart';
 import 'package:flutter_adaptive_cards/src/elements/text_block.dart';
 import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
-import 'package:flutter_adaptive_cards/src/generic_action.dart';
+import 'package:flutter_adaptive_cards/src/actions/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards/src/inputs/date.dart';
 import 'package:flutter_adaptive_cards/src/inputs/number.dart';

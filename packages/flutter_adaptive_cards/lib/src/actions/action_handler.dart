@@ -6,18 +6,21 @@ import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 class InheritedAdaptiveCardHandlers extends InheritedWidget {
   const InheritedAdaptiveCardHandlers({
     super.key,
+
     required this.onSubmit,
     required this.onExecute,
     required this.onOpenUrl,
+
     required this.onChange,
     required super.child,
   });
 
   final Function(Map map) onSubmit;
   final Function(Map map) onExecute;
+  final Function(String url) onOpenUrl;
+
   final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
   onChange;
-  final Function(String url) onOpenUrl;
 
   static InheritedAdaptiveCardHandlers? of(BuildContext context) {
     final InheritedAdaptiveCardHandlers? handlers = context
