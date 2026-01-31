@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -42,7 +43,9 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    popupParentResolver = InheritedReferenceResolver.of(context).resolver;
+    popupParentResolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
   }
 
   Future<void> onTapped(BuildContext context) async {
@@ -73,7 +76,9 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = InheritedReferenceResolver.of(context).resolver;
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
 
     // TODO(username): implement the correct styling
     return Visibility(

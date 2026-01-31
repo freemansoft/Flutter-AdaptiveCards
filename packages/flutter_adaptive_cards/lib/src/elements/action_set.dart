@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ActionSet.html
@@ -34,7 +35,9 @@ class ActionSetState extends State<ActionSet>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final resolver = InheritedReferenceResolver.of(context).resolver;
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
     final actionsConfig = resolver.getActionsConfig();
 
     activeActions.clear();
@@ -55,7 +58,9 @@ class ActionSetState extends State<ActionSet>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = InheritedReferenceResolver.of(context).resolver;
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
     final actionsConfig = resolver.getActionsConfig();
 
     return Visibility(

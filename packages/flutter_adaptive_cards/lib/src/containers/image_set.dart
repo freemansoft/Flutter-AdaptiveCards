@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/elements/image.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ImageSet.html
@@ -55,10 +56,9 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
   void didChangeDependencies() {
     super.didChangeDependencies();
     loadSize();
-    backgroundColor =
-        InheritedReferenceResolver.of(
-          context,
-        ).resolver.resolveContainerBackgroundColor(
+    backgroundColor = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
+        .resolveContainerBackgroundColor(
           style: adaptiveMap['style']?.toString(),
         );
   }
@@ -114,9 +114,10 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
       return;
     }
     final int size =
-        InheritedReferenceResolver.of(
-          context,
-        ).resolver.getImageSetConfig()?.imageSize(sizeDescription) ??
+        ProviderScope.containerOf(context)
+            .read(styleReferenceResolverProvider)
+            .getImageSetConfig()
+            ?.imageSize(sizeDescription) ??
         20;
     maybeSize = size.toDouble();
   }

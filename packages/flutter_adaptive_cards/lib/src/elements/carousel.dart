@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCarousel({
@@ -183,12 +184,10 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
 
     // Resolve background color based on style
     // We can use ReferenceResolver logic or simple map for now.
-    // inherited_reference_resolver logic is usually handled by the registry wrapping this? No.
-    // We can assume InheritedReferenceResolver is present.
     // But specific container logic might be needed.
 
-    final Color? backgroundColor = InheritedReferenceResolver.of(context)
-        .resolver
+    final Color? backgroundColor = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
         .resolveContainerBackgroundColor(
           style: adaptiveMap['style'],
         );

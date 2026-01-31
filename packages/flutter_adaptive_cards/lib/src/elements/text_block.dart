@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/actions/generic_action.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/TextBlock.html
@@ -60,7 +61,9 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
             )!
             as GenericActionOpenUrl;
     // should be lazily calculated because styling could have changed
-    final resolver = InheritedReferenceResolver.of(context).resolver;
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
     horizontalAlignment = resolver.resolveAlignment(
       adaptiveMap['horizontalAlignment'],
     );
@@ -157,10 +160,9 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   // Probably want to pass context down the tree, until now -> this
   Color? getColor(BuildContext context) {
-    final Color? color =
-        InheritedReferenceResolver.of(
-          context,
-        ).resolver.resolveContainerForegroundColor(
+    final Color? color = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
+        .resolveContainerForegroundColor(
           style: adaptiveMap['color'],
           isSubtle: adaptiveMap['isSubtle'],
         );

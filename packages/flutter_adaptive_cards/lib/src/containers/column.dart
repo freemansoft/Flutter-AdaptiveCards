@@ -3,8 +3,9 @@ import 'package:flutter_adaptive_cards/src/actions/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Column.html
@@ -96,17 +97,19 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
             );
           }).toList()
         : [];
-    horizontalAlignment = InheritedReferenceResolver.of(context).resolver
+    horizontalAlignment = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
         .resolveHorzontalCrossAxisAlignment(
           adaptiveMap['horizontalAlignment'],
         );
-    verticalAlignment = InheritedReferenceResolver.of(context).resolver
+    verticalAlignment = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
         .resolveVerticalMainAxisContentAlginment(
           adaptiveMap['verticalContentAlignment'],
         );
 
-    containerHorizontalAlignment = InheritedReferenceResolver.of(context)
-        .resolver
+    containerHorizontalAlignment = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
         .resolveContainerAlignment(
           adaptiveMap['horizontalAlignment'],
         );
@@ -115,18 +118,17 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
   @override
   Widget build(BuildContext context) {
     final double preceedingSpacing = SpacingsConfig.resolveSpacing(
-      InheritedReferenceResolver.of(
+      ProviderScope.containerOf(
         context,
-      ).resolver.getSpacingsConfig(),
+      ).read(styleReferenceResolverProvider).getSpacingsConfig(),
       adaptiveMap['spacing'],
     );
     final backgroundImageUrl = resolveBackgroundImage(
       adaptiveMap['backgroundImage'],
     )?.url;
-    final backgroundColor =
-        InheritedReferenceResolver.of(
-          context,
-        ).resolver.resolveContainerBackgroundColorIfNoBackgroundImage(
+    final backgroundColor = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
+        .resolveContainerBackgroundColorIfNoBackgroundImage(
           context: context,
           style: adaptiveMap['style']?.toString(),
           backgroundImageUrl: backgroundImageUrl,

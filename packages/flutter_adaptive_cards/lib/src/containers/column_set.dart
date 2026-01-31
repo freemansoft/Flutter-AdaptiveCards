@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/containers/column.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ColumnSet.html
@@ -54,14 +55,17 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
       adaptiveMap['backgroundImage'],
     )?.url;
     backgroundColor =
-        InheritedReferenceResolver.of(
-          context,
-        ).resolver.resolveContainerBackgroundColorIfNoBackgroundImage(
-          context: context,
-          style: adaptiveMap['style']?.toString(),
-          backgroundImageUrl: backgroundImageUrl,
-        );
-    horizontalAlignment = InheritedReferenceResolver.of(context).resolver
+        ProviderScope.containerOf(
+              context,
+            )
+            .read(styleReferenceResolverProvider)
+            .resolveContainerBackgroundColorIfNoBackgroundImage(
+              context: context,
+              style: adaptiveMap['style']?.toString(),
+              backgroundImageUrl: backgroundImageUrl,
+            );
+    horizontalAlignment = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
         .resolveHorizontalMainAxisAlginment(
           adaptiveMap['horizontalAlignment'],
         );

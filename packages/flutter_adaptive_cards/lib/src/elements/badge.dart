@@ -4,9 +4,10 @@ import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/badge_styles_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/font_color_config.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveBadge({
@@ -51,7 +52,9 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = InheritedReferenceResolver.of(context).resolver;
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
     final Color backgroundColor =
         resolveBadgeBackgroundColor(
           badgeStyles: resolver.getBadgeStylesConfig(),

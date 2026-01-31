@@ -1,11 +1,13 @@
 # Actions Architecture & Flow 🔧
 
 ## Overview ✅
+
 This document describes how the Adaptive Cards action system is organized and how an action flows from parsing to execution. The design separates abstract **Generic** action interfaces from concrete **Default** implementations so you can plug in custom behavior easily.
 
 ---
 
 ## Key Concepts 💡
+
 - **Generic action interfaces** (e.g., `GenericSubmitAction`, `GenericExecuteAction`, `GenericActionOpenUrl`) live in `lib/src/actions/generic_action.dart` and define the public contract (the `tap()` signature).
 - **Default implementations** (e.g., `DefaultSubmitAction`, `DefaultExecuteAction`) live in `lib/src/actions/default_actions.dart` and provide the package-provided behavior.
 - **ActionTypeRegistry** (`lib/src/actions/action_type_registry.dart`) maps the parsed `Map<String, dynamic>` (the action map) to an appropriate `GenericAction` instance.
@@ -14,6 +16,7 @@ This document describes how the Adaptive Cards action system is organized and ho
 ---
 
 ## Typical Flow (high level) ▶️
+
 1. JSON parsing: card JSON is parsed; actions are represented as `Map<String, dynamic>` with a `type` field like `"Action.Submit"`.
 2. Registry lookup: `ActionTypeRegistry.getActionForType(map: parsedMap)` selects a `GenericAction` instance.
 3. Widget wiring: the element/action widget stores the `GenericAction` reference and uses it to handle user interaction.
@@ -23,6 +26,7 @@ This document describes how the Adaptive Cards action system is organized and ho
 ---
 
 ## Design Rationale 🔍
+
 - Keeping `Generic*` as abstract interfaces lets consumers implement custom actions without depending on concrete names.
 - Making `Default*` actions stateless (no stored `adaptiveMap`) allows them to be `const` and reused, and forces data to be passed at call time so behavior is deterministic.
 - The `DefaultActionTypeRegistry` is the default bridge that returns `Default*` instances; users can provide their own `ActionTypeRegistry` to return custom implementations.
@@ -30,6 +34,7 @@ This document describes how the Adaptive Cards action system is organized and ho
 ---
 
 ## How to implement a custom action ✍️
+
 1. Implement the abstract `Generic*` interface you need:
 
 ```dart
@@ -48,12 +53,12 @@ class MySubmitAction implements GenericSubmitAction {
 ```
 
 2. Provide a custom `ActionTypeRegistry` that returns instances of your custom action when appropriate.
-
 3. Register your `ActionTypeRegistry` in the place the app uses (e.g., via provider or by passing to the card builder API).
 
 ---
 
 ## Tests & Migration Notes ⚠️
+
 - Existing consumers should continue to rely on `Generic*` types; concrete `Default*` classes are only used by the default registry.
 - Non-golden tests run with: `flutter test --exclude-tags=golden` (golden tests are tagged as `['golden']`).
 - If you previously relied on passing `adaptiveMap` into action constructors, migrate to calling `tap(..., adaptiveMap: ...)` instead.
@@ -61,6 +66,7 @@ class MySubmitAction implements GenericSubmitAction {
 ---
 
 ## Files of interest 🔎
+
 - `lib/src/actions/generic_action.dart` — abstract `Generic*` interfaces
 - `lib/src/actions/default_actions.dart` — concrete `Default*` implementations
 - `lib/src/actions/action_type_registry.dart` — default registry mapping action types to implementations
@@ -69,6 +75,7 @@ class MySubmitAction implements GenericSubmitAction {
 ---
 
 ## Quick Tips ✨
+
 - Prefer implementing a `Generic*` interface over subclassing a `Default*` class unless you need to reuse internal Default logic.
 - Keep action implementations side-effect aware and idempotent when possible to simplify testing.
 

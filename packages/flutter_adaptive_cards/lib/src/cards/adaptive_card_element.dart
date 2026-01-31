@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/elements/actions/show_card.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -124,9 +123,12 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
               ),
             )
             .toList();
-    final String stringAxis = InheritedReferenceResolver.of(
-      context,
-    ).resolver.resolveOrientation('actionsOrientation');
+    final String stringAxis =
+        ProviderScope.containerOf(
+              context,
+            )
+            .read(styleReferenceResolverProvider)
+            .resolveOrientation('actionsOrientation');
     if (stringAxis == 'Horizontal') {
       actionsOrientation = Axis.horizontal;
     } else if (stringAxis == 'Vertical') {
