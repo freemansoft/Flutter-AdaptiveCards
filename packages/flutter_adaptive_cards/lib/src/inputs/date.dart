@@ -14,7 +14,7 @@ import 'package:intl/intl.dart';
 class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveDateInput({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -92,9 +92,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
               width: double.infinity,
               height: 40,
               child: TextFormField(
-                key: ValueKey(
-                  '${(widget.key! as ValueKey<String>).value}_input',
-                ),
+                key: generateWidgetKey(adaptiveMap),
                 readOnly: true,
                 style: const TextStyle(),
                 controller: controller,

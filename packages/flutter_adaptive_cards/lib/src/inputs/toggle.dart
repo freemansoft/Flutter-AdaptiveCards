@@ -10,7 +10,7 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveToggle extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveToggle({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -52,7 +52,7 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
         child: Row(
           children: <Widget>[
             Switch(
-              key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
+              key: generateWidgetKey(adaptiveMap),
               value: boolValue,
               onChanged: (newValue) {
                 setState(() {

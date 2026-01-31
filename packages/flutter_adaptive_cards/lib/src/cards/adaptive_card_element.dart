@@ -19,7 +19,7 @@ class AdaptiveCardElement extends StatefulWidget
   AdaptiveCardElement({
     required this.adaptiveMap,
     required this.listView,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

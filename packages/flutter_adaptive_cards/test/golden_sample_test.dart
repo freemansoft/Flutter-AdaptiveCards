@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
@@ -27,8 +26,7 @@ void main() {
   setUp(() async {
     HttpOverrides.global = MyTestHttpOverrides();
 
-        await loadFontsForTest();
-
+    await loadFontsForTest();
   });
 
   testWidgets('Golden Sample 1', (tester) async {
@@ -65,7 +63,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/sample1_comment.png'),
     );
-  });
+  }, tags: ['golden']);
 
   //
   // TODO(username): This test is a little bogus because the frame looks the same after tapping the buttons
@@ -104,7 +102,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/sample2_snooze.png'),
     );
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden Sample 3', (tester) async {
     configureTestView();
@@ -120,7 +118,7 @@ void main() {
       matchesGoldenFile('gold_files/sample3-base.png'),
     );
     await tester.pump(const Duration(seconds: 1));
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden Sample 4', (tester) async {
     configureTestView();
@@ -135,7 +133,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/sample4-base.png'),
     );
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden Sample 5', (tester) async {
     configureTestView();
@@ -178,7 +176,7 @@ void main() {
       find.byKey(key),
       matchesGoldenFile('gold_files/sample5-tofu.png'),
     );
-  });
+  }, tags: ['golden']);
   // TODO(username): add other tests
   testWidgets('Golden Sample 14', (tester) async {
     configureTestView();
@@ -195,7 +193,7 @@ void main() {
     );
 
     await tester.pump(const Duration(seconds: 1));
-  });
+  }, tags: ['golden']);
 
   testWidgets('Golden Sample 16', (tester) async {
     configureTestView();
@@ -212,5 +210,5 @@ void main() {
     );
 
     await tester.pump(const Duration(seconds: 1));
-  });
+  }, tags: ['golden']);
 }

@@ -11,7 +11,7 @@ class AdaptiveActionSubmit extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionSubmit({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

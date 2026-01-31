@@ -13,7 +13,7 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCodeBlock({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

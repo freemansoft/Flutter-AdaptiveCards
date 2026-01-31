@@ -14,7 +14,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveFactSet({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

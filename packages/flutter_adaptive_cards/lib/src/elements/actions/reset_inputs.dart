@@ -8,7 +8,7 @@ class AdaptiveActionResetInputs extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionResetInputs({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

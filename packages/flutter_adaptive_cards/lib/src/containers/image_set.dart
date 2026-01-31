@@ -12,7 +12,7 @@ class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveImageSet({
     required this.adaptiveMap,
     required this.supportMarkdown,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

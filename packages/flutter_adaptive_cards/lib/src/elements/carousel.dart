@@ -9,7 +9,7 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCarousel({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

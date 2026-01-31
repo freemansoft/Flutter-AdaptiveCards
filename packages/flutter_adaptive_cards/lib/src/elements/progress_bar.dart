@@ -9,7 +9,7 @@ class AdaptiveProgressBar extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveProgressBar({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
   @override

@@ -11,7 +11,7 @@ class AdaptiveActionToggleVisibility extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionToggleVisibility({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

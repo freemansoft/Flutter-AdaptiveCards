@@ -18,7 +18,7 @@ class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTable({
     required this.adaptiveMap,
     required this.supportMarkdown,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

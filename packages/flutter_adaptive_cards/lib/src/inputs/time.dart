@@ -10,7 +10,7 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveTimeInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTimeInput({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
@@ -57,7 +57,7 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: ElevatedButton(
-          key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
+          key: generateWidgetKey(adaptiveMap),
           onPressed: () async {
             final TimeOfDay? result = await rawRootCardWidgetState
                 .timePickerForPlatform(

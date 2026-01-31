@@ -210,6 +210,11 @@ TODO for the example programs moved to [example README](example/README.md)
 - _Inputs_ missing implementations and features
   - None identified
   - Note: [`Input.Choice`](https://adaptivecards.io/explorer/Input.Choice.html) currently implemented as a map in [`ChoiceSet`](https://adaptivecards.io/explorer/Input.ChoiceSet.html)
+- Inputs have been migrated to use Flutter `Form` APIs and standardised keys to improve testing and validation.
+  - **Input field keys** are now `ValueKey(id)`. Example: `ValueKey('myText')`.
+  - **Parent card keys** for input widgets use `ValueKey('${id}_adaptive')` to avoid collisions with the inner field.
+  - **Selector item keys** use `ValueKey('${id}_${itemKey}')` (useful for targeting specific options in tests).
+- `RawAdaptiveCard.searchList` accepts an optional `inputId` that is propagated to the modal search `ChoiceFilter` so the modal's search field receives a predictable key.
 - Actions\_ missing implementations and features
   - [`Action.ToggleVisibility`](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) not implemented - currently implemented as `no-op` along with its' associated[`TargetElement`](https://adaptivecards.io/explorer/TargetElement.html) - it will assert when in debug mode
 - _Tests_
@@ -351,10 +356,16 @@ to see the result of each test
 flutter test -r expanded
 ```
 
-and to update the golden files run
+Golden tests on local machines will fail because the checked in images were generated on a linux machine. All of the golden tests are tagged with `@tag golden` You can run all the tests _other than golden_ with
 
 ```sh
-flutter test --update-goldens test/sample_golden_test.dart
+flutter test packages/flutter_adaptive_cards --exclude-tags=golden
+```
+
+or from a terminal inside the package
+
+```sh
+flutter test --exclude-tags=golden
 ```
 
 This updates the golden files for the sample cards. Depending on your operating system you might have issues with the font rendering. For the CI / CD setup you need to generate the golden files using a Docker container:

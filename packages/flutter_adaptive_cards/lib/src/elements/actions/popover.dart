@@ -12,7 +12,7 @@ class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionPopover({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

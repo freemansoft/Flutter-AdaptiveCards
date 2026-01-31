@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+- **Breaking change:** Input widget key naming and form migration (see `.requirements/Using-Flutter-Form-Inputs.md`)
+  - Input field widgets now use the input id as their `ValueKey` (e.g. `ValueKey('myInputId')`)
+  - Parent/adaptive card keys for inputs use the suffix `_adaptive` (e.g. `ValueKey('${id}_adaptive')`)
+  - Selector item keys use the format `${id}_${itemKey}` (e.g. `ValueKey('myChoiceSet_Choice 1')`)
+  - `RawAdaptiveCard.searchList` now accepts an optional `inputId` which is propagated to the choice-filter modal so the modal search field can be keyed and tested.
+  - Tests and examples were updated to reflect the new keys (non-golden tests updated, new `text_input_test.dart` added).
+  - **Behavior change:** Non-input adaptive widgets now use `generateAdaptiveWidgetKey()` for their widget keys instead of `generateWidgetKey()`. Update any tests or consumers that relied on the old keys.
+
+Consumers should update any tests or code that relied on the old `<id>_input` keys to the new naming scheme.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)

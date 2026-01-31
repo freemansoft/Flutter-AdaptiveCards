@@ -76,10 +76,22 @@ We try to show every possible configuration parameter supported by the AdaptiveC
 flutter test
 ```
 
-and to update the golden files run
+Golden tests on local machines will fail because the checked in images were generated on a linux machine. All the golden tests are tagged with `@tag golden` You can run all the tests _other than golden_ with
+
+```sh
+flutter test packages/flutter_adaptive_cards --exclude-tags=golden
+```
+
+or from a terminal inside the package
+
+```sh
+flutter test --exclude-tags=golden
+```
+
+You can see what the goldens would look like or generate goldens on a linux machine with.  Do **not** check in these generated image files if you are on a windows or mac machine.  This command can also be useful if you just want to see if there are any changes that will break the CI build.  Just look at the isolated diffs
 
 ```bash
-flutter test --update-goldens test/sample_golden_test.dart
+flutter test --update-goldens test
 ```
 
 This updates the golden files for the sample cards. Depending on your operating system you might have issues with the font rendering. For the CI / CD setup you need to generate the golden files using a Docker container:

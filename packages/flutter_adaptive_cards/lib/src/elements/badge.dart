@@ -11,7 +11,7 @@ import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveBadge({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 

@@ -51,33 +51,42 @@ class ChoiceFilterState extends State<ChoiceFilter> {
         Container(
           margin: const EdgeInsets.all(8),
           height: 40,
-          child: TextField(
-            key: ValueKey('${(widget.key! as ValueKey<String>).value}_input'),
-            autofocus: true,
-            style: const TextStyle(),
-            controller: _searchController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 8,
-                horizontal: 8,
-              ),
-              enabledBorder: const OutlineInputBorder(borderSide: BorderSide()),
-              filled: true,
-              prefixIcon: const Icon(Icons.search),
-              suffix: _searchController.text.isEmpty
-                  ? null
-                  : IconButton(
-                      icon: const Icon(Icons.cancel),
-                      onPressed: () {
-                        _searchController.clear();
-                        onSearchTextChanged('');
-                      },
-                    ),
-            ),
-            onChanged: onSearchTextChanged,
+          child: Builder(
+            builder: (context) {
+              final String keyValue = (widget.key is ValueKey<String>)
+                  ? (widget.key as ValueKey<String>).value
+                  : 'choiceFilter';
+              return TextFormField(
+                key: ValueKey(keyValue),
+                autofocus: true,
+                style: const TextStyle(),
+                controller: _searchController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 8,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(),
+                  ),
+                  filled: true,
+                  prefixIcon: const Icon(Icons.search),
+                  suffix: _searchController.text.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: const Icon(Icons.cancel),
+                          onPressed: () {
+                            _searchController.clear();
+                            onSearchTextChanged('');
+                          },
+                        ),
+                ),
+                onChanged: onSearchTextChanged,
+              );
+            },
           ),
         ),
         Expanded(

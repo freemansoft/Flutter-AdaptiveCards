@@ -16,7 +16,7 @@ import 'package:video_player/video_player.dart';
 class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveMedia({
     required this.adaptiveMap,
-  }) : super(key: generateWidgetKey(adaptiveMap)) {
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
