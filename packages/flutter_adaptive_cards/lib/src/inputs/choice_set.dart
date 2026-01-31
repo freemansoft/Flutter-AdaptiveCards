@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
@@ -243,16 +244,14 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           icon: const Icon(Icons.arrow_drop_down),
           style: TextStyle(
             // TODO(username): this is not right - should have a different function
-            color:
-                InheritedReferenceResolver.of(
-                  context,
-                ).resolver.resolveContainerForegroundColor(
+            color: ProviderScope.containerOf(context)
+                .read(styleReferenceResolverProvider)
+                .resolveContainerForegroundColor(
                   style: null,
                 ),
-            backgroundColor:
-                InheritedReferenceResolver.of(
-                  context,
-                ).resolver.resolveInputBackgroundColor(
+            backgroundColor: ProviderScope.containerOf(context)
+                .read(styleReferenceResolverProvider)
+                .resolveInputBackgroundColor(
                   context: context,
                   style: null,
                 ),

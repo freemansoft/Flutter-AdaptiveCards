@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 
+/// Not currently used - replaced by riverpod
+///
 /// This class exists to provide a ReferenceResolver to the widget tree
 /// We use this instead of riverpod because makes it easy to provide
 /// scoped resolvers and to create overides to

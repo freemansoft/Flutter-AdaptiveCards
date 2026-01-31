@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Container.html
@@ -47,18 +48,17 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
       children = [];
     }
     spacing = SpacingsConfig.resolveSpacing(
-      InheritedReferenceResolver.of(
+      ProviderScope.containerOf(
         context,
-      ).resolver.getSpacingsConfig(),
+      ).read(styleReferenceResolverProvider).getSpacingsConfig(),
       adaptiveMap['spacing'],
     );
     final backgroundImageUrl = resolveBackgroundImage(
       adaptiveMap['backgroundImage'],
     )?.url;
-    backgroundColor =
-        InheritedReferenceResolver.of(
-          context,
-        ).resolver.resolveContainerBackgroundColorIfNoBackgroundImage(
+    backgroundColor = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
+        .resolveContainerBackgroundColorIfNoBackgroundImage(
           context: context,
           style: adaptiveMap['style']?.toString(),
           backgroundImageUrl: backgroundImageUrl,

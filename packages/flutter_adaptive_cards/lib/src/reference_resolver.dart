@@ -18,18 +18,12 @@ import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/text_style_config.dart';
 import 'package:format/format.dart';
 
-/// In spec was resolved via host config.
-/// That is no longer true.
-///
-/// Much of this should be theme based in the future with custom theme types.
-///
-/// Here it will eventually be custom style attributes.
 ///
 /// All JSON values can also be null, in that case the default is used or null
 ///
 /// https://github.com/microsoft/AdaptiveCards/blob/main/schemas/1.5.0/adaptive-card.json
 ///
-/// Styles not implemented as of now
+/// Styles not implemented even though we have configs
 /// ImageStyle
 /// Spacing
 /// TextBlockStyle

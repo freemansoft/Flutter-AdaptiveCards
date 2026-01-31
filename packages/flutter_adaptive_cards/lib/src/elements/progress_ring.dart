@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveProgressRing extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -66,17 +67,17 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
     super.didChangeDependencies();
     final colorString = adaptiveMap['color'] as String?;
     progressColor = ProgressColorsConfig.resolveProgressColor(
-      config: InheritedReferenceResolver.of(
+      config: ProviderScope.containerOf(
         context,
-      ).resolver.getProgressColorConfig(),
+      ).read(styleReferenceResolverProvider).getProgressColorConfig(),
       color: colorString,
     );
     final sizeString = adaptiveMap['size'] as String?;
     sizePx =
         ProgressSizesConfig.resolveProgressSize(
-          InheritedReferenceResolver.of(
+          ProviderScope.containerOf(
             context,
-          ).resolver.getProgressSizesConfig(),
+          ).read(styleReferenceResolverProvider).getProgressSizesConfig(),
           sizeString,
         ) ??
         30;

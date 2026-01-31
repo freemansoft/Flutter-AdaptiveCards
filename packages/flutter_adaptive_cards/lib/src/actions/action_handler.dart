@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 
+/// Not currently used - no way to inject this down the tree
+///
 /// Insert one of these in the widget tree to inject onSubmit(), onChange(), onExecute(), and onOpenUrl() handlers
 /// The handlers here will be attached to widgets in the tree
 class InheritedAdaptiveCardHandlers extends InheritedWidget {

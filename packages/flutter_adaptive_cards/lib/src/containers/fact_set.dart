@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/fact_set_config.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Implements
 /// https://adaptivecards.io/explorer/FactSet.html
@@ -44,19 +45,18 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    backgroundColor =
-        InheritedReferenceResolver.of(
-          context,
-        ).resolver.resolveContainerBackgroundColor(
+    backgroundColor = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
+        .resolveContainerBackgroundColor(
           style: adaptiveMap['style']?.toString(),
         );
   }
 
   @override
   Widget build(BuildContext context) {
-    final ReferenceResolver resolver = InheritedReferenceResolver.of(
+    final ReferenceResolver resolver = ProviderScope.containerOf(
       context,
-    ).resolver;
+    ).read(styleReferenceResolverProvider);
     final FactSetConfig? factSetConfig = resolver.getFactSetConfig();
 
     return Visibility(

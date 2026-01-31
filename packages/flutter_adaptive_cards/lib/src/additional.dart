@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/actions/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SeparatorElement extends StatelessWidget {
   const SeparatorElement({
@@ -19,9 +20,9 @@ class SeparatorElement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topSpacing = SpacingsConfig.resolveSpacing(
-      InheritedReferenceResolver.of(
+      ProviderScope.containerOf(
         context,
-      ).resolver.getSpacingsConfig(),
+      ).read(styleReferenceResolverProvider).getSpacingsConfig(),
       adaptiveMap['spacing'],
     );
 
@@ -32,7 +33,9 @@ class SeparatorElement extends StatelessWidget {
         child: child,
       );
     } else {
-      final resolver = InheritedReferenceResolver.of(context).resolver;
+      final resolver = ProviderScope.containerOf(
+        context,
+      ).read(styleReferenceResolverProvider);
       final separatorConfig = resolver.getSeparatorConfig();
       final color = parseHexColor(separatorConfig?.lineColor);
 
@@ -119,11 +122,7 @@ class ChildStyler extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InheritedReferenceResolver(
-      resolver: InheritedReferenceResolver.of(
-        context,
-      ).resolver.copyWith(style: adaptiveMap['style']),
-      child: child,
-    );
+    // TODO(username): implement style changing logic for inheriting parent style
+    return child;
   }
 }

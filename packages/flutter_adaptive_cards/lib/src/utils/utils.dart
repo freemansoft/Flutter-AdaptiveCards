@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -181,7 +182,9 @@ Widget loadLabel({
     return const SizedBox();
   }
 
-  final resolver = InheritedReferenceResolver.of(context).resolver;
+  final resolver = ProviderScope.containerOf(
+    context,
+  ).read(styleReferenceResolverProvider);
   final inputsConfig = resolver.getInputsConfig();
   final labelConfig = isRequired
       ? inputsConfig?.label.requiredInputs
@@ -250,7 +253,9 @@ Widget loadErrorMessage({
     return const SizedBox();
   }
 
-  final resolver = InheritedReferenceResolver.of(context).resolver;
+  final resolver = ProviderScope.containerOf(
+    context,
+  ).read(styleReferenceResolverProvider);
   final inputsConfig = resolver.getInputsConfig();
   final errorMessageConfig = inputsConfig?.errorMessage;
 

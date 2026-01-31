@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/actions/action_type_registry.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/host_config.dart';
-import 'package:flutter_adaptive_cards/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
@@ -464,14 +463,10 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       overrides: [
         rawAdaptiveCardStateProvider.overrideWithValue(this),
         cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
-        actionTypeRegistryProvider.overrideWithValue(
-          widget.actionTypeRegistry,
-        ),
+        actionTypeRegistryProvider.overrideWithValue(widget.actionTypeRegistry),
+        styleReferenceResolverProvider.overrideWithValue(_resolver),
       ],
-      child: InheritedReferenceResolver(
-        resolver: _resolver,
-        child: Card(color: backgroundColor, child: child),
-      ),
+      child: Card(color: backgroundColor, child: child),
     );
   }
 }
