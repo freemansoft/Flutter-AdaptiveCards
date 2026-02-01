@@ -79,6 +79,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'AdaptiveCardElement',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Select Action',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildAdaptiveCardSelectAction,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'Badge',
         useCases: [
           _widgetbook.WidgetbookUseCase(
@@ -142,14 +152,14 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Column',
         useCases: [
           _widgetbook.WidgetbookUseCase(
+            name: 'Column SelectAction',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildSamplesExample14,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Example 1',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildColumnExample1,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 2',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildColumnExample2,
           ),
           _widgetbook.WidgetbookUseCase(
             name: 'Example 3',
@@ -165,6 +175,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Example 5',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildColumnExample5,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Select Action',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildColumnExample2,
           ),
         ],
       ),
@@ -185,11 +200,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Example 10',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildColumnSetExample10,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 2',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildColumnSetExample2,
           ),
           _widgetbook.WidgetbookUseCase(
             name: 'Example 3',
@@ -226,6 +236,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildColumnSetExample9,
           ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Select Action',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildColumnSetExample2,
+          ),
         ],
       ),
       _widgetbook.WidgetbookComponent(
@@ -235,11 +250,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Example 1',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildContainerExample1,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 2',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildContainerExample2,
           ),
           _widgetbook.WidgetbookUseCase(
             name: 'Example 3',
@@ -256,6 +266,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildContainerExample5,
           ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Select Action',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildContainerExample2,
+          ),
         ],
       ),
       _widgetbook.WidgetbookComponent(
@@ -271,11 +286,6 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookComponent(
         name: 'Image',
         useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 1',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildImageExample1,
-          ),
           _widgetbook.WidgetbookUseCase(
             name: 'Example 2',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
@@ -300,6 +310,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Height Set in Pixels',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildImageHeightSetInPixels,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Select Action',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildImageExample1,
           ),
           _widgetbook.WidgetbookUseCase(
             name: 'Width Set in Pixels',
@@ -540,11 +555,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Example 13',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildSamplesExample13,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 14',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildSamplesExample14,
           ),
           _widgetbook.WidgetbookUseCase(
             name: 'Example 15 (Video)',

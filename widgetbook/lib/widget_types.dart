@@ -166,6 +166,13 @@ class Actions extends StatelessWidget {
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
+/// Stub for 'Actions' route (v1.6)
+class AdaptiveCardElement extends StatelessWidget {
+  const AdaptiveCardElement({super.key});
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
+
 /// Stub for 'CodeBlock' route (v1.6)
 class CodeBlock extends StatelessWidget {
   const CodeBlock({super.key});

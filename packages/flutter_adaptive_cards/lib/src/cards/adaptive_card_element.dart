@@ -252,7 +252,10 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       overrides: [
         adaptiveCardElementStateProvider.overrideWithValue(this),
       ],
-      child: Form(key: formKey, child: result),
+      child: AdaptiveTappable(
+        adaptiveMap: adaptiveMap,
+        child: Form(key: formKey, child: result),
+      ),
     );
   }
 

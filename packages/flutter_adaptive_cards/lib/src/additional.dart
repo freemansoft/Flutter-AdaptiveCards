@@ -54,6 +54,8 @@ class SeparatorElement extends StatelessWidget {
   }
 }
 
+/// Implements selectAction for any element
+/// Used in Image, Container, Column, columnSet, adaptiveCard, etc.
 class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTappable({
     required this.child,
@@ -98,14 +100,16 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => action?.tap(
-        context: context,
-        rawAdaptiveCardState: rawRootCardWidgetState,
-        adaptiveMap: adaptiveMap,
-      ),
-      child: widget.child,
-    );
+    return action == null
+        ? widget.child
+        : InkWell(
+            onTap: () => action?.tap(
+              context: context,
+              rawAdaptiveCardState: rawRootCardWidgetState,
+              adaptiveMap: adaptiveMap['selectAction'],
+            ),
+            child: widget.child,
+          );
   }
 }
 
