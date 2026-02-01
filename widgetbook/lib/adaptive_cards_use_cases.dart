@@ -673,6 +673,27 @@ Widget buildActionShowCardExample1(BuildContext context) {
 }
 
 // =============================================================================
+// ACTION TOGGLE  Component
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Action.ToggleVisibility SelectAction',
+  type: widget_types.Actions,
+  path: '[Components]',
+)
+Widget buildActionToggleVisibilityExample1(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/action_toggle/example1.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Action.ToggleVisibility Actions',
+  type: widget_types.Actions,
+  path: '[Components]',
+)
+Widget buildActionToggleVisibilityExample2(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/action_toggle/example2.json');
+}
+// =============================================================================
 // INPUT TEXT Component
 // =============================================================================
 

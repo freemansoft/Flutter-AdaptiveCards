@@ -13,6 +13,11 @@
       "type": "Action.OpenUrl",
       "title": "Action.OpenUrl",
       "url": "http://adaptivecards.io"
+    },{
+      "type": "Action.OpenUrl",
+      "title": "Action.OpenUrl with tooltip",
+      "tooltip": "This is an Action.OpenUrl button with a tooltip",
+      "url": "http://adaptivecards.io"
     }
   ]
 }

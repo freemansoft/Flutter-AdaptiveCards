@@ -11,7 +11,8 @@
   "actions": [
     {
       "type": "Action.ShowCard",
-      "title": "Action.ShowCard",
+      "title": "Action.ShowCard with tooltip",
+      "tooltip": "This is an Action.ShowCard button with a tooltip",
       "card": {
         "type": "AdaptiveCard",
         "body": [

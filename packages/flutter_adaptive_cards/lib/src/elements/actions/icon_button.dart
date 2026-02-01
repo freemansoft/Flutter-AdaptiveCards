@@ -53,33 +53,34 @@ class IconButtonActionState extends State<IconButtonAction>
       ),
     );
 
-    Widget result = Visibility(
-      visible: isVisible,
-      child: SeparatorElement(
-        adaptiveMap: adaptiveMap,
-        child: ElevatedButton(
-          onPressed: () => widget.onTapped(context),
-
-          style: buttonStyle,
-          child: Text(title),
-        ),
-      ),
-    );
-
-    if (iconUrl != null) {
-      result = Visibility(
-        visible: isVisible,
-        child: SeparatorElement(
-          adaptiveMap: adaptiveMap,
-          child: ElevatedButton.icon(
+    final theButton = (iconUrl != null)
+        ? ElevatedButton.icon(
             onPressed: () => widget.onTapped(context),
             style: buttonStyle,
             icon: AdaptiveImageUtils.getImage(iconUrl!, height: 36),
             label: Text(title),
-          ),
-        ),
-      );
-    }
+          )
+        : ElevatedButton(
+            onPressed: () => widget.onTapped(context),
+            style: buttonStyle,
+            child: Text(title),
+          );
+
+    final wrappedButton = (tooltip != null)
+        ? Tooltip(
+            message: tooltip!,
+            child: theButton,
+          )
+        : theButton;
+
+    final result = Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        child: wrappedButton,
+      ),
+    );
+
     return result;
   }
 }

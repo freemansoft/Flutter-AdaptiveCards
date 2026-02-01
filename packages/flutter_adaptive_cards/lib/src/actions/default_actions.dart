@@ -166,8 +166,41 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
   }
 }
 
-class DefaultOpenUrlDialog extends DefaultOpenUrlAction {
-  const DefaultOpenUrlDialog();
+/// idential to DefaultOpenUrlAction for now
+class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
+  const DefaultOpenUrlDialogAction();
+
+  @override
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+    required Map<String, dynamic> adaptiveMap,
+    String? altUrl,
+  }) {
+    final String? urlFromMap = adaptiveMap['url'] as String?;
+    final String? urlToOpen = altUrl ?? urlFromMap;
+    if (urlToOpen != null) {
+      final foo = InheritedAdaptiveCardHandlers.of(context);
+      if (foo != null) {
+        foo.onOpenUrl(urlToOpen);
+      } else {
+        unawaited(launchUrl(Uri.parse(urlToOpen)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              format(
+                'No custom handler found for onOpenUrl: \n {} {} {}',
+                urlFromMap ?? '',
+                altUrl ?? '',
+                urlToOpen,
+              ),
+            ),
+          ),
+        );
+        // probably should log that there is no valid url
+      }
+    }
+  }
 }
 
 class DefaultResetInputsAction extends GenericActionResetInputs {
