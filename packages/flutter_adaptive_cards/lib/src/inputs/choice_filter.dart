@@ -54,7 +54,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
           child: Builder(
             builder: (context) {
               final String keyValue = (widget.key is ValueKey<String>)
-                  ? (widget.key as ValueKey<String>).value
+                  ? (widget.key! as ValueKey<String>).value
                   : 'choiceFilter';
               return TextFormField(
                 key: ValueKey(keyValue),
