@@ -4,7 +4,9 @@ import '../utils/test_utils.dart';
 
 void main() {
   testWidgets('Handle string backgroundImage', (WidgetTester tester) async {
-    await tester.pumpWidget(getWidget(path: 'background_image_string.json'));
+    await tester.pumpWidget(
+      getTestWidgetFromPath(path: 'background_image_string.json'),
+    );
     await tester.pumpAndSettle();
 
     final containerFinder = find.byWidgetPredicate(
@@ -30,7 +32,9 @@ void main() {
   });
 
   testWidgets('Handle object backgroundImage', (WidgetTester tester) async {
-    await tester.pumpWidget(getWidget(path: 'background_image_object.json'));
+    await tester.pumpWidget(
+      getTestWidgetFromPath(path: 'background_image_object.json'),
+    );
     await tester.pumpAndSettle();
 
     final containerFinder = find.byWidgetPredicate(

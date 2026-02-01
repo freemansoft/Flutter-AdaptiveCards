@@ -6,7 +6,7 @@ import 'utils/test_utils.dart';
 
 void main() {
   testWidgets('Activity Update test', (tester) async {
-    final Widget widget = getWidget(path: 'example1.json');
+    final Widget widget = getTestWidgetFromPath(path: 'example1.json');
 
     await tester.pumpWidget(widget);
 

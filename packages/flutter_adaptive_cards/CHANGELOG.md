@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added calcuated and specified ids
 - Added keys to the input fields in the input adaptive cards and atual input widgets for testing
 - Migrated the hostconfig from InheritedReferenceResolver to riverpod provider_scope
+- Selection applied via AdaptiveTappable to AdaptiveCard Element and Containers
 
 ## [0.2.0](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
 

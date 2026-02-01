@@ -8,7 +8,7 @@ import 'utils/test_utils.dart';
 // Helper to load widget from a subdirectory of samples
 // Not needed here
 Widget getSampleForGoldenTest(Key key, String sampleName) {
-  return getWidget(path: '$sampleName.json', key: key);
+  return getTestWidgetFromPath(path: '$sampleName.json', key: key);
 }
 
 void configureTestView() {

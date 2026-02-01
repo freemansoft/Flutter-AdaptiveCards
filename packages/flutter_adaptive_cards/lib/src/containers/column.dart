@@ -42,8 +42,6 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
   late CrossAxisAlignment horizontalAlignment;
   late Alignment? containerHorizontalAlignment;
 
-  GenericAction? action;
-
   @override
   void initState() {
     super.initState();
@@ -80,12 +78,6 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    if (adaptiveMap.containsKey('selectAction')) {
-      action = actionTypeRegistry.getActionForType(
-        map: adaptiveMap['selectAction'],
-      );
-    }
 
     items = adaptiveMap['items'] != null
         ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
@@ -138,12 +130,8 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: InkWell(
-          onTap: () => action?.tap(
-            context: context,
-            rawAdaptiveCardState: rawRootCardWidgetState,
-            adaptiveMap: adaptiveMap,
-          ),
+        child: AdaptiveTappable(
+          adaptiveMap: adaptiveMap,
           child: Container(
             // we need this container to be the same size as the row element
             // so that all the columns are the same height

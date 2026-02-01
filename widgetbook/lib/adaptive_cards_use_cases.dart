@@ -132,10 +132,11 @@ Widget buildSamplesExample13(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example13.json');
 }
 
+// this sample should probably be moved to Column use cases and directory
 @widgetbook.UseCase(
-  name: 'Example 14',
-  type: widget_types.Examples,
-  path: '[Other]',
+  name: 'Column SelectAction',
+  type: widget_types.Column,
+  path: '[Components]',
 )
 Widget buildSamplesExample14(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example14.json');
@@ -149,6 +150,21 @@ Widget buildSamplesExample14(BuildContext context) {
 )
 Widget buildSamplesExample15(BuildContext context) {
   return const GenericPage(url: 'lib/samples/examples/example15.json');
+}
+
+// =============================================================================
+// Adaptive Card Element Component
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Select Action',
+  type: widget_types.AdaptiveCardElement,
+  path: '[Components]',
+)
+Widget buildAdaptiveCardSelectAction(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/adaptive_card_element/select_action.json',
+  );
 }
 
 // =============================================================================
@@ -262,12 +278,12 @@ Widget buildTextBlockExample11(BuildContext context) {
 // =============================================================================
 
 @widgetbook.UseCase(
-  name: 'Example 1',
+  name: 'Select Action',
   type: widget_types.Image,
   path: '[Components]',
 )
 Widget buildImageExample1(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/image/example1.json');
+  return const GenericPage(url: 'lib/samples/image/select_action.json');
 }
 
 @widgetbook.UseCase(
@@ -349,12 +365,12 @@ Widget buildContainerExample1(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Example 2',
+  name: 'Select Action',
   type: widget_types.Container,
   path: '[Components]',
 )
 Widget buildContainerExample2(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/container/example2.json');
+  return const GenericPage(url: 'lib/samples/container/select_action.json');
 }
 
 @widgetbook.UseCase(
@@ -394,12 +410,12 @@ Widget buildColumnSetExample1(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Example 2',
+  name: 'Select Action',
   type: widget_types.ColumnSet,
   path: '[Components]',
 )
 Widget buildColumnSetExample2(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/column_set/example2.json');
+  return const GenericPage(url: 'lib/samples/column_set/select_action.json');
 }
 
 @widgetbook.UseCase(
@@ -499,12 +515,12 @@ Widget buildColumnExample1(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Example 2',
+  name: 'Select Action',
   type: widget_types.Column,
   path: '[Components]',
 )
 Widget buildColumnExample2(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/column/example2.json');
+  return const GenericPage(url: 'lib/samples/column/select_action.json');
 }
 
 @widgetbook.UseCase(
