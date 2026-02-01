@@ -1,13 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 void main() {
-  setUpAll(() {
-    HttpOverrides.global = MyTestHttpOverrides();
-  });
-
   testWidgets('Handle string backgroundImage', (WidgetTester tester) async {
     await tester.pumpWidget(getWidget(path: 'background_image_string.json'));
     await tester.pumpAndSettle();

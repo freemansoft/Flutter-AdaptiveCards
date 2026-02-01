@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inputs/date.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,11 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'utils/test_utils.dart';
 
 void main() {
-  // Deliver actual images
-  setUp(() {
-    HttpOverrides.global = MyTestHttpOverrides();
-  });
-
   testWidgets('Activity Update test', (tester) async {
     final Widget widget = getWidget(path: 'example1.json');
 

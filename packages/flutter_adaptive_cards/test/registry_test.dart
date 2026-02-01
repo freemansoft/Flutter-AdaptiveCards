@@ -15,8 +15,6 @@ class MockAdaptiveCardState extends Mock implements RawAdaptiveCardState {
 }
 
 void main() {
-  setUp(() {});
-
   testWidgets('Basic types return', (tester) async {
     const CardTypeRegistry cardRegistry = CardTypeRegistry();
     final Widget adaptiveElement = cardRegistry.getElement(

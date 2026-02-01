@@ -9,10 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 void main() {
-  setUp(() {
-    HttpOverrides.global = MyTestHttpOverrides();
-  });
-
   testWidgets('TimeInput parseTime handles valid and invalid values', (
     WidgetTester tester,
   ) async {

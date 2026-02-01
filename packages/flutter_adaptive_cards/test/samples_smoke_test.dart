@@ -8,11 +8,6 @@ import 'utils/test_utils.dart';
 
 /// These test just validate the samples render without errors
 void main() {
-  // Deliver actual images
-  setUp(() {
-    HttpOverrides.global = MyTestHttpOverrides();
-  });
-
   // The Video player doesn't work on windows or linux
   // https://pub.dev/packages/video_player
   // PLatform doesn't have Platform.isWeb
