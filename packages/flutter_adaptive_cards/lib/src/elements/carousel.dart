@@ -189,7 +189,7 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     final Color? backgroundColor = ProviderScope.containerOf(context)
         .read(styleReferenceResolverProvider)
         .resolveContainerBackgroundColor(
-          style: adaptiveMap['style'],
+          style: style,
         );
 
     BoxDecoration? decoration;

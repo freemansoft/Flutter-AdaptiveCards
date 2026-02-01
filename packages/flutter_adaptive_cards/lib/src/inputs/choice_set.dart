@@ -333,18 +333,18 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   /// JSON Schema definition "ChoiceInputStyle"
   bool loadCompact() {
-    if (!adaptiveMap.containsKey('style')) return true;
-    final String style = adaptiveMap['style'].toString().toLowerCase();
-    if (style == 'compact' || style == 'filtered') return true;
-    if (style == 'expanded') return false;
+    if (style == null) return true;
+    final String ourStyle = style ?? ''.toLowerCase();
+    if (ourStyle == 'compact' || ourStyle == 'filtered') return true;
+    if (ourStyle == 'expanded') return false;
     throw StateError(
       'The style of the ChoiceSet needs to be either compact or expanded',
     );
   }
 
   bool loadFiltered() {
-    if (!adaptiveMap.containsKey('style')) return false;
-    if (adaptiveMap['style'].toString().toLowerCase() == 'filtered') {
+    if (style == null) return false;
+    if (style?.toLowerCase() == 'filtered') {
       return true;
     }
 

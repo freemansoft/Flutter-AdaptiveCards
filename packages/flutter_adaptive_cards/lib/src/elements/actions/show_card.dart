@@ -96,11 +96,11 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
           style: ElevatedButton.styleFrom(
             backgroundColor: resolver.resolveButtonBackgroundColor(
               context: context,
-              style: adaptiveMap['style'],
+              style: style,
             ),
             foregroundColor: resolver.resolveButtonForegroundColor(
               context: context,
-              style: adaptiveMap['style'],
+              style: style,
             ),
             // minimumSize: const Size.fromHeight(50),
           ),

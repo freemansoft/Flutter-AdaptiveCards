@@ -25,7 +25,7 @@ void main() {
           body: RawAdaptiveCard.fromMap(
             map: map,
             initData: const {'pickTime': '12:30'},
-            hostConfig: HostConfig(),
+            hostConfigs: HostConfigs(),
           ),
         ),
       );

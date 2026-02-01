@@ -44,7 +44,10 @@ class NetworkPage extends StatelessWidget {
             );
           },
 
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(
+            light: HostConfig(),
+            dark: HostConfig(),
+          ),
           showDebugJson: true,
         ),
       ),

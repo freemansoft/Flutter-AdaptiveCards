@@ -31,7 +31,7 @@ void main() {
     final Widget widget = MaterialApp(
       home: RawAdaptiveCard.fromMap(
         map: cardMap,
-        hostConfig: HostConfig(),
+        hostConfigs: HostConfigs(),
       ),
     );
 
@@ -103,7 +103,7 @@ void main() {
     final Widget widget = MaterialApp(
       home: RawAdaptiveCard.fromMap(
         map: cardMap,
-        hostConfig: HostConfig(),
+        hostConfigs: HostConfigs(),
       ),
     );
 
@@ -176,7 +176,7 @@ void main() {
       final Widget widget = MaterialApp(
         home: RawAdaptiveCard.fromMap(
           map: cardMap,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         ),
       );
 
@@ -270,7 +270,7 @@ void main() {
     final Widget widget = MaterialApp(
       home: RawAdaptiveCard.fromMap(
         map: cardMap,
-        hostConfig: HostConfig(),
+        hostConfigs: HostConfigs(),
       ),
     );
 
@@ -283,7 +283,10 @@ void main() {
     expect(find.text('Target Element 3'), findsOneWidget);
 
     // Find and tap the ToggleVisibility action button
-    final toggleButtonFinder = find.widgetWithText(ElevatedButton, 'Toggle Elements');
+    final toggleButtonFinder = find.widgetWithText(
+      ElevatedButton,
+      'Toggle Elements',
+    );
     expect(toggleButtonFinder, findsOneWidget);
 
     await tester.tap(toggleButtonFinder);
@@ -342,7 +345,7 @@ void main() {
       final Widget widget = MaterialApp(
         home: RawAdaptiveCard.fromMap(
           map: cardMap,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         ),
       );
 

@@ -31,38 +31,40 @@ import 'package:format/format.dart';
 class ReferenceResolver {
   ReferenceResolver({
     this.currentContainerStyle,
-    required this.hostConfig,
+    required this.hostConfigs,
   });
 
   ReferenceResolver._({
     this.currentContainerStyle,
-    required this.hostConfig,
+    required this.hostConfigs,
   });
 
   /// Locally used for containers
   final String? currentContainerStyle;
+  final HostConfigs hostConfigs;
 
-  final HostConfig hostConfig;
-
-  HostConfig getHostConfig() => hostConfig;
-  ImageSetConfig? getImageSetConfig() => hostConfig.imageSet;
-  ActionsConfig? getActionsConfig() => hostConfig.actions;
-  AdaptiveCardConfig? getAdaptiveCardConfig() => hostConfig.adaptiveCard;
+  HostConfigs getHostConfigs() => hostConfigs;
+  ImageSetConfig? getImageSetConfig() => hostConfigs.current.imageSet;
+  ActionsConfig? getActionsConfig() => hostConfigs.current.actions;
+  AdaptiveCardConfig? getAdaptiveCardConfig() =>
+      hostConfigs.current.adaptiveCard;
   ContainerStylesConfig? getContainerStylesConfig() =>
-      hostConfig.containerStyles;
-  FactSetConfig? getFactSetConfig() => hostConfig.factSet;
-  FontSizesConfig? getFontSizesConfig() => hostConfig.fontSizes;
-  FontWeightsConfig? getFontWeightsConfig() => hostConfig.fontWeights;
-  ImageSizesConfig? getImageSizesConfig() => hostConfig.imageSizes;
-  InputsConfig? getInputsConfig() => hostConfig.inputs;
-  MediaConfig? getMediaConfig() => hostConfig.media;
-  SeparatorConfig? getSeparatorConfig() => hostConfig.separator;
-  SpacingsConfig? getSpacingsConfig() => hostConfig.spacing;
-  TextBlockConfig? getTextBlockConfig() => hostConfig.textBlock;
-  TextStylesConfig? getTextStylesConfig() => hostConfig.textStyles;
-  BadgeStylesConfig? getBadgeStylesConfig() => hostConfig.badgeStyles;
-  ProgressSizesConfig? getProgressSizesConfig() => hostConfig.progressSizes;
-  ProgressColorsConfig? getProgressColorConfig() => hostConfig.progressColors;
+      hostConfigs.current.containerStyles;
+  FactSetConfig? getFactSetConfig() => hostConfigs.current.factSet;
+  FontSizesConfig? getFontSizesConfig() => hostConfigs.current.fontSizes;
+  FontWeightsConfig? getFontWeightsConfig() => hostConfigs.current.fontWeights;
+  ImageSizesConfig? getImageSizesConfig() => hostConfigs.current.imageSizes;
+  InputsConfig? getInputsConfig() => hostConfigs.current.inputs;
+  MediaConfig? getMediaConfig() => hostConfigs.current.media;
+  SeparatorConfig? getSeparatorConfig() => hostConfigs.current.separator;
+  SpacingsConfig? getSpacingsConfig() => hostConfigs.current.spacing;
+  TextBlockConfig? getTextBlockConfig() => hostConfigs.current.textBlock;
+  TextStylesConfig? getTextStylesConfig() => hostConfigs.current.textStyles;
+  BadgeStylesConfig? getBadgeStylesConfig() => hostConfigs.current.badgeStyles;
+  ProgressSizesConfig? getProgressSizesConfig() =>
+      hostConfigs.current.progressSizes;
+  ProgressColorsConfig? getProgressColorConfig() =>
+      hostConfigs.current.progressColors;
 
   /// JSON Schema definition "Colors"
   ///
@@ -145,35 +147,39 @@ class ReferenceResolver {
 
   Color? resolveContainerBackgroundColor({
     required String? style,
+    String? defaultStyle = 'default',
   }) {
     // style if passed in and not default
     // then currentcontainer style if set
     // else finally default
-    final String myStyle = (style != null && style != 'default')
+    final String? myStyle = (style != null && style != 'default')
         ? style
-        : (currentContainerStyle != null)
+              .toLowerCase() // named style
+        : (currentContainerStyle != null) // no named style so fall back
         ? currentContainerStyle!
-        : 'default';
+              .toLowerCase() // style null or default -> look up
+        : defaultStyle; // style null
 
     Color? backgroundColor;
 
-    switch (myStyle.toLowerCase()) {
+    switch (myStyle) {
       case 'emphasis':
         backgroundColor =
             getContainerStylesConfig()?.emphasis.backgroundColor ??
             FallbackConfigs.containerStylesConfig.emphasis.backgroundColor;
       case 'default':
-      default:
         backgroundColor =
             getContainerStylesConfig()?.defaultStyle.backgroundColor ??
             FallbackConfigs.containerStylesConfig.defaultStyle.backgroundColor;
+      default:
+        backgroundColor = null;
     }
 
     assert(() {
       developer.log(
         format(
           'resolved background style:{} to color:{}',
-          myStyle,
+          myStyle ?? '',
           backgroundColor,
         ),
         name: runtimeType.toString(),
@@ -300,7 +306,7 @@ class ReferenceResolver {
     final String myStyle = style ?? 'default';
     return ReferenceResolver._(
       currentContainerStyle: myStyle,
-      hostConfig: hostConfig,
+      hostConfigs: hostConfigs,
     );
   }
 

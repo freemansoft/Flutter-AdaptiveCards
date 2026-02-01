@@ -51,18 +51,15 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final backgroundImageUrl = resolveBackgroundImage(
-      adaptiveMap['backgroundImage'],
-    )?.url;
+
     backgroundColor =
         ProviderScope.containerOf(
               context,
             )
             .read(styleReferenceResolverProvider)
-            .resolveContainerBackgroundColorIfNoBackgroundImage(
-              context: context,
-              style: adaptiveMap['style']?.toString(),
-              backgroundImageUrl: backgroundImageUrl,
+            .resolveContainerBackgroundColor(
+              style: style,
+              defaultStyle: null,
             );
     horizontalAlignment = ProviderScope.containerOf(context)
         .read(styleReferenceResolverProvider)

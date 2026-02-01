@@ -114,16 +114,15 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
       ).read(styleReferenceResolverProvider).getSpacingsConfig(),
       adaptiveMap['spacing'],
     );
-    final backgroundImageUrl = resolveBackgroundImage(
-      adaptiveMap['backgroundImage'],
-    )?.url;
-    final backgroundColor = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveContainerBackgroundColorIfNoBackgroundImage(
-          context: context,
-          style: adaptiveMap['style']?.toString(),
-          backgroundImageUrl: backgroundImageUrl,
-        );
+
+    // no background if we have an iamge - hmm but should we anyway?
+    final backgroundColor = backgroundImageSpecified(adaptiveMap)
+        ? null
+        : ProviderScope.containerOf(context)
+              .read(styleReferenceResolverProvider)
+              .resolveContainerBackgroundColor(
+                style: style,
+              );
 
     Widget child = Visibility(
       visible: isVisible,

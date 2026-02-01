@@ -28,7 +28,7 @@ void main() {
       home: Scaffold(
         body: RawAdaptiveCard.fromMap(
           map: map,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
           onChange: (id, value, state) {
             if (id == 'myChoiceSet') {
               selectedValue = value as String?;
@@ -97,7 +97,7 @@ void main() {
         home: Scaffold(
           body: RawAdaptiveCard.fromMap(
             map: map,
-            hostConfig: HostConfig(),
+            hostConfigs: HostConfigs(),
             onChange: (id, value, state) {
               if (id == 'myChoiceSet') selectedValue = value as String?;
             },
@@ -151,7 +151,7 @@ void main() {
       home: Scaffold(
         body: RawAdaptiveCard.fromMap(
           map: map,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
           onChange: (id, value, state) {
             if (id == 'myChoiceSet') selectedValue = value as String?;
           },
@@ -196,7 +196,7 @@ void main() {
       home: Scaffold(
         body: RawAdaptiveCard.fromMap(
           map: map,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
           onChange: (id, value, state) {
             if (id == 'myChoiceSet') selectedValue = value as String?;
           },

@@ -116,7 +116,7 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
     Widget getPlaceholder() {
       return postUrl != null
-          ? AdaptiveImageUtils.getImage(postUrl!)
+          ? AdaptiveImageUtils.getImage(postUrl!, semanticsLabel: altText)
           : Container();
     }
 

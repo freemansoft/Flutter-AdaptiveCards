@@ -12,9 +12,28 @@ import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart
 import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/text_style_config.dart';
 
+class HostConfigs {
+  HostConfigs({
+    this.light = const HostConfig(),
+    this.dark = const HostConfig(),
+  }) {
+    // should look at the teme
+    current = light;
+  }
+
+  /// can set this to light or dark o something else
+  late HostConfig current;
+
+  /// for the light theme
+  final HostConfig light;
+
+  /// for the dark theme
+  final HostConfig dark;
+}
+
 /// Top level configuration for Adaptive Cards
 class HostConfig {
-  HostConfig({
+  const HostConfig({
     this.imageBaseUrl,
     this.fontFamily,
     this.supportsInteractivity,

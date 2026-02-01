@@ -29,7 +29,7 @@ void main() {
       home: Scaffold(
         body: RawAdaptiveCard.fromMap(
           map: map,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         ),
       ),
     );

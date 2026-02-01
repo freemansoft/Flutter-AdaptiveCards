@@ -34,11 +34,11 @@ class RawAdaptiveCard extends StatefulWidget {
     this.onChange,
     this.listView = false,
     this.showDebugJson = true,
-    required this.hostConfig,
+    required this.hostConfigs,
   });
 
   final Map<String, dynamic> map;
-  final HostConfig hostConfig;
+  final HostConfigs hostConfigs;
   final CardTypeRegistry cardTypeRegistry;
   final ActionTypeRegistry actionTypeRegistry;
   final Map? initData;
@@ -64,7 +64,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void initState() {
     super.initState();
 
-    _resolver = ReferenceResolver(hostConfig: widget.hostConfig);
+    _resolver = ReferenceResolver(
+      hostConfigs: widget.hostConfigs,
+    );
 
     _adaptiveElement = widget.cardTypeRegistry.getElement(
       map: widget.map,
@@ -79,7 +81,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
   @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
-    _resolver = ReferenceResolver(hostConfig: widget.hostConfig);
+    _resolver = ReferenceResolver(
+      hostConfigs: widget.hostConfigs,
+    );
     _adaptiveElement = widget.cardTypeRegistry.getElement(
       map: widget.map,
     );

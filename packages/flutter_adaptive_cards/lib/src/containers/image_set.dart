@@ -59,7 +59,7 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
     backgroundColor = ProviderScope.containerOf(context)
         .read(styleReferenceResolverProvider)
         .resolveContainerBackgroundColor(
-          style: adaptiveMap['style']?.toString(),
+          style: style,
         );
   }
 

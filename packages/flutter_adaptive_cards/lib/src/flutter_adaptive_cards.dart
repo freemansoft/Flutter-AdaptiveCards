@@ -86,7 +86,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
-    required this.hostConfig,
+    required this.hostConfigs,
   });
 
   AdaptiveCard.network({
@@ -100,7 +100,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
-    required this.hostConfig,
+    required this.hostConfigs,
   }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(
          url: url,
        );
@@ -116,7 +116,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
-    required this.hostConfig,
+    required this.hostConfigs,
   }) : adaptiveCardContentProvider = AssetAdaptiveCardContentProvider(
          path: assetPath,
        );
@@ -132,7 +132,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
-    required this.hostConfig,
+    required this.hostConfigs,
   }) : adaptiveCardContentProvider = MemoryAdaptiveCardContentProvider(
          content: content,
        );
@@ -148,7 +148,7 @@ class AdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
-    required this.hostConfig,
+    required this.hostConfigs,
   }) : adaptiveCardContentProvider = JsonAdaptiveCardContentProvider(
          jsonString: jsonString,
        );
@@ -177,7 +177,7 @@ class AdaptiveCard extends StatefulWidget {
   final bool listView;
 
   /// HostConfig for this card stack - describes string to color, etc. mappings
-  final HostConfig hostConfig;
+  final HostConfigs hostConfigs;
 
   @override
   AdaptiveCardState createState() => AdaptiveCardState();
@@ -269,7 +269,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
       onChange: onChange,
       listView: widget.listView,
       showDebugJson: widget.showDebugJson,
-      hostConfig: widget.hostConfig,
+      hostConfigs: widget.hostConfigs,
     );
   }
 }

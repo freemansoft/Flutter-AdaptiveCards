@@ -26,7 +26,7 @@ void main() {
       home: Scaffold(
         body: RawAdaptiveCard.fromMap(
           map: map,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         ),
       ),
     );
@@ -58,7 +58,7 @@ void main() {
       home: Scaffold(
         body: RawAdaptiveCard.fromMap(
           map: map,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         ),
       ),
     );
@@ -98,7 +98,7 @@ void main() {
         body: RawAdaptiveCard.fromMap(
           map: map,
           initData: const {'initNumber': '15'},
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         ),
       ),
     );

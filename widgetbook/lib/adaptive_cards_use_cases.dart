@@ -428,7 +428,7 @@ Widget buildColumnSetExample3(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Example 4',
+  name: 'Background Image',
   type: widget_types.ColumnSet,
   path: '[Components]',
 )

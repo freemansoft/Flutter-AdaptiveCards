@@ -70,6 +70,7 @@ class AdaptiveImageState extends State<AdaptiveImage>
         fit: fit,
         height: height,
         width: width,
+        semanticsLabel: adaptiveMap['altText']?.toString(),
       ),
     );
 
@@ -105,7 +106,7 @@ class AdaptiveImageState extends State<AdaptiveImage>
   }
 
   bool loadIsPerson() {
-    if (adaptiveMap['style'] == null || adaptiveMap['style'] == 'default') {
+    if (style == null || style == 'default') {
       return false;
     }
     return true;
