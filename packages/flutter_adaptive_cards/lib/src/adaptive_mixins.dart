@@ -40,6 +40,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   AdaptiveCardElementState get adaptiveCardElementState =>
       ProviderScope.containerOf(context).read(adaptiveCardElementStateProvider);
 
+  String? get style => (adaptiveMap['style'] as String?)?.toLowerCase();
+
   Map<String, dynamic> get adaptiveMap => widget.adaptiveMap;
 
   @override
@@ -109,10 +111,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     ImageRepeat repeat = ImageRepeat.noRepeat,
     BoxFit fit = BoxFit.cover,
   }) {
-    return AdaptiveImageUtils.getImage(
-      url,
-      fit: fit,
-    );
+    return AdaptiveImageUtils.getImage(url, fit: fit, semanticsLabel: null);
   }
 
   /// Reliable image provider loader that handles base64 and network images
@@ -175,6 +174,21 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
       fit: props.fit,
     );
   }
+}
+
+bool backgroundImageSpecified(Map element) {
+  final backgroundImage = element['backgroundImage'];
+  if (backgroundImage == null) return false;
+
+  if (backgroundImage is String) {
+    return true;
+  }
+
+  if (backgroundImage is Map && backgroundImage['url'] != null) {
+    return true;
+  }
+
+  return false;
 }
 
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>

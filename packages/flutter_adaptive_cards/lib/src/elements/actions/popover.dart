@@ -64,7 +64,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
               child: AdaptivePopoverContainer(
                 child: RawAdaptiveCard.fromMap(
                   map: card!,
-                  hostConfig: popupParentResolver.getHostConfig(),
+                  hostConfigs: popupParentResolver.getHostConfigs(),
                 ),
               ),
             ),
@@ -89,11 +89,11 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
           style: ElevatedButton.styleFrom(
             backgroundColor: resolver.resolveButtonBackgroundColor(
               context: context,
-              style: adaptiveMap['style'],
+              style: style,
             ),
             foregroundColor: resolver.resolveButtonForegroundColor(
               context: context,
-              style: adaptiveMap['style'],
+              style: style,
             ),
             // minimumSize: const Size.fromHeight(50),
           ),

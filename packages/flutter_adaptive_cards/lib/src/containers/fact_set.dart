@@ -48,7 +48,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     backgroundColor = ProviderScope.containerOf(context)
         .read(styleReferenceResolverProvider)
         .resolveContainerBackgroundColor(
-          style: adaptiveMap['style']?.toString(),
+          style: style,
         );
   }
 

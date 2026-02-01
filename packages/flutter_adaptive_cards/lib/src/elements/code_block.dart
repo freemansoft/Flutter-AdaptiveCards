@@ -55,7 +55,7 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
     // To match height, we use the same Text Style.
 
     const textStyle = TextStyle(
-      fontFamily: 'Courier',
+      fontFamily: 'Roboto',
       fontFeatures: [FontFeature.tabularFigures()],
       fontSize: 14,
       height: 1.2, // Fixed height to ensure alignment

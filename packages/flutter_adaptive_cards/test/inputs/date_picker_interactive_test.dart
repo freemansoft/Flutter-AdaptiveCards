@@ -23,7 +23,7 @@ void main() {
         body: RawAdaptiveCard.fromMap(
           map: map,
           initData: const {'pickDateInteractive': '2025-02-02'},
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         ),
       ),
     );

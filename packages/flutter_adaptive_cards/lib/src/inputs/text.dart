@@ -38,7 +38,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   late bool isRequired;
   late bool isMultiline;
   late int maxLength;
-  TextInputType? style;
+  TextInputType? inputStyle;
 
   @override
   void didChangeDependencies() {
@@ -47,7 +47,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
     isRequired = adaptiveMap['isRequired'] as bool? ?? false;
     isMultiline = adaptiveMap['isMultiline'] as bool? ?? false;
     maxLength = adaptiveMap['maxLength'] as int? ?? 20;
-    style = resolveTextInputType(adaptiveMap['style']);
+    inputStyle = resolveTextInputType(style);
     controller.text = value;
     stateHasError = false;
   }
@@ -72,7 +72,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
                 controller: controller,
                 // maxLength: maxLength,
                 inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
-                keyboardType: style,
+                keyboardType: inputStyle,
                 maxLines: isMultiline ? null : 1,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(

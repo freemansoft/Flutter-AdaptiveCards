@@ -55,7 +55,10 @@ class GenericPage extends StatelessWidget {
             );
           },
 
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(
+            light: HostConfig(),
+            dark: HostConfig(),
+          ),
           showDebugJson: true,
         ),
       ),

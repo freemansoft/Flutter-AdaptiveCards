@@ -30,7 +30,6 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late String? text;
   late String? iconUrl;
-  late String style;
   late String appearance;
   late String size;
   late String? tooltip;
@@ -41,7 +40,6 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     super.initState();
     text = adaptiveMap['text'] as String?;
     iconUrl = adaptiveMap['iconUrl'] as String?;
-    style = adaptiveMap['style']?.toString().toLowerCase() ?? 'default';
     appearance =
         adaptiveMap['appearance']?.toString().toLowerCase() ?? 'filled';
     size = adaptiveMap['size']?.toString().toLowerCase() ?? 'medium';
@@ -58,14 +56,14 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     final Color backgroundColor =
         resolveBadgeBackgroundColor(
           badgeStyles: resolver.getBadgeStylesConfig(),
-          colorStyle: style,
+          colorStyle: style ?? 'default  ',
           appearance: appearance,
         ) ??
         Colors.grey;
     final Color textColor =
         resolveBadgeForegroundColor(
           badgeStyles: resolver.getBadgeStylesConfig(),
-          colorStyle: style,
+          colorStyle: style ?? 'default  ',
           appearance: appearance,
         ) ??
         Colors.black;
@@ -75,7 +73,12 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
 
     Widget? iconWidget;
     if (iconUrl != null) {
-      iconWidget = AdaptiveImageUtils.getImage(iconUrl!, height: 16, width: 16);
+      iconWidget = AdaptiveImageUtils.getImage(
+        iconUrl!,
+        height: 16,
+        width: 16,
+        semanticsLabel: text,
+      );
     }
 
     final List<Widget> children = [];

@@ -43,11 +43,11 @@ void main() {
       () {
         final cardJson = AdaptiveCard.json(
           jsonString: jsonString,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         );
         final cardMemory = AdaptiveCard.memory(
           content: contentMap,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         );
 
         expect(
@@ -66,11 +66,11 @@ void main() {
       () async {
         final cardJson = AdaptiveCard.json(
           jsonString: jsonString,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         );
         final cardMemory = AdaptiveCard.memory(
           content: contentMap,
-          hostConfig: HostConfig(),
+          hostConfigs: HostConfigs(),
         );
 
         final contentJson = await cardJson.adaptiveCardContentProvider

@@ -45,11 +45,11 @@ class IconButtonActionState extends State<IconButtonAction>
     final buttonStyle = ElevatedButton.styleFrom(
       backgroundColor: resolver.resolveButtonBackgroundColor(
         context: context,
-        style: adaptiveMap['style'],
+        style: style,
       ),
       foregroundColor: resolver.resolveButtonForegroundColor(
         context: context,
-        style: adaptiveMap['style'],
+        style: style,
       ),
     );
 
@@ -57,7 +57,11 @@ class IconButtonActionState extends State<IconButtonAction>
         ? ElevatedButton.icon(
             onPressed: () => widget.onTapped(context),
             style: buttonStyle,
-            icon: AdaptiveImageUtils.getImage(iconUrl!, height: 36),
+            icon: AdaptiveImageUtils.getImage(
+              iconUrl!,
+              height: 36,
+              semanticsLabel: title,
+            ),
             label: Text(title),
           )
         : ElevatedButton(
@@ -68,7 +72,7 @@ class IconButtonActionState extends State<IconButtonAction>
 
     final wrappedButton = (tooltip != null)
         ? Tooltip(
-            message: tooltip!,
+            message: tooltip,
             child: theButton,
           )
         : theButton;

@@ -53,16 +53,16 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
       ).read(styleReferenceResolverProvider).getSpacingsConfig(),
       adaptiveMap['spacing'],
     );
-    final backgroundImageUrl = resolveBackgroundImage(
-      adaptiveMap['backgroundImage'],
-    )?.url;
-    backgroundColor = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveContainerBackgroundColorIfNoBackgroundImage(
-          context: context,
-          style: adaptiveMap['style']?.toString(),
-          backgroundImageUrl: backgroundImageUrl,
-        );
+
+    // no background if we have an iamge - hmm but should we anyway?
+
+    backgroundColor = backgroundImageSpecified(adaptiveMap)
+        ? null
+        : ProviderScope.containerOf(context)
+              .read(styleReferenceResolverProvider)
+              .resolveContainerBackgroundColor(
+                style: style,
+              );
   }
 
   @override

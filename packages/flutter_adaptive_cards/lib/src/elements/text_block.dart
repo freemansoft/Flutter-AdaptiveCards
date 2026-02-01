@@ -94,8 +94,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
         ? getMarkdownText(context: context)
         : getText();
 
-    final isHeading =
-        adaptiveMap['style']?.toString().toLowerCase() == 'heading';
+    final isHeading = style?.toLowerCase() == 'heading';
 
     return Visibility(
       visible: isVisible,

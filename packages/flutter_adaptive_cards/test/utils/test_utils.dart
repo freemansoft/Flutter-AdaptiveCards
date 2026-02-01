@@ -173,7 +173,7 @@ Widget getTestWidgetFromMap({
     // debug "show json" panes don't show in prod
     // so dislable them in the golden images
     showDebugJson: false,
-    hostConfig: HostConfig(),
+    hostConfigs: HostConfigs(),
   );
 
   // this should generate an action handler set instead but the LLM

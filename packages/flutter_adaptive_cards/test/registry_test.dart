@@ -2,17 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/elements/media.dart';
 import 'package:flutter_adaptive_cards/src/elements/text_block.dart';
 import 'package:flutter_adaptive_cards/src/elements/unknown.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/registry.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-
-class MockAdaptiveCardState extends Mock implements RawAdaptiveCardState {
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.debug}) {
-    return '';
-  }
-}
 
 void main() {
   testWidgets('Basic types return', (tester) async {
