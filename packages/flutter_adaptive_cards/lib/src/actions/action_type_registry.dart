@@ -33,7 +33,7 @@ class DefaultActionTypeRegistry extends ActionTypeRegistry {
       case 'Action.OpenUrl':
         return const DefaultOpenUrlAction();
       case 'Action.OpenUrlDialog':
-        return const DefaultOpenUrlDialog();
+        return const DefaultOpenUrlDialogAction();
       case 'Action.Submit':
         return const DefaultSubmitAction();
       case 'Action.Execute':

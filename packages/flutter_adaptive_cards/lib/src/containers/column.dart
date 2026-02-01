@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards/src/actions/generic_action.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';

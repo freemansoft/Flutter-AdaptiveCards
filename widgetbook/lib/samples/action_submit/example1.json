@@ -26,5 +26,13 @@
         "x": 13
       }
     }
+    , {
+      "type": "Action.Submit",
+      "title": "Action.Submit  with tooltip",
+      "tooltip": "This is an Action.Submit button with a tooltip",
+      "data": {
+        "x": 13
+      }
+    }
   ]
 }

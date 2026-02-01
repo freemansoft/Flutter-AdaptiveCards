@@ -180,6 +180,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   String get title => adaptiveMap['title'] as String? ?? '';
+  String? get tooltip => adaptiveMap['tooltip'] as String?;
 }
 
 mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>

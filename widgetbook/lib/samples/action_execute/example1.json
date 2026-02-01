@@ -25,6 +25,13 @@
       "data": {
         "x": 13
       }
+    }, {
+      "type": "Action.Execute",
+      "title": "Action.Execute  with tooltip",
+      "tooltip": "This is an Action.Execute button with a tooltip",
+      "data": {
+        "x": 13
+      }
     }
   ]
 }

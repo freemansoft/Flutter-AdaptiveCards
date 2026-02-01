@@ -86,6 +86,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
+        // TODO(username): add tooltip support to ShowCard
         child: ElevatedButton(
           onPressed: () {
             if (targetCard != null) {

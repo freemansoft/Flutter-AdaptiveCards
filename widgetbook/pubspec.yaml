@@ -81,6 +81,7 @@ flutter:
     - lib/samples/action_open_url/
     - lib/samples/action_submit/
     - lib/samples/action_show_card/
+    - lib/samples/action_toggle/
     - lib/samples/adaptive_card_element/
     - lib/samples/inputs/input_text/
     - lib/samples/inputs/input_number/

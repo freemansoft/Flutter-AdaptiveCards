@@ -72,6 +72,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildActionSubmitExample1,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Action.ToggleVisibility Actions',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionToggleVisibilityExample2,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Action.ToggleVisibility SelectAction',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionToggleVisibilityExample1,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Actions.Popover Actions.Reset',
             builder:
                 _widgetbook_workspace_adaptive_cards_use_cases.buildV16Actions,
