@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -22,13 +20,6 @@ void configureTestView() {
 }
 
 void main() {
-  // Deliver actual images
-  setUp(() async {
-    HttpOverrides.global = MyTestHttpOverrides();
-
-    await loadFontsForTest();
-  });
-
   testWidgets('Golden Sample 1', (tester) async {
     configureTestView();
 

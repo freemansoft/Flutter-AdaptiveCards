@@ -9,10 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 void main() {
-  setUp(() {
-    HttpOverrides.global = MyTestHttpOverrides();
-  });
-
   testWidgets('ChoiceSet multi-select appendInput contains multiple values', (
     WidgetTester tester,
   ) async {

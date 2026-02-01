@@ -8,9 +8,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 void main() {
-  setUp(() {
-    HttpOverrides.global = MyTestHttpOverrides();
-  });
 
   testWidgets('Date picker allows interactive date change', (
     WidgetTester tester,

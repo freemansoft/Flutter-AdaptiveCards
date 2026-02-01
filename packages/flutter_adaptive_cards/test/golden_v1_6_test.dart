@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -23,12 +21,6 @@ void configureTestView() {
 }
 
 void main() {
-  setUp(() async {
-    HttpOverrides.global = MyTestHttpOverrides();
-
-    await loadFontsForTest();
-  });
-
   testWidgets('Golden Badge', (tester) async {
     configureTestView();
     const ValueKey key = ValueKey('paint');

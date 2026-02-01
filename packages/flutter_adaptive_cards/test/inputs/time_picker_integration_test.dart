@@ -9,10 +9,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 void main() {
-  setUp(() {
-    HttpOverrides.global = MyTestHttpOverrides();
-  });
-
   testWidgets(
     'Tapping TimeInput opens picker and confirming OK preserves time',
     (

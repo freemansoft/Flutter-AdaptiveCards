@@ -1,16 +1,12 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards/src/inputs/choice_set.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../utils/test_utils.dart';
 
 void main() {
-  setUp(() {
-    HttpOverrides.global = MyTestHttpOverrides();
-  });
+
 
   testWidgets('ChoiceFilter filters results based on search text', (
     WidgetTester tester,
