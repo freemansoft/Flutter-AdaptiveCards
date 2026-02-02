@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:chewie/chewie.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:format/format.dart';
 import 'package:video_player/video_player.dart';
 
 /// Implements
@@ -53,10 +55,14 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
     // https://pub.dev/packages/video_player
     if (Platform.isWindows || Platform.isLinux) {
-      debugPrint(
-        'this will throw an `init() has not been implemented` exception'
-        ' because the video player is not supported on some platforms',
-      );
+      assert(() {
+        developer.log(
+          'this will throw an `init() has not been implemented` exception'
+          ' because the video player is not supported on some platforms',
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
     }
 
     // We could use mediaConfig.allowInlinePlayback to decide whether to initialize player
@@ -85,9 +91,14 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
     try {
       await videoPlayerController.initialize();
     } catch (e) {
-      debugPrint(
-        'video not supported on this platform: $sourceUrl $e',
-      );
+      assert(() {
+        developer.log(
+          format('video {} not supported on this platform: {}', sourceUrl, e),
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+
       rethrow;
     }
 
