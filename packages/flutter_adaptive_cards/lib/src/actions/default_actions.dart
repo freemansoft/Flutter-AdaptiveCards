@@ -130,6 +130,10 @@ class DefaultExecuteAction extends GenericExecuteAction {
 }
 
 /// Default actions for onTaps for Action.OpenUrl
+///
+/// Default behavior is to open the url in a webview
+/// limited set of protocols are supported
+/// https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
 class DefaultOpenUrlAction extends GenericActionOpenUrl {
   const DefaultOpenUrlAction();
 

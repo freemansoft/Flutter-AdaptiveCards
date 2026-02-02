@@ -63,7 +63,13 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
       ).read(adaptiveCardElementStateProvider).registerCardWidget(id, widget);
     } else {
       // a lot of them don't have ids
-      //debugPrint('No ID found for ${widget.runtimeType}');
+      assert(() {
+        developer.log(
+          format('No id found for type: {}', runtimeType.toString()),
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
     }
   }
 
