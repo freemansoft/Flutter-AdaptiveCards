@@ -21,14 +21,19 @@
   "actions": [
     {
       "type": "Action.Execute",
-      "title": "Action.Execute",
+      "title": "We Accept Action.Execute",
+      "verb": "accepted",
       "data": {
-        "x": 13
+        "x": 13,
+        "y": 20,
+        "z": 30
       }
-    }, {
+    },
+    {
       "type": "Action.Execute",
-      "title": "Action.Execute  with tooltip",
+      "title": "We Reject Action.Execute with tooltip",
       "tooltip": "This is an Action.Execute button with a tooltip",
+      "verb": "rejected",
       "data": {
         "x": 13
       }

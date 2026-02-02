@@ -40,6 +40,7 @@ abstract class GenericExecuteAction extends GenericAction {
     required BuildContext context,
     required RawAdaptiveCardState rawAdaptiveCardState,
     required Map<String, dynamic> adaptiveMap,
+    String? verb, // added in schema 1.6
   });
 }
 
