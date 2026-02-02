@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class BasicMarkdown extends MarkdownWidget {
   /// Creates a non-scrolling widget that parses and displays Markdown.

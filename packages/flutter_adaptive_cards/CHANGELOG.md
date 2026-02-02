@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrated the hostconfig from InheritedReferenceResolver to riverpod provider_scope
 - Selection applied via AdaptiveTappable to AdaptiveCard Element and Containers
 - Add tooltips to actions
+- Migrate from flutter_markdown to flutter_markdown_plus
 
 ## [0.2.0](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.1.2...0.2.0) - 2023-??-??
 
