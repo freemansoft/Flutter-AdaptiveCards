@@ -53,7 +53,6 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
       ..addFont(fontData23)
       ..addFont(fontData24)
       ..addFont(fontData25);
-    ;
 
     await fontLoaderRoboto.load();
 

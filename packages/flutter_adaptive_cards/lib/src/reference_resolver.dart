@@ -360,8 +360,7 @@ class ReferenceResolver {
   /// - extraLarge
   double resolveFontSize({required BuildContext context, String? sizeString}) {
     final String size = sizeString?.toLowerCase() ?? 'default';
-    final config = getFontSizesConfig();
-    if (config == null) return 14;
+    final config = getFontSizesConfig() ?? FallbackConfigs.fontSizesConfig;
     int sizeValue;
     switch (size) {
       case 'small':

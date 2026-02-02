@@ -179,31 +179,31 @@ class FallbackConfigs {
       ForegroundColorsConfig(
         defaultColor: FontColorConfig(
           defaultColor: Colors.black,
-          subtleColor: Colors.black,
+          subtleColor: Colors.black.withAlpha(128),
         ),
         accent: FontColorConfig(
           defaultColor: Colors.blue,
-          subtleColor: Colors.blue,
-        ),
-        dark: FontColorConfig(
-          defaultColor: Colors.white,
-          subtleColor: Colors.white,
+          subtleColor: Colors.blue.withAlpha(128),
         ),
         light: FontColorConfig(
+          defaultColor: Colors.white,
+          subtleColor: Colors.white.withAlpha(128),
+        ),
+        dark: FontColorConfig(
           defaultColor: Colors.black,
-          subtleColor: Colors.black,
+          subtleColor: Colors.black.withAlpha(128),
         ),
         good: FontColorConfig(
           defaultColor: Colors.green,
-          subtleColor: Colors.green,
+          subtleColor: Colors.green.withAlpha(128),
         ),
         warning: FontColorConfig(
           defaultColor: Colors.orange,
-          subtleColor: Colors.orange,
+          subtleColor: Colors.orange.withAlpha(128),
         ),
         attention: FontColorConfig(
           defaultColor: Colors.red,
-          subtleColor: Colors.red,
+          subtleColor: Colors.red.withAlpha(128),
         ),
       );
 
@@ -217,5 +217,13 @@ class FallbackConfigs {
     lighter: FontWeight.w200.value,
     defaultWeight: FontWeight.normal.value,
     bolder: FontWeight.bold.value,
+  );
+
+  static final FontSizesConfig fontSizesConfig = FontSizesConfig(
+    small: 10,
+    defaultSize: 12,
+    medium: 17,
+    large: 20,
+    extraLarge: 24,
   );
 }

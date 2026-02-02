@@ -5,25 +5,27 @@
     "body": [
         {
             "type": "TextBlock",
-            "text": "This is some **bold** text"
+            "text": "This is some **bold** text\\\nthat is on **multiple** lines"
         },
         {
             "type": "TextBlock",
-            "text": "This is some _italic_ text"
+            "text": "This is some _italic_ text\\\nthat is on _multiple_ lines"
         },
         {
             "type": "TextBlock",
-            "text": "- Bullet \r- List \r",
+            "text": "- Bullet \n- List \n- Items",
+            "wrap": true,
+            "separator": true
+        },
+        {
+            "type": "TextBlock",
+            "text": "1. Numbered\n2. List\n3. Items",
             "wrap": true
         },
         {
             "type": "TextBlock",
-            "text": "1. Numbered\r2. List\r",
-            "wrap": true
-        },
-        {
-            "type": "TextBlock",
-            "text": "Check out [Adaptive Cards](http://adaptivecards.io)"
+            "text": "Check out [Adaptive Cards](http://adaptivecards.io)",
+            "separator":true
         }
     ]
 }

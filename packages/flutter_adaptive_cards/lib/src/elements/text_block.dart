@@ -4,7 +4,7 @@ import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
@@ -176,14 +176,35 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       fontSize: fontSize,
       color: color,
     );
+    // this doesn't actually work as is documented in flutter_markdown and flutter_markdown_plus
+    final TextStyle pStyle = (maxLines == 1)
+        ? TextStyle(
+            fontWeight: fontWeight,
+            fontSize: fontSize,
+            color: color,
+            overflow: TextOverflow.ellipsis,
+          )
+        : TextStyle(
+            fontWeight: fontWeight,
+            fontSize: fontSize,
+            color: color,
+          );
+
+    final TextStyle aStyle = TextStyle(
+      fontWeight: fontWeight,
+      fontSize: fontSize,
+      decoration: TextDecoration.underline, // Add the underline
+      color: color,
+    );
 
     return MarkdownStyleSheet(
-      a: style,
+      a: aStyle,
       blockquote: style,
       code: style,
       em: style,
       strong: style.copyWith(fontWeight: FontWeight.bold),
-      p: style,
+      p: pStyle,
+      //pPadding: EdgeInsets.zero, // for the bullet points
     );
   }
 }

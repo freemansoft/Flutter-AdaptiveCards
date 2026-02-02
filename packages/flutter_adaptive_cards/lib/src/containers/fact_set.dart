@@ -5,7 +5,7 @@ import 'package:flutter_adaptive_cards/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Implements

@@ -147,6 +147,7 @@ This repo has been reformatted and updated using VS Code extensions. The VS Code
 - markdownlint
 - Markdown Preview Mermaid
 - Intellicode
+- AdaptiveCards
 - GitHub Actions
 - GitLens
 
@@ -174,10 +175,11 @@ Demo Adaptive Card*
 │                                               └── Form
 │                                                   └── Container
 │                                                       └── Column
-│                                                           ├── AdaptiveTextBlock(*)
-│                                                           │   └── SeparatorElement
-│                                                           │       └── Column
-│                                                           │           └── ...
+|                                                           ├── AdaptiveTextBlock(*)
+│                                                           ├.   └── Visble
+│                                                           │        └── SeparatorElement
+│                                                           │            └── Column
+│                                                           │                └── ...
 │                                                           └── AdaptiveColumnSet(*)
 │                                                               └── SeparatorElement
 │                                                                   └── Column
@@ -210,7 +212,6 @@ TODO for the example programs moved to [example README](example/README.md)
     - [`TableCell`](https://adaptivecards.io/explorer/TableCell.html) currently implemented in-line in [`Table`](https://adaptivecards.io/explorer/Table.html)
   - Note: [`Fact`](https://adaptivecards.io/explorer/Fact.html) currently implemented as a map in `FactSet`
 - _Inputs_ missing implementations and features
-  - None identified
   - Note: [`Input.Choice`](https://adaptivecards.io/explorer/Input.Choice.html) currently implemented as a map in [`ChoiceSet`](https://adaptivecards.io/explorer/Input.ChoiceSet.html)
 - Inputs have been migrated to use Flutter `Form` APIs and standardised keys to improve testing and validation.
   - **Input field keys** are now `ValueKey(id)`. Example: `ValueKey('myText')`.
@@ -218,16 +219,18 @@ TODO for the example programs moved to [example README](example/README.md)
   - **Selector item keys** use `ValueKey('${id}_${itemKey}')` (useful for targeting specific options in tests).
 - `RawAdaptiveCard.searchList` accepts an optional `inputId` that is propagated to the modal search `ChoiceFilter` so the modal's search field receives a predictable key.
 - Actions\_ missing implementations and features
-  - [`Action.ToggleVisibility`](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) not implemented - currently implemented as `no-op` along with its' associated[`TargetElement`](https://adaptivecards.io/explorer/TargetElement.html) - it will assert when in debug mode
 - _Tests_
   - Font line spacing is subtly different between platforms. You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
   - Using default flutter fonts instead of roboto <https://github.com/flutter/flutter/issues/56383>
-  - Golden toolkit but it will show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
+  - Golden toolkit fonts loaded but it will show black bars for text inside of text fields instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
 - Action.OpenUrlDialog is not impelemnted correctly. It should fetch another URL and display the adaptive card returned in a dialog
 - resetInputs() needs to be overridden in every input field that needs something other than '' when no value was set in the json.
 - mandatory inputs checks may not include all inputs because possible overrides may not be implement
 - Visitors are at the raw adaptive card level meaning all adaptive cards and their children are in scope. All forms are impacted at that level.
 - The raw_adaptive_card is global to all sub AdaptiveCardElement instances.  reference resolver operates at this level
+- Possibly add the deprecated `Action.OpenUrl`
+- markdown bullet point spacing is wrong.
+-
 
 ## ChangeLog
 
