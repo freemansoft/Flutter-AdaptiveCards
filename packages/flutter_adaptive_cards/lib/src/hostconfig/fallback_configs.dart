@@ -219,11 +219,12 @@ class FallbackConfigs {
     bolder: FontWeight.bold.value,
   );
 
+  /// This should come from the theme but we don't have access to the theme
   static final FontSizesConfig fontSizesConfig = FontSizesConfig(
     small: 10,
     defaultSize: 12,
-    medium: 17,
-    large: 20,
-    extraLarge: 24,
+    medium: 14,
+    large: 18,
+    extraLarge: 22,
   );
 }
