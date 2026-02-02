@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'package:flutter_adaptive_cards/src/hostconfig/fallback_configs.dart';
 
 class FontSizesConfig {
   FontSizesConfig({
@@ -9,13 +9,15 @@ class FontSizesConfig {
     required this.extraLarge,
   });
 
+  /// This should from the theme but we don't have access to the theme
   factory FontSizesConfig.fromJson(Map<String, dynamic> json) {
+    final fallbackSizes = FallbackConfigs.fontSizesConfig;
     return FontSizesConfig(
-      small: json['small'] as int? ?? 10,
-      defaultSize: json['default'] as int? ?? 12,
-      medium: json['medium'] as int? ?? 14,
-      large: json['large'] as int? ?? 17,
-      extraLarge: json['extraLarge'] as int? ?? 20,
+      small: json['small'] as int? ?? fallbackSizes.small,
+      defaultSize: json['default'] as int? ?? fallbackSizes.defaultSize,
+      medium: json['medium'] as int? ?? fallbackSizes.medium,
+      large: json['large'] as int? ?? fallbackSizes.large,
+      extraLarge: json['extraLarge'] as int? ?? fallbackSizes.extraLarge,
     );
   }
 
@@ -33,11 +35,13 @@ class FontWeightsConfig {
     required this.bolder,
   });
 
+  /// This should from the theme but we don't have access to the theme
   factory FontWeightsConfig.fromJson(Map<String, dynamic> json) {
+    final fallbackWeights = FallbackConfigs.fontWeightsConfig;
     return FontWeightsConfig(
-      lighter: json['lighter'] as int? ?? FontWeight.w200.value,
-      defaultWeight: json['default'] as int? ?? FontWeight.normal.value,
-      bolder: json['bolder'] as int? ?? FontWeight.bold.value,
+      lighter: json['lighter'] as int? ?? fallbackWeights.lighter,
+      defaultWeight: json['default'] as int? ?? fallbackWeights.defaultWeight,
+      bolder: json['bolder'] as int? ?? fallbackWeights.bolder,
     );
   }
 
