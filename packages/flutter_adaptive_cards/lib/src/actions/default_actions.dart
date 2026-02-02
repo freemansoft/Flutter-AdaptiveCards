@@ -80,6 +80,7 @@ class DefaultExecuteAction extends GenericExecuteAction {
     required BuildContext context,
     required RawAdaptiveCardState rawAdaptiveCardState,
     required Map<String, dynamic> adaptiveMap,
+    String? verb, // added in schema 1.6
   }) {
     bool valid = true;
 
@@ -119,7 +120,8 @@ class DefaultExecuteAction extends GenericExecuteAction {
               SnackBar(
                 content: Text(
                   format(
-                    'No custom handler found for onExecute: \n {}',
+                    'No custom handler found for onExecute: verb: {} \n {}',
+                    verb ?? '',
                     data.toString(),
                   ),
                 ),

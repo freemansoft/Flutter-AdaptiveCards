@@ -60,6 +60,11 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   /// Cards that exist under the AdaptiveCardElement by ID
   final Map<String, Widget> _registeredCards = {};
 
+  /// "metadata": {
+  ///   "webUrl": "https://example.com/card-content"
+  /// },
+  String? get metadataUrl => adaptiveMap['metadata']?['webUrl']?.toString();
+
   /// Register a card to the registry so we can refer to it later
   /// We want all cards that have a user provided id to be registered
   /// We also register the adaptive Card element itself because showCard
