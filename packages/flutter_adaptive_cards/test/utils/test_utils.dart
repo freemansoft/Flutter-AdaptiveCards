@@ -183,18 +183,15 @@ Widget getTestWidgetFromMap({
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: Text(title)),
-        body: RepaintBoundary(
-          key: key,
-          child: Center(
-            child: InheritedAdaptiveCardHandlers(
-              onOpenUrl: onOpenUrl ?? (_) {},
-              // this a test so we can look at this later
-              // ignore: inference_failure_on_collection_literal
-              onSubmit: onSubmit ?? (Map _) => {},
-              onExecute: (_) {},
-              onChange: null,
-              child: adaptiveCard,
-            ),
+        body: Center(
+          child: InheritedAdaptiveCardHandlers(
+            onOpenUrl: onOpenUrl ?? (_) {},
+            // this a test so we can look at this later
+            // ignore: inference_failure_on_collection_literal
+            onSubmit: onSubmit ?? (Map _) => {},
+            onExecute: (_) {},
+            onChange: null,
+            child: adaptiveCard,
           ),
         ),
       ),
@@ -203,10 +200,7 @@ Widget getTestWidgetFromMap({
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: Text(title)),
-        body: RepaintBoundary(
-          key: key,
-          child: Center(child: adaptiveCard),
-        ),
+        body: Center(child: adaptiveCard),
       ),
     );
   }

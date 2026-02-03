@@ -227,4 +227,12 @@ class FallbackConfigs {
     large: 18,
     extraLarge: 22,
   );
+
+  static final SeparatorConfig separatorConfig = SeparatorConfig(
+    lineColor: Colors.grey.shade300
+        .toARGB32()
+        .toRadixString(16)
+        .padLeft(6, '0'),
+    lineThickness: 1,
+  );
 }

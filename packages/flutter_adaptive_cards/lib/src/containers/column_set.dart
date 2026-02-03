@@ -70,15 +70,19 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
 
   @override
   Widget build(BuildContext context) {
-    Widget child = Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: horizontalAlignment!,
-      children: columns!.toList(),
-    );
-
-    if (!widget.supportMarkdown) {
-      child = IntrinsicHeight(child: child);
-    }
+    final Widget child = !widget.supportMarkdown
+        ? IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: horizontalAlignment!,
+              children: columns!.toList(),
+            ),
+          )
+        : Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: horizontalAlignment!,
+            children: columns!.toList(),
+          );
 
     return Visibility(
       visible: isVisible,
