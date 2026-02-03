@@ -28,28 +28,51 @@ class SeparatorElement extends StatelessWidget {
 
     final separator = adaptiveMap['separator'] as bool? ?? false;
     if (!separator) {
-      return Container(
-        padding: EdgeInsets.only(top: topSpacing),
-        child: child,
-      );
+      if (adaptiveMap['type']?.toString().toLowerCase() == 'column') {
+        return Container(
+          padding: EdgeInsets.only(left: topSpacing),
+          child: child,
+        );
+      } else {
+        return Container(
+          padding: EdgeInsets.only(top: topSpacing),
+          child: child,
+        );
+      }
     } else {
       final resolver = ProviderScope.containerOf(
         context,
       ).read(styleReferenceResolverProvider);
-      final separatorConfig = resolver.getSeparatorConfig();
-      final color = parseHexColor(separatorConfig?.lineColor);
+      final color = resolver.resolveSeparatorColor();
+      final thickness = resolver.resolveSeparatorThickness();
 
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Divider(
-            height: topSpacing,
-            thickness: separatorConfig?.lineThickness.toDouble(),
-            color: color,
-          ),
-          child,
-        ],
-      );
+      // TODO(username): This should actually be done in the ColumnSet
+      if (adaptiveMap['type']?.toString().toLowerCase() == 'column') {
+        // The divider isn't showing :-( Why?
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            VerticalDivider(
+              width: topSpacing,
+              thickness: thickness,
+              color: color,
+            ),
+            Expanded(child: child),
+          ],
+        );
+      } else {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Divider(
+              height: topSpacing,
+              thickness: thickness,
+              color: color,
+            ),
+            child,
+          ],
+        );
+      }
     }
   }
 }

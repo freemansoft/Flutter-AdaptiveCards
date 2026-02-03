@@ -124,7 +124,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
                 style: style,
               );
 
-    Widget child = Visibility(
+    final Widget child = Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
@@ -133,6 +133,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
           child: Container(
             // we need this container to be the same size as the row element
             // so that all the columns are the same height
+            // and for the decoration
             alignment: containerHorizontalAlignment,
             padding: EdgeInsets.only(left: preceedingSpacing),
             decoration: getDecorationFromMap(
@@ -154,9 +155,9 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     );
 
     // Why is this here if we could have another expanded below?
-    if (!widget.supportMarkdown) {
-      child = Expanded(child: child);
-    }
+    // if (!widget.supportMarkdown) {
+    //   child = Expanded(child: child);
+    // }
 
     var result = child;
     assert(
@@ -170,7 +171,11 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     } else if (mode == 'weighted') {
       result = Expanded(flex: width, child: child);
     } else if (mode == 'px') {
-      result = SizedBox(width: width.toDouble(), child: child);
+      // flexible required to deal with height
+      result = SizedBox(
+        width: width.toDouble(),
+        child: child,
+      );
     }
 
     return result;

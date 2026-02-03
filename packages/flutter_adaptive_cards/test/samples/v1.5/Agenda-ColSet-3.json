@@ -1,0 +1,75 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Today's Agenda",
+      "wrap": true,
+      "style": "heading"
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "none",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "110px"
+        },
+        {
+          "type": "Column",
+          "backgroundImage": {
+            "url": "https://adaptivecards.io/content/SmallVerticalLineGray.png",
+            "fillMode": "repeatVertically",
+            "horizontalAlignment": "center"
+          },
+          "items": [
+            {
+              "type": "Image",
+              "horizontalAlignment": "center",
+              "url": "https://adaptivecards.io/content/Gray_Dot.png",
+              "altText": "In transit"
+            }
+          ],
+          "width": "auto",
+          "spacing": "none"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://cdn.adaptivecards.io/assets/car.png",
+                      "altText": "Travel by car"
+                    }
+                  ],
+                  "width": "auto"
+                },
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "about 45 minutes",
+                      "isSubtle": true,
+                      "wrap": true
+                    }
+                  ],
+                  "width": "stretch"
+                }
+              ]
+            }
+          ],
+          "width": 40
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5"
+}

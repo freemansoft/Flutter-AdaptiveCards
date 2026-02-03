@@ -16,6 +16,7 @@ import 'package:flutter_adaptive_cards/src/hostconfig/inputs_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/text_style_config.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:format/format.dart';
 
 ///
@@ -576,5 +577,16 @@ class ReferenceResolver {
       default:
         return 12;
     }
+  }
+
+  double resolveSeparatorThickness() {
+    return getSeparatorConfig()?.lineThickness.toDouble() ??
+        FallbackConfigs.separatorConfig.lineThickness.toDouble();
+  }
+
+  Color resolveSeparatorColor() {
+    return parseHexColor(getSeparatorConfig()?.lineColor) ??
+        parseHexColor(FallbackConfigs.separatorConfig.lineColor) ??
+        Colors.grey.shade300;
   }
 }

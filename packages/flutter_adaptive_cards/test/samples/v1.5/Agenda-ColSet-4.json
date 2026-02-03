@@ -1,0 +1,101 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Today's Agenda",
+      "wrap": true,
+      "style": "heading"
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "none",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "TextBlock",
+              "spacing": "none",
+              "text": "8:00 PM",
+              "wrap": true
+            },
+            {
+              "type": "TextBlock",
+              "spacing": "none",
+              "text": "1hr",
+              "isSubtle": true,
+              "wrap": true
+            }
+          ],
+          "width": "110px"
+        },
+        {
+          "type": "Column",
+          "backgroundImage": {
+            "url": "https://adaptivecards.io/content/SmallVerticalLineGray.png",
+            "fillMode": "repeatVertically",
+            "horizontalAlignment": "center"
+          },
+          "items": [
+            {
+              "type": "Image",
+              "horizontalAlignment": "center",
+              "url": "https://adaptivecards.io/content/CircleBlue_flight.png",
+              "altText": "Location B: Flight"
+            }
+          ],
+          "width": "auto",
+          "spacing": "none"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "**Alaska Airlines AS1021 flight to Chicago**",
+              "wrap": true
+            },
+            {
+              "type": "ColumnSet",
+              "spacing": "none",
+              "columns": [
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://cdn.adaptivecards.io/assets/location_gray.png",
+                      "altText": "Location"
+                    }
+                  ],
+                  "width": "auto"
+                },
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "Seattle Tacoma International Airport (17801 International Blvd, Seattle, WA, United States)",
+                      "wrap": true
+                    }
+                  ],
+                  "width": "stretch"
+                }
+              ]
+            },
+            {
+              "type": "Image",
+              "url": "https://adaptivecards.io/content/SeaTacMap.png",
+              "size": "Stretch",
+              "altText": "Map of the Seattle-Tacoma airport"
+            }
+          ],
+          "width": 40
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5"
+}

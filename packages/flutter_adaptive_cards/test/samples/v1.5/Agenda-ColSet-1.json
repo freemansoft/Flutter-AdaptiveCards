@@ -1,0 +1,143 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Today's Agenda",
+      "wrap": true,
+      "style": "heading"
+    },
+    {
+      "type": "ColumnSet",
+      "horizontalAlignment": "center",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "horizontalAlignment": "center",
+              "columns": [
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://adaptivecards.io/content/LocationGreen_A.png",
+                      "altText": "Location A"
+                    }
+                  ],
+                  "width": "auto"
+                },
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**Redmond**",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "text": "8a - 12:30p",
+                      "wrap": true
+                    }
+                  ],
+                  "width": "auto"
+                }
+              ]
+            }
+          ],
+          "width": 1
+        },
+        {
+          "type": "Column",
+          "spacing": "large",
+          "separator": true,
+          "items": [
+            {
+              "type": "ColumnSet",
+              "horizontalAlignment": "center",
+              "columns": [
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://adaptivecards.io/content/LocationBlue_B.png",
+                      "altText": "Location B"
+                    }
+                  ],
+                  "width": "auto"
+                },
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**Bellevue**",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "text": "12:30p - 3p",
+                      "wrap": true
+                    }
+                  ],
+                  "width": "auto"
+                }
+              ]
+            }
+          ],
+          "width": 1
+        },
+        {
+          "type": "Column",
+          "spacing": "large",
+          "separator": true,
+          "items": [
+            {
+              "type": "ColumnSet",
+              "horizontalAlignment": "center",
+              "columns": [
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "Image",
+                      "url": "https://adaptivecards.io/content/LocationRed_C.png",
+                      "altText": "Location C"
+                    }
+                  ],
+                  "width": "auto"
+                },
+                {
+                  "type": "Column",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "**Seattle**",
+                      "wrap": true
+                    },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "text": "8p",
+                      "wrap": true
+                    }
+                  ],
+                  "width": "auto"
+                }
+              ]
+            }
+          ],
+          "width": 1
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5"
+}
