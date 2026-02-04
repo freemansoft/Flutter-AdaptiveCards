@@ -184,6 +184,8 @@ Widget getTestWidgetFromMap({
       home: Scaffold(
         appBar: AppBar(title: Text(title)),
         body: Center(
+          // tests look for this value key as the root for golden
+          key: key,
           child: InheritedAdaptiveCardHandlers(
             onOpenUrl: onOpenUrl ?? (_) {},
             // this a test so we can look at this later
@@ -200,7 +202,11 @@ Widget getTestWidgetFromMap({
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: Text(title)),
-        body: Center(child: adaptiveCard),
+        body: Center(
+          // tests look for this value key as the root for golden
+          key: key,
+          child: adaptiveCard,
+        ),
       ),
     );
   }
