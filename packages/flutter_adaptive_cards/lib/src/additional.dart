@@ -65,13 +65,14 @@ class SeparatorElement extends StatelessWidget {
 }
 
 /// Implements selectAction for any element
+/// Not really an Adaptive card element so we generate random keys for it
 /// Used in Image, Container, Column, columnSet, adaptiveCard, etc.
 class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTappable({
     required this.child,
     required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
-    id = loadId(adaptiveMap);
+  }) : super(key: ValueKey<String>(UUIDGenerator().getId())) {
+    id = UUIDGenerator().getId();
   }
 
   final Widget child;
@@ -84,13 +85,6 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   AdaptiveTappableState createState() => AdaptiveTappableState();
-
-  /// Tappable is an element because of some context required
-  /// But it really isn't something we operate against so we just generate an id
-  /// Should get picked up even though we import utils.
-  String loadId(Map aMap) {
-    return UUIDGenerator().getId();
-  }
 }
 
 class AdaptiveTappableState extends State<AdaptiveTappable>
