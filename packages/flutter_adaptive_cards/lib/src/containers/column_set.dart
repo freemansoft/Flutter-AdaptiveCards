@@ -31,21 +31,15 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin {
-  List<AdaptiveColumn>? columns;
+  List<Widget>? columns;
   MainAxisAlignment? horizontalAlignment;
   Color? backgroundColor;
 
   @override
   void initState() {
     super.initState();
-    columns = List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? [])
-        .map(
-          (child) => AdaptiveColumn(
-            adaptiveMap: child,
-            supportMarkdown: widget.supportMarkdown,
-          ),
-        )
-        .toList();
+    // this is missing the type check for 'column'
+    // should this use the card registry to create the columns?
   }
 
   @override
@@ -66,11 +60,28 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
         .resolveHorizontalMainAxisAlginment(
           adaptiveMap['horizontalAlignment'],
         );
+
+    columns = List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? []).expand((
+      child,
+    ) {
+      final separator = child['separator'] as bool? ?? false;
+      return [
+        // Vertical divider zero height because can't calculate  height
+        // just hack this in for testing for now
+        // TODO(username): find a way to make the height dynamic like the column does.
+        if (separator) const SizedBox(height: 30, child: VerticalDivider()),
+        AdaptiveColumn(
+          adaptiveMap: child,
+          supportMarkdown: widget.supportMarkdown,
+        ),
+      ];
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final Widget child = !widget.supportMarkdown
+        // this will probably throw some intrinsic height errors
         ? IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
