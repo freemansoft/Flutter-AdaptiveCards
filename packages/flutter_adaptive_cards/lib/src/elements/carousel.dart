@@ -145,7 +145,9 @@ class AdaptiveCarouselPage extends StatefulWidget
   AdaptiveCarouselPage({
     super.key,
     required this.adaptiveMap,
-  });
+  }) {
+    id = loadId(adaptiveMap);
+  }
 
   @override
   final Map<String, dynamic> adaptiveMap;
