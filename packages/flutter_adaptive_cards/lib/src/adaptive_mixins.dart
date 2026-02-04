@@ -65,7 +65,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
       // a lot of them don't have ids
       assert(() {
         developer.log(
-          format('No id found for type: {}', runtimeType.toString()),
+          'Did not register $id No id found for type: $runtimeType',
           name: runtimeType.toString(),
         );
         return true;
@@ -216,7 +216,11 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         ? ''
         : adaptiveMap['value'].toString();
 
-    placeholder = adaptiveMap['placeholder'] as String? ?? '';
+    placeholder =
+        adaptiveMap['placeholder'] as String? ??
+        adaptiveMap['label'] as String? ??
+        '';
+
     errorMessage = adaptiveMap['errorMessage'] as String?;
   }
 

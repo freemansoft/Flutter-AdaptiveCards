@@ -59,7 +59,7 @@ class AdaptiveImageState extends State<AdaptiveImage>
   @override
   Widget build(BuildContext context) {
     BoxFit fit = BoxFit.contain;
-    if (height != null && width != null) {
+    if (height != null && width != null && height != width) {
       fit = BoxFit.fill;
     }
 

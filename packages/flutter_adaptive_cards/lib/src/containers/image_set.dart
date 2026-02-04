@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
@@ -65,44 +67,40 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
 
   @override
   Widget build(BuildContext context) {
+    // developer.log(
+    //   'Building ImageSet $id with ${images.length} images maybeSize: $maybeSize',
+    //   name: runtimeType.toString(),
+    // );
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: Container(
           color: backgroundColor,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Wrap(
-                //maxCrossAxisExtent: 200.0,
-                children: images
-                    .map(
-                      (img) => SizedBox(
-                        width: calculateSize(constraints),
-                        child: img,
-                      ),
-                    )
-                    .toList(),
-                //shrinkWrap: true,
+          child: Wrap(
+            children: images.map((img) {
+              if (maybeSize != null) {
+                return SizedBox(width: maybeSize, child: img);
+              }
+              // Calculate factor
+              double factor = 1;
+              if (imageSize == 'stretch') {
+                factor = 1;
+              } else if (images.length >= 5) {
+                factor = 1.0 / 5.0;
+              } else if (images.isNotEmpty) {
+                factor = 1.0 / images.length;
+              }
+              developer.log(
+                'factor $factor for $id',
+                name: runtimeType.toString(),
               );
-            },
+              return FractionallySizedBox(widthFactor: factor, child: img);
+            }).toList(),
           ),
         ),
       ),
     );
-  }
-
-  double calculateSize(BoxConstraints constraints) {
-    if (maybeSize != null) return maybeSize!;
-    if (imageSize == 'stretch') return constraints.maxWidth;
-    // Display a maximum of 5 children
-    if (images.length >= 5) {
-      return constraints.maxWidth / 5;
-    } else if (images.isEmpty) {
-      return 0;
-    } else {
-      return constraints.maxWidth / images.length;
-    }
   }
 
   void loadSize() {
