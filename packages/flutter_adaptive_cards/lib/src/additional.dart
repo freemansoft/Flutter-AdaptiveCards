@@ -29,10 +29,8 @@ class SeparatorElement extends StatelessWidget {
     final separator = adaptiveMap['separator'] as bool? ?? false;
     if (!separator) {
       if (adaptiveMap['type']?.toString().toLowerCase() == 'column') {
-        return Container(
-          padding: EdgeInsets.only(left: topSpacing),
-          child: child,
-        );
+        // columns don't have spacing at the top
+        return child;
       } else {
         return Container(
           padding: EdgeInsets.only(top: topSpacing),
@@ -46,20 +44,9 @@ class SeparatorElement extends StatelessWidget {
       final color = resolver.resolveSeparatorColor();
       final thickness = resolver.resolveSeparatorThickness();
 
-      // TODO(username): This should actually be done in the ColumnSet
       if (adaptiveMap['type']?.toString().toLowerCase() == 'column') {
-        // The divider isn't showing :-( Why?
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            VerticalDivider(
-              width: topSpacing,
-              thickness: thickness,
-              color: color,
-            ),
-            Expanded(child: child),
-          ],
-        );
+        // Column dividers happen at the ColumnSet level
+        return child;
       } else {
         return Column(
           mainAxisSize: MainAxisSize.min,
