@@ -36,13 +36,6 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   Color? backgroundColor;
 
   @override
-  void initState() {
-    super.initState();
-    // this is missing the type check for 'column'
-    // should this use the card registry to create the columns?
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
@@ -61,39 +54,37 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
           adaptiveMap['horizontalAlignment'],
         );
 
-    columns = List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? []).expand((
-      child,
-    ) {
-      final separator = child['separator'] as bool? ?? false;
-      return [
-        // Vertical divider zero height because can't calculate  height
-        // just hack this in for testing for now
-        // TODO(username): find a way to make the height dynamic like the column does.
-        if (separator) const SizedBox(height: 30, child: VerticalDivider()),
-        AdaptiveColumn(
-          adaptiveMap: child,
-          supportMarkdown: widget.supportMarkdown,
-        ),
-      ];
-    }).toList();
+    // this is missing the type check for 'column'
+    // should this use the card registry to create the columns?
+    columns = List<Map<String, dynamic>>.from(adaptiveMap['columns'] ?? [])
+        .expand((
+          child,
+        ) {
+          final separator = child['separator'] as bool? ?? false;
+          return [
+            if (separator) const VerticalDivider(),
+            AdaptiveColumn(
+              adaptiveMap: child,
+              supportMarkdown: widget.supportMarkdown,
+            ),
+          ];
+        })
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final Widget child = !widget.supportMarkdown
-        // this will probably throw some intrinsic height errors
-        ? IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: horizontalAlignment!,
-              children: columns!.toList(),
-            ),
-          )
-        : Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: horizontalAlignment!,
-            children: columns!.toList(),
-          );
+    // developer.log(
+    //   'Building ColumnSet $id with ${columns!.length} columns',
+    //   name: runtimeType.toString(),
+    // );
+    final Widget child = IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: horizontalAlignment!,
+        children: columns!.toList(),
+      ),
+    );
 
     return Visibility(
       visible: isVisible,

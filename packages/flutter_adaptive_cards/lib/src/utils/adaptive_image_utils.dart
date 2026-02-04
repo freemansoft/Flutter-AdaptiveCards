@@ -9,8 +9,9 @@ class AdaptiveImageUtils {
     double? height,
     BoxFit fit = BoxFit.contain,
     Color? color,
-    String? semanticsLabel = 'alt text not set',
+    String? semanticsLabel,
   }) {
+    final resolvedSemanticsLabel = semanticsLabel ?? 'alt text not set';
     if (url.startsWith('data:image/') && url.contains('base64,')) {
       final String base64String = url.split('base64,')[1];
       return Image.memory(
@@ -19,7 +20,7 @@ class AdaptiveImageUtils {
         height: height,
         fit: fit,
         color: color,
-        semanticLabel: semanticsLabel,
+        semanticLabel: resolvedSemanticsLabel,
       );
     }
 
@@ -32,7 +33,7 @@ class AdaptiveImageUtils {
         colorFilter: color != null
             ? ColorFilter.mode(color, BlendMode.srcIn)
             : null,
-        semanticsLabel: semanticsLabel,
+        semanticsLabel: resolvedSemanticsLabel,
       );
     } else {
       return Image.network(
@@ -41,7 +42,7 @@ class AdaptiveImageUtils {
         height: height,
         fit: fit,
         color: color,
-        semanticLabel: semanticsLabel,
+        semanticLabel: resolvedSemanticsLabel,
       );
     }
   }

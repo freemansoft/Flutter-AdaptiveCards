@@ -185,6 +185,10 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
   @override
   Widget build(BuildContext context) {
+    // developer.log(
+    //   'Building AdaptiveCardElement $id with ${bodyChildren.length} children',
+    //   name: runtimeType.toString(),
+    // );
     loadNonBodyChildren();
 
     final List<Widget> widgetChildren = bodyChildren
