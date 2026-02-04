@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
 import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/inputs/date.dart';
+import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -31,7 +32,19 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
-    expect(find.text('Choose date'), findsOneWidget);
+    // adaptive card element
+    expect(find.byKey(generateAdaptiveWidgetKey(map)), findsOneWidget);
+
+    // now finds two probably label and help text
+    expect(find.text('Choose date'), findsAtLeastNWidgets(1));
+    expect(find.byType(AdaptiveDateInput), findsOneWidget);
+    // the input.date field itself
+    expect(
+      find.byKey(generateAdaptiveWidgetKey(map['body'][0])),
+      findsOneWidget,
+    );
+    expect(find.byKey(generateWidgetKey(map['body'][0])), findsOneWidget);
+
     expect(find.byKey(const ValueKey('myDate')), findsOneWidget);
   });
 
