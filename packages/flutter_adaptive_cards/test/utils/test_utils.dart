@@ -215,3 +215,10 @@ Widget getTestWidgetFromMap({
     );
   }
 }
+
+/// Helper function to create a widget from a JSON string
+Widget getTestWidgetFromString({required String jsonString, Key? key}) {
+  final Map<String, dynamic> map =
+      json.decode(jsonString) as Map<String, dynamic>;
+  return getTestWidgetFromMap(map: map, key: key, title: 'Test');
+}

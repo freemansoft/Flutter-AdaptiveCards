@@ -68,11 +68,12 @@ void main() {
       await tester.pumpAndSettle();
 
       final dynamic state = tester.state(find.byType(AdaptiveDateInput));
+      final Map<String, dynamic> out = {};
 
       // Set a selectedDateTime and ensure appendInput uses ISO8601
-      state.selectedDateTime = DateTime.parse('2025-01-15');
-      final Map<String, dynamic> out = {};
-      state.appendInput(out);
+      state
+        ..selectedDateTime = DateTime.parse('2025-01-15')
+        ..appendInput(out);
 
       expect(out['initDate'].toString().startsWith('2025-01-15'), isTrue);
     },
