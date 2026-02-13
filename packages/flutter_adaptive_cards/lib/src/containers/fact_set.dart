@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/hostconfig/fact_set_config.dart';
+import 'package:flutter_adaptive_cards/src/models/fact.dart';
 import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -31,7 +32,7 @@ class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class AdaptiveFactSetState extends State<AdaptiveFactSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin {
-  late List<Map> facts;
+  late List<Fact> facts;
   Color? backgroundColor;
 
   @override
@@ -39,7 +40,11 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     super.initState();
 
     /// https://adaptivecards.io/explorer/Fact.html
-    facts = List<Map>.from(adaptiveMap['facts']).toList();
+    facts =
+        (adaptiveMap['facts'] as List<dynamic>?)
+            ?.map((e) => Fact.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
   }
 
   @override
@@ -81,7 +86,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
                               : double.infinity,
                         ),
                         child: Text(
-                          fact['title'],
+                          fact.title,
                           softWrap: factSetConfig?.title.wrap ?? true,
                           style: TextStyle(
                             fontWeight: resolver.resolveFontWeight(
@@ -116,7 +121,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
                                 : double.infinity,
                           ),
                           child: MarkdownBody(
-                            data: fact['value'],
+                            data: fact.value,
                             styleSheet: loadMarkdownStyleSheet(
                               resolver: resolver,
                               context: context,

@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/models/table_cell.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:format/format.dart';
 
@@ -130,10 +131,11 @@ class AdaptiveTableState extends State<AdaptiveTable>
     //  name: runtimeType.toString());
 
     // All the table cell markup in this row [cell, cell, cell]
-    final List<Map<String, dynamic>> rowTableCells =
-        List<Map<String, dynamic>>.from(
-          row['cells'],
-        );
+    final List<TableCellModel> rowTableCells =
+        (row['cells'] as List<dynamic>?)
+            ?.map((e) => TableCellModel.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
     //developer.log(format("rowTableCells: row:{} length:{} - {} ", rowNum,
     //    rowTableCells.length, rowTableCells.toString()),
     //      name: runtimeType.toString());
@@ -143,7 +145,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
       rowTableCells.length,
       (rowNum) {
         // some of the samples have empty rows
-        return rowTableCells[rowNum]['items'] as List<dynamic>? ?? [];
+        return rowTableCells[rowNum].items;
       },
     );
     // developer.log(format("rowCellItems: row:{} length:{} - {}", rowNum,
@@ -164,7 +166,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
       //     name: this.runtimeType.toString());
       return TableCell(
         child: Container(
-          decoration: getDecorationFromMap(rowTableCells[col]),
+          decoration: getDecorationFromMap(rowTableCells[col].toJson()),
           child: Scrollbar(
             child: Wrap(
               children: List<Widget>.generate(oneCellItems.length, (
