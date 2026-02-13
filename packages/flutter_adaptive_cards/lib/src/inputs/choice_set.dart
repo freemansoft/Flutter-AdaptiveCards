@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/models/choice.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -69,11 +70,15 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     isRequired = adaptiveMap['isRequired'] as bool? ?? false;
 
     if (adaptiveMap['choices'] != null) {
-      final choices = adaptiveMap['choices'] as List<dynamic>;
+      final List<Choice> choices =
+          (adaptiveMap['choices'] as List<dynamic>?)
+              ?.map((e) => Choice.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [];
 
       /// https://adaptivecards.io/explorer/Input.Choice.html
-      for (final dynamic map in choices) {
-        _choices[map['title']] = map['value'].toString();
+      for (final Choice choice in choices) {
+        _choices[choice.title] = choice.value;
       }
     }
 

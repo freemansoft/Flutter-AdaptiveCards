@@ -6,6 +6,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
+import 'package:flutter_adaptive_cards/src/models/media_source.dart';
 import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
@@ -51,7 +52,12 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
     super.initState();
 
     // https://adaptivecards.io/explorer/MediaSource.html
-    sourceUrl = adaptiveMap['sources'][0]['url']?.toString() ?? '';
+    final List<MediaSource> sources =
+        (adaptiveMap['sources'] as List<dynamic>?)
+            ?.map((e) => MediaSource.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+    sourceUrl = sources.isNotEmpty ? sources[0].url : '';
 
     // https://pub.dev/packages/video_player
     if (Platform.isWindows || Platform.isLinux) {
