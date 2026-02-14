@@ -166,35 +166,28 @@ class ReferenceResolver {
         backgroundColor =
             getContainerStylesConfig()?.emphasis.backgroundColor ??
             FallbackConfigs.containerStylesConfig.emphasis.backgroundColor;
-        break;
       case 'good':
         backgroundColor =
             getContainerStylesConfig()?.good?.backgroundColor ??
             FallbackConfigs.containerStylesConfig.good?.backgroundColor;
-        break;
       case 'attention':
         backgroundColor =
             getContainerStylesConfig()?.attention?.backgroundColor ??
             FallbackConfigs.containerStylesConfig.attention?.backgroundColor;
-        break;
       case 'warning':
         backgroundColor =
             getContainerStylesConfig()?.warning?.backgroundColor ??
             FallbackConfigs.containerStylesConfig.warning?.backgroundColor;
-        break;
       case 'accent':
         backgroundColor =
             getContainerStylesConfig()?.accent?.backgroundColor ??
             FallbackConfigs.containerStylesConfig.accent?.backgroundColor;
-        break;
       case 'default':
         backgroundColor =
             getContainerStylesConfig()?.defaultStyle.backgroundColor ??
             FallbackConfigs.containerStylesConfig.defaultStyle.backgroundColor;
-        break;
       default:
         backgroundColor = null;
-        break;
     }
 
     assert(() {
