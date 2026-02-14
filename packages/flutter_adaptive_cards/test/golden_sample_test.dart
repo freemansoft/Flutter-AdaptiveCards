@@ -186,18 +186,18 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
   }, tags: ['golden']);
 
-  testWidgets('Golden Sample 16', (tester) async {
+  testWidgets('Golden Table 1', (tester) async {
     configureTestView();
 
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'example16');
+    final Widget sample = getSampleForGoldenTest(key, 'table1');
 
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/sample16-base.png'),
+      matchesGoldenFile('gold_files/table1-base.png'),
     );
 
     await tester.pump(const Duration(seconds: 1));
@@ -214,7 +214,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/table2.png'),
+      matchesGoldenFile('gold_files/table2-base.png'),
     );
 
     await tester.pump(const Duration(seconds: 1));
