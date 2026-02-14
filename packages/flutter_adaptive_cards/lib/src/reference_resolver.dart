@@ -490,7 +490,7 @@ class ReferenceResolver {
   /// JSON Schema definition "VerticalContentAlignment"
   ///   Defines how content should be aligned vertically within the container
   ///
-  // TODO(username): add to all containers
+  // TODO(username): Implemented on column an table add to all containers
   ///
   /// Resolves vertical alignment from a string value
   ///

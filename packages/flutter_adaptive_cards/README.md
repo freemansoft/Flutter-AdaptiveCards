@@ -196,21 +196,16 @@ TODO for the example programs moved to [example README](example/README.md)
 
 - `initData` does not appear to be working on date fields. The `initData` button in the sample program demonstrates this
 - Currently uses `Provider` for inherited state. Determine if this 3rd party dependency is a good idea given `Provider`` is essentially EOL or frozen.
-- Add template and data json merge support - Adaptive Cards 1.3
 - Find out if there is any regex validation tag or extension
+  - add support for regex validation
 - There is currently no way to unset a container style inside a child container. This means you can't get back to a card background color in a nested container if you set it somewhere in the widget tree betwen you and the card.
 - Make a single purpose dart file for consumer imports with no code in it in place of `flutter_adaptive_cards.dart` or move the code in that file.
-- Inject locale behavior in more places
+- Inject locale behavior into money, time and dates including parsing
 - _Card Elements_ missing implementations and features
   - Add [`RichTextBlock`](https://adaptivecards.io/explorer/RichTextBlock.html)
   - Add [`TextRun`](https://adaptivecards.io/explorer/TextRun.html)
   - Note: [`MediaSource`](https://adaptivecards.io/explorer/MediaSource.html) currently implemented as a map in [`Media`](https://adaptivecards.io/explorer/Media.html)
   - [`Media`](https://adaptivecards.io/explorer/Media.html) `poster` attribute does not show poster, possibly with the latest media player update
-- _Containers_ missing implementations and features
-  - Add [`Table`](https://adaptivecards.io/explorer/Table.html) attributes
-    - Column sizes, grid style show grid lines, etc
-    - [`TableCell`](https://adaptivecards.io/explorer/TableCell.html) currently implemented in-line in [`Table`](https://adaptivecards.io/explorer/Table.html)
-  - Note: [`Fact`](https://adaptivecards.io/explorer/Fact.html) currently implemented as a map in `FactSet`
 - _Inputs_ missing implementations and features
   - Note: [`Input.Choice`](https://adaptivecards.io/explorer/Input.Choice.html) currently implemented as a map in [`ChoiceSet`](https://adaptivecards.io/explorer/Input.ChoiceSet.html)
 - Inputs have been migrated to use Flutter `Form` APIs and standardised keys to improve testing and validation.
@@ -218,21 +213,21 @@ TODO for the example programs moved to [example README](example/README.md)
   - **Parent card keys** for input widgets use `ValueKey('${id}_adaptive')` to avoid collisions with the inner field.
   - **Selector item keys** use `ValueKey('${id}_${itemKey}')` (useful for targeting specific options in tests).
 - `RawAdaptiveCard.searchList` accepts an optional `inputId` that is propagated to the modal search `ChoiceFilter` so the modal's search field receives a predictable key.
-- Actions\_ missing implementations and features
+- Actions missing implementations and features
 - _Tests_
   - Font line spacing is subtly different between platforms. You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
   - Using default flutter fonts instead of roboto <https://github.com/flutter/flutter/issues/56383>
   - Golden toolkit fonts loaded but it will show black bars for text inside of text fields instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
-- Action.OpenUrlDialog is not impelemnted correctly. It should fetch another URL and display the adaptive card returned in a dialog
 - resetInputs() needs to be overridden in every input field that needs something other than '' when no value was set in the json.
 - mandatory inputs checks may not include all inputs because possible overrides may not be implement
 - Visitors are at the raw adaptive card level meaning all adaptive cards and their children are in scope. All forms are impacted at that level.
-- The raw_adaptive_card is global to all sub AdaptiveCardElement instances.  reference resolver operates at this level
-- Possibly add the deprecated `Action.OpenUrl`
+- Possibly add the deprecated `Action.HTTP`
 - markdown bullet point spacing is wrong.
--
+- Material time picker doesn't support min and max time
 
 ## ChangeLog
+
+This CHANGELOG has been replaced by the root CHANGELOG.md file. See [CHANGELOG.md](CHANGELOG.md) for more information.
 
 2023 09
 
