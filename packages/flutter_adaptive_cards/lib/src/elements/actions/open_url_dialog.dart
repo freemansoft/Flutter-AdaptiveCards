@@ -55,6 +55,7 @@ class AdaptiveActionOpenUrlDialogState
             as GenericActionOpenUrlDialog;
   }
 
+  /// returns the content if a card otherwise returns the URL
   Future<dynamic> _fetchContent(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
@@ -66,14 +67,17 @@ class AdaptiveActionOpenUrlDialogState
           return json.decode(response.body) as Map<String, dynamic>;
         } catch (e) {
           // If JSON parsing fails, fallback to browser
+          developer.log('Could not parse JSON from $url: $e');
           return url;
         }
       } else {
         // If not JSON or error status, fallback to browser
+        developer.log('Could not fetch content from $url');
         return url;
       }
     } catch (e) {
       // Network error, show fallback
+      developer.log('Could not fetch content from $url: $e');
       return url;
     }
   }
@@ -131,6 +135,8 @@ class AdaptiveActionOpenUrlDialogState
                           } else if (snapshot.hasData) {
                             final data = snapshot.data;
                             if (data is Map<String, dynamic>) {
+                              // We think this is card.
+                              // This doesn't support templates
                               return SingleChildScrollView(
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,

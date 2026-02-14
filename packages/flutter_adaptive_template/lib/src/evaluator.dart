@@ -2,6 +2,7 @@
 // ignore_for_file: strict_raw_type
 
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:flutter_adaptive_template/src/resolver.dart';
 
 /// template expression evaluator
@@ -271,6 +272,8 @@ class Evaluator {
               try {
                 result = json.decode(evaluatedArg);
               } catch (_) {
+                // If JSON parsing fails, fallback to browser
+                developer.log('Could not parse JSON from $evaluatedArg');
                 result = null;
               }
             } else {
