@@ -154,12 +154,10 @@ class ReferenceResolver {
     // then currentcontainer style if set
     // else finally default
     final String? myStyle = (style != null && style != 'default')
-        ? style
-              .toLowerCase() // named style
-        : (currentContainerStyle != null) // no named style so fall back
-        ? currentContainerStyle!
-              .toLowerCase() // style null or default -> look up
-        : defaultStyle; // style null
+        ? style.toLowerCase()
+        : (currentContainerStyle != null)
+        ? currentContainerStyle!.toLowerCase()
+        : defaultStyle;
 
     Color? backgroundColor;
 
@@ -168,12 +166,35 @@ class ReferenceResolver {
         backgroundColor =
             getContainerStylesConfig()?.emphasis.backgroundColor ??
             FallbackConfigs.containerStylesConfig.emphasis.backgroundColor;
+        break;
+      case 'good':
+        backgroundColor =
+            getContainerStylesConfig()?.good?.backgroundColor ??
+            FallbackConfigs.containerStylesConfig.good?.backgroundColor;
+        break;
+      case 'attention':
+        backgroundColor =
+            getContainerStylesConfig()?.attention?.backgroundColor ??
+            FallbackConfigs.containerStylesConfig.attention?.backgroundColor;
+        break;
+      case 'warning':
+        backgroundColor =
+            getContainerStylesConfig()?.warning?.backgroundColor ??
+            FallbackConfigs.containerStylesConfig.warning?.backgroundColor;
+        break;
+      case 'accent':
+        backgroundColor =
+            getContainerStylesConfig()?.accent?.backgroundColor ??
+            FallbackConfigs.containerStylesConfig.accent?.backgroundColor;
+        break;
       case 'default':
         backgroundColor =
             getContainerStylesConfig()?.defaultStyle.backgroundColor ??
             FallbackConfigs.containerStylesConfig.defaultStyle.backgroundColor;
+        break;
       default:
         backgroundColor = null;
+        break;
     }
 
     assert(() {
@@ -511,7 +532,7 @@ class ReferenceResolver {
   /// - left
   /// - center
   /// - right
-  MainAxisAlignment resolveHorizontalMainAxisAlginment(
+  MainAxisAlignment resolveHorizontalMainAxisAlignment(
     String? horizontalAlignment,
   ) {
     final String myHorizontalAlignment =
@@ -579,6 +600,10 @@ class ReferenceResolver {
     }
   }
 
+  double resolveSpacing(String? spacing) {
+    return SpacingsConfig.resolveSpacing(getSpacingsConfig(), spacing);
+  }
+
   double resolveSeparatorThickness() {
     return getSeparatorConfig()?.lineThickness.toDouble() ??
         FallbackConfigs.separatorConfig.lineThickness.toDouble();
@@ -588,5 +613,42 @@ class ReferenceResolver {
     return parseHexColor(getSeparatorConfig()?.lineColor) ??
         parseHexColor(FallbackConfigs.separatorConfig.lineColor) ??
         Colors.grey.shade300;
+  }
+
+  /// Get border color based on grid style
+  Color resolveGridStyleColor(String style) {
+    // Simple color mapping - ideally should use HostConfig
+    switch (style.toLowerCase()) {
+      case 'emphasis':
+        return Colors.grey.shade600;
+      case 'good':
+        return Colors.green.shade600;
+      case 'attention':
+        return Colors.red.shade600;
+      case 'warning':
+        return Colors.orange.shade600;
+      case 'accent':
+        return Colors.blue.shade600;
+      case 'default':
+      default:
+        return Colors.grey.shade400;
+    }
+  }
+
+  /// Get vertical alignment for table cells
+  TableCellVerticalAlignment resolveTableCellVerticalAlignment(
+    String? verticalAlignment,
+  ) {
+    final alignment = verticalAlignment?.toLowerCase() ?? 'center';
+
+    switch (alignment) {
+      case 'top':
+        return TableCellVerticalAlignment.top;
+      case 'bottom':
+        return TableCellVerticalAlignment.bottom;
+      case 'center':
+      default:
+        return TableCellVerticalAlignment.middle;
+    }
   }
 }

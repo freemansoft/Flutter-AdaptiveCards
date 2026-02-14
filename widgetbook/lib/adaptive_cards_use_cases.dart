@@ -821,6 +821,15 @@ Widget buildTableExample1(BuildContext context) {
   return const GenericPage(url: 'lib/samples/table/example1.json');
 }
 
+@widgetbook.UseCase(
+  name: 'Example 2',
+  type: widget_types.Table,
+  path: '[Components]',
+)
+Widget buildTableExample2(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/table/example2.json');
+}
+
 // =============================================================================
 // V1.6 Components - Badge
 // =============================================================================

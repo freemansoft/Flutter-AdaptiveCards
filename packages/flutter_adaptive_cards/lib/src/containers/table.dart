@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards/src/additional.dart';
 import 'package:flutter_adaptive_cards/src/models/table_cell.dart';
+import 'package:flutter_adaptive_cards/src/reference_resolver.dart';
+import 'package:flutter_adaptive_cards/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 
 ///
-/// https://adaptivecards.io/explorer/ColumnSet.html
+/// https://adaptivecards.io/explorer/Table.html
 ///
-/// This is a placeholder implementation that only shows an empty table
-/// Has no error handling
 ///
 /// Reasonable test schema is https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json
 ///
@@ -33,12 +34,32 @@ class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
 
   @override
   AdaptiveTableState createState() => AdaptiveTableState();
+
+  // a column
+  static ValueKey<String> columnKey(String tableKey, int col) =>
+      ValueKey('${tableKey}_col_$col');
+
+  // a specific cell
+  static ValueKey<String> cellKey(String tableKey, int rowIndex, int col) =>
+      ValueKey('${tableKey}_${rowIndex}_$col');
+
+  // a specific row
+  static ValueKey<String> rowKey(String tableKey, int rowIndex) =>
+      ValueKey('${tableKey}_row_$rowIndex');
+
+  // the column this whole thing sits in
+  static ValueKey<String> tableColumnKey(String tableKey) =>
+      ValueKey('${tableKey}_column');
 }
 
 class AdaptiveTableState extends State<AdaptiveTable>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin {
   late List<Map<String, dynamic>> columns;
   late List<Map<String, dynamic>> rows;
+  late bool showGridLines;
+  late String gridStyle;
+  late bool firstRowAsHeader;
+  late String? verticalCellAlignment;
 
   @override
   void initState() {
@@ -47,6 +68,13 @@ class AdaptiveTableState extends State<AdaptiveTable>
 
     // Should all be Table Rows
     rows = List<Map<String, dynamic>>.from(adaptiveMap['rows'] ?? []);
+
+    // Parse new properties
+    showGridLines = adaptiveMap['showGridLines'] as bool? ?? true;
+    gridStyle = adaptiveMap['gridStyle'] as String? ?? 'default';
+    firstRowAsHeader = adaptiveMap['firstRowAsHeader'] as bool? ?? true;
+    verticalCellAlignment =
+        adaptiveMap['verticalCellContentAlignment'] as String?;
 
     assert(() {
       developer.log(
@@ -59,140 +87,282 @@ class AdaptiveTableState extends State<AdaptiveTable>
 
   @override
   Widget build(BuildContext context) {
+    final String tableKey = (widget.key as ValueKey<String>).value;
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
+    Widget tableContent = Column(
+      key: AdaptiveTable.tableColumnKey(tableKey),
+      children: generateTableRows(rows, resolver, tableKey),
+    );
+
+    if (showGridLines) {
+      final Color borderColor = resolver.resolveGridStyleColor(gridStyle);
+      tableContent = Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: borderColor),
+        ),
+        child: tableContent,
+      );
+    }
+
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: Table(
-          border: TableBorder.all(),
-          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-          defaultColumnWidth: const FlexColumnWidth(),
-          // column width should be picked up from the columns["width"]
-          // columnWidths: const <int, TableColumnWidth>{
-          //   1: FlexColumnWidth(),
-          //   2: FlexColumnWidth(),
-          //   3: FlexColumnWidth(),
-          // },
-          children: generateTableRows(rows),
-        ),
+        child: tableContent,
       ),
     );
   }
 
-  MainAxisAlignment loadHorizontalAlignment() {
-    final String horizontalAlignment =
-        adaptiveMap['horizontalCellContentAlignment']
-            ?.toString()
-            .toLowerCase() ??
-        'left';
-
-    switch (horizontalAlignment) {
-      case 'left':
-        return MainAxisAlignment.start;
-      case 'center':
-        return MainAxisAlignment.center;
-      case 'right':
-        return MainAxisAlignment.end;
-      default:
-        return MainAxisAlignment.start;
-    }
-  }
-
   ///
-  /// Generates all the Table rows for the table [TableRow[TableCell[Widget]]]
+  /// Generates all the Table rows for the table
   ///
-  List<TableRow> generateTableRows(List<Map<String, dynamic>> rows) {
-    final allRows = List<TableRow>.generate(rows.length, (rowNum) {
-      return generateTableRowWidgets(rows[rowNum]);
-    });
-    // this code should assert that all rows have the same number of columns
-    assert(() {
-      final firstRow = allRows.first;
-      final expectedColumnCount = firstRow.children.length;
+  List<Widget> generateTableRows(
+    List<Map<String, dynamic>> rows,
+    ReferenceResolver resolver,
+    String tableKey,
+  ) {
+    final List<Widget> rowWidgets = [];
+    final Color borderColor = resolver.resolveGridStyleColor(gridStyle);
+    final double spacing = resolver.resolveSpacing('default');
 
-      for (int i = 0; i < allRows.length; i++) {
-        final row = allRows[i];
-        assert(
-          row.children.length == expectedColumnCount,
-          'Row $i has ${row.children.length} columns, expected $expectedColumnCount',
-        );
+    for (int i = 0; i < rows.length; i++) {
+      final isHeaderRow = firstRowAsHeader && i == 0;
+      rowWidgets.add(
+        generateTableRowWidgets(
+          rows[i],
+          resolver,
+          isHeaderRow: isHeaderRow,
+          rowIndex: i,
+          tableKey: tableKey,
+        ),
+      );
+
+      // Add separator if showing grid lines and not the last row
+      if (i < rows.length - 1) {
+        if (showGridLines) {
+          rowWidgets.add(Divider(height: 1, thickness: 1, color: borderColor));
+        } else {
+          rowWidgets.add(SizedBox(height: spacing));
+        }
       }
-      return true;
-    }());
+    }
 
-    return allRows;
+    return rowWidgets;
   }
 
   ///
-  /// Generates a TableRow for the Table TableRow[TableCell[Widget]]
+  /// Generates a Row for the Table
   ///
-  TableRow generateTableRowWidgets(Map<String, dynamic> row) {
-    //developer.log(format("Row: num:{} - {})", rowNum, row.toString()),
-    //  name: runtimeType.toString());
-
-    // All the table cell markup in this row [cell, cell, cell]
-    final List<TableCellModel> rowTableCells =
+  Widget generateTableRowWidgets(
+    Map<String, dynamic> row,
+    ReferenceResolver resolver, {
+    bool isHeaderRow = false,
+    required int rowIndex,
+    required String tableKey,
+  }) {
+    final List<Map<String, dynamic>> rowCellItems =
         (row['cells'] as List<dynamic>?)
-            ?.map((e) => TableCellModel.fromJson(e as Map<String, dynamic>))
+            ?.cast<Map<String, dynamic>>()
             .toList() ??
         [];
-    //developer.log(format("rowTableCells: row:{} length:{} - {} ", rowNum,
-    //    rowTableCells.length, rowTableCells.toString()),
-    //      name: runtimeType.toString());
 
-    // The row markup contains a [TableCells[items]]
-    final List<List<dynamic>> rowCellItems = List<List<dynamic>>.generate(
-      rowTableCells.length,
-      (rowNum) {
-        // some of the samples have empty rows
-        return rowTableCells[rowNum].items;
-      },
-    );
-    // developer.log(format("rowCellItems: row:{} length:{} - {}", rowNum,
-    //    rowCellItems.length, rowCellItems.toString()),
-    //      name: runtimeType.toString());
+    final List<TableCellModel> rowTableCells = rowCellItems
+        .map((e) => TableCellModel.fromJson(e))
+        .toList();
 
-    final List<TableCell>
-    tableCells = List<TableCell>.generate(rowCellItems.length, (
-      col,
-    ) {
+    final rowStyle = row['style'] as String?;
+    final Color borderColor = resolver.resolveGridStyleColor(gridStyle);
+    final double spacing = resolver.resolveSpacing('default');
+
+    final List<Widget> cellWidgets = [];
+
+    // Ensure we don't exceed defined columns or handle mismatch gracefully?
+    // Table asserts equal columns. We can just loop available cells.
+    // Ideally we match columns definition length.
+    final int cellCount = rowCellItems.length;
+
+    for (int col = 0; col < cellCount; col++) {
       final List<Map<String, dynamic>> oneCellItems =
           List<Map<String, dynamic>>.from(
-            rowCellItems[col],
+            rowTableCells[col].items,
           );
-      // developer.log(
-      //     format("oneCellItems: row:{} col:{} widgets in cell:{} - {}", rowNum,
-      //         col, oneCellItems.length, oneCellItems.toString()),
-      //     name: this.runtimeType.toString());
-      return TableCell(
-        child: Container(
-          decoration: getDecorationFromMap(rowTableCells[col].toJson()),
-          child: Scrollbar(
-            child: Wrap(
-              children: List<Widget>.generate(oneCellItems.length, (
-                widgetIndex,
-              ) {
-                developer.log(
-                  format(
-                    'onCellItems for index {} : {}',
-                    widgetIndex,
-                    oneCellItems[widgetIndex],
-                  ),
-                  name: runtimeType.toString(),
-                );
-                return cardTypeRegistry.getElement(
-                  map: oneCellItems[widgetIndex],
-                );
-              }),
-            ),
+
+      final cellModel = rowTableCells[col];
+
+      // Resolve background color
+      final effectiveStyle = cellModel.style ?? rowStyle;
+      final backgroundColor = resolver.resolveContainerBackgroundColor(
+        style: effectiveStyle,
+      );
+
+      // Resolve vertical alignment
+      final verticalAlign =
+          cellModel.verticalContentAlignment ?? verticalCellAlignment;
+      final vMainAxis = resolver.resolveVerticalMainAxisContentAlginment(
+        verticalAlign,
+      );
+
+      // Resolve horizontal alignment
+      final horizontalAlign =
+          cellModel.horizontalContentAlignment ??
+          adaptiveMap['horizontalCellContentAlignment'] as String?;
+      final hMainAxis = resolver.resolveHorizontalMainAxisAlignment(
+        horizontalAlign,
+      );
+
+      // Convert MainAxisAlignment to Alignment
+      double x = -1; // left
+      if (hMainAxis == MainAxisAlignment.center) x = 0.0;
+      if (hMainAxis == MainAxisAlignment.end) x = 1.0;
+
+      double y = -1; // top
+      if (vMainAxis == MainAxisAlignment.center) y = 0.0;
+      if (vMainAxis == MainAxisAlignment.end) y = 1.0;
+
+      final containerAlignment = Alignment(x, y);
+
+      final Widget cellContent = Container(
+        key: AdaptiveTable.cellKey(tableKey, rowIndex, col),
+        decoration: isHeaderRow
+            ? getHeaderCellDecoration(
+                cellModel.toJson(),
+                backgroundColor: backgroundColor,
+              )
+            : getDecorationFromMap(
+                cellModel.toJson(),
+                backgroundColor: backgroundColor,
+              ),
+        child: Align(
+          alignment: containerAlignment,
+          child: buildCellContent(
+            oneCellItems: oneCellItems,
+            isHeaderRow: isHeaderRow,
+            cellModel: cellModel,
+            // Horizontal alignment passed to buildCellContent is redundant if handled by Align
+            // but buildCellContent uses it for checking?
+            // Actually buildCellContent implementation in previous step removed the logic.
+            // But we can check if it needs update.
           ),
         ),
       );
+
+      // Determine column width
+      // Default to flex 1 if columns def is missing or shorter
+      Widget wrappedCell;
+      if (col < columns.length) {
+        final columnDef = columns[col];
+        final dynamic width = columnDef['width'];
+
+        if (width is num) {
+          wrappedCell = Expanded(
+            key: AdaptiveTable.columnKey(tableKey, col),
+            flex: width.toInt(),
+            child: cellContent,
+          );
+        } else if (width is String && width.endsWith('px')) {
+          final pixels = double.tryParse(width.replaceAll('px', ''));
+          if (pixels != null) {
+            wrappedCell = SizedBox(
+              key: AdaptiveTable.columnKey(tableKey, col),
+              width: pixels,
+              child: cellContent,
+            );
+          } else {
+            wrappedCell = Expanded(
+              key: AdaptiveTable.columnKey(tableKey, col),
+              child: cellContent,
+            );
+          }
+        } else {
+          wrappedCell = Expanded(
+            key: AdaptiveTable.columnKey(tableKey, col),
+            child: cellContent,
+          );
+        }
+      } else {
+        wrappedCell = Expanded(
+          key: AdaptiveTable.columnKey(tableKey, col),
+          child: cellContent,
+        );
+      }
+
+      cellWidgets.add(wrappedCell);
+
+      // Add separator
+      if (col < cellCount - 1) {
+        if (showGridLines) {
+          cellWidgets.add(
+            VerticalDivider(width: 1, thickness: 1, color: borderColor),
+          );
+        } else {
+          cellWidgets.add(SizedBox(width: spacing));
+        }
+      }
+    }
+
+    return IntrinsicHeight(
+      child: Row(
+        key: AdaptiveTable.rowKey(tableKey, rowIndex),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: cellWidgets,
+      ),
+    );
+  }
+
+  /// Build decoration for header cells
+  BoxDecoration getHeaderCellDecoration(
+    Map<String, dynamic> cellJson, {
+    Color? backgroundColor,
+  }) {
+    // Use base decoration and optionally enhance for headers
+    final baseDecoration = getDecorationFromMap(
+      cellJson,
+      backgroundColor: backgroundColor,
+    );
+    // Header cells could have special background/border if needed
+    return baseDecoration;
+  }
+
+  /// Build cell content with alignment support
+  Widget buildCellContent({
+    required List<Map<String, dynamic>> oneCellItems,
+    required bool isHeaderRow,
+    required TableCellModel cellModel,
+  }) {
+    final cellWidgets = List<Widget>.generate(oneCellItems.length, (
+      widgetIndex,
+    ) {
+      developer.log(
+        format(
+          'onCellItems for index {} : {}',
+          widgetIndex,
+          oneCellItems[widgetIndex],
+        ),
+        name: runtimeType.toString(),
+      );
+      return cardTypeRegistry.getElement(
+        map: oneCellItems[widgetIndex],
+      );
     });
 
-    // developer.log(format("cell children: {}", tableCellChildren));
-    // return TableRow(children: [tableCellChildren],
-    //    name: runtimeType.toString());
-    return TableRow(children: tableCells);
+    Widget content = Scrollbar(
+      child: Wrap(children: cellWidgets),
+    );
+
+    // Horizontal alignment is now handled by parent Align widget
+
+    // Apply header text styling if this is a header row
+    if (isHeaderRow) {
+      content = DefaultTextStyle(
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+        child: content,
+      );
+    }
+
+    return content;
   }
 }

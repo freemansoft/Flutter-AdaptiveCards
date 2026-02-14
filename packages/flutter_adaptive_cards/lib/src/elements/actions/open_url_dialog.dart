@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/src/actions/generic_action.dart';
@@ -83,7 +84,7 @@ class AdaptiveActionOpenUrlDialogState
       await launchUrl(uri);
     } else {
       // Handle error if needed, for now just log or do nothing
-      debugPrint('Could not launch $url');
+      developer.log('Could not launch $url');
     }
   }
 
