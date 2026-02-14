@@ -57,6 +57,25 @@ class MySubmitAction implements GenericSubmitAction {
 
 ---
 
+## Action.OpenUrlDialog Behavior 🌐
+
+`Action.OpenUrlDialog` is a specific action type that displays content from a URL within a dialog.
+
+### Core Logic
+
+1.  **Fetch Content**: When triggered, the action performs an HTTP GET request to the specified `url`.
+2.  **Content Negotiation**:
+    - It checks the `Content-Type` header of the response.
+    - It attempts to parse the response body as JSON.
+3.  **Display Strategy**:
+    - **JSON Content**: If the response is valid Adaptive Card JSON (typically `application/json`), the card is rendered directly within the dialog.
+    - **Web Content (Fallback)**: If the response is NOT JSON (e.g., standard HTML web page) or parsing fails:
+      - The action **automatically launches the system default browser** to the target URL using `url_launcher`.
+      - The dialog closes automatically to provide a seamless transition.
+    - **Error Handling**: Network errors or other failures may display an error message in the dialog or trigger the fallback mechanism depending on the failure type.
+
+---
+
 ## Tests & Migration Notes ⚠️
 
 - Existing consumers should continue to rely on `Generic*` types; concrete `Default*` classes are only used by the default registry.
