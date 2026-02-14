@@ -43,6 +43,10 @@ class ContainerStylesConfig {
   ContainerStylesConfig({
     required this.defaultStyle,
     required this.emphasis,
+    this.good,
+    this.attention,
+    this.warning,
+    this.accent,
   });
 
   factory ContainerStylesConfig.fromJson(Map<String, dynamic> json) {
@@ -61,9 +65,49 @@ class ContainerStylesConfig {
           foregroundColors: ForegroundColorsConfig.fromJson({}),
         ),
       ),
+      good: json['good'] == null
+          ? null
+          : ContainerStyleConfig.fromJson(
+              json['good'],
+              defaults: ContainerStyleConfig(
+                backgroundColor: const Color(0xFFCCFFCC), // Light green
+                foregroundColors: ForegroundColorsConfig.fromJson({}),
+              ),
+            ),
+      attention: json['attention'] == null
+          ? null
+          : ContainerStyleConfig.fromJson(
+              json['attention'],
+              defaults: ContainerStyleConfig(
+                backgroundColor: const Color(0xFFFFCCCC), // Light red
+                foregroundColors: ForegroundColorsConfig.fromJson({}),
+              ),
+            ),
+      warning: json['warning'] == null
+          ? null
+          : ContainerStyleConfig.fromJson(
+              json['warning'],
+              defaults: ContainerStyleConfig(
+                backgroundColor: const Color(0xFFFFE6CC), // Light orange
+                foregroundColors: ForegroundColorsConfig.fromJson({}),
+              ),
+            ),
+      accent: json['accent'] == null
+          ? null
+          : ContainerStyleConfig.fromJson(
+              json['accent'],
+              defaults: ContainerStyleConfig(
+                backgroundColor: const Color(0xFFCCE6FF), // Light blue
+                foregroundColors: ForegroundColorsConfig.fromJson({}),
+              ),
+            ),
     );
   }
 
   final ContainerStyleConfig defaultStyle;
   final ContainerStyleConfig emphasis;
+  final ContainerStyleConfig? good;
+  final ContainerStyleConfig? attention;
+  final ContainerStyleConfig? warning;
+  final ContainerStyleConfig? accent;
 }

@@ -50,7 +50,7 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
             );
     horizontalAlignment = ProviderScope.containerOf(context)
         .read(styleReferenceResolverProvider)
-        .resolveHorizontalMainAxisAlginment(
+        .resolveHorizontalMainAxisAlignment(
           adaptiveMap['horizontalAlignment'],
         );
 

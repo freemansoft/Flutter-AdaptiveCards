@@ -173,6 +173,22 @@ class FallbackConfigs {
           backgroundColor: Colors.grey,
           foregroundColors: _containerForegroundColorConfig,
         ),
+        good: ContainerStyleConfig(
+          backgroundColor: const Color(0xFFCCFFCC), // Light green
+          foregroundColors: _containerForegroundColorConfig,
+        ),
+        attention: ContainerStyleConfig(
+          backgroundColor: const Color(0xFFFFCCCC), // Light red
+          foregroundColors: _containerForegroundColorConfig,
+        ),
+        warning: ContainerStyleConfig(
+          backgroundColor: const Color(0xFFFFE6CC), // Light orange
+          foregroundColors: _containerForegroundColorConfig,
+        ),
+        accent: ContainerStyleConfig(
+          backgroundColor: const Color(0xFFCCE6FF), // Light blue
+          foregroundColors: _containerForegroundColorConfig,
+        ),
       );
 
   static final ForegroundColorsConfig _containerForegroundColorConfig =

@@ -202,4 +202,21 @@ void main() {
 
     await tester.pump(const Duration(seconds: 1));
   }, tags: ['golden']);
+
+  testWidgets('Golden Sample Table 2', (tester) async {
+    configureTestView();
+
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'table2');
+
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile('gold_files/table2.png'),
+    );
+
+    await tester.pump(const Duration(seconds: 1));
+  }, tags: ['golden']);
 }

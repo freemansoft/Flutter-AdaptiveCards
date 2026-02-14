@@ -197,6 +197,11 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'ColumnSet',
         useCases: [
           _widgetbook.WidgetbookUseCase(
+            name: 'Background Image',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildColumnSetExample4,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Column width in pixels',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildColumnSetColumnWidthPixels,
@@ -215,11 +220,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Example 3',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildColumnSetExample3,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Example 4',
-            builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildColumnSetExample4,
           ),
           _widgetbook.WidgetbookUseCase(
             name: 'Example 5',
@@ -470,6 +470,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Example 1',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildTableExample1,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 2',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildTableExample2,
           ),
         ],
       ),
