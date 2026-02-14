@@ -118,7 +118,6 @@ String getDayOfMonthSuffix(int n) {
 }
 
 /// Parses a given text string to property handle DATE() and TIME()
-// TODO(username): this needs a bunch of tests
 String parseTextString(String text) {
   return text.replaceAllMapped(RegExp('{{.*}}'), (match) {
     final String? res = match.group(0);
