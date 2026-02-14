@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
-import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards/src/containers/table.dart';
+import 'package:flutter_adaptive_cards/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -254,7 +254,7 @@ void main() {
       const tableKey = 'testTable_adaptive';
       final containerFinder = find.byKey(AdaptiveTable.cellKey(tableKey, 0, 0));
       final container = tester.widget<Container>(containerFinder);
-      final align = container.child as Align;
+      final align = container.child! as Align;
       expect(align.alignment, Alignment.topLeft); // 'top' -> topLeft
     });
 
@@ -439,7 +439,7 @@ void main() {
         AdaptiveTable.cellKey(tableKey, 0, 0),
       );
       final goodContainer = tester.widget<Container>(goodContainerFinder);
-      final goodDecoration = goodContainer.decoration as BoxDecoration;
+      final goodDecoration = goodContainer.decoration! as BoxDecoration;
       expect(goodDecoration.color, const Color(0xFFCCFFCC));
 
       // Verify "attention" style (red)
@@ -450,7 +450,7 @@ void main() {
         attentionContainerFinder,
       );
       final attentionDecoration =
-          attentionContainer.decoration as BoxDecoration;
+          attentionContainer.decoration! as BoxDecoration;
       expect(attentionDecoration.color, const Color(0xFFFFCCCC));
     });
 

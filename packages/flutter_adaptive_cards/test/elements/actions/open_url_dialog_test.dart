@@ -219,7 +219,10 @@ class MockHttpClientResponse extends Fake implements HttpClientResponse {
   @override
   HttpHeaders get headers => MockHttpHeaders({
     'content-type': [
-      isJson ? 'application/json; charset=utf-8' : 'text/html; charset=utf-8',
+      if (isJson)
+        'application/json; charset=utf-8'
+      else
+        'text/html; charset=utf-8',
     ],
   });
 

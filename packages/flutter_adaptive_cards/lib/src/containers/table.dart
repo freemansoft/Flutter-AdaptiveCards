@@ -87,7 +87,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
 
   @override
   Widget build(BuildContext context) {
-    final String tableKey = (widget.key as ValueKey<String>).value;
+    final String tableKey = (widget.key! as ValueKey<String>).value;
     final resolver = ProviderScope.containerOf(
       context,
     ).read(styleReferenceResolverProvider);
@@ -169,7 +169,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
         [];
 
     final List<TableCellModel> rowTableCells = rowCellItems
-        .map((e) => TableCellModel.fromJson(e))
+        .map(TableCellModel.fromJson)
         .toList();
 
     final rowStyle = row['style'] as String?;
