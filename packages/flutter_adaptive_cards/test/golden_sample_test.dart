@@ -168,7 +168,7 @@ void main() {
       matchesGoldenFile('gold_files/sample5-tofu.png'),
     );
   }, tags: ['golden']);
-  // TODO(username): add other tests
+
   testWidgets('Golden Sample 14', (tester) async {
     configureTestView();
 
