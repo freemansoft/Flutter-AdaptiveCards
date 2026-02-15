@@ -43,8 +43,8 @@ class FallbackConfigs {
           subtleColor: Colors.black,
         ),
         light: FontColorConfig(
-          defaultColor: Colors.white,
-          subtleColor: Colors.white,
+          defaultColor: Colors.blueGrey.shade200,
+          subtleColor: Colors.blueGrey.shade100,
         ),
         good: FontColorConfig(
           defaultColor: Colors.green.shade200,
@@ -202,8 +202,8 @@ class FallbackConfigs {
           subtleColor: Colors.blue.withAlpha(128),
         ),
         light: FontColorConfig(
-          defaultColor: Colors.white,
-          subtleColor: Colors.white.withAlpha(128),
+          defaultColor: Colors.blueGrey,
+          subtleColor: Colors.blueGrey.withAlpha(128),
         ),
         dark: FontColorConfig(
           defaultColor: Colors.black,

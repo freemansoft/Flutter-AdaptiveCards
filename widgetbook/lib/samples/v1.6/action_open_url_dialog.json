@@ -1,0 +1,34 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Actions Open Url",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Open Bad URL will show bubble up",
+      "size": "Small"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrlDialog",
+      "title": "Open URL",
+      "url": "https://google.com"
+    },
+    {
+      "type": "Action.OpenUrlDialog",
+      "title": "Open Bad URL",
+      "url": "https://bad-google.com"
+    },
+    {
+      "type": "Action.OpenUrlDialog",
+      "title": "Open Card Example",
+      "url": "https://raw.githubusercontent.com/microsoft/BotBuilder-Samples/refs/heads/main/samples/javascript_nodejs/07.using-adaptive-cards/resources/SolitaireCard.json"
+    }
+  ]
+}

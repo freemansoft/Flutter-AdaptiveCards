@@ -1,0 +1,23 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Actions Reset Inputs",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Input.Text",
+      "id": "myText",
+      "placeholder": "Type something to reset..."
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.ResetInputs",
+      "title": "Reset Inputs"
+    }
+  ]
+}

@@ -271,9 +271,9 @@ class Evaluator {
             if (evaluatedArg is String) {
               try {
                 result = json.decode(evaluatedArg);
-              } catch (_) {
+              } on FormatException catch (e) {
                 // If JSON parsing fails, fallback to browser
-                developer.log('Could not parse JSON from $evaluatedArg');
+                developer.log('Could not parse JSON from $evaluatedArg: $e');
                 result = null;
               }
             } else {
