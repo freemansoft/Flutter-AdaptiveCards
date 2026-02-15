@@ -82,9 +82,24 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildActionToggleVisibilityExample1,
           ),
           _widgetbook.WidgetbookUseCase(
-            name: 'Actions.Popover Actions.Reset',
+            name: 'Actions.InsertImage',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ActionsInsertImage,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Actions.OpenUrlDialog',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ActionsOpenUrlDialog,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Actions.Popover',
             builder:
                 _widgetbook_workspace_adaptive_cards_use_cases.buildV16Actions,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Actions.Reset',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ActionsReset,
           ),
         ],
       ),

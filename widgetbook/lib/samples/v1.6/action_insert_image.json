@@ -1,0 +1,18 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Actions Insert Image",
+      "size": "Medium",
+      "weight": "Bolder"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.InsertImage",
+      "title": "Insert Image"
+    }
+  ]
+}

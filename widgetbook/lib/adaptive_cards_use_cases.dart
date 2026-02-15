@@ -936,12 +936,39 @@ Widget buildV16ChartLine(BuildContext context) {
 // =============================================================================
 
 @widgetbook.UseCase(
-  name: 'Actions.Popover Actions.Reset',
+  name: 'Actions.Popover',
   type: widget_types.Actions,
   path: '[Components]',
 )
 Widget buildV16Actions(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/v1.6/action.json');
+  return const GenericPage(url: 'lib/samples/v1.6/action_popover.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Actions.Reset',
+  type: widget_types.Actions,
+  path: '[Components]',
+)
+Widget buildV16ActionsReset(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.6/action_reset.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Actions.OpenUrlDialog',
+  type: widget_types.Actions,
+  path: '[Components]',
+)
+Widget buildV16ActionsOpenUrlDialog(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.6/action_open_url_dialog.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Actions.InsertImage',
+  type: widget_types.Actions,
+  path: '[Components]',
+)
+Widget buildV16ActionsInsertImage(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.6/action_insert_image.json');
 }
 
 // =============================================================================

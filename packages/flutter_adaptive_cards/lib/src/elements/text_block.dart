@@ -114,6 +114,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     );
   }
 
+  /// Returns Text
   Widget getText() {
     return Text(
       key: generateWidgetKey(adaptiveMap),
@@ -130,10 +131,11 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     );
   }
 
+  /// Returns MarkdownBody
   Widget getMarkdownText({required BuildContext context}) {
     return MarkdownBody(
       key: generateWidgetKey(adaptiveMap),
-      // TODOthe markdown library does currently not support max lines
+      // Bug: the markdown library does currently not support max lines
       // As markdown support is more important than maxLines right now
       // this is in here.
       //maxLines: maxLines,

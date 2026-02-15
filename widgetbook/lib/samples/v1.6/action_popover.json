@@ -1,0 +1,22 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Actions Popover",
+      "size": "Medium",
+      "weight": "Bolder"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Popover",
+      "title": "Show Popover",
+      "card": {
+        "type": "AdaptiveCard",
+        "body": [{ "type": "TextBlock", "text": "This is a popover!" }]
+      }
+    }
+  ]
+}
