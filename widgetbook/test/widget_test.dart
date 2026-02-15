@@ -8,5 +8,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  // cause I like them here
+  // ignore: avoid_types_on_closure_parameters
   testWidgets('Placeholder for future tests', (WidgetTester tester) async {});
 }

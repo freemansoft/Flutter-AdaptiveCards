@@ -26,6 +26,15 @@
         "--web-port",
         "3000"
       ]
+    },
+    {
+      "name": "Adaptive Explorer - Current",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "cwd": "${workspaceFolder}/adaptive_explorer",
+      "program": "lib/main.dart",
+      "args": []
     }
   ]
 }

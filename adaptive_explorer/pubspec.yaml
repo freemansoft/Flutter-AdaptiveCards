@@ -1,5 +1,5 @@
-name: widgetbook_workspace
-description: "Widgetbook of AdaptiveCards."
+name: adaptive_explorer
+description: "Adaptive Cards explorer."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -29,32 +29,24 @@ resolution: workspace
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  accessibility_tools: ^2.0.0
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  file_picker: ^10.3.10
   flutter:
     sdk: flutter
-
   flutter_adaptive_cards:
-    path: ../
-  flutter_localizations:
-    sdk: flutter
-
-  format: ^1.5.2
-  url_launcher: ^6.3.1
-
-  widgetbook: ^3.20.2
-  widgetbook_annotation: ^3.9.0
+    path: ../packages/flutter_adaptive_cards
+  flutter_adaptive_template:
+    path: ../packages/flutter_adaptive_template
+  path: ^1.9.1
+  watcher: ^1.2.1
 
 dev_dependencies:
-  build_runner: ^2.10.5
   flutter_test:
     sdk: flutter
   very_good_analysis: ^10.0.0
-  widgetbook_generator: ^3.20.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -65,32 +57,3 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
-  # Assets for AdaptiveCard samples
-  assets:
-    - lib/samples/examples/
-    - lib/samples/text_block/
-    - lib/samples/image/
-    - lib/samples/container/
-    - lib/samples/column_set/
-    - lib/samples/column/
-    - lib/samples/fact_set/
-    - lib/samples/image_set/
-    - lib/samples/action_execute/
-    - lib/samples/action_set/
-    - lib/samples/action_open_url/
-    - lib/samples/action_submit/
-    - lib/samples/action_show_card/
-    - lib/samples/action_toggle/
-    - lib/samples/adaptive_card_element/
-    - lib/samples/inputs/input_text/
-    - lib/samples/inputs/input_number/
-    - lib/samples/inputs/input_date/
-    - lib/samples/inputs/input_time/
-    - lib/samples/inputs/input_toggle/
-    - lib/samples/inputs/input_choice_set/
-    - lib/samples/media/
-    - lib/samples/table/
-    - lib/samples/v1.6/
-    - lib/samples/pnp_templates/
-    - assets/
