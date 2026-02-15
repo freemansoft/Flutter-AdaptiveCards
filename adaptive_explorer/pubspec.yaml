@@ -36,8 +36,8 @@ dependencies:
   file_picker: ^10.3.10
   flutter:
     sdk: flutter
-  flutter_adaptive_cards:
-    path: ../packages/flutter_adaptive_cards
+  flutter_adaptive_cards_plus:
+    path: ../packages/flutter_adaptive_cards_plus
   flutter_adaptive_template:
     path: ../packages/flutter_adaptive_template
   path: ^1.9.1

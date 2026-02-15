@@ -6,7 +6,7 @@ This project is a Flutter implementation of the Adaptive Cards specification. Th
 
 Adaptive Cards is a way of implementing Server Driven UI (SDUI) using a JSON based schema to deliver user interfaces specifications across platforms.
 
-1. See the [Getting Started](packages/flutter_adaptive_cards/README.md) page for more information about this library.
+1. See the [Getting Started](packages/flutter_adaptive_cards_plus/README.md) page for more information about this library.
 
 ## The default branch has been renamed!
 
@@ -24,8 +24,8 @@ git remote set-head origin -a
 ## Getting Started
 
 1. You can view demonstrations of this implementation by running the [Widgetbook](widgetbook)
-1. The actual library is in [packages/flutter_adaptive_cards](packages/flutter_adaptive_cards/README.md)
-   The changelog is in [packages/flutter_adaptive_cards/CHANGELOG.md](packages/flutter_adaptive_cards/CHANGELOG.md)
+1. The actual library is in [packages/flutter_adaptive_cards_plus](packages/flutter_adaptive_cards_plus/README.md)
+   The changelog is in [packages/flutter_adaptive_cards_plus/CHANGELOG.md](packages/flutter_adaptive_cards_plus/CHANGELOG.md)
 1. [Adaptive Expressions reference](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions?view=azure-bot-service-4.0)
 1. [Adaptive Cards Template reference](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/card-templates)
 
@@ -48,6 +48,6 @@ HostConfig is a JSON object that contains configuration options for the Adaptive
 
 Many!
 
-- See [Defects](packages/flutter_adaptive_cards/README.md#defects)
+- See [Defects](packages/flutter_adaptive_cards_plus/README.md#defects)
 - https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/text-features may not all be implemented
 -
