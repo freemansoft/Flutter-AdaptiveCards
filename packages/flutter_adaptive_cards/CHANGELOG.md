@@ -19,8 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2026-02-15
 
-- Added the adaptive explorer app
+- First version to be published on pub.dev out of the freemansoft repo
+- Added the adaptive_explorer app
 - Set versions on all projects to 0.3.0
+-
 
 ## [0.2.1](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.20...0.2.1) 2025-09-23
 
