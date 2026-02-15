@@ -1,6 +1,6 @@
 # Design for Microsoft AdaptiveCard Template Engine
 
-This is the initial design document for a Dart based templating engine located in `packages/flutter_adaptive_template` to be used in conjuction with the flutter adpaptive cards library located in `pacagkesflutter_adaptive_cards` in this repository. There is no cross package dependencies. Both flutter_adaptive_template and flutter_adaptive_cards can be used independently. The purpose of this engine is to separate the data in an adaptive card from the layout.  The template service applies the data json to the template json creating a renderable adaptive card json.  This page describes the templating language <https://learn.microsoft.com/en-us/adaptive-cards/templating/language> and should be used as the source.
+This is the initial design document for a Dart based templating engine located in `packages/flutter_adaptive_template` to be used in conjuction with the flutter adpaptive cards library located in `pacagkesflutter_adaptive_cards_plus` in this repository. There is no cross package dependencies. Both flutter_adaptive_template and flutter_adaptive_cards_plus can be used independently. The purpose of this engine is to separate the data in an adaptive card from the layout. The template service applies the data json to the template json creating a renderable adaptive card json. This page describes the templating language <https://learn.microsoft.com/en-us/adaptive-cards/templating/language> and should be used as the source.
 
 This design supports separate template an data json but the standard also supports the data being part of the data in a "$data" field on the root of the JSON. You can see this in the examples.
 
@@ -25,7 +25,7 @@ This design supports separate template an data json but the standard also suppor
 
 ## Scopes with "$data"
 
-A binding scope lets you set the _base_ of the data tree for the following template references. References below that point essentially include the scope as a prefix on the binding property names.  You can set the binding scope back to null or the root of the data json by using `${$root}` as `$root` is a _magic word_ name.  A long property reference of `${person.name}`
+A binding scope lets you set the _base_ of the data tree for the following template references. References below that point essentially include the scope as a prefix on the binding property names. You can set the binding scope back to null or the root of the data json by using `${$root}` as `$root` is a _magic word_ name. A long property reference of `${person.name}`
 This came from <https://learn.microsoft.com/en-us/adaptive-cards/templating/language>
 
 There are a few reserved keywords to access various binding scopes.
@@ -61,38 +61,38 @@ To assign a "data context" to any element add a $data attribute to the element.
 
 ## Array Binding
 
-An Adaptive Card element's `$data` property is bound to an array in the data JSON. That property should be an Array in the data JSON under the name that is the value of the `data` property.  Elements in the template JSON will be repeated, as an array, for each item in the data JSON array.
+An Adaptive Card element's `$data` property is bound to an array in the data JSON. That property should be an Array in the data JSON under the name that is the value of the `data` property. Elements in the template JSON will be repeated, as an array, for each item in the data JSON array.
 
 Any binding expressions `${myProperty}` used in property values will be scoped to the individual item within the array.
 
-The following sample creates a 2 Fact long FactSet from a data JSON.  This exmaple came from <https://stackoverflow.com/questions/63738912/bind-an-array-with-dynamic-length-to-an-adaptive-card>
+The following sample creates a 2 Fact long FactSet from a data JSON. This exmaple came from <https://stackoverflow.com/questions/63738912/bind-an-array-with-dynamic-length-to-an-adaptive-card>
 
 Template JSON
 
 ```json
 {
-"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-"type": "AdaptiveCard",
-"version": "1.3",
-"body": [
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.3",
+  "body": [
     {
-        "type": "TextBlock",
-        "text": "${title}",
-        "size": "Medium",
-        "weight": "Bolder",
-        "wrap": true,
-        "separator": true
+      "type": "TextBlock",
+      "text": "${title}",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true,
+      "separator": true
     },
     {
-        "type": "FactSet",
-        "facts": [
-            {
-                "$data": "${instructions}",
-                "title": "${id}.",
-                "value": "${text}"
-            }
-        ],
-        "separator": true
+      "type": "FactSet",
+      "facts": [
+        {
+          "$data": "${instructions}",
+          "title": "${id}.",
+          "value": "${text}"
+        }
+      ],
+      "separator": true
     }
   ]
 }
@@ -116,7 +116,6 @@ Data JSON
   }
 }
 ```
-
 
 Results in
 
@@ -196,10 +195,11 @@ JSON Adaptive Card Template fragment
 Results in the following JSON
 
 JSON
+
 ```json
 {
-    "type": "TextBlock",
-    "text": "Release-104"
+  "type": "TextBlock",
+  "text": "Release-104"
 }
 ```
 
@@ -238,16 +238,17 @@ Custom functions implemented in dart are not supported by the Dart Template libr
 
 ## Example Simple Template expansion
 
-
 Template JSON
+
 ```json
 {
-   "type": "TextBlock",
-   "text": "${firstName}"
+  "type": "TextBlock",
+  "text": "${firstName}"
 }
 ```
 
 Result JSON
+
 ```JSON
 {
    "firstName": "Matt"
@@ -258,15 +259,14 @@ Resulting card json
 
 ```json
 {
-   "type": "TextBlock",
-   "text": "Matt"
+  "type": "TextBlock",
+  "text": "Matt"
 }
 ```
 
-
 ## AdaptiveCardTemplate - Dart Class
 
-The template library initializes with the JSON template.  Then later calls apply data to to the template.
+The template library initializes with the JSON template. Then later calls apply data to to the template.
 
 ### Sample C# interface
 
@@ -342,14 +342,14 @@ string cardJson = template.Expand(context);
 
 Each of the features and capabilities described above must have unit tests to validate and prevent regression. The unit tests should use json template and json data files that should be part of the testing directory. in `packages/flutter_adaptive_template/test`. We want the unit test JSON to be in json files and not embedded in the tests themselves for future usage and analysis.
 
-Testing template and data JSON can be found in the adaptive card templating service [on GitHub](https://github.com/microsoft/adaptivecards-templates/tree/master/templates). The project can copy over.  The team should prioritize templates and data in separate files but an also pull in JSON that has a $data section and then the template to be filed with the $data.  Some of the examples have a "$SampleData" section in the template that can be used to validate the template.  For testing, if we find that in a copied example then the $SampleData can be removed from the json and then be passed as the data json along with the modified template when executing the test.
+Testing template and data JSON can be found in the adaptive card templating service [on GitHub](https://github.com/microsoft/adaptivecards-templates/tree/master/templates). The project can copy over. The team should prioritize templates and data in separate files but an also pull in JSON that has a $data section and then the template to be filed with the $data.  Some of the examples have a "$SampleData" section in the template that can be used to validate the template. For testing, if we find that in a copied example then the $SampleData can be removed from the json and then be passed as the data json along with the modified template when executing the test.
 
 1. Copy sample json from https://github.com/microsoft/adaptivecards-templates/tree/master/templates to use in the test. The examples in this document should also be made into tests with the json being put in json files and read by the tests
-1. Create a unit test that loads the sample template/data json pair and merges them.  The developer should create an expected output json file and verify the merged template/data with the expected output.
+1. Create a unit test that loads the sample template/data json pair and merges them. The developer should create an expected output json file and verify the merged template/data with the expected output.
 
 ## Data and Time Formatting
 
-`DATE` and `TIME` formatting functins are implemented in flutter_adaptive_cards and not `flutter_adaptive_template`
+`DATE` and `TIME` formatting functins are implemented in flutter_adaptive_cards_plus and not `flutter_adaptive_template`
 
 ## References
 

@@ -1,0 +1,154 @@
+import 'dart:async';
+import 'dart:developer' as developer;
+import 'dart:io';
+
+import 'package:chewie/chewie.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards_plus/src/additional.dart';
+import 'package:flutter_adaptive_cards_plus/src/models/media_source.dart';
+import 'package:flutter_adaptive_cards_plus/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards_plus/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:format/format.dart';
+import 'package:video_player/video_player.dart';
+
+/// Implements
+/// * https://adaptivecards.io/explorer/Media.html
+/// * https://adaptivecards.io/explorer/MediaSource.html
+class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
+  AdaptiveMedia({
+    required this.adaptiveMap,
+  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+    id = loadId(adaptiveMap);
+  }
+
+  @override
+  final Map<String, dynamic> adaptiveMap;
+
+  @override
+  late final String id;
+
+  @override
+  AdaptiveMediaState createState() => AdaptiveMediaState();
+}
+
+class AdaptiveMediaState extends State<AdaptiveMedia>
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+  late VideoPlayerController videoPlayerController;
+  ChewieController? controller;
+
+  late String sourceUrl;
+  late String? postUrl;
+  late String altText;
+
+  FadeAnimation imageFadeAnim = const FadeAnimation(
+    child: Icon(Icons.play_arrow, size: 100),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+
+    // https://adaptivecards.io/explorer/MediaSource.html
+    final List<MediaSource> sources =
+        (adaptiveMap['sources'] as List<dynamic>?)
+            ?.map((e) => MediaSource.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+    sourceUrl = sources.isNotEmpty ? sources[0].url : '';
+
+    // https://pub.dev/packages/video_player
+    if (Platform.isWindows || Platform.isLinux) {
+      assert(() {
+        developer.log(
+          'this will throw an `init() has not been implemented` exception'
+          ' because the video player is not supported on some platforms',
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+    }
+
+    // We could use mediaConfig.allowInlinePlayback to decide whether to initialize player
+    // but for now we'll respect it as a hint for the UI if needed.
+    unawaited(initializePlayer());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
+    final mediaConfig = resolver.getMediaConfig();
+
+    postUrl = adaptiveMap['poster']?.toString() ?? mediaConfig?.defaultPoster;
+    if (postUrl != null && postUrl!.isEmpty) postUrl = null;
+  }
+
+  Future<void> initializePlayer() async {
+    videoPlayerController = VideoPlayerController.networkUrl(
+      Uri.parse(sourceUrl),
+    );
+
+    try {
+      await videoPlayerController.initialize();
+    } catch (e) {
+      assert(() {
+        developer.log(
+          format('video {} not supported on this platform: {}', sourceUrl, e),
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+
+      rethrow;
+    }
+
+    controller = ChewieController(
+      aspectRatio: 3 / 2,
+      autoPlay: false,
+      looping: true,
+      videoPlayerController: videoPlayerController,
+    );
+
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    unawaited(videoPlayerController.dispose());
+    controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget getVideoPlayer() {
+      return Chewie(controller: controller!);
+    }
+
+    Widget getPlaceholder() {
+      return postUrl != null
+          ? AdaptiveImageUtils.getImage(postUrl!, semanticsLabel: altText)
+          : Container();
+    }
+
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: AspectRatio(
+            aspectRatio: 3 / 2,
+            child: controller == null ? getPlaceholder() : getVideoPlayer(),
+          ),
+        ),
+      ),
+    );
+  }
+}

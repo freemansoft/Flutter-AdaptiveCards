@@ -11,7 +11,7 @@ Usage:
   While sitting in the root of the repo, I run:
   python3 scripts/copy_golden_images.py \
     '/Users/joefreeman/Downloads/adaptive_cards_golden_test_failures' \
-        'packages/flutter_adaptive_cards/test/gold_files'
+        'packages/flutter_adaptive_cards_plus/test/gold_files'
 """
 
 import argparse
