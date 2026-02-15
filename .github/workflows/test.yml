@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable' # Or 'beta' or 'master' depending on your needs
+          channel: "stable" # Or 'beta' or 'master' depending on your needs
           flutter-version: 3.38.5 # should sync with fvm version
           cache: true
 
@@ -32,3 +32,7 @@ jobs:
           name: adaptive_cards_golden_test_failures # Name for the artifact
           path: packages/flutter_adaptive_cards/test/failures # The path where Flutter saves failure images (adjust if different in your project)
           retention-days: 7 # Optional: how long to keep the artifact
+
+      - name: Run adaptive_explorer tests including golden tests
+        run: flutter test -r expanded
+        working-directory: ./adaptive_explorer

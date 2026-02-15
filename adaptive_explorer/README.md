@@ -17,6 +17,12 @@ Viewer for adaptive cards json files. Can be used to open a json file and displa
 
 This application runs on any desktop, macos, windows or linux
 
+## Supported platforms
+
+- Windows
+- MacOS
+- Linux
+
 ## Getting Started
 
 1. Run this app
