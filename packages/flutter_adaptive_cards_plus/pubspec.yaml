@@ -1,0 +1,43 @@
+name: flutter_adaptive_cards_plus
+description: Adaptive Cards are platform-agnostic snippets of UI, authored in JSON, that apps and services can openly exchange.
+version: 0.3.0
+homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
+
+environment:
+  sdk: ^3.10.4
+resolution: workspace
+
+dependencies:
+  # Content
+  # Video player with controls - Android, IOS, MACOS, WEB https://pub.dev/packages/chewie
+  # Could investigate video_player_media_kit - Android, IOS, LINUX, MACOS, Web, WINDOWS
+  chewie: ^1.13.0
+  fl_chart: 1.0.0 # https://github.com/imaNNeo/fl_chart/issues/1986
+  flutter:
+    sdk: flutter
+
+  ## Markdown renderer
+  flutter_markdown_plus: ^1.0.0
+  flutter_riverpod: ^3.0.0
+  flutter_svg: ^2.0.10+1
+  format: ^1.5.0
+  # General
+  http: ^1.6.0
+  ## Localization
+  intl: ^0.20.2
+
+  # Used for automatic color adjustment for dark theme
+  tinycolor2: ^3.0.1
+  url_launcher: ^6.3.2
+  uuid: ^4.5.1
+  video_player: ^2.10.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.4.5
+  #test: ^1.26.3
+  very_good_analysis: ^10.0.0
+
+flutter:
+  uses-material-design: true

@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards/flutter_adaptive_cards.dart';
+import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards.dart';
 import 'package:format/format.dart';
 
 /// A simplified page widget for Widgetbook that displays a single AdaptiveCard

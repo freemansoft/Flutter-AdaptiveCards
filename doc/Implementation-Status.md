@@ -179,19 +179,19 @@ These are implemented but not part of the standard Microsoft specification:
 
 ```bash
 # Count implemented HostConfig entities
-ls -1 packages/flutter_adaptive_cards/lib/src/hostconfig/*.dart | wc -l
+ls -1 packages/flutter_adaptive_cards_plus/lib/src/hostconfig/*.dart | wc -l
 
 # Count HostConfig tests
-ls -1 packages/flutter_adaptive_cards/test/hostconfig/*_test.dart | wc -l
+ls -1 packages/flutter_adaptive_cards_plus/test/hostconfig/*_test.dart | wc -l
 
 # Count input types
-ls -1 packages/flutter_adaptive_cards/lib/src/inputs/*.dart | wc -l
+ls -1 packages/flutter_adaptive_cards_plus/lib/src/inputs/*.dart | wc -l
 
 # Count input tests
-ls -1 packages/flutter_adaptive_cards/test/inputs/*_test.dart | wc -l
+ls -1 packages/flutter_adaptive_cards_plus/test/inputs/*_test.dart | wc -l
 
 # Run non-golden tests
-cd packages/flutter_adaptive_cards
+cd packages/flutter_adaptive_cards_plus
 flutter test --exclude-tags=golden
 ```
 

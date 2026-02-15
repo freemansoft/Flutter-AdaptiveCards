@@ -6,7 +6,7 @@ The key should be set in the widget constructor
 
 ## Changes
 
-For each AdaptiveElementWidget class located in `packages/flutter_adaptive_cards/lib/src`
+For each AdaptiveElementWidget class located in `packages/flutter_adaptive_cards_plus/lib/src`
 
 - Change the constructor to remove the passed in `key` and replace it with a key generated using `generateWidgetKey()`.
 

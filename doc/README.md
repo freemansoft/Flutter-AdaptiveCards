@@ -5,7 +5,7 @@ This directory contains design documents, implementation guides, and architectur
 ## Quick Links
 
 - **Main Project**: [Repository README](../README.md)
-- **Library README**: [flutter_adaptive_cards README](../packages/flutter_adaptive_cards/README.md)
+- **Library README**: [flutter_adaptive_cards_plus README](../packages/flutter_adaptive_cards_plus/README.md)
 - **Microsoft Standards**:
   - [Adaptive Cards Hub](https://adaptivecards.microsoft.com/)
   - [Legacy Site & Schema Explorer](https://adaptivecards.io/)
@@ -92,8 +92,8 @@ Specification for base64 encoded inline image support using `Image.memory`. Incl
 
 Test requirements for HostConfig serialization. Each HostConfig entity should have:
 
-- Test file: `packages/flutter_adaptive_cards/test/hostconfig/{name}_test.dart`
-- JSON file: `packages/flutter_adaptive_cards/test/hostconfig/{name}.json`
+- Test file: `packages/flutter_adaptive_cards_plus/test/hostconfig/{name}_test.dart`
+- JSON file: `packages/flutter_adaptive_cards_plus/test/hostconfig/{name}.json`
 - Validation against schema
 
 ---
