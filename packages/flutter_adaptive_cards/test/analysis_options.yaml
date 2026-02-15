@@ -1,0 +1,7 @@
+include: ../analysis_options.yaml
+
+linter:
+  # Override or disable specific linter rules in tests
+  rules:
+    # I like types for clarity in tests
+    avoid_types_as_parameter_names: false

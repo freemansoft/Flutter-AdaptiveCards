@@ -55,6 +55,8 @@ linter:
     always_use_package_imports: true
     directives_ordering: true
     sort_pub_dependencies: true
+    # I like types for clarity in tests
+    avoid_types_on_closure_parameters: false
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
