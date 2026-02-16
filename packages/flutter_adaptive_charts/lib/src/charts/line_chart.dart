@@ -1,8 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards_plus/src/additional.dart';
-import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
+import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards_extend.dart';
 
 ///
 /// https://adaptivecards.microsoft.com/?topic=Chart.Line

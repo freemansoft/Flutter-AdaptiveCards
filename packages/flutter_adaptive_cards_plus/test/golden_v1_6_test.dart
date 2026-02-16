@@ -51,20 +51,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
 
-  testWidgets('Golden Donut', (tester) async {
-    configureTestView();
-    const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'chart_donut');
-    await tester.pumpWidget(sample);
-    await tester.pumpAndSettle();
-
-    await expectLater(
-      find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_donut.png'),
-    );
-    await tester.pump(const Duration(milliseconds: 100));
-  }, tags: ['golden']);
-
   testWidgets('Golden Carousel', (tester) async {
     configureTestView();
     const ValueKey key = ValueKey('paint');

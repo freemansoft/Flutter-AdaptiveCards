@@ -1,0 +1,33 @@
+name: flutter_adaptive_charts
+description: Additional adaptive card components charts
+version: 0.3.0
+homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
+
+environment:
+  sdk: ^3.10.4
+resolution: workspace
+
+dependencies:
+  fl_chart: 1.0.0 # https://github.com/imaNNeo/fl_chart/issues/1986
+  flutter:
+    sdk: flutter
+
+  flutter_adaptive_cards_plus:
+
+  format: ^1.5.0
+  # General
+  http: ^1.6.0
+  ## Localization
+  intl: ^0.20.2
+
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mockito: ^5.4.5
+  #test: ^1.26.3
+  very_good_analysis: ^10.0.0
+
+flutter:
+  uses-material-design: true

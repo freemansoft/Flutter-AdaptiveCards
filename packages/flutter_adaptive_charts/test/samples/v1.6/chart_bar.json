@@ -4,12 +4,12 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "Horizontal Bar Chart Example",
+      "text": "Vertical Bar Chart Example",
       "size": "Medium",
       "weight": "Bolder"
     },
     {
-      "type": "Chart.HorizontalBar",
+      "type": "Chart.VerticalBar",
       "data": [
         { "x": "Category A", "y": 10, "color": "#FF0000" },
         { "x": "Category B", "y": 25, "color": "#00FF00" },

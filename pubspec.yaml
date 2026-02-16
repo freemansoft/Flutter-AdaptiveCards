@@ -4,6 +4,7 @@ environment:
   sdk: ^3.10.4
 workspace:
   - packages/flutter_adaptive_cards_plus
+  - packages/flutter_adaptive_charts
   - packages/flutter_adaptive_template
   - widgetbook
   - adaptive_explorer

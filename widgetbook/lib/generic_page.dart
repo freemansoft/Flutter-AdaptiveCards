@@ -2,6 +2,8 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards.dart';
+import 'package:flutter_adaptive_charts/flutter_adaptive_charts.dart';
+
 import 'package:format/format.dart';
 
 /// A simplified page widget for Widgetbook that displays a single AdaptiveCard
@@ -31,6 +33,10 @@ class GenericPage extends StatelessWidget {
           assetPath: url,
           supportMarkdown: supportMarkdown,
           initData: initData,
+          // add the chart registrations
+          cardRegistry: CardTypeRegistry(
+            addedElements: CardChartsRegistry.additionalChartElements,
+          ),
           onChange: (id, value, state) {
             developer.log(
               format(
