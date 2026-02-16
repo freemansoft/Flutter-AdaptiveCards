@@ -5,7 +5,6 @@ flutter_adaptive_cards_plus.iml
 # golden tests
 test/failures/
 
-
 # Miscellaneous
 *.class
 *.log
@@ -13,11 +12,9 @@ test/failures/
 *.swp
 .DS_Store
 .atom/
-.build/
 .buildlog/
 .history
 .svn/
-.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -36,12 +33,7 @@ migrate_working_dir/
 # not an issue in a workspace
 /pubspec.lock
 **/doc/api/
-**/ios/Flutter/.last_build_id
 .dart_tool/
-.flutter-plugins
 .flutter-plugins-dependencies
-.pub-cache/
-.pub/
 /build/
 /coverage/
-

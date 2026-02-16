@@ -30,7 +30,19 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: adaptive_cards_golden_test_failures # Name for the artifact
-          path: packages/flutter_adaptive_cards_plus/test/failures # The path where Flutter saves failure images (adjust if different in your project)
+          path: packages/flutter_adaptive_cards_plus/test/failures # The path where Flutter saves failure images
+          retention-days: 7 # Optional: how long to keep the artifact
+
+      - name: Run adaptive_charts tests including golden tests
+        run: flutter test -r expanded
+        working-directory: ./packages/flutter_adaptive_charts
+
+      - name: Upload adaptive_charts golden test failure images
+        if: ${{ failure() }} # This ensures the step runs only if the previous test step failed
+        uses: actions/upload-artifact@v4
+        with:
+          name: adaptive_charts_golden_test_failures # Name for the artifact
+          path: packages/flutter_adaptive_charts/test/failures # The path where Flutter saves failure images
           retention-days: 7 # Optional: how long to keep the artifact
 
       - name: Run adaptive_explorer tests including golden tests

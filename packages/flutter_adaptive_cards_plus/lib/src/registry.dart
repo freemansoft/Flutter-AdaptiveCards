@@ -19,9 +19,6 @@ import 'package:flutter_adaptive_cards_plus/src/elements/actions/submit.dart';
 import 'package:flutter_adaptive_cards_plus/src/elements/actions/toggle_visibility.dart';
 import 'package:flutter_adaptive_cards_plus/src/elements/badge.dart';
 import 'package:flutter_adaptive_cards_plus/src/elements/carousel.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/charts/bar_chart.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/charts/line_chart.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/charts/pie_donut_chart.dart';
 import 'package:flutter_adaptive_cards_plus/src/elements/code_block.dart';
 import 'package:flutter_adaptive_cards_plus/src/elements/compound_button.dart';
 import 'package:flutter_adaptive_cards_plus/src/elements/image.dart';
@@ -215,48 +212,6 @@ class CardTypeRegistry {
         // Actually "TabPage" is likely a child. But if user used "Other" for type...
         // Let's support TabSet as the container.
         return AdaptiveTabSet(adaptiveMap: map);
-
-      // Charts
-      case 'Chart.Donut':
-        return AdaptivePieChart(
-          adaptiveMap: map,
-          isDonut: true,
-        );
-      case 'Chart.Pie':
-        return AdaptivePieChart(
-          adaptiveMap: map,
-          isDonut: false,
-        );
-      case 'Chart.Gauge':
-        // Implementing Gauge as Donut for now (or Pie)
-        return AdaptivePieChart(
-          adaptiveMap: map,
-          isDonut: true,
-        );
-
-      case 'Chart.Line':
-        return AdaptiveLineChart(adaptiveMap: map);
-
-      case 'Chart.VerticalBar':
-        return AdaptiveBarChart(
-          adaptiveMap: map,
-          type: BarChartType.vertical,
-        );
-      case 'Chart.HorizontalBar':
-        return AdaptiveBarChart(
-          adaptiveMap: map,
-          type: BarChartType.horizontal,
-        );
-      case 'Chart.HorizontalBar.Stacked':
-        return AdaptiveBarChart(
-          adaptiveMap: map,
-          type: BarChartType.horizontalStacked,
-        );
-      case 'Chart.VerticalBar.Grouped':
-        return AdaptiveBarChart(
-          adaptiveMap: map,
-          type: BarChartType.grouped,
-        );
     }
     return AdaptiveUnknown(
       adaptiveMap: map,
