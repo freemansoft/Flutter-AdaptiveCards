@@ -47,4 +47,32 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
+
+  testWidgets('Line Chart', (tester) async {
+    configureTestView();
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'chart_line');
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile('gold_files/v1_6_line.png'),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+  }, tags: ['golden']);
+
+  testWidgets('Pie Chart', (tester) async {
+    configureTestView();
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'chart_pie');
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile('gold_files/v1_6_pie.png'),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+  }, tags: ['golden']);
 }

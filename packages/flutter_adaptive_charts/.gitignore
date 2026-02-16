@@ -1,3 +1,10 @@
+# Partially from https://github.com/flutter/flutter/blob/master/packages/flutter_tools/templates/app/.gitignore.tmpl
+# from https://github.com/github/gitignore/blob/main/Flutter.gitignore
+
+flutter_adaptive_cards_plus.iml
+# golden tests
+test/failures/
+
 # Miscellaneous
 *.class
 *.log
@@ -23,6 +30,7 @@ migrate_working_dir/
 
 # Flutter/Dart/Pub related
 # Libraries should not include pubspec.lock, per https://dart.dev/guides/libraries/private-files#pubspeclock.
+# not an issue in a workspace
 /pubspec.lock
 **/doc/api/
 .dart_tool/
