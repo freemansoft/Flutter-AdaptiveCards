@@ -328,6 +328,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       }
     }
 
+    /// notify the card that the value has changed so it can invoke custom behavior
     rawRootCardWidgetState.changeValue(id, choice);
     setState(() {
       controller.text = _selectedChoices.isNotEmpty

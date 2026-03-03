@@ -57,12 +57,13 @@ abstract class GenericActionOpenUrl extends GenericAction {
   });
 }
 
-/// Default actions for onTaps for Action.OpenUrlDialog
+/// Abstract action for onTaps for Action.OpenUrlDialog
 /// Exists to support possible webview in future
 abstract class GenericActionOpenUrlDialog extends GenericActionOpenUrl {
   const GenericActionOpenUrlDialog();
 }
 
+/// Abstract action for onTaps for Action.ResetInputs
 abstract class GenericActionResetInputs extends GenericAction {
   const GenericActionResetInputs();
 
@@ -74,6 +75,7 @@ abstract class GenericActionResetInputs extends GenericAction {
   });
 }
 
+// Abstract action for Action.ToggleVisibility
 abstract class GenericActionToggleVisibility extends GenericAction {
   const GenericActionToggleVisibility();
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_plus/src/actions/action_handler.dart';
 import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
@@ -54,18 +55,22 @@ class DefaultSubmitAction extends GenericSubmitAction {
 
     if (valid) {
       final foo = InheritedAdaptiveCardHandlers.of(context);
-      foo != null
-          ? foo.onSubmit(data)
-          : ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  format(
-                    'No custom handler found for onSubmit: \n {}',
-                    data.toString(),
-                  ),
-                ),
+      if (foo != null) {
+        foo.onSubmit(data);
+      } else if (kDebugMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              format(
+                'No custom handler found for onSubmit: \n {}',
+                data.toString(),
               ),
-            );
+            ),
+          ),
+        );
+      } else {
+        // no handler and not in debug mode so do nothing
+      }
     }
   }
 }
@@ -114,19 +119,23 @@ class DefaultExecuteAction extends GenericExecuteAction {
 
     if (valid) {
       final foo = InheritedAdaptiveCardHandlers.of(context);
-      foo != null
-          ? foo.onExecute(data)
-          : ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  format(
-                    'No custom handler found for onExecute: verb: {} \n {}',
-                    verb ?? '',
-                    data.toString(),
-                  ),
-                ),
+      if (foo != null) {
+        foo.onExecute(data);
+      } else if (kDebugMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              format(
+                'No custom handler found for onExecute: verb: {} \n {}',
+                verb ?? '',
+                data.toString(),
               ),
-            );
+            ),
+          ),
+        );
+      } else {
+        // no handler and not in debug mode so do nothing
+      }
     }
   }
 }
@@ -154,24 +163,28 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
         foo.onOpenUrl(urlToOpen);
       } else {
         unawaited(launchUrl(Uri.parse(urlToOpen)));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              format(
-                'No custom handler found for onOpenUrl: \n {} {} {}',
-                urlFromMap ?? '',
-                altUrl ?? '',
-                urlToOpen,
+        if (kDebugMode) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                format(
+                  'No custom handler found for onOpenUrl: \n {} {} {}',
+                  urlFromMap ?? '',
+                  altUrl ?? '',
+                  urlToOpen,
+                ),
               ),
             ),
-          ),
-        );
+          );
+        }
         // probably should log that there is no valid url
       }
     }
   }
 }
 
+/// Default actions for onTaps for Action.OpenUrlDialog
+///
 /// idential to DefaultOpenUrlAction for now
 class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
   const DefaultOpenUrlDialogAction();
@@ -188,27 +201,31 @@ class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
     if (urlToOpen != null) {
       final foo = InheritedAdaptiveCardHandlers.of(context);
       if (foo != null) {
-        foo.onOpenUrl(urlToOpen);
+        foo.onOpenUrlDialog(urlToOpen);
       } else {
         unawaited(launchUrl(Uri.parse(urlToOpen)));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              format(
-                'No custom handler found for onOpenUrl: \n {} {} {}',
-                urlFromMap ?? '',
-                altUrl ?? '',
-                urlToOpen,
+        if (kDebugMode) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                format(
+                  'No custom handler found for onOpenUrlDialog: \n {} {} {}',
+                  urlFromMap ?? '',
+                  altUrl ?? '',
+                  urlToOpen,
+                ),
               ),
             ),
-          ),
-        );
+          );
+        }
         // probably should log that there is no valid url
       }
     }
   }
 }
 
+/// Default actions for Action.ResetInputs
+/// Resets the form
 class DefaultResetInputsAction extends GenericActionResetInputs {
   const DefaultResetInputsAction();
 
@@ -238,6 +255,8 @@ class DefaultResetInputsAction extends GenericActionResetInputs {
   }
 }
 
+/// Default actions for Action.ToggleVisibility
+///
 class DefaultToggleVisibilityAction extends GenericActionToggleVisibility {
   const DefaultToggleVisibilityAction();
 

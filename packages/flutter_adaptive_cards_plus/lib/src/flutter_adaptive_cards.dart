@@ -245,7 +245,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                format('No custom handler found for onchange: \n {}', it),
+                format('No custom handler found for onChange: \n {}', it),
               ),
             ),
           );
