@@ -166,6 +166,7 @@ Widget getTestWidgetFromMap({
   required String title,
   Key? key,
   Function(String)? onOpenUrl,
+  Function(String)? onOpenUrlDialog,
   Function(Map<dynamic, dynamic>)? onSubmit,
 }) {
   final Widget adaptiveCard = RawAdaptiveCard.fromMap(
@@ -189,6 +190,7 @@ Widget getTestWidgetFromMap({
           child: Center(
             child: InheritedAdaptiveCardHandlers(
               onOpenUrl: onOpenUrl ?? (_) {},
+              onOpenUrlDialog: onOpenUrlDialog ?? (_) {},
               // this a test so we can look at this later
               // ignore: inference_failure_on_collection_literal
               onSubmit: onSubmit ?? (Map _) => {},
