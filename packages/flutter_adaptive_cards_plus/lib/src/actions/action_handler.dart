@@ -28,11 +28,19 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
     required super.child,
   });
 
+  /// called when a Action.Submit submit is pressed
   final Function(Map map) onSubmit;
+
+  /// called when an Action.Execute execute is pressed
   final Function(Map map) onExecute;
+
+  /// called when an Action.OpenUrl openUrl is pressed
   final Function(String url) onOpenUrl;
+
+  /// called when an Action.OpenUrlDialog openUrlDialog is pressed
   final Function(String url) onOpenUrlDialog;
 
+  /// called when a value changes in an Input.ChoiceSet
   final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
   onChange;
 
