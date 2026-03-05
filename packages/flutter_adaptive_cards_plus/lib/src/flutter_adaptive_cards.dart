@@ -80,7 +80,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
     super.key,
     required this.adaptiveCardContentProvider,
     this.placeholder,
-    this.cardRegistry = const CardTypeRegistry(),
+    this.cardTypeRegistry = const CardTypeRegistry(),
     this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     this.initData,
     this.onChange,
@@ -93,7 +93,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
   AdaptiveCardsRoot.network({
     super.key,
     this.placeholder,
-    this.cardRegistry = const CardTypeRegistry(),
+    this.cardTypeRegistry = const CardTypeRegistry(),
     this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     required String url,
     this.initData,
@@ -109,7 +109,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
   AdaptiveCardsRoot.asset({
     super.key,
     this.placeholder,
-    this.cardRegistry = const CardTypeRegistry(),
+    this.cardTypeRegistry = const CardTypeRegistry(),
     this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     required String assetPath,
     this.initData,
@@ -125,7 +125,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
   AdaptiveCardsRoot.map({
     super.key,
     this.placeholder,
-    this.cardRegistry = const CardTypeRegistry(),
+    this.cardTypeRegistry = const CardTypeRegistry(),
     this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     required Map<String, dynamic> content,
     this.initData,
@@ -141,7 +141,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
   AdaptiveCardsRoot.json({
     super.key,
     this.placeholder,
-    this.cardRegistry = const CardTypeRegistry(),
+    this.cardTypeRegistry = const CardTypeRegistry(),
     this.actionTypeRegistry = const DefaultActionTypeRegistry(),
     required String jsonString,
     this.initData,
@@ -161,7 +161,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
   final Widget? placeholder;
 
   /// Used to convert card type strings into Card instances
-  final CardTypeRegistry cardRegistry;
+  final CardTypeRegistry cardTypeRegistry;
 
   /// Used to convert card type strings into Card instances
   final ActionTypeRegistry actionTypeRegistry;
@@ -270,7 +270,7 @@ class AdaptiveCardsRootState extends State<AdaptiveCardsRoot> {
 
     return RawAdaptiveCard.fromMap(
       map: map!,
-      cardTypeRegistry: widget.cardRegistry,
+      cardTypeRegistry: widget.cardTypeRegistry,
       actionTypeRegistry: widget.actionTypeRegistry,
       initData: initData,
       onChange: onChange,

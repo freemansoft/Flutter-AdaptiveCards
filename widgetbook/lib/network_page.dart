@@ -22,7 +22,7 @@ class NetworkPage extends StatelessWidget {
         child: AdaptiveCardsRoot.network(
           url: url,
           // add the chart registrations
-          cardRegistry: CardTypeRegistry(
+          cardTypeRegistry: CardTypeRegistry(
             addedElements: CardChartsRegistry.additionalChartElements,
           ),
           onChange: (id, value, dataQuery, state) {

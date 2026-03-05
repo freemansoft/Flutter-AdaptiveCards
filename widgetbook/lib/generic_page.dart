@@ -34,7 +34,7 @@ class GenericPage extends StatelessWidget {
           supportMarkdown: supportMarkdown,
           initData: initData,
           // add the chart registrations
-          cardRegistry: CardTypeRegistry(
+          cardTypeRegistry: CardTypeRegistry(
             addedElements: CardChartsRegistry.additionalChartElements,
           ),
           onChange: (id, value, dataQuery, state) {
