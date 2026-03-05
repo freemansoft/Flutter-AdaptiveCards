@@ -41,11 +41,11 @@ void main() {
     test(
       'AdaptiveCard.json and AdaptiveCard.memory have correct providers',
       () {
-        final cardJson = AdaptiveCard.json(
+        final cardJson = AdaptiveCardsRoot.json(
           jsonString: jsonString,
           hostConfigs: HostConfigs(),
         );
-        final cardMemory = AdaptiveCard.memory(
+        final cardMemory = AdaptiveCardsRoot.map(
           content: contentMap,
           hostConfigs: HostConfigs(),
         );
@@ -64,11 +64,11 @@ void main() {
     test(
       'AdaptiveCard.json and AdaptiveCard.memory providers return same content',
       () async {
-        final cardJson = AdaptiveCard.json(
+        final cardJson = AdaptiveCardsRoot.json(
           jsonString: jsonString,
           hostConfigs: HostConfigs(),
         );
-        final cardMemory = AdaptiveCard.memory(
+        final cardMemory = AdaptiveCardsRoot.map(
           content: contentMap,
           hostConfigs: HostConfigs(),
         );

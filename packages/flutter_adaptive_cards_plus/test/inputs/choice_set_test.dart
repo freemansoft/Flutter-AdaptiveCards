@@ -29,7 +29,7 @@ void main() {
         body: RawAdaptiveCard.fromMap(
           map: map,
           hostConfigs: HostConfigs(),
-          onChange: (id, value, state) {
+          onChange: (id, value, dataQuery, state) {
             if (id == 'myChoiceSet') {
               selectedValue = value as String?;
             }
@@ -98,7 +98,7 @@ void main() {
           body: RawAdaptiveCard.fromMap(
             map: map,
             hostConfigs: HostConfigs(),
-            onChange: (id, value, state) {
+            onChange: (id, value, dataQuery, state) {
               if (id == 'myChoiceSet') selectedValue = value as String?;
             },
           ),
@@ -152,7 +152,7 @@ void main() {
         body: RawAdaptiveCard.fromMap(
           map: map,
           hostConfigs: HostConfigs(),
-          onChange: (id, value, state) {
+          onChange: (id, value, dataQuery, state) {
             if (id == 'myChoiceSet') selectedValue = value as String?;
           },
         ),
@@ -197,7 +197,7 @@ void main() {
         body: RawAdaptiveCard.fromMap(
           map: map,
           hostConfigs: HostConfigs(),
-          onChange: (id, value, state) {
+          onChange: (id, value, dataQuery, state) {
             if (id == 'myChoiceSet') selectedValue = value as String?;
           },
         ),

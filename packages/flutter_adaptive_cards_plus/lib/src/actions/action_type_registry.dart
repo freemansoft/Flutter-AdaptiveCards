@@ -3,7 +3,7 @@ import 'package:flutter_adaptive_cards_plus/src/actions/default_actions.dart';
 import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
 
 /// Finds the action processor for a given action type
-/// Applications can inject their own custom action registry when constructing [AdaptiveCard]
+/// Applications can inject their own custom action registry when constructing [AdaptiveCardsRoot]
 abstract class ActionTypeRegistry {
   const ActionTypeRegistry();
 
@@ -14,7 +14,7 @@ abstract class ActionTypeRegistry {
   });
 }
 
-/// The default action registry if none is passed into [AdaptiveCard] constructors
+/// The default action registry if none is passed into [AdaptiveCardsRoot] constructors
 class DefaultActionTypeRegistry extends ActionTypeRegistry {
   const DefaultActionTypeRegistry();
 

@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added the adaptive_explorer app
 - Set versions on all projects to 0.3.0
 - renamed package `flutter_adaptive_cards` to `flutter_adaptive_cards_plus` to avoid pub.dev name collision
+- add data query support
+- Renamed AdaptiveCard to AdaptiveCardsRoot
 
 ## [0.2.1](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.20...0.2.1) 2025-09-23
 

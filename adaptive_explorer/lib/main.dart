@@ -169,7 +169,7 @@ class _HomePageState extends State<HomePage> {
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: AdaptiveCard.memory(
+          child: AdaptiveCardsRoot.map(
             content: _currentCardData!,
             hostConfigs: HostConfigs(),
             showDebugJson: false,

@@ -19,18 +19,19 @@ class NetworkPage extends StatelessWidget {
     return SelectionArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
-        child: AdaptiveCard.network(
+        child: AdaptiveCardsRoot.network(
           url: url,
           // add the chart registrations
           cardRegistry: CardTypeRegistry(
             addedElements: CardChartsRegistry.additionalChartElements,
           ),
-          onChange: (id, value, state) {
+          onChange: (id, value, dataQuery, state) {
             developer.log(
               format(
-                'onChange: id: {}, value: {}, state: {}',
+                'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
                 id,
                 value,
+                dataQuery,
                 state,
               ),
               name: runtimeType.toString(),
@@ -39,9 +40,10 @@ class NetworkPage extends StatelessWidget {
               SnackBar(
                 content: Text(
                   format(
-                    'onChange: id: {}, value: {}, state: {}',
+                    'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
                     id,
                     value,
+                    dataQuery,
                     state,
                   ),
                 ),

@@ -7,6 +7,7 @@ import 'package:flutter_adaptive_cards_plus/src/actions/action_handler.dart';
 import 'package:flutter_adaptive_cards_plus/src/actions/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_plus/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_plus/src/hostconfig/host_config.dart';
+import 'package:flutter_adaptive_cards_plus/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_plus/src/registry.dart';
 import 'package:format/format.dart';
 import 'package:http/http.dart' as http;
@@ -72,10 +73,10 @@ class NetworkAdaptiveCardContentProvider
 }
 
 /// The start of our AdaptiveCard widget tree but is not the actual `AdaptiveCard`
-/// Wraps a `RawAdaptiveCard`
+/// Wraps a `RawAdaptiveCard` that is the actual adaptive card element
 /// Pass in the Action handlers specific to the host program
-class AdaptiveCard extends StatefulWidget {
-  const AdaptiveCard({
+class AdaptiveCardsRoot extends StatefulWidget {
+  const AdaptiveCardsRoot({
     super.key,
     required this.adaptiveCardContentProvider,
     this.placeholder,
@@ -89,7 +90,7 @@ class AdaptiveCard extends StatefulWidget {
     required this.hostConfigs,
   });
 
-  AdaptiveCard.network({
+  AdaptiveCardsRoot.network({
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
@@ -105,7 +106,7 @@ class AdaptiveCard extends StatefulWidget {
          url: url,
        );
 
-  AdaptiveCard.asset({
+  AdaptiveCardsRoot.asset({
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
@@ -121,7 +122,7 @@ class AdaptiveCard extends StatefulWidget {
          path: assetPath,
        );
 
-  AdaptiveCard.memory({
+  AdaptiveCardsRoot.map({
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
@@ -137,7 +138,7 @@ class AdaptiveCard extends StatefulWidget {
          content: content,
        );
 
-  AdaptiveCard.json({
+  AdaptiveCardsRoot.json({
     super.key,
     this.placeholder,
     this.cardRegistry = const CardTypeRegistry(),
@@ -169,7 +170,12 @@ class AdaptiveCard extends StatefulWidget {
   final Map? initData;
 
   /// Environment specific function that knows how to handle state change
-  final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
+  final Function(
+    String id,
+    dynamic value,
+    DataQuery? dataQuery,
+    RawAdaptiveCardState cardState,
+  )?
   onChange;
 
   final bool showDebugJson;
@@ -180,11 +186,11 @@ class AdaptiveCard extends StatefulWidget {
   final HostConfigs hostConfigs;
 
   @override
-  AdaptiveCardState createState() => AdaptiveCardState();
+  AdaptiveCardsRootState createState() => AdaptiveCardsRootState();
 }
 
 /// State for **The** AdaptiveCard card
-class AdaptiveCardState extends State<AdaptiveCard> {
+class AdaptiveCardsRootState extends State<AdaptiveCardsRoot> {
   /// The loaded json map for this `AdaptiveCard` and its descendants
   Map<String, dynamic>? map;
 
@@ -192,7 +198,13 @@ class AdaptiveCardState extends State<AdaptiveCard> {
   Map? initData;
 
   /// Environment specific function that knows how to handle state change
-  Function(String id, dynamic value, RawAdaptiveCardState cardState)? onChange;
+  Function(
+    String id,
+    dynamic value,
+    DataQuery? dataQuery,
+    RawAdaptiveCardState cardState,
+  )?
+  onChange;
 
   /// Environment specific function that knows how to handle submission to remote APIs
   Function(Map map)? onSubmit;
@@ -220,18 +232,13 @@ class AdaptiveCardState extends State<AdaptiveCard> {
   }
 
   @override
-  void didUpdateWidget(AdaptiveCard oldWidget) {
+  void didUpdateWidget(AdaptiveCardsRoot oldWidget) {
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // Update the onChange if one is provided
-    if (widget.onChange != null) {
-      onChange = widget.onChange;
-    }
 
     // Update the onChange if one is provided or there is one in the DefaultAdapterCardHandlers
     if (widget.onChange != null) {
@@ -241,7 +248,7 @@ class AdaptiveCardState extends State<AdaptiveCard> {
       if (foundOnChange != null) {
         onChange = foundOnChange;
       } else {
-        onChange = (it, value, cardState) {
+        onChange = (it, value, dataQuery, cardState) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
