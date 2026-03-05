@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_plus/src/additional.dart';
 import 'package:flutter_adaptive_cards_plus/src/models/choice.dart';
+import 'package:flutter_adaptive_cards_plus/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_plus/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,6 +59,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   late bool isFiltered;
   late bool isCompact;
   late bool isMultiSelect;
+  DataQuery? dataQuery;
 
   TextEditingController controller = TextEditingController();
   bool stateHasError = false;
@@ -80,6 +82,12 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       for (final Choice choice in choices) {
         _choices[choice.title] = choice.value;
       }
+    }
+
+    if (adaptiveMap.containsKey('choices.data')) {
+      dataQuery = DataQuery.fromJson(
+        adaptiveMap['choices.data'] as Map<String, dynamic>,
+      );
     }
 
     isFiltered = loadFiltered();
@@ -279,7 +287,8 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   Widget _buildExpandedSingleSelect() {
     return RadioGroup<String>(
-      key: ValueKey(widget.id),
+      key: generateWidgetKey(adaptiveMap),
+      //key: generateWidgetKeyFromId(widget.id),
       groupValue: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
       onChanged: select,
       child: Column(
@@ -329,7 +338,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     }
 
     /// notify the card that the value has changed so it can invoke custom behavior
-    rawRootCardWidgetState.changeValue(id, choice);
+    rawRootCardWidgetState.changeValue(id, choice, dataQuery: dataQuery);
     setState(() {
       controller.text = _selectedChoices.isNotEmpty
           ? _selectedChoices.first

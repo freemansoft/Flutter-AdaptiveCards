@@ -8,6 +8,8 @@ void main() {
     final Widget widget = getTestWidgetFromPath(path: 'column_height.json');
 
     await tester.pumpWidget(widget);
+    // this is so that the async loading of the card is completed
+    await tester.pumpAndSettle();
 
     // Verify IntrinsicHeight IS present now
     final intrinsicHeightFinder = find.byType(IntrinsicHeight);

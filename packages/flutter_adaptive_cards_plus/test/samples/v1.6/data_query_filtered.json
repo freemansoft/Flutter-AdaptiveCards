@@ -1,0 +1,23 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Input.ChoiceSet",
+      "id": "selectedUser",
+      "placeholder": "Search for a user...",
+      "choices": [
+        {
+          "title": "Static choice example",
+          "value": "static_value"
+        }
+      ],
+      "choices.data": {
+        "type": "Data.Query",
+        "dataset": "graph.microsoft.com/users"
+      },
+      "style": "filtered"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}

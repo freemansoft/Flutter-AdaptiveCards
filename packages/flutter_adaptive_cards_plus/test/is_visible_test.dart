@@ -25,6 +25,8 @@ void main() {
 
       final widget = getTestWidgetFromString(jsonString: testJson);
       await tester.pumpWidget(widget);
+      // this is so that the async loading of the card is completed
+      await tester.pumpAndSettle();
 
       // Should find the Visibility widget
       final visibilityFinder = find.byType(Visibility);
@@ -54,6 +56,8 @@ void main() {
 
       final widget = getTestWidgetFromString(jsonString: testJson);
       await tester.pumpWidget(widget);
+      // this is so that the async loading of the card is completed
+      await tester.pumpAndSettle();
 
       // Should find Visibility widget
       final visibilityFinder = find.byType(Visibility);
@@ -82,6 +86,8 @@ void main() {
 
         final widget = getTestWidgetFromString(jsonString: testJson);
         await tester.pumpWidget(widget);
+        // this is so that the async loading of the card is completed
+        await tester.pumpAndSettle();
 
         // Text should be visible by default
         expect(find.text('I have no isVisible property'), findsOneWidget);
@@ -125,6 +131,8 @@ void main() {
 
       final widget = getTestWidgetFromString(jsonString: testJson);
       await tester.pumpWidget(widget);
+      // this is so that the async loading of the card is completed
+      await tester.pumpAndSettle();
 
       // Should find visible elements
       expect(find.text('Visible 1'), findsOneWidget);
@@ -161,6 +169,8 @@ void main() {
 
       final widget = getTestWidgetFromString(jsonString: testJson);
       await tester.pumpWidget(widget);
+      // this is so that the async loading of the card is completed
+      await tester.pumpAndSettle();
 
       // String "true" should be visible
       expect(find.text('String True'), findsOneWidget);

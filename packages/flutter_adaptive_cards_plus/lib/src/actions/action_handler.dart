@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_plus/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_plus/src/models/data_query.dart';
 
 /// Applications could add this above the Adaptive cards tree
 ///
@@ -41,7 +42,12 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
   final Function(String url) onOpenUrlDialog;
 
   /// called when a value changes in an Input.ChoiceSet
-  final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
+  final Function(
+    String id,
+    dynamic value,
+    DataQuery? dataQuery,
+    RawAdaptiveCardState cardState,
+  )
   onChange;
 
   static InheritedAdaptiveCardHandlers? of(BuildContext context) {

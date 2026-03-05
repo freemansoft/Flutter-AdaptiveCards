@@ -9,6 +9,7 @@ import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_plus/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards_plus/src/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards_plus/src/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards_plus/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_plus/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_plus/src/registry.dart';
 import 'package:flutter_adaptive_cards_plus/src/riverpod_providers.dart';
@@ -43,7 +44,12 @@ class RawAdaptiveCard extends StatefulWidget {
   final ActionTypeRegistry actionTypeRegistry;
   final Map? initData;
 
-  final Function(String id, dynamic value, RawAdaptiveCardState cardState)?
+  final Function(
+    String id,
+    dynamic value,
+    DataQuery? dataQuery,
+    RawAdaptiveCardState cardState,
+  )?
   onChange;
 
   final bool showDebugJson;
@@ -210,9 +216,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     }());
   }
 
-  void changeValue(String id, dynamic value) {
+  void changeValue(String id, dynamic value, {DataQuery? dataQuery}) {
     if (widget.onChange != null) {
-      widget.onChange?.call(id, value, this);
+      widget.onChange?.call(id, value, dataQuery, this);
     }
   }
 

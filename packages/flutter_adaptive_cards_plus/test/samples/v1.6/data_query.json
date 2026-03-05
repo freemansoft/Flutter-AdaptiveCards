@@ -1,0 +1,28 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "Input.ChoiceSet",
+      "id": "selectedUser",
+      "placeholder": "Search for a user...",
+      "style": "expanded",
+      "isMultiSelect": false,
+      "choices": [
+        {
+          "title": "Title1",
+          "value": "value_1"
+        },
+        {
+          "title": "Title2",
+          "value": "value_2"
+        }
+      ],
+      "choices.data": {
+        "type": "Data.Query",
+        "dataset": "graph.microsoft.com/users"
+      }
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json"
+}

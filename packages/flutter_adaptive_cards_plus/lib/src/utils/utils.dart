@@ -308,14 +308,21 @@ String loadId(Map aMap) {
   }
 }
 
-/// generate the widget key for the adaptive widget
+/// generate the widget key for the adaptive widget that wraps any field widget
+/// based on the 'id' property in the passed in map plus the suffix '_adaptive'
 ValueKey<String> generateAdaptiveWidgetKey(Map aMap) {
   return ValueKey('${loadId(aMap)}_adaptive');
 }
 
 /// generate the widget key for the actual input element
+/// based on the 'id' property in the passed in map
 ValueKey<String> generateWidgetKey(Map aMap, {String? suffix}) {
   final String id = loadId(aMap);
+  return generateWidgetKeyFromId(id, suffix: suffix);
+}
+
+/// generate the widget key for the actual input element
+ValueKey<String> generateWidgetKeyFromId(String id, {String? suffix}) {
   if (suffix != null) {
     return ValueKey('${id}_$suffix');
   }

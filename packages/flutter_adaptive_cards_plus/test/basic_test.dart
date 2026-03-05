@@ -9,6 +9,8 @@ void main() {
     final Widget widget = getTestWidgetFromPath(path: 'example1.json');
 
     await tester.pumpWidget(widget);
+    // this is so that the async loading of the card is completed
+    await tester.pumpAndSettle();
 
     // TODO(username): Why don't these finds for text work like the objects do?
 
