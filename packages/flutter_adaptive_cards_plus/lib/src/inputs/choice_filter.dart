@@ -94,7 +94,11 @@ class ChoiceFilterState extends State<ChoiceFilter> {
               ? ListView.builder(
                   itemCount: _searchResult.length,
                   itemBuilder: (context, index) {
+                    final String keyValue = (widget.key is ValueKey<String>)
+                        ? (widget.key! as ValueKey<String>).value
+                        : 'choiceFilter';
                     return ListTile(
+                      key: ValueKey('${keyValue}_${_searchResult[index].id}'),
                       title: Text(_searchResult[index].name),
                       onTap: () {
                         Navigator.pop(context);
@@ -106,7 +110,11 @@ class ChoiceFilterState extends State<ChoiceFilter> {
               : ListView.builder(
                   itemCount: _data.length,
                   itemBuilder: (context, index) {
+                    final String keyValue = (widget.key is ValueKey<String>)
+                        ? (widget.key! as ValueKey<String>).value
+                        : 'choiceFilter';
                     return ListTile(
+                      key: ValueKey('${keyValue}_${_data[index].id}'),
                       title: Text(_data[index].name),
                       onTap: () {
                         Navigator.pop(context);

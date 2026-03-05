@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards.dart';
 import 'package:flutter_adaptive_cards_plus/src/actions/action_handler.dart';
 import 'package:flutter_adaptive_cards_plus/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_plus/src/models/data_query.dart';
 import 'package:flutter_adaptive_charts/flutter_adaptive_charts.dart';
 import 'package:mockito/mockito.dart';
 
@@ -154,11 +155,34 @@ class Blue8x8Image {
 ///
 /// Optionally provide a key to wrap the returned widget in a RepaintBoundary with that key
 /// primarily used for golden tests regions
-Widget getTestWidgetFromPath({required String path, Key? key}) {
+Widget getTestWidgetFromPath({
+  required String path,
+  Key? key,
+  Function(String)? onOpenUrl,
+  Function(String)? onOpenUrlDialog,
+  Function(Map<dynamic, dynamic>)? onSubmit,
+  Function(Map<dynamic, dynamic>)? onExecute,
+  Function(
+    String id,
+    dynamic value,
+    DataQuery? dataQuery,
+    RawAdaptiveCardState cardState,
+  )?
+  onChange,
+}) {
   final File file = File('test/samples/$path');
   final Map<String, dynamic> map =
       json.decode(file.readAsStringSync()) as Map<String, dynamic>;
-  return getTestWidgetFromMap(map: map, key: key, title: path);
+  return getTestWidgetFromMap(
+    map: map,
+    key: key,
+    title: path,
+    onOpenUrl: onOpenUrl,
+    onOpenUrlDialog: onOpenUrlDialog,
+    onSubmit: onSubmit,
+    onExecute: onExecute,
+    onChange: onChange,
+  );
 }
 
 /// This lets us inject action handlers for testing
@@ -169,9 +193,17 @@ Widget getTestWidgetFromMap({
   Function(String)? onOpenUrl,
   Function(String)? onOpenUrlDialog,
   Function(Map<dynamic, dynamic>)? onSubmit,
+  Function(Map<dynamic, dynamic>)? onExecute,
+  Function(
+    String id,
+    dynamic value,
+    DataQuery? dataQuery,
+    RawAdaptiveCardState cardState,
+  )?
+  onChange,
 }) {
-  final Widget adaptiveCard = RawAdaptiveCard.fromMap(
-    map: map,
+  final Widget adaptiveCard = AdaptiveCardsRoot.map(
+    content: map,
     // add the chart registrations
     cardTypeRegistry: CardTypeRegistry(
       addedElements: CardChartsRegistry.additionalChartElements,
@@ -184,7 +216,11 @@ Widget getTestWidgetFromMap({
 
   // this should generate an action handler set instead but the LLM
   // saw that we could rely on InheritedAdaptiveCardHandlers here
-  if (onOpenUrl != null || onSubmit != null) {
+  if (onOpenUrl != null ||
+      onOpenUrlDialog != null ||
+      onSubmit != null ||
+      onExecute != null ||
+      onChange != null) {
     // wrap in handlers
     return MaterialApp(
       home: Scaffold(
@@ -194,13 +230,28 @@ Widget getTestWidgetFromMap({
           key: key,
           child: Center(
             child: InheritedAdaptiveCardHandlers(
-              onOpenUrl: onOpenUrl ?? (_) {},
-              onOpenUrlDialog: onOpenUrlDialog ?? (_) {},
               // this a test so we can look at this later
               // ignore: inference_failure_on_collection_literal
-              onSubmit: onSubmit ?? (Map _) => {},
-              onExecute: (_) {},
-              onChange: null,
+              onOpenUrl: onOpenUrl ?? (String _) => {},
+              // this a test so we can look at this later
+              // ignore: inference_failure_on_collection_literal
+              onOpenUrlDialog: onOpenUrlDialog ?? (String _) => {},
+              // this a test so we can look at this later
+              // ignore: inference_failure_on_collection_literal
+              onSubmit: onSubmit ?? (Map<dynamic, dynamic> _) => {},
+              // this a test so we can look at this later
+              // ignore: inference_failure_on_collection_literal
+              onExecute: onExecute ?? (Map<dynamic, dynamic> _) => {},
+              onChange:
+                  onChange ??
+                  (
+                    String id,
+                    dynamic value,
+                    DataQuery? dataQuery,
+                    RawAdaptiveCardState cardState,
+                    // this a test so we can look at this later
+                    // ignore: inference_failure_on_collection_literal
+                  ) => {},
               child: adaptiveCard,
             ),
           ),

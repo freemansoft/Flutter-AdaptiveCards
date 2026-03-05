@@ -29,20 +29,21 @@ class GenericPage extends StatelessWidget {
     return SelectionArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
-        child: AdaptiveCard.asset(
+        child: AdaptiveCardsRoot.asset(
           assetPath: url,
           supportMarkdown: supportMarkdown,
           initData: initData,
           // add the chart registrations
-          cardRegistry: CardTypeRegistry(
+          cardTypeRegistry: CardTypeRegistry(
             addedElements: CardChartsRegistry.additionalChartElements,
           ),
-          onChange: (id, value, state) {
+          onChange: (id, value, dataQuery, state) {
             developer.log(
               format(
-                'onChange: id: {}, value: {}, state: {}',
+                'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
                 id,
                 value,
+                dataQuery,
                 state,
               ),
               name: runtimeType.toString(),
@@ -51,9 +52,10 @@ class GenericPage extends StatelessWidget {
               SnackBar(
                 content: Text(
                   format(
-                    'onChange: id: {}, value: {}, state: {}',
+                    'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
                     id,
                     value,
+                    dataQuery,
                     state,
                   ),
                 ),
