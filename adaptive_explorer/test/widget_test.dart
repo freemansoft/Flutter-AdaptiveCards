@@ -1,10 +1,3 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:adaptive_explorer/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +6,6 @@ void main() {
   testWidgets('App starts with empty state and buttons on AppBar', (
     tester,
   ) async {
-    // Build our app and trigger a frame.
     await tester.pumpWidget(const AdaptiveExplorerApp());
 
     // Verify that our app starts with the selection message.
@@ -33,5 +25,57 @@ void main() {
     // Also verify icons for good measure
     expect(find.byIcon(Icons.file_open), findsOneWidget);
     expect(find.byIcon(Icons.data_object), findsOneWidget);
+  });
+
+  testWidgets('App bar has tab bar with Template, Data, and Merged tabs', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const AdaptiveExplorerApp());
+
+    // Verify tab bar is present
+    expect(find.byType(TabBar), findsOneWidget);
+
+    // Verify the three tab labels
+    expect(find.text('Template'), findsOneWidget);
+    expect(find.text('Data'), findsOneWidget);
+    expect(find.text('Merged'), findsOneWidget);
+  });
+
+  testWidgets('Save button is present in AppBar', (tester) async {
+    await tester.pumpWidget(const AdaptiveExplorerApp());
+
+    final appBar = find.byType(AppBar);
+    expect(
+      find.descendant(of: appBar, matching: find.text('Save')),
+      findsOneWidget,
+    );
+    expect(find.byIcon(Icons.save), findsOneWidget);
+  });
+
+  testWidgets('Save button is disabled when no file is loaded', (tester) async {
+    await tester.pumpWidget(const AdaptiveExplorerApp());
+
+    await tester.pumpAndSettle();
+
+    final saveButtonFinder = find
+        .ancestor(
+          of: find.text('Save'),
+          matching: find.byWidgetPredicate(
+            (widget) {
+              try {
+                (widget as dynamic).onPressed;
+                return true;
+              } catch (_) {
+                return false;
+              }
+            },
+          ),
+        )
+        .first;
+    expect(saveButtonFinder, findsOneWidget);
+
+    // Verify it is disabled (onPressed is null)
+    final dynamic button = tester.widget(saveButtonFinder);
+    expect(button.onPressed, isNull);
   });
 }
