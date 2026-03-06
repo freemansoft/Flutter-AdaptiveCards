@@ -2,37 +2,58 @@ import 'dart:async';
 
 import 'package:watcher/watcher.dart';
 
-/// Service that watches a file for changes.
+/// Service that watches files for changes.
 class FileWatcherService {
-  StreamSubscription<WatchEvent>? _subscription;
+  StreamSubscription<WatchEvent>? _templateSubscription;
+  StreamSubscription<WatchEvent>? _dataSubscription;
   final _controller = StreamController<void>.broadcast();
 
-  /// Stream that emits an event whenever the watched file changes.
+  /// Stream that emits an event whenever a watched file changes.
   Stream<void> get fileChangedStream => _controller.stream;
 
-  /// Starts watching the file at [path].
+  /// Starts watching the template file at [path].
   ///
-  /// If a file was already being watched, the previous watch is cancelled.
-  void watchFile(String path) {
-    unawaited(_subscription?.cancel());
-
-    // watcher doesn't always work perfectly for single files across all
-    // platforms. Sometimes it's better to watch the directory, but for now
-    // let's try FileWatcher. If FileWatcher proves unreliable, we might need a
-    // PollingFileWatcher or directory watch.
+  /// If a template file was already being watched, the previous watch is
+  /// cancelled.
+  void watchTemplateFile(String path) {
+    unawaited(_templateSubscription?.cancel());
     final watcher = FileWatcher(path);
-
-    _subscription = watcher.events.listen((event) {
+    _templateSubscription = watcher.events.listen((event) {
       if (event.type == ChangeType.MODIFY) {
         _controller.add(null);
       }
     });
   }
 
-  /// Stops watching the current file.
+  /// Starts watching the data file at [path].
+  ///
+  /// If a data file was already being watched, the previous watch is cancelled.
+  void watchDataFile(String path) {
+    unawaited(_dataSubscription?.cancel());
+    final watcher = FileWatcher(path);
+    _dataSubscription = watcher.events.listen((event) {
+      if (event.type == ChangeType.MODIFY) {
+        _controller.add(null);
+      }
+    });
+  }
+
+  /// Stops watching the template file.
+  void stopWatchingTemplate() {
+    unawaited(_templateSubscription?.cancel());
+    _templateSubscription = null;
+  }
+
+  /// Stops watching the data file.
+  void stopWatchingData() {
+    unawaited(_dataSubscription?.cancel());
+    _dataSubscription = null;
+  }
+
+  /// Stops watching all files.
   void stopWatching() {
-    unawaited(_subscription?.cancel());
-    _subscription = null;
+    stopWatchingTemplate();
+    stopWatchingData();
   }
 
   /// Disposes resources used by the service.

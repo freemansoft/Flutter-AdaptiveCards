@@ -40,6 +40,7 @@ dependencies:
     path: ../packages/flutter_adaptive_cards_plus
   flutter_adaptive_template:
     path: ../packages/flutter_adaptive_template
+  json_editor_flutter: ^1.4.2
   path: ^1.9.1
   watcher: ^1.2.1
 
