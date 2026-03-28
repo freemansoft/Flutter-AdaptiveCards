@@ -2,6 +2,8 @@
 
 This is an Adaptive Card implementation for Flutter that has been been updated from the original by others. They did amazing work. No one appears to be doing PRs to bring it back to the original so I'm just listing the forking history below.
 
+## Microsoft Adaptive Cards
+
 ![Adaptive Cards](https://adaptivecards.io/content/bf-logo.png)
 
 - [New AdaptiveCards Hub](https://adaptivecards.microsoft.com/)
@@ -13,7 +15,9 @@ This is an Adaptive Card implementation for Flutter that has been been updated f
 - [Description of Active Cards](https://github.com/MicrosoftDocs/AdaptiveCards)
 - [Another example repo containing samples/templates](https://github.com/pnp/AdaptiveCards-Templates)
 
-Teams often create a flow management layer in front of the core business services that coughs up Adaptive Cards as the in response to user actions. The cannonical flow would be
+## Consumption Patterns
+
+Teams often create a presentation or flow management lservice ayer in front of the core business services that coughs up Adaptive Cards as the in response to user actions. The cannonical flow would be
 
 ```mermaid
 sequenceDiagram
@@ -78,7 +82,7 @@ flowchart
   end
 ```
 
-## Loading Data into fields outside of the AdaptiveCard JSON
+## Loading Data into fields outside of the AdaptiveCard JSON with `initData` / `initInput`
 
 You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will be passed across the AdaptiveCard widget Tree.
 `initData` is demonstrated in the sample app on the `initData` button overriding values from the JSON. `loadData` was in the sample app but was removed and needs to be re-added.
@@ -97,16 +101,17 @@ Your program can pass it's own handlers to the `AdaptiveCard` constructors. See 
 
 ## Example Execution
 
-There is an expansive example program that demonstrates all Adaptive Cards. See [example README.md](example/README.md)
+There are two example apps and a bunch of tests that demonstrate card usage.
+
+1. We abused **Widgetbook** to show the cards in a way that is more useful than single adaptive card components. Everything in Widgetbook is a JSON markup sitting in the file system. Many of these ar emodified versions of what is avaialble on the INterenet from Microsoft an dothers
+2. The other example app is the **Adaptive Card ExplorerEditor** which is a full featured editor for creating , previewing andtesting Adaptive Cards.
 
 ## Tests
 
-The test use the standard flutter testing mechanism which uses the `FlutterTest` font or the `Ahem` font.
+There are functional Unit tests and _golden_ unit tests located in the `test` folder. They all use use the standard flutter testing mechanism. Golden tests may load a font so as not to use the `ahem` block font.
 
-- The tests used to load the Roboto fonts to get an exact match but the line spacing can be off between platforms.
-- I've updated the golden images (again) to use the default testing font. The line spacing is subtly different so you have to pick a platform for the golden tests which means I've polluted the repo for no reason. <https://github.com/flutter/flutter/issues/2943>
-
-1. Note that the test could upgrade to ebay's golden toolkit that renders fonts. In that case we could bring back the Roboto fonts. Golden toolkit can show black bars instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
+- The tests load the Roboto fonts so that the golden tests don't juset show the block font. Spacing can be off between platforms so the golden tests run to get an exact match but the line spacing can be off between platforms.
+- I've updated the golden images to use a font. The line spacing is subtly different so you have to pick a platform for the golden tests which means repo images must lawys be built on the same platform. The golden test images are bult on the buld agent under linux and those are the only platform images that should be check in. See: <https://github.com/flutter/flutter/issues/2943>. The golden test library is obslete. That is a problem for future developers.
 
 ## Compatibility
 
@@ -114,7 +119,9 @@ Compatability changes should be captured in the Changelog section below
 
 - Video player doesn't work on windows because the 3rd party library doesn't support windows fat clients.
 
-This codebase has been updated to support some of the null safety requred for 3.7.0+. It works with the following version of flutter.
+## Flutter Version
+
+Flutter versioning is managed with `fvm`. The current Flutter version is as follows..
 
 ```powershell
 PS C:\dev\flutter> flutter --version
@@ -133,13 +140,21 @@ fvm install 3.38.5
 
 Released Flutter / Dart bundling versions are located here: <https://docs.flutter.dev/release/archive?tab=windows>
 
-## VS Code
+## Development Tools
+
+### VS Code
 
 This repo has been reformatted and updated using VS Code extensions. The VS Code Flutter/Dart extension cleaned up some imports and mad other changes that have been comitted to the repository.
 
+Notes:
+
 1. VSCode told me to enable `Developer Mode` in **Windows** settings in order to run the examples. Is that for the Windows app or the Web app?
 
-### Plugins used during coding
+### Antigravity
+
+A fair amoiunt of development has been done using Antigravity
+
+#### Plugins used during coding
 
 - Flutter
 - Dart
@@ -225,54 +240,6 @@ TODO for the example programs moved to [example README](example/README.md)
 - markdown bullet point spacing is wrong.
 - Material time picker doesn't support min and max time
 
-## ChangeLog
-
-This CHANGELOG has been replaced by the root CHANGELOG.md file. See [CHANGELOG.md](CHANGELOG.md) for more information.
-
-2023 09
-
-- Removed hostconfig - some pieces still to be put together
-- .
-  - 3 styles still to be fixed in the resolver
-
-2023 07
-
-- hostconfig
-  - Removed containerStyles
-  - hostconfig background colors are ignored in place of the container background colors
-  - hostconfig foreground colors are ignored in place of container foreground colors when set to 'default'
-- hostconfig colors are ARGB so an alpha channel is always needed - host_config files updated
-- Remove `approximateDarkThemeColors` and brightness because people should use light and dark themes
-- Remove `fontSizes` and `fontWeights` from host_config - use inherited themes
-- Eliminate all hard coded Text sizes and colors to use inerited themes
-- Updated to work with Flutter > 3.7 that implements null safety. Tested with Flutter 3.10
-- added minimal `Table` implementation as a starting point
-- migrated from `print()` to `developer.log()`
-- Support both Material and Cupertino Date and Time pickers based on platform
-- Test:
-  - Flutter tests must end in `_test`. Renamed `_tests` files to `_test`
-  - Test upgrade to work with Flutter 3.10 and flutter_test ???
-  - Added simple `Table` test
-  - Migrated test off `Roboto` font to default testing font in an attempt to make more platform agnostic. line spacing was different on different platforms even using project bundled Roboto
-  - Upgraded testing SDK
-
-2023 06
-
-- Updated where nulls were used by Flutter is now null safe.
-- Picked a default with for text alignment that may be wrong or differ from the old default.
-- Minor changes to use Material in one config file because VS Code warned about it
-- used VS Code plugin `dart import` to organize imports
-- Test:
-  - Just did the dumb fix for mockito mocking with null safety.
-  - Test images updated for windows
-  - Image URLs updated to their new homes. Some old sites were migrated or taken down
-- android with Java 17
-  - gradle upgrade from 5.6.2 to 7.4.2
-  - upgraded kotlin version to 1.8.22
-  - added `--add-opens=java.base/java.io=ALL-UNNAMED` to jvm args to run on Java 17 (Java 16+)
-
----
-
 ## Repository History
 
 Everything below this line is from the original README.md
@@ -286,7 +253,7 @@ The referenced GitHub repository has vanished. Look at the forking train to figu
 
 **\*\***\*\***\*\***\*\*\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\*\*\***\*\***\*\***\*\***...
 
-# Adaptive Cards for Flutter
+## Adaptive Cards for Flutter
 
 ## Installing
 
@@ -296,7 +263,7 @@ Add this to your package's pubspec.yaml file:
 
 ```yml
 dependencies:
-  flutter_adaptive_cards_plus: ^0.2.0
+  flutter_adaptive_cards_plus: ^0.3.0
 ```
 
 ```dart
@@ -338,9 +305,9 @@ AdaptiveCard.network(
 );
 ```
 
-## Example App
+## Widgetbook
 
-We try to show every possible configuration parameter supported by the AdaptiveCards components in the example app of this repository. If we missed any, please feel free to open an issue.
+The Widgetbook demonstrates components loaded via JSON. It does not implement any of the controls to change the seettings.
 
 ## Running the tests
 
@@ -381,15 +348,13 @@ flutter test --update-goldens
 # afterwards commit the freshly generated sample files (after checking them)
 ```
 
+## Authors
+
+This has been heavilty rewritten and upgraded for later libraries and Flutterversions. See [README_orig.md](README_orig.md) for origianl attribution
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Authors
-
-- **Norbert Kozsir** (@Norbert515) – _Initial work_, Former Head of Flutter development at Neohelden GmbH
-- **Pascal Stech** (@Curvel) – _Maintainer_, Flutter Developer at Neohelden GmbH (NeoSEALs team)
-- **Maik Hummel** (@Beevelop) – _Maintainer_, CTO at Neohelden GmbH (Daddy of the NeoSEALs team)
 
 See also the list of [contributors](https://github.com/freemansoft/Flutter-AdaptiveCards/contributors) who participated in this project.
 

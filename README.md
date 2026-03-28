@@ -8,9 +8,9 @@ Adaptive Cards is a way of implementing Server Driven UI (SDUI) using a JSON bas
 
 1. See the [Getting Started](packages/flutter_adaptive_cards_plus/README.md) page for more information about this library.
 
-## The default branch has been renamed!
+## GitHub notes
 
-`master` is now named `main`
+The default branch has been renamed from the original repository. `master` is now named `main`
 
 If you have a local clone, you can update it by running the following commands.
 
@@ -21,13 +21,22 @@ git branch -u origin/main main
 git remote set-head origin -a
 ```
 
-## Getting Started
+## This project: Packages and tools
 
-1. You can view demonstrations of this implementation by running the [Widgetbook](widgetbook)
-1. The actual library is in [packages/flutter_adaptive_cards_plus](packages/flutter_adaptive_cards_plus/README.md)
-   The changelog is in [packages/flutter_adaptive_cards_plus/CHANGELOG.md](packages/flutter_adaptive_cards_plus/CHANGELOG.md)
-1. [Adaptive Expressions reference](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions?view=azure-bot-service-4.0)
-1. [Adaptive Cards Template reference](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/card-templates)
+1. Tools
+   1. You can view demonstrations of this implementation by running the [Widgetbook](widgetbook)
+   1. There is a editor / preview tool at [packages/flutter_adaptive_cards_editor](packages/flutter_adaptive_cards_editor/README.md)
+1. Libraries
+   1. The Adaptive Card library is in [packages/flutter_adaptive_cards_plus](packages/flutter_adaptive_cards_plus/README.md)
+   1. The Adaptive Card library CHANGELOG is in [packages/flutter_adaptive_cards_plus/CHANGELOG.md](packages/flutter_adaptive_cards_plus/CHANGELOG.md)
+1. Adaptive Card Charting is an extension that adds charting capabilities and is implemented in its own package so that its third party dependencies are isolated from the core library. [packages/flutter_adaptive_cards_charts](packages/flutter_adaptive_cards_charts/README.md)
+   1. The Adaptive Card Charting library CHANGELOG is in [packages/flutter_adaptive_cards_charts/CHANGELOG.md](packages/flutter_adaptive_cards_charts/CHANGELOG.md)
+1. The Adaptive Card Template library supports merging json data into an Adaptive Card template. It is implemented in its own package [packages/flutter_adaptive_cards_template](packages/flutter_adaptive_cards_template/README.md)
+   1. The Adaptive Card Template library CHANGELOG is in [packages/flutter_adaptive_cards_template/CHANGELOG.md](packages/flutter_adaptive_cards_template/CHANGELOG.md)
+   1. [Adaptive Cards Template specification](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/card-templates)
+
+1. azure bot service expressions are not currently supported.
+   1. [Adaptive Expressions specification](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions?view=azure-bot-service-4.0)
 
 ## Platform Support
 
@@ -40,9 +49,10 @@ git remote set-head origin -a
 | macOS    | ✅     |                             |
 | Windows  | ✅     | Video Player not supported  |
 
-## Configuration via HostConfig
+## Project Configuration.
 
-HostConfig is a JSON object that contains configuration options for the Adaptive Card renderer. It is used to control the appearance and behavior of the Adaptive Card renderer. It is passed to the AdaptiveCard widget as a parameter. The HostConfig is optional and if not provided, the Fallback HostConfig will be used. In cases where a partial HostConfig is provided the Fallback subgraph will be used for the missing json objects. This means you can provide a partial HostConfig and only override the Entities you want to change. All of the primitive properties in a specific HostConfig Entity are required. Fallback is at the entitiy level.
+- Flutter versions are managed using fvm.
+- This repository is managed using flutter workspaces via the `pubspec.yaml`
 
 ## Defects
 
