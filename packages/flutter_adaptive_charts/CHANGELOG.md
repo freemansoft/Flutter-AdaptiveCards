@@ -1,3 +1,3 @@
-## 0.0.1
+## 0.3.0
 
-* TODO: Describe initial release.
+* Initial release of the split `flutter_adaptive_charts` package for Flutter Adaptive Cards ecosystem.
