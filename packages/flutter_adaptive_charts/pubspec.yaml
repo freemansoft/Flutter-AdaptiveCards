@@ -9,7 +9,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  fl_chart: 1.0.0 # https://github.com/imaNNeo/fl_chart/issues/1986
+  fl_chart: ^1.0.0 # https://github.com/imaNNeo/fl_chart/issues/1986
   flutter:
     sdk: flutter
 
