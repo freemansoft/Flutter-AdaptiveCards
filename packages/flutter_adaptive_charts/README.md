@@ -1,3 +1,5 @@
+# Flutter Adaptive Charts
+
 A set of adaptive cards that are charts based on the 1.6 spec. Packaged as a separate library to remove the dependency on the charting library from the main adaptive cards library.
 
 ## Features
@@ -31,10 +33,9 @@ Pass in the additional charting elements to Registry on start up
 
 ## Usage
 
-TODO: Create AdaptiveCards JSON that matches the charts 1.6 spec.
+Please refer to the examples in the main repository for creating AdaptiveCards JSON that matches the charts 1.6 spec.
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+For more information, please visit the [Flutter-AdaptiveCards GitHub Repository](https://github.com/freemansoft/Flutter-AdaptiveCards).
+There you can find more information about how this package integrates with the rest of the Adaptive Cards environment, how to contribute, and how to file issues.
