@@ -60,4 +60,14 @@ Many!
 
 - See [Defects](packages/flutter_adaptive_cards_plus/README.md#defects)
 - https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/text-features may not all be implemented
--
+
+## LLM Agent Support
+
+This project uses the [AGENTS.md](AGENTS.md) file to provide instructions to LLM agents, Antigravity, Cursor, and others. The contents came from the Flutter team's recommendation <https://docs.flutter.dev/ai/ai-rules>. This is the shorter 10K character version because of Antigravity's rule file character limit of 12,000 [antigravity user-rules](https://docs.antigravity.ai/user-rules#agents.md).
+
+Changes from the verson created by the Flutter team:
+
+- Linting rules changed from default to use VGV linter
+- Use `riverpod` instead of `provider`
+- Added **Semantic Label Keys** rule
+- Added internationalizaiton and localization rules
