@@ -71,3 +71,20 @@ Changes from the verson created by the Flutter team:
 - Use `riverpod` instead of `provider`
 - Added **Semantic Label Keys** rule
 - Added internationalizaiton and localization rules
+
+## More about adaptive cards and available SDKs
+
+- [Adaptive Cards learning and specification site](https://learn.microsoft.com/en-us/adaptive-cards/)
+- [Partners](https://learn.microsoft.com/en-us/adaptive-cards/resources/partners) using adaptive cards
+- [Adaptive Cards for Android](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/android/getting-started) is available as a [maven artifact](https://search.maven.org/artifact/io.adaptivecards/adaptivecards-android)
+- [Adaptive Cards for ios is available as a pod](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/ios/getting-started)
+- [Adaptive Cards for javascript](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/javascript/getting-started) is available via npm
+- [Adaptive Cards for Windows WPF](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/net-wpf/getting-started)
+- [Adaptives Cards for Image](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/net-image/getting-started) renders into a png
+- [Adaptive Cards for Windows UWP](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/uwp/getting-started)
+- A community supported [Adaptive Cards for ReactNative](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/react-native/getting-started)
+
+There is also
+
+- A [React Native designer SDK](https://learn.microsoft.com/en-us/adaptive-cards/sdk/designer)
+- A [Javascript Templating SDK](https://learn.microsoft.com/en-us/adaptive-cards/templating/sdk) that can be used as a designer
