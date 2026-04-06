@@ -23,12 +23,12 @@ so the JSON parser can instantiate them by `"type"` string.
 Located in `lib/src/registry.dart`. Maps JSON `"type"` strings to element
 widgets via two mechanisms:
 
-| Method | Purpose |
-|---|---|
-| `_getBaseElement()` / `_getBaseAction()` | Built-in elements (switch/case) |
-| `addedElements: {}` constructor param | Custom/override elements from host apps |
-| `addedActions: {}` constructor param | Custom/override actions from host apps |
-| `removedElements: []` constructor param | Suppress specific element types |
+| Method                                   | Purpose                                 |
+| ---------------------------------------- | --------------------------------------- |
+| `_getBaseElement()` / `_getBaseAction()` | Built-in elements (switch/case)         |
+| `addedElements: {}` constructor param    | Custom/override elements from host apps |
+| `addedActions: {}` constructor param     | Custom/override actions from host apps  |
+| `removedElements: []` constructor param  | Suppress specific element types         |
 
 ### `ActionTypeRegistry` — Action Handlers
 
@@ -39,13 +39,13 @@ There are two complementary sides of the action handling pipeline in this archit
 
 1. **`GenericActions` (The "Sender / Processor")**
    `GenericActions` (e.g., `GenericSubmitAction`, `GenericExecuteAction`) define **how an Adaptive Card Action element behaves** when a user interacts with it (e.g., tapping a button).
-   *   **Role:** They encapsulate the internal state logic and payload construction for a specific action type. For example, when an `Action.Submit` is tapped, its `GenericAction` traverses the Flutter widget tree, finds all input fields, validates them, and bundles their values into a `data` map.
-   *   **Responsibility:** Form validation, input gathering, state manipulation, and preparing the payload. They are tightly coupled to the Adaptive Card elements.
+   - **Role:** They encapsulate the internal state logic and payload construction for a specific action type. For example, when an `Action.Submit` is tapped, its `GenericAction` traverses the Flutter widget tree, finds all input fields, validates them, and bundles their values into a `data` map.
+   - **Responsibility:** Form validation, input gathering, state manipulation, and preparing the payload. They are tightly coupled to the Adaptive Card elements.
 
 2. **`InheritedAdaptiveCardHandlers` (The "Receiver / Listener")**
    `InheritedAdaptiveCardHandlers` is an `InheritedWidget` that defines **what the host application does** once an action has been processed and a payload is ready.
-   *   **Role:** It acts as an integration point. It allows developers consuming the package to provide application-specific callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, etc.).
-   *   **Responsibility:** Executing host application business logic (e.g., making an API call, navigating), completely separated from the internal Adaptive Card UI logic.
+   - **Role:** It acts as an integration point. It allows developers consuming the package to provide application-specific callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, etc.).
+   - **Responsibility:** Executing host application business logic (e.g., making an API call, navigating), completely separated from the internal Adaptive Card UI logic.
 
 **How They Work Together:** When a user taps an action button, the `tap()` method on the corresponding `GenericAction` runs, collecting and validating inputs. Once the payload is ready, the `GenericAction` looks up the `InheritedAdaptiveCardHandlers` from the build context and invokes the application-provided callback (like `onSubmit(data)`), delegating the final execution to the host app.
 
@@ -63,9 +63,9 @@ implementation. The pattern for all non-input elements:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards_plus/src/additional.dart';
-import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
+import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// Implements the MyElement Adaptive Card element type.
 class AdaptiveMyElement extends StatefulWidget with AdaptiveElementWidgetMixin {
@@ -117,7 +117,7 @@ class AdaptiveMyElementState extends State<AdaptiveMyElement>
 
 ```dart
 // 1. Add import at the top
-import 'package:flutter_adaptive_cards_plus/src/cards/elements/my_element.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/elements/my_element.dart';
 
 // 2. Add a case in _getBaseElement():
 case 'MyElement':
@@ -135,25 +135,28 @@ If consumers need to subclass or reference your element, add it to:
 
 Mixins provide shared behavior. Apply them to the **State** class:
 
-| Mixin | Applied to | Provides |
-|---|---|---|
-| `AdaptiveElementWidgetMixin` | `StatefulWidget` | `adaptiveMap`, `id` abstract getters |
-| `AdaptiveElementMixin<T>` | `State<T>` | `id`, `cardTypeRegistry`, `actionTypeRegistry`, `rawRootCardWidgetState`, `style`, `adaptiveMap` |
-| `AdaptiveVisibilityMixin<T>` | `State<T>` | `isVisible`, `setIsVisible()` — reads `"isVisible"` JSON prop |
-| `AdaptiveActionMixin<T>` | `State<T>` | `title`, `tooltip` — for action widgets |
-| `AdaptiveInputMixin<T>` | `State<T>` | `value`, `placeholder`, `errorMessage`, `appendInput()`, `initInput()`, `checkRequired()`, `resetInput()` |
+| Mixin                        | Applied to       | Provides                                                                                                  |
+| ---------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------- |
+| `AdaptiveElementWidgetMixin` | `StatefulWidget` | `adaptiveMap`, `id` abstract getters                                                                      |
+| `AdaptiveElementMixin<T>`    | `State<T>`       | `id`, `cardTypeRegistry`, `actionTypeRegistry`, `rawRootCardWidgetState`, `style`, `adaptiveMap`          |
+| `AdaptiveVisibilityMixin<T>` | `State<T>`       | `isVisible`, `setIsVisible()` — reads `"isVisible"` JSON prop                                             |
+| `AdaptiveActionMixin<T>`     | `State<T>`       | `title`, `tooltip` — for action widgets                                                                   |
+| `AdaptiveInputMixin<T>`      | `State<T>`       | `value`, `placeholder`, `errorMessage`, `appendInput()`, `initInput()`, `checkRequired()`, `resetInput()` |
 
 **Typical element (non-input):**
+
 ```dart
 with AdaptiveElementMixin, AdaptiveVisibilityMixin
 ```
 
 **Typical input element:**
+
 ```dart
 with AdaptiveElementMixin, AdaptiveVisibilityMixin, AdaptiveInputMixin
 ```
 
 **Typical action widget:**
+
 ```dart
 with AdaptiveElementMixin, AdaptiveActionMixin
 ```
@@ -174,10 +177,12 @@ AdaptiveMyElement({required this.adaptiveMap})
 ```
 
 This produces:
+
 - Widget key: `ValueKey('${id}_adaptive')`
 - Child content key (for inputs): `ValueKey('$id')` or `ValueKey('${id}_suffix')`
 
 Tests use these keys to locate widgets:
+
 ```dart
 find.byKey(const ValueKey('myElementId_adaptive'))  // outer StatefulWidget
 find.byKey(const ValueKey('myElementId'))           // inner content widget
@@ -191,7 +196,7 @@ From within a State's `build()` method, read the `ReferenceResolver` to apply
 theme-aware colors, font sizes, and spacing:
 
 ```dart
-import 'package:flutter_adaptive_cards_plus/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @override
@@ -225,8 +230,8 @@ the library, using `CardTypeRegistry.addedElements`:
 
 ```dart
 // In the host app:
-import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards.dart';
-import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards_extend.dart';
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs_extend.dart';
 
 final registry = CardTypeRegistry(
   addedElements: {
@@ -245,8 +250,9 @@ AdaptiveCardsRoot.asset(
 
 The extension library re-exports the mixins and utilities a custom element
 needs:
+
 ```dart
-import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards_extend.dart';
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs_extend.dart';
 // Gives access to: AdaptiveElementWidgetMixin, AdaptiveElementMixin,
 //   AdaptiveVisibilityMixin, SeparatorElement, generateAdaptiveWidgetKey,
 //   generateWidgetKey, loadId, etc.
@@ -256,7 +262,8 @@ import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards_extend.dart';
 
 ## Testing a New Element
 
-1. **Create a sample JSON** in `packages/flutter_adaptive_cards_plus/test/samples/`:
+1. **Create a sample JSON** in `packages/flutter_adaptive_cards_fs/test/samples/`:
+
    ```json
    {
      "type": "AdaptiveCard",
@@ -272,6 +279,7 @@ import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards_extend.dart';
    ```
 
 2. **Write a widget test** using the standard test helpers:
+
    ```dart
    import 'utils/test_utils.dart';
 
@@ -288,6 +296,6 @@ import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards_extend.dart';
 
 4. **Run tests** from the package directory:
    ```bash
-   cd packages/flutter_adaptive_cards_plus
+   cd packages/flutter_adaptive_cards_fs
    fvm flutter test
    ```

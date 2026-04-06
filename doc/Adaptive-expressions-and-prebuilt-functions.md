@@ -5,7 +5,7 @@
 >
 > This describes the Azure AI Bot Service expression language and prebuilt functions, which are **separate from** the core Adaptive Cards specification. These expressions were designed specifically for Azure Bot Framework conversational AI scenarios.
 >
-> The standard Adaptive Cards specification (used by this library) does NOT include these expressions. We may consider adding this expression language to `flutter_adaptive_template` in the future if there is demand for Azure bot integration.
+> The standard Adaptive Cards specification (used by this library) does NOT include these expressions. We may consider adding this expression language to `flutter_adaptive_template_fs` in the future if there is demand for Azure bot integration.
 >
 > **For standard Adaptive Cards templating**, see [JSON-Template-Design.md](./JSON-Template-Design.md) which documents the Microsoft Adaptive Cards templating language that IS implemented in this library.
 

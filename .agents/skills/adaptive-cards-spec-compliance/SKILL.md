@@ -20,7 +20,7 @@ implemented or reviewed:
 3. **Reference the JavaScript SDK as the primary cross-platform reference**
    implementation (it is the most complete open-source reference).
 4. **Flag unimplemented features** and known gaps in this Flutter library.
-5. **Consult the templating spec** for any work in `flutter_adaptive_template`.
+5. **Consult the templating spec** for any work in `flutter_adaptive_template_fs`.
 
 ---
 
@@ -63,7 +63,7 @@ implemented or reviewed:
 ## Element Coverage Checklist
 
 Use this as the canonical list when implementing or auditing element support.
-Cross-check each item against `lib/src/registry.dart` in `flutter_adaptive_cards_plus`.
+Cross-check each item against `lib/src/registry.dart` in `flutter_adaptive_cards_fs`.
 
 ### Body Elements
 
@@ -204,9 +204,9 @@ the old `{...}` syntax is deprecated as of May 2020):
 | `if(cond, trueVal, falseVal)` | Inline conditional function |
 | `json(string)` | Parses a JSON string to an object |
 
-### Flutter Template Library (`flutter_adaptive_template`)
+### Flutter Template Library (`flutter_adaptive_template_fs`)
 
-Location: `packages/flutter_adaptive_template/lib/src/`
+Location: `packages/flutter_adaptive_template_fs/lib/src/`
 
 | File | Purpose |
 |---|---|
