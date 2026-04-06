@@ -4,7 +4,7 @@ All input types have a choice of using basic flutter widgets or using flutter fo
 
 ## Input.xxx Adaptive card inputs
 
-- AdaptiveCard inputs are located in `flutter_adaptive_cards_plus/lib/src/cards/inputs`. Each class there should have its own associated unit test class in `flutter_adaptive_cards_plus/test/inputs`.
+- AdaptiveCard inputs are located in `flutter_adaptive_cards_fs/lib/src/cards/inputs`. Each class there should have its own associated unit test class in `flutter_adaptive_cards_fs/test/inputs`.
 
 ## Comoponent field implementations
 

@@ -2,8 +2,8 @@
 name: flutter-adaptive-cards-testing
 description: >
   Testing patterns, utilities, and golden image workflows for the
-  flutter_adaptive_cards_plus library. Use this before writing or modifying
-  any test in packages/flutter_adaptive_cards_plus/test/.
+  flutter_adaptive_cards_fs library. Use this before writing or modifying
+  any test in packages/flutter_adaptive_cards_fs/test/.
 ---
 
 # Flutter Adaptive Cards Testing Skill
@@ -12,12 +12,12 @@ description: >
 
 All library tests live under:
 ```
-packages/flutter_adaptive_cards_plus/test/
+packages/flutter_adaptive_cards_fs/test/
 ```
 
 Tests are run **from that package directory**, not the monorepo root:
 ```bash
-cd packages/flutter_adaptive_cards_plus
+cd packages/flutter_adaptive_cards_fs
 flutter test                        # all tests
 flutter test test/golden_sample_test.dart  # specific file
 flutter test --tags golden          # only golden image tests
@@ -106,7 +106,7 @@ All Adaptive Card widgets use deterministic `ValueKey`s derived from the
 element's `id` JSON property. Use these functions to locate widgets in tests:
 
 ```dart
-import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 // Key for the StatefulWidget wrapper (outer layer):
 ValueKey generateAdaptiveWidgetKey(Map adaptiveMap);
@@ -179,7 +179,7 @@ testWidgets('My Card Golden', (tester) async {
 Only update goldens on **your development machine** (not CI), after verifying
 the rendered output looks correct visually:
 ```bash
-cd packages/flutter_adaptive_cards_plus
+cd packages/flutter_adaptive_cards_fs
 flutter test --update-goldens --tags golden
 ```
 
@@ -210,12 +210,12 @@ When adding a new test:
 
 From the repo root, run tests for all packages:
 ```bash
-flutter test packages/flutter_adaptive_cards_plus
+flutter test packages/flutter_adaptive_cards_fs
 flutter test adaptive_explorer
 flutter test widgetbook
 ```
 
 Or run a single package's tests using the Dart MCP tool with the package root:
 ```
-root: file:///path/to/Flutter-AdaptiveCards/packages/flutter_adaptive_cards_plus
+root: file:///path/to/Flutter-AdaptiveCards/packages/flutter_adaptive_cards_fs
 ```

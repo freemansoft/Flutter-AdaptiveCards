@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_adaptive_template/flutter_adaptive_template.dart';
+import 'package:flutter_adaptive_template_fs/flutter_adaptive_template_fs.dart';
 
 /// Manager class to handle JSON file loading, merging, and saving.
 class TemplateManager {

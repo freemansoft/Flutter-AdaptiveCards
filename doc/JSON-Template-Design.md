@@ -1,6 +1,6 @@
 # Design for Microsoft AdaptiveCard Template Engine
 
-This is the initial design document for a Dart based templating engine located in `packages/flutter_adaptive_template` to be used in conjuction with the flutter adpaptive cards library located in `pacagkesflutter_adaptive_cards_plus` in this repository. There is no cross package dependencies. Both flutter_adaptive_template and flutter_adaptive_cards_plus can be used independently. The purpose of this engine is to separate the data in an adaptive card from the layout. The template service applies the data json to the template json creating a renderable adaptive card json. This page describes the templating language <https://learn.microsoft.com/en-us/adaptive-cards/templating/language> and should be used as the source.
+This is the initial design document for a Dart based templating engine located in `packages/flutter_adaptive_template_fs` to be used in conjuction with the flutter adpaptive cards library located in `pacagkesflutter_adaptive_cards_fs` in this repository. There is no cross package dependencies. Both flutter_adaptive_template_fs and flutter_adaptive_cards_fs can be used independently. The purpose of this engine is to separate the data in an adaptive card from the layout. The template service applies the data json to the template json creating a renderable adaptive card json. This page describes the templating language <https://learn.microsoft.com/en-us/adaptive-cards/templating/language> and should be used as the source.
 
 This design supports separate template an data json but the standard also supports the data being part of the data in a "$data" field on the root of the JSON. You can see this in the examples.
 
@@ -340,7 +340,7 @@ string cardJson = template.Expand(context);
 
 ## Testing
 
-Each of the features and capabilities described above must have unit tests to validate and prevent regression. The unit tests should use json template and json data files that should be part of the testing directory. in `packages/flutter_adaptive_template/test`. We want the unit test JSON to be in json files and not embedded in the tests themselves for future usage and analysis.
+Each of the features and capabilities described above must have unit tests to validate and prevent regression. The unit tests should use json template and json data files that should be part of the testing directory. in `packages/flutter_adaptive_template_fs/test`. We want the unit test JSON to be in json files and not embedded in the tests themselves for future usage and analysis.
 
 Testing template and data JSON can be found in the adaptive card templating service [on GitHub](https://github.com/microsoft/adaptivecards-templates/tree/master/templates). The project can copy over. The team should prioritize templates and data in separate files but an also pull in JSON that has a $data section and then the template to be filed with the $data.  Some of the examples have a "$SampleData" section in the template that can be used to validate the template. For testing, if we find that in a copied example then the $SampleData can be removed from the json and then be passed as the data json along with the modified template when executing the test.
 
@@ -349,7 +349,7 @@ Testing template and data JSON can be found in the adaptive card templating serv
 
 ## Data and Time Formatting
 
-`DATE` and `TIME` formatting functins are implemented in flutter_adaptive_cards_plus and not `flutter_adaptive_template`
+`DATE` and `TIME` formatting functins are implemented in flutter_adaptive_cards_fs and not `flutter_adaptive_template_fs`
 
 ## References
 

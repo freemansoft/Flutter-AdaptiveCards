@@ -97,7 +97,7 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ---
 
-## Templating (flutter_adaptive_template package)
+## Templating (flutter_adaptive_template_fs package)
 
 | Feature             | Microsoft Spec                                                               | Implementation | Tests      | Documentation                                        | Notes            |
 | ------------------- | ---------------------------------------------------------------------------- | -------------- | ---------- | ---------------------------------------------------- | ---------------- |
@@ -110,7 +110,7 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 | `json()` Function   | spec                                                                         | 📝 Designed    | ⚠️ Unknown | [JSON-Template-Design.md](./JSON-Template-Design.md) | -                |
 | `if()` Expressions  | spec                                                                         | 📝 Designed    | ⚠️ Unknown | [JSON-Template-Design.md](./JSON-Template-Design.md) | -                |
 
-**Note**: Templating implementation status needs verification in `packages/flutter_adaptive_template/`
+**Note**: Templating implementation status needs verification in `packages/flutter_adaptive_template_fs/`
 
 ---
 
@@ -153,7 +153,7 @@ These are implemented but not part of the standard Microsoft specification:
 1. **Fix ColumnSet Height Bug**: Verify and fix inconsistent Column heights ([doc](./Column-ColumnSet-Fill-Vertical-Height.md))
 2. **Verify backgroundImage**: Confirm both string and object forms work ([doc](./backgroundImage.md))
 3. **Fix Action.OpenUrlDialog**: Implement correct fetch-and-show behavior
-4. **Verify Template Package**: Check implementation status of `flutter_adaptive_template`
+4. **Verify Template Package**: Check implementation status of `flutter_adaptive_template_fs`
 
 ### Medium Priority
 
@@ -179,19 +179,19 @@ These are implemented but not part of the standard Microsoft specification:
 
 ```bash
 # Count implemented HostConfig entities
-ls -1 packages/flutter_adaptive_cards_plus/lib/src/hostconfig/*.dart | wc -l
+ls -1 packages/flutter_adaptive_cards_fs/lib/src/hostconfig/*.dart | wc -l
 
 # Count HostConfig tests
-ls -1 packages/flutter_adaptive_cards_plus/test/hostconfig/*_test.dart | wc -l
+ls -1 packages/flutter_adaptive_cards_fs/test/hostconfig/*_test.dart | wc -l
 
 # Count input types
-ls -1 packages/flutter_adaptive_cards_plus/lib/src/cards/inputs/*.dart | wc -l
+ls -1 packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/*.dart | wc -l
 
 # Count input tests
-ls -1 packages/flutter_adaptive_cards_plus/test/inputs/*_test.dart | wc -l
+ls -1 packages/flutter_adaptive_cards_fs/test/inputs/*_test.dart | wc -l
 
 # Run non-golden tests
-cd packages/flutter_adaptive_cards_plus
+cd packages/flutter_adaptive_cards_fs
 flutter test --exclude-tags=golden
 ```
 

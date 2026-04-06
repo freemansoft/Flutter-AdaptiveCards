@@ -38,10 +38,10 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_adaptive_cards_plus:
-    path: ../packages/flutter_adaptive_cards_plus
-  flutter_adaptive_charts:
-    path: ../packages/flutter_adaptive_charts
+  flutter_adaptive_cards_fs:
+    path: ../packages/flutter_adaptive_cards_fs
+  flutter_adaptive_charts_fs:
+    path: ../packages/flutter_adaptive_charts_fs
   flutter_localizations:
     sdk: flutter
 

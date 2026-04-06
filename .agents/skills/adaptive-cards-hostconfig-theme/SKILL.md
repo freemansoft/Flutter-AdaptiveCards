@@ -120,7 +120,7 @@ final childResolver = resolver.copyWith(style: 'emphasis');
 Inside any element's `build()` method, get the resolver via Riverpod:
 
 ```dart
-import 'package:flutter_adaptive_cards_plus/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @override
