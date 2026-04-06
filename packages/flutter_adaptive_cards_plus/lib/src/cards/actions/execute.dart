@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/actions/icon_button.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
 
-class AdaptiveActionResetInputs extends StatefulWidget
+///
+/// https://adaptivecards.io/explorer/Action.Execute.html
+///
+class AdaptiveActionExecute extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveActionResetInputs({
+  AdaptiveActionExecute({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -19,13 +22,12 @@ class AdaptiveActionResetInputs extends StatefulWidget
   late final String id;
 
   @override
-  AdaptiveActionResetInputsState createState() =>
-      AdaptiveActionResetInputsState();
+  AdaptiveActionExecuteState createState() => AdaptiveActionExecuteState();
 }
 
-class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
+class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
     with AdaptiveActionMixin, AdaptiveElementMixin {
-  late GenericActionResetInputs action;
+  late GenericExecuteAction action;
 
   @override
   void didChangeDependencies() {
@@ -34,7 +36,7 @@ class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
         actionTypeRegistry.getActionForType(
               map: adaptiveMap,
             )!
-            as GenericActionResetInputs;
+            as GenericExecuteAction;
   }
 
   @override
@@ -46,6 +48,7 @@ class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,
           adaptiveMap: adaptiveMap,
+          verb: adaptiveMap['verb']?.toString(),
         );
       },
     );

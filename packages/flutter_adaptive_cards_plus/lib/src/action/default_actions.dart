@@ -2,14 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/action_handler.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/action_handler.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_plus/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_plus/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:format/format.dart';
 import 'package:url_launcher/url_launcher.dart';
+// Default action handlers with basic behavior
+// including forwarding to the InheritedAdaptiveCardHandlers
 
 /// Default actions for onTaps for Action.Submit
 /// Expects there to be supplementary data in 'data' property

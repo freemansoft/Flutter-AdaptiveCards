@@ -203,7 +203,7 @@ Demo Adaptive Card*
 
 ```
 
-Taken from the example App
+Taken from the example (deleted) App
 
 ## Open TODO and open issues and bugs defects items
 

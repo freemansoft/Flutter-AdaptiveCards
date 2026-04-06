@@ -4,11 +4,11 @@ All input types have a choice of using basic flutter widgets or using flutter fo
 
 ## Input.xxx Adaptive card inputs
 
-- AdaptiveCard inputs are located in `flutter_adpative_cards/lib/src/elements/inputs`. Each class there should have its own associated unit test class in `flutter_adaptive_cards_plus/test/elements/inputs`.
+- AdaptiveCard inputs are located in `flutter_adaptive_cards_plus/lib/src/cards/inputs`. Each class there should have its own associated unit test class in `flutter_adaptive_cards_plus/test/inputs`.
 
 ## Comoponent field implementations
 
-All of the data entry components in lib/src/elements/inputs should be form componets instead of plain flutter inputs.
+All of the data entry components in lib/src/cards/inputs should be form componets instead of plain flutter inputs.
 
 - Existing Flutter widget text inputs, selection inputs and the other types should be replaced with their form equivalent where possible
 

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/actions/icon_button.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
 
-///
-/// https://adaptivecards.io/explorer/Action.Submit.html
-///
-class AdaptiveActionSubmit extends StatefulWidget
+class AdaptiveActionResetInputs extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveActionSubmit({
+  AdaptiveActionResetInputs({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -22,12 +19,13 @@ class AdaptiveActionSubmit extends StatefulWidget
   late final String id;
 
   @override
-  AdaptiveActionSubmitState createState() => AdaptiveActionSubmitState();
+  AdaptiveActionResetInputsState createState() =>
+      AdaptiveActionResetInputsState();
 }
 
-class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
+class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
     with AdaptiveActionMixin, AdaptiveElementMixin {
-  late GenericSubmitAction action;
+  late GenericActionResetInputs action;
 
   @override
   void didChangeDependencies() {
@@ -36,7 +34,7 @@ class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
         actionTypeRegistry.getActionForType(
               map: adaptiveMap,
             )!
-            as GenericSubmitAction;
+            as GenericActionResetInputs;
   }
 
   @override

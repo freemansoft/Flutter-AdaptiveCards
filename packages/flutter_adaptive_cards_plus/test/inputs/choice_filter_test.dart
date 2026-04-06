@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/inputs/choice_filter.dart';
-import 'package:flutter_adaptive_cards_plus/src/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/inputs/choice_filter.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/inputs/choice_set.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

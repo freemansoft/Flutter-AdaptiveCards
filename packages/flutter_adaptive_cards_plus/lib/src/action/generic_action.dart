@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_plus/src/flutter_raw_adaptive_card.dart';
 
-/// Generic actions forward to the RawAdaptiveCardState
+/// GenericActions are injectible action handlers that
+/// the default handlers forward to the RawAdaptiveCardState
 /// functions that are specific to the action type
 ///
-/// The root default beahvior for onTaps in for all actions
+/// The root default beahvior for onTaps in each of the Action types
 /// Each action type has its own implementation
 abstract class GenericAction {
   const GenericAction();

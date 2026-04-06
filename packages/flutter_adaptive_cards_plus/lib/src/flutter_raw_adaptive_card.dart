@@ -4,11 +4,11 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/action_type_registry.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/inputs/choice_filter.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_plus/src/hostconfig/host_config.dart';
-import 'package:flutter_adaptive_cards_plus/src/inputs/choice_filter.dart';
-import 'package:flutter_adaptive_cards_plus/src/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_plus/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_plus/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_plus/src/registry.dart';

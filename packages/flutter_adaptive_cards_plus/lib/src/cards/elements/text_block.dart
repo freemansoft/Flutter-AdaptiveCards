@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_plus/src/additional.dart';
 import 'package:flutter_adaptive_cards_plus/src/riverpod_providers.dart';
@@ -41,6 +41,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   late String text;
   late String? fontFamily;
 
+  ///We're assuming that the only type of action on a text block is an open url
   late GenericActionOpenUrl action;
 
   @override

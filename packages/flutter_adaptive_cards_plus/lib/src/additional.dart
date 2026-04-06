@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_plus/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards_plus/src/riverpod_providers.dart';

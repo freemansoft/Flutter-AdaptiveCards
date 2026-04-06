@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/action_handler.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_plus/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_plus/src/models/data_query.dart';
 import 'package:flutter_adaptive_charts/flutter_adaptive_charts.dart';

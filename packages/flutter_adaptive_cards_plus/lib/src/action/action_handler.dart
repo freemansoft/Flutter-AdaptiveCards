@@ -13,7 +13,9 @@ import 'package:flutter_adaptive_cards_plus/src/models/data_query.dart';
 ///
 /// See DefaultActions as to how this could be used.
 ///
-/// The onChange here gets injected into the [RawAdaptiveCardState] onChange handler
+/// The onChange here is a little different. It isn't sourced from an Action
+/// but rather from the Input widgets themselves.
+/// It is injected into the [RawAdaptiveCardState] onChange handler
 ///
 /// The handlers here will be attached to widgets in the tree
 class InheritedAdaptiveCardHandlers extends InheritedWidget {
@@ -30,15 +32,19 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
   });
 
   /// called when a Action.Submit submit is pressed
+  /// and we are running the default action handlers
   final Function(Map map) onSubmit;
 
   /// called when an Action.Execute execute is pressed
+  /// and we are running the default action handlers
   final Function(Map map) onExecute;
 
   /// called when an Action.OpenUrl openUrl is pressed
+  /// and we are running the default action handlers
   final Function(String url) onOpenUrl;
 
   /// called when an Action.OpenUrlDialog openUrlDialog is pressed
+  /// and we are running the default action handlers
   final Function(String url) onOpenUrlDialog;
 
   /// called when a value changes in an Input.ChoiceSet

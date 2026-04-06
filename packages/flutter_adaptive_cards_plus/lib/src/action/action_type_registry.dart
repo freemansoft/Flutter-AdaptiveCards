@@ -1,8 +1,10 @@
 import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/default_actions.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/default_actions.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/generic_action.dart';
 
 /// Finds the action processor for a given action type
+/// This is the way "Action" handlers are registered and discovered.
+///
 /// Applications can inject their own custom action registry when constructing [AdaptiveCardsRoot]
 abstract class ActionTypeRegistry {
   const ActionTypeRegistry();
