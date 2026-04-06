@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/actions/icon_button.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
 
 ///

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/inputs/date.dart';
 import 'package:flutter_adaptive_cards_plus/src/flutter_raw_adaptive_card.dart';
-import 'package:flutter_adaptive_cards_plus/src/inputs/date.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

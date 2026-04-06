@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/generic_action.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/actions/icon_button.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
 
 ///
-/// https://adaptivecards.io/explorer/Action.Execute.html
+/// https://adaptivecards.io/explorer/Action.ToggleVisibility.html
 ///
-class AdaptiveActionExecute extends StatefulWidget
+class AdaptiveActionToggleVisibility extends StatefulWidget
     with AdaptiveElementWidgetMixin {
-  AdaptiveActionExecute({
+  AdaptiveActionToggleVisibility({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -22,12 +22,14 @@ class AdaptiveActionExecute extends StatefulWidget
   late final String id;
 
   @override
-  AdaptiveActionExecuteState createState() => AdaptiveActionExecuteState();
+  AdaptiveActionToggleVisibilityState createState() =>
+      AdaptiveActionToggleVisibilityState();
 }
 
-class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
+class AdaptiveActionToggleVisibilityState
+    extends State<AdaptiveActionToggleVisibility>
     with AdaptiveActionMixin, AdaptiveElementMixin {
-  late GenericExecuteAction action;
+  late GenericActionToggleVisibility action;
 
   @override
   void didChangeDependencies() {
@@ -36,7 +38,7 @@ class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
         actionTypeRegistry.getActionForType(
               map: adaptiveMap,
             )!
-            as GenericExecuteAction;
+            as GenericActionToggleVisibility;
   }
 
   @override
@@ -48,7 +50,6 @@ class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,
           adaptiveMap: adaptiveMap,
-          verb: adaptiveMap['verb']?.toString(),
         );
       },
     );

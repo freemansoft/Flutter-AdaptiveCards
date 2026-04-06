@@ -8,9 +8,9 @@ This document describes how the Adaptive Cards action system is organized and ho
 
 ## Key Concepts 💡
 
-- **Generic action interfaces** (e.g., `GenericSubmitAction`, `GenericExecuteAction`, `GenericActionOpenUrl`) live in `lib/src/actions/generic_action.dart` and define the public contract (the `tap()` signature).
-- **Default implementations** (e.g., `DefaultSubmitAction`, `DefaultExecuteAction`) live in `lib/src/actions/default_actions.dart` and provide the package-provided behavior.
-- **ActionTypeRegistry** (`lib/src/actions/action_type_registry.dart`) maps the parsed `Map<String, dynamic>` (the action map) to an appropriate `GenericAction` instance.
+- **Generic action interfaces** (e.g., `GenericSubmitAction`, `GenericExecuteAction`, `GenericActionOpenUrl`) live in `lib/src/action/generic_action.dart` and define the public contract (the `tap()` signature).
+- **Default implementations** (e.g., `DefaultSubmitAction`, `DefaultExecuteAction`) live in `lib/src/action/default_actions.dart` and provide the package-provided behavior.
+- **ActionTypeRegistry** (`lib/src/action/action_type_registry.dart`) maps the parsed `Map<String, dynamic>` (the action map) to an appropriate `GenericAction` instance.
 - **Runtime invocation**: Action widgets invoke `action.tap(...)` at tap time, passing the current `adaptiveMap` so Default implementations remain stateless and reusable.
 
 ---
@@ -86,10 +86,10 @@ class MySubmitAction implements GenericSubmitAction {
 
 ## Files of interest 🔎
 
-- `lib/src/actions/generic_action.dart` — abstract `Generic*` interfaces
-- `lib/src/actions/default_actions.dart` — concrete `Default*` implementations
-- `lib/src/actions/action_type_registry.dart` — default registry mapping action types to implementations
-- `lib/src/elements/actions/*` — action widgets and call sites
+- `lib/src/action/generic_action.dart` — abstract `Generic*` interfaces
+- `lib/src/action/default_actions.dart` — concrete `Default*` implementations
+- `lib/src/action/action_type_registry.dart` — default registry mapping action types to implementations
+- `lib/src/cards/actions/*` — action widgets and call sites
 
 ---
 

@@ -185,7 +185,7 @@ ls -1 packages/flutter_adaptive_cards_plus/lib/src/hostconfig/*.dart | wc -l
 ls -1 packages/flutter_adaptive_cards_plus/test/hostconfig/*_test.dart | wc -l
 
 # Count input types
-ls -1 packages/flutter_adaptive_cards_plus/lib/src/inputs/*.dart | wc -l
+ls -1 packages/flutter_adaptive_cards_plus/lib/src/cards/inputs/*.dart | wc -l
 
 # Count input tests
 ls -1 packages/flutter_adaptive_cards_plus/test/inputs/*_test.dart | wc -l

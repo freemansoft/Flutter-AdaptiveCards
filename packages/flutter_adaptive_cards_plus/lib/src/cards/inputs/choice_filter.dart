@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_adaptive_cards_plus/src/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/inputs/choice_set.dart';
 
 class ChoiceFilter extends StatefulWidget {
   const ChoiceFilter({super.key, required this.data, required this.callback});

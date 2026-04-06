@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/action_type_registry.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_plus/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_plus/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_plus/src/registry.dart';

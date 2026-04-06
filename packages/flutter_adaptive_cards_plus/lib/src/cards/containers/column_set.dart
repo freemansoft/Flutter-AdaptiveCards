@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_plus/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_plus/src/additional.dart';
-import 'package:flutter_adaptive_cards_plus/src/containers/column.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/containers/column.dart';
 import 'package:flutter_adaptive_cards_plus/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_plus/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

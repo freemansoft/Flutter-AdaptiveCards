@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/media.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/text_block.dart';
-import 'package:flutter_adaptive_cards_plus/src/elements/unknown.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/elements/media.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/elements/text_block.dart';
+import 'package:flutter_adaptive_cards_plus/src/cards/elements/unknown.dart';
 import 'package:flutter_adaptive_cards_plus/src/registry.dart';
 import 'package:flutter_test/flutter_test.dart';
 

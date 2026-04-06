@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/action_handler.dart';
-import 'package:flutter_adaptive_cards_plus/src/actions/action_type_registry.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/action_handler.dart';
+import 'package:flutter_adaptive_cards_plus/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_plus/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_plus/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards_plus/src/models/data_query.dart';
