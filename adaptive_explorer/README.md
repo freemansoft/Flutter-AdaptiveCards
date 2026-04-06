@@ -1,6 +1,6 @@
 # adaptive_explorer
 
-A design studio for the flutter_adaptive_cards_plus library. This viewer and editor for adaptive cards json files lets you open and render adaptive cards. It has a an editor capability that lets you edit a card in one tab and then render it in the preview tab.
+A design studio for the flutter_adaptive_cards_fs library. This viewer and editor for adaptive cards json files lets you open and render adaptive cards. It has a an editor capability that lets you edit a card in one tab and then render it in the preview tab.
 
 Can be used to open a json file and display it. Will refresh the display if an outside editor updates the source file
 

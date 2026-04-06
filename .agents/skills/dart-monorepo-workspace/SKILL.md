@@ -16,9 +16,9 @@ Flutter-AdaptiveCards/           ← workspace root (pubspec.yaml declares works
 ├── pubspec.yaml                 ← workspace manifest ONLY — no real package here
 ├── .fvmrc                       ← pins Flutter SDK version (fvm)
 ├── packages/
-│   ├── flutter_adaptive_cards_plus/    ← MAIN LIBRARY (published to pub.dev)
-│   ├── flutter_adaptive_charts/        ← charting extension package
-│   └── flutter_adaptive_template/      ← AdaptiveCard template merging package
+│   ├── flutter_adaptive_cards_fs/    ← MAIN LIBRARY (published to pub.dev)
+│   ├── flutter_adaptive_charts_fs/        ← charting extension package
+│   └── flutter_adaptive_template_fs/      ← AdaptiveCard template merging package
 ├── adaptive_explorer/           ← desktop editor/preview app (not published)
 └── widgetbook/                  ← widgetbook demo app (not published)
 ```
@@ -31,9 +31,9 @@ publish_to: none
 environment:
   sdk: ^3.10.4
 workspace:
-  - packages/flutter_adaptive_cards_plus
-  - packages/flutter_adaptive_charts
-  - packages/flutter_adaptive_template
+  - packages/flutter_adaptive_cards_fs
+  - packages/flutter_adaptive_charts_fs
+  - packages/flutter_adaptive_template_fs
   - widgetbook
   - adaptive_explorer
 ```
@@ -72,8 +72,8 @@ specific package directory**, not the workspace root.
 
 | Task | Directory | Command |
 |---|---|---|
-| Run main library tests | `packages/flutter_adaptive_cards_plus` | `fvm flutter test` |
-| Add a dep to main library | `packages/flutter_adaptive_cards_plus` | `fvm flutter pub add <pkg>` |
+| Run main library tests | `packages/flutter_adaptive_cards_fs` | `fvm flutter test` |
+| Add a dep to main library | `packages/flutter_adaptive_cards_fs` | `fvm flutter pub add <pkg>` |
 | Run the explorer app | `adaptive_explorer` | `fvm flutter run` |
 | Run the widgetbook app | `widgetbook` | `fvm flutter run` |
 | Get all deps (workspace) | Repo root | `fvm flutter pub get` |
@@ -82,13 +82,13 @@ specific package directory**, not the workspace root.
 
 ### ✅ Correct — from package directory:
 ```bash
-cd packages/flutter_adaptive_cards_plus
+cd packages/flutter_adaptive_cards_fs
 fvm flutter test test/basic_test.dart
 ```
 
 ### ❌ Wrong — from repo root:
 ```bash
-fvm flutter test packages/flutter_adaptive_cards_plus/test/basic_test.dart
+fvm flutter test packages/flutter_adaptive_cards_fs/test/basic_test.dart
 # This may fail because asset resolution and test config depend on CWD
 ```
 
@@ -102,12 +102,12 @@ using **path dependencies** (resolved automatically by the workspace):
 ```yaml
 # widgetbook/pubspec.yaml excerpt
 dependencies:
-  flutter_adaptive_cards_plus:
-    path: ../packages/flutter_adaptive_cards_plus
-  flutter_adaptive_charts:
-    path: ../packages/flutter_adaptive_charts
-  flutter_adaptive_template:
-    path: ../packages/flutter_adaptive_template
+  flutter_adaptive_cards_fs:
+    path: ../packages/flutter_adaptive_cards_fs
+  flutter_adaptive_charts_fs:
+    path: ../packages/flutter_adaptive_charts_fs
+  flutter_adaptive_template_fs:
+    path: ../packages/flutter_adaptive_template_fs
 ```
 
 Changes to a library package are **immediately reflected** in the apps without
@@ -116,31 +116,31 @@ requiring a publish step — just hot reload or restart.
 ### Dependency Graph
 
 ```
-adaptive_explorer  ──► flutter_adaptive_cards_plus
-widgetbook         ──► flutter_adaptive_cards_plus
-                   ──► flutter_adaptive_charts
-                   ──► flutter_adaptive_template
-flutter_adaptive_charts   ──► flutter_adaptive_cards_plus
+adaptive_explorer  ──► flutter_adaptive_cards_fs
+widgetbook         ──► flutter_adaptive_cards_fs
+                   ──► flutter_adaptive_charts_fs
+                   ──► flutter_adaptive_template_fs
+flutter_adaptive_charts_fs   ──► flutter_adaptive_cards_fs
 ```
 
 ---
 
 ## Package Purposes
 
-### `packages/flutter_adaptive_cards_plus` — Core Library
+### `packages/flutter_adaptive_cards_fs` — Core Library
 - **Published to pub.dev**
 - Parses and renders Adaptive Cards JSON as Flutter widgets.
 - Entry points:
-  - `lib/flutter_adaptive_cards.dart` — public API (import this in consuming apps)
+  - `lib/flutter_adaptive_cards_fs.dart` — public API (import this in consuming apps)
   - `lib/flutter_adaptive_cards_extend.dart` — extension API (import when creating custom elements)
 - Contains: element widgets, containers, inputs, actions, HostConfig, registry.
 
-### `packages/flutter_adaptive_charts` — Charts Extension
+### `packages/flutter_adaptive_charts_fs` — Charts Extension
 - **Published to pub.dev**
 - Adds charting element types (isolates heavy chart dependencies).
 - Registered via the extension API into a `CardTypeRegistry`.
 
-### `packages/flutter_adaptive_template` — Template Package
+### `packages/flutter_adaptive_template_fs` — Template Package
 - **Published to pub.dev**
 - Implements [AdaptiveCards template spec](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/card-templates).
 - Merges JSON data into an Adaptive Card template before rendering.
@@ -183,7 +183,7 @@ fvm flutter analyze
 
 ```bash
 # Add a runtime dependency to main library
-cd packages/flutter_adaptive_cards_plus
+cd packages/flutter_adaptive_cards_fs
 fvm flutter pub add some_package
 
 # Add a dev dependency

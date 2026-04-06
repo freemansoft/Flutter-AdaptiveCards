@@ -5,7 +5,7 @@ import 'package:adaptive_explorer/src/file_watcher_service.dart';
 import 'package:adaptive_explorer/src/template_manager.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_plus/flutter_adaptive_cards.dart';
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:json_editor_flutter/json_editor_flutter.dart';
 
 void main() {

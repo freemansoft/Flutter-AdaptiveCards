@@ -3,9 +3,9 @@ param (
 )
 
 $packages = @(
-    "packages\flutter_adaptive_cards_plus",
-    "packages\flutter_adaptive_charts",
-    "packages\flutter_adaptive_template"
+    "packages\flutter_adaptive_cards_fs",
+    "packages\flutter_adaptive_charts_fs",
+    "packages\flutter_adaptive_template_fs"
 )
 
 $rootDir = (Get-Item -Path ".\").FullName

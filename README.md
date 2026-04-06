@@ -6,7 +6,7 @@ This project is a Flutter implementation of the Adaptive Cards specification. Th
 
 Adaptive Cards is a way of implementing Server Driven UI (SDUI) using a JSON based schema to deliver user interfaces specifications across platforms.
 
-1. See the [Getting Started](packages/flutter_adaptive_cards_plus/README.md) page for more information about this library.
+1. See the [Getting Started](packages/flutter_adaptive_cards_fs/README.md) page for more information about this library.
 
 ## GitHub notes
 
@@ -27,8 +27,8 @@ git remote set-head origin -a
    1. You can view demonstrations of this implementation by running the [Widgetbook](widgetbook)
    1. There is a editor / preview tool at [packages/flutter_adaptive_cards_editor](packages/flutter_adaptive_cards_editor/README.md)
 1. Libraries
-   1. The Adaptive Card library is in [packages/flutter_adaptive_cards_plus](packages/flutter_adaptive_cards_plus/README.md)
-   1. The Adaptive Card library CHANGELOG is in [packages/flutter_adaptive_cards_plus/CHANGELOG.md](packages/flutter_adaptive_cards_plus/CHANGELOG.md)
+   1. The Adaptive Card library is in [packages/flutter_adaptive_cards_fs](packages/flutter_adaptive_cards_fs/README.md)
+   1. The Adaptive Card library CHANGELOG is in [packages/flutter_adaptive_cards_fs/CHANGELOG.md](packages/flutter_adaptive_cards_fs/CHANGELOG.md)
 1. Adaptive Card Charting is an extension that adds charting capabilities and is implemented in its own package so that its third party dependencies are isolated from the core library. [packages/flutter_adaptive_cards_charts](packages/flutter_adaptive_cards_charts/README.md)
    1. The Adaptive Card Charting library CHANGELOG is in [packages/flutter_adaptive_cards_charts/CHANGELOG.md](packages/flutter_adaptive_cards_charts/CHANGELOG.md)
 1. The Adaptive Card Template library supports merging json data into an Adaptive Card template. It is implemented in its own package [packages/flutter_adaptive_cards_template](packages/flutter_adaptive_cards_template/README.md)
@@ -58,7 +58,7 @@ git remote set-head origin -a
 
 Many!
 
-- See [Defects](packages/flutter_adaptive_cards_plus/README.md#defects)
+- See [Defects](packages/flutter_adaptive_cards_fs/README.md#defects)
 - https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/text-features may not all be implemented
 
 ## LLM Agent Support

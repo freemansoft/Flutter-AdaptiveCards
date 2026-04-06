@@ -1,0 +1,26 @@
+name: flutter_adaptive_template_fs
+description: A template engine for adaptive cards, enabling data binding and dynamic rendering of adaptive card payloads in Flutter.
+version: 0.3.0
+homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
+repository: https://github.com/freemansoft/Flutter-AdaptiveCards
+
+environment:
+  sdk: ^3.10.4
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  path: ^1.9.1
+  very_good_analysis: ^10.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
