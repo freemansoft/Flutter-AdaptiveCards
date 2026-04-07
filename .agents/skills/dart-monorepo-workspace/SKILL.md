@@ -70,23 +70,25 @@ fvm install
 Each package is an independent Flutter/Dart project. Run commands **from the
 specific package directory**, not the workspace root.
 
-| Task | Directory | Command |
-|---|---|---|
-| Run main library tests | `packages/flutter_adaptive_cards_fs` | `fvm flutter test` |
+| Task                      | Directory                            | Command                     |
+| ------------------------- | ------------------------------------ | --------------------------- |
+| Run main library tests    | `packages/flutter_adaptive_cards_fs` | `fvm flutter test`          |
 | Add a dep to main library | `packages/flutter_adaptive_cards_fs` | `fvm flutter pub add <pkg>` |
-| Run the explorer app | `adaptive_explorer` | `fvm flutter run` |
-| Run the widgetbook app | `widgetbook` | `fvm flutter run` |
-| Get all deps (workspace) | Repo root | `fvm flutter pub get` |
-| Analyze all packages | Repo root | `fvm flutter analyze` |
-| Format all code | Repo root | `fvm dart format .` |
+| Run the explorer app      | `adaptive_explorer`                  | `fvm flutter run`           |
+| Run the widgetbook app    | `widgetbook`                         | `fvm flutter run`           |
+| Get all deps (workspace)  | Repo root                            | `fvm flutter pub get`       |
+| Analyze all packages      | Repo root                            | `fvm flutter analyze`       |
+| Format all code           | Repo root                            | `fvm dart format .`         |
 
 ### ✅ Correct — from package directory:
+
 ```bash
 cd packages/flutter_adaptive_cards_fs
 fvm flutter test test/basic_test.dart
 ```
 
 ### ❌ Wrong — from repo root:
+
 ```bash
 fvm flutter test packages/flutter_adaptive_cards_fs/test/basic_test.dart
 # This may fail because asset resolution and test config depend on CWD
@@ -128,6 +130,7 @@ flutter_adaptive_charts_fs   ──► flutter_adaptive_cards_fs
 ## Package Purposes
 
 ### `packages/flutter_adaptive_cards_fs` — Core Library
+
 - **Published to pub.dev**
 - Parses and renders Adaptive Cards JSON as Flutter widgets.
 - Entry points:
@@ -136,22 +139,26 @@ flutter_adaptive_charts_fs   ──► flutter_adaptive_cards_fs
 - Contains: element widgets, containers, inputs, actions, HostConfig, registry.
 
 ### `packages/flutter_adaptive_charts_fs` — Charts Extension
+
 - **Published to pub.dev**
 - Adds charting element types (isolates heavy chart dependencies).
 - Registered via the extension API into a `CardTypeRegistry`.
 
 ### `packages/flutter_adaptive_template_fs` — Template Package
+
 - **Published to pub.dev**
 - Implements [AdaptiveCards template spec](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/card-templates).
 - Merges JSON data into an Adaptive Card template before rendering.
 
 ### `adaptive_explorer` — Desktop Editor/Preview App
+
 - **Not published**
 - macOS/Linux/Windows desktop app for editing and previewing Adaptive Card JSON.
 - Uses `file_watcher_service.dart` to watch the JSON file on disk and live-reload
   the preview pane automatically.
 
 ### `widgetbook` — Component Demo App
+
 - **Not published**
 - Uses [widgetbook.io](https://widgetbook.io) to catalog all card element types.
 - Use cases defined in `lib/adaptive_cards_use_cases.dart`.
@@ -173,6 +180,7 @@ include: package:very_good_analysis/analysis_options.yaml
 ```
 
 Run analysis from the root to cover all packages at once:
+
 ```bash
 fvm flutter analyze
 ```
