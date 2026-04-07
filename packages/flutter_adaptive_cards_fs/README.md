@@ -103,8 +103,9 @@ Your program can pass it's own handlers to the `AdaptiveCard` constructors. See 
 
 There are two example apps and a bunch of tests that demonstrate card usage.
 
-1. We abused **Widgetbook** to show the cards in a way that is more useful than single adaptive card components. Everything in Widgetbook is a JSON markup sitting in the file system. Many of these ar emodified versions of what is avaialble on the INterenet from Microsoft an dothers
-2. The other example app is the **Adaptive Card ExplorerEditor** which is a full featured editor for creating , previewing andtesting Adaptive Cards.
+1. We abused **Widgetbook** [to show the cards](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/widgetbook) in a way that is more useful than single adaptive card components. Everything in Widgetbook is a JSON markup sitting in the file system. Many of these ar emodified versions of what is avaialble on the INterenet from Microsoft and others
+2. The other example app is the **Adaptive Card Explorer Editor** [which is a full featured editor](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_explorer) for creating , previewing and testing Adaptive Cards.
+3. The tests are in the `test` folder and are run using the standard flutter testing mechanism.
 
 ## Tests
 
