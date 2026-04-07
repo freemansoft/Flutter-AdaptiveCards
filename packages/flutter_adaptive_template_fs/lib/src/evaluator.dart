@@ -189,7 +189,7 @@ class Evaluator {
       if (entry.key == r'$data' || entry.key == r'$when') continue;
 
       // Now keys can be expressions per Adaptive Cards Spec: "${dynamicKey}": "value"
-      final String keyStr = (entry.key is String)
+      final keyStr = (entry.key is String)
           ? entry.key as String
           : entry.key.toString();
       final expandedKey = _expandValue(keyStr)?.toString() ?? keyStr;
@@ -320,6 +320,8 @@ class Evaluator {
         return 0;
       }
       if (name == 'concat') {
+        // cause I want it to be obvious
+        // ignore: avoid_redundant_argument_values
         return args.map((e) => e?.toString() ?? '').join('');
       }
       if (name == 'empty') {
