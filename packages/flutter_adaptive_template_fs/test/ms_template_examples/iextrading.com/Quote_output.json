@@ -22,7 +22,7 @@
         },
         {
           "type": "TextBlock",
-          "text": ", SHORT)}} )}}"
+          "text": "${{DATE(${parseDateFromEpoch(latestUpdate)}, SHORT)}} ${{TIME(${parseDateFromEpoch(latestUpdate)})}}"
         }
       ]
     },
@@ -44,8 +44,8 @@
                 },
                 {
                   "type": "TextBlock",
-                  "text": "▼ USD 2.69 ()",
-                  "color": "attention",
+                  "text": "▲ USD 2.69 ()",
+                  "color": "good",
                   "spacing": "None"
                 }
               ]

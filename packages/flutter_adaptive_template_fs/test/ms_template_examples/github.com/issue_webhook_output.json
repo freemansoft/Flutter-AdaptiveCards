@@ -34,7 +34,7 @@
             {
               "type": "TextBlock",
               "spacing": "None",
-              "text": "Created {{DATE(2019-05-15T15:20:18Z,SHORT)}}",
+              "text": "Created {{DATE(${issue.created_at},SHORT)}}",
               "isSubtle": true,
               "wrap": true
             }

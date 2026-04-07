@@ -7,8 +7,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "HR Taskforce (Private)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Welcome to the HR Taskforce team.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:HRTaskforce@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -17,8 +36,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Video Production (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Video Production",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:VideoProduction@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -27,8 +65,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Marketing Campaigns (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Marketing Campaigns",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:marketingcampaigns@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -37,8 +94,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Ideas (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Where we share innovative ideas.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Ideas@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -47,8 +123,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Business Development (Private)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Welcome to the BizDev team.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:BusinessDevelopment@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -57,8 +152,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Quality Assurance (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Quality Assurance group forum to discus bugs, fixes, and obstacles to releasing the best products in the marketplace.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:qualityassurance@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -67,8 +181,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "New Managers March 2017 (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "New Managers training course for March 2017",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:newMan201703@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -77,8 +210,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Activewear (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Activewear events Channel ... everything you need to know all in one place. Announcements, Events, Information, and News.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Activewear@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -87,8 +239,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Social Campaigns (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "An environment for collaboration for current and future social campaigns.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:socialcampaigns@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -97,8 +268,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Software Development (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Central area for discussion and collaboration for the Software Development Team.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:softwaredevelopment@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -107,8 +297,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Marketing (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "A group to synthesize, analyze, and synchronize our marketing efforts.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Marketing@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -117,8 +326,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "IT Department (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "IT Department",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:itdepartment@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -127,8 +355,28 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Northwind Traders",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "No description provided",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2,
+          "isSubtle": true
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Northwind@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -137,8 +385,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Product Launch (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "A collaboration area for the Product Launch team.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:productlaunch@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -147,8 +414,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Negotiation For Beginners (HiddenMembership)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Negotiation For Beginners training",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:NegotiationForBeginners@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -157,8 +443,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Leadership 101 (HiddenMembership)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Leadership 101 training",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Leadership101@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -167,8 +472,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Operations and Facilities (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Discussion area for Operations and Facilities employees.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:operationsandfacilities@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -177,8 +501,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Growing Future Leaders (HiddenMembership)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Growing Future Leaders training",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:GrowingFutureLeaders@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -187,8 +530,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "X1050 Launch Team (Private)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Welcome to the team that we've assembled to launch our product.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:X1050LaunchTeam@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -197,8 +559,28 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Legal Team",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "No description provided",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2,
+          "isSubtle": true
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Legal2@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -207,8 +589,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Telemedicine Workflow (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Telemedicine Workflow",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:telemedicineworkflow@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -217,8 +618,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Product Launch Event (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Product Launch Event",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:productlaunchevent@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -227,8 +647,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "IT Support (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "It Support Group - Feel free to ask questions and for help with your IT needs. We're here to serve you!",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:itsupport@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -237,8 +676,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Product Launch follow-up (Private)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Product Launch follow-up",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:ProductLaunchfollow-up@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -247,8 +705,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Finance (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Finance departments central collaboration forum.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Finance@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -257,8 +734,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Engineering (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "A collaborative forum for the Engineering department.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:engineering@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -267,8 +763,28 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Tailspin Toys",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "No description provided",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2,
+          "isSubtle": true
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Tailspin@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -277,8 +793,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Human Resources (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "A group that collaborates about onboarding and other HR-related topics.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:humanresources@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -287,8 +822,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Electronic Events (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Electronic events Channel ... everything you need to know all in one place. Announcements, Events, Information, and News.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:ElectronicEvents@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -297,8 +851,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Legal (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Legal departments central collaboration forum.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Legal@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -307,8 +880,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Online Marketing (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "A group to synthesize, analyze, and synchronize our online marketing efforts.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:onlinemarketing@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -317,8 +909,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Advanced Presentation Skills (HiddenMembership)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Advanced Presentation Skills training",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:AdvancedPresentationSkills@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -327,8 +938,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Employee Training (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Global Trainings Resources forum used to respond to employee trainging questions, and present new policies, procedures, and protocols.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:employeetraining@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -337,8 +967,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "IT (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "IT",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:IT@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -347,8 +996,28 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "All Employees",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "No description provided",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2,
+          "isSubtle": true
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Employees@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -357,8 +1026,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Research and Development (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Central group for the Research and Development team to collaborate across projects.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:researchanddevelopment@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -367,8 +1055,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Fashion Events (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Fashion events Channel ... everything you need to know all in one place. Announcements, Events, Information, and News.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:FashionEvents@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -377,8 +1084,28 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Sales Team",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "No description provided",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2,
+          "isSubtle": true
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Sales2@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -387,8 +1114,28 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Executives",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "No description provided",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2,
+          "isSubtle": true
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Executives@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -397,8 +1144,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Project Management (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "A forum for the Project Management team to collaborate and discuss tasks, challenges, and victories across past, present, and future projects.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:projectmanagement@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -407,8 +1173,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "HR (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "HR Channel ... everything you need to know all in one place.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:HR@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -417,8 +1202,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Retail (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "A general forum for the Retail Team.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Retail@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -427,8 +1231,28 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Finance Team",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "No description provided",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2,
+          "isSubtle": true
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Finance2@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -437,8 +1261,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Presentation Skills 101 (HiddenMembership)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Presentation Skills 101 training",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:PresentationSkills101@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -447,8 +1290,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Marketing Team (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "A general forum for the Marketing Team.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:marketingteam@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -457,8 +1319,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Senior Leadership Team (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Official collaboration area for Senior Leadership.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:seniorleadershipteam@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -467,8 +1348,28 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Project Falcon",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "No description provided",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2,
+          "isSubtle": true
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:ProjectFalcon@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -477,8 +1378,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Finance and Accounting (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "Finance and Accounting departments central collaboration forum.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:financeandaccounting@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -487,8 +1407,27 @@
       "type": "Container",
       "items": [
         {
+          "type": "TextBlock",
+          "text": "Sales (Public)",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "A general forum for the Sales Team.",
+          "spacing": "Small",
+          "wrap": true,
+          "maxLines": 2
+        },
+        {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Sales@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
