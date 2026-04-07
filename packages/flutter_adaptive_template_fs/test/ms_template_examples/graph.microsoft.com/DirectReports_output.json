@@ -23,7 +23,7 @@
                         {
                           "type": "Image",
                           "altText": "",
-                          "url": "https://graph.microsoft.com/v1.0/users/{mail}/photo/$value",
+                          "url": "https://graph.microsoft.com/v1.0/users/PradeepG@M365x214355.onmicrosoft.com/photo/$value",
                           "size": "Small",
                           "style": "Person"
                         }
@@ -35,11 +35,11 @@
                       "items": [
                         {
                           "type": "TextBlock",
-                          "text": "{displayName}"
+                          "text": "Pradeep Gupta"
                         },
                         {
                           "type": "TextBlock",
-                          "text": "{jobTitle}",
+                          "text": "Accountant II",
                           "isSubtle": true,
                           "spacing": "None"
                         }

@@ -47,7 +47,7 @@
           "items": [
             {
               "type": "Image",
-              "url": "http://openweathermap.org/img/w/{current.weather[0].icon}.png",
+              "url": "http://openweathermap.org/img/w/.png",
               "size": "Small"
             }
           ]
@@ -68,13 +68,13 @@
             },
             {
               "type": "Image",
-              "url": "http://openweathermap.org/img/w/{list[0].weather[0].icon}.png",
+              "url": "http://openweathermap.org/img/w/02n.png",
               "size": "Small",
               "spacing": "None"
             },
             {
               "type": "TextBlock",
-              "text": ")}}",
+              "text": "${{DATE({parseDateFromEpoch(list[0].dt * 1000)})}}",
               "size": "Small",
               "isSubtle": true,
               "horizontalAlignment": "Center",
@@ -94,7 +94,7 @@
             },
             {
               "type": "Image",
-              "url": "http://openweathermap.org/img/w/{list[1].weather[0].icon}.png",
+              "url": "http://openweathermap.org/img/w/01n.png",
               "size": "Small",
               "spacing": "None"
             },
@@ -120,7 +120,7 @@
             },
             {
               "type": "Image",
-              "url": "http://openweathermap.org/img/w/{list[2].weather[0].icon}.png",
+              "url": "http://openweathermap.org/img/w/04n.png",
               "size": "Small",
               "spacing": "None"
             },
@@ -146,7 +146,7 @@
             },
             {
               "type": "Image",
-              "url": "http://openweathermap.org/img/w/{list[3].weather[0].icon}.png",
+              "url": "http://openweathermap.org/img/w/04n.png",
               "size": "Small",
               "spacing": "None"
             },
@@ -172,7 +172,7 @@
             },
             {
               "type": "Image",
-              "url": "http://openweathermap.org/img/w/{list[4].weather[0].icon}.png",
+              "url": "http://openweathermap.org/img/w/01d.png",
               "size": "Small",
               "spacing": "None"
             },

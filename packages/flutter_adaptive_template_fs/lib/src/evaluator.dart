@@ -1,8 +1,9 @@
 // JSON conversion can be a lot of things so it is dynamic
-// ignore_for_file: strict_raw_type
+// ignore_for_file: strict_raw_type, unnecessary_parenthesis
 
 import 'dart:convert';
-import 'dart:developer' as developer;
+import 'package:flutter_adaptive_template_fs/src/ast.dart';
+import 'package:flutter_adaptive_template_fs/src/expression_parser.dart';
 import 'package:flutter_adaptive_template_fs/src/resolver.dart';
 
 /// template expression evaluator
@@ -41,11 +42,8 @@ class Evaluator {
   }
 
   dynamic _expandString(String value) {
-    // Check for expression syntax ${...}
-    // Is a simplified regex, might need a proper parser for nested braces etc.
-    // For now, let's assume simple cases or match the full string.
-
-    final pattern = RegExp(r'\$\{(.*?)\}');
+    // Check for expression syntax ${...} and deprecated {...}
+    final pattern = RegExp(r'\$?\{([^}]+)\}');
     final matches = pattern.allMatches(value);
 
     // If exact match "${expression}",
@@ -53,14 +51,22 @@ class Evaluator {
     if (matches.length == 1) {
       final match = matches.first;
       if (match.start == 0 && match.end == value.length) {
-        return _evaluateExpression(match.group(1)!);
+        try {
+          return _evaluateExpression(match.group(1)!);
+        } catch (e) {
+          return value; // failed to parse, return original literal
+        }
       }
     }
 
     // String interpolation "Hello ${name}"
     return value.replaceAllMapped(pattern, (match) {
-      final val = _evaluateExpression(match.group(1)!);
-      return val?.toString() ?? '';
+      try {
+        final val = _evaluateExpression(match.group(1)!);
+        return val?.toString() ?? '';
+      } catch (e) {
+        return match.group(0)!; // failed to parse, don't replace
+      }
     });
   }
 
@@ -182,147 +188,150 @@ class Evaluator {
     for (final entry in value.entries) {
       if (entry.key == r'$data' || entry.key == r'$when') continue;
 
-      final key =
-          entry.key; // Keys can also be templated? "Implicitly binds..."
-      // Spec says: "${<property>}": "Implicitly binds..."
-
-      // TODO(username): Key expansion? For now assuming static keys.
+      // Now keys can be expressions per Adaptive Cards Spec: "${dynamicKey}": "value"
+      final String keyStr = (entry.key is String)
+          ? entry.key as String
+          : entry.key.toString();
+      final expandedKey = _expandValue(keyStr)?.toString() ?? keyStr;
 
       final expandedVal = _expandValue(entry.value);
-      newMap[key as String] = expandedVal;
+      newMap[expandedKey] = expandedVal;
     }
     return newMap;
   }
 
   dynamic _evaluateExpression(String expression) {
-    final expr = expression.trim();
+    final ast = ExpressionParser.parse(expression);
+    return _evaluateAst(ast);
+  }
 
-    // 1. Literal Strings
-    if ((expr.startsWith("'") && expr.endsWith("'")) ||
-        (expr.startsWith('"') && expr.endsWith('"'))) {
-      if (expr.length < 2) return '';
-      return expr.substring(1, expr.length - 1);
-    }
+  dynamic _evaluateAst(AstNode node) {
+    if (node is LiteralNode) return node.value;
 
-    // 2. Numeric Literals
-    if (num.tryParse(expr) != null) {
-      return num.parse(expr);
-    }
-
-    // 3. Comparisons (Naive)
-    // >, <, <=, >=, ==, !=
-    // Use regex to split safely? For now, manual check.
-    if (expr.contains(' > ')) {
-      final parts = expr.split(' > ');
-      if (parts.length == 2) {
-        final left = _evaluateExpression(parts[0]);
-        final right = _evaluateExpression(parts[1]);
-        if (left is num && right is num) return left > right;
+    if (node is IdentifierNode) {
+      if (node.name == r'$root') return _rootData;
+      if (node.name == r'$data') {
+        return _dataStack.isNotEmpty ? _dataStack.last : null;
       }
-    }
-    if (expr.contains(' <= ')) {
-      final parts = expr.split(' <= ');
-      if (parts.length == 2) {
-        final left = _evaluateExpression(parts[0]);
-        final right = _evaluateExpression(parts[1]);
-        if (left is num && right is num) return left <= right;
-      }
-    }
-
-    // 4. Reserved Keywords (simple)
-    if (expr == r'$root') return _rootData;
-    if (expr == r'$data') return _dataStack.last;
-    if (expr == r'$index') {
-      for (var i = _scopeStack.length - 1; i >= 0; i--) {
-        if (_scopeStack[i].containsKey(r'$index')) {
-          return _scopeStack[i][r'$index'];
+      if (node.name == r'$index') {
+        for (var i = _scopeStack.length - 1; i >= 0; i--) {
+          if (_scopeStack[i].containsKey(r'$index')) {
+            return _scopeStack[i][r'$index'];
+          }
         }
+        return null;
+      }
+      return Resolver.resolve(_dataStack.last, node.name);
+    }
+
+    if (node is MemberAccessNode) {
+      final obj = _evaluateAst(node.object);
+      if (obj == null) return null;
+
+      var propStr = '';
+      if (node.isComputed) {
+        propStr = _evaluateAst(node.property).toString();
+      } else {
+        propStr = (node.property as IdentifierNode).name;
+      }
+
+      if (obj is Map && obj.containsKey(propStr)) {
+        return obj[propStr];
+      }
+      if (obj is List) {
+        final idx = int.tryParse(propStr);
+        if (idx != null && idx >= 0 && idx < obj.length) return obj[idx];
       }
       return null;
     }
 
-    // 5. Function Calls (balanced parens) & Property Chains
-    if (expr.contains('(')) {
-      final openParen = expr.indexOf('(');
-      // Check if it looks like a function call at the start
-      final funcName = expr.substring(0, openParen).trim();
+    if (node is UnaryExpressionNode) {
+      final arg = _evaluateAst(node.argument);
+      if (node.operator == '!') return !(arg == true);
+      if (node.operator == '-') return -(arg as num);
+      if (node.operator == '+') return (arg as num);
+    }
 
-      // Known functions
-      if (funcName == 'json' || funcName == 'if') {
-        var balance = 0;
-        var closeParen = -1;
-        for (var i = openParen; i < expr.length; i++) {
-          if (expr[i] == '(') balance++;
-          if (expr[i] == ')') balance--;
-          if (balance == 0) {
-            closeParen = i;
-            break;
-          }
-        }
+    if (node is BinaryExpressionNode) {
+      final left = _evaluateAst(node.left);
 
-        if (closeParen != -1) {
-          final argsStr = expr.substring(openParen + 1, closeParen);
-          final after = expr.substring(closeParen + 1).trim();
+      // Short circuit
+      if (node.operator == '&&') {
+        if (left != true) return false;
+        return _evaluateAst(node.right) == true;
+      }
+      if (node.operator == '||') {
+        if (left == true) return true;
+        return _evaluateAst(node.right) == true;
+      }
 
-          dynamic result;
-
-          if (funcName == 'json') {
-            final evaluatedArg = _evaluateExpression(argsStr);
-            if (evaluatedArg is String) {
-              try {
-                result = json.decode(evaluatedArg);
-              } on FormatException catch (e) {
-                // If JSON parsing fails, fallback to browser
-                developer.log('Could not parse JSON from $evaluatedArg: $e');
-                result = null;
-              }
-            } else {
-              result = null;
-            }
-          } else if (funcName == 'if') {
-            final args = _splitArgs(argsStr);
-            if (args.length == 3) {
-              final cond = _evaluateExpression(args[0]);
-              result = (cond == true)
-                  ? _evaluateExpression(args[1])
-                  : _evaluateExpression(args[2]);
-            }
-          }
-
-          // Resolve remaining path if any
-          if (after.isNotEmpty) {
-            String? p;
-            if (after.startsWith('.')) {
-              p = after.substring(1);
-            } else if (after.startsWith('[')) {
-              p = after;
-            }
-
-            if (p != null) {
-              return Resolver.resolve(result, p);
-            }
-          }
-
-          return result;
-        }
+      final right = _evaluateAst(node.right);
+      switch (node.operator) {
+        case '==':
+          return left == right;
+        case '!=':
+          return left != right;
+        case '>':
+          return (left as num) > (right as num);
+        case '>=':
+          return (left as num) >= (right as num);
+        case '<':
+          return (left as num) < (right as num);
+        case '<=':
+          return (left as num) <= (right as num);
+        case '+':
+          if (left is num && right is num) return left + right;
+          return left.toString() + right.toString();
+        case '-':
+          return (left as num) - (right as num);
+        case '*':
+          return (left as num) * (right as num);
+        case '/':
+          return (left as num) / (right as num);
       }
     }
 
-    // 6. Property access on keywords
-    if (expr.startsWith(r'$root.')) {
-      return Resolver.resolve(_rootData, expr.substring(6));
-    }
-    if (expr.startsWith(r'$data.')) {
-      return Resolver.resolve(_dataStack.last, expr.substring(6));
-    }
+    if (node is FunctionCallNode) {
+      final funcNameNode = node.function;
+      var name = '';
+      if (funcNameNode is IdentifierNode) name = funcNameNode.name;
 
-    // 7. Fallback property access
-    return Resolver.resolve(_dataStack.last, expr);
-  }
+      final args = node.arguments.map(_evaluateAst).toList();
 
-  List<String> _splitArgs(String args) {
-    // Extremely naive split by comma, respecting quotes would be needed
-    // For now verification tasks likely simple
-    return args.split(',').map((e) => e.trim()).toList();
+      if (name == 'json') {
+        if (args.isEmpty || args[0] == null) return null;
+        try {
+          return json.decode(args[0].toString());
+        } catch (e) {
+          return null;
+        }
+      }
+      if (name == 'if') {
+        if (args.length == 3) {
+          return (args[0] == true) ? args[1] : args[2];
+        }
+      }
+      if (name == 'length') {
+        if (args.isNotEmpty && args[0] != null) {
+          if (args[0] is String) return (args[0] as String).length;
+          if (args[0] is List) return (args[0] as List).length;
+          if (args[0] is Map) return (args[0] as Map).length;
+        }
+        return 0;
+      }
+      if (name == 'concat') {
+        return args.map((e) => e?.toString() ?? '').join('');
+      }
+      if (name == 'empty') {
+        if (args.isEmpty || args[0] == null) return true;
+        if (args[0] is String) return args[0].isEmpty;
+        if (args[0] is List) return (args[0] as List).isEmpty;
+        if (args[0] is Map) return (args[0] as Map).isEmpty;
+        return false;
+      }
+      // Unknown function
+      return null;
+    }
+    return null;
   }
 }

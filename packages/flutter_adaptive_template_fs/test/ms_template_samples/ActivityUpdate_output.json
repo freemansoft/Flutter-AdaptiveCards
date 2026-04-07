@@ -37,7 +37,7 @@
             {
               "type": "TextBlock",
               "spacing": "none",
-              "text": "Created {{DATE(, SHORT)}}",
+              "text": "Created {{DATE(${string(createdUtc)}, SHORT)}}",
               "isSubtle": true,
               "wrap": true
             }

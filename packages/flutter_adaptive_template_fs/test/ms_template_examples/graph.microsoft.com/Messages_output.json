@@ -34,12 +34,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2019-08-01T06:23:20Z, COMPACT)}} {{TIME(2019-08-01T06:23:20Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }
@@ -99,12 +99,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2018-09-10T23:47:53Z, COMPACT)}} {{TIME(2018-09-10T23:47:53Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }
@@ -164,12 +164,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2018-09-10T21:52:35Z, COMPACT)}} {{TIME(2018-09-10T21:52:35Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }
@@ -229,12 +229,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2018-09-09T16:29:42Z, COMPACT)}} {{TIME(2018-09-09T16:29:42Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }
@@ -294,12 +294,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2018-09-04T18:15:17Z, COMPACT)}} {{TIME(2018-09-04T18:15:17Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }
@@ -359,12 +359,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2018-09-03T16:58:35Z, COMPACT)}} {{TIME(2018-09-03T16:58:35Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }
@@ -424,12 +424,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2018-09-02T16:35:18Z, COMPACT)}} {{TIME(2018-09-02T16:35:18Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }
@@ -489,12 +489,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2018-09-01T16:32:01Z, COMPACT)}} {{TIME(2018-09-01T16:32:01Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }
@@ -554,12 +554,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2018-08-29T17:18:48Z, COMPACT)}} {{TIME(2018-08-29T17:18:48Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }
@@ -619,12 +619,12 @@
               "items": [
                 {
                   "type": "TextBlock",
-                  "text": " ❗ ",
+                  "text": "  ",
                   "horizontalAlignment": "Right"
                 },
                 {
                   "type": "TextBlock",
-                  "text": "{{DATE(2018-08-28T16:15:10Z, COMPACT)}} {{TIME(2018-08-28T16:15:10Z)}}",
+                  "text": "{{DATE(${sentDateTime}, COMPACT)}} {{TIME(${sentDateTime})}}",
                   "spacing": "None",
                   "size": "Small"
                 }

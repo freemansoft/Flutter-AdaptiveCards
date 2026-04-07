@@ -29,7 +29,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:Adams@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Adams@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -48,6 +59,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "18/2111",
               "spacing": "None"
             },
@@ -60,7 +76,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:AdeleV@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:AdeleV@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -91,7 +118,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:admin@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:admin@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -110,6 +148,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "131/1104",
               "spacing": "None"
             },
@@ -122,7 +165,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:AlexW@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:AlexW@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -141,6 +195,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "24/1106",
               "spacing": "None"
             },
@@ -153,7 +212,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:AllanD@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:AllanD@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -184,7 +254,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:Baker@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Baker@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -203,6 +284,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "19/3123",
               "spacing": "None"
             },
@@ -215,7 +301,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:BenW@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:BenW@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -246,7 +343,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:BrianJ@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:BrianJ@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -265,6 +373,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "131/2105",
               "spacing": "None"
             },
@@ -277,7 +390,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:ChristieC@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:ChristieC@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -308,7 +432,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:Crystal@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Crystal@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -327,6 +462,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "18/2107",
               "spacing": "None"
             },
@@ -339,7 +479,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:DebraB@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:DebraB@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -358,6 +509,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "14/1108",
               "spacing": "None"
             },
@@ -370,7 +526,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:DiegoS@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:DiegoS@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -389,6 +556,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "97/2302",
               "spacing": "None"
             },
@@ -401,7 +573,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:EmilyB@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:EmilyB@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -420,6 +603,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "14/1102",
               "spacing": "None"
             },
@@ -432,7 +620,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:EnricoC@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:EnricoC@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -451,6 +650,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "19/2109",
               "spacing": "None"
             },
@@ -463,7 +667,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:GradyA@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:GradyA@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -482,6 +697,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "18/1106",
               "spacing": "None"
             },
@@ -494,7 +714,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:HenriettaM@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:HenriettaM@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -525,7 +756,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:Hood@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Hood@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -544,6 +786,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "19/2106",
               "spacing": "None"
             },
@@ -556,7 +803,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:IrvinS@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:IrvinS@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -575,6 +833,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "20/1101",
               "spacing": "None"
             },
@@ -587,7 +850,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:IsaiahL@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:IsaiahL@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -606,6 +880,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "23/2102",
               "spacing": "None"
             },
@@ -618,7 +897,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:JohannaL@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:JohannaL@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -637,6 +927,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "20/1109",
               "spacing": "None"
             },
@@ -649,7 +944,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:JoniS@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:JoniS@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -668,6 +974,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "23/3101",
               "spacing": "None"
             },
@@ -680,7 +991,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:LeeG@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:LeeG@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -699,6 +1021,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "20/2107",
               "spacing": "None"
             },
@@ -711,7 +1038,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:LidiaH@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:LidiaH@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -730,6 +1068,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "20/1104",
               "spacing": "None"
             },
@@ -742,7 +1085,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:LynneR@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:LynneR@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -761,6 +1115,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "12/1110",
               "spacing": "None"
             },
@@ -773,7 +1132,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:MeganB@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:MeganB@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -792,6 +1162,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "131/2103",
               "spacing": "None"
             },
@@ -804,7 +1179,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:MiriamG@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:MiriamG@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -823,6 +1209,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "36/2121",
               "spacing": "None"
             },
@@ -835,7 +1226,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:NestorW@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:NestorW@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -854,6 +1256,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "15/1102",
               "spacing": "None"
             },
@@ -866,7 +1273,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:PattiF@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:PattiF@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -885,6 +1303,11 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": null,
+              "spacing": "Small"
+            },
+            {
+              "type": "TextBlock",
               "text": "98/2202",
               "spacing": "None"
             },
@@ -897,7 +1320,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:PradeepG@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:PradeepG@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -928,7 +1362,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:Rainier@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Rainier@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true
@@ -959,7 +1404,18 @@
         },
         {
           "type": "ActionSet",
-          "actions": []
+          "actions": [
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send a message",
+              "url": "im:Stevens@M365x214355.onmicrosoft.com"
+            },
+            {
+              "type": "Action.OpenUrl",
+              "title": "Send an email",
+              "url": "mailto:Stevens@M365x214355.onmicrosoft.com"
+            }
+          ]
         }
       ],
       "separator": true

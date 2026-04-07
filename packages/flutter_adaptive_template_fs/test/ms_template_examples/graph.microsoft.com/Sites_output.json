@@ -12,13 +12,13 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "{displayName}",
+              "text": "Engineering Excellence",
               "size": "Medium",
               "weight": "Bolder"
             },
             {
               "type": "TextBlock",
-              "text": "{description}",
+              "text": "Let's store our notes on how we can make this company and its services, better.",
               "spacing": "Small",
               "wrap": true,
               "maxLines": 2
@@ -35,7 +35,48 @@
                 {
                   "type": "Action.OpenUrl",
                   "title": "View site",
-                  "url": "{webUrl}"
+                  "url": "https://m365x214355.sharepoint.com/ee"
+                }
+              ]
+            }
+          ],
+          "verticalContentAlignment": "Center"
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Internal blog",
+              "size": "Medium",
+              "weight": "Bolder"
+            },
+            {
+              "type": "TextBlock",
+              "text": "Let's capture our thoughts in this subsite blog.",
+              "spacing": "Small",
+              "wrap": true,
+              "maxLines": 2
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "type": "Action.OpenUrl",
+                  "title": "View site",
+                  "url": "https://m365x214355.sharepoint.com/internalblogs"
                 }
               ]
             }
