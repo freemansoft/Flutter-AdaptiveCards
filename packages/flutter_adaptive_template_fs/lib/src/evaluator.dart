@@ -2,6 +2,7 @@
 // ignore_for_file: strict_raw_type, unnecessary_parenthesis
 
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter_adaptive_template_fs/src/ast.dart';
 import 'package:flutter_adaptive_template_fs/src/expression_parser.dart';
 import 'package:flutter_adaptive_template_fs/src/resolver.dart';
@@ -288,6 +289,10 @@ class Evaluator {
           return (left as num) * (right as num);
         case '/':
           return (left as num) / (right as num);
+        case '%':
+          return (left as num) % (right as num);
+        case '^':
+          return math.pow(left as num, right as num);
       }
     }
 
@@ -330,6 +335,63 @@ class Evaluator {
         if (args[0] is List) return (args[0] as List).isEmpty;
         if (args[0] is Map) return (args[0] as Map).isEmpty;
         return false;
+      }
+      // String functions
+      if (name == 'toUpper') {
+        return args.isNotEmpty ? args[0]?.toString().toUpperCase() : null;
+      }
+      if (name == 'toLower') {
+        return args.isNotEmpty ? args[0]?.toString().toLowerCase() : null;
+      }
+      if (name == 'trim') {
+        return args.isNotEmpty ? args[0]?.toString().trim() : null;
+      }
+      if (name == 'substring') {
+        if (args.isEmpty) return null;
+        final str = args[0]?.toString() ?? '';
+        final start = args.length > 1 ? (args[1] as num?)?.toInt() ?? 0 : 0;
+        final len = args.length > 2 ? (args[2] as num?)?.toInt() : null;
+        if (start < 0 || start > str.length) return str;
+        if (len != null) {
+          final end = start + len;
+          if (end < start || end > str.length) return str.substring(start);
+          return str.substring(start, end);
+        }
+        return str.substring(start);
+      }
+      if (name == 'replace') {
+        if (args.length < 3) return null;
+        return args[0]?.toString().replaceAll(args[1]?.toString() ?? '', args[2]?.toString() ?? '');
+      }
+
+      // Math functions
+      if (name == 'min') {
+        if (args.isEmpty) return null;
+        var m = args[0] as num;
+        for (var i = 1; i < args.length; i++) {
+          m = math.min(m, args[i] as num);
+        }
+        return m;
+      }
+      if (name == 'max') {
+        if (args.isEmpty) return null;
+        var m = args[0] as num;
+        for (var i = 1; i < args.length; i++) {
+          m = math.max(m, args[i] as num);
+        }
+        return m;
+      }
+      if (name == 'round') {
+        if (args.isEmpty || args[0] == null) return null;
+        return (args[0] as num).round();
+      }
+      if (name == 'floor') {
+        if (args.isEmpty || args[0] == null) return null;
+        return (args[0] as num).floor();
+      }
+      if (name == 'ceil') {
+        if (args.isEmpty || args[0] == null) return null;
+        return (args[0] as num).ceil();
       }
       // Unknown function
       return null;

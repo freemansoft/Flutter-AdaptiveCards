@@ -22,39 +22,41 @@ The engine is primarily composed of three components:
 
 ## Core Implemented Features
 
-The current system is a **custom, naive implementation** of the Adaptive Card templating spec. 
+The templating engine is a custom implementation of the Adaptive Card templating spec.
+The outer template traversal uses a recursive parser and regex-based string interpolation (`${expression}`), while the contents of the expressions are passed to an Abstract Syntax Tree (AST) parser (`ExpressionParser`) for evaluation.
+
 It supports the following core structural features:
 
-- **String Interpolation**: Simple binding resolution using `${property}` or static text alongside bindings.
-- **Context Iteration (`$data`)**: 
+- **String Interpolation**: Binding resolution using `${property}` or static text alongside bindings.
+- **Context Iteration (`$data`)**:
   - **Array Binding**: When `$data` is bound to an array, the evaluator acts as a repeater, duplicating the surrounding template object for each item.
   - **Scope Shifting**: When `$data` binds to an object, it shifts the current evaluation scope into that object child.
-- **Conditional Layout (`$when`)**: Allows a template block to be dropped entirely if the expression resolves to `false` (e.g., `"${price > 30}"`).
-- **Reserved Keywords**: 
+- **Conditional Layout (`$when`)**: Allows a template block to be dropped entirely if the expression resolves to `false`.
+- **Reserved Keywords**:
   - `$root` to always refer to the base data payload.
   - `$data` to refer to the current scoped context.
   - `$index` to refer to the current iteration counter inside array binding.
-- **Limited Functions**: Exposes `json(string)` and `if(condition, trueResult, falseResult)`.
+
+### Adaptive Expressions (AST)
+Expressions inside `${...}` are parsed into an AST. Supported syntax includes:
+- **Math and Operations**: Supports arithmetic (`+`, `-`, `*`, `/`, `%`, `^`), numeric comparisons (`>`, `<=`, `==`, `!=`), and boolean logical operators (`&&`, `||`, `!`).
+- **String Functions**: Contains implementations for `toUpper`, `toLower`, `substring`, `trim`, `replace`, `length`, `concat`, `empty`.
+- **Math Functions**: Contains implementations for `min`, `max`, `round`, `floor`, `ceil`.
+- **JSON Functions**: Contains `json()` to transform a string into a map, and `if()` for inline logic.
 
 ## Shortcomings & Missing Features
 
-The `flutter_adaptive_template_fs` package uses simple RegExp and manual string manipulation rather than a compiled AST (Abstract Syntax Tree) expression parser. This leads to several notable deviations from the spec:
+While a significant portion of the Adaptive Expressions spec is implemented, there are a few notable gaps:
 
-### 1. Incomplete Expression Language (AEL)
-- **Functions**: Microsoft’s Adaptive Expressions ecosystem defines dozens of built-in functions (e.g., `formatDateTime`, `subString`, `length`, `concat`, etc.). The current package only implements `json()` and `if()`.
-- **Math and Operations**: Supports very basic numeric comparisons (`>`, `<=`). It lacks full boolean logical operators (e.g., `&&`, `||`) or arithmetic (`+`, `-`, `*`, `/`).
+### 1. Missing Spec Functions
+- **Advanced Functions**: While common math and string functions are present, Microsoft’s full Adaptive Expressions ecosystem defines dozens of more complex built-in functions (e.g., date-time formatting) that are not yet implemented.
 
-### 2. Naive Parsing Logic
-- **Regex Limitations**: The evaluator uses a basic `RegExp(r'\$\{(.*?)\}')` search to find interpolations. It does not handle deeply nested braces well.
-- **Argument Splitting**: The `_splitArgs` method splits on commas indiscriminately. This means using a comma inside a string literal (e.g., `if(cond, 'Yes, okay', 'No')`) will break the `if()` function because the quotes are not respected during splitting.
-- **Parentheses Counting**: While function calls do use a parentheses balancing loop, it is basic and lacks error recovery.
+### 2. Missing Key Expansion
+- Currently, the package only expands *values*. The Adaptive Cards templating spec technically allows for dynamic object key names using string interpolation (`"${dynamicKey}": "value"`). The current `_expandMapObject` implementation skips evaluating keys dynamically.
 
-### 3. Missing Key Expansion
-- Currently, the package only expands *values*. The Adaptive Cards templating spec technically allows for dynamic object key names using string interpolation (`"${dynamicKey}": "value"`). The current `_expandMapObject` implementation skips this entirely.
-
-### 4. Advanced Resolution Limitations
+### 3. Advanced Resolution Limitations
 - `Resolver.resolve` is hardcoded to parse simple `part` splits and `[index]` bracket notation but will fail if bracket keys contain dots or complex string values.
 
 ## Summary
 
-When working with `flutter_adaptive_template_fs`, be aware that **it is not a full Adaptive Expressions engine**. Complex logical conditions and string formatting must typically be handled by the host application *before* injecting the data payload into the template, rather than expecting the templating engine to mutate strings on the fly.
+When working with `flutter_adaptive_template_fs`, be aware that **while it uses a real AST**, some edge-case functions and complex runtime logic might not be mapped. Complex datetime formatting must typically be handled by the host application *before* injecting the data payload into the template.

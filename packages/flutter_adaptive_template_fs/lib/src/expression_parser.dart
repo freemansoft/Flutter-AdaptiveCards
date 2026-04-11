@@ -55,7 +55,7 @@ class Lexer {
   /// The list of supported operators.
   static const operators = [
     '==', '!=', '<=', '>=', '&&', '||',
-    '<', '>', '+', '-', '*', '/', '!',
+    '<', '>', '+', '-', '*', '/', '%', '^', '!',
   ];
 
   /// Returns the next token in the input stream.
@@ -269,9 +269,19 @@ class ExpressionParser {
   }
 
   AstNode _parseMultiplicative() {
-    var node = _parseUnary();
+    var node = _parseExponential();
     while (_current.type == TokenType.operator &&
-        (_current.value == '*' || _current.value == '/')) {
+        (_current.value == '*' || _current.value == '/' || _current.value == '%')) {
+      final op = _current.value;
+      _advance();
+      node = BinaryExpressionNode(op, node, _parseExponential());
+    }
+    return node;
+  }
+
+  AstNode _parseExponential() {
+    var node = _parseUnary();
+    while (_current.type == TokenType.operator && _current.value == '^') {
       final op = _current.value;
       _advance();
       node = BinaryExpressionNode(op, node, _parseUnary());
