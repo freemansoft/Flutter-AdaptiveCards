@@ -256,10 +256,10 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down),
           style: TextStyle(
-            // TODO(username): this is not right - should have a different function
             color: ProviderScope.containerOf(context)
                 .read(styleReferenceResolverProvider)
-                .resolveContainerForegroundColor(
+                .resolveInputForegroundColor(
+                  context: context,
                   style: null,
                 ),
             backgroundColor: ProviderScope.containerOf(context)

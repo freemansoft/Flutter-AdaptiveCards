@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Behavior change:** Non-input adaptive widgets now use `generateAdaptiveWidgetKey()` for their widget keys instead of `generateWidgetKey()`. Update any tests or consumers that relied on the old keys.
 - Consumers should update any tests or code that relied on the old `<id>_input` keys to the new naming scheme.
 - change name to `flutter_adaptive_cards_fs` to avoid conflict on pub.dev with package published 12/2025
+- Added dynamic dark mode support to `RawAdaptiveCard` by listening to `Theme.of(context).brightness`.
+- Enabled `verticalContentAlignment` on `AdaptiveContainer`.
+- Fixed action `resolveOrientation` to use `ActionsConfig` values from HostConfig.
+- Added basic `"fallback": "drop"` support for elements that fail to map or are unknown.
+- Added `resolveInputForegroundColor` to `ReferenceResolver` and updated `ChoiceSet` dropdown to use it for better theme-aware coloring.
 
 ## [0.2.1](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.20...0.2.1) 2025-09-23
 
