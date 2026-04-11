@@ -253,6 +253,8 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         child: DropdownButton<String>(
           key: generateWidgetKey(adaptiveMap),
 
+          isExpanded: true,
+          icon: const Icon(Icons.arrow_drop_down),
           style: TextStyle(
             color: ProviderScope.containerOf(context)
                 .read(styleReferenceResolverProvider)
