@@ -63,6 +63,8 @@ void main() {
           matching: find.byWidgetPredicate(
             (widget) {
               try {
+                // ignoring because the onPressed could take action
+                // ignore: unnecessary_statements
                 (widget as dynamic).onPressed;
                 return true;
               } catch (_) {
