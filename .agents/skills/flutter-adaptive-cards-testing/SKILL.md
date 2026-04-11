@@ -11,17 +11,36 @@ description: >
 ## Overview
 
 All library tests live under:
+
 ```
 packages/flutter_adaptive_cards_fs/test/
 ```
 
 Tests are run **from that package directory**, not the monorepo root:
+
 ```bash
 cd packages/flutter_adaptive_cards_fs
-flutter test                        # all tests
-flutter test test/golden_sample_test.dart  # specific file
-flutter test --tags golden          # only golden image tests
-flutter test --update-goldens       # regenerate golden images
+fvm flutter test                        # all tests
+fvm flutter test test/golden_sample_test.dart  # specific file
+fvm flutter test --tags golden          # only golden image tests
+fvm flutter test --update-goldens       # regenerate golden images
+```
+
+---
+
+## Key-First Testing (Mandatory)
+
+To ensure tests are resilient to UI refactoring and font rendering differences, **always prioritize finding widgets by Key** over finding by text or type.
+
+```dart
+// [GOOD] Precise and stable
+expect(find.byKey(const ValueKey('submitButton')), findsOneWidget);
+
+// [AVOID] Brittle and easily broken by text changes
+expect(find.text('Submit'), findsOneWidget);
+
+// [AVOID] Ambiguous in large cards
+expect(find.byType(ElevatedButton), findsOneWidget);
 ```
 
 ---
@@ -29,155 +48,88 @@ flutter test --update-goldens       # regenerate golden images
 ## Core Test Utilities — `test/utils/test_utils.dart`
 
 Import this in every test file:
+
 ```dart
 import 'utils/test_utils.dart';
 ```
 
 ### `getTestWidgetFromPath` — The Primary Test Helper
 
-Loads an Adaptive Card JSON file from `test/samples/<path>` and returns a
-fully-wrapped `MaterialApp` ready for `tester.pumpWidget()`.
+Loads an Adaptive Card JSON file from `test/samples/<path>` and returns a fully-wrapped `MaterialApp`.
+
+**Architecture Note**: This helper automatically wraps the card in:
+
+1.  **MaterialApp & Scaffold**: Providing necessary theme and layout context.
+2.  **RepaintBoundary**: With an optional `key`, used to target specific regions for golden images.
+3.  **InheritedAdaptiveCardHandlers**: Injects mock handlers for `onSubmit`, `onExecute`, `onChange`, etc., if provided as arguments.
 
 ```dart
 Widget getTestWidgetFromPath({
   required String path,           // relative to test/samples/
-  Key? key,                       // used for golden RepaintBoundary targeting
+  Key? key,                       // targets the RepaintBoundary for Goldens
   Function(String)? onOpenUrl,
-  Function(String)? onOpenUrlDialog,
   Function(Map<dynamic, dynamic>)? onSubmit,
   Function(Map<dynamic, dynamic>)? onExecute,
-  Function(
-    String id,
-    dynamic value,
-    DataQuery? dataQuery,
-    RawAdaptiveCardState cardState,
-  )? onChange,
+  Function(String id, dynamic value, DataQuery? query, RawAdaptiveCardState state)? onChange,
 })
 ```
 
-**Usage — basic rendering:**
-```dart
-testWidgets('renders badge card', (tester) async {
-  await tester.pumpWidget(getTestWidgetFromPath(path: 'badge_test.json'));
-  await tester.pumpAndSettle();
-  expect(find.byType(AdaptiveBadge), findsOneWidget);
-});
-```
-
-**Usage — with action callbacks:**
-```dart
-testWidgets('calls onChange on input change', (tester) async {
-  String? changedId;
-  await tester.pumpWidget(
-    getTestWidgetFromPath(
-      path: 'inputs/text_input.json',
-      onChange: (id, value, dataQuery, cardState) {
-        changedId = id;
-      },
-    ),
-  );
-  await tester.pumpAndSettle();
-  await tester.enterText(find.byKey(const ValueKey('myInput')), 'hello');
-  expect(changedId, equals('myInput'));
-});
-```
-
-### `getTestWidgetFromMap` — Build from a Map Directly
-
-Use when you need to construct the JSON programmatically in the test:
-```dart
-final map = {'type': 'AdaptiveCard', 'version': '1.5', 'body': [...]};
-await tester.pumpWidget(getTestWidgetFromMap(map: map, title: 'Test'));
-```
-
-### `getTestWidgetFromString` — Build from a JSON String
-
-Use for small inline test cards:
-```dart
-const json = '{"type":"AdaptiveCard","version":"1.5","body":[...]}';
-await tester.pumpWidget(getTestWidgetFromString(jsonString: json));
-```
-
 ---
 
-## Widget Key Generation
+## Widget Key Generation Patterns
 
-All Adaptive Card widgets use deterministic `ValueKey`s derived from the
-element's `id` JSON property. Use these functions to locate widgets in tests:
+All widgets use deterministic `ValueKey`s. Use these patterns to locate them:
 
-```dart
-import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+| Widget Type        | Key Path        | Example                                          |
+| ------------------ | --------------- | ------------------------------------------------ |
+| **Card Wrapper**   | `{id}_adaptive` | `find.byKey(const ValueKey('myField_adaptive'))` |
+| **Input Content**  | `{id}`          | `find.byKey(const ValueKey('myField'))`          |
+| **ChoiceSet Item** | `{id}_{value}`  | `find.byKey(const ValueKey('myChoice_red'))`     |
+| **Modal Search**   | `{id}`          | Filtered ChoiceSet search fields use the same ID |
 
-// Key for the StatefulWidget wrapper (outer layer):
-ValueKey generateAdaptiveWidgetKey(Map adaptiveMap);
-// Produces: ValueKey('${id}_adaptive')
-
-// Key for the inner input/content widget:
-ValueKey generateWidgetKey(Map adaptiveMap, {String? suffix});
-// Produces: ValueKey('$id') or ValueKey('${id}_$suffix')
-
-// Key from a known id string:
-ValueKey generateWidgetKeyFromId(String id, {String? suffix});
-```
-
-**Finding a widget by ID in a test:**
-```dart
-// Given JSON id: "myTextField"
-final inputFinder = find.byKey(const ValueKey('myTextField'));
-final wrapperFinder = find.byKey(const ValueKey('myTextField_adaptive'));
-```
-
----
-
-## Test Configuration — `test/flutter_test_config.dart`
-
-This file runs automatically before all tests. It:
-1. Installs `MyTestHttpOverrides` to intercept all network image requests and
-   return a transparent 1×1 PNG — **never make real network calls in tests**.
-2. Loads Roboto and RobotoMono font assets from
-   `assets/fonts/Roboto/` so golden images render consistently.
-
-You do **not** need to set up fonts or HTTP overrides manually in test files.
+> **Utility Functions**: Use `generateAdaptiveWidgetKey(map)` for the wrapper and `generateWidgetKey(map)` for contents.
 
 ---
 
 ## Golden Image Tests
 
-### File Locations
-- Test files: `test/golden_*_test.dart`, `test/v6_agenda_test.dart`
-- Gold images: `test/gold_files/*.png`
-- Sample JSON: `test/samples/*.json`
+### Canonical Environment (Linux)
 
-### Standard Golden Test Pattern
+> [!WARNING]
+> **Golden image pixels are platform-specific.** This project uses **Linux (CI)** as the ground truth for golden images.
+>
+> - **Updating Goldens**: Should primarily be done via CI or on a Linux environment.
+> - **Local Verification**: macOS/Windows goldens may show subtle antialiasing differences. If a golden fails locally on Mac but passes on CI, the CI result is correct.
+
+### Standard Golden Pattern
 
 ```dart
 testWidgets('My Card Golden', (tester) async {
-  // 1. Fix the viewport to a predictable size
+  // 1. Fixed viewport
   RendererBinding.instance.renderViews.first.configuration =
       TestViewConfiguration.fromView(
-        size: const Size(500, 700),    // standard size used throughout
+        size: const Size(500, 700),
         view: PlatformDispatcher.instance.implicitView!,
       );
 
-  // 2. A stable ValueKey to target the RepaintBoundary
   const key = ValueKey('paint');
 
-  // 3. Load and pump
+  // 2. Load and Pump
   await tester.pumpWidget(getTestWidgetFromPath(path: 'my_card.json', key: key));
   await tester.pumpAndSettle();
 
-  // 4. Compare to golden
+  // 3. Compare (Note: targets the key, not the whole screen)
   await expectLater(
     find.byKey(key),
     matchesGoldenFile('gold_files/my_card-base.png'),
   );
-}, tags: ['golden']);   // <-- always tag golden tests
+}, tags: ['golden']);
 ```
 
-### Updating Goldens
+### Local Golden Generation for Visual Verifications
 
-Only update goldens on **your development machine** (not CI), after verifying
-the rendered output looks correct visually:
+You can generate goldens on your local machine for visual verification purposes, but they will not be used for CI testing and they should not be comitted to the repository.
+
 ```bash
 cd packages/flutter_adaptive_cards_fs
 flutter test --update-goldens --tags golden
@@ -188,6 +140,9 @@ flutter test --update-goldens --tags golden
 > to manage this. Check `test/analysis_options.yaml` for any tag restrictions.
 
 ### Running Only Non-Golden Tests (Faster Iteration)
+
+The local AI agents should always run the tests with the `--exclude-tags golden` flag to speed up the test execution and because local execution of golden tests will fail due to the platform aliasing issues.
+
 ```bash
 flutter test --exclude-tags golden
 ```
@@ -196,26 +151,8 @@ flutter test --exclude-tags golden
 
 ## Test Sample Files
 
-Sample JSON cards live in `test/samples/`. Subdirectories organize by element
-type (e.g., `test/samples/inputs/`, `test/samples/containers/`).
+Sample JSON cards live in `test/samples/`.
+Always add a new sample JSON when implementing a feature or fixing a bug to enable regression testing and designer validation.
 
-When adding a new test:
-1. Create your JSON sample in the appropriate `test/samples/` subdirectory.
-2. Validate it at [adaptivecards.io/designer](https://adaptivecards.io/designer/) first.
-3. Reference it via `getTestWidgetFromPath(path: 'subdirectory/my_card.json')`.
-
----
-
-## Running Tests for the Full Monorepo
-
-From the repo root, run tests for all packages:
-```bash
-flutter test packages/flutter_adaptive_cards_fs
-flutter test adaptive_explorer
-flutter test widgetbook
-```
-
-Or run a single package's tests using the Dart MCP tool with the package root:
-```
-root: file:///path/to/Flutter-AdaptiveCards/packages/flutter_adaptive_cards_fs
-```
+1. Create `test/samples/feature_name.json`.
+2. Reference via `getTestWidgetFromPath(path: 'feature_name.json')`.
