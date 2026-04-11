@@ -286,6 +286,21 @@ class ReferenceResolver {
     return resolveContainerBackgroundColor(style: style);
   }
 
+  /// Resolve the foreground color for inputs
+  Color? resolveInputForegroundColor({
+    required BuildContext context,
+    String? style,
+  }) {
+    //return Theme.of(context).textTheme.bodyMedium?.color;
+    final ContainerStyleConfig? containerStyle =
+        getContainerStylesConfig()?.defaultStyle;
+    final FontColorConfig colorConfig =
+        containerStyle?.foregroundColors.fontColorConfig(style) ??
+        FallbackConfigs.containerStylesConfig.defaultStyle.foregroundColors
+            .fontColorConfig(style);
+    return colorConfig.defaultColor;
+  }
+
   ///
   /// This returns no color
   /// if a background image url is provided
@@ -325,10 +340,13 @@ class ReferenceResolver {
     );
   }
 
-  // TODO(username): hook this up somehow
   // "Horizontal" or "Vertical"
-  String resolveOrientation(String s) {
-    return 'Horizontal';
+  String resolveOrientation(String? orientation) {
+    final String myOrientation =
+        orientation?.toLowerCase() ??
+        getActionsConfig()?.actionsOrientation.toLowerCase() ??
+        'horizontal';
+    return myOrientation == 'vertical' ? 'Vertical' : 'Horizontal';
   }
 
   /// JSON Schema definition "FontWeight"

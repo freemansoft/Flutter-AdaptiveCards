@@ -28,7 +28,7 @@ class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class AdaptiveContainerState extends State<AdaptiveContainer>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin {
-  // TODO(username): implement verticalContentAlignment
+  late MainAxisAlignment verticalContentAlignment;
   late List<Widget> children;
   late double spacing;
   late Color? backgroundColor;
@@ -55,6 +55,12 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
     );
 
     // no background if we have an iamge - hmm but should we anyway?
+
+    verticalContentAlignment = ProviderScope.containerOf(context)
+        .read(styleReferenceResolverProvider)
+        .resolveVerticalMainAxisContentAlginment(
+          adaptiveMap['verticalContentAlignment']?.toString(),
+        );
 
     backgroundColor = backgroundImageSpecified(adaptiveMap)
         ? null
@@ -86,7 +92,10 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
                   vertical: spacing,
                   horizontal: spacing,
                 ),
-                child: Column(children: children.toList()),
+                child: Column(
+                  mainAxisAlignment: verticalContentAlignment,
+                  children: children.toList(),
+                ),
               ),
             ),
           ),
