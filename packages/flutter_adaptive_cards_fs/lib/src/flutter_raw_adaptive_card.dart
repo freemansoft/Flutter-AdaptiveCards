@@ -69,10 +69,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void initState() {
     super.initState();
-
-    _resolver = ReferenceResolver(
-      hostConfigs: widget.hostConfigs,
-    );
+    // Resolver initialization moved to didChangeDependencies to access context Theme
 
     _adaptiveElement = widget.cardTypeRegistry.getElement(
       map: widget.map,
@@ -86,14 +83,32 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateResolver();
+  }
+
+  @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.map != widget.map || oldWidget.cardTypeRegistry != widget.cardTypeRegistry) {
+      _adaptiveElement = widget.cardTypeRegistry.getElement(
+        map: widget.map,
+      );
+    }
+    _updateResolver();
+  }
+
+  void _updateResolver() {
+    // Dynamically toggle HostConfig light/dark mode based on the current theme brightness
+    final Brightness brightness = Theme.of(context).brightness;
+    widget.hostConfigs.current = brightness == Brightness.dark
+        ? widget.hostConfigs.dark
+        : widget.hostConfigs.light;
+
     _resolver = ReferenceResolver(
       hostConfigs: widget.hostConfigs,
     );
-    _adaptiveElement = widget.cardTypeRegistry.getElement(
-      map: widget.map,
-    );
-    super.didUpdateWidget(oldWidget);
   }
 
   /// Every widget can access method of this class, meaning setting the state

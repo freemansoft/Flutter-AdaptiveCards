@@ -213,6 +213,16 @@ class CardTypeRegistry {
         // Let's support TabSet as the container.
         return AdaptiveTabSet(adaptiveMap: map);
     }
+
+    final fallback = map['fallback'];
+    if (fallback != null) {
+      if (fallback == 'drop') {
+        return const SizedBox.shrink();
+      } else if (fallback is Map<String, dynamic>) {
+        return getElement(map: fallback);
+      }
+    }
+
     return AdaptiveUnknown(
       adaptiveMap: map,
       type: stringType,
