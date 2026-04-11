@@ -187,6 +187,15 @@ fvm flutter analyze
 
 ---
 
+## Changelog Updates
+
+Whenever you make changes to one of the published packages (e.g., `flutter_adaptive_cards_fs`, `flutter_adaptive_charts_fs`, `flutter_adaptive_template_fs`):
+
+1. **Always** append your changes to the corresponding `CHANGELOG.md` file in that package's directory.
+2. If introducing new features or bug fixes, you should add an `## Unreleased` section to the `CHANGELOG.md` to document the changes properly.
+
+---
+
 ## Pub Commands Reference
 
 ```bash

@@ -7,3 +7,6 @@
 - Implemented standard AEL functions: `length`, `concat`, `empty`, `json`, and `if`.
 - Added support for legacy `{}` syntax for broader compatibility.
 - Improved stability and error handling for complex nested expressions.
+- Added support for math operations (modulo `%` and power `^`).
+- Added support for core math functions: `min`, `max`, `round`, `floor`, and `ceil`.
+- Added support for core string functions: `toUpper`, `toLower`, `trim`, `replace`, and `substring`.

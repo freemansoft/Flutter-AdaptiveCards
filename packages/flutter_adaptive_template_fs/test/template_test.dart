@@ -197,5 +197,59 @@ void main() {
       expect(items[0]['text'], '0: Item A from Test');
       expect(items[1]['text'], '1: Item B from Test');
     });
+
+    test('Expressions: Math operations % and ^', () {
+      final templateJson = {
+        'modulo': r'${10 % 3}',
+        'power': r'${2 ^ 3}',
+      };
+
+      final template = AdaptiveCardTemplate(templateJson);
+      final result = json.decode(template.expand({}));
+      
+      expect(result['modulo'], 1);
+      expect(result['power'], 8);
+    });
+
+    test('Expressions: Math functions', () {
+      final templateJson = {
+        'min': r'${min(10, 5, 20)}',
+        'max': r'${max(10, 5, 20)}',
+        'round': r'${round(3.6)}',
+        'floor': r'${floor(3.6)}',
+        'ceil': r'${ceil(3.2)}',
+      };
+
+      final template = AdaptiveCardTemplate(templateJson);
+      final result = json.decode(template.expand({}));
+      
+      expect(result['min'], 5);
+      expect(result['max'], 20);
+      expect(result['round'], 4);
+      expect(result['floor'], 3);
+      expect(result['ceil'], 4);
+    });
+
+    test('Expressions: String functions', () {
+      final templateJson = {
+        'toUpper': r'${toUpper(name)}',
+        'toLower': r'${toLower(name)}',
+        'trim': r'${trim(spacedName)}',
+        'substr': r'${substring(name, 1, 4)}',
+        'replace': r"${replace(name, 'e', 'x')}",
+      };
+
+      final template = AdaptiveCardTemplate(templateJson);
+      final result = json.decode(template.expand({
+        'name': 'freeman',
+        'spacedName': '  freeman  '
+      }));
+      
+      expect(result['toUpper'], 'FREEMAN');
+      expect(result['toLower'], 'freeman');
+      expect(result['trim'], 'freeman');
+      expect(result['substr'], 'reem');
+      expect(result['replace'], 'frxxman');
+    });
   });
 }
