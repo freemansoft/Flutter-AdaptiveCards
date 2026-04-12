@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed action `resolveOrientation` to use `ActionsConfig` values from HostConfig.
 - Added basic `"fallback": "drop"` support for elements that fail to map or are unknown.
 - Added `resolveInputForegroundColor` to `ReferenceResolver` and updated `ChoiceSet` dropdown to use it for better theme-aware coloring.
+- Added `{{DATE(timestamp, FORMAT)}}` and `{{TIME(timestamp)}}` macro replacements in `TextBlock` and `FactSet` elements using a new `DateTimeUtils` utility.
+- Added `intl` dependency for robust date parsing and localization approximations.
 
 ## [0.2.1](https://github.com/freemansoft/Flutter-AdaptiveCards/compare/0.20...0.2.1) 2025-09-23
 

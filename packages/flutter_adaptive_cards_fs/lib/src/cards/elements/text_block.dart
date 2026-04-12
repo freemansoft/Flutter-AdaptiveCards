@@ -3,6 +3,7 @@ import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,9 +48,10 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   @override
   void initState() {
     super.initState();
-    text = parseTextString(
+    final rawText = parseTextString(
       adaptiveMap['text'] ?? '',
     ); // text block with no text
+    text = DateTimeUtils.formatText(rawText);
   }
 
   @override

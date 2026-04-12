@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:flutter_adaptive_template_fs/flutter_adaptive_template_fs.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   group('AdaptiveCardTemplate', () {
@@ -206,7 +207,7 @@ void main() {
 
       final template = AdaptiveCardTemplate(templateJson);
       final result = json.decode(template.expand({}));
-      
+
       expect(result['modulo'], 1);
       expect(result['power'], 8);
     });
@@ -222,7 +223,7 @@ void main() {
 
       final template = AdaptiveCardTemplate(templateJson);
       final result = json.decode(template.expand({}));
-      
+
       expect(result['min'], 5);
       expect(result['max'], 20);
       expect(result['round'], 4);
@@ -240,16 +241,44 @@ void main() {
       };
 
       final template = AdaptiveCardTemplate(templateJson);
-      final result = json.decode(template.expand({
-        'name': 'freeman',
-        'spacedName': '  freeman  '
-      }));
-      
+      final result = json.decode(
+        template.expand({'name': 'freeman', 'spacedName': '  freeman  '}),
+      );
+
       expect(result['toUpper'], 'FREEMAN');
       expect(result['toLower'], 'freeman');
       expect(result['trim'], 'freeman');
       expect(result['substr'], 'reem');
       expect(result['replace'], 'frxxman');
+    });
+
+    test('Expressions: Date and Time functions', () {
+      final templateJson = {
+        'utcNowStr': r'${utcNow()}',
+        'year': r'${year(myDate)}',
+        'month': r'${month(myDate)}',
+        'day': r'${dayOfMonth(myDate)}',
+        'addDays': r'${addDays(myDate, 5)}',
+        'formatted': r"${formatDateTime(myDate, 'MM/dd/yyyy')}",
+      };
+
+      final template = AdaptiveCardTemplate(templateJson);
+      final result = json.decode(
+        template.expand({'myDate': '2025-10-15T00:00:00Z'}),
+      );
+
+      // note that the unconverted day in the date object and the
+      // formatted day may be different depending on the timezone
+      expect(result['utcNowStr'], isNotNull);
+      expect(result['year'], 2025);
+      expect(result['month'], 10);
+      expect(result['day'], 15);
+      expect((result['addDays'] as String).contains('2025-10-20'), isTrue);
+      final expectedDate = DateTime.parse('2025-10-15T00:00:00Z').toLocal();
+      expect(
+        result['formatted'],
+        DateFormat('MM/dd/yyyy').format(expectedDate),
+      );
     });
   });
 }
