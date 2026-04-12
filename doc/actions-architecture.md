@@ -80,6 +80,7 @@ class MySubmitAction implements GenericSubmitAction {
 
 - Existing consumers should continue to rely on `Generic*` types; concrete `Default*` classes are only used by the default registry.
 - Non-golden tests run with: `flutter test --exclude-tags=golden` (golden tests are tagged as `['golden']`).
+- Golden tests are platform-specific and stored in subdirectories (e.g., `gold_files/linux/`, `gold_files/macos/`).
 - If you previously relied on passing `adaptiveMap` into action constructors, migrate to calling `tap(..., adaptiveMap: ...)` instead.
 
 ---

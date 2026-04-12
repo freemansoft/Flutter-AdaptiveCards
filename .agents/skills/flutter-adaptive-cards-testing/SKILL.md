@@ -96,10 +96,12 @@ All widgets use deterministic `ValueKey`s. Use these patterns to locate them:
 ### Canonical Environment (Linux)
 
 > [!WARNING]
-> **Golden image pixels are platform-specific.** This project uses **Linux (CI)** as the ground truth for golden images.
+> **Golden image pixels are platform-specific.** This project organizes golden images into platform-specific subdirectories:
 >
-> - **Updating Goldens**: Should primarily be done via CI or on a Linux environment.
-> - **Local Verification**: macOS/Windows goldens may show subtle antialiasing differences. If a golden fails locally on Mac but passes on CI, the CI result is correct.
+> - `test/gold_files/linux/`: Project-wide source of truth (CI generated).
+> - `test/gold_files/macos/`: Local verification images.
+>
+> **Updating Goldens**: Should primarily be done via CI (for Linux results). Use `getGoldenPath(filename)` to dynamically resolve the path.
 
 ### Standard Golden Pattern
 
@@ -118,10 +120,10 @@ testWidgets('My Card Golden', (tester) async {
   await tester.pumpWidget(getTestWidgetFromPath(path: 'my_card.json', key: key));
   await tester.pumpAndSettle();
 
-  // 3. Compare (Note: targets the key, not the whole screen)
+  // 3. Compare (Note: targets the key, uses dynamic platform path)
   await expectLater(
     find.byKey(key),
-    matchesGoldenFile('gold_files/my_card-base.png'),
+    matchesGoldenFile(getGoldenPath('my_card-base.png')),
   );
 }, tags: ['golden']);
 ```

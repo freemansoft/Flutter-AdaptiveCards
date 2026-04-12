@@ -29,7 +29,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_donut.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_donut.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
@@ -43,7 +43,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_bar.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_bar.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
@@ -57,7 +57,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_line.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_line.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
@@ -71,7 +71,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_pie.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_pie.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
