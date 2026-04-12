@@ -193,6 +193,8 @@ ls -1 packages/flutter_adaptive_cards_fs/test/inputs/*_test.dart | wc -l
 # Run non-golden tests
 cd packages/flutter_adaptive_cards_fs
 flutter test --exclude-tags=golden
+
+# Note: Golden tests are platform-specific and stored in subdirectories (e.g., gold_files/linux/)
 ```
 
 ---

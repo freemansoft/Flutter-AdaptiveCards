@@ -111,8 +111,8 @@ There are two example apps and a bunch of tests that demonstrate card usage.
 
 There are functional Unit tests and _golden_ unit tests located in the `test` folder. They all use use the standard flutter testing mechanism. Golden tests may load a font so as not to use the `ahem` block font.
 
-- The tests load the Roboto fonts so that the golden tests don't juset show the block font. Spacing can be off between platforms so the golden tests run to get an exact match but the line spacing can be off between platforms.
-- I've updated the golden images to use a font. The line spacing is subtly different so you have to pick a platform for the golden tests which means repo images must lawys be built on the same platform. The golden test images are bult on the buld agent under linux and those are the only platform images that should be check in. See: <https://github.com/flutter/flutter/issues/2943>. The golden test library is obslete. That is a problem for future developers.
+- The tests load the Roboto fonts so that the golden tests don't just show the block font. Spacing can be off between platforms so the golden tests are organized into platform-specific subdirectories (e.g., `gold_files/linux/`, `gold_files/macos/`).
+- Golden images are platform-specific. The **Linux (CI)** images are the project's source of truth. Golden tests dynamically select the appropriate subdirectory based on the host OS. See: <https://github.com/flutter/flutter/issues/2943>.
 
 ## Compatibility
 
@@ -324,7 +324,7 @@ to see the result of each test
 flutter test -r expanded
 ```
 
-Golden tests on local machines will fail because the checked in images were generated on a linux machine. All of the golden tests are tagged with `@tag golden` You can run all the tests _other than golden_ with
+Golden tests are platform-specific and stored in subdirectories (e.g., `gold_files/linux/`). If you run tests on a platform without checked-in goldens (like macOS), they will fail unless you generate local goldens. All golden tests are tagged with `@tag golden`. You can run all tests _other than golden_ with:
 
 ```sh
 flutter test packages/flutter_adaptive_cards_fs --exclude-tags=golden
@@ -336,7 +336,7 @@ or from a terminal inside the package
 flutter test --exclude-tags=golden
 ```
 
-This updates the golden files for the sample cards. Depending on your operating system you might have issues with the font rendering. For the CI / CD setup you need to generate the golden files using a Docker container:
+This updates or creates the golden files for the current platform in the appropriate subdirectory (e.g., `gold_files/macos/`). For the CI / CD setup, Linux-based goldens are required and should be generated using a Docker container:
 
 ```zsh
 # run the following command in the root folder of this project

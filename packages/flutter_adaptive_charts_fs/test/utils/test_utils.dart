@@ -280,3 +280,8 @@ Widget getTestWidgetFromString({required String jsonString, Key? key}) {
       json.decode(jsonString) as Map<String, dynamic>;
   return getTestWidgetFromMap(map: map, key: key, title: 'Test');
 }
+
+/// Helper function to get the path for a golden file based on the current platform
+String getGoldenPath(String filename) {
+  return 'gold_files/${Platform.operatingSystem.toLowerCase()}/$filename';
+}
