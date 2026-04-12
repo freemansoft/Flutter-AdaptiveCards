@@ -351,7 +351,7 @@ flutter test --update-goldens
 
 ## Authors
 
-This has been heavilty rewritten and upgraded for later libraries and Flutterversions. See [README_orig.md](README_orig.md) for origianl attribution
+This has been heavilty rewritten and upgraded for later libraries and Flutter versions including null safety. See [README_orig.md](README_orig.md) for origianl attribution
 
 ## Contributing
 
