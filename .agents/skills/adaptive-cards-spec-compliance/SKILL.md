@@ -120,8 +120,8 @@ registered in `CardTypeRegistry` and uses `BadgeStylesConfig` from HostConfig.
 
 The spec requires that **unknown element types be silently ignored** (not crash),
 with the `fallback` property rendered instead if present. In this library:
-- Unknown types return `null` from `CardTypeRegistry._getBaseElement()`
-- The `fallback` property processing should be verified when adding new elements
+- Unknown types return `AdaptiveUnknown` (an error display) from `CardTypeRegistry._getBaseElement()` unless a `fallback` is provided.
+- **Implemented:** The `fallback` property is processed in `CardTypeRegistry` for unknown or unsupported element types.
 
 ### `requires` Property
 
@@ -131,11 +131,13 @@ This is **not currently validated** in the Flutter library — it is a known gap
 
 ### Fallback Property
 
-Every element and action can declare a `fallback` property that can be either:
-- `"drop"` — element is silently dropped if not renderable
-- Another element object — that element is rendered instead
+Every element and action can declare a `fallback` property. In this library:
+- **Elements:** Fully supported. If an element type is unknown or registration fails, the renderer checks `fallback`:
+    - `"drop"` — element is silently dropped (rendered as `SizedBox.shrink()`)
+    - Another element object — that element is rendered instead (recursive lookup)
+- **Actions:** **Not currently implemented**. Fallback properties on actions are ignored; unknown actions will trigger an assertion or return `AdaptiveUnknown`.
 
-Verify `fallback` handling when implementing any new element type.
+Verify `fallback` behavior when implementing any new element type.
 
 ### versioning
 
@@ -195,14 +197,32 @@ the old `{...}` syntax is deprecated as of May 2020):
 | Syntax | Purpose |
 |---|---|
 | `"${name}"` | Property binding (exact match returns typed value) |
+| `"${person.name}"` | Nested property access (dot notation) |
+| `"${items[0]}"` | Array indexer or computed property access |
 | `"Hello ${name}!"` | String interpolation (always returns string) |
 | `"$data": "${items}"` | Binds current context to `items` array |
 | `"$data": "${items}"` on array → repeats element | Array repeater pattern |
 | `"$when": "${price > 30}"` | Conditional element inclusion |
 | `"$root"` | Reference to root data context |
 | `"$index"` | Zero-based index within current array repetition |
-| `if(cond, trueVal, falseVal)` | Inline conditional function |
-| `json(string)` | Parses a JSON string to an object |
+
+### Supported Operators (Adaptive Expressions)
+
+| Category | Operators |
+|---|---|
+| **Logical** | `&&`, `||`, `!` |
+| **Comparison** | `==`, `!=`, `<`, `<=`, `>`, `>=` |
+| **Arithmetic** | `+`, `-`, `*`, `/`, `%`, `^` |
+
+### Supported Functions
+
+| Category | Functions |
+|---|---|
+| **Logic** | `if(cond, t, f)` |
+| **Parsing** | `json(string)` |
+| **String** | `concat()`, `toUpper()`, `toLower()`, `trim()`, `substring(str, start, [len])`, `replace(str, old, new)` |
+| **Math** | `min()`, `max()`, `round()`, `floor()`, `ceil()` |
+| **Collection** | `length()`, `empty()` |
 
 ### Flutter Template Library (`flutter_adaptive_template_fs`)
 
@@ -217,14 +237,13 @@ Location: `packages/flutter_adaptive_template_fs/lib/src/`
 **Key implementation details:**
 
 - `Evaluator` maintains a `_dataStack` and `_scopeStack` for nested `$data` contexts
+- **Expression Parsing:** Uses a recursive-descent `ExpressionParser` that produces an Abstract Syntax Tree (`AstNode`).
+- **AST Evaluation:** `Evaluator._evaluateAst` handles literals, identifiers, member access, operations, and function calls.
 - `$data` pointing to an array triggers the repeater: the element produces
   a `List<Map>` instead of a single `Map`, which `_expandList` flattens
 - `$when` is evaluated as a boolean; `null` or `false` → element is excluded (`null` returned)
-- Only `json()` and `if()` built-in functions are currently implemented
-- **Gap:** Adaptive Expressions (the full Azure Bot Service expression language)
-  is **not** supported. The README notes: "azure bot service expressions are not
-  currently supported." The spec URL is:
-  https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions
+- **Gap:** While a robust subset of **Adaptive Expressions** is implemented, the full Azure Bot Service library (100+ functions) is not exhaustive. Missing: Date/Time functions, advanced collection manipulation (`select`, `where`).
+  Spec URL: https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions
 
 ### Template SDK Parity (JS reference)
 
@@ -251,11 +270,11 @@ takes the root data map directly and automatically scopes it as `$root`.
 |---|---|---|
 | `requires` property | Not validated — elements are not gated on SDK capability declarations | All elements |
 | Dark mode | `HostConfigs.current` always returns light config | HostConfig |
-| Adaptive Expressions | Only `if()` and `json()` template functions; full expression language missing | [Expressions spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) |
+| Adaptive Expressions | Robust subset implemented (operators, string, math, logic); Date/Time and advanced collection functions missing | [Expressions spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) |
 | Text features | Markdown subset / rich text features may be incomplete | [Text features](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/text-features) |
 | `Action.Execute` | Verify implementation status against v1.4 spec | [explorer](https://adaptivecards.io/explorer/Action.Execute.html) |
 | `Table`/`TableRow`/`TableCell` | Verify v1.5 table support | [explorer](https://adaptivecards.io/explorer/Table.html) |
-| `fallback` property | Verify `"drop"` and fallback element handling across all elements | All elements |
+| `fallback` (actions) | Verify and implement fallback handling for unknown Action types | All actions |
 | Version gating | Cards declaring `"version": "1.x"` are not version-checked | `AdaptiveCard` root |
 
 ---
