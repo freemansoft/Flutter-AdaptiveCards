@@ -1,3 +1,7 @@
+## [Unreleased]
+
+- Fixed flaky date formatting tests in `template_test.dart` by making expectations timezone-aware.
+
 ## 0.3.0
 
 - Initial release of the independent `flutter_adaptive_template_fs` package.
@@ -10,3 +14,6 @@
 - Added support for math operations (modulo `%` and power `^`).
 - Added support for core math functions: `min`, `max`, `round`, `floor`, and `ceil`.
 - Added support for core string functions: `toUpper`, `toLower`, `trim`, `replace`, and `substring`.
+- Added Adaptive Expressions Language (AEL) Date/Time function support (`utcNow`, `formatDateTime`, `year`, `month`, `dayOfMonth`, `date`).
+- Added Date manipulation functions (`addDays`, `addHours`, `addMinutes`, `addSeconds`).
+- Added `intl` package dependency for date parsing functionality.

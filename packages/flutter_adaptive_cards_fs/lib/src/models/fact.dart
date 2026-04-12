@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 
 /// Fact model for AdaptiveCards FactSet element
 ///
@@ -14,8 +15,8 @@ class Fact {
   /// Creates a Fact from JSON map
   factory Fact.fromJson(Map<String, dynamic> json) {
     return Fact(
-      title: json['title'] as String? ?? '',
-      value: json['value'] as String? ?? '',
+      title: DateTimeUtils.formatText(json['title'] as String? ?? ''),
+      value: DateTimeUtils.formatText(json['value'] as String? ?? ''),
     );
   }
 

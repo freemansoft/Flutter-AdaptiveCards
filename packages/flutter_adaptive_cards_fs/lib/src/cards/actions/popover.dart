@@ -80,7 +80,6 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
       context,
     ).read(styleReferenceResolverProvider);
 
-    // TODO(username): implement the correct styling
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(

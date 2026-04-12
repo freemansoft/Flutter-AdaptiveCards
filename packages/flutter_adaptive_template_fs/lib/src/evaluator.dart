@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:flutter_adaptive_template_fs/src/ast.dart';
 import 'package:flutter_adaptive_template_fs/src/expression_parser.dart';
 import 'package:flutter_adaptive_template_fs/src/resolver.dart';
+import 'package:intl/intl.dart';
 
 /// template expression evaluator
 class Evaluator {
@@ -189,7 +190,7 @@ class Evaluator {
     for (final entry in value.entries) {
       if (entry.key == r'$data' || entry.key == r'$when') continue;
 
-      // Now keys can be expressions per Adaptive Cards Spec: "${dynamicKey}": "value"
+      // Keys can be expr per Adaptive Cards Spec: "${dynamicKey}": "value"
       final keyStr = (entry.key is String)
           ? entry.key as String
           : entry.key.toString();
@@ -361,7 +362,10 @@ class Evaluator {
       }
       if (name == 'replace') {
         if (args.length < 3) return null;
-        return args[0]?.toString().replaceAll(args[1]?.toString() ?? '', args[2]?.toString() ?? '');
+        return args[0]?.toString().replaceAll(
+          args[1]?.toString() ?? '',
+          args[2]?.toString() ?? '',
+        );
       }
 
       // Math functions
@@ -393,6 +397,68 @@ class Evaluator {
         if (args.isEmpty || args[0] == null) return null;
         return (args[0] as num).ceil();
       }
+
+      // Date and Time Functions
+      if (name == 'utcNow') {
+        return DateTime.now().toUtc().toIso8601String();
+      }
+      if (name == 'formatDateTime') {
+        if (args.isEmpty || args[0] == null) return null;
+        try {
+          final date = DateTime.parse(args[0].toString()).toLocal();
+          final format = args.length > 1
+              ? args[1]?.toString()
+              : "yyyy-MM-dd'T'HH:mm:ss";
+          return DateFormat(format).format(date);
+        } catch (e) {
+          return args[0];
+        }
+      }
+      if (name == 'date') {
+        if (args.isEmpty || args[0] == null) return null;
+        try {
+          final date = DateTime.parse(args[0].toString());
+          return DateFormat('M/d/yyyy').format(date);
+        } catch (e) {
+          return null;
+        }
+      }
+      if (name == 'year' || name == 'month' || name == 'dayOfMonth') {
+        if (args.isEmpty || args[0] == null) return null;
+        try {
+          final date = DateTime.parse(args[0].toString());
+          if (name == 'year') return date.year;
+          if (name == 'month') return date.month;
+          if (name == 'dayOfMonth') return date.day;
+        } catch (e) {
+          return null;
+        }
+      }
+      if (name == 'addDays' ||
+          name == 'addHours' ||
+          name == 'addMinutes' ||
+          name == 'addSeconds') {
+        if (args.length < 2 || args[0] == null || args[1] == null) return null;
+        try {
+          final date = DateTime.parse(args[0].toString());
+          final amount = (args[1] as num).toInt();
+          if (name == 'addDays') {
+            return date.add(Duration(days: amount)).toIso8601String();
+          }
+          if (name == 'addHours') {
+            return date.add(Duration(hours: amount)).toIso8601String();
+          }
+          if (name == 'addMinutes') {
+            return date.add(Duration(minutes: amount)).toIso8601String();
+          }
+          if (name == 'addSeconds') {
+            return date.add(Duration(seconds: amount)).toIso8601String();
+          }
+        } catch (e) {
+          return null;
+        }
+      }
+
       // Unknown function
       return null;
     }

@@ -262,6 +262,11 @@ final result = evaluator.expand(templatePayload);  // returns JSON string
 Note the difference: JS wraps data in `{ $root: ... }`; Flutter's `Evaluator`
 takes the root data map directly and automatically scopes it as `$root`.
 
+### Date and Time Formatting
+
+- **Text Macros (`{{DATE}}`, `{{TIME}}`)**: Implementations across TextBlock and FactSet use standard Dart `intl` formatters as a close approximation to the Adaptive Cards specification for C#-style time formatting. Localization accuracy and format strings might slightly differ from the Microsoft SDK reference.
+- **Adaptive Expressions (`formatDateTime`)**: The `formatDateTime` function approximation relies on standard Dart date strings and may not yield strict parity with all custom C# `ToString()` format sequences available in the .NET SDK.
+
 ---
 
 ## Known Gaps (as of this documentation)
