@@ -1,12 +1,17 @@
-# Where did `flutter-recommended.md` rules come from?
+---
+trigger: always_on
+---
 
-- [Flutter AI rules docs](https://docs.flutter.dev/ai/ai-rules)
-  - antigravity is using the rules_10k.md because of antigravity limits
-- [rules.md on github](https://raw.githubusercontent.com/flutter/flutter/refs/heads/main/docs/rules/rules.md)
+# AI Rules Organization
 
-## Changes
+The project's AI instructions are organized into two layers to ensure context efficiency:
 
-- Linting rules changed from default to use Very Good Ventures (VGV) linter
-- Use `riverpod` instead of `provider`
-- Added **Semantic Label Keys** rule
-- Added internationalizaiton and localization rules
+1. **Root `AGENTS.md`**: Contains the "Always-On" project guardrails (FVM, Riverpod, Monorepo hygiene, Analysis).
+2. **`.agents/skills/`**: Contains modular, task-specific "Playbooks" (Spec compliance, UI best practices, Code review).
+
+## Governance
+
+- **State Management**: The project uses **Riverpod**.
+- **Linting**: Rules follow the Very Good Ventures (VGV) `very_good_analysis` guidelines.
+- **Commands**: All commands must be run via `fvm`.
+- **Semantic Label Keys** Apply semantic labelings and use widget key standards
