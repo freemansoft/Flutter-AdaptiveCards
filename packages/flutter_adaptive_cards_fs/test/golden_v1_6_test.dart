@@ -32,7 +32,7 @@ void main() {
     // We rely on the fact that we can generate them or just verify it renders without error.
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_badge.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_badge.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
@@ -46,7 +46,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_rating.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_rating.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
@@ -61,7 +61,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_carousel.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_carousel.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
@@ -75,7 +75,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_accordion.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_accordion.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
@@ -89,7 +89,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_code_block.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_code_block.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
@@ -103,7 +103,7 @@ void main() {
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile('gold_files/v1_6_progress_bar.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_progress_bar.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
@@ -128,11 +128,11 @@ void main() {
     // Not sure whey we have a MaterialApp for the dialog.
     await expectLater(
       find.byType(AdaptivePopoverContainer),
-      matchesGoldenFile('gold_files/v1_6_popover_dialog.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_popover_dialog.png')),
     );
     await expectLater(
       find.byType(MaterialApp).last,
-      matchesGoldenFile('gold_files/v1_6_popover_base.png'),
+      matchesGoldenFile(getGoldenPath('v1_6_popover_base.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
