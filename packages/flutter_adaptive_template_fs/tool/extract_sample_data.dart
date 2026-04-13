@@ -48,7 +48,7 @@ void main() {
 
         debugPrint('Processed: ${file.path} -> Created: $dataFilePath');
       }
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('Error processing ${file.path}: $e');
     }
   }

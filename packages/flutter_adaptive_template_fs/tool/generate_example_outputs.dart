@@ -68,7 +68,7 @@ void main() {
         File(outputPath).writeAsStringSync(outputContent);
 
         debugPrint('Generated output: $outputPath');
-      } catch (e) {
+      } on Object catch (e) {
         debugPrint('Error processing ${dataFile.path}: $e');
         debugPrint(e.toString());
       }

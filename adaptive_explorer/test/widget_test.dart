@@ -67,7 +67,7 @@ void main() {
                 // ignore: unnecessary_statements
                 (widget as dynamic).onPressed;
                 return true;
-              } catch (_) {
+              } on Object catch (_) {
                 return false;
               }
             },
@@ -77,7 +77,7 @@ void main() {
     expect(saveButtonFinder, findsOneWidget);
 
     // Verify it is disabled (onPressed is null)
-    final dynamic button = tester.widget(saveButtonFinder);
+    final TextButton button = tester.widget<TextButton>(saveButtonFinder);
     expect(button.onPressed, isNull);
   });
 }

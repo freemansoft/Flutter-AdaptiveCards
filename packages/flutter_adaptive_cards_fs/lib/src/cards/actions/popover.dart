@@ -16,7 +16,6 @@ class AdaptiveActionPopover extends StatefulWidget
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
   @override
   final Map<String, dynamic> adaptiveMap;
 

@@ -6,7 +6,6 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 
 ///
@@ -60,9 +59,15 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
         max = inputFormat.parse(adaptiveMap['max']);
       }
       // catch them all
-      // ignore: avoid_catches_without_on_clauses
-    } catch (formatException) {
+    } on Exception catch (formatException) {
       // what should we do here?
+      assert(() {
+        developer.log(
+          'failed to init state $formatException.',
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
     }
   }
 
@@ -71,7 +76,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
     final Locale myLocale = Localizations.localeOf(context);
     assert(() {
       developer.log(
-        format('locale: {}', myLocale),
+        'locale: $myLocale',
         name: runtimeType.toString(),
       );
       return true;
@@ -190,10 +195,9 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
               : inputFormat.format(selectedDateTime!);
         });
         // catch them all
-        // ignore: avoid_catches_without_on_clauses
-      } catch (formatException) {
+      } on Exception catch (formatException) {
         developer.log(
-          format('{}', formatException),
+          '$formatException',
           name: runtimeType.toString(),
         );
       }

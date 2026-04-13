@@ -55,7 +55,7 @@ class Evaluator {
       if (match.start == 0 && match.end == value.length) {
         try {
           return _evaluateExpression(match.group(1)!);
-        } catch (e) {
+        } on Object catch (_) {
           return value; // failed to parse, return original literal
         }
       }
@@ -66,7 +66,7 @@ class Evaluator {
       try {
         final val = _evaluateExpression(match.group(1)!);
         return val?.toString() ?? '';
-      } catch (e) {
+      } on Object catch (_) {
         return match.group(0)!; // failed to parse, don't replace
       }
     });
@@ -308,7 +308,7 @@ class Evaluator {
         if (args.isEmpty || args[0] == null) return null;
         try {
           return json.decode(args[0].toString());
-        } catch (e) {
+        } on Object catch (_) {
           return null;
         }
       }
@@ -318,10 +318,11 @@ class Evaluator {
         }
       }
       if (name == 'length') {
-        if (args.isNotEmpty && args[0] != null) {
-          if (args[0] is String) return (args[0] as String).length;
-          if (args[0] is List) return (args[0] as List).length;
-          if (args[0] is Map) return (args[0] as Map).length;
+        if (args.isNotEmpty) {
+          final dynamic arg0 = args[0];
+          if (arg0 is String) return arg0.length;
+          if (arg0 is List) return arg0.length;
+          if (arg0 is Map) return arg0.length;
         }
         return 0;
       }
@@ -332,9 +333,10 @@ class Evaluator {
       }
       if (name == 'empty') {
         if (args.isEmpty || args[0] == null) return true;
-        if (args[0] is String) return args[0].isEmpty;
-        if (args[0] is List) return (args[0] as List).isEmpty;
-        if (args[0] is Map) return (args[0] as Map).isEmpty;
+        final dynamic arg0 = args[0];
+        if (arg0 is String) return arg0.isEmpty;
+        if (arg0 is List) return arg0.isEmpty;
+        if (arg0 is Map) return arg0.isEmpty;
         return false;
       }
       // String functions
@@ -410,7 +412,7 @@ class Evaluator {
               ? args[1]?.toString()
               : "yyyy-MM-dd'T'HH:mm:ss";
           return DateFormat(format).format(date);
-        } catch (e) {
+        } on Object catch (_) {
           return args[0];
         }
       }
@@ -419,7 +421,7 @@ class Evaluator {
         try {
           final date = DateTime.parse(args[0].toString());
           return DateFormat('M/d/yyyy').format(date);
-        } catch (e) {
+        } on Object catch (_) {
           return null;
         }
       }
@@ -430,7 +432,7 @@ class Evaluator {
           if (name == 'year') return date.year;
           if (name == 'month') return date.month;
           if (name == 'dayOfMonth') return date.day;
-        } catch (e) {
+        } on Object catch (_) {
           return null;
         }
       }
@@ -454,7 +456,7 @@ class Evaluator {
           if (name == 'addSeconds') {
             return date.add(Duration(seconds: amount)).toIso8601String();
           }
-        } catch (e) {
+        } on Object catch (_) {
           return null;
         }
       }

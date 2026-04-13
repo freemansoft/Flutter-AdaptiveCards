@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:intl/intl.dart';
 
 class DateTimeUtils {
@@ -7,16 +9,16 @@ class DateTimeUtils {
   /// Parses an Adaptive Cards text string and replaces {{DATE}} and {{TIME}} macros.
   static String formatText(String input) {
     var result = input;
-    
+
     // Replace {{DATE(timestamp, FORMAT)}}
     result = result.replaceAllMapped(_dateRegex, (match) {
       final argsStr = match.group(1);
       if (argsStr == null || argsStr.isEmpty) return match.group(0)!;
-      
+
       final args = argsStr.split(',').map((e) => e.trim()).toList();
       final timestamp = args[0];
       final formatHint = args.length > 1 ? args[1].toUpperCase() : 'COMPACT';
-      
+
       try {
         final date = DateTime.parse(timestamp).toLocal();
         if (formatHint == 'COMPACT') {
@@ -28,7 +30,14 @@ class DateTimeUtils {
         } else {
           return DateFormat.yMd().format(date);
         }
-      } catch (e) {
+      } on Object catch (e) {
+        assert(() {
+          developer.log(
+            'failed to format date $input, $e',
+            name: 'DateTimeUtils',
+          );
+          return true;
+        }());
         return match.group(0)!;
       }
     });
@@ -37,14 +46,21 @@ class DateTimeUtils {
     result = result.replaceAllMapped(_timeRegex, (match) {
       final argsStr = match.group(1);
       if (argsStr == null || argsStr.isEmpty) return match.group(0)!;
-      
+
       final args = argsStr.split(',').map((e) => e.trim()).toList();
       final timestamp = args[0];
-      
+
       try {
         final date = DateTime.parse(timestamp).toLocal();
         return DateFormat.jm().format(date);
-      } catch (e) {
+      } on Object catch (e) {
+        assert(() {
+          developer.log(
+            'failed to format date $input, $e',
+            name: 'DateTimeUtils',
+          );
+          return true;
+        }());
         return match.group(0)!;
       }
     });

@@ -8,7 +8,6 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:format/format.dart';
 import 'package:url_launcher/url_launcher.dart';
 // Default action handlers with basic behavior
 // including forwarding to the InheritedAdaptiveCardHandlers
@@ -63,10 +62,7 @@ class DefaultSubmitAction extends GenericSubmitAction {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              format(
-                'No custom handler found for onSubmit: \n {}',
-                data.toString(),
-              ),
+              'No custom handler found for onSubmit: \n $data',
             ),
           ),
         );
@@ -127,11 +123,7 @@ class DefaultExecuteAction extends GenericExecuteAction {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              format(
-                'No custom handler found for onExecute: verb: {} \n {}',
-                verb ?? '',
-                data.toString(),
-              ),
+              'No custom handler found for onExecute: verb: $verb \n $data',
             ),
           ),
         );
@@ -169,12 +161,7 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                format(
-                  'No custom handler found for onOpenUrl: \n {} {} {}',
-                  urlFromMap ?? '',
-                  altUrl ?? '',
-                  urlToOpen,
-                ),
+                'No custom handler found for onOpenUrl: \n $urlFromMap $altUrl $urlToOpen',
               ),
             ),
           );
@@ -210,12 +197,7 @@ class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                format(
-                  'No custom handler found for onOpenUrlDialog: \n {} {} {}',
-                  urlFromMap ?? '',
-                  altUrl ?? '',
-                  urlToOpen,
-                ),
+                'No custom handler found for onOpenUrlDialog: \n $urlFromMap $altUrl $urlToOpen',
               ),
             ),
           );

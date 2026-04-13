@@ -11,7 +11,6 @@ import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:format/format.dart';
 import 'package:video_player/video_player.dart';
 
 /// Implements
@@ -23,7 +22,6 @@ class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
   @override
   final Map<String, dynamic> adaptiveMap;
 
@@ -96,10 +94,10 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
     try {
       await videoPlayerController.initialize();
-    } catch (e) {
+    } on Object catch (e) {
       assert(() {
         developer.log(
-          format('video {} not supported on this platform: {}', sourceUrl, e),
+          'video $sourceUrl not supported on this platform: $e',
           name: runtimeType.toString(),
         );
         return true;

@@ -1,10 +1,7 @@
-## [Unreleased]
-
-- Fixed flaky date formatting tests in `template_test.dart` by making expectations timezone-aware.
-
-## 0.3.0
+## 0.3.0 - 2026-04-12
 
 - Initial release of the independent `flutter_adaptive_template_fs` package.
+- Fixed flaky date formatting tests in `template_test.dart` by making expectations timezone-aware.
 - Replaced regex-based expression evaluator with a robust AST-based recursive-descent parser.
 - Added support for full Adaptive Expressions Language (AEL) operators (math, logical, comparison).
 - Enabled dynamic key expansion for objects (e.g., `{"${dynamicKey}": "value"}`).

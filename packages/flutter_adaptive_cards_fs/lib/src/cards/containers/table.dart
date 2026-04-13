@@ -8,7 +8,6 @@ import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:format/format.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Table.html
@@ -78,7 +77,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
 
     assert(() {
       developer.log(
-        format('Table: columns: {} rows: {}', columns.length, rows.length),
+        'Table: columns: ${columns.length} rows: ${rows.length}',
         name: runtimeType.toString(),
       );
       return true;
@@ -335,11 +334,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
       widgetIndex,
     ) {
       developer.log(
-        format(
-          'onCellItems for index {} : {}',
-          widgetIndex,
-          oneCellItems[widgetIndex],
-        ),
+        'onCellItems for index $widgetIndex : ${oneCellItems[widgetIndex]}',
         name: runtimeType.toString(),
       );
       return cardTypeRegistry.getElement(

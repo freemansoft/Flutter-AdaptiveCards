@@ -17,7 +17,6 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.d
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_style_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:format/format.dart';
 
 ///
 /// All JSON values can also be null, in that case the default is used or null
@@ -114,13 +113,7 @@ class ReferenceResolver {
 
     assert(() {
       developer.log(
-        format(
-          'resolved foreground style:{} color:{} subtle:{} to color:{}',
-          myStyle,
-          style,
-          subtleOrDefault,
-          foregroundColor,
-        ),
+        'resolved foreground style:$myStyle color:$style subtle:$subtleOrDefault to color:$foregroundColor',
         name: runtimeType.toString(),
       );
       return true;
@@ -192,11 +185,7 @@ class ReferenceResolver {
 
     assert(() {
       developer.log(
-        format(
-          'resolved background style:{} to color:{}',
-          myStyle ?? '',
-          backgroundColor,
-        ),
+        'resolved background style:$myStyle to color:$backgroundColor',
         name: runtimeType.toString(),
       );
       return true;
@@ -228,11 +217,7 @@ class ReferenceResolver {
 
     assert(() {
       developer.log(
-        format(
-          'resolved background style:{} to color:{}',
-          myStyle,
-          backgroundColor,
-        ),
+        'resolved background style:$myStyle to color:$backgroundColor',
         name: runtimeType.toString(),
       );
       return true;
@@ -264,11 +249,7 @@ class ReferenceResolver {
 
     assert(() {
       developer.log(
-        format(
-          'resolved foreground style:{} to color:{}',
-          myStyle,
-          foregroundColor,
-        ),
+        'resolved foreground style:$myStyle to color:$foregroundColor',
         name: runtimeType.toString(),
       );
       return true;

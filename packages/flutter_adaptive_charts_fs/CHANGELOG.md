@@ -1,6 +1,4 @@
-## [Unreleased]
-
-## 0.3.0
+## 0.3.0 - 2026-04-12
 
 - Initial release of the split `flutter_adaptive_cards_fs` package for Flutter Adaptive Cards ecosystem.
 - **Golden Image Reorganization:** Restructured golden images into platform-specific subdirectories (`test/gold_files/linux/`, `test/gold_files/macos/`, etc.).
