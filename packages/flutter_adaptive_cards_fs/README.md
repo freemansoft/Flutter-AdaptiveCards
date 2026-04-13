@@ -11,7 +11,7 @@ This is an Adaptive Card implementation for Flutter that has been been updated f
 - [Legacy Adaptive Cards Schema Docs](https://adaptivecards.io/explorer)
 - [The main GitHub repo with samples](https://github.com/microsoft/AdaptiveCards)
   - [The v1.5 samples on the main GitHub repo](https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5/Scenarios)
-  - [Template samples. Templates are not supported in this library](https://github.com/microsoft/AdaptiveCards/tree/main/samples/Templates/Scenarios)
+  - [Template samples](https://github.com/microsoft/AdaptiveCards/tree/main/samples/Templates/Scenarios). Templating is supported via the [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs) companion package.
 - [Description of Active Cards](https://github.com/MicrosoftDocs/AdaptiveCards)
 - [Another example repo containing samples/templates](https://github.com/pnp/AdaptiveCards-Templates)
 
@@ -258,7 +258,7 @@ The referenced GitHub repository has vanished. Look at the forking train to figu
 
 ## Installing
 
-No releases have been created for 0.2.0 at this time. This is a placeholder for when the Git repo starts creating releases
+Version 0.3.0 is the first release of this package under the `_fs` namespace.
 
 Add this to your package's pubspec.yaml file:
 
