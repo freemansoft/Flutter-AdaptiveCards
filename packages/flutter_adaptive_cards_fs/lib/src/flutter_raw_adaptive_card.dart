@@ -14,7 +14,6 @@ import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:format/format.dart';
 
 /// The working root of an adaptive card tree when operating against the tree
 ///
@@ -91,7 +90,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.map != widget.map || oldWidget.cardTypeRegistry != widget.cardTypeRegistry) {
+    if (oldWidget.map != widget.map ||
+        oldWidget.cardTypeRegistry != widget.cardTypeRegistry) {
       _adaptiveElement = widget.cardTypeRegistry.getElement(
         map: widget.map,
       );
@@ -177,12 +177,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     assert(() {
       developer.log(
-        format(
-          'setVisibility {} on {} {}',
-          isVisible,
-          id,
-          foundElementState,
-        ),
+        'setVisibility $isVisible on $id $foundElementState',
         name: runtimeType.toString(),
       );
       return true;
@@ -219,12 +214,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     assert(() {
       developer.log(
-        format(
-          'toggled visibility to {} on {} {}',
-          newVisibility ?? 'nan',
-          id,
-          foundElementState,
-        ),
+        'toggled visibility to ${newVisibility ?? 'nan'} on $id $foundElementState',
         name: runtimeType.toString(),
       );
       return true;
@@ -381,15 +371,10 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     );
     assert(() {
       developer.log(
-        format(
-          'CupertinoPicker: initialtimeOfDay:{} initialDateTime:{} minDateTime:{} maxDateTime:{}',
-          initialTimeOfDay,
-          initialDateTime,
-          minDateTime,
-          maxDateTime,
-        ),
+        'CupertinoPicker: initialtimeOfDay:$initialTimeOfDay initialDateTime:$initialDateTime minDateTime:$minDateTime maxDateTime:$maxDateTime',
         name: runtimeType.toString(),
       );
+
       return true;
     }());
 

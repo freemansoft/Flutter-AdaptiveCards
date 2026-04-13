@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
@@ -80,7 +81,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
                           icon: const Icon(Icons.cancel),
                           onPressed: () {
                             _searchController.clear();
-                            onSearchTextChanged('');
+                            unawaited(onSearchTextChanged(''));
                           },
                         ),
                 ),

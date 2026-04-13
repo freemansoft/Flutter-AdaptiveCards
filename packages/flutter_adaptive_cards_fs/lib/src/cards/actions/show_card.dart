@@ -7,7 +7,6 @@ import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:format/format.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.ShowCard.html
@@ -49,12 +48,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
       adaptiveCardElementState.registerCardWidget(targetCard!.id, targetCard!);
       assert(() {
         developer.log(
-          format(
-            'targetCard for {} has id {} built for {}',
-            id,
-            possibleTargetCard.id,
-            possibleTargetCard,
-          ),
+          'targetCard for $id has id ${possibleTargetCard.id} built for $possibleTargetCard',
           name: runtimeType.toString(),
         );
         return true;
@@ -63,11 +57,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
       // we have a card but not the mandatory type
       assert(() {
         developer.log(
-          format(
-            'target card Time must be AdaptiveCardElement for {} built for {}',
-            id,
-            possibleTargetCard,
-          ),
+          'target card Time must be AdaptiveCardElement for $id built for $possibleTargetCard',
           name: runtimeType.toString(),
         );
         return true;

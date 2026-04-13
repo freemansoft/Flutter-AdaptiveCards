@@ -16,7 +16,7 @@ void main() {
     };
     final res = e.expand(jsonTemplate);
     debugPrint('Res: $res');
-  } catch (e, st) {
+  } on Object catch (e, st) {
     debugPrint('Error: $e \n $st');
   }
 }

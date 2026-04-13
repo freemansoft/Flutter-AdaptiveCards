@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
@@ -30,13 +32,12 @@ class FadeAnimationState extends State<FadeAnimation>
       duration: widget.duration,
       vsync: this,
     );
-    animationController
-      ..addListener(() {
-        if (mounted) {
-          setState(() {});
-        }
-      })
-      ..forward(from: 0);
+    animationController.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+    unawaited(animationController.forward(from: 0));
   }
 
   @override
@@ -49,7 +50,7 @@ class FadeAnimationState extends State<FadeAnimation>
   void didUpdateWidget(FadeAnimation oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.child != widget.child) {
-      animationController.forward(from: 0);
+      unawaited(animationController.forward(from: 0));
     }
   }
 

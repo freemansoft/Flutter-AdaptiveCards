@@ -9,7 +9,6 @@ import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:format/format.dart';
 
 // Mixin for widgets that are adaptive elements- widget and not state
 
@@ -242,11 +241,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     if (adaptiveMap.containsKey('value')) {
       assert(() {
         developer.log(
-          format(
-            'resetting value to {} string for {}',
-            adaptiveMap['value'],
-            id,
-          ),
+          'resetting value to ${adaptiveMap['value']} string for $id',
           name: runtimeType.toString(),
         );
         return true;
@@ -255,7 +250,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     } else {
       assert(() {
         developer.log(
-          format('resetting value to empty string for {}', id),
+          'resetting value to empty string for $id',
           name: runtimeType.toString(),
         );
         return true;

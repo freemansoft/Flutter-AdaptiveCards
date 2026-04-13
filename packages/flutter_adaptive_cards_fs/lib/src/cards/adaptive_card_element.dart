@@ -7,7 +7,6 @@ import 'package:flutter_adaptive_cards_fs/src/cards/actions/show_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:format/format.dart';
 
 /// The implementation of the `AdaptiveCard` card type.
 ///
@@ -78,7 +77,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     _registeredCards[registrationId] = it;
     assert(() {
       developer.log(
-        format('Registered card with id:{} type:{}', registrationId, it),
+        'Registered card with id:$registrationId type:$it',
         name: runtimeType.toString(),
       );
       return true;
@@ -93,10 +92,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       _registeredCards.remove(registrationId);
       assert(() {
         developer.log(
-          format(
-            'Unregistered card with id:{} ',
-            registrationId,
-          ),
+          'Unregistered card with id:$registrationId ',
           name: runtimeType.toString(),
         );
         return true;
@@ -170,11 +166,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       assert(() {
         if (showCardActions.isNotEmpty) {
           developer.log(
-            format(
-              'showCardElements for {} constructed to {}',
-              id,
-              showCardTargetElements.map((card) => card.id).toList(),
-            ),
+            'showCardElements for $id constructed to ${showCardTargetElements.map((card) => card.id).toList()}',
             name: runtimeType.toString(),
           );
         }

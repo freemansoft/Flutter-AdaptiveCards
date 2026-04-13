@@ -9,7 +9,6 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
-import 'package:format/format.dart';
 import 'package:http/http.dart' as http;
 
 /// Core definition for AdaptiveCardContent providers.
@@ -218,15 +217,17 @@ class AdaptiveCardsRootState extends State<AdaptiveCardsRoot> {
   @override
   void initState() {
     super.initState();
-    widget.adaptiveCardContentProvider.loadAdaptiveCardContent().then((
-      adaptiveMap,
-    ) {
-      if (mounted) {
-        setState(() {
-          map = adaptiveMap;
-        });
-      }
-    });
+    unawaited(
+      widget.adaptiveCardContentProvider.loadAdaptiveCardContent().then((
+        adaptiveMap,
+      ) {
+        if (mounted) {
+          setState(() {
+            map = adaptiveMap;
+          });
+        }
+      }),
+    );
 
     initData = widget.initData;
   }
@@ -252,7 +253,7 @@ class AdaptiveCardsRootState extends State<AdaptiveCardsRoot> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                format('No custom handler found for onChange: \n {}', it),
+                'No custom handler found for onChange: \n $it',
               ),
             ),
           );

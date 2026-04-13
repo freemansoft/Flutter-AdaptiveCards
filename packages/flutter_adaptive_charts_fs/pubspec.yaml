@@ -15,7 +15,6 @@ dependencies:
 
   flutter_adaptive_cards_fs: ^0.3.0
 
-  format: ^1.5.0
   # General
   http: ^1.6.0
   ## Localization

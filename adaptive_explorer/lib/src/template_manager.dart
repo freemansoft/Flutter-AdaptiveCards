@@ -28,7 +28,7 @@ class TemplateManager {
       final content = await _templateFile!.readAsString();
       return jsonDecode(content) as Map<String, dynamic>;
     } on Exception catch (e) {
-      debugPrint('Error reading template file: $e');
+      debugPrint('Error reading template file ${_templateFile!.path}: $e');
       return null;
     }
   }
@@ -42,7 +42,7 @@ class TemplateManager {
       final content = await _dataFile!.readAsString();
       return jsonDecode(content) as Map<String, dynamic>;
     } on Exception catch (e) {
-      debugPrint('Error reading data file: $e');
+      debugPrint('Error reading data file: ${_dataFile!.path}: $e');
       return null;
     }
   }
