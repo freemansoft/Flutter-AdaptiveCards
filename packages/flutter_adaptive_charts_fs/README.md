@@ -37,5 +37,7 @@ Please refer to the examples in the main repository for creating AdaptiveCards J
 
 ## Additional information
 
-For more information, please visit the [Flutter-AdaptiveCards GitHub Repository](https://github.com/freemansoft/Flutter-AdaptiveCards).
-There you can find more information about how this package integrates with the rest of the Adaptive Cards environment, how to contribute, and how to file issues.
+This package is part of the [Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards) ecosystem. 
+
+For more information, please visit the [Main GitHub Repository](https://github.com/freemansoft/Flutter-AdaptiveCards). There you can find details about how this package integrates with the core library, how to contribute, and how to file issues.
+

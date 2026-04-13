@@ -47,7 +47,10 @@ Current implementation supports:
 
 ## Additional information
 
-For more information, please visit the [Flutter-AdaptiveCards GitHub Repository](https://github.com/freemansoft/Flutter-AdaptiveCards).
+This package is part of the [Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards) ecosystem. 
+
+For more information, please visit the [Main GitHub Repository](https://github.com/freemansoft/Flutter-AdaptiveCards). There you can find details about how this package integrates with the core library, how to contribute, and how to file issues.
+
 
 ## Demonstration
 
