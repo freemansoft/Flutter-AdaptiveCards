@@ -914,7 +914,7 @@ Widget buildV16ChartBar(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Bar Horizontal (crashes)',
+  name: 'Bar Horizontal',
   type: widget_types.Charts,
   path: '[Components]',
 )
