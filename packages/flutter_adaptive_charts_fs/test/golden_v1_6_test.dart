@@ -37,13 +37,27 @@ void main() {
   testWidgets('Vertical Bar Chart', (tester) async {
     configureTestView();
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'chart_bar');
+    final Widget sample = getSampleForGoldenTest(key, 'chart_vertical_bar');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
     await expectLater(
       find.byKey(key),
-      matchesGoldenFile(getGoldenPath('v1_6_bar.png')),
+      matchesGoldenFile(getGoldenPath('v1_6_vertical_bar.png')),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+  }, tags: ['golden']);
+
+  testWidgets('Horizontal Bar Chart', (tester) async {
+    configureTestView();
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'chart_horizontal_bar');
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('v1_6_horizontal_bar.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);

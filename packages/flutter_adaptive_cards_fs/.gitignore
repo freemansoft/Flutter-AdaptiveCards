@@ -4,7 +4,7 @@
 flutter_adaptive_cards_fs.iml
 # golden tests
 test/failures/
-
+test/gold_files/windows/
 
 # Miscellaneous
 *.class

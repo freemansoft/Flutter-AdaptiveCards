@@ -182,18 +182,12 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
               show: true,
               bottomTitles: axisTitles,
             ),
-            // For horizontal, rotation is handled by RotatedBox
+            rotationQuarterTurns: isHorizontal ? 1 : 0,
           ),
         ),
       ),
     );
 
-    if (isHorizontal) {
-      return RotatedBox(quarterTurns: 1, child: chart);
-    }
     return chart;
   }
-
-  // TODO(username): Implement Rotation wrapper for Horizontal Bar Chart if fl_chart doesn't support it natively yet.
-  // Or use `LineChart` for vertical only?
 }

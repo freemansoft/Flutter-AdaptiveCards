@@ -137,7 +137,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Charts',
         useCases: [
           _widgetbook.WidgetbookUseCase(
-            name: 'Bar Horizontal (crashes)',
+            name: 'Bar Horizontal',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildV16ChartBarHorizontal,
           ),
