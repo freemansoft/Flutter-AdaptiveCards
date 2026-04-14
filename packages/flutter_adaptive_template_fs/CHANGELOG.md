@@ -2,8 +2,7 @@
 
 ## [0.4.0] - 2026-04-14
 
-- Support for setup version 0.4.0
-- Updated dependencies for 0.4.0
+- version numbers were sync'd to the flutter_adaptive_charts_fs 0.4.0
 
 ## [0.3.0] - 2026-04-12
 
