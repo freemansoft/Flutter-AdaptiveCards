@@ -1,4 +1,10 @@
-## 0.3.0 - 2026-04-12
+# Changelog
+
+## [0.4.0] - 2026-04-14
+
+- version numbers were sync'd to the flutter_adaptive_charts_fs 0.4.0
+
+## [0.3.0] - 2026-04-12
 
 - Initial release of the independent `flutter_adaptive_template_fs` package.
 - Fixed flaky date formatting tests in `template_test.dart` by making expectations timezone-aware.

@@ -173,7 +173,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     return color;
   }
 
-  // TODOMarkdown still has some problems
+  // TODO(username): Markdown still has some problems
   MarkdownStyleSheet loadMarkdownStyleSheet(BuildContext context) {
     final color = getColor(context);
     final TextStyle style = TextStyle(
