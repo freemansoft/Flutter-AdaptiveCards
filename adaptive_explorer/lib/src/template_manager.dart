@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_adaptive_template_fs/flutter_adaptive_template_fs.dart';
 
 /// Manager class to handle JSON file loading, merging, and saving.
@@ -28,7 +28,10 @@ class TemplateManager {
       final content = await _templateFile!.readAsString();
       return jsonDecode(content) as Map<String, dynamic>;
     } on Exception catch (e) {
-      debugPrint('Error reading template file ${_templateFile!.path}: $e');
+      assert(() {
+        developer.log('Error reading template file ${_templateFile!.path}: $e');
+        return true;
+      }());
       return null;
     }
   }
@@ -42,7 +45,10 @@ class TemplateManager {
       final content = await _dataFile!.readAsString();
       return jsonDecode(content) as Map<String, dynamic>;
     } on Exception catch (e) {
-      debugPrint('Error reading data file: ${_dataFile!.path}: $e');
+      assert(() {
+        developer.log('Error reading data file: ${_dataFile!.path}: $e');
+        return true;
+      }());
       return null;
     }
   }
@@ -70,7 +76,10 @@ class TemplateManager {
       ).expand({r'$root': dataMap, ...dataMap});
       return jsonDecode(resultString) as Map<String, dynamic>;
     } on Exception catch (e) {
-      debugPrint('Error merging template: $e');
+      assert(() {
+        developer.log('Error merging template: $e');
+        return true;
+      }());
       return null;
     }
   }
@@ -86,7 +95,10 @@ class TemplateManager {
       await _templateFile!.writeAsString(jsonString);
       return true;
     } on Exception catch (e) {
-      debugPrint('Error saving template file: $e');
+      assert(() {
+        developer.log('Error saving template file: $e');
+        return true;
+      }());
       return false;
     }
   }
@@ -102,7 +114,10 @@ class TemplateManager {
       await _dataFile!.writeAsString(jsonString);
       return true;
     } on Exception catch (e) {
-      debugPrint('Error saving data file: $e');
+      assert(() {
+        developer.log('Error saving data file: $e');
+        return true;
+      }());
       return false;
     }
   }
@@ -117,7 +132,11 @@ class TemplateManager {
       await File(path).writeAsString(jsonString);
       return true;
     } on Exception catch (e) {
-      debugPrint('Error saving file to $path: $e');
+      assert(() {
+        developer.log('Error saving file to $path: $e');
+        return true;
+      }());
+
       return false;
     }
   }

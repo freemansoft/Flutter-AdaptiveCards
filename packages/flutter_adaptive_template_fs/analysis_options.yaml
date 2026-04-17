@@ -1,6 +1,7 @@
 include: package:very_good_analysis/analysis_options.yaml
 analyzer:
   errors:
+    # we use asserts to log in debug mode
     prefer_asserts_with_message: ignore
 
 # Additional information about this file can be found at

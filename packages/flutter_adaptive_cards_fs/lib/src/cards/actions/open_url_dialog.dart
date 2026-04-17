@@ -71,25 +71,40 @@ class AdaptiveActionOpenUrlDialogState
           return json.decode(response.body) as Map<String, dynamic>;
         } on FormatException catch (e) {
           // If JSON parsing fails, fallback to browser
-          developer.log('Could not parse JSON from $url: $e');
+          assert(() {
+            developer.log('Could not parse JSON from $url: $e');
+            return true;
+          }());
+
           rethrow;
         }
       } else if (contentType.contains('text/html')) {
         // If not JSON or error status, fallback to browser
-        developer.log('Remote returned HTML instead of JSON from $url');
+        assert(() {
+          developer.log('Remote returned HTML instead of JSON from $url');
+          return true;
+        }());
+
         return url;
       } else {
         // If not JSON, HTML, drop it
-        developer.log(
-          'Remote returned unexpected content type $contentType from $url',
-        );
+        assert(() {
+          developer.log(
+            'Remote returned unexpected content type $contentType from $url',
+          );
+          return true;
+        }());
         return null;
       }
     } else {
       // not a 200 but not a ClientException (not an exception)
-      developer.log(
-        'Remote returned unexpected status ${response.statusCode} from $url',
-      );
+      assert(() {
+        developer.log(
+          'Remote returned unexpected status ${response.statusCode} from $url',
+        );
+        return true;
+      }());
+
       return null;
     }
   }
@@ -100,7 +115,10 @@ class AdaptiveActionOpenUrlDialogState
       await launchUrl(uri);
     } else {
       // Handle error if needed, for now just log or do nothing
-      developer.log('Could not launch $url');
+      assert(() {
+        developer.log('Could not launch $url');
+        return true;
+      }());
     }
   }
 

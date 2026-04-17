@@ -12,6 +12,8 @@ include: package:very_good_analysis/analysis_options.yaml
 analyzer:
   errors:
     omit_local_variable_types: ignore
+    # we use asserts to log in debug mode
+    prefer_asserts_with_message: ignore
 
 linter:
   # The lint rules applied to this project can be customized in the
