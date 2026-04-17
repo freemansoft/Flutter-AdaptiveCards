@@ -26,16 +26,20 @@ class NetworkPage extends StatelessWidget {
             addedElements: CardChartsRegistry.additionalChartElements,
           ),
           onChange: (id, value, dataQuery, state) {
-            developer.log(
-              format(
-                'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
-                id,
-                value,
-                dataQuery,
-                state,
-              ),
-              name: runtimeType.toString(),
-            );
+            assert(() {
+              developer.log(
+                format(
+                  'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
+                  id,
+                  value,
+                  dataQuery,
+                  state,
+                ),
+                name: runtimeType.toString(),
+              );
+              return true;
+            }());
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
