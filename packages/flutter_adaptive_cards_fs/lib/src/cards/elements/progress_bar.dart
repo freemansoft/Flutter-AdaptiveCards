@@ -68,7 +68,9 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
       progressBar = LinearProgressIndicator(
         value: percent,
         color: progressColor,
-        backgroundColor: Colors.grey[300],
+        backgroundColor: ProviderScope.containerOf(context)
+            .read(styleReferenceResolverProvider)
+            .resolveProgressBackgroundColor(),
         minHeight: 10,
         borderRadius: BorderRadius.circular(5),
       );
@@ -78,7 +80,9 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
       // "foreground should be 10% of the full width" - Material default might not be exactly 10% but matches behavior.
       progressBar = LinearProgressIndicator(
         color: progressColor,
-        backgroundColor: Colors.grey[300],
+        backgroundColor: ProviderScope.containerOf(context)
+            .read(styleReferenceResolverProvider)
+            .resolveProgressBackgroundColor(),
         minHeight: 10,
         borderRadius: BorderRadius.circular(5),
       );

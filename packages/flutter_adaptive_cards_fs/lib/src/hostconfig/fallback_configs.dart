@@ -26,6 +26,9 @@ class FallbackConfigs {
     defaultColor: Colors.grey,
   );
 
+  static final Color progressBackgroundColor = Colors.grey.shade300;
+
+
   // completely hacky fallback that will teach people to use HostConfig
   static final fallbackBadgeStylesConfig = BadgeStylesConfig(
     filled: BadgeStyleConfig(
