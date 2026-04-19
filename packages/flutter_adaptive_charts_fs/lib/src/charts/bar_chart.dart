@@ -85,7 +85,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
         for (final item in items) {
           final double val = (item['y'] as num? ?? 0).toDouble();
           final String? colorStr = item['color'] as String?;
-          final Color color = _parseColor(colorStr) ?? Colors.blue; // rotation?
+          final Color color = _parseColor(colorStr) ?? Colors.blue;
 
           stackItems.add(
             BarChartRodStackItem(runningSum, runningSum + val, color),

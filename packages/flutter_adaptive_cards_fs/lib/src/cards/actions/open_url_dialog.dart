@@ -150,7 +150,7 @@ class AdaptiveActionOpenUrlDialogState
                             return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.error, color: Colors.red),
+                                Icon(Icons.error, color: Theme.of(context).colorScheme.error),
                                 const SizedBox(height: 8),
                                 Text(
                                   'Error loading content: ${snapshot.error}',

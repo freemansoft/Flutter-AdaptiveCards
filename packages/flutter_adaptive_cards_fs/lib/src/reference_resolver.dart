@@ -609,21 +609,20 @@ class ReferenceResolver {
 
   /// Get border color based on grid style
   Color resolveGridStyleColor(String style) {
-    // Simple color mapping - ideally should use HostConfig
     switch (style.toLowerCase()) {
       case 'emphasis':
-        return Colors.grey.shade600;
+        return resolveContainerForegroundColor(style: 'default', isSubtle: true) ?? Colors.grey.shade600;
       case 'good':
-        return Colors.green.shade600;
+        return resolveContainerForegroundColor(style: 'good') ?? Colors.green.shade600;
       case 'attention':
-        return Colors.red.shade600;
+        return resolveContainerForegroundColor(style: 'attention') ?? Colors.red.shade600;
       case 'warning':
-        return Colors.orange.shade600;
+        return resolveContainerForegroundColor(style: 'warning') ?? Colors.orange.shade600;
       case 'accent':
-        return Colors.blue.shade600;
+        return resolveContainerForegroundColor(style: 'accent') ?? Colors.blue.shade600;
       case 'default':
       default:
-        return Colors.grey.shade400;
+        return resolveContainerForegroundColor(style: 'default', isSubtle: true) ?? Colors.grey.shade400;
     }
   }
 
@@ -642,5 +641,71 @@ class ReferenceResolver {
       default:
         return TableCellVerticalAlignment.middle;
     }
+  }
+
+  /// Resolves the background color for a progress element
+  Color resolveProgressBackgroundColor() {
+    return FallbackConfigs.progressBackgroundColor;
+  }
+
+  /// Resolves the foreground color for a Badge
+  Color? resolveBadgeForegroundColor({
+    String? colorStyle,
+    String? appearance,
+    bool? isSubtle,
+  }) {
+    final myBadgeStyles =
+        getBadgeStylesConfig() ?? FallbackConfigs.fallbackBadgeStylesConfig;
+
+    final String myColorStyle = colorStyle ?? 'default';
+    final BadgeStyleConfig badgeStyle = (appearance?.toLowerCase() == 'tint')
+        ? myBadgeStyles.tint
+        : myBadgeStyles.filled;
+    final FontColorConfig colorConfig = badgeStyle.foregroundColors
+        .fontColorConfig(myColorStyle);
+    final Color foregroundColor = (isSubtle ?? false)
+        ? colorConfig.subtleColor
+        : colorConfig.defaultColor;
+
+    return foregroundColor;
+  }
+
+  /// Resolves the background color for a Badge
+  Color? resolveBadgeBackgroundColor({
+    String? colorStyle,
+    String? appearance,
+  }) {
+    final myBadgeStyles =
+        getBadgeStylesConfig() ?? FallbackConfigs.fallbackBadgeStylesConfig;
+
+    final String myColorStyle = colorStyle ?? 'default';
+    final BadgeStyleConfig badgeStyle = (appearance?.toLowerCase() == 'tint')
+        ? myBadgeStyles.tint
+        : myBadgeStyles.filled;
+    final FontColorConfig colorConfig = badgeStyle.backgroundColors
+        .fontColorConfig(myColorStyle);
+    final Color backgroundColor = colorConfig.defaultColor;
+
+    return backgroundColor;
+  }
+
+  /// Resolves the title text style for a compound button
+  TextStyle resolveCompoundButtonTitleStyle() {
+    return const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 16,
+    );
+  }
+
+  /// Resolves the description text style for a compound button
+  TextStyle resolveCompoundButtonDescriptionStyle() {
+    return TextStyle(
+      fontSize: 12,
+      color: resolveContainerForegroundColor(
+            style: 'default',
+            isSubtle: true,
+          ) ??
+          Colors.grey[700],
+    );
   }
 }

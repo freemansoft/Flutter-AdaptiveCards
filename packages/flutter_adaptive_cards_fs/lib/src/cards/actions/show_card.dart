@@ -72,40 +72,47 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
       context,
     ).read(styleReferenceResolverProvider);
 
+    final theButton = ElevatedButton(
+      onPressed: () {
+        if (targetCard != null) {
+          adaptiveCardElementState.showCard(targetCard!);
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: resolver.resolveButtonBackgroundColor(
+          context: context,
+          style: style,
+        ),
+        foregroundColor: resolver.resolveButtonForegroundColor(
+          context: context,
+          style: style,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(title),
+          // chevron state based on if our card being shown
+          if (adaptiveCardElementState.currentCard != targetCard)
+            const Icon(Icons.keyboard_arrow_up)
+          else
+            const Icon(Icons.keyboard_arrow_down),
+        ],
+      ),
+    );
+
+    final wrappedButton = (tooltip != null)
+        ? Tooltip(
+            message: tooltip,
+            child: theButton,
+          )
+        : theButton;
+
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        // TODO(username): add tooltip support to ShowCard
-        child: ElevatedButton(
-          onPressed: () {
-            if (targetCard != null) {
-              adaptiveCardElementState.showCard(targetCard!);
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: resolver.resolveButtonBackgroundColor(
-              context: context,
-              style: style,
-            ),
-            foregroundColor: resolver.resolveButtonForegroundColor(
-              context: context,
-              style: style,
-            ),
-            // minimumSize: const Size.fromHeight(50),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(title),
-              // chevron state based on if our card being shown
-              if (adaptiveCardElementState.currentCard != targetCard)
-                const Icon(Icons.keyboard_arrow_up)
-              else
-                const Icon(Icons.keyboard_arrow_down),
-            ],
-          ),
-        ),
+        child: wrappedButton,
       ),
     );
   }

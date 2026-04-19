@@ -95,7 +95,9 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
       child: CircularProgressIndicator(
         value: percent,
         color: progressColor,
-        backgroundColor: Colors.grey[300],
+        backgroundColor: ProviderScope.containerOf(context)
+            .read(styleReferenceResolverProvider)
+            .resolveProgressBackgroundColor(),
         strokeWidth: stroke,
       ),
     );

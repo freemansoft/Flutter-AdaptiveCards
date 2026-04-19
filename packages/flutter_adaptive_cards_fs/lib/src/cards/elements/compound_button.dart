@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveCompoundButton extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -38,6 +40,9 @@ class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
 
   @override
   Widget build(BuildContext context) {
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
@@ -69,15 +74,12 @@ class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                      style: resolver.resolveCompoundButtonTitleStyle(),
                     ),
                     if (description != null)
                       Text(
                         description!,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                        style: resolver.resolveCompoundButtonDescriptionStyle(),
                       ),
                   ],
                 ),

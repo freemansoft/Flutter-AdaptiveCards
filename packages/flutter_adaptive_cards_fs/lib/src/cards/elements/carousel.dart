@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -106,14 +107,18 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
             ),
             const SizedBox(height: 8),
             // Carousel Controls
-            _buildControls(),
+            _buildControls(
+              ProviderScope.containerOf(
+                context,
+              ).read(styleReferenceResolverProvider),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildControls() {
+  Widget _buildControls(ReferenceResolver resolver) {
     // "The control has a smal circular button for each each CarouselPage...
     // The current page will be bar the same width as 3 of the non selected page dots."
     return Row(
@@ -128,9 +133,16 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
             width: isSelected ? 24.0 : 8.0, // Bar width vs Dot width
             height: 8,
             decoration: BoxDecoration(
-              color: isSelected
-                  ? Theme.of(context).primaryColor
-                  : Colors.grey.withAlpha(128),
+              color: _currentIndex == index
+                  ? resolver.resolveContainerForegroundColor(
+                          style: 'default',
+                        ) ??
+                        Colors.black
+                  : resolver.resolveContainerForegroundColor(
+                          style: 'default',
+                          isSubtle: true,
+                        ) ??
+                        Colors.grey.withAlpha(128),
               borderRadius: BorderRadius.circular(4), // Fully rounded
             ),
           ),
@@ -198,7 +210,13 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     if (showBorder || backgroundColor != null) {
       decoration = BoxDecoration(
         color: backgroundColor,
-        border: showBorder ? Border.all(color: Colors.grey.shade300) : null,
+        border: showBorder
+            ? Border.all(
+                color: ProviderScope.containerOf(
+                  context,
+                ).read(styleReferenceResolverProvider).resolveSeparatorColor(),
+              )
+            : null,
         borderRadius: roundedCorners ? BorderRadius.circular(8) : null,
       );
     }

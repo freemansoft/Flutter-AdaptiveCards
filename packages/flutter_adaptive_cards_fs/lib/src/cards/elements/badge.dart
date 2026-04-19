@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_color_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -54,18 +51,18 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
       context,
     ).read(styleReferenceResolverProvider);
     final Color backgroundColor =
-        resolveBadgeBackgroundColor(
-          badgeStyles: resolver.getBadgeStylesConfig(),
-          colorStyle: style ?? 'default  ',
+        resolver.resolveBadgeBackgroundColor(
+          colorStyle: style ?? 'default',
           appearance: appearance,
         ) ??
-        Colors.grey;
+        resolver.resolveContainerBackgroundColor(style: 'default') ??
+        Colors.transparent;
     final Color textColor =
-        resolveBadgeForegroundColor(
-          badgeStyles: resolver.getBadgeStylesConfig(),
-          colorStyle: style ?? 'default  ',
+        resolver.resolveBadgeForegroundColor(
+          colorStyle: style ?? 'default',
           appearance: appearance,
         ) ??
+        resolver.resolveContainerForegroundColor(style: 'default') ??
         Colors.black;
 
     // Resolve subtle vs non-subtle via HostConfig if possible,
@@ -127,48 +124,5 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
         child: badge,
       ),
     );
-  }
-
-  /// Resolves the foreground color for a Badge
-  Color? resolveBadgeForegroundColor({
-    BadgeStylesConfig? badgeStyles,
-    String? colorStyle,
-    String? appearance,
-    bool? isSubtle,
-  }) {
-    final myBadgeStyles =
-        badgeStyles ?? FallbackConfigs.fallbackBadgeStylesConfig;
-
-    final String myColorStyle = colorStyle ?? 'default';
-    final BadgeStyleConfig badgeStyle = (appearance?.toLowerCase() == 'tint')
-        ? myBadgeStyles.tint
-        : myBadgeStyles.filled;
-    final FontColorConfig colorConfig = badgeStyle.foregroundColors
-        .fontColorConfig(myColorStyle);
-    final Color foregroundColor = (isSubtle ?? false)
-        ? colorConfig.subtleColor
-        : colorConfig.defaultColor;
-
-    return foregroundColor;
-  }
-
-  /// Resolves the background color for a Badge
-  Color? resolveBadgeBackgroundColor({
-    BadgeStylesConfig? badgeStyles,
-    String? colorStyle,
-    String? appearance,
-  }) {
-    final myBadgeStyles =
-        badgeStyles ?? FallbackConfigs.fallbackBadgeStylesConfig;
-
-    final String myColorStyle = colorStyle ?? 'default';
-    final BadgeStyleConfig badgeStyle = (appearance?.toLowerCase() == 'tint')
-        ? myBadgeStyles.tint
-        : myBadgeStyles.filled;
-    final FontColorConfig colorConfig = badgeStyle.backgroundColors
-        .fontColorConfig(myColorStyle);
-    final Color backgroundColor = colorConfig.defaultColor;
-
-    return backgroundColor;
   }
 }
