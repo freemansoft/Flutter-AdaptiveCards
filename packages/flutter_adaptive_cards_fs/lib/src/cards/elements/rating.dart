@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveRating({
@@ -38,13 +40,28 @@ class AdaptiveRatingState extends State<AdaptiveRating>
 
   @override
   Widget build(BuildContext context) {
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
     Color starColor;
     if (color == 'marigold') {
-      starColor = Colors.orange;
+      starColor =
+          resolver.resolveContainerForegroundColor(style: 'warning') ??
+          Colors.orange;
     } else if (color == 'light') {
-      starColor = Colors.white70;
+      starColor =
+          resolver.resolveContainerForegroundColor(
+            style: 'default',
+            isSubtle: true,
+          ) ??
+          Colors.white70;
     } else {
-      starColor = Colors.grey;
+      starColor =
+          resolver.resolveContainerForegroundColor(
+            style: 'default',
+            isSubtle: false,
+          ) ??
+          Colors.grey;
     }
 
     final double iconSize = size == 'large' ? 24 : 16;

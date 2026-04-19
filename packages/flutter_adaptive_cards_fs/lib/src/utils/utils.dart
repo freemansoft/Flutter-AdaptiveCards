@@ -234,10 +234,10 @@ Widget loadLabel({
                 ),
               ),
             if (isRequired)
-              const TextSpan(
+              TextSpan(
                 text: ' *',
                 // TODO(username): fix this color to be looked up from ReferenceResolver
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
           ],
         ),

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// https://adaptivecards.microsoft.com/?topic=CodeBlock
 ///
 /// No contract available
-// TODO(username): Language specific syntax highlighting would be nice,
+// TODO(username): Add support for language specific syntax highlighting.
 // but is complex without external deps like flutter_highlight
-// TODO(username): Support collapse to specific number of lines
+// TODO(username): Add support collapse to specific number of lines
 //
 class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCodeBlock({
@@ -43,6 +45,9 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
 
   @override
   Widget build(BuildContext context) {
+    final resolver = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
     final lines = codeSnippet.split('\n');
     final lineNumbers = StringBuffer();
     for (var i = 0; i < lines.length; i++) {
@@ -81,7 +86,14 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
                 // Line Numbers
                 SelectableText(
                   lineNumbers.toString(),
-                  style: textStyle.copyWith(color: Colors.grey),
+                  style: textStyle.copyWith(
+                    color:
+                        resolver.resolveContainerForegroundColor(
+                          style: 'default',
+                          isSubtle: true,
+                        ) ??
+                        Colors.grey,
+                  ),
                   textAlign: TextAlign.right,
                 ),
                 const SizedBox(width: 12),
