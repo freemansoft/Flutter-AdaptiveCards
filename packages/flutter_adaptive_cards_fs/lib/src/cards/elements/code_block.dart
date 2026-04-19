@@ -8,9 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.microsoft.com/?topic=CodeBlock
 ///
 /// No contract available
-// TODO(username): Add support for language specific syntax highlighting.
-// but is complex without external deps like flutter_highlight
-// TODO(username): Add support collapse to specific number of lines
+// TODO(username): Add language specific highlighting and line folding.
+// language specific highlighting is complex without 3p support
 //
 class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCodeBlock({
