@@ -5,18 +5,18 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart'
 ///
 /// https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar
 /// https://adaptivecards.microsoft.com/?topic=Chart.VerticalBar
+/// https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar.Stacked
+/// https://adaptivecards.microsoft.com/?topic=Chart.VerticalBar.Grouped
 ///
 /// https://adaptivecards.microsoft.com/?topic=BarChartDataValue
-/// https://adaptivecards.microsoft.com/?topic=VerticalBarChartDataValue///
+/// https://adaptivecards.microsoft.com/?topic=VerticalBarChartDataValue
 /// https://adaptivecards.microsoft.com/?topic=HorizontalBarChartDataValue
 ///
 enum BarChartType {
   vertical,
+  verticalGrouped,
   horizontal,
-  stacked, // Vertical Stacked
-  grouped, // Vertical Grouped
   horizontalStacked,
-  // horizontalGrouped - implies grouped ?
 }
 
 class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
@@ -41,6 +41,7 @@ class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 class AdaptiveBarChartState extends State<AdaptiveBarChart>
     with AdaptiveElementMixin {
   late List<BarChartGroupData> barGroups;
+  late List<String> xLabels;
   late double maxY;
 
   @override
@@ -52,62 +53,138 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
   void _parseData() {
     final data = adaptiveMap['data'];
     barGroups = [];
+    xLabels = [];
     maxY = 10; // Default safety
     if (data is! List) return;
     maxY = 0;
 
-    // We need to group data by X coordinate (category)
-    final Map<String, List<Map<String, dynamic>>> groupedData = {};
-    for (final item in data) {
-      final String x = item['x']?.toString() ?? 'Unknown';
-      if (!groupedData.containsKey(x)) {
-        groupedData[x] = [];
-      }
-      groupedData[x]!.add(item);
-    }
+    final bool isStacked =
+        widget.type == BarChartType.horizontalStacked ||
+        (widget.type == BarChartType.verticalGrouped &&
+            adaptiveMap['stacked'] == true);
+    final bool isGrouped =
+        widget.type == BarChartType.verticalGrouped &&
+        (!adaptiveMap.containsKey('stacked') ||
+            adaptiveMap['stacked'] == null ||
+            adaptiveMap['stacked'] == false);
 
-    int xIndex = 0;
-    groupedData.forEach((key, items) {
-      final List<BarChartRodData> rods = [];
-      double currentYSum = 0;
+    debugPrint('isStacked: $isStacked, isGrouped: $isGrouped');
 
-      // For Stacked, we need to handle "fromY" and "toY" or just stack logicaly?
-      // fl_chart supports rodStackItems? No, it supports `BarChartRodData` having `rodStackItems`.
-      // If Stacked, we create ONE rod per group, with multiple rodStackItems.
+    if (isStacked || isGrouped) {
+      // Data is a list of series
+      final Map<String, List<Map<String, dynamic>>> pivotData = {};
+      final List<Color> defaultColors = [
+        Colors.blue,
+        Colors.green,
+        Colors.orange,
+        Colors.purple,
+        Colors.red,
+        Colors.teal,
+      ];
 
-      final bool isStacked =
-          widget.type == BarChartType.stacked ||
-          widget.type == BarChartType.horizontalStacked;
+      int seriesIndex = 0;
+      for (final series in data) {
+        // Chart.VerticalBar.Grouped uses `data.values`
+        // Chart.HorizontalBar.Grouped uses `data.data`
+        final List<dynamic>? points =
+            series['data'] as List<dynamic>? ??
+            series['values'] as List<dynamic>?;
+        if (points == null) continue;
 
-      if (isStacked) {
-        final List<BarChartRodStackItem> stackItems = [];
-        double runningSum = 0;
-        for (final item in items) {
-          final double val = (item['y'] as num? ?? 0).toDouble();
-          final String? colorStr = item['color'] as String?;
-          final Color color = _parseColor(colorStr) ?? Colors.blue;
+        final Color defaultSeriesColor =
+            defaultColors[seriesIndex % defaultColors.length];
 
-          stackItems.add(
-            BarChartRodStackItem(runningSum, runningSum + val, color),
-          );
-          runningSum += val;
+        for (final point in points) {
+          final String x =
+              (point['legend'] ?? point['x'])?.toString() ?? 'Unknown';
+          if (!pivotData.containsKey(x)) {
+            pivotData[x] = [];
+          }
+          pivotData[x]!.add({
+            'y': point['value'] ?? point['y'] ?? 0,
+            'color': point['color'] ?? series['color'],
+            'fallbackColor': defaultSeriesColor,
+          });
         }
-        currentYSum = runningSum;
-        if (currentYSum > maxY) maxY = currentYSum;
+        seriesIndex++;
+      }
 
-        rods.add(
-          BarChartRodData(
-            toY: currentYSum,
-            rodStackItems: stackItems,
-            width: 16,
-            color: Colors.transparent, // Color is in stack items
-            borderRadius: BorderRadius.zero,
+      int xIndex = 0;
+      pivotData.forEach((key, items) {
+        xLabels.add(key);
+        final List<BarChartRodData> rods = [];
+
+        if (isStacked) {
+          final List<BarChartRodStackItem> stackItems = [];
+          double runningSum = 0;
+          for (final item in items) {
+            final double val = (item['y'] as num).toDouble();
+            final String? colorStr = item['color'] as String?;
+            final Color fallback = item['fallbackColor'] as Color;
+            final Color color = _parseColor(colorStr) ?? fallback;
+
+            stackItems.add(
+              BarChartRodStackItem(runningSum, runningSum + val, color),
+            );
+            runningSum += val;
+          }
+          final double currentYSum = runningSum;
+          if (currentYSum > maxY) maxY = currentYSum;
+
+          rods.add(
+            BarChartRodData(
+              toY: currentYSum,
+              rodStackItems: stackItems,
+              width: 16,
+              color: Colors.transparent,
+              borderRadius: BorderRadius.zero,
+            ),
+          );
+        } else {
+          // isGrouped
+          for (final item in items) {
+            final double val = (item['y'] as num).toDouble();
+            if (val > maxY) maxY = val;
+            final String? colorStr = item['color'] as String?;
+            final Color fallback = item['fallbackColor'] as Color;
+            final Color color = _parseColor(colorStr) ?? fallback;
+
+            rods.add(
+              BarChartRodData(
+                toY: val,
+                color: color,
+                width: 16,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            );
+          }
+        }
+
+        barGroups.add(
+          BarChartGroupData(
+            x: xIndex,
+            barRods: rods,
+            barsSpace: 4,
           ),
         );
-      } else {
-        // Grouped (or simple)
-        // Multiple rods side by side (if Grouped) or just one rod (simple)
-        // If "Grouped", typically multiple series show up as multiple bars for same X.
+        xIndex++;
+      });
+    } else {
+      // Standard simple format
+      final Map<String, List<Map<String, dynamic>>> groupedData = {};
+      for (final item in data) {
+        final String x = item['x']?.toString() ?? 'Unknown';
+        if (!groupedData.containsKey(x)) {
+          groupedData[x] = [];
+        }
+        groupedData[x]!.add(item);
+      }
+
+      int xIndex = 0;
+      groupedData.forEach((key, items) {
+        xLabels.add(key);
+        final List<BarChartRodData> rods = [];
+
         for (final item in items) {
           final double val = (item['y'] as num? ?? 0).toDouble();
           if (val > maxY) maxY = val;
@@ -123,17 +200,17 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
             ),
           );
         }
-      }
 
-      barGroups.add(
-        BarChartGroupData(
-          x: xIndex,
-          barRods: rods,
-          barsSpace: 4, // Space between rods in a group
-        ),
-      );
-      xIndex++;
-    });
+        barGroups.add(
+          BarChartGroupData(
+            x: xIndex,
+            barRods: rods,
+            barsSpace: 4, // Space between rods in a group
+          ),
+        );
+        xIndex++;
+      });
+    }
 
     // Safety
     if (maxY == 0) maxY = 10;
@@ -144,10 +221,19 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
   // https://adaptivecards.microsoft.com/?topic=VerticalBarChartDataValue
   Color? _parseColor(String? colorStr) {
     if (colorStr == null) return null;
+
+    final lower = colorStr.toLowerCase();
+    if (lower == 'good') return Colors.green;
+    if (lower == 'warning') return Colors.amber;
+    if (lower == 'attention') return Colors.red;
+    if (lower == 'accent') return Colors.blue;
+
     // Basic hex parsing
     final myColorStr = colorStr.replaceAll('#', '');
     if (myColorStr.length == 6) {
       return Color(int.parse('FF$myColorStr', radix: 16));
+    } else if (myColorStr.length == 8) {
+      return Color(int.parse(myColorStr, radix: 16));
     }
     return null;
   }
@@ -160,10 +246,18 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
 
     final sideTitles = SideTitles(
       showTitles: true,
+      reservedSize: 32,
       getTitlesWidget: (val, meta) {
-        return Text(
-          val.isFinite ? val.toInt().toString() : '',
-          style: const TextStyle(fontSize: 10),
+        final int index = val.toInt();
+        final String text = (index >= 0 && index < xLabels.length)
+            ? xLabels[index]
+            : '';
+        return SideTitleWidget(
+          meta: meta,
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 10),
+          ),
         );
       },
     );

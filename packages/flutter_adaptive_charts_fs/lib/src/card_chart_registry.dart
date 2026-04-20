@@ -42,7 +42,7 @@ class CardChartsRegistry {
     ),
     'Chart.VerticalBar.Grouped': (map) => AdaptiveBarChart(
       adaptiveMap: map,
-      type: BarChartType.grouped,
+      type: BarChartType.verticalGrouped,
     ),
   };
 }

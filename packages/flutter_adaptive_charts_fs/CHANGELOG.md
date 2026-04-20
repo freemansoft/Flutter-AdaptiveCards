@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0] - 2026-04-19
+
+- Added `Chart.HorizontalBar.Stacked` support
+- Added `Chart.VerticalBar.Grouped` support
+- Fixed bar chart x-axis rendering to show labels instead of indices
+- version numbers were sync'd to 0.5.0
+
+
 ## [0.4.0] - 2026-04-14
 
 - Added horizontal bar chart sample

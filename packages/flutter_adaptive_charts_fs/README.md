@@ -4,10 +4,20 @@ A set of adaptive cards that are charts based on the 1.6 spec. Packaged as a sep
 
 ## Features
 
-- Pie and Donut Charts
-- Bar Charts (Vertical, Horizontal, Stacked, Grouped)
-- Line Charts
-- Gauge Charts
+- `Chart.VerticalBar` : Vertical Bar Charts
+- `chart.HorizontalBar` : Horizontal Bar Charts
+- `Chart.Donutz` : Donut Chart
+- `Chart.Pie` : Pie Chart
+- `Chart.Line` : Line Charts
+
+## Not tested
+
+- `Chart.VerticalBar.Grouped` : Vertical Grouped Bar Charts
+- `Chart.HorizontalBar.Stacked` : Horizontal Stacked Bar Charts
+
+## Not Implemented
+
+- `Chart.Gauge` : Gauge Charts - no clear way to implement in fl_chart
 
 ## Getting started
 
@@ -37,7 +47,6 @@ Please refer to the examples in the main repository for creating AdaptiveCards J
 
 ## Additional information
 
-This package is part of the [Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards) ecosystem. 
+This package is part of the [Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards) ecosystem.
 
 For more information, please visit the [Main GitHub Repository](https://github.com/freemansoft/Flutter-AdaptiveCards). There you can find details about how this package integrates with the core library, how to contribute, and how to file issues.
-
