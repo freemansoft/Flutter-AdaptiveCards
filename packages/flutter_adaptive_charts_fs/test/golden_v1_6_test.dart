@@ -62,6 +62,40 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
 
+  testWidgets('Vertical Bar Grouped Chart', (tester) async {
+    configureTestView();
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(
+      key,
+      'chart_bar_vertical_grouped',
+    );
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('v1_6_vertical_bar_grouped.png')),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+  }, tags: ['golden']);
+
+  testWidgets('Horizontal Bar Stacked Chart', (tester) async {
+    configureTestView();
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(
+      key,
+      'chart_bar_horizontal_stacked',
+    );
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('v1_6_horizontal_bar_stacked.png')),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+  }, tags: ['golden']);
+
   testWidgets('Line Chart', (tester) async {
     configureTestView();
     const ValueKey key = ValueKey('paint');

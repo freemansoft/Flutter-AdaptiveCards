@@ -923,6 +923,28 @@ Widget buildV16ChartBarHorizontal(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Bar Vertical Grouped',
+  type: widget_types.Charts,
+  path: '[Components]',
+)
+Widget buildV16ChartBarVerticalGrouped(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/v1.6/chart_bar_vertical_grouped.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Bar Horizontal Stacked',
+  type: widget_types.Charts,
+  path: '[Components]',
+)
+Widget buildV16ChartBarHorizontalStacked(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/v1.6/chart_bar_horizontal_stacked.json',
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Line',
   type: widget_types.Charts,
   path: '[Components]',
