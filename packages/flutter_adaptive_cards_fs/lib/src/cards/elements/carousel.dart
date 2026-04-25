@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCarousel({
@@ -107,11 +105,7 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
             ),
             const SizedBox(height: 8),
             // Carousel Controls
-            _buildControls(
-              ProviderScope.containerOf(
-                context,
-              ).read(styleReferenceResolverProvider),
-            ),
+            _buildControls(styleResolver),
           ],
         ),
       ),
@@ -200,9 +194,7 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     // We can use ReferenceResolver logic or simple map for now.
     // But specific container logic might be needed.
 
-    final Color? backgroundColor = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveContainerBackgroundColor(
+    final Color? backgroundColor = styleResolver.resolveContainerBackgroundColor(
           style: style,
         );
 
@@ -212,9 +204,7 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
         color: backgroundColor,
         border: showBorder
             ? Border.all(
-                color: ProviderScope.containerOf(
-                  context,
-                ).read(styleReferenceResolverProvider).resolveSeparatorColor(),
+                color: styleResolver.resolveSeparatorColor(),
               )
             : null,
         borderRadius: roundedCorners ? BorderRadius.circular(8) : null,

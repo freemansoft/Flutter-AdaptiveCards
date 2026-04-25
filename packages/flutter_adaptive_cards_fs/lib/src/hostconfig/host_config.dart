@@ -1,6 +1,7 @@
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/actions_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/adaptive_card_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/chart_colors_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_config.dart';
@@ -55,6 +56,7 @@ class HostConfig {
     this.badgeStyles,
     this.progressSizes,
     this.progressColors,
+    this.chartColors,
   });
 
   factory HostConfig.fromJson(Map<String, dynamic> json) {
@@ -116,6 +118,9 @@ class HostConfig {
       progressColors: (json['progressColors'] != null)
           ? ProgressColorsConfig.fromJson(json['progressColors'])
           : null,
+      chartColors: (json['chartColors'] != null)
+          ? ChartColorsConfig.fromJson(json['chartColors'])
+          : null,
     );
   }
 
@@ -140,4 +145,5 @@ class HostConfig {
   final BadgeStylesConfig? badgeStyles;
   final ProgressSizesConfig? progressSizes;
   final ProgressColorsConfig? progressColors;
+  final ChartColorsConfig? chartColors;
 }

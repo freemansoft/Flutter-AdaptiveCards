@@ -5,9 +5,7 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -42,9 +40,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    popupParentResolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    popupParentResolver = styleResolver;
   }
 
   Future<void> onTapped(BuildContext context) async {
@@ -75,9 +71,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    final resolver = styleResolver;
 
     return Visibility(
       visible: isVisible,

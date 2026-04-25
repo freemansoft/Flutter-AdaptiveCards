@@ -4,6 +4,8 @@ This is an Adaptive Card implementation for Flutter that has been been updated f
 
 ## Microsoft Adaptive Cards
 
+This project is in no way associated with Microsoft. It is an open source project to create an adaptive card implementation for Flutter.
+
 ![Adaptive Cards](https://adaptivecards.io/content/bf-logo.png)
 
 - [New AdaptiveCards Hub](https://adaptivecards.microsoft.com/)
@@ -17,7 +19,7 @@ This is an Adaptive Card implementation for Flutter that has been been updated f
 
 ## Consumption Patterns
 
-Teams often create a presentation or flow management lservice ayer in front of the core business services that coughs up Adaptive Cards as the in response to user actions. The cannonical flow would be
+Teams often create a presentation or flow management service layer in front of the core business services that acts a bridge to the UI. It coughs up Adaptive Cards as the response to user actions. The cannonical flow would be
 
 ```mermaid
 sequenceDiagram

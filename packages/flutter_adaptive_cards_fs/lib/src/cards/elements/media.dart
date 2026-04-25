@@ -7,10 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/media_source.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 /// Implements
@@ -78,9 +76,7 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final resolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    final resolver = styleResolver;
     final mediaConfig = resolver.getMediaConfig();
 
     postUrl = adaptiveMap['poster']?.toString() ?? mediaConfig?.defaultPoster;

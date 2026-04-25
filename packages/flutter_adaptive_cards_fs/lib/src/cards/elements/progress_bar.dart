@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveProgressBar extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -54,9 +52,7 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
     super.didChangeDependencies();
     final colorString = adaptiveMap['color']?.toString();
     progressColor = ProgressColorsConfig.resolveProgressColor(
-      config: ProviderScope.containerOf(
-        context,
-      ).read(styleReferenceResolverProvider).getProgressColorConfig(),
+      config: styleResolver.getProgressColorConfig(),
       color: colorString,
     );
   }
@@ -68,9 +64,7 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
       progressBar = LinearProgressIndicator(
         value: percent,
         color: progressColor,
-        backgroundColor: ProviderScope.containerOf(context)
-            .read(styleReferenceResolverProvider)
-            .resolveProgressBackgroundColor(),
+        backgroundColor: styleResolver.resolveProgressBackgroundColor(),
         minHeight: 10,
         borderRadius: BorderRadius.circular(5),
       );
@@ -80,9 +74,7 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
       // "foreground should be 10% of the full width" - Material default might not be exactly 10% but matches behavior.
       progressBar = LinearProgressIndicator(
         color: progressColor,
-        backgroundColor: ProviderScope.containerOf(context)
-            .read(styleReferenceResolverProvider)
-            .resolveProgressBackgroundColor(),
+        backgroundColor: styleResolver.resolveProgressBackgroundColor(),
         minHeight: 10,
         borderRadius: BorderRadius.circular(5),
       );

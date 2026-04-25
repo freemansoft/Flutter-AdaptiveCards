@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Assuming there is a container (TabSet?) that holds TabPages.
 // If "TabPage" is the valid element mentioned by user, then likely there is a parent "TabSet".
@@ -56,9 +54,7 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    final resolver = styleResolver;
     if (tabs.isEmpty) return const SizedBox.shrink();
 
     return Visibility(

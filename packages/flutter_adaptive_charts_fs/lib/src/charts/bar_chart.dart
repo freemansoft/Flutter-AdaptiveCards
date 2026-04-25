@@ -44,9 +44,10 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
   late List<String> xLabels;
   late double maxY;
 
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _parseData();
   }
 
@@ -73,14 +74,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
     if (isStacked || isGrouped) {
       // Data is a list of series
       final Map<String, List<Map<String, dynamic>>> pivotData = {};
-      final List<Color> defaultColors = [
-        Colors.blue,
-        Colors.green,
-        Colors.orange,
-        Colors.purple,
-        Colors.red,
-        Colors.teal,
-      ];
+      final List<Color> defaultColors = styleResolver.resolveChartPalette();
 
       int seriesIndex = 0;
       for (final series in data) {
@@ -121,7 +115,10 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
             final double val = (item['y'] as num).toDouble();
             final String? colorStr = item['color'] as String?;
             final Color fallback = item['fallbackColor'] as Color;
-            final Color color = _parseColor(colorStr) ?? fallback;
+            final Color color = styleResolver.resolveChartColor(
+              colorStr,
+              fallback: fallback,
+            );
 
             stackItems.add(
               BarChartRodStackItem(runningSum, runningSum + val, color),
@@ -147,7 +144,10 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
             if (val > maxY) maxY = val;
             final String? colorStr = item['color'] as String?;
             final Color fallback = item['fallbackColor'] as Color;
-            final Color color = _parseColor(colorStr) ?? fallback;
+            final Color color = styleResolver.resolveChartColor(
+              colorStr,
+              fallback: fallback,
+            );
 
             rods.add(
               BarChartRodData(
@@ -189,7 +189,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
           final double val = (item['y'] as num? ?? 0).toDouble();
           if (val > maxY) maxY = val;
           final String? colorStr = item['color'] as String?;
-          final Color color = _parseColor(colorStr) ?? Colors.blue;
+          final Color color = styleResolver.resolveChartColor(colorStr);
 
           rods.add(
             BarChartRodData(
@@ -215,27 +215,6 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
     // Safety
     if (maxY == 0) maxY = 10;
     maxY *= 1.2; // padding
-  }
-
-  // TODO(username): Add support for AdaptiveCards named colors
-  // https://adaptivecards.microsoft.com/?topic=VerticalBarChartDataValue
-  Color? _parseColor(String? colorStr) {
-    if (colorStr == null) return null;
-
-    final lower = colorStr.toLowerCase();
-    if (lower == 'good') return Colors.green;
-    if (lower == 'warning') return Colors.amber;
-    if (lower == 'attention') return Colors.red;
-    if (lower == 'accent') return Colors.blue;
-
-    // Basic hex parsing
-    final myColorStr = colorStr.replaceAll('#', '');
-    if (myColorStr.length == 6) {
-      return Color(int.parse('FF$myColorStr', radix: 16));
-    } else if (myColorStr.length == 8) {
-      return Color(int.parse(myColorStr, radix: 16));
-    }
-    return null;
   }
 
   @override

@@ -3,9 +3,7 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
@@ -256,15 +254,11 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           isExpanded: true,
           icon: const Icon(Icons.arrow_drop_down),
           style: TextStyle(
-            color: ProviderScope.containerOf(context)
-                .read(styleReferenceResolverProvider)
-                .resolveInputForegroundColor(
+            color: styleResolver.resolveInputForegroundColor(
                   context: context,
                   style: null,
                 ),
-            backgroundColor: ProviderScope.containerOf(context)
-                .read(styleReferenceResolverProvider)
-                .resolveInputBackgroundColor(
+            backgroundColor: styleResolver.resolveInputBackgroundColor(
                   context: context,
                   style: null,
                 ),

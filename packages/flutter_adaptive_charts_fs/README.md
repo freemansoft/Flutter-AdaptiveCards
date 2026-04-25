@@ -2,6 +2,10 @@
 
 A set of adaptive cards that are charts based on the 1.6 spec. Packaged as a separate library to remove the dependency on the charting library from the main adaptive cards library.
 
+## Microsoft Adaptive Cards
+
+This project is in no way associated with Microsoft. It is an open source project to create an adaptive card implementation for Flutter.
+
 ## Features
 
 - `Chart.VerticalBar` : Vertical Bar Charts
@@ -40,6 +44,44 @@ Pass in the additional charting elements to Registry on start up
     required this.hostConfigs,
   });
 ```
+
+## Color Configuration
+
+The charts package supports theme-aware color resolution via `HostConfig`. You can define a default palette and a default color for all charts in your application by updating the `chartColors` property in your `HostConfig`.
+
+### Example: Injecting a Custom Palette
+
+```dart
+final myConfig = HostConfig(
+  chartColors: ChartColorsConfig(
+    defaultPalette: [
+      Colors.indigo,
+      Colors.cyan,
+      Colors.teal,
+      Colors.amber,
+    ],
+    defaultColor: Colors.blueGrey,
+  ),
+);
+
+AdaptiveCardsRoot(
+  hostConfigs: HostConfigs(light: myConfig),
+  // ...
+);
+```
+
+### Example: JSON HostConfig
+
+```json
+{
+  "chartColors": {
+    "defaultPalette": ["#3F51B5", "#00BCD4", "#009688", "#FFC107"],
+    "defaultColor": "#607D8B"
+  }
+}
+```
+
+Individual data items can still override these colors using the `"color"` property (hex or semantic names like `"good"`, `"warning"`, `"attention"`, `"accent"`).
 
 ## Usage
 

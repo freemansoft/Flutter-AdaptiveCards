@@ -30,9 +30,10 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
   late double minX;
   late double maxX;
 
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _parseData();
   }
 
@@ -56,6 +57,8 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
 
     final Map<String, List<FlSpot>> seriesSpots = {};
     final Map<String, Color> seriesColors = {};
+    final List<Color> defaultPalette = styleResolver.resolveChartPalette();
+    int seriesCount = 0;
 
     for (final item in data) {
       // Assuming numeric X for LineChart for now.
@@ -77,10 +80,13 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
 
       if (!seriesSpots.containsKey(series)) {
         seriesSpots[series] = [];
-        if (colorStr != null) {
-          final Color? c = _parseColor(colorStr);
-          if (c != null) seriesColors[series] = c;
-        }
+        final Color fallback =
+            defaultPalette[seriesCount % defaultPalette.length];
+        seriesColors[series] = styleResolver.resolveChartColor(
+          colorStr,
+          fallback: fallback,
+        );
+        seriesCount++;
       }
       seriesSpots[series]!.add(FlSpot(x, y));
     }
@@ -108,7 +114,7 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
         LineChartBarData(
           spots: spots,
           isCurved: true,
-          color: seriesColors[series] ?? Colors.blue,
+          color: seriesColors[series],
           barWidth: 3,
           isStrokeCapRound: true,
           dotData: const FlDotData(show: false),
@@ -116,15 +122,6 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
         ),
       );
     });
-  }
-
-  Color? _parseColor(String? colorStr) {
-    if (colorStr == null) return null;
-    final myColorStr = colorStr.replaceAll('#', '');
-    if (myColorStr.length == 6) {
-      return Color(int.parse('FF$myColorStr', radix: 16));
-    }
-    return null;
   }
 
   @override

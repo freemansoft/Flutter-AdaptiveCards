@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_sizes_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Image.html
@@ -49,9 +47,7 @@ class AdaptiveImageState extends State<AdaptiveImage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     loadSize();
-    horizontalAlignment = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveAlignment(
+    horizontalAlignment = styleResolver.resolveAlignment(
           adaptiveMap['horizontalAlignment'],
         );
   }
@@ -121,9 +117,7 @@ class AdaptiveImageState extends State<AdaptiveImage>
     int? size;
     if (sizeDescription != 'auto' && sizeDescription != 'stretch') {
       size = ImageSizesConfig.resolveImageSizes(
-        ProviderScope.containerOf(
-          context,
-        ).read(styleReferenceResolverProvider).getImageSizesConfig(),
+        styleResolver.getImageSizesConfig(),
         sizeDescription,
       );
     }

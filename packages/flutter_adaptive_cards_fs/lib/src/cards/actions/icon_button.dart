@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
   IconButtonAction({
@@ -39,9 +37,7 @@ class IconButtonActionState extends State<IconButtonAction>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    final resolver = styleResolver;
     final buttonStyle = ElevatedButton.styleFrom(
       backgroundColor: resolver.resolveButtonBackgroundColor(
         context: context,

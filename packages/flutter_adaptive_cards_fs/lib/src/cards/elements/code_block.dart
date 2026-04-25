@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// https://adaptivecards.microsoft.com/?topic=CodeBlock
 ///
@@ -44,9 +42,7 @@ class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    final resolver = styleResolver;
     final lines = codeSnippet.split('\n');
     final lineNumbers = StringBuffer();
     for (var i = 0; i < lines.length; i++) {

@@ -6,7 +6,9 @@
 - Added `Chart.VerticalBar.Grouped` support
 - Fixed bar chart x-axis rendering to show labels instead of indices
 - version numbers were sync'd to 0.5.0
-
+- Standardized color resolution using `ReferenceResolver` and `HostConfig`.
+- Added support for custom color palettes and default colors via `HostConfig`.
+- All chart types now respect semantic color names ('good', 'warning', 'attention', 'accent').
 
 ## [0.4.0] - 2026-04-14
 

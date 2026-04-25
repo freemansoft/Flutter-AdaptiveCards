@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
@@ -38,6 +39,9 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   AdaptiveCardElementState get adaptiveCardElementState =>
       ProviderScope.containerOf(context).read(adaptiveCardElementStateProvider);
+
+  ReferenceResolver get styleResolver =>
+      ProviderScope.containerOf(context).read(styleReferenceResolverProvider);
 
   String? get style => (adaptiveMap['style'] as String?)?.toLowerCase();
 

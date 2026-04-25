@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Column.html
@@ -88,20 +86,14 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
             );
           }).toList()
         : [];
-    horizontalAlignment = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveHorzontalCrossAxisAlignment(
+    horizontalAlignment = styleResolver.resolveHorzontalCrossAxisAlignment(
           adaptiveMap['horizontalAlignment'],
         );
-    verticalAlignment = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveVerticalMainAxisContentAlginment(
+    verticalAlignment = styleResolver.resolveVerticalMainAxisContentAlginment(
           adaptiveMap['verticalContentAlignment'],
         );
 
-    containerHorizontalAlignment = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveContainerAlignment(
+    containerHorizontalAlignment = styleResolver.resolveContainerAlignment(
           adaptiveMap['horizontalAlignment'],
         );
   }
@@ -109,18 +101,14 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
   @override
   Widget build(BuildContext context) {
     final double preceedingSpacing = SpacingsConfig.resolveSpacing(
-      ProviderScope.containerOf(
-        context,
-      ).read(styleReferenceResolverProvider).getSpacingsConfig(),
+      styleResolver.getSpacingsConfig(),
       adaptiveMap['spacing'],
     );
 
     // no background if we have an iamge - hmm but should we anyway?
     final backgroundColor = backgroundImageSpecified(adaptiveMap)
         ? null
-        : ProviderScope.containerOf(context)
-              .read(styleReferenceResolverProvider)
-              .resolveContainerBackgroundColor(
+        : styleResolver.resolveContainerBackgroundColor(
                 style: style,
               );
 

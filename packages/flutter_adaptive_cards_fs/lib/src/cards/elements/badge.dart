@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveBadge({
@@ -47,9 +45,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    final resolver = styleResolver;
     final Color backgroundColor =
         resolver.resolveBadgeBackgroundColor(
           colorStyle: style ?? 'default',

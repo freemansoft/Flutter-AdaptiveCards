@@ -124,12 +124,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
               ),
             )
             .toList();
-    final String stringAxis =
-        ProviderScope.containerOf(
-              context,
-            )
-            .read(styleReferenceResolverProvider)
-            .resolveOrientation('actionsOrientation');
+    final String stringAxis = styleResolver.resolveOrientation(
+      'actionsOrientation',
+    );
     if (stringAxis == 'Horizontal') {
       actionsOrientation = Axis.horizontal;
     } else if (stringAxis == 'Vertical') {

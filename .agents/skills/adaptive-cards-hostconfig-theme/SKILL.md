@@ -16,7 +16,7 @@ developer's contract that defines colors, font sizes, spacing, and more.
 This project maps that HostConfig object to Flutter rendering through two
 central abstractions:
 
-```
+```txt
 HostConfigs  ──(contains)──►  HostConfig (light)
              ──(contains)──►  HostConfig (dark)
                                    │
@@ -32,14 +32,14 @@ every element widget via a Riverpod `Provider` override.
 
 ## Key Files
 
-| File | Purpose |
-|---|---|
-| `lib/src/hostconfig/host_config.dart` | `HostConfig` + `HostConfigs` classes |
-| `lib/src/reference_resolver.dart` | `ReferenceResolver` — all resolution logic |
-| `lib/src/hostconfig/fallback_configs.dart` | Hardcoded defaults used when HostConfig is absent |
-| `lib/src/hostconfig/*.dart` | Typed config classes for each subsection |
-| `lib/src/riverpod_providers.dart` | `styleReferenceResolverProvider` Riverpod provider |
-| `lib/src/flutter_raw_adaptive_card.dart` | Where `ReferenceResolver` is created and scoped |
+| File                                       | Purpose                                            |
+| ------------------------------------------ | -------------------------------------------------- |
+| `lib/src/hostconfig/host_config.dart`      | `HostConfig` + `HostConfigs` classes               |
+| `lib/src/reference_resolver.dart`          | `ReferenceResolver` — all resolution logic         |
+| `lib/src/hostconfig/fallback_configs.dart` | Hardcoded defaults used when HostConfig is absent  |
+| `lib/src/hostconfig/*.dart`                | Typed config classes for each subsection           |
+| `lib/src/riverpod_providers.dart`          | `styleReferenceResolverProvider` Riverpod provider |
+| `lib/src/flutter_raw_adaptive_card.dart`   | Where `ReferenceResolver` is created and scoped    |
 
 ---
 
@@ -82,6 +82,7 @@ class HostConfig {
   final BadgeStylesConfig? badgeStyles;             // badge filled/tint colors
   final ProgressSizesConfig? progressSizes;         // progress bar dimensions
   final ProgressColorsConfig? progressColors;       // progress bar colors
+  final ChartColorsConfig? chartColors;            // chart palettes and defaults
   // ... other subsections
 }
 ```
@@ -91,12 +92,14 @@ class HostConfig {
 ## How `ReferenceResolver` is Created and Distributed
 
 In `RawAdaptiveCardState.initState()`:
+
 ```dart
 _resolver = ReferenceResolver(hostConfigs: widget.hostConfigs);
 ```
 
 In `RawAdaptiveCardState.build()`, it is injected into the
 `ProviderScope` that wraps all element widgets:
+
 ```dart
 return ProviderScope(
   overrides: [
@@ -109,6 +112,7 @@ return ProviderScope(
 
 **Containers** use `copyWith()` to create a child resolver with the current
 container style, maintaining proper style inheritance down the tree:
+
 ```dart
 final childResolver = resolver.copyWith(style: 'emphasis');
 ```
@@ -158,6 +162,7 @@ Color? color = resolver.resolveContainerForegroundColor(
 ```
 
 Resolution priority:
+
 1. Explicitly passed `style` (if not `'default'`)
 2. `currentContainerStyle` (inherited from parent container's resolver)
 3. The `'default'` container style foreground colors
@@ -230,13 +235,13 @@ String? family = resolver.resolveFontType(
 
 Fallback font size values (from `FallbackConfigs.fontSizesConfig`):
 
-| AC Name | Default px |
-|---|---|
-| small | 10 |
-| **default** | 12 |
-| medium | 14 |
-| large | 18 |
-| extraLarge | 22 |
+| AC Name     | Default px |
+| ----------- | ---------- |
+| small       | 10         |
+| **default** | 12         |
+| medium      | 14         |
+| large       | 18         |
+| extraLarge  | 22         |
 
 ### Spacing
 
@@ -256,21 +261,33 @@ double gap = SpacingsConfig.resolveSpacing(
 
 Fallback spacing values (from `FallbackConfigs.spacingsConfig`):
 
-| AC Name | Default px |
-|---|---|
-| none | 0 |
-| small | 4 |
-| **default** | 4 |
-| medium | 8 |
-| large | 16 |
-| extraLarge | 32 |
-| padding | 20 |
+| AC Name     | Default px |
+| ----------- | ---------- |
+| none        | 0          |
+| small       | 4          |
+| **default** | 4          |
+| medium      | 8          |
+| large       | 16         |
+| extraLarge  | 32         |
+| padding     | 20         |
 
 ### Separators
 
 ```dart
-double thickness = resolver.resolveSeparatorThickness(); // default: 1.0
-Color color = resolver.resolveSeparatorColor();          // default: Colors.grey.shade300
+
+```
+
+### Charts
+
+```dart
+// Resolves the color palette for charts
+List<Color> palette = resolver.resolveChartPalette();
+
+// Resolves a single chart color (hex or semantic 'good'/'warning'/etc.)
+Color color = resolver.resolveChartColor(
+  adaptiveMap['color'] as String?,
+  fallback: Colors.blue,
+);
 ```
 
 ### Alignment
@@ -317,7 +334,7 @@ int maxLines = resolver.resolveMaxLines(
 
 The color resolution chain for foreground text:
 
-```
+```txt
 ContainerStylesConfig
   └── ContainerStyleConfig (for 'default' or 'emphasis')
         └── ForegroundColorsConfig
@@ -327,9 +344,11 @@ ContainerStylesConfig
 ```
 
 Colors in JSON are hex strings in `#RRGGBB` or `#AARRGGBB` format:
+
 ```json
 { "default": "#FF000000", "subtle": "#B2000000" }
 ```
+
 `FontColorConfig._parseColor()` handles both formats.
 
 ---
@@ -422,6 +441,7 @@ test('custom font sizes are parsed', () {
 
 Widget-level HostConfig tests use `getTestWidgetFromMap` with a custom
 `AdaptiveCardsRoot` that has an injected `HostConfigs`:
+
 ```dart
 // See test/host_config_test.dart for the established pattern
 ```

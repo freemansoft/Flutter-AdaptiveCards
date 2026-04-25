@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/actions_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/adaptive_card_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/chart_colors_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
@@ -65,6 +66,7 @@ class ReferenceResolver {
       hostConfigs.current.progressSizes;
   ProgressColorsConfig? getProgressColorConfig() =>
       hostConfigs.current.progressColors;
+  ChartColorsConfig? getChartColorsConfig() => hostConfigs.current.chartColors;
 
   /// JSON Schema definition "Colors"
   ///
@@ -611,18 +613,30 @@ class ReferenceResolver {
   Color resolveGridStyleColor(String style) {
     switch (style.toLowerCase()) {
       case 'emphasis':
-        return resolveContainerForegroundColor(style: 'default', isSubtle: true) ?? Colors.grey.shade600;
+        return resolveContainerForegroundColor(
+              style: 'default',
+              isSubtle: true,
+            ) ??
+            Colors.grey.shade600;
       case 'good':
-        return resolveContainerForegroundColor(style: 'good') ?? Colors.green.shade600;
+        return resolveContainerForegroundColor(style: 'good') ??
+            Colors.green.shade600;
       case 'attention':
-        return resolveContainerForegroundColor(style: 'attention') ?? Colors.red.shade600;
+        return resolveContainerForegroundColor(style: 'attention') ??
+            Colors.red.shade600;
       case 'warning':
-        return resolveContainerForegroundColor(style: 'warning') ?? Colors.orange.shade600;
+        return resolveContainerForegroundColor(style: 'warning') ??
+            Colors.orange.shade600;
       case 'accent':
-        return resolveContainerForegroundColor(style: 'accent') ?? Colors.blue.shade600;
+        return resolveContainerForegroundColor(style: 'accent') ??
+            Colors.blue.shade600;
       case 'default':
       default:
-        return resolveContainerForegroundColor(style: 'default', isSubtle: true) ?? Colors.grey.shade400;
+        return resolveContainerForegroundColor(
+              style: 'default',
+              isSubtle: true,
+            ) ??
+            Colors.grey.shade400;
     }
   }
 
@@ -701,11 +715,44 @@ class ReferenceResolver {
   TextStyle resolveCompoundButtonDescriptionStyle() {
     return TextStyle(
       fontSize: 12,
-      color: resolveContainerForegroundColor(
+      color:
+          resolveContainerForegroundColor(
             style: 'default',
             isSubtle: true,
           ) ??
           Colors.grey[700],
     );
+  }
+
+  /// Resolves the color palette for charts
+  List<Color> resolveChartPalette() {
+    return getChartColorsConfig()?.defaultPalette ??
+        FallbackConfigs.chartColorsConfig.defaultPalette;
+  }
+
+  /// Resolves a single chart color from a string (hex or semantic name)
+  Color resolveChartColor(String? colorStr, {Color? fallback}) {
+    if (colorStr == null) {
+      return fallback ??
+          getChartColorsConfig()?.defaultColor ??
+          FallbackConfigs.chartColorsConfig.defaultColor;
+    }
+
+    final lower = colorStr.toLowerCase();
+    switch (lower) {
+      case 'good':
+        return Colors.green;
+      case 'warning':
+        return Colors.amber;
+      case 'attention':
+        return Colors.red;
+      case 'accent':
+        return Colors.blue;
+    }
+
+    return parseHexColor(colorStr) ??
+        fallback ??
+        getChartColorsConfig()?.defaultColor ??
+        FallbackConfigs.chartColorsConfig.defaultColor;
   }
 }
