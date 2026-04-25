@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/containers/column.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ColumnSet.html
@@ -39,18 +37,11 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    backgroundColor =
-        ProviderScope.containerOf(
-              context,
-            )
-            .read(styleReferenceResolverProvider)
-            .resolveContainerBackgroundColor(
+    backgroundColor = styleResolver.resolveContainerBackgroundColor(
               style: style,
               defaultStyle: null,
             );
-    horizontalAlignment = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveHorizontalMainAxisAlignment(
+    horizontalAlignment = styleResolver.resolveHorizontalMainAxisAlignment(
           adaptiveMap['horizontalAlignment'],
         );
 

@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.ShowCard.html
@@ -68,9 +66,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    final resolver = styleResolver;
 
     final theButton = ElevatedButton(
       onPressed: () {

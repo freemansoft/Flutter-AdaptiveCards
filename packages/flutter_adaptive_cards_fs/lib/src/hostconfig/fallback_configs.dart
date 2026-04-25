@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/chart_colors_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_color_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_config.dart';
@@ -28,6 +29,17 @@ class FallbackConfigs {
 
   static final Color progressBackgroundColor = Colors.grey.shade300;
 
+  static const chartColorsConfig = ChartColorsConfig(
+    defaultPalette: [
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.red,
+      Colors.teal,
+    ],
+    defaultColor: Colors.blue,
+  );
 
   // completely hacky fallback that will teach people to use HostConfig
   static final fallbackBadgeStylesConfig = BadgeStylesConfig(

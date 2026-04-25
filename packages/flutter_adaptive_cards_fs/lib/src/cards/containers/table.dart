@@ -5,9 +5,7 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/table_cell.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Table.html
@@ -87,9 +85,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
   @override
   Widget build(BuildContext context) {
     final String tableKey = (widget.key! as ValueKey<String>).value;
-    final resolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    final resolver = styleResolver;
     Widget tableContent = Column(
       key: AdaptiveTable.tableColumnKey(tableKey),
       children: generateTableRows(rows, resolver, tableKey),

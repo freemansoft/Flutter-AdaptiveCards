@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AdaptiveProgressRing extends StatefulWidget
     with AdaptiveElementWidgetMixin {
@@ -67,17 +65,13 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
     super.didChangeDependencies();
     final colorString = adaptiveMap['color'] as String?;
     progressColor = ProgressColorsConfig.resolveProgressColor(
-      config: ProviderScope.containerOf(
-        context,
-      ).read(styleReferenceResolverProvider).getProgressColorConfig(),
+      config: styleResolver.getProgressColorConfig(),
       color: colorString,
     );
     final sizeString = adaptiveMap['size'] as String?;
     sizePx =
         ProgressSizesConfig.resolveProgressSize(
-          ProviderScope.containerOf(
-            context,
-          ).read(styleReferenceResolverProvider).getProgressSizesConfig(),
+          styleResolver.getProgressSizesConfig(),
           sizeString,
         ) ??
         30;
@@ -95,9 +89,7 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
       child: CircularProgressIndicator(
         value: percent,
         color: progressColor,
-        backgroundColor: ProviderScope.containerOf(context)
-            .read(styleReferenceResolverProvider)
-            .resolveProgressBackgroundColor(),
+        backgroundColor: styleResolver.resolveProgressBackgroundColor(),
         strokeWidth: stroke,
       ),
     );

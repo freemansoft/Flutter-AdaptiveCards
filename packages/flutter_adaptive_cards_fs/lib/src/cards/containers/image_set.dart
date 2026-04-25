@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/image.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ImageSet.html
@@ -58,9 +56,7 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
   void didChangeDependencies() {
     super.didChangeDependencies();
     loadSize();
-    backgroundColor = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveContainerBackgroundColor(
+    backgroundColor = styleResolver.resolveContainerBackgroundColor(
           style: style,
         );
   }
@@ -112,9 +108,7 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
       return;
     }
     final int size =
-        ProviderScope.containerOf(context)
-            .read(styleReferenceResolverProvider)
-            .getImageSetConfig()
+        styleResolver.getImageSetConfig()
             ?.imageSize(sizeDescription) ??
         20;
     maybeSize = size.toDouble();

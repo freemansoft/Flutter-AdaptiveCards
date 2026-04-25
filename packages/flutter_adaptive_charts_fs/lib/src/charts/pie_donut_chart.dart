@@ -30,10 +30,14 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
     with AdaptiveElementMixin {
   late List<PieChartSectionData> sections;
 
+
   @override
-  void initState() {
-    super.initState();
-    // Parse data
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _parseData();
+  }
+
+  void _parseData() {
     // Expected structure: data: { series: [ { data: [ { x: "Label", y: 10, color: "#FF0000" } ] } ] }
     // Or simplified: data entries.
     // We need to look at AC Chart schema.
@@ -50,15 +54,14 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
             .toDouble();
         final String title =
             item['title']?.toString() ?? item['x']?.toString() ?? '';
-        String? colorStr = item['color']?.toString();
-        Color color = Colors.blue;
-        if (colorStr != null) {
-          // Basic hex parsing - improving later
-          colorStr = colorStr.replaceAll('#', '');
-          if (colorStr.length == 6) {
-            color = Color(int.parse('FF$colorStr', radix: 16));
-          }
-        }
+        final String? colorStr = item['color']?.toString();
+        final List<Color> defaultPalette = styleResolver.resolveChartPalette();
+        final Color fallback =
+            defaultPalette[sections.length % defaultPalette.length];
+        final Color color = styleResolver.resolveChartColor(
+          colorStr,
+          fallback: fallback,
+        );
 
         sections.add(
           PieChartSectionData(

@@ -4,10 +4,8 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Implements
 /// https://adaptivecards.io/explorer/FactSet.html
@@ -50,18 +48,14 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    backgroundColor = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveContainerBackgroundColor(
+    backgroundColor = styleResolver.resolveContainerBackgroundColor(
           style: style,
         );
   }
 
   @override
   Widget build(BuildContext context) {
-    final ReferenceResolver resolver = ProviderScope.containerOf(
-      context,
-    ).read(styleReferenceResolverProvider);
+    final ReferenceResolver resolver = styleResolver;
     final FactSetConfig? factSetConfig = resolver.getFactSetConfig();
 
     return Visibility(

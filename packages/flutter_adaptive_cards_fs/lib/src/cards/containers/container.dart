@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Container.html
@@ -48,25 +46,19 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
       children = [];
     }
     spacing = SpacingsConfig.resolveSpacing(
-      ProviderScope.containerOf(
-        context,
-      ).read(styleReferenceResolverProvider).getSpacingsConfig(),
+      styleResolver.getSpacingsConfig(),
       adaptiveMap['spacing'],
     );
 
     // no background if we have an iamge - hmm but should we anyway?
 
-    verticalContentAlignment = ProviderScope.containerOf(context)
-        .read(styleReferenceResolverProvider)
-        .resolveVerticalMainAxisContentAlginment(
+    verticalContentAlignment = styleResolver.resolveVerticalMainAxisContentAlginment(
           adaptiveMap['verticalContentAlignment']?.toString(),
         );
 
     backgroundColor = backgroundImageSpecified(adaptiveMap)
         ? null
-        : ProviderScope.containerOf(context)
-              .read(styleReferenceResolverProvider)
-              .resolveContainerBackgroundColor(
+        : styleResolver.resolveContainerBackgroundColor(
                 style: style,
               );
   }

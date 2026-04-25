@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Number.html
@@ -98,9 +96,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
                     borderSide: const BorderSide(),
                   ),
                   filled: true,
-                  fillColor: ProviderScope.containerOf(context)
-                      .read(styleReferenceResolverProvider)
-                      .resolveInputBackgroundColor(
+                  fillColor: styleResolver.resolveInputBackgroundColor(
                         context: context,
                         style: null,
                       ),
