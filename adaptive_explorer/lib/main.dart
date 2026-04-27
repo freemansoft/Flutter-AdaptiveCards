@@ -179,15 +179,6 @@ class _HomePageState extends State<HomePage>
       appBar: AppBar(
         title: const Text('Adaptive Explorer'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (_) => setState(() {}),
-          tabs: const [
-            Tab(text: 'Template'),
-            Tab(text: 'Data'),
-            Tab(text: 'Merged'),
-          ],
-        ),
         actions: [
           TextButton.icon(
             onPressed: () => unawaited(_openTemplate()),
@@ -334,30 +325,45 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildEditorTabView() {
-    return TabBarView(
-      controller: _tabController,
+    return Column(
       children: [
-        _buildJsonEditor(
-          data: _templateJson,
-          onChanged: (updated) {
-            _editedTemplateJson = updated;
-          },
-          readOnly: false,
-          emptyMessage: 'No template loaded',
+        TabBar(
+          controller: _tabController,
+          onTap: (_) => setState(() {}),
+          tabs: const [
+            Tab(text: 'Template'),
+            Tab(text: 'Data'),
+            Tab(text: 'Merged'),
+          ],
         ),
-        _buildJsonEditor(
-          data: _dataJson,
-          onChanged: (updated) {
-            _editedDataJson = updated;
-          },
-          readOnly: false,
-          emptyMessage: 'No data loaded',
-        ),
-        _buildJsonEditor(
-          data: _mergedJson,
-          onChanged: null,
-          readOnly: true,
-          emptyMessage: 'No merged result available',
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildJsonEditor(
+                data: _templateJson,
+                onChanged: (updated) {
+                  _editedTemplateJson = updated;
+                },
+                readOnly: false,
+                emptyMessage: 'No template loaded',
+              ),
+              _buildJsonEditor(
+                data: _dataJson,
+                onChanged: (updated) {
+                  _editedDataJson = updated;
+                },
+                readOnly: false,
+                emptyMessage: 'No data loaded',
+              ),
+              _buildJsonEditor(
+                data: _mergedJson,
+                onChanged: null,
+                readOnly: true,
+                emptyMessage: 'No merged result available',
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -383,6 +389,7 @@ class _HomePageState extends State<HomePage>
       enableKeyEdit: !readOnly,
       enableValueEdit: !readOnly,
       enableMoreOptions: !readOnly,
+      editors: const [Editors.text, Editors.tree],
     );
   }
 }
