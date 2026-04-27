@@ -27,7 +27,7 @@ class ActionSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class ActionSetState extends State<ActionSet>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   List<Widget> activeActions = [];
 
   @override

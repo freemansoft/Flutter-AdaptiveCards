@@ -24,7 +24,7 @@ class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveCarouselState extends State<AdaptiveCarousel>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late List<Map<String, dynamic>> pages;
   late int initialPage;
   late PageController pageController;
@@ -166,7 +166,7 @@ class AdaptiveCarouselPage extends StatefulWidget
 }
 
 class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, ProviderScopeMixin {
   late List<Widget> children;
 
   @override
@@ -194,7 +194,8 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     // We can use ReferenceResolver logic or simple map for now.
     // But specific container logic might be needed.
 
-    final Color? backgroundColor = styleResolver.resolveContainerBackgroundColor(
+    final Color? backgroundColor = styleResolver
+        .resolveContainerBackgroundColor(
           style: style,
         );
 

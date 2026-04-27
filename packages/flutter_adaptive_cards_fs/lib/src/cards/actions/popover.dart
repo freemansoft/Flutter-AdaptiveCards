@@ -25,7 +25,11 @@ class AdaptiveActionPopover extends StatefulWidget
 }
 
 class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
-    with AdaptiveActionMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with
+        AdaptiveActionMixin,
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin {
   late Map<String, dynamic>? card;
   // used to inherit the parent's host config
   late ReferenceResolver popupParentResolver;

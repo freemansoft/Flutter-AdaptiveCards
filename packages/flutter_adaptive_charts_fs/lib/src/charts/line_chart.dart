@@ -23,13 +23,12 @@ class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveLineChartState extends State<AdaptiveLineChart>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, ProviderScopeMixin {
   late List<LineChartBarData> lineBarsData;
   late double minY;
   late double maxY;
   late double minX;
   late double maxX;
-
 
   @override
   void didChangeDependencies() {

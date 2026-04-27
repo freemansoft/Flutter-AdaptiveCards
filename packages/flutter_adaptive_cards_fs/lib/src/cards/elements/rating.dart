@@ -21,7 +21,7 @@ class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveRatingState extends State<AdaptiveRating>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late double value;
   late double max;
   late String color;

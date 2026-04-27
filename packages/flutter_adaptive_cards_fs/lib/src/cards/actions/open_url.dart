@@ -26,7 +26,7 @@ class AdaptiveActionOpenUrl extends StatefulWidget
 }
 
 class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
-    with AdaptiveActionMixin, AdaptiveElementMixin {
+    with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
   late GenericActionOpenUrl action;
   late String? iconUrl;
 

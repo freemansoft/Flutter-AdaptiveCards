@@ -29,7 +29,8 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
         AdaptiveTextualInputMixin,
         AdaptiveElementMixin,
         AdaptiveInputMixin,
-        AdaptiveVisibilityMixin {
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin {
   late TimeOfDay? selectedTime;
   late TimeOfDay min;
   late TimeOfDay max;

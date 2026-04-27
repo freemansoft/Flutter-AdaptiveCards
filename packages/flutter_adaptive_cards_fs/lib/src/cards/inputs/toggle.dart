@@ -25,7 +25,11 @@ class AdaptiveToggle extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveToggleState extends State<AdaptiveToggle>
-    with AdaptiveInputMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with
+        AdaptiveInputMixin,
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin {
   bool boolValue = false;
 
   late String valueOff;

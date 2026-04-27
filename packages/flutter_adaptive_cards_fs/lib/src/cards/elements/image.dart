@@ -31,7 +31,7 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveImageState extends State<AdaptiveImage>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late bool isPerson;
   double? width;
   double? height;
@@ -48,8 +48,8 @@ class AdaptiveImageState extends State<AdaptiveImage>
     super.didChangeDependencies();
     loadSize();
     horizontalAlignment = styleResolver.resolveAlignment(
-          adaptiveMap['horizontalAlignment'],
-        );
+      adaptiveMap['horizontalAlignment'],
+    );
   }
 
   @override

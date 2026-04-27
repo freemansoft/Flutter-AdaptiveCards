@@ -29,7 +29,11 @@ class AdaptiveActionShowCard extends StatefulWidget
 }
 
 class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
-    with AdaptiveActionMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with
+        AdaptiveActionMixin,
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin {
   AdaptiveCardElement? targetCard;
 
   @override

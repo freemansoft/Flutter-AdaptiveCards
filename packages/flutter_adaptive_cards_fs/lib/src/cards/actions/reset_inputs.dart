@@ -24,7 +24,7 @@ class AdaptiveActionResetInputs extends StatefulWidget
 }
 
 class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
-    with AdaptiveActionMixin, AdaptiveElementMixin {
+    with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
   late GenericActionResetInputs action;
 
   @override

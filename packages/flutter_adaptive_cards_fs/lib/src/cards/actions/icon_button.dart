@@ -26,7 +26,11 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class IconButtonActionState extends State<IconButtonAction>
-    with AdaptiveActionMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with
+        AdaptiveActionMixin,
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin {
   late String? iconUrl;
 
   @override

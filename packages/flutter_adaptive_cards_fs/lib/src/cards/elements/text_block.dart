@@ -30,7 +30,7 @@ class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   // will be replaced later
   late FontWeight fontWeight = FontWeight.normal;
   late double fontSize = 12;

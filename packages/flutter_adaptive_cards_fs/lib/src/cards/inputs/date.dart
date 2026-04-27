@@ -31,7 +31,8 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
         AdaptiveTextualInputMixin,
         AdaptiveElementMixin,
         AdaptiveInputMixin,
-        AdaptiveVisibilityMixin {
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin {
   String? label;
   late bool isRequired;
   DateTime? selectedDateTime;
@@ -121,9 +122,9 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
                   ),
                   filled: true,
                   fillColor: styleResolver.resolveInputBackgroundColor(
-                        context: context,
-                        style: null,
-                      ),
+                    context: context,
+                    style: null,
+                  ),
                   suffixIcon: const Icon(Icons.calendar_today, size: 15),
                   hintText: placeholder,
                   // required or box will exist even though field is hidden or half height

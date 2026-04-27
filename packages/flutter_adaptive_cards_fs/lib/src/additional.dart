@@ -88,7 +88,7 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTappableState extends State<AdaptiveTappable>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, ProviderScopeMixin {
   GenericAction? action;
 
   @override

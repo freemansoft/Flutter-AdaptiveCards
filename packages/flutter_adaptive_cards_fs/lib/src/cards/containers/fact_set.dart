@@ -29,7 +29,7 @@ class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveFactSetState extends State<AdaptiveFactSet>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late List<Fact> facts;
   Color? backgroundColor;
 
@@ -49,8 +49,8 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
   void didChangeDependencies() {
     super.didChangeDependencies();
     backgroundColor = styleResolver.resolveContainerBackgroundColor(
-          style: style,
-        );
+      style: style,
+    );
   }
 
   @override

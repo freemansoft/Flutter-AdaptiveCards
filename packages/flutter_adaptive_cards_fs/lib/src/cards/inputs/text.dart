@@ -29,7 +29,8 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
         AdaptiveTextualInputMixin,
         AdaptiveInputMixin,
         AdaptiveElementMixin,
-        AdaptiveVisibilityMixin {
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin {
   TextEditingController controller = TextEditingController();
 
   String? label;
@@ -93,9 +94,9 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
                   ),
                   filled: true,
                   fillColor: styleResolver.resolveInputBackgroundColor(
-                        context: context,
-                        style: null,
-                      ),
+                    context: context,
+                    style: null,
+                  ),
                   hintText: placeholder,
                   // required or box will exist even though field is hidden or half height
                   hintStyle: const TextStyle(),

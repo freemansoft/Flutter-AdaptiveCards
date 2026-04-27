@@ -45,7 +45,11 @@ class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
-    with AdaptiveInputMixin, AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with
+        AdaptiveInputMixin,
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin {
   // Map from title to value
   final Map<String, String> _choices = {};
 
@@ -255,13 +259,13 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           icon: const Icon(Icons.arrow_drop_down),
           style: TextStyle(
             color: styleResolver.resolveInputForegroundColor(
-                  context: context,
-                  style: null,
-                ),
+              context: context,
+              style: null,
+            ),
             backgroundColor: styleResolver.resolveInputBackgroundColor(
-                  context: context,
-                  style: null,
-                ),
+              context: context,
+              style: null,
+            ),
           ),
           items: _choices.keys
               .map(

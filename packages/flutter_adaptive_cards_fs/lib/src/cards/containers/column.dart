@@ -28,7 +28,7 @@ class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveColumnState extends State<AdaptiveColumn>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late List<Widget> items;
 
   /// Can be "auto", "stretch" or "weighted"
@@ -87,15 +87,15 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
           }).toList()
         : [];
     horizontalAlignment = styleResolver.resolveHorzontalCrossAxisAlignment(
-          adaptiveMap['horizontalAlignment'],
-        );
+      adaptiveMap['horizontalAlignment'],
+    );
     verticalAlignment = styleResolver.resolveVerticalMainAxisContentAlginment(
-          adaptiveMap['verticalContentAlignment'],
-        );
+      adaptiveMap['verticalContentAlignment'],
+    );
 
     containerHorizontalAlignment = styleResolver.resolveContainerAlignment(
-          adaptiveMap['horizontalAlignment'],
-        );
+      adaptiveMap['horizontalAlignment'],
+    );
   }
 
   @override
@@ -109,8 +109,8 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     final backgroundColor = backgroundImageSpecified(adaptiveMap)
         ? null
         : styleResolver.resolveContainerBackgroundColor(
-                style: style,
-              );
+            style: style,
+          );
 
     final Widget child = Visibility(
       visible: isVisible,

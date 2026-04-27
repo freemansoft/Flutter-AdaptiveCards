@@ -26,7 +26,7 @@ class AdaptiveActionExecute extends StatefulWidget
 }
 
 class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
-    with AdaptiveActionMixin, AdaptiveElementMixin {
+    with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
   late GenericExecuteAction action;
 
   @override

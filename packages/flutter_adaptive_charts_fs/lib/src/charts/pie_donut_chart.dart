@@ -27,9 +27,8 @@ class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptivePieChartState extends State<AdaptivePieChart>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, ProviderScopeMixin {
   late List<PieChartSectionData> sections;
-
 
   @override
   void didChangeDependencies() {

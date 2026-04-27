@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `ChartColorsConfig` to `HostConfig` to allow custom color palettes for charts.
 - Added `ReferenceResolver` with `resolveChartPalette` and `resolveChartColor` methods.
 - migrated more hard coded styles to the resolver
+- Abstracted `ProviderScope` getter functions into a new `ProviderScopeMixin` away from `AdaptiveElementMixin`.
 
 ## [0.4.0] - 2026-04-14
 
