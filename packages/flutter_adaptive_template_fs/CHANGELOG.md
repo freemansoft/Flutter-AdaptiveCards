@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.0]
+
+- Bumped versions to 0.6.0 for next development cycle
+
 ## [0.5.0] - 2026-04-19
 
 - version numbers were sync'd to 0.5.0
