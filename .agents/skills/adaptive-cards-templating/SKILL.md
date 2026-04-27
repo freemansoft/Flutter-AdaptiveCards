@@ -67,3 +67,13 @@ While a significant portion of the Adaptive Expressions spec is implemented, the
 ## Summary
 
 When working with `flutter_adaptive_template_fs`, be aware that **while it uses a real AST**, some edge-case functions and complex runtime logic might not be mapped. Complex datetime formatting must typically be handled by the host application _before_ injecting the data payload into the template.
+
+## Tooling & Interactive Testing
+
+The `adaptive_explorer` application serves as an interactive environment for testing templating. It provides a visual layout with
+
+- **Template**: The raw Adaptive Card template with binding expressions.
+- **Data**: The JSON data payload (`$root`).
+- **Merged**: The read-only resolved output produced by `flutter_adaptive_template_fs`.
+
+This UI facilitates rapid authoring, debugging, and validation of templating behavior without needing to run the full application.
