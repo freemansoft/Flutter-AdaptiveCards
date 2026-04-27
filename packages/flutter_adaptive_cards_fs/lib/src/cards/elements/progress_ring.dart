@@ -23,7 +23,7 @@ class AdaptiveProgressRing extends StatefulWidget
 }
 
 class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   double? percent;
   late String? color;
   late String size;

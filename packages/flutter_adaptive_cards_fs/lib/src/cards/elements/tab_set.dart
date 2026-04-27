@@ -30,7 +30,8 @@ class AdaptiveTabSetState extends State<AdaptiveTabSet>
     with
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
-        TickerProviderStateMixin {
+        TickerProviderStateMixin,
+        ProviderScopeMixin {
   late List<Map<String, dynamic>> tabs;
   late TabController _tabController;
 

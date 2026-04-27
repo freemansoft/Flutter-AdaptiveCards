@@ -23,9 +23,7 @@ mixin AdaptiveElementWidgetMixin on StatefulWidget {
   String get id;
 }
 
-mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
-  String get id => widget.id;
-
+mixin ProviderScopeMixin<T extends StatefulWidget> on State<T> {
   RawAdaptiveCardState get rawRootCardWidgetState => ProviderScope.containerOf(
     context,
     listen: false,
@@ -42,6 +40,10 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   ReferenceResolver get styleResolver =>
       ProviderScope.containerOf(context).read(styleReferenceResolverProvider);
+}
+
+mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
+  String get id => widget.id;
 
   String? get style => (adaptiveMap['style'] as String?)?.toLowerCase();
 

@@ -28,7 +28,7 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   List<Widget>? columns;
   MainAxisAlignment? horizontalAlignment;
   Color? backgroundColor;
@@ -38,12 +38,12 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
     super.didChangeDependencies();
 
     backgroundColor = styleResolver.resolveContainerBackgroundColor(
-              style: style,
-              defaultStyle: null,
-            );
+      style: style,
+      defaultStyle: null,
+    );
     horizontalAlignment = styleResolver.resolveHorizontalMainAxisAlignment(
-          adaptiveMap['horizontalAlignment'],
-        );
+      adaptiveMap['horizontalAlignment'],
+    );
 
     // this is missing the type check for 'column'
     // should this use the card registry to create the columns?

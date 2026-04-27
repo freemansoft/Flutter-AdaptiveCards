@@ -26,7 +26,7 @@ class AdaptiveActionSubmit extends StatefulWidget
 }
 
 class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
-    with AdaptiveActionMixin, AdaptiveElementMixin {
+    with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
   late GenericSubmitAction action;
 
   @override

@@ -23,7 +23,7 @@ class AdaptiveActionInsertImage extends StatefulWidget
 }
 
 class AdaptiveActionInsertImageState extends State<AdaptiveActionInsertImage>
-    with AdaptiveActionMixin, AdaptiveElementMixin {
+    with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
   @override
   Widget build(BuildContext context) {
     return IconButtonAction(

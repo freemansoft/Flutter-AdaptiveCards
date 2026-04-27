@@ -21,7 +21,7 @@ class AdaptiveAccordion extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveAccordionState extends State<AdaptiveAccordion>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late List<Map<String, dynamic>> items;
 
   @override

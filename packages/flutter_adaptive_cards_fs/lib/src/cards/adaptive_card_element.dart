@@ -33,7 +33,7 @@ class AdaptiveCardElement extends StatefulWidget
 }
 
 class AdaptiveCardElementState extends State<AdaptiveCardElement>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, ProviderScopeMixin {
   String? version;
 
   /// The current card that is being shown via a showCard action

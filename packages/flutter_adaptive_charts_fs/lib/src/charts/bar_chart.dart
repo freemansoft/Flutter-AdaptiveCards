@@ -39,11 +39,10 @@ class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveBarChartState extends State<AdaptiveBarChart>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, ProviderScopeMixin {
   late List<BarChartGroupData> barGroups;
   late List<String> xLabels;
   late double maxY;
-
 
   @override
   void didChangeDependencies() {

@@ -28,7 +28,7 @@ class AdaptiveActionToggleVisibility extends StatefulWidget
 
 class AdaptiveActionToggleVisibilityState
     extends State<AdaptiveActionToggleVisibility>
-    with AdaptiveActionMixin, AdaptiveElementMixin {
+    with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
   late GenericActionToggleVisibility action;
 
   @override

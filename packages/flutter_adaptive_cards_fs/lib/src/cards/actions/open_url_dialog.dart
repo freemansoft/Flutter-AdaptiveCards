@@ -35,7 +35,7 @@ class AdaptiveActionOpenUrlDialog extends StatefulWidget
 
 class AdaptiveActionOpenUrlDialogState
     extends State<AdaptiveActionOpenUrlDialog>
-    with AdaptiveActionMixin, AdaptiveElementMixin {
+    with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
   late String? url;
   late GenericActionOpenUrlDialog action;
 
@@ -150,7 +150,10 @@ class AdaptiveActionOpenUrlDialogState
                             return Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.error, color: Theme.of(context).colorScheme.error),
+                                Icon(
+                                  Icons.error,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
                                 const SizedBox(height: 8),
                                 Text(
                                   'Error loading content: ${snapshot.error}',

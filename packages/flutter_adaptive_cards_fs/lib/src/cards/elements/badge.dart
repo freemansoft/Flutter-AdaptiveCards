@@ -22,7 +22,7 @@ class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveBadgeState extends State<AdaptiveBadge>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late String? text;
   late String? iconUrl;
   late String appearance;

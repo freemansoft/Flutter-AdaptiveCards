@@ -30,7 +30,7 @@ class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveImageSetState extends State<AdaptiveImageSet>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late List<AdaptiveImage> images;
 
   late String imageSize;
@@ -57,8 +57,8 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
     super.didChangeDependencies();
     loadSize();
     backgroundColor = styleResolver.resolveContainerBackgroundColor(
-          style: style,
-        );
+      style: style,
+    );
   }
 
   @override
@@ -108,9 +108,7 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
       return;
     }
     final int size =
-        styleResolver.getImageSetConfig()
-            ?.imageSize(sizeDescription) ??
-        20;
+        styleResolver.getImageSetConfig()?.imageSize(sizeDescription) ?? 20;
     maybeSize = size.toDouble();
   }
 }

@@ -31,7 +31,7 @@ class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveUnknownState extends State<AdaptiveUnknown>
-    with AdaptiveElementMixin {
+    with AdaptiveElementMixin, ProviderScopeMixin {
   @override
   Widget build(BuildContext context) {
     Widget result = const SizedBox();

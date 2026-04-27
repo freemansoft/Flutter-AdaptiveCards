@@ -22,7 +22,7 @@ class AdaptiveProgressBar extends StatefulWidget
 }
 
 class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   double? percent;
   late String? color;
   late bool separator;

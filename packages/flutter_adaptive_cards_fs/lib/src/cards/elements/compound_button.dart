@@ -23,7 +23,7 @@ class AdaptiveCompoundButton extends StatefulWidget
 }
 
 class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late String title;
   late String? description;
   late String? iconUrl;

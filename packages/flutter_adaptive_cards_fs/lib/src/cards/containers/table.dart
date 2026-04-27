@@ -50,7 +50,7 @@ class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveTableState extends State<AdaptiveTable>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late List<Map<String, dynamic>> columns;
   late List<Map<String, dynamic>> rows;
   late bool showGridLines;

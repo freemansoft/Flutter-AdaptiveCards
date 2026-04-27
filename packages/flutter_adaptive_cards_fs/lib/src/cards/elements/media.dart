@@ -31,7 +31,7 @@ class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveMediaState extends State<AdaptiveMedia>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late VideoPlayerController videoPlayerController;
   ChewieController? controller;
 

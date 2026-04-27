@@ -27,7 +27,7 @@ class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
-    with AdaptiveElementMixin, AdaptiveVisibilityMixin {
+    with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late String codeSnippet;
   late String? language;
   late int startLineNumber;
