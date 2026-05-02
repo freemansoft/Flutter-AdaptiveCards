@@ -5,7 +5,7 @@ homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
 repository: https://github.com/freemansoft/Flutter-AdaptiveCards
 
 environment:
-  sdk: ^3.10.4
+  sdk: ^3.11.0
 resolution: workspace
 
 dependencies:
@@ -35,8 +35,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: ^5.4.5
-  #test: ^1.26.3
-  very_good_analysis: ^10.0.0
+  very_good_analysis: ^10.2.0
 
 flutter:
   uses-material-design: true

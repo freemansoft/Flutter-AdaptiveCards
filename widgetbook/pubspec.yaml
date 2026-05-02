@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.6.0
 
 environment:
-  sdk: ^3.10.4
+  sdk: ^3.11.0
 resolution: workspace
 
 # Dependencies specify other packages that your package needs in order to work.
@@ -55,7 +55,7 @@ dev_dependencies:
   build_runner: ^2.10.5
   flutter_test:
     sdk: flutter
-  very_good_analysis: ^10.0.0
+  very_good_analysis: ^10.2.0
   widgetbook_generator: ^3.20.1
 
 # For information on the generic Dart part of this file, see the
