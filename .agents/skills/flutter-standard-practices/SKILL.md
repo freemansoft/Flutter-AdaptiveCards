@@ -2,7 +2,7 @@
 name: flutter-standard-practices
 description: >
   Standard patterns and best practices for Flutter development in the FlutterAdaptiveCards project.
-  Includes Layout, Theming, Routing, and Serialization guidelines.
+  Covers Theming (Material 3) and JSON Serialization using code-generation.
   Load this skill when performing detailed UI or infrastructure work.
 ---
 
@@ -36,55 +36,31 @@ final ThemeData lightTheme = ThemeData(
 
 ---
 
-## 2. Layout Best Practices
+## 2. Data Handling & Serialization
 
-- **Expanded:** Use to make a child widget fill the remaining available space along the main axis.
-- **Flexible:** Use when you want a widget to shrink to fit, but not necessarily grow. Don't combine `Flexible` and `Expanded` in the same `Row` or `Column`.
-- **Wrap:** Use when you have a series of widgets that would overflow a `Row` or `Column`, and you want them to move to the next line.
-- **SingleChildScrollView:** Use when your content is intrinsically larger than the viewport, but is a fixed size.
-- **ListView / GridView:** For long lists or grids of content, always use a builder constructor (`.builder`).
-- **FittedBox:** Use to scale or fit a single child widget within its parent.
-- **LayoutBuilder:** Use for complex, responsive layouts to make decisions based on the available space.
+> [!IMPORTANT]
+> This project uses **code-generation** (`json_serializable` + `json_annotation`) for JSON serialization.
+> Do **not** use the manual `dart:convert` approach shown in the `flutter-implement-json-serialization`
+> skill — that skill is a generic Flutter reference and conflicts with the pattern used here.
 
----
-
-## 3. Data Handling & Serialization
-
-- **JSON:** Use `json_serializable` and `json_annotation`.
-- **Naming:** Use `fieldRename: FieldRename.snake` for consistency.
+- **JSON:** Use `json_serializable` and `json_annotation` (never manual `fromJson`/`toJson` maps).
+- **Naming:** Use `fieldRename: FieldRename.snake` so JSON `snake_case` keys map to Dart `camelCase` fields automatically.
+- **Code-gen:** Run `fvm flutter pub run build_runner build --delete-conflicting-outputs` to regenerate after any model change.
+- **`toJson` opt-in:** Add `includeIfNull: false` to omit null fields from serialized output.
 
 ```dart
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user.g.dart';
+
 @JsonSerializable(fieldRename: FieldRename.snake)
 class User {
+  const User({required this.firstName, required this.lastName});
+
   final String firstName;
   final String lastName;
-  User({required this.firstName, required this.lastName});
+
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 }
-```
-
----
-
-## 4. Routing (GoRouter)
-
-Use `go_router` for all navigation needs (deep linking, web). Ensure users are redirected to login when unauthorized.
-
-```dart
-final GoRouter _router = GoRouter(
-  routes: <RouteBase>[
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const HomeScreen(),
-      routes: <RouteBase>[
-        GoRoute(
-          path: 'details/:id',
-          builder: (context, state) {
-            final String id = state.pathParameters['id']!;
-            return DetailScreen(id: id);
-          },
-        ),
-      ],
-    ),
-  ],
-);
 ```

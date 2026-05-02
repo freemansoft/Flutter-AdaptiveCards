@@ -64,4 +64,9 @@ linter:
 
 ---
 > [!NOTE]
-> Detailed guidelines for **Layout**, **Theming**, **Routing**, and **Serialization** have been moved to the `.agents/skills/flutter-standard-practices` skill. Load that skill when performing detailed UI or infrastructure work.
+> **Theming** and **Serialization (code-gen)** guidelines are in the `flutter-standard-practices` skill.
+> **Layout** guidance is in the `flutter-build-responsive-layout` and `flutter-fix-layout-issues` skills.
+> **Routing** guidance is in the `flutter-setup-declarative-routing` skill.
+>
+> **Serialization conflict:** This project uses `json_serializable` code-gen. The `flutter-implement-json-serialization`
+> skill (installed from flutter/skills) teaches manual `dart:convert` — do **not** follow it for model classes in this repo.
