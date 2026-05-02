@@ -63,6 +63,8 @@ Many!
 
 ## LLM Agent Support
 
+### AGENTS.md
+
 This project uses the [AGENTS.md](AGENTS.md) file to provide instructions to LLM agents, Antigravity, Cursor, and others. The contents came from the Flutter team's recommendation <https://docs.flutter.dev/ai/ai-rules>. This is the shorter 10K character version because of Antigravity's rule file character limit of 12,000 [antigravity user-rules](https://docs.antigravity.ai/user-rules#agents.md).
 
 Changes from the verson created by the Flutter team:
@@ -71,6 +73,48 @@ Changes from the verson created by the Flutter team:
 - Use `riverpod` instead of `provider`
 - Added **Semantic Label Keys** rule
 - Added internationalizaiton and localization rules
+
+### Skills
+
+`.agents/skills/` contains the skills used by LLM agents.
+
+The Flutter team's [skills](https://github.com/flutter/skills)
+
+- flutter-add-integration-tests
+- flutter-add-widget-preview
+- flutter-add-widget-tests
+- flutter-apply-architecture-best-practices
+- flutter-build-responsive-layout
+- flutter-fix-layout-issues
+- flutter-implement-json-serialization
+- flutter-setup-declarative-routing
+- flutter-setup-localization
+- flutter-use-http-package
+
+The dart-lang [skills](https://github.com/dart-lang/skills)
+
+- dart-add-unit-test
+- dart-build-cli-app
+- dart-collect-coverage
+- dart-fix-runtime-errors
+- dart-fix-static-analysis-errors
+- dart-generate-test-mocks
+- dart-migrate-to-checks-package
+- dart-resolve-package-conflicts
+- dart-run-static-analysis
+- dart-use-pattern-matching
+
+The following skills were created for this project using Antigravity LLM prompts
+
+- adaptive-cards-element-registry
+- adaptive-cards-hostconfig-theme
+- adaptive-cards-spec-compliance
+- adaptive-cards-templating
+- adaptive-cards-testing
+- code-revew
+- dart-monorepo-workspace
+- flutter-standard-practices
+- release-engineer
 
 ## More about adaptive cards and available SDKs
 
