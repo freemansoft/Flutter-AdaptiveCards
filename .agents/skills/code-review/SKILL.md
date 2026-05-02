@@ -24,24 +24,29 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 ## 2. `flutter_adaptive_cards_fs` Checklist
 
 ### Registration & Pattern Compliance
+
 - [ ] **Registry**: Is the new element/action added to `CardTypeRegistry` or `ActionTypeRegistry`?
 - [ ] **Mixins**: Does the element correctly implement `AdaptiveElementWidgetMixin` (Widget) and `AdaptiveElementMixin` + `AdaptiveVisibilityMixin` (State)?
 - [ ] **Inputs**: If it's an input, does it use `AdaptiveInputMixin` and register its value correctly?
 
 ### Theming & Styling
+
 - [ ] **ReferenceResolver**: Does the element use `styleReferenceResolverProvider` for all colors, font sizes, and spacing?
 - [ ] **Theme Awareness**: Has it been verified in both **Light** and **Dark** modes?
 - [ ] **HostConfig**: Does it respect spacing, separator, and padding properties from JSON via `SeparatorElement`?
 
 ### Keys & Identity
+
 - [ ] **Deterministic Keys**: Is the outer widget key generated via `generateAdaptiveWidgetKey(adaptiveMap)`?
-- [ ] **Internal Keys**: For inputs or sub-elements, are keys generated using the `id` (e.g., `ValueKey(id)` or `ValueKey('${id}_suffix')`)? *Crucial for testing stability.*
+- [ ] **Internal Keys**: For inputs or sub-elements, are keys generated using the `id` (e.g., `ValueKey(id)` or `ValueKey('${id}_suffix')`)? _Crucial for testing stability._
 
 ### Accessibility
+
 - [ ] **Semantics**: Does the widget use `Semantics` or `semanticLabel` where appropriate?
 - [ ] **Alt-text**: For images or icons, is the `altText` (if provided in JSON) used as a semantic label?
 
 ### Exports
+
 - [ ] **Public API**: Is the new class/widget exported in `lib/flutter_adaptive_cards_fs.dart`?
 - [ ] **Extension API**: Is it exported in `lib/flutter_adaptive_cards_extend.dart` if intended for customization by consumers?
 
@@ -60,8 +65,8 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 - [ ] **Key-First Searching**: All `find.text()` or `find.byType()` calls in tests should be replaced with `find.byKey()` whenever a key is available.
 - [ ] **JSON Samples**: Is there a new file in `test/samples/` demonstrating the feature/fix?
 - [ ] **Golden Tests**:
-    - Have golden tests been added/updated for UI changes?
-    - **Note**: Golden tests must be ran on a Linux machine (usually CI) for canonical reference images. Local Mac/Windows goldens may differ slightly.
+  - Have golden tests been added/updated for UI changes?
+  - **Note**: Golden tests must be ran on a Linux machine (usually CI) for canonical reference images. Local Mac/Windows goldens may differ slightly.
 
 ---
 
@@ -78,5 +83,6 @@ When performing a review, summarize findings using this format:
 - **Testing**: [PASS/FAIL] (Keys, Samples, Goldens)
 
 #### Details
+
 - [Specific feedback regarding keys, accessibility, etc.]
 ```

@@ -11,7 +11,7 @@ description: >
 
 ## Repository Layout
 
-```
+```text
 Flutter-AdaptiveCards/           ← workspace root (pubspec.yaml declares workspace)
 ├── pubspec.yaml                 ← workspace manifest ONLY — no real package here
 ├── .fvmrc                       ← pins Flutter SDK version (fvm)

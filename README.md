@@ -14,7 +14,7 @@ The default branch has been renamed from the original repository. `master` is no
 
 If you have a local clone, you can update it by running the following commands.
 
-```
+```bash
 git branch -m master main
 git fetch origin
 git branch -u origin/main main
@@ -106,14 +106,14 @@ The dart-lang [skills](https://github.com/dart-lang/skills)
 
 The following skills were created for this project using Antigravity LLM prompts
 
+- adaptive-cards-monorepo-workspace
 - adaptive-cards-element-registry
+- adaptive-cards-flutter-standard-practices
 - adaptive-cards-hostconfig-theme
 - adaptive-cards-spec-compliance
 - adaptive-cards-templating
 - adaptive-cards-testing
 - code-revew
-- dart-monorepo-workspace
-- flutter-standard-practices
 - release-engineer
 
 ## More about adaptive cards and available SDKs
