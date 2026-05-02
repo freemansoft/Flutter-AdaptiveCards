@@ -1,7 +1,7 @@
 name: _
 publish_to: none
 environment:
-  sdk: ^3.10.4
+  sdk: ^3.11.0
 workspace:
   - packages/flutter_adaptive_cards_fs
   - packages/flutter_adaptive_charts_fs

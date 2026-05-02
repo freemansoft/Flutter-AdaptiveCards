@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.6.0]
 
 - Bumped versions to 0.6.0 for next development cycle
+- Updated to Dart SDK 3.11 and Flutter 3.41
 
 ## [0.5.0]
 
