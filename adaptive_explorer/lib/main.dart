@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _openTemplate() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
       );
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _openData() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
       );

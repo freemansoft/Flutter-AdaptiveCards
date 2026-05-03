@@ -1,8 +1,15 @@
-# adaptive_explorer
+# Flutter Adaptive Cards adaptive_explorer
 
-A design studio for the flutter_adaptive_cards_fs library. This viewer and editor for adaptive cards json files lets you open and render adaptive cards. It has a an editor capability that lets you edit a card in one tab and then render it in the preview tab.
+A design studio for the [flutter_adaptive_cards_fs](/packages/flutter_adaptive_cards_fs/README.md), the supplemental charts library [flutter_adaptive_charts_fs](/packages/flutter_adaptive_charts_fs/README.md), and [flutter_adaptive_template_fs](/packages/flutter_adaptive_template_fs/README.md) libraries.
 
-Can be used to open a json file and display it. Will refresh the display if an outside editor updates the source file
+This application contains two panes: a viewer and an editor for adaptive card JSON files, which let you open and render adaptive cards.
+
+- It has an editor that lets you edit a card in one tab and then render it in the preview tab.
+- You can open a json file and display it. The program watches the file system and refreshes the preview pane when the source file is changed in the file system.
+- When opening files, you can open either a template json file, a data json file, or a merged json file.
+  - Opening a resolved (merged) JSON file will open the source file in the editor and a rendered view in the preview pane.
+  - Opening both a template and a data file will open the template and data files in the editor and a rendered view in the preview pane.
+  - Opening a template without a data file will render the template as is leaving in place of the data references.
 
 ## Known Issues
 
@@ -52,6 +59,6 @@ This project should have both unit and integration tests
 
 - The app uses the file_picker package to open files. This requires the app to be signed with a valid certificate.
 - File permissions have been enabled in the entitlements file for the app to enable fetching and saving of sample files
-  - `	<key>com.apple.security.files.user-selected.read-write</key>`
+  - `<key>com.apple.security.files.user-selected.read-write</key>`
 - Network permissions have been enabled in the entitlements file for the app to enable fetching of network images.
-  - `	<key>com.apple.security.network.client</key>`
+  - `<key>com.apple.security.network.client</key>`
