@@ -4,8 +4,8 @@ This directory contains design documents, implementation guides, and architectur
 
 ## Quick Links
 
-- **Main Project**: [Repository README](../README.md)
-- **Library README**: [flutter_adaptive_cards_fs README](../packages/flutter_adaptive_cards_fs/README.md)
+- **Main Project**: [Repository README](/README.md)
+- **Library README**: [flutter_adaptive_cards_fs README](/packages/flutter_adaptive_cards_fs/README.md)
 - **Microsoft Standards**:
   - [Adaptive Cards Hub](https://adaptivecards.microsoft.com/)
   - [Legacy Site & Schema Explorer](https://adaptivecards.io/)
@@ -142,4 +142,4 @@ When adding or updating documentation:
 
 ---
 
-_Last Updated: 2026-02-13_
+Last Updated: 2026-02-13

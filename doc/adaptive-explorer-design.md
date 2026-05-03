@@ -2,4 +2,4 @@
 
 ## Features
 
-- See [adaptive explorerREADME.md](../adaptive_explorer/README.md) for the design of the tool
+- See [adaptive explorer README.md](/adaptive_explorer/README.md) for the design of the tool

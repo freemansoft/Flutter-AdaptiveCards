@@ -1,6 +1,6 @@
 # Adaptive Cards in Flutter
 
-This is an Adaptive Card implementation for Flutter that has been been updated from the original by others. They did amazing work. No one appears to be doing PRs to bring it back to the original so I'm just listing the forking history below.
+This is an Adaptive Card implementation for Flutter that is built from a fork of a fork of a library that is no longer available on GitHub. The intermediate forking chain is pretty much all abandoned. This is available on [pub.dev](https://pub.dev/packages/flutter_adaptive_cards_fs) and is hosted on GitHub at [freemansoft Flutter-AdaptiveCards](/packages/flutter_adaptive_cards_fs)
 
 ## Microsoft Adaptive Cards
 
@@ -8,16 +8,37 @@ This project is in no way associated with Microsoft. It is an open source projec
 
 ![Adaptive Cards](https://adaptivecards.io/content/bf-logo.png)
 
+### References
+
 - [New AdaptiveCards Hub](https://adaptivecards.microsoft.com/)
 - [Legacy Adaptive Cards website](https://adaptivecards.io/)
 - [Legacy Adaptive Cards Schema Docs](https://adaptivecards.io/explorer)
 - [The main GitHub repo with samples](https://github.com/microsoft/AdaptiveCards)
   - [The v1.5 samples on the main GitHub repo](https://github.com/microsoft/AdaptiveCards/tree/main/samples/v1.5/Scenarios)
-  - [Template samples](https://github.com/microsoft/AdaptiveCards/tree/main/samples/Templates/Scenarios). Templating is supported via the [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs) companion package.
+  - [Template samples](https://github.com/microsoft/AdaptiveCards/tree/main/samples/Templates/Scenarios).
 - [Description of Active Cards](https://github.com/MicrosoftDocs/AdaptiveCards)
 - [Another example repo containing samples/templates](https://github.com/pnp/AdaptiveCards-Templates)
 
+### Flutter-AdaptiveCards mono repo
+
+Libraries avaiable on pub.dev from this repository include:
+
+| Package / Library                                         | Location                                                                              |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| The core of Adaptive Cards is supported via               | [flutter_adaptive_cards_fs](https://pub.dev/packages/flutter_adaptive_cards_fs)             |
+| Supplemental Adaptive Card based charts are supported via | [flutter_adaptive_charts_fs](https://pub.dev/packages/flutter_adaptive_charts_fs)     |
+| Templating is supported via the                           | [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs) |
+
+Utility programs available in this repository that are not published to pub.dev include:
+
+| Design time utility                                      | Location                                  |
+| -------------------------------------------------------- | ----------------------------------------- |
+| The Adaptive Card Explorer Editor                        | ([adaptive_explorer](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_explorer)) |
+| A Widgetbook for demonstrating cards and their features: | ([widgetbook](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/widgetbook))               |
+
 ## Consumption Patterns
+
+Adaptive Cards are intended to be served up via some presentation service or API letting the service control the UX flow. It is possible to just use them with local JSON templates but that's not the intended use.
 
 Teams often create a presentation or flow management service layer in front of the core business services that acts a bridge to the UI. It coughs up Adaptive Cards as the response to user actions. The cannonical flow would be
 
@@ -128,10 +149,10 @@ Flutter versioning is managed with `fvm`. The current Flutter version is as foll
 
 ```powershell
 PS C:\dev\flutter> flutter --version
-Flutter 3.38.5 • channel stable • https://github.com/flutter/flutter.git
-Framework • revision f6ff1529fd (5 weeks ago) • 2025-12-11 11:50:07 -0500
-Engine • hash c108a94d7a8273e112339e6c6833daa06e723a54 (revision 1527ae0ec5) (1 months ago) • 2025-12-11 15:04:31.000Z
-Tools • Dart 3.10.4 • DevTools 2.51.1
+Flutter 3.41.2 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision 90673a4eef (2 months ago) • 2026-02-18 13:54:59 -0800
+Engine • hash d96704abcce17ff165bbef9d77123407ef961017 (revision 6c0baaebf7) (2 months ago) • 2026-02-18 19:22:23.000Z
+Tools • Dart 3.11.0 • DevTools 2.54.1
 ```
 
 You can move to this version of flutter by installing fvm and then:
@@ -168,6 +189,7 @@ A fair amoiunt of development has been done using Antigravity
 - AdaptiveCards
 - GitHub Actions
 - GitLens
+- Antigravity
 
 ## Widget Hierarchy with Flutter-AdaptiveCards
 
@@ -246,6 +268,7 @@ TODO for the example programs moved to [example README](example/README.md)
 ## Repository History
 
 Everything below this line is from the original README.md
+
 The referenced GitHub repository has vanished. Look at the forking train to figure out where the current repository was forked from or look here:
 
 1. <https://github.com/freemansoft/Flutter-AdaptiveCards> Mine forked from
@@ -254,9 +277,7 @@ The referenced GitHub repository has vanished. Look at the forking train to figu
 1. <https://github.com/rodydavis/Flutter-AdaptiveCards> the original but possibly from the no longer here repo
 1. <https://github.com/neohelden/Flutter-AdaptiveCards>
 
-**\*\***\*\***\*\***\*\*\*\***\*\***\*\***\*\***\_**\*\***\*\***\*\***\*\*\*\***\*\***\*\***\*\***...
-
-## Adaptive Cards for Flutter
+---
 
 ## Installing
 
@@ -358,8 +379,6 @@ This has been heavilty rewritten and upgraded for later libraries and Flutter ve
 ## Contributing
 
 Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-See also the list of [contributors](https://github.com/freemansoft/Flutter-AdaptiveCards/contributors) who participated in this project.
 
 ## License
 

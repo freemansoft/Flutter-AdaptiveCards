@@ -1,21 +1,35 @@
 # Flutter Adaptive Charts
 
-A set of adaptive cards that are charts based on the 1.6 spec. Packaged as a separate library to remove the dependency on the charting library from the main adaptive cards library.
+A set of adaptive cards that are charts based on the 1.6 Adaptive Cards spec. Packaged as a separate library to remove the dependency on the charting library from the main adaptive cards library. This charting library is available on GitHub [flutter_adaptive_charts_fs](/packages/flutter_adaptive_charts_fs/) and on [pub.dev](https://pub.dev/packages/flutter_adaptive_charts_fs). `flutter_adaptive_charts_fs` is not a standalone library. It requires [flutter_adaptive_cards_fs](/packages/flutter_adaptive_cards_fs/) available on [pub.dev](https://pub.dev/packages/flutter_adaptive_cards_fs).
 
 ## Microsoft Adaptive Cards
 
 This project is in no way associated with Microsoft. It is an open source project to create an adaptive card implementation for Flutter.
 
-## Features
+### Flutter-AdaptiveCards mono repo
+
+Libraries avaiable on pub.dev from this repository include:
+
+| Package / Library                                         | pub.dev                                                                                |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| The core of Adaptive Cards is supported via               | [flutter_adaptive_cards_fs](https://pub.dev/packages/flutter_adaptive_cards_fs)             |
+| Supplemental Adaptive Card based charts are supported via | [flutter_adaptive_charts_fs](https://pub.dev/packages/flutter_adaptive_charts_fs)     |
+| Templating is supported via the                           | [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs) |
+
+Utility programs available in this repository that are not published to pub.dev include:
+
+| Design time utility                                      | Location                                  |
+| -------------------------------------------------------- | ----------------------------------------- |
+| The Adaptive Card Explorer Editor                        | ([adaptive_explorer](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_explorer)) |
+| A Widgetbook for demonstrating cards and their features: | ([widgetbook](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/widgetbook))               |
+
+## Supported Components
 
 - `Chart.VerticalBar` : Vertical Bar Charts
 - `chart.HorizontalBar` : Horizontal Bar Charts
 - `Chart.Donutz` : Donut Chart
 - `Chart.Pie` : Pie Chart
 - `Chart.Line` : Line Charts
-
-## Not tested
-
 - `Chart.VerticalBar.Grouped` : Vertical Grouped Bar Charts
 - `Chart.HorizontalBar.Stacked` : Horizontal Stacked Bar Charts
 
