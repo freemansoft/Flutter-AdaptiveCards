@@ -15,7 +15,21 @@ void main() {
 /// The root widget of the application.
 class AdaptiveExplorerApp extends StatelessWidget {
   /// Creates a new [AdaptiveExplorerApp].
-  const AdaptiveExplorerApp({super.key});
+  /// Two parameters are available for loading initial JSON during tests.
+  /// This supports two optional parameters to simplify testing:
+  /// * [initialTemplateJson] can be injected as an initial template JSON.
+  /// * [initialDataJson] can be injected as an initial data JSON.
+  const AdaptiveExplorerApp({
+    super.key,
+    this.initialTemplateJson,
+    this.initialDataJson,
+  });
+
+  /// Optional initial template JSON for testing.
+  final Map<String, dynamic>? initialTemplateJson;
+
+  /// Optional initial data JSON for testing.
+  final Map<String, dynamic>? initialDataJson;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +39,10 @@ class AdaptiveExplorerApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: HomePage(
+        initialTemplateJson: initialTemplateJson,
+        initialDataJson: initialDataJson,
+      ),
     );
   }
 }
@@ -33,7 +50,17 @@ class AdaptiveExplorerApp extends StatelessWidget {
 /// The main page of the application.
 class HomePage extends StatefulWidget {
   /// Creates a new [HomePage].
-  const HomePage({super.key});
+  const HomePage({
+    super.key,
+    this.initialTemplateJson,
+    this.initialDataJson,
+  });
+
+  /// Optional initial template JSON so we don't have to open a file every time.
+  final Map<String, dynamic>? initialTemplateJson;
+
+  /// Optional initial data JSON so we don't have to open a file every time.
+  final Map<String, dynamic>? initialDataJson;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -61,6 +88,10 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _templateJson = widget.initialTemplateJson;
+    _dataJson = widget.initialDataJson;
+    _editedTemplateJson = widget.initialTemplateJson;
+    _editedDataJson = widget.initialDataJson;
     _fileWatcherService.fileChangedStream.listen((_) {
       unawaited(_reload());
     });
@@ -75,16 +106,16 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _reload() async {
     if (_templateManager.templatePath == null) return;
-    final template = await _templateManager.getTemplateJson();
-    final data = await _templateManager.getDataJson();
-    final merged = await _templateManager.getMergedJson();
+    final loadedTemplateJson = await _templateManager.getTemplateJson();
+    final loadedDataJson = await _templateManager.getDataJson();
+    final mergedJson = await _templateManager.getMergedJson();
     if (mounted) {
       setState(() {
-        _templateJson = template;
-        _dataJson = data;
-        _mergedJson = merged;
-        _editedTemplateJson = template;
-        _editedDataJson = data;
+        _templateJson = loadedTemplateJson;
+        _dataJson = loadedDataJson;
+        _mergedJson = mergedJson;
+        _editedTemplateJson = loadedTemplateJson;
+        _editedDataJson = loadedDataJson;
         _errorMessage = null;
       });
     }

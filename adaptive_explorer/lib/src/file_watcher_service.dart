@@ -1,4 +1,5 @@
 import 'dart:async';
+//import 'dart:io';
 
 import 'package:watcher/watcher.dart';
 
@@ -16,6 +17,7 @@ class FileWatcherService {
   /// If a template file was already being watched, the previous watch is
   /// cancelled.
   void watchTemplateFile(String path) {
+    //if (Platform.environment.containsKey('FLUTTER_TEST')) return;
     unawaited(_templateSubscription?.cancel());
     final watcher = FileWatcher(path);
     _templateSubscription = watcher.events.listen((event) {
@@ -29,6 +31,7 @@ class FileWatcherService {
   ///
   /// If a data file was already being watched, the previous watch is cancelled.
   void watchDataFile(String path) {
+    //if (Platform.environment.containsKey('FLUTTER_TEST')) return;
     unawaited(_dataSubscription?.cancel());
     final watcher = FileWatcher(path);
     _dataSubscription = watcher.events.listen((event) {
