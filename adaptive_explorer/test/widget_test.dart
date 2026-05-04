@@ -30,7 +30,11 @@ void main() {
   testWidgets('App bar has tab bar with Template, Data, and Merged tabs', (
     tester,
   ) async {
-    await tester.pumpWidget(const AdaptiveExplorerApp());
+    final mockTemplate = {'type': 'AdaptiveCard', 'version': '1.0'};
+
+    await tester.pumpWidget(
+      AdaptiveExplorerApp(initialTemplateJson: mockTemplate),
+    );
 
     // Verify tab bar is present
     expect(find.byType(TabBar), findsOneWidget);
@@ -39,6 +43,15 @@ void main() {
     expect(find.text('Template'), findsOneWidget);
     expect(find.text('Data'), findsOneWidget);
     expect(find.text('Merged'), findsOneWidget);
+  });
+
+  testWidgets('App bar not shown when no files open', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const AdaptiveExplorerApp());
+
+    // Verify tab bar is present
+    expect(find.byType(TabBar), findsNothing);
   });
 
   testWidgets('Save button is present in AppBar', (tester) async {

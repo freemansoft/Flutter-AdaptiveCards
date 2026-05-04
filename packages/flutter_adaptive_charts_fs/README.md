@@ -10,16 +10,16 @@ This project is in no way associated with Microsoft. It is an open source projec
 
 Libraries avaiable on pub.dev from this repository include:
 
-| Package / Library                                         | pub.dev                                                                                |
+| Package / Library                                         | pub.dev                                                                               |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| The core of Adaptive Cards is supported via               | [flutter_adaptive_cards_fs](https://pub.dev/packages/flutter_adaptive_cards_fs)             |
+| The core of Adaptive Cards is supported via               | [flutter_adaptive_cards_fs](https://pub.dev/packages/flutter_adaptive_cards_fs)       |
 | Supplemental Adaptive Card based charts are supported via | [flutter_adaptive_charts_fs](https://pub.dev/packages/flutter_adaptive_charts_fs)     |
 | Templating is supported via the                           | [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs) |
 
 Utility programs available in this repository that are not published to pub.dev include:
 
-| Design time utility                                      | Location                                  |
-| -------------------------------------------------------- | ----------------------------------------- |
+| Design time utility                                      | Location                                                                                                |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | The Adaptive Card Explorer Editor                        | ([adaptive_explorer](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_explorer)) |
 | A Widgetbook for demonstrating cards and their features: | ([widgetbook](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/widgetbook))               |
 
