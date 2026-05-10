@@ -16,24 +16,28 @@
     },
     {
       "type": "ActionSet",
-      "id": "actionSet1",
+      "id": "actionSet-1",
       "actions": [
         {
+          "id": "actionSubmit-1",
           "title": "Action.Submit",
           "type": "Action.Submit",
           "style": "positive"
         },
         {
+          "id": "actionExecute-1",
           "title": "Action.Execute",
           "type": "Action.Execute",
           "style": "destructive"
         },
         {
+          "id": "actionOpenUrl-1",
           "title": "Action.OpenUrl",
           "type": "Action.OpenUrl",
           "url": "https://adaptivecards.io/"
         },
         {
+          "id": "actionShowCard-1",
           "title": "Action.ShowCard",
           "type": "Action.ShowCard",
           "card": {

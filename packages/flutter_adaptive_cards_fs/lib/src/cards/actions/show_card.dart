@@ -38,19 +38,25 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
 
   @override
   void didChangeDependencies() {
-    // we cache the show card widget because it isn't in the tree if hidden (not visible)
+    // we cache the target of the show card widget
+    // because it isn't in the tree if hidden (not visible)
     // should this be in didChangeDependencies instead?
     final Widget possibleTargetCard = cardTypeRegistry.getElement(
       map: adaptiveMap['card'],
     );
     if (possibleTargetCard is AdaptiveCardElement) {
+      // AdaptiveCard Element doesn't actually have natural id in the map
+      // so it won't be registered by default
+      // for show card, though we know the AdaptiveCard Element
+      // needs to be registered because we need to show/hide it
+      // in this case we override that behavior when getElement is called
       targetCard = possibleTargetCard;
       // this feels like a hack because it should have gotten called when created
       // do we need it because dependenciesDidChange doesn't get called so the mixin doesn't fire?
       adaptiveCardElementState.registerCardWidget(targetCard!.id, targetCard!);
       assert(() {
         developer.log(
-          'targetCard for $id has id ${possibleTargetCard.id} built for $possibleTargetCard',
+          'targetCard of $id has id ${possibleTargetCard.id} built for $possibleTargetCard',
           name: runtimeType.toString(),
         );
         return true;

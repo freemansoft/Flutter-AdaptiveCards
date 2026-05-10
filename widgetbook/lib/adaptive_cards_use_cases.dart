@@ -972,7 +972,7 @@ Widget buildV16Actions(BuildContext context) {
   path: '[Components]',
 )
 Widget buildV16ActionsReset(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/v1.6/action_reset.json');
+  return const GenericPage(url: 'lib/samples/v1.6/action_reset_inputs.json');
 }
 
 @widgetbook.UseCase(
