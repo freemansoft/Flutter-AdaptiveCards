@@ -68,20 +68,37 @@ class SeparatorElement extends StatelessWidget {
 /// Not really an Adaptive card element so we generate random keys for it
 /// Used in Image, Container, Column, columnSet, adaptiveCard, etc.
 class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveTappable({
-    required this.child,
-    required this.adaptiveMap,
-  }) : super(key: ValueKey<String>(UUIDGenerator().getId())) {
-    id = UUIDGenerator().getId();
+  factory AdaptiveTappable({
+    required Widget child,
+    required Map<String, dynamic> adaptiveMap,
+  }) {
+    final uniqueId = UUIDGenerator().generateUniqueId(
+      type: adaptiveMap['type'],
+      map: adaptiveMap,
+    );
+    return AdaptiveTappable._(
+      adaptiveMap: adaptiveMap,
+      id: uniqueId,
+      key: ValueKey<String>(uniqueId),
+      child: child,
+    );
   }
+
+  AdaptiveTappable._({
+    super.key,
+    required this.adaptiveMap,
+    required this.id,
+    required this.child,
+  });
 
   final Widget child;
 
   @override
   final Map<String, dynamic> adaptiveMap;
 
+  /// overrides the abstract id in adaptiveElementMixin
   @override
-  late final String id;
+  final String id;
 
   @override
   AdaptiveTappableState createState() => AdaptiveTappableState();

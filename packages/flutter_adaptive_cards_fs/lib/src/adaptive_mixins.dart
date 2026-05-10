@@ -70,7 +70,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
       // a lot of them don't have ids
       assert(() {
         developer.log(
-          'Did not register $id No id found for type: $runtimeType',
+          'Did not register $id No natural id found for type: $runtimeType',
           name: runtimeType.toString(),
         );
         return true;

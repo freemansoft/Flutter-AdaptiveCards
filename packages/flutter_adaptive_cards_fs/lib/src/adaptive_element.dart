@@ -87,7 +87,10 @@ abstract class AdaptiveElement {
     if (adaptiveMap.containsKey('id')) {
       id = adaptiveMap['id'].toString();
     } else {
-      id = UUIDGenerator().getId();
+      id = UUIDGenerator().generateUniqueId(
+        type: adaptiveMap['type'],
+        map: adaptiveMap,
+      );
     }
   }
 

@@ -25,10 +25,7 @@ dependencies:
   ## Localization
   intl: ^0.20.2
 
-  # Used for automatic color adjustment for dark theme
-  tinycolor2: ^3.0.1
   url_launcher: ^6.3.2
-  uuid: ^4.5.1
   video_player: ^2.10.0
 
 dev_dependencies:

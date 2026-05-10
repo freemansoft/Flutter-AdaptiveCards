@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
 class FadeAnimation extends StatefulWidget {
   const FadeAnimation({
@@ -303,9 +303,9 @@ String loadId(Map aMap) {
   if (aMap.containsKey('id')) {
     return aMap['id'].toString();
   } else {
-    // if no id is specified, use the hashcode of the map
+    // if no id specified, use generator which will use type and map hashcode
     // only thing we can do for cards that don't have id properties or provided ids
-    return '${aMap['type']}-${aMap.hashCode}';
+    return UUIDGenerator().generateUniqueId(type: aMap['type'], map: aMap);
   }
 }
 
@@ -323,6 +323,7 @@ ValueKey<String> generateWidgetKey(Map aMap, {String? suffix}) {
 }
 
 /// generate the widget key for the actual input element
+/// where the id property has already been resolved
 ValueKey<String> generateWidgetKeyFromId(String id, {String? suffix}) {
   if (suffix != null) {
     return ValueKey('${id}_$suffix');
@@ -338,14 +339,27 @@ class UUIDGenerator {
   }
 
   /// The named constructor is the "real" constructor
-  UUIDGenerator._internal() {
-    uuid = const Uuid();
-  }
+  UUIDGenerator._internal();
+
   static final UUIDGenerator _instance = UUIDGenerator._internal();
 
-  late final Uuid uuid;
-
-  String getId() {
-    return uuid.v1();
+  /// generates the next UUID based on provided type and/or map
+  ///
+  /// If both are provided, the UUID will be of the form 'type_hashCode'
+  /// If only type is provided, the UUID will be of the form 'type_hashCode'
+  /// If only map is provided, the UUID will be of the form 'hashCode'
+  /// If neither is provided, the UUID will be a random string
+  String generateUniqueId({required String? type, required Map? map}) {
+    final newId = (type == null && map == null)
+        ? UniqueKey().toString()
+        : (type == null ? '${map.hashCode}' : '${type}-${map.hashCode}');
+    assert(() {
+      developer.log(
+        'Generating Unique ID: $newId for type $type',
+        //stackTrace: StackTrace.current,
+      );
+      return true;
+    }());
+    return newId;
   }
 }
