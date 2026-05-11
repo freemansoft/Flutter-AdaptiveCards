@@ -202,7 +202,7 @@ Widget getTestWidgetFromMap({
   )?
   onChange,
 }) {
-  final Widget adaptiveCard = AdaptiveCardsRoot.map(
+  final Widget adaptiveCard = AdaptiveCardsCanvas.map(
     content: map,
     // add the chart registrations
     cardTypeRegistry: CardTypeRegistry(

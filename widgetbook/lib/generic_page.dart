@@ -33,7 +33,7 @@ class GenericPage extends StatelessWidget {
     return SelectionArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
-        child: AdaptiveCardsRoot.asset(
+        child: AdaptiveCardsCanvas.asset(
           assetPath: url,
           supportMarkdown: supportMarkdown,
           initData: initData,

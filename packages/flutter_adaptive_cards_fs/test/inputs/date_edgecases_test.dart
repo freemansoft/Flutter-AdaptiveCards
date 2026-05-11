@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/date.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../utils/test_utils.dart';
 
 void main() {
   testWidgets('DateInput handles invalid initData format gracefully', (
@@ -19,14 +18,10 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: Scaffold(
-        body: RawAdaptiveCard.fromMap(
-          map: map,
-          initData: const {'badDate': 'not-a-date'},
-          hostConfigs: HostConfigs(),
-        ),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: map,
+      title: 'Date Edge Cases Test',
+      initData: const {'badDate': 'not-a-date'},
     );
 
     await tester.pumpWidget(widget);
@@ -55,13 +50,9 @@ void main() {
         ],
       };
 
-      final Widget widget = MaterialApp(
-        home: Scaffold(
-          body: RawAdaptiveCard.fromMap(
-            map: map,
-            hostConfigs: HostConfigs(),
-          ),
-        ),
+      final Widget widget = getTestWidgetFromMap(
+        map: map,
+        title: 'Date Edge Cases appendInput Test',
       );
 
       await tester.pumpWidget(widget);

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../utils/test_utils.dart';
 
 void main() {
   testWidgets('AdaptiveChoiceSet expanded single select (Radio buttons)', (
@@ -24,18 +23,14 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: Scaffold(
-        body: RawAdaptiveCard.fromMap(
-          map: map,
-          hostConfigs: HostConfigs(),
-          onChange: (id, value, dataQuery, state) {
-            if (id == 'myChoiceSet') {
-              selectedValue = value as String?;
-            }
-          },
-        ),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: map,
+      title: 'ChoiceSet Expanded Test',
+      onChange: (id, value, dataQuery, state) {
+        if (id == 'myChoiceSet') {
+          selectedValue = value as String?;
+        }
+      },
     );
 
     await tester.pumpWidget(widget);
@@ -93,16 +88,12 @@ void main() {
         ],
       };
 
-      final Widget widget = MaterialApp(
-        home: Scaffold(
-          body: RawAdaptiveCard.fromMap(
-            map: map,
-            hostConfigs: HostConfigs(),
-            onChange: (id, value, dataQuery, state) {
-              if (id == 'myChoiceSet') selectedValue = value as String?;
-            },
-          ),
-        ),
+      final Widget widget = getTestWidgetFromMap(
+        map: map,
+        title: 'ChoiceSet Compact Test',
+        onChange: (id, value, dataQuery, state) {
+          if (id == 'myChoiceSet') selectedValue = value as String?;
+        },
       );
 
       await tester.pumpWidget(widget);
@@ -147,16 +138,12 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: Scaffold(
-        body: RawAdaptiveCard.fromMap(
-          map: map,
-          hostConfigs: HostConfigs(),
-          onChange: (id, value, dataQuery, state) {
-            if (id == 'myChoiceSet') selectedValue = value as String?;
-          },
-        ),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: map,
+      title: 'ChoiceSet MultiSelect Test',
+      onChange: (id, value, dataQuery, state) {
+        if (id == 'myChoiceSet') selectedValue = value as String?;
+      },
     );
 
     await tester.pumpWidget(widget);
@@ -192,16 +179,12 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: Scaffold(
-        body: RawAdaptiveCard.fromMap(
-          map: map,
-          hostConfigs: HostConfigs(),
-          onChange: (id, value, dataQuery, state) {
-            if (id == 'myChoiceSet') selectedValue = value as String?;
-          },
-        ),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: map,
+      title: 'ChoiceSet Filtered Test',
+      onChange: (id, value, dataQuery, state) {
+        if (id == 'myChoiceSet') selectedValue = value as String?;
+      },
     );
 
     await tester.pumpWidget(widget);

@@ -66,8 +66,8 @@ void main() {
 
     test('idIsNatural returns false for generated id', () {
       final map = {'type': 'TextBlock'};
-      // First load the id to generate it
-      loadId(map);
+      // injectIds will add the generated id to the map
+      injectIds(map);
 
       final isNatural = idIsNatural(map);
 

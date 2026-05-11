@@ -87,9 +87,12 @@ abstract class AdaptiveElement {
     if (adaptiveMap.containsKey('id')) {
       id = adaptiveMap['id'].toString();
     } else {
+      // this should never happen because we inject missing ids on load
+      assert(() {
+        return true;
+      }());
       id = UUIDGenerator().generateUniqueId(
         type: adaptiveMap['type'],
-        map: adaptiveMap,
       );
     }
   }

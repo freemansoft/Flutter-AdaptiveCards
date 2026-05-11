@@ -19,7 +19,7 @@ class NetworkPage extends StatelessWidget {
     return SelectionArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(8),
-        child: AdaptiveCardsRoot.network(
+        child: AdaptiveCardsCanvas.network(
           url: url,
           // add the chart registrations
           cardTypeRegistry: CardTypeRegistry(

@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated to Dart SDK 3.11 and Flutter 3.41
 - Removed `uuid` package dependency and replaced it with Flutter's native `UniqueKey()` for widget key generation.
 - Removed unused `tinycolor2` package dependency to reduce library footprint.
+- Renamed `AdaptiveCardsRoot` to `AdaptiveCardsCanvas`
+- Inject `id` attributes into the JSON tree in the `AdaptiveCardsCanvas` so that all objects have ids when not provided. Note that this changes the provided JSON. You can see this in the adaptive_explorer app in the merged tab.
 
 ## [0.5.0]
 

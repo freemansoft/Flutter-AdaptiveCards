@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/time.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../utils/test_utils.dart';
 
 void main() {
   testWidgets('TimeInput parseTime handles valid and invalid values', (
@@ -18,13 +17,9 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: Scaffold(
-        body: RawAdaptiveCard.fromMap(
-          map: map,
-          hostConfigs: HostConfigs(),
-        ),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: map,
+      title: 'Time Edge Cases Test',
     );
 
     await tester.pumpWidget(widget);
@@ -58,14 +53,10 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: Scaffold(
-        body: RawAdaptiveCard.fromMap(
-          map: map,
-          initData: const {'initTime': '09:45'},
-          hostConfigs: HostConfigs(),
-        ),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: map,
+      title: 'Time Edge Cases initData Test',
+      initData: const {'initTime': '09:45'},
     );
 
     await tester.pumpWidget(widget);

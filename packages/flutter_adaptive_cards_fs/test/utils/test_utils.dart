@@ -168,6 +168,9 @@ Widget getTestWidgetFromPath({
     RawAdaptiveCardState cardState,
   )?
   onChange,
+  Map? initData,
+  HostConfigs? hostConfigs,
+  bool listView = false,
 }) {
   final File file = File('test/samples/$path');
   final Map<String, dynamic> map =
@@ -181,6 +184,9 @@ Widget getTestWidgetFromPath({
     onSubmit: onSubmit,
     onExecute: onExecute,
     onChange: onChange,
+    initData: initData,
+    hostConfigs: hostConfigs,
+    listView: listView,
   );
 }
 
@@ -200,13 +206,18 @@ Widget getTestWidgetFromMap({
     RawAdaptiveCardState cardState,
   )?
   onChange,
+  Map? initData,
+  HostConfigs? hostConfigs,
+  bool listView = false,
 }) {
-  final Widget adaptiveCard = AdaptiveCardsRoot.map(
+  final Widget adaptiveCard = AdaptiveCardsCanvas.map(
     content: map,
     // debug "show json" panes don't show in prod
     // so dislable them in the golden images
     showDebugJson: false,
-    hostConfigs: HostConfigs(),
+    initData: initData,
+    hostConfigs: hostConfigs ?? HostConfigs(),
+    listView: listView,
   );
 
   // this should generate an action handler set instead but the LLM

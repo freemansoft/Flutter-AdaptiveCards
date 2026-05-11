@@ -78,7 +78,7 @@ final myConfig = HostConfig(
   ),
 );
 
-AdaptiveCardsRoot(
+AdaptiveCardsCanvas(
   hostConfigs: HostConfigs(light: myConfig),
   // ...
 );

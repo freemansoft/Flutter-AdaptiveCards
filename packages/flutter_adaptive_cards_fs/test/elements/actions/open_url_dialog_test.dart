@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../utils/test_utils.dart';
 
 void main() {
   setUp(() {
@@ -34,13 +33,9 @@ void main() {
     };
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: RawAdaptiveCard.fromMap(
-            map: cardMap,
-            hostConfigs: HostConfigs(),
-          ),
-        ),
+      getTestWidgetFromMap(
+        map: cardMap,
+        title: 'OpenUrlDialog Test',
       ),
     );
 
@@ -82,13 +77,9 @@ void main() {
     };
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: RawAdaptiveCard.fromMap(
-            map: cardMap,
-            hostConfigs: HostConfigs(),
-          ),
-        ),
+      getTestWidgetFromMap(
+        map: cardMap,
+        title: 'OpenUrlDialog Browser Launch Test',
       ),
     );
 

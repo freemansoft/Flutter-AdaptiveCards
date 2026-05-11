@@ -345,7 +345,7 @@ class _HomePageState extends State<HomePage>
     }
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: AdaptiveCardsRoot.map(
+      child: AdaptiveCardsCanvas.map(
         key: ValueKey(jsonEncode(cardData)),
         content: cardData,
         hostConfigs: HostConfigs(),
