@@ -9,6 +9,7 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:http/http.dart' as http;
 
 /// Core definition for AdaptiveCardContent providers.
@@ -71,11 +72,12 @@ class NetworkAdaptiveCardContentProvider
   }
 }
 
-/// The start of our AdaptiveCard widget tree but is not the actual `AdaptiveCard`
-/// Wraps a `RawAdaptiveCard` that is the actual adaptive card element
+/// The canvas for AdaptiveCard widget trees
+/// but is not the actual card of type `AdaptiveCard`
+/// Wraps a [RawAdaptiveCard] that is the actual adaptive card element
 /// Pass in the Action handlers specific to the host program
-class AdaptiveCardsRoot extends StatefulWidget {
-  const AdaptiveCardsRoot({
+class AdaptiveCardsCanvas extends StatefulWidget {
+  const AdaptiveCardsCanvas({
     super.key,
     required this.adaptiveCardContentProvider,
     this.placeholder,
@@ -89,7 +91,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
     required this.hostConfigs,
   });
 
-  AdaptiveCardsRoot.network({
+  AdaptiveCardsCanvas.network({
     super.key,
     this.placeholder,
     this.cardTypeRegistry = const CardTypeRegistry(),
@@ -105,7 +107,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
          url: url,
        );
 
-  AdaptiveCardsRoot.asset({
+  AdaptiveCardsCanvas.asset({
     super.key,
     this.placeholder,
     this.cardTypeRegistry = const CardTypeRegistry(),
@@ -121,7 +123,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
          path: assetPath,
        );
 
-  AdaptiveCardsRoot.map({
+  AdaptiveCardsCanvas.map({
     super.key,
     this.placeholder,
     this.cardTypeRegistry = const CardTypeRegistry(),
@@ -137,7 +139,7 @@ class AdaptiveCardsRoot extends StatefulWidget {
          content: content,
        );
 
-  AdaptiveCardsRoot.json({
+  AdaptiveCardsCanvas.json({
     super.key,
     this.placeholder,
     this.cardTypeRegistry = const CardTypeRegistry(),
@@ -185,11 +187,11 @@ class AdaptiveCardsRoot extends StatefulWidget {
   final HostConfigs hostConfigs;
 
   @override
-  AdaptiveCardsRootState createState() => AdaptiveCardsRootState();
+  AdaptiveCardsCanvasState createState() => AdaptiveCardsCanvasState();
 }
 
 /// State for **The** AdaptiveCard card
-class AdaptiveCardsRootState extends State<AdaptiveCardsRoot> {
+class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
   /// The loaded json map for this `AdaptiveCard` and its descendants
   Map<String, dynamic>? map;
 
@@ -222,6 +224,7 @@ class AdaptiveCardsRootState extends State<AdaptiveCardsRoot> {
         adaptiveMap,
       ) {
         if (mounted) {
+          injectIds(adaptiveMap);
           setState(() {
             map = adaptiveMap;
           });
@@ -233,7 +236,7 @@ class AdaptiveCardsRootState extends State<AdaptiveCardsRoot> {
   }
 
   @override
-  void didUpdateWidget(AdaptiveCardsRoot oldWidget) {
+  void didUpdateWidget(AdaptiveCardsCanvas oldWidget) {
     super.didUpdateWidget(oldWidget);
   }
 

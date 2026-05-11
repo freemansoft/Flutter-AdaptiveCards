@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/text_block.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../utils/test_utils.dart';
 
 void main() {
   testWidgets('Container respects verticalContentAlignment', (
@@ -22,17 +21,13 @@ void main() {
       ],
     };
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: RawAdaptiveCard.fromMap(
-            map: map,
-            hostConfigs: HostConfigs(),
-            listView: true,
-          ),
-        ),
-      ),
+    final widget = getTestWidgetFromMap(
+      map: map,
+      title: 'Container Alignment Test',
+      listView: false,
     );
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
 
     // Verify it parsed and built
     expect(find.text('Centered Text'), findsOneWidget);

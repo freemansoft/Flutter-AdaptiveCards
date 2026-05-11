@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'utils/test_utils.dart';
 
 void main() {
   testWidgets('fallback: drop hides the element', (WidgetTester tester) async {
@@ -18,17 +17,13 @@ void main() {
       ],
     };
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: RawAdaptiveCard.fromMap(
-            map: map,
-            hostConfigs: HostConfigs(),
-            listView: true,
-          ),
-        ),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: map,
+      title: 'Fallback Test',
+      listView: false,
     );
+    await tester.pumpWidget(widget);
+    await tester.pumpAndSettle();
 
     // Should find the normal text
     expect(find.text('Normal Text'), findsOneWidget);

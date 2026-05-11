@@ -295,7 +295,9 @@ Widget loadErrorMessage({
 
 /// ids are generated if they aren't specified in the 'id' property
 bool idIsNatural(Map aMap) {
-  return aMap.containsKey('id');
+  final String? id = aMap['id']?.toString();
+  final String? type = aMap['type']?.toString();
+  return UUIDGenerator().isNaturalId(id, type);
 }
 
 /// Can override this if need to special process the id
@@ -303,9 +305,11 @@ String loadId(Map aMap) {
   if (aMap.containsKey('id')) {
     return aMap['id'].toString();
   } else {
-    // if no id specified, use generator which will use type and map hashcode
-    // only thing we can do for cards that don't have id properties or provided ids
-    return UUIDGenerator().generateUniqueId(type: aMap['type'], map: aMap);
+    // this should never happen because we inject missing ids on load
+    assert(() {
+      return true;
+    }());
+    return UUIDGenerator().generateUniqueId(type: aMap['type']);
   }
 }
 
@@ -346,13 +350,12 @@ class UUIDGenerator {
   /// generates the next UUID based on provided type and/or map
   ///
   /// If both are provided, the UUID will be of the form 'type_hashCode'
-  /// If only type is provided, the UUID will be of the form 'type_hashCode'
-  /// If only map is provided, the UUID will be of the form 'hashCode'
+  /// If only type is provided, the UUID will be of the form 'type_UniqueKey'
   /// If neither is provided, the UUID will be a random string
-  String generateUniqueId({required String? type, required Map? map}) {
-    final newId = (type == null && map == null)
+  String generateUniqueId({required String? type}) {
+    final newId = (type == null)
         ? UniqueKey().toString()
-        : (type == null ? '${map.hashCode}' : '${type}-${map.hashCode}');
+        : '$type-${UniqueKey()}';
     assert(() {
       developer.log(
         'Generating Unique ID: $newId for type $type',
@@ -361,5 +364,40 @@ class UUIDGenerator {
       return true;
     }());
     return newId;
+  }
+
+  bool isNaturalId(String? id, String? type) {
+    if (id == null) return false;
+    if (type == null) return true;
+    return !id.contains(type);
+  }
+}
+
+/// Recursively traverses the map and injects an 'id' property into any map
+/// that has a 'type' property but lacks an 'id'.
+void injectIds(
+  dynamic data,
+) {
+  if (data is Map) {
+    if (data.containsKey('type') &&
+        !data.containsKey('id') &&
+        data['type'] is String) {
+      data['id'] = UUIDGenerator().generateUniqueId(
+        type: data['type'].toString(),
+      );
+    }
+    // Create a copy of values to avoid ConcurrentModificationError when injecting 'id'
+    final values = data.values.toList();
+    for (int i = 0; i < values.length; i++) {
+      final value = values[i];
+      injectIds(value);
+    }
+  } else if (data is List) {
+    // Create a copy of list to be safe, although less likely to be modified here
+    final items = data.toList();
+    for (int i = 0; i < items.length; i++) {
+      final item = items[i];
+      injectIds(item);
+    }
   }
 }

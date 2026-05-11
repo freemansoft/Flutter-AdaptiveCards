@@ -1,4 +1,4 @@
-import 'package:flutter_adaptive_cards_fs/src/flutter_adaptive_cards_fs.dart';
+import 'package:flutter_adaptive_cards_fs/src/adaptive_cards_canvas.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -41,11 +41,11 @@ void main() {
     test(
       'AdaptiveCard.json and AdaptiveCard.memory have correct providers',
       () {
-        final cardJson = AdaptiveCardsRoot.json(
+        final cardJson = AdaptiveCardsCanvas.json(
           jsonString: jsonString,
           hostConfigs: HostConfigs(),
         );
-        final cardMemory = AdaptiveCardsRoot.map(
+        final cardMemory = AdaptiveCardsCanvas.map(
           content: contentMap,
           hostConfigs: HostConfigs(),
         );
@@ -64,11 +64,11 @@ void main() {
     test(
       'AdaptiveCard.json and AdaptiveCard.memory providers return same content',
       () async {
-        final cardJson = AdaptiveCardsRoot.json(
+        final cardJson = AdaptiveCardsCanvas.json(
           jsonString: jsonString,
           hostConfigs: HostConfigs(),
         );
-        final cardMemory = AdaptiveCardsRoot.map(
+        final cardMemory = AdaptiveCardsCanvas.map(
           content: contentMap,
           hostConfigs: HostConfigs(),
         );

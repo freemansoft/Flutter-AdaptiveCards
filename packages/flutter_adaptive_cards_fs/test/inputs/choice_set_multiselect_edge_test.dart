@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../utils/test_utils.dart';
 
 void main() {
   testWidgets('ChoiceSet multi-select appendInput contains multiple values', (
@@ -25,13 +24,9 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: Scaffold(
-        body: RawAdaptiveCard.fromMap(
-          map: map,
-          hostConfigs: HostConfigs(),
-        ),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: map,
+      title: 'ChoiceSet MultiSelect Edge Test',
     );
 
     await tester.pumpWidget(widget);

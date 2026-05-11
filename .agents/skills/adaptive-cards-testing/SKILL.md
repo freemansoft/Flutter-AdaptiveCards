@@ -12,7 +12,7 @@ description: >
 
 All library tests live under:
 
-```
+```bash
 packages/flutter_adaptive_cards_fs/test/
 ```
 
@@ -53,24 +53,35 @@ Import this in every test file:
 import 'utils/test_utils.dart';
 ```
 
-### `getTestWidgetFromPath` — The Primary Test Helper
+### `getTestWidgetFromPath` & `getTestWidgetFromMap` — Primary Test Helpers
 
-Loads an Adaptive Card JSON file from `test/samples/<path>` and returns a fully-wrapped `MaterialApp`.
+These helpers load an Adaptive Card (from a file or a Map) and return a fully-wrapped `MaterialApp`.
 
-**Architecture Note**: This helper automatically wraps the card in:
+> [!IMPORTANT]
+> **Mandatory Usage**: Always use these helpers instead of `RawAdaptiveCard.fromMap` or `AdaptiveCardsCanvas` directly. They ensure that:
+>
+> 1. **ID Injection**: Missing IDs are recursively injected into the JSON map.
+> 2. **Context**: Necessary `ProviderScope` and `InheritedAdaptiveCardHandlers` are provided.
+> 3. **UI Context**: The card is wrapped in a `MaterialApp`, `Scaffold`, and `RepaintBoundary`.
 
-1.  **MaterialApp & Scaffold**: Providing necessary theme and layout context.
-2.  **RepaintBoundary**: With an optional `key`, used to target specific regions for golden images.
-3.  **InheritedAdaptiveCardHandlers**: Injects mock handlers for `onSubmit`, `onExecute`, `onChange`, etc., if provided as arguments.
+**Architecture Note**: These helpers automatically wrap the card in:
+
+1. **MaterialApp & Scaffold**: Providing necessary theme and layout context.
+2. **RepaintBoundary**: With an optional `key`, used to target specific regions for golden images.
+3. **InheritedAdaptiveCardHandlers**: Injects mock handlers for `onSubmit`, `onExecute`, `onChange`, etc., if provided as arguments.
 
 ```dart
 Widget getTestWidgetFromPath({
   required String path,           // relative to test/samples/
   Key? key,                       // targets the RepaintBoundary for Goldens
-  Function(String)? onOpenUrl,
-  Function(Map<dynamic, dynamic>)? onSubmit,
-  Function(Map<dynamic, dynamic>)? onExecute,
-  Function(String id, dynamic value, DataQuery? query, RawAdaptiveCardState state)? onChange,
+  // ... handlers
+})
+
+Widget getTestWidgetFromMap({
+  required Map<String, dynamic> map,
+  required String title,
+  Key? key,
+  // ... handlers
 })
 ```
 

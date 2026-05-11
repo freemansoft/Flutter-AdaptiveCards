@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../utils/test_utils.dart';
 
 void main() {
   testWidgets('Date picker allows interactive date change', (
@@ -18,14 +17,10 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: Scaffold(
-        body: RawAdaptiveCard.fromMap(
-          map: map,
-          initData: const {'pickDateInteractive': '2025-02-02'},
-          hostConfigs: HostConfigs(),
-        ),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: map,
+      title: 'Date Picker Interactive Test',
+      initData: const {'pickDateInteractive': '2025-02-02'},
     );
 
     await tester.pumpWidget(widget);

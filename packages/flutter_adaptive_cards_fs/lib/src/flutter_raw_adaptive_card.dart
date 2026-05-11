@@ -5,6 +5,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/adaptive_cards_canvas.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
@@ -15,10 +16,11 @@ import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The working root of an adaptive card tree when operating against the tree
+/// The working root of an adaptive card tree when operating against the map
 ///
-/// Created as a child of `AdaptiveCard`
+/// The this root of the loaded tree is a child of [AdaptiveCardsCanvas]
 /// There is usually only one of these per page. (One per AdaptiveCard tree)
+/// except when there is an Action.ShowCard which results in another sub-tree
 ///
 class RawAdaptiveCard extends StatefulWidget {
   /// This widget takes a [map] (which usually is just a json decoded string)

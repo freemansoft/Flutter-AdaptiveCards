@@ -158,8 +158,8 @@ Tools • Dart 3.11.0 • DevTools 2.54.1
 You can move to this version of flutter by installing fvm and then:
 
 ```zsh
-fvm install 3.38.5
-#fvm use 3.38.5
+fvm install 3.41.2
+#fvm use 3.41.2
 ```
 
 Released Flutter / Dart bundling versions are located here: <https://docs.flutter.dev/release/archive?tab=windows>
@@ -200,7 +200,7 @@ Demo Adaptive Card*
 ├── Selection Area (copy/paste enable)
 │   └── Padding
 │       └── Column
-│           └── AdaptiveCard(*)
+│           └── AdaptiveCardsCanvas(*)
 │               └── RawAdaptiveCard(*)
 │                   ├── Provider<RawAdaptiveCardState>(*)
 │                   ├── Provider<CardTypeRegistry>(*)
@@ -296,7 +296,7 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
 ## Using
 
-Using Adaptive Cards in Flutter coudn't be simpler: All you need is the `AdaptiveCard` widget.
+Using Adaptive Cards in Flutter coudn't be simpler: All you need is the `AdaptiveCardsCanvas` widget.
 
 ### :warning: Markdown support vs. ColumnSet content alignment
 
@@ -305,14 +305,14 @@ Due to [issue #171](https://github.com/flutter/flutter_markdown/issues/171) of t
 ### Loading an AdaptiveCard
 
 There are several constructors which handle loading of the AC from different sources.
-`AdaptiveCard.network` takes a url to download the payload and display it.
-`AdaptiveCard.asset` takes an asset path to load the payload from the local data.
-`AdaptiveCard.memory` takes a map (which can be obtained but decoding a string using the json class) and displays it.
+`AdaptiveCardsCanvas.network` takes a url to download the payload and display it.
+`AdaptiveCardsCanvas.asset` takes an asset path to load the payload from the local data.
+`AdaptiveCardsCanvas.map` takes a map (which can be obtained but decoding a string using the json class) and displays it.
 
 ### Example
 
 ```dart
-AdaptiveCard.network(
+AdaptiveCardsCanvas.network(
   placeholder: Text("Loading, please wait"),
   url: "www.someUrlThatPoints.To/A.json",
   hostConfigPath: "assets/host_config.json",

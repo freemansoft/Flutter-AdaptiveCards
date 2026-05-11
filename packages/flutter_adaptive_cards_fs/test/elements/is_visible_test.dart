@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/text_block.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../utils/test_utils.dart';
 
 void main() {
   testWidgets('isVisible property controls element visibility', (
@@ -28,11 +28,9 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: RawAdaptiveCard.fromMap(
-        map: cardMap,
-        hostConfigs: HostConfigs(),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: cardMap,
+      title: 'Visibility Test',
     );
 
     await tester.pumpWidget(widget);
@@ -100,11 +98,9 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: RawAdaptiveCard.fromMap(
-        map: cardMap,
-        hostConfigs: HostConfigs(),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: cardMap,
+      title: 'RawState Visibility Test',
     );
 
     await tester.pumpWidget(widget);
@@ -173,11 +169,9 @@ void main() {
         ],
       };
 
-      final Widget widget = MaterialApp(
-        home: RawAdaptiveCard.fromMap(
-          map: cardMap,
-          hostConfigs: HostConfigs(),
-        ),
+      final Widget widget = getTestWidgetFromMap(
+        map: cardMap,
+        title: 'Toggle Visibility Test',
       );
 
       await tester.pumpWidget(widget);
@@ -267,11 +261,9 @@ void main() {
       ],
     };
 
-    final Widget widget = MaterialApp(
-      home: RawAdaptiveCard.fromMap(
-        map: cardMap,
-        hostConfigs: HostConfigs(),
-      ),
+    final Widget widget = getTestWidgetFromMap(
+      map: cardMap,
+      title: 'Action Toggle Visibility Test',
     );
 
     await tester.pumpWidget(widget);
@@ -342,11 +334,9 @@ void main() {
         ],
       };
 
-      final Widget widget = MaterialApp(
-        home: RawAdaptiveCard.fromMap(
-          map: cardMap,
-          hostConfigs: HostConfigs(),
-        ),
+      final Widget widget = getTestWidgetFromMap(
+        map: cardMap,
+        title: 'Target Element Visibility Test',
       );
 
       await tester.pumpWidget(widget);

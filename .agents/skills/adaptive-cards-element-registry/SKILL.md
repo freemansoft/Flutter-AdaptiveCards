@@ -241,7 +241,7 @@ final registry = CardTypeRegistry(
   removedElements: ['Media'],  // disable an element type
 );
 
-AdaptiveCardsRoot.asset(
+AdaptiveCardsCanvas.asset(
   assetPath: 'assets/my_card.json',
   cardTypeRegistry: registry,
   hostConfigs: HostConfigs(),
@@ -295,6 +295,7 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs_extend.dart'
 3. **Add a golden test** (see `flutter-adaptive-cards-testing` skill).
 
 4. **Run tests** from the package directory:
+
    ```bash
    cd packages/flutter_adaptive_cards_fs
    fvm flutter test

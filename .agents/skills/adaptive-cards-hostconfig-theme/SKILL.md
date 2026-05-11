@@ -388,7 +388,7 @@ final myConfig = HostConfig(
   ),
 );
 
-AdaptiveCardsRoot.asset(
+AdaptiveCardsCanvas.asset(
   assetPath: 'assets/my_card.json',
   hostConfigs: HostConfigs(light: myConfig, dark: myDarkConfig),
 );
@@ -440,7 +440,7 @@ test('custom font sizes are parsed', () {
 ```
 
 Widget-level HostConfig tests use `getTestWidgetFromMap` with a custom
-`AdaptiveCardsRoot` that has an injected `HostConfigs`:
+`AdaptiveCardsCanvas` that has an injected `HostConfigs`:
 
 ```dart
 // See test/host_config_test.dart for the established pattern
