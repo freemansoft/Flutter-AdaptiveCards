@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed `AdaptiveCardsRoot` to `AdaptiveCardsCanvas`
 - Inject `id` attributes into the JSON tree in the `AdaptiveCardsCanvas` so that all objects have ids when not provided. Note that this changes the provided JSON. You can see this in the adaptive_explorer app in the merged tab.
 - Fixed `resetInputs()` to correctly clear and revert underlying UI state (text controllers, selectors, etc.) across all `Input` element types.
+- Fixed `Input.Time` validation logic which previously rejected valid times. Improved the displayed error message format.
+- Fixed Cupertino Time Picker overlay dismissal to pop the modal itself instead of the root navigator.
 
 ## [0.5.0]
 
