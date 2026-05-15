@@ -51,6 +51,15 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
     stateHasError = false;
   }
 
+  @override
+  void resetInput() {
+    super.resetInput();
+    setState(() {
+      controller.text = value;
+      stateHasError = false;
+    });
+  }
+
   bool stateHasError = false;
 
   @override

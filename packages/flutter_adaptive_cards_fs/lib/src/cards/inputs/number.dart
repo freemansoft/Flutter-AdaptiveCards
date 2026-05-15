@@ -55,6 +55,15 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   }
 
   @override
+  void resetInput() {
+    super.resetInput();
+    setState(() {
+      controller.text = value;
+      stateHasError = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Visibility(
       visible: isVisible,

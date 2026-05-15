@@ -102,6 +102,19 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   }
 
   @override
+  void resetInput() {
+    super.resetInput();
+    setState(() {
+      _selectedChoices.clear();
+      if (value.isNotEmpty) {
+        _selectedChoices.addAll(value.split(','));
+      }
+      controller.text = _selectedChoices.isNotEmpty ? _selectedChoices.first : '';
+      stateHasError = false;
+    });
+  }
+
+  @override
   void appendInput(Map map) {
     map[id] = _selectedChoices.join(',');
   }
