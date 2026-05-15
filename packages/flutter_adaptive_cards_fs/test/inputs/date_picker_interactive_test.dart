@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
@@ -26,8 +27,9 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final dateMap = map['body'][0] as Map<String, dynamic>;
     // Open the date picker
-    await tester.tap(find.byKey(const ValueKey('pickDateInteractive')));
+    await tester.tap(find.byKey(generateWidgetKey(dateMap)));
     await tester.pumpAndSettle();
 
     // Try tapping a different day in the calendar, e.g., '10'
@@ -44,7 +46,7 @@ void main() {
 
     // After confirming, the field should contain the new formatted date (same month/year)
     final TextFormField field = tester.widget(
-      find.byKey(const ValueKey('pickDateInteractive')),
+      find.byKey(generateWidgetKey(dateMap)),
     );
 
     expect(field.controller!.text, equals('2025-02-10'));

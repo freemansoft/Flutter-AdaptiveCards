@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/toggle.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
@@ -26,9 +27,10 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final toggleMap = map['body'][0] as Map<String, dynamic>;
     expect(find.text('Enable feature'), findsOneWidget);
-    expect(find.byKey(const ValueKey('myToggle')), findsOneWidget);
-    final Switch sw = tester.widget(find.byKey(const ValueKey('myToggle')));
+    expect(find.byKey(generateWidgetKey(toggleMap)), findsOneWidget);
+    final Switch sw = tester.widget(find.byKey(generateWidgetKey(toggleMap)));
     expect(sw.value, isFalse);
   });
 
@@ -55,11 +57,12 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
-    final Switch sw = tester.widget(find.byKey(const ValueKey('initToggle')));
+    final toggleMap = map['body'][0] as Map<String, dynamic>;
+    final Switch sw = tester.widget(find.byKey(generateWidgetKey(toggleMap)));
     expect(sw.value, isTrue);
 
     // Toggle it off
-    await tester.tap(find.byKey(const ValueKey('initToggle')));
+    await tester.tap(find.byKey(generateWidgetKey(toggleMap)));
     await tester.pumpAndSettle();
 
     final dynamic state = tester.state(find.byType(AdaptiveToggle));

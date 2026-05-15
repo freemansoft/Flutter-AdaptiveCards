@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/time.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
@@ -26,9 +27,10 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final timeMap = map['body'][0] as Map<String, dynamic>;
     // Open the time picker
-    expect(find.byKey(const ValueKey('pickTimeInteractive')), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('pickTimeInteractive')));
+    expect(find.byKey(generateWidgetKey(timeMap)), findsOneWidget);
+    await tester.tap(find.byKey(generateWidgetKey(timeMap)));
     await tester.pumpAndSettle();
 
     // Try several strategies to change the time interactively.
