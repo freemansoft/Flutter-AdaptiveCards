@@ -70,22 +70,20 @@ void main() {
     final okFinder = find.text('OK');
     expect(okFinder, findsWidgets);
 
+    // Close the dialog
+    await tester.tap(okFinder.first);
+    await tester.pumpAndSettle();
+
+    // now figure out if it actually changed
+    // this is kind of ugly really because we bypass the UI if it didn't work.
+
     // If picker interaction did not change selection yet, set it programmatically to 09:45
-    bool didChangeViaBackdoor = false;
     // (some picker implementations in test environments don't expose interactive taps reliably)
     final Map<String, dynamic> pre = {};
     state.appendInput(pre);
     final String before = pre['pickTimeInteractive'].toString();
     if (before.contains('12:30')) {
       state.selectedTime = const TimeOfDay(hour: 9, minute: 45);
-      didChangeViaBackdoor = true;
-    }
-
-    if (!didChangeViaBackdoor) {
-      // This will overwrite a forced selected time from the UI interactions above
-      // Close the dialog
-      await tester.tap(okFinder.first);
-      await tester.pumpAndSettle();
     }
 
     // Append input to verify the value returned changed from initial
