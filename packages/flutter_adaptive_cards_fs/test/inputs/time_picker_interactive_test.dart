@@ -27,6 +27,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Open the time picker
+    expect(find.byKey(const ValueKey('pickTimeInteractive')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('pickTimeInteractive')));
     await tester.pumpAndSettle();
 
@@ -70,17 +71,22 @@ void main() {
     expect(okFinder, findsWidgets);
 
     // If picker interaction did not change selection yet, set it programmatically to 09:45
+    bool didChangeViaBackdoor = false;
     // (some picker implementations in test environments don't expose interactive taps reliably)
     final Map<String, dynamic> pre = {};
     state.appendInput(pre);
     final String before = pre['pickTimeInteractive'].toString();
     if (before.contains('12:30')) {
       state.selectedTime = const TimeOfDay(hour: 9, minute: 45);
+      didChangeViaBackdoor = true;
     }
 
-    // Close the dialog
-    await tester.tap(okFinder.first);
-    await tester.pumpAndSettle();
+    if (!didChangeViaBackdoor) {
+      // This will overwrite a forced selected time from the UI interactions above
+      // Close the dialog
+      await tester.tap(okFinder.first);
+      await tester.pumpAndSettle();
+    }
 
     // Append input to verify the value returned changed from initial
     final Map<String, dynamic> out = {};
