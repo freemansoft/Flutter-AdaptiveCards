@@ -76,15 +76,16 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
                   max,
                 );
             if (result != null) {
-              if (result.hour >= min.hour && result.hour <= max.hour) {
+              // this should take into account minutes too
+              if (result.hour < min.hour && result.hour > max.hour) {
                 // can't count on context in async
                 rawRootCardWidgetState.showError(
+                  'Time ${result.hour} '
+                  'must be after ${min.hour} and before ${max.hour} ',
                   // old code
-                  // ignore: use_build_context_synchronously
-                  'Time must be after ${context.mounted ? min.format(rawRootCardWidgetState.context) : min.toString()}'
+                  //'must be after ${context.mounted ? min.format(rawRootCardWidgetState.context) : min.toString()}'
                   // old code
-                  // ignore: use_build_context_synchronously
-                  ' and before ${context.mounted ? max.format(rawRootCardWidgetState.context) : max.toString()}',
+                  //' and before ${context.mounted ? max.format(rawRootCardWidgetState.context) : max.toString()}',
                 );
               } else {
                 setState(() {

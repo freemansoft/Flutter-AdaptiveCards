@@ -385,6 +385,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     // showCupertinoModalPopup is a built-in function of the cupertino library
     await showCupertinoModalPopup<TimeOfDay?>(
       context: context,
+      useRootNavigator: false,
       builder: (_) => SizedBox(
         height: 500,
         child: Column(
@@ -406,7 +407,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
             // Close the modal
             CupertinoButton(
               child: const Text('OK'),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         ),
