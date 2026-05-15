@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
@@ -99,11 +100,12 @@ void main() {
       await tester.pumpWidget(widget);
       await tester.pumpAndSettle();
 
+      final choiceMap = map['body'][0] as Map<String, dynamic>;
       // Dropdown exists and has correct key
-      expect(find.byKey(const ValueKey('myChoiceSet')), findsOneWidget);
+      expect(find.byKey(generateWidgetKey(choiceMap)), findsOneWidget);
 
       // Open dropdown and select Choice 2
-      await tester.tap(find.byKey(const ValueKey('myChoiceSet')));
+      await tester.tap(find.byKey(generateWidgetKey(choiceMap)));
       await tester.pumpAndSettle();
 
       // Find the menu item and tap it
@@ -149,11 +151,17 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final choiceMap = map['body'][0] as Map<String, dynamic>;
     // Check the checkbox tile keys exist
-    expect(find.byKey(const ValueKey('myChoiceSet_Choice 2')), findsOneWidget);
+    expect(
+      find.byKey(generateWidgetKey(choiceMap, suffix: 'Choice 2')),
+      findsOneWidget,
+    );
 
     // Tap the tile for Choice 2
-    await tester.tap(find.byKey(const ValueKey('myChoiceSet_Choice 2')));
+    await tester.tap(
+      find.byKey(generateWidgetKey(choiceMap, suffix: 'Choice 2')),
+    );
     await tester.pumpAndSettle();
 
     expect(selectedValue, equals('2'));
@@ -190,15 +198,16 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final choiceMap = map['body'][0] as Map<String, dynamic>;
     // The filtered text field is present and keyed
-    expect(find.byKey(const ValueKey('myChoiceSet')), findsOneWidget);
+    expect(find.byKey(generateWidgetKey(choiceMap)), findsOneWidget);
 
     // Tap to open the modal
-    await tester.tap(find.byKey(const ValueKey('myChoiceSet')));
+    await tester.tap(find.byKey(generateWidgetKey(choiceMap)));
     await tester.pumpAndSettle();
 
     // After opening modal, the card field, the ChoiceFilter widget and the modal search field share the key
-    expect(find.byKey(const ValueKey('myChoiceSet')), findsNWidgets(3));
+    expect(find.byKey(generateWidgetKey(choiceMap)), findsNWidgets(3));
 
     // The modal lists values (names) '1' and '2' — tap '2'
     final modalItem = find.text('2');

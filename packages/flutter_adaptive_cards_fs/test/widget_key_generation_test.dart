@@ -114,13 +114,13 @@ void main() {
       'Input field key should be just the ID (without _adaptive suffix)',
       () {
         // This tests the documented pattern where:
-        // - Card widget key: {id}_adaptive
-        // - Input field key: {id}
-        // The actual input field widgets use ValueKey(id) directly
-
+        // - Card widget key: {id}_adaptive  → generateAdaptiveWidgetKey(map)
+        // - Input field key: {id}           → generateWidgetKey(map)
         const inputId = 'emailInput';
-        const cardKey = ValueKey('${inputId}_adaptive');
-        const fieldKey = ValueKey(inputId);
+        final inputMap = {'id': inputId, 'type': 'Input.Text'};
+
+        final cardKey = generateAdaptiveWidgetKey(inputMap);
+        final fieldKey = generateWidgetKey(inputMap);
 
         expect(cardKey, isNot(equals(fieldKey)));
         expect(cardKey.value, '${inputId}_adaptive');
@@ -131,8 +131,9 @@ void main() {
     test('ChoiceSet item keys follow {id}_{item} pattern', () {
       const choiceSetId = 'colorChoice';
       const itemValue = 'red';
+      final choiceMap = {'id': choiceSetId, 'type': 'Input.ChoiceSet'};
 
-      const itemKey = ValueKey('${choiceSetId}_$itemValue');
+      final itemKey = generateWidgetKey(choiceMap, suffix: itemValue);
 
       expect(itemKey.value, 'colorChoice_red');
     });

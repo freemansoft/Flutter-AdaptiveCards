@@ -39,8 +39,6 @@ void main() {
       findsOneWidget,
     );
     expect(find.byKey(generateWidgetKey(map['body'][0])), findsOneWidget);
-
-    expect(find.byKey(const ValueKey('myDate')), findsOneWidget);
   });
 
   testWidgets('DateInput initData and appendInput work', (
@@ -66,8 +64,9 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final dateMap = map['body'][0] as Map<String, dynamic>;
     final TextFormField field = tester.widget(
-      find.byKey(const ValueKey('initDate')),
+      find.byKey(generateWidgetKey(dateMap)),
     );
 
     // Controller should be formatted as yyyy-MM-dd

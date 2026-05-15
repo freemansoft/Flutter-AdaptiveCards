@@ -102,49 +102,49 @@ Data JSON
 
 ```json
 {
-  {
-    "title": "Instructions:",
-    "instructions": [{
-            "id": "1",
-            "text": "blablablabla"
-        },
-        {
-            "id": "2",
-            "text": "qwerertzasdfadfds fasdf "
-        }
-    ]
-  }
+  "title": "Instructions:",
+  "instructions": [
+    {
+      "id": "1",
+      "text": "blablablabla"
+    },
+    {
+      "id": "2",
+      "text": "qwerertzasdfadfds fasdf "
+    }
+  ]
 }
 ```
 
 Results in
 
 ```json
-"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-"type": "AdaptiveCard",
-"version": "1.3",
-"body": [
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.3",
+  "body": [
     {
-        "type": "TextBlock",
-        "text": "${title}",
-        "size": "Medium",
-        "weight": "Bolder",
-        "wrap": true,
-        "separator": true
+      "type": "TextBlock",
+      "text": "${title}",
+      "size": "Medium",
+      "weight": "Bolder",
+      "wrap": true,
+      "separator": true
     },
     {
-        "type": "FactSet",
-        "facts": [
-            {
-                "title": "1",
-                "value": "blablablabla"
-            },
-            {
-                "title": "2",
-                "value": "qwerertzasdfadfds fasdf "
-            }
-        ],
-        "separator": true
+      "type": "FactSet",
+      "facts": [
+        {
+          "title": "1",
+          "value": "blablablabla"
+        },
+        {
+          "title": "2",
+          "value": "qwerertzasdfadfds fasdf "
+        }
+      ],
+      "separator": true
     }
   ]
 }

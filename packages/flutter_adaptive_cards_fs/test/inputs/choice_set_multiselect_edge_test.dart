@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
@@ -32,10 +33,15 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final choiceMap = map['body'][0] as Map<String, dynamic>;
     // Tap Choice 1 and Choice 2
-    await tester.tap(find.byKey(const ValueKey('multiChoice_Choice 1')));
+    await tester.tap(
+      find.byKey(generateWidgetKey(choiceMap, suffix: 'Choice 1')),
+    );
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('multiChoice_Choice 2')));
+    await tester.tap(
+      find.byKey(generateWidgetKey(choiceMap, suffix: 'Choice 2')),
+    );
     await tester.pumpAndSettle();
 
     final dynamic state = tester.state(find.byType(AdaptiveChoiceSet));
@@ -51,7 +57,9 @@ void main() {
     expect(parts, contains('2'));
 
     // Tapping Choice 1 again should remove it
-    await tester.tap(find.byKey(const ValueKey('multiChoice_Choice 1')));
+    await tester.tap(
+      find.byKey(generateWidgetKey(choiceMap, suffix: 'Choice 1')),
+    );
     await tester.pumpAndSettle();
     final Map<String, dynamic> out2 = {};
     state.appendInput(out2);

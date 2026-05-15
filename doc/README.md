@@ -14,6 +14,16 @@ This directory contains design documents, implementation guides, and architectur
 
 ---
 
+## Implementation Status
+
+### [Implementation-Status.md](./Implementation-Status.md)
+
+**Status**: ✅ Current | **Category**: Status Matrix
+
+Comprehensive matrix tracking implementation status of all Adaptive Cards elements, containers, inputs, actions, HostConfig, and templating against the Microsoft v1.6 specification. Includes custom/extended elements, known gaps, and priority recommendations.
+
+---
+
 ## Architecture & Design
 
 ### [actions-architecture.md](./actions-architecture.md)
@@ -120,11 +130,11 @@ Documents bug where AdaptiveColumns in an AdaptiveColumnSet have inconsistent he
 
 ## Missing/Recommended Documentation
 
-Based on the implementation plan, the following documents would be valuable additions:
+Based on the current state of the codebase, the following documents would be valuable additions:
 
-- **Implementation-Status.md**: Comprehensive status matrix showing compliance with Microsoft standard
-- **Architecture-Overview.md**: High-level system architecture showing package structure, widget hierarchy, and state management
-- **Migration-Guide.md**: Guide for updating from Provider to Riverpod (if applicable)
+- **Custom-Extensions.md**: Reference for all non-spec elements and actions (Rating, CodeBlock, CompoundButton, Carousel, Accordion, Badge, ProgressBar, ProgressRing, TabSet, Action.ResetInputs, Action.Popover, Action.InsertImage, Action.OpenUrlDialog) with JSON type strings, required properties, and behavior
+- **Architecture-Overview.md**: High-level system architecture showing package structure, widget hierarchy, and state management (Riverpod internals vs consumer API)
+- **Known-Gaps.md**: Consolidate all spec compliance gaps (`requires`, action fallback, dark mode, version gating, `RichTextBlock`, `TextRun`) currently spread across multiple files
 
 ---
 

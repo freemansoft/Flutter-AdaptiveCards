@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/date.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
@@ -28,8 +29,9 @@ void main() {
     await tester.pumpAndSettle();
 
     // Should not throw and controller should be empty (init failed quietly)
+    final dateMap = map['body'][0] as Map<String, dynamic>;
     final TextFormField field = tester.widget(
-      find.byKey(const ValueKey('badDate')),
+      find.byKey(generateWidgetKey(dateMap)),
     );
 
     expect(field.controller!.text, equals(''));

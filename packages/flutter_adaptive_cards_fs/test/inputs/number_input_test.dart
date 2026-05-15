@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/number.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
@@ -29,8 +30,9 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final numMap = map['body'][0] as Map<String, dynamic>;
     expect(find.byType(TextFormField), findsOneWidget);
-    expect(find.byKey(const ValueKey('myNumber')), findsOneWidget);
+    expect(find.byKey(generateWidgetKey(numMap)), findsOneWidget);
   });
 
   testWidgets('NumberInput required validation shows error', (
@@ -93,24 +95,25 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final numMap = map['body'][0] as Map<String, dynamic>;
     final TextFormField field = tester.widget(
-      find.byKey(const ValueKey('initNumber')),
+      find.byKey(generateWidgetKey(numMap)),
     );
 
     expect(field.controller!.text, equals('15'));
 
     // Entering a value outside of min/max should be rejected by formatter
-    await tester.enterText(find.byKey(const ValueKey('initNumber')), '5');
+    await tester.enterText(find.byKey(generateWidgetKey(numMap)), '5');
     await tester.pump();
 
     final TextFormField fieldAfter = tester.widget(
-      find.byKey(const ValueKey('initNumber')),
+      find.byKey(generateWidgetKey(numMap)),
     );
 
     expect(fieldAfter.controller!.text, isNot(equals('5')));
 
     // Enter a valid value
-    await tester.enterText(find.byKey(const ValueKey('initNumber')), '12');
+    await tester.enterText(find.byKey(generateWidgetKey(numMap)), '12');
     await tester.pump();
 
     final dynamic state = tester.state(find.byType(AdaptiveNumberInput));

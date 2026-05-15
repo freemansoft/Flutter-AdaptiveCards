@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/text.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
@@ -28,9 +29,10 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final textMap = map['body'][0] as Map<String, dynamic>;
     expect(find.text('Full name'), findsOneWidget);
     expect(find.byType(TextFormField), findsOneWidget);
-    expect(find.byKey(const ValueKey('myText')), findsOneWidget);
+    expect(find.byKey(generateWidgetKey(textMap)), findsOneWidget);
   });
 
   testWidgets('TextInput required validation shows error message', (
@@ -93,14 +95,15 @@ void main() {
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
+    final textMap = map['body'][0] as Map<String, dynamic>;
     final TextFormField field = tester.widget(
-      find.byKey(const ValueKey('initText')),
+      find.byKey(generateWidgetKey(textMap)),
     );
 
     expect(field.controller!.text, equals('initial value'));
 
     // Change text via UI and assert appendInput returns the value
-    await tester.enterText(find.byKey(const ValueKey('initText')), 'hello');
+    await tester.enterText(find.byKey(generateWidgetKey(textMap)), 'hello');
     await tester.pump();
 
     final dynamic state = tester.state(find.byType(AdaptiveTextInput));
