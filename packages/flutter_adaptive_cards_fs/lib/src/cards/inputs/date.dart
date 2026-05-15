@@ -71,6 +71,21 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
   }
 
   @override
+  void resetInput() {
+    super.resetInput();
+    setState(() {
+      try {
+        selectedDateTime = value.isNotEmpty ? inputFormat.parse(value) : null;
+      } on Exception {
+        selectedDateTime = null;
+      }
+      controller.text = selectedDateTime == null
+          ? placeholder
+          : inputFormat.format(selectedDateTime!);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Locale myLocale = Localizations.localeOf(context);
     assert(() {

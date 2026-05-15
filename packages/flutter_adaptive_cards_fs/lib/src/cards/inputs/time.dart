@@ -44,6 +44,14 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
         parseTime(adaptiveMap['max']) ?? const TimeOfDay(minute: 59, hour: 23);
   }
 
+  @override
+  void resetInput() {
+    super.resetInput();
+    setState(() {
+      selectedTime = value.isNotEmpty ? parseTime(value) : null;
+    });
+  }
+
   TimeOfDay? parseTime(String? time) {
     if (time == null || time.isEmpty) return null;
     final List<String> times = time.split(':');

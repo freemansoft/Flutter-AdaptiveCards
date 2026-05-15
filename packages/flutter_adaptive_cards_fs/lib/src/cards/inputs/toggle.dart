@@ -48,6 +48,14 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
   }
 
   @override
+  void resetInput() {
+    super.resetInput();
+    setState(() {
+      boolValue = value == valueOn;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Visibility(
       visible: isVisible,
