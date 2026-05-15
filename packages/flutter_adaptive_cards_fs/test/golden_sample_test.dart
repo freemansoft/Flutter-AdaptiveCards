@@ -57,7 +57,7 @@ void main() {
   }, tags: ['golden']);
 
   //
-  // TODO(username): This test is a little bogus because the frame looks the same after tapping the buttons
+  // This test is a little bogus because the frame looks the same after tapping the buttons
   //
   testWidgets('Golden Sample 2', (tester) async {
     configureTestView();
