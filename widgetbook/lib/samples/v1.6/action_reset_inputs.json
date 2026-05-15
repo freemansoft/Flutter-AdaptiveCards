@@ -10,8 +10,13 @@
     },
     {
       "type": "Input.Text",
-      "id": "myText",
+      "id": "myText1",
       "placeholder": "Type something to reset..."
+    },
+    {
+      "type": "Input.Text",
+      "id": "myText2",
+      "value": "Initial Text"
     }
   ],
   "actions": [

@@ -11,7 +11,9 @@ Follow this procedure when upgrading the Flutter and Dart SDK versions used in t
 
 ## 1. Upgrade FVM (Flutter Version Management)
 
-FVM is the source of truth for the local development environment.
+FVM is the source of truth for the local development environment. `fvm flutter --version` will automatically update the fvm managed local flutter to the correct version if it is not already installed.
+
+You can manually update flutter versions by running:
 
 - Run `fvm install <new-flutter-version>` (e.g., `fvm install 3.41.2`) in the root of the repository if the new target version of flutter is not already installed.
 - Run `fvm use <new-flutter-version>` (e.g., `fvm use 3.41.2`) in the root of the repository.
