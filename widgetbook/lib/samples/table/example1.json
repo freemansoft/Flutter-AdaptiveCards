@@ -210,6 +210,11 @@
                     "cells": [
                         {
                             "type": "TableCell",
+                            "selectAction": {
+                                "type": "Action.OpenUrl",
+                                "title": "Amsterdam Airport Info",
+                                "url": "https://www.schiphol.nl/en/"
+                            },
                             "items": [
                                 {
                                     "type": "TextBlock",

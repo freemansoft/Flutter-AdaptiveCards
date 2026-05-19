@@ -218,7 +218,7 @@ class AdaptiveTableState extends State<AdaptiveTable>
 
       final containerAlignment = Alignment(x, y);
 
-      final Widget cellContent = Container(
+      Widget cellContent = Container(
         key: AdaptiveTable.cellKey(tableKey, rowIndex, col),
         decoration: isHeaderRow
             ? getHeaderCellDecoration(
@@ -235,13 +235,16 @@ class AdaptiveTableState extends State<AdaptiveTable>
             oneCellItems: oneCellItems,
             isHeaderRow: isHeaderRow,
             cellModel: cellModel,
-            // Horizontal alignment passed to buildCellContent is redundant if handled by Align
-            // but buildCellContent uses it for checking?
-            // Actually buildCellContent implementation in previous step removed the logic.
-            // But we can check if it needs update.
           ),
         ),
       );
+
+      if (cellModel.selectAction != null) {
+        cellContent = AdaptiveTappable(
+          adaptiveMap: cellModel.toJson(),
+          child: cellContent,
+        );
+      }
 
       // Determine column width
       // Default to flex 1 if columns def is missing or shorter
