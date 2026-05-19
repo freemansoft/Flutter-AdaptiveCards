@@ -132,8 +132,8 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 | `fallback` (elements) | All elements | ✅ Complete          | -                                                                                      | Handled in `CardTypeRegistry` |
 | `fallback` (actions)  | All actions  | ❌ Missing            | -                                                                                      | `_getActionWidget` ends in `assert(false)`; no fallback check |
 | `requires`        | All elements    | ❌ Missing            | -                                                                                      | Version requirement validation not implemented |
-| `selectAction`    | Some elements   | ⚠️ Partial            | -                                                                                      | Confirmed on Container, Column, ColumnSet; unconfirmed on Image and TableCell |
-| `backgroundImage` | Card/Container  | ⚠️ Needs Verification | [backgroundImage.md](./backgroundImage.md)                                             | String & object forms     |
+| `selectAction`    | Some elements   | ✅ Complete           | -                                                                                      | Confirmed on Container, Column, ColumnSet, Image, and TableCell. |
+| `backgroundImage` | Card/Container  | ⚠️ Partial            | [backgroundImage.md](./backgroundImage.md)                                             | Parsed via mixin for Container, Column, ColumnSet, TableCell; root card uses Stack, bypassing repeat/alignment parameters; alignment properties missing. |
 
 ---
 

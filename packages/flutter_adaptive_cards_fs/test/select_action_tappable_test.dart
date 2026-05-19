@@ -133,6 +133,54 @@ void main() {
     expect(opened, isTrue);
   });
 
+  testWidgets('AdaptiveTable Cell selectAction (OpenUrl) fires handler', (
+    tester,
+  ) async {
+    bool opened = false;
+
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'version': '1.5',
+      'body': [
+        {
+          'type': 'Table',
+          'columns': [
+            {'width': 1},
+          ],
+          'rows': [
+            {
+              'type': 'TableRow',
+              'cells': [
+                {
+                  'type': 'TableCell',
+                  'selectAction': {
+                    'type': 'Action.OpenUrl',
+                    'url': 'https://example.com/cell',
+                  },
+                  'items': [
+                    {'type': 'TextBlock', 'text': 'Tap TableCell'},
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      buildCard(map, onOpenUrl: (url) => opened = true, onSubmit: (_) {}),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tap TableCell'), findsOneWidget);
+
+    await tester.tap(find.text('Tap TableCell'));
+    await tester.pumpAndSettle();
+
+    expect(opened, isTrue);
+  });
+
   testWidgets('AdaptiveImage selectAction (OpenUrl) fires handler', (
     tester,
   ) async {
