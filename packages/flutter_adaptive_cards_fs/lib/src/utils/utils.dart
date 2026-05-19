@@ -236,7 +236,8 @@ Widget loadLabel({
               TextSpan(
                 text: ' *',
                 style: TextStyle(
-                  color: resolver.resolveContainerForegroundColor(
+                  color:
+                      resolver.resolveContainerForegroundColor(
                         style: 'attention',
                         isSubtle: false,
                       ) ??
