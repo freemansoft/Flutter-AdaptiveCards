@@ -44,17 +44,26 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   late GenericActionOpenUrl action;
 
   @override
-  void initState() {
-    super.initState();
-    final rawText = parseTextString(
-      adaptiveMap['text'] ?? '',
-    ); // text block with no text
-    text = DateTimeUtils.formatText(rawText);
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    // We look up locale here so it updates if the system language changes
+    final String? locale = () {
+      try {
+        return Localizations.maybeLocaleOf(context)?.toString();
+        // catch everything
+        // ignore: avoid_catches_without_on_clauses
+      } catch (_) {
+        return null;
+      }
+    }();
+
+    final rawText = parseTextString(
+      adaptiveMap['text'] ?? '',
+      locale: locale,
+    );
+    text = DateTimeUtils.formatText(rawText);
+
     // gag me with a hack - the api is built against a type key in a map
     action =
         actionTypeRegistry.getActionForType(
