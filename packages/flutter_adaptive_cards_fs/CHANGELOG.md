@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.7.0]
 
 - change landscape / portrait breakpoint handling for AdaptiveCardElement
+- `parseTextString` now accepts an optional `locale` parameter for correct date/time localization.
+- `AdaptiveTextBlock` now passes the current `Localizations.maybeLocaleOf(context)` to `parseTextString` for region-aware date/time macro expansion.
+- Removed unused `AdaptiveElement` class and ensured `AdaptiveElementMixin` properly unregisters widgets on `dispose`.
 
 ## [0.6.0]
 

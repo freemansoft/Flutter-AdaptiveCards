@@ -61,7 +61,6 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     if (idIsNatural(adaptiveMap)) {
       // register cards with IDs so we can target them
       // At one time this was only used for showCard
-      // TODO(username): We don't have a good way to unregister cards see dispose()
       ProviderScope.containerOf(
         context,
         listen: false,
@@ -87,6 +86,23 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   @override
   int get hashCode => id.hashCode;
+
+  @override
+  void dispose() {
+    if (idIsNatural(adaptiveMap)) {
+      try {
+        ProviderScope.containerOf(
+          context,
+          listen: false,
+        ).read(adaptiveCardElementStateProvider).unregisterCardWidget(id);
+        // no idea what could pop up here if there is an error
+        // ignore: avoid_catches_without_on_clauses
+      } catch (_) {
+        // May fail if ProviderScope is already disposed
+      }
+    }
+    super.dispose();
+  }
 
   BoxFit calculateBackgroundImageFit(String? fillMode) {
     final myFillMode = fillMode?.toLowerCase();

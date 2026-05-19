@@ -202,8 +202,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       );
     } else {
       actionWidget = Wrap(
-        spacing: 8.0,
-        runSpacing: 8.0,
+        spacing: 8,
+        runSpacing: 8,
         alignment: WrapAlignment.start,
         children: activeActions,
       );

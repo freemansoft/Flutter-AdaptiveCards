@@ -119,7 +119,7 @@ String getDayOfMonthSuffix(int n) {
 }
 
 /// Parses a given text string to property handle DATE() and TIME()
-String parseTextString(String text) {
+String parseTextString(String text, {String? locale}) {
   return text.replaceAllMapped(RegExp('{{.*}}'), (match) {
     final String? res = match.group(0);
     String? input = res?.substring(2, res.length - 2);
@@ -138,20 +138,19 @@ String parseTextString(String text) {
 
       final DateTime? dateTime = DateTime.tryParse(items[0]);
 
-      // TODO(username): use locale
       DateFormat dateFormat;
 
       if (dateTime == null) return res ?? '';
       if (items[1] == 'COMPACT') {
-        dateFormat = DateFormat.yMd();
+        dateFormat = DateFormat.yMd(locale);
         return dateFormat.format(dateTime);
       } else if (items[1] == 'SHORT') {
-        dateFormat = DateFormat('E, MMM d{n}, y');
+        dateFormat = DateFormat('E, MMM d{n}, y', locale);
         return dateFormat
             .format(dateTime)
             .replaceFirst('{n}', getDayOfMonthSuffix(dateTime.day));
       } else if (items[1] == 'LONG') {
-        dateFormat = DateFormat('EEEE, MMMM d{n}, y');
+        dateFormat = DateFormat('EEEE, MMMM d{n}, y', locale);
         return dateFormat
             .format(dateTime)
             .replaceFirst('{n}', getDayOfMonthSuffix(dateTime.day));
@@ -164,7 +163,7 @@ String parseTextString(String text) {
       final DateTime? dateTime = DateTime.tryParse(time ?? '');
       if (dateTime == null) return res ?? '';
 
-      final DateFormat dateFormat = DateFormat('jm');
+      final DateFormat dateFormat = DateFormat('jm', locale);
 
       return dateFormat.format(dateTime);
     } else {
@@ -236,8 +235,13 @@ Widget loadLabel({
             if (isRequired)
               TextSpan(
                 text: ' *',
-                // TODO(username): fix this color to be looked up from ReferenceResolver
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+                style: TextStyle(
+                  color: resolver.resolveContainerForegroundColor(
+                        style: 'attention',
+                        isSubtle: false,
+                      ) ??
+                      Theme.of(context).colorScheme.error,
+                ),
               ),
           ],
         ),
