@@ -121,19 +121,19 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## Common Properties
 
-| Property              | Microsoft Spec  | Implementation | Documentation                                                                          | Notes                                                                                                                                                    |
-| --------------------- | --------------- | -------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                  | All elements    | ✅ Complete    | [AdaptiveWidget-Key-Generation.md](./AdaptiveWidget-Key-Generation.md)                 | Used for key generation                                                                                                                                  |
-| `isVisible`           | All elements    | ✅ Complete    | [Implementing-IsVisible.md](./Implementing-IsVisible.md)                               | Visibility widget wrapper                                                                                                                                |
-| `separator`           | Most elements   | ✅ Complete    | -                                                                                      | Visual separators                                                                                                                                        |
-| `spacing`             | Most elements   | ✅ Complete    | -                                                                                      | Layout spacing                                                                                                                                           |
-| `height`              | Elements        | ⚠️ Partial     | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Known issues                                                                                                                                             |
-| `style`               | Containers/Text | ✅ Complete    | [Style-Design.md](./Style-Design.md)                                                   | HostConfig-based                                                                                                                                         |
-| `fallback` (elements) | All elements    | ✅ Complete    | -                                                                                      | Handled in `CardTypeRegistry`                                                                                                                            |
-| `fallback` (actions)  | All actions     | ❌ Missing     | -                                                                                      | `_getActionWidget` ends in `assert(false)`; no fallback check                                                                                            |
-| `requires`            | All elements    | ❌ Missing     | -                                                                                      | Version requirement validation not implemented                                                                                                           |
-| `selectAction`        | Some elements   | ✅ Complete    | -                                                                                      | Confirmed on Container, Column, ColumnSet, Image, and TableCell.                                                                                         |
-| `backgroundImage`     | Card/Container  | ⚠️ Partial     | [backgroundImage.md](./backgroundImage.md)                                             | Parsed via mixin for Container, Column, ColumnSet, TableCell; root card uses Stack, bypassing repeat/alignment parameters; alignment properties missing. |
+| Property              | Microsoft Spec  | Implementation | Documentation                                                                          | Notes                                                                                                                                                                   |
+| --------------------- | --------------- | -------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | All elements    | ✅ Complete    | [AdaptiveWidget-Key-Generation.md](./AdaptiveWidget-Key-Generation.md)                 | Used for key generation                                                                                                                                                 |
+| `isVisible`           | All elements    | ✅ Complete    | [Implementing-IsVisible.md](./Implementing-IsVisible.md)                               | Visibility widget wrapper                                                                                                                                               |
+| `separator`           | Most elements   | ✅ Complete    | -                                                                                      | Visual separators                                                                                                                                                       |
+| `spacing`             | Most elements   | ✅ Complete    | -                                                                                      | Layout spacing                                                                                                                                                          |
+| `height`              | Elements        | ⚠️ Partial     | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Known issues                                                                                                                                                            |
+| `style`               | Containers/Text | ✅ Complete    | [Style-Design.md](./Style-Design.md)                                                   | HostConfig-based                                                                                                                                                        |
+| `fallback` (elements) | All elements    | ✅ Complete    | -                                                                                      | Handled in `CardTypeRegistry`                                                                                                                                           |
+| `fallback` (actions)  | All actions     | ❌ Missing     | -                                                                                      | `_getActionWidget` ends in `assert(false)`; no fallback check                                                                                                           |
+| `requires`            | All elements    | ❌ Missing     | -                                                                                      | Version requirement validation not implemented                                                                                                                          |
+| `selectAction`        | Some elements   | ✅ Complete    | -                                                                                      | Confirmed on Container, Column, ColumnSet, Image, and TableCell.                                                                                                        |
+| `backgroundImage`     | Card/Container  | ✅ Complete    | [backgroundImage.md](./backgroundImage.md)                                             | Parsed via mixin for Container, Column, ColumnSet, TableCell; fully tested (both string and object forms), including empty aspect-ratio sizing and `minHeight` support. |
 
 ---
 
@@ -163,9 +163,6 @@ All are registered in `CardTypeRegistry` (`lib/src/registry.dart`).
 ### High Priority
 
 1. **Fix ColumnSet Height Bug**: Verify and fix inconsistent Column heights ([doc](./Column-ColumnSet-Fill-Vertical-Height.md))
-2. **Verify backgroundImage**: Confirm both string and object forms work ([doc](./backgroundImage.md))
-3. **Implement `fallback` for Actions**: `_getActionWidget` currently ends in `assert(false)` with no fallback processing
-4. **Implement `requires` property validation**: Skip elements that declare version requirements the renderer cannot meet
 
 ### Medium Priority
 
@@ -174,16 +171,16 @@ All are registered in `CardTypeRegistry` (`lib/src/registry.dart`).
    - `Fact` → proper class
    - `Input.Choice` → proper class
    - `TableCell` → proper class
-
 2. **Complete Table Implementation**: Add column sizing, grid styles, etc.
-
-3. **Add RichTextBlock & TextRun**: Design docs first, then implement
 
 ### Low Priority
 
 1. **Media Poster Fix**: Resolve poster attribute display issue
 2. **Test Coverage**: Expand test coverage for partial implementations
 3. **Documentation**: Add implementation links to all doc files
+4. **Add RichTextBlock & TextRun**: Design docs first, then implement
+5. **Implement `fallback` for Actions**: `_getActionWidget` currently ends in `assert(false)` with no fallback processing
+6. **Implement `requires` property validation**: Skip elements that declare version requirements the renderer cannot meet
 
 ---
 

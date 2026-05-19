@@ -58,4 +58,80 @@ void main() {
     expect(decorationImage.fit, BoxFit.none);
     expect(decorationImage.repeat, ImageRepeat.repeat);
   });
+
+  testWidgets(
+    'Container with only backgroundImage renders it as a child for aspect ratio scaling',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        getTestWidgetFromString(
+          jsonString: r'''
+          {
+            "type": "AdaptiveCard",
+            "body": [
+              {
+                "type": "Container",
+                "minHeight": "240px",
+                "backgroundImage": "https://adaptivecards.io/content/airplane.png"
+              }
+            ],
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.2"
+          }''',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The Container should contain an Image or RawImage widget directly since it has no children
+      final imageFinder = find.byType(Image);
+      expect(imageFinder, findsOneWidget);
+
+      final imageWidget = tester.widget<Image>(imageFinder);
+      expect(imageWidget.image, isA<NetworkImage>());
+      expect(
+        (imageWidget.image as NetworkImage).url,
+        'https://adaptivecards.io/content/airplane.png',
+      );
+    },
+  );
+
+  testWidgets(
+    'Column with only backgroundImage renders it as a child for aspect ratio scaling',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        getTestWidgetFromString(
+          jsonString: r'''
+{
+            "type": "AdaptiveCard",
+            "body": [
+              {
+                "type": "ColumnSet",
+                "columns": [
+                  {
+                    "type": "Column",
+                    "width": "20px",
+                    "minHeight": "20px",
+                    "backgroundImage": "https://adaptivecards.io/content/airplane.png"
+                  }
+                ]
+              }
+            ],
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "version": "1.2"
+          }''',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The Column should contain an Image or RawImage widget directly since it has no children
+      final imageFinder = find.byType(Image);
+      expect(imageFinder, findsOneWidget);
+
+      final imageWidget = tester.widget<Image>(imageFinder);
+      expect(imageWidget.image, isA<NetworkImage>());
+      expect(
+        (imageWidget.image as NetworkImage).url,
+        'https://adaptivecards.io/content/airplane.png',
+      );
+    },
+  );
 }

@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `parseTextString` now accepts an optional `locale` parameter for correct date/time localization.
 - `AdaptiveTextBlock` now passes the current `Localizations.maybeLocaleOf(context)` to `parseTextString` for region-aware date/time macro expansion.
 - Removed unused `AdaptiveElement` class and ensured `AdaptiveElementMixin` properly unregisters widgets on `dispose`.
+- Fixed `minHeight` parameter parsing and constraint application on `AdaptiveColumn` and `AdaptiveContainer` elements (supporting raw pixel and integer formats).
+- Fixed background image aspect-ratio sizing on `AdaptiveColumn` and `AdaptiveContainer` elements when they only contain a `backgroundImage` and have `minHeight` or pixel `width` constraints set, ensuring the other dimension scales dynamically to preserve original image proportions.
 
 ## [0.6.0]
 

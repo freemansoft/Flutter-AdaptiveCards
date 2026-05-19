@@ -406,3 +406,16 @@ void injectIds(
     }
   }
 }
+
+/// Parses the `minHeight` property from the Adaptive Cards JSON,
+/// supporting both pixel values (e.g. `"240px"`) and raw integer/double values.
+double? parseMinHeight(dynamic rawMinHeight) {
+  if (rawMinHeight == null) return null;
+  final String minHeightStr = rawMinHeight.toString().trim().toLowerCase();
+  if (minHeightStr.endsWith('px')) {
+    return double.tryParse(
+      minHeightStr.substring(0, minHeightStr.length - 2),
+    );
+  }
+  return double.tryParse(minHeightStr);
+}
