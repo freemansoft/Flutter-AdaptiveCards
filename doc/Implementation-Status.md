@@ -27,17 +27,17 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## Containers
 
-| Container | Microsoft Spec                                           | Implementation | Tests      | Documentation                                                                          | Notes                                      |
-| --------- | -------------------------------------------------------- | -------------- | ---------- | -------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Container | [spec](https://adaptivecards.io/explorer/Container.html) | ✅ Complete    | ✅ Yes     | -                                                                                      | Core container                             |
-| ColumnSet | [spec](https://adaptivecards.io/explorer/ColumnSet.html) | ⚠️ Partial     | ⚠️ Limited | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Height bug noted                           |
-| Column    | [spec](https://adaptivecards.io/explorer/Column.html)    | ⚠️ Partial     | ⚠️ Limited | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Height bug noted                           |
-| FactSet   | [spec](https://adaptivecards.io/explorer/FactSet.html)   | ✅ Complete    | ✅ Yes     | -                                                                                      | -                                          |
-| Fact      | [spec](https://adaptivecards.io/explorer/Fact.html)      | ⚠️ Map         | ❌ No      | -                                                                                      | Implemented as map in FactSet              |
-| ImageSet  | [spec](https://adaptivecards.io/explorer/ImageSet.html)  | ✅ Complete    | ⚠️ Limited | -                                                                                      | -                                          |
-| Table     | [spec](https://adaptivecards.io/explorer/Table.html)     | ⚠️ Partial     | ⚠️ Basic   | -                                                                                      | Minimal implementation, missing attributes |
-| TableCell | [spec](https://adaptivecards.io/explorer/TableCell.html) | ⚠️ Inline      | ❌ No      | -                                                                                      | Implemented inline in Table                |
-| TableRow  | [spec](https://adaptivecards.io/explorer/TableRow.html)  | ⚠️ Partial     | ❌ No      | -                                                                                      | Part of Table implementation               |
+| Container | Microsoft Spec                                           | Implementation | Tests      | Documentation                                                                          | Notes                                                                |
+| --------- | -------------------------------------------------------- | -------------- | ---------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Container | [spec](https://adaptivecards.io/explorer/Container.html) | ✅ Complete    | ✅ Yes     | -                                                                                      | Core container                                                       |
+| ColumnSet | [spec](https://adaptivecards.io/explorer/ColumnSet.html) | ⚠️ Partial     | ⚠️ Limited | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Height bug noted                                                     |
+| Column    | [spec](https://adaptivecards.io/explorer/Column.html)    | ⚠️ Partial     | ⚠️ Limited | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Height bug noted                                                     |
+| FactSet   | [spec](https://adaptivecards.io/explorer/FactSet.html)   | ✅ Complete    | ✅ Yes     | -                                                                                      | -                                                                    |
+| Fact      | [spec](https://adaptivecards.io/explorer/Fact.html)      | ⚠️ Map         | ❌ No      | -                                                                                      | Implemented as map in FactSet                                        |
+| ImageSet  | [spec](https://adaptivecards.io/explorer/ImageSet.html)  | ✅ Complete    | ⚠️ Limited | -                                                                                      | -                                                                    |
+| Table     | [spec](https://adaptivecards.io/explorer/Table.html)     | ⚠️ Partial     | ⚠️ Basic   | -                                                                                      | Minimal implementation, missing attributes                           |
+| TableCell | [spec](https://adaptivecards.io/explorer/TableCell.html) | ⚠️ Inline      | ✅ Yes     | -                                                                                      | Implemented inline in Table; selectAction fully supported and tested |
+| TableRow  | [spec](https://adaptivecards.io/explorer/TableRow.html)  | ⚠️ Partial     | ❌ No      | -                                                                                      | Part of Table implementation                                         |
 
 ---
 
@@ -60,17 +60,17 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## Actions
 
-| Action                  | Microsoft Spec                                                         | Implementation | Tests  | Documentation                                        | Notes                                       |
-| ----------------------- | ---------------------------------------------------------------------- | -------------- | ------ | ---------------------------------------------------- | ------------------------------------------- |
-| Action.Execute          | [spec](https://adaptivecards.io/explorer/Action.Execute.html)          | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                   |
-| Action.OpenUrl          | [spec](https://adaptivecards.io/explorer/Action.OpenUrl.html)          | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                   |
-| Action.ShowCard         | [spec](https://adaptivecards.io/explorer/Action.ShowCard.html)         | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                   |
-| Action.Submit           | [spec](https://adaptivecards.io/explorer/Action.Submit.html)           | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                   |
-| Action.ToggleVisibility | [spec](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                   |
-| Action.OpenUrlDialog    | [Teams ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions) | ✅ Complete | ❌ No | [actions-architecture.md](./actions-architecture.md) | **Teams extension** (schema v1.5+) — launches modal/task module dialog |
-| Action.ResetInputs      | [Bot Framework ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions) | ✅ Complete | ❌ No | - | **Teams/Bot Framework extension** — resets input fields; used with `valueChangedAction` |
-| Action.InsertImage      | Host-specific ext                                                      | ✅ Complete    | ❌ No  | -                                                    | **Host extension** (Word/PowerPoint, v1.5+) — inserts image into host canvas |
-| Action.Popover          | -                                                                      | ✅ Complete    | ❌ No  | -                                                    | **Project-specific** — no known spec source; popover overlay |
+| Action                  | Microsoft Spec                                                                                                            | Implementation | Tests  | Documentation                                        | Notes                                                                                   |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------- | ------ | ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Action.Execute          | [spec](https://adaptivecards.io/explorer/Action.Execute.html)                                                             | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                               |
+| Action.OpenUrl          | [spec](https://adaptivecards.io/explorer/Action.OpenUrl.html)                                                             | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                               |
+| Action.ShowCard         | [spec](https://adaptivecards.io/explorer/Action.ShowCard.html)                                                            | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                               |
+| Action.Submit           | [spec](https://adaptivecards.io/explorer/Action.Submit.html)                                                              | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                               |
+| Action.ToggleVisibility | [spec](https://adaptivecards.io/explorer/Action.ToggleVisibility.html)                                                    | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                               |
+| Action.OpenUrlDialog    | [Teams ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions)         | ✅ Complete    | ❌ No  | [actions-architecture.md](./actions-architecture.md) | **Teams extension** (schema v1.5+) — launches modal/task module dialog                  |
+| Action.ResetInputs      | [Bot Framework ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions) | ✅ Complete    | ❌ No  | -                                                    | **Teams/Bot Framework extension** — resets input fields; used with `valueChangedAction` |
+| Action.InsertImage      | Host-specific ext                                                                                                         | ✅ Complete    | ❌ No  | -                                                    | **Host extension** (Word/PowerPoint, v1.5+) — inserts image into host canvas            |
+| Action.Popover          | -                                                                                                                         | ✅ Complete    | ❌ No  | -                                                    | **Project-specific** — no known spec source; popover overlay                            |
 
 ---
 
@@ -105,35 +105,35 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## Templating (flutter_adaptive_template_fs package)
 
-| Feature             | Microsoft Spec                                                               | Implementation | Tests   | Documentation                                        | Notes                                        |
-| ------------------- | ---------------------------------------------------------------------------- | -------------- | ------- | ---------------------------------------------------- | -------------------------------------------- |
-| Template Expansion  | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/)         | ✅ Complete    | ✅ Yes  | [JSON-Template-Design.md](./JSON-Template-Design.md) | `Evaluator` in `flutter_adaptive_template_fs` |
-| `$data` Scoping     | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language) | ✅ Complete    | ✅ Yes  | [JSON-Template-Design.md](./JSON-Template-Design.md) | `_dataStack` in `Evaluator`                  |
-| `$root` Reference   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language) | ✅ Complete    | ✅ Yes  | [JSON-Template-Design.md](./JSON-Template-Design.md) | Scoped via `_scopeStack`                     |
-| `$index` in Arrays  | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language) | ✅ Complete    | ✅ Yes  | [JSON-Template-Design.md](./JSON-Template-Design.md) | Available during array repetition            |
-| Array Binding       | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language) | ✅ Complete    | ✅ Yes  | [JSON-Template-Design.md](./JSON-Template-Design.md) | `$data` pointing to array triggers repeater  |
-| `$when` Conditional | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language) | ✅ Complete    | ✅ Yes  | [JSON-Template-Design.md](./JSON-Template-Design.md) | `null`/`false` → element excluded            |
-| `json()` Function   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language) | ✅ Complete    | ✅ Yes  | [JSON-Template-Design.md](./JSON-Template-Design.md) | Parses embedded JSON strings                 |
-| `if()` Expressions  | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language) | ✅ Complete    | ✅ Yes  | [JSON-Template-Design.md](./JSON-Template-Design.md) | Conditional value selection                  |
-| Adaptive Expressions | [spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) | ⚠️ Partial | ✅ Yes | - | Operators, string, math, logic implemented; Date/Time and advanced collection functions missing |
+| Feature              | Microsoft Spec                                                                                                           | Implementation | Tests  | Documentation                                        | Notes                                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------- | ------ | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Template Expansion   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/)                                                     | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | `Evaluator` in `flutter_adaptive_template_fs`                                                   |
+| `$data` Scoping      | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | `_dataStack` in `Evaluator`                                                                     |
+| `$root` Reference    | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | Scoped via `_scopeStack`                                                                        |
+| `$index` in Arrays   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | Available during array repetition                                                               |
+| Array Binding        | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | `$data` pointing to array triggers repeater                                                     |
+| `$when` Conditional  | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | `null`/`false` → element excluded                                                               |
+| `json()` Function    | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | Parses embedded JSON strings                                                                    |
+| `if()` Expressions   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | Conditional value selection                                                                     |
+| Adaptive Expressions | [spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) | ⚠️ Partial     | ✅ Yes | -                                                    | Operators, string, math, logic implemented; Date/Time and advanced collection functions missing |
 
 ---
 
 ## Common Properties
 
-| Property          | Microsoft Spec  | Implementation        | Documentation                                                                          | Notes                     |
-| ----------------- | --------------- | --------------------- | -------------------------------------------------------------------------------------- | ------------------------- |
-| `id`              | All elements    | ✅ Complete           | [AdaptiveWidget-Key-Generation.md](./AdaptiveWidget-Key-Generation.md)                 | Used for key generation   |
-| `isVisible`       | All elements    | ✅ Complete           | [Implementing-IsVisible.md](./Implementing-IsVisible.md)                               | Visibility widget wrapper |
-| `separator`       | Most elements   | ✅ Complete           | -                                                                                      | Visual separators         |
-| `spacing`         | Most elements   | ✅ Complete           | -                                                                                      | Layout spacing            |
-| `height`          | Elements        | ⚠️ Partial            | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Known issues              |
-| `style`           | Containers/Text | ✅ Complete           | [Style-Design.md](./Style-Design.md)                                                   | HostConfig-based          |
-| `fallback` (elements) | All elements | ✅ Complete          | -                                                                                      | Handled in `CardTypeRegistry` |
-| `fallback` (actions)  | All actions  | ❌ Missing            | -                                                                                      | `_getActionWidget` ends in `assert(false)`; no fallback check |
-| `requires`        | All elements    | ❌ Missing            | -                                                                                      | Version requirement validation not implemented |
-| `selectAction`    | Some elements   | ✅ Complete           | -                                                                                      | Confirmed on Container, Column, ColumnSet, Image, and TableCell. |
-| `backgroundImage` | Card/Container  | ⚠️ Partial            | [backgroundImage.md](./backgroundImage.md)                                             | Parsed via mixin for Container, Column, ColumnSet, TableCell; root card uses Stack, bypassing repeat/alignment parameters; alignment properties missing. |
+| Property              | Microsoft Spec  | Implementation | Documentation                                                                          | Notes                                                                                                                                                    |
+| --------------------- | --------------- | -------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                  | All elements    | ✅ Complete    | [AdaptiveWidget-Key-Generation.md](./AdaptiveWidget-Key-Generation.md)                 | Used for key generation                                                                                                                                  |
+| `isVisible`           | All elements    | ✅ Complete    | [Implementing-IsVisible.md](./Implementing-IsVisible.md)                               | Visibility widget wrapper                                                                                                                                |
+| `separator`           | Most elements   | ✅ Complete    | -                                                                                      | Visual separators                                                                                                                                        |
+| `spacing`             | Most elements   | ✅ Complete    | -                                                                                      | Layout spacing                                                                                                                                           |
+| `height`              | Elements        | ⚠️ Partial     | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Known issues                                                                                                                                             |
+| `style`               | Containers/Text | ✅ Complete    | [Style-Design.md](./Style-Design.md)                                                   | HostConfig-based                                                                                                                                         |
+| `fallback` (elements) | All elements    | ✅ Complete    | -                                                                                      | Handled in `CardTypeRegistry`                                                                                                                            |
+| `fallback` (actions)  | All actions     | ❌ Missing     | -                                                                                      | `_getActionWidget` ends in `assert(false)`; no fallback check                                                                                            |
+| `requires`            | All elements    | ❌ Missing     | -                                                                                      | Version requirement validation not implemented                                                                                                           |
+| `selectAction`        | Some elements   | ✅ Complete    | -                                                                                      | Confirmed on Container, Column, ColumnSet, Image, and TableCell.                                                                                         |
+| `backgroundImage`     | Card/Container  | ⚠️ Partial     | [backgroundImage.md](./backgroundImage.md)                                             | Parsed via mixin for Container, Column, ColumnSet, TableCell; root card uses Stack, bypassing repeat/alignment parameters; alignment properties missing. |
 
 ---
 
@@ -142,19 +142,19 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 These are implemented but not part of the standard Microsoft specification.
 All are registered in `CardTypeRegistry` (`lib/src/registry.dart`).
 
-| Element           | JSON Type String  | Implementation | Tests      | Documentation | Notes                                          |
-| ----------------- | ----------------- | -------------- | ---------- | ------------- | ---------------------------------------------- |
-| Badge             | `Badge`           | ✅ Complete    | ⚠️ Limited | -             | Custom element; has HostConfig `BadgeStylesConfig` |
-| Carousel          | `Carousel`        | ✅ Complete    | ⚠️ Limited | -             | Custom element; child pages use `CarouselPage` |
-| CarouselPage      | `CarouselPage`    | ✅ Complete    | ⚠️ Limited | -             | Child element of `Carousel`                    |
-| Accordion         | `Accordion`       | ✅ Complete    | ⚠️ Limited | -             | Custom collapsible element                     |
-| ProgressBar       | `ProgressBar`     | ✅ Complete    | ⚠️ Limited | -             | Custom element                                 |
-| ProgressRing      | `ProgressRing`    | ✅ Complete    | ⚠️ Limited | -             | Custom element                                 |
-| Rating            | `Rating`          | ✅ Complete    | ⚠️ Limited | -             | Custom element; also registered as `Input.Rating` |
-| CodeBlock         | `CodeBlock`       | ✅ Complete    | ⚠️ Limited | -             | Custom code display element                    |
-| CompoundButton    | `CompoundButton`  | ✅ Complete    | ⚠️ Limited | -             | Custom button with icon + text                 |
-| TabSet            | `TabSet`          | ✅ Complete    | ⚠️ Limited | -             | Custom tab container                           |
-| Charts (multiple) | _(via Charts pkg)_ | ✅ Complete   | ⚠️ Limited | -             | Custom elements in `flutter_adaptive_charts_fs` |
+| Element           | JSON Type String   | Implementation | Tests      | Documentation | Notes                                              |
+| ----------------- | ------------------ | -------------- | ---------- | ------------- | -------------------------------------------------- |
+| Badge             | `Badge`            | ✅ Complete    | ⚠️ Limited | -             | Custom element; has HostConfig `BadgeStylesConfig` |
+| Carousel          | `Carousel`         | ✅ Complete    | ⚠️ Limited | -             | Custom element; child pages use `CarouselPage`     |
+| CarouselPage      | `CarouselPage`     | ✅ Complete    | ⚠️ Limited | -             | Child element of `Carousel`                        |
+| Accordion         | `Accordion`        | ✅ Complete    | ⚠️ Limited | -             | Custom collapsible element                         |
+| ProgressBar       | `ProgressBar`      | ✅ Complete    | ⚠️ Limited | -             | Custom element                                     |
+| ProgressRing      | `ProgressRing`     | ✅ Complete    | ⚠️ Limited | -             | Custom element                                     |
+| Rating            | `Rating`           | ✅ Complete    | ⚠️ Limited | -             | Custom element; also registered as `Input.Rating`  |
+| CodeBlock         | `CodeBlock`        | ✅ Complete    | ⚠️ Limited | -             | Custom code display element                        |
+| CompoundButton    | `CompoundButton`   | ✅ Complete    | ⚠️ Limited | -             | Custom button with icon + text                     |
+| TabSet            | `TabSet`           | ✅ Complete    | ⚠️ Limited | -             | Custom tab container                               |
+| Charts (multiple) | _(via Charts pkg)_ | ✅ Complete    | ⚠️ Limited | -             | Custom elements in `flutter_adaptive_charts_fs`    |
 
 ---
 
@@ -166,7 +166,6 @@ All are registered in `CardTypeRegistry` (`lib/src/registry.dart`).
 2. **Verify backgroundImage**: Confirm both string and object forms work ([doc](./backgroundImage.md))
 3. **Implement `fallback` for Actions**: `_getActionWidget` currently ends in `assert(false)` with no fallback processing
 4. **Implement `requires` property validation**: Skip elements that declare version requirements the renderer cannot meet
-5. **Verify `selectAction` on Image and TableCell**: Confirm or fix coverage to close the ⚠️ Partial gap
 
 ### Medium Priority
 
@@ -212,5 +211,5 @@ flutter test --exclude-tags=golden
 
 ---
 
-_Last Updated: 2026-05-19_  
+_Last Updated: 2026-05-19_
 _Based on v1.6.0 of Microsoft Adaptive Cards specification_
