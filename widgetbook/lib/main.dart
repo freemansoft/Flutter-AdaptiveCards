@@ -23,6 +23,8 @@ class WidgetbookApp extends StatelessWidget {
       addons: [
         // DeviceFrame AddOn deprecated in favor of ViewportAddon
         ViewportAddon(Viewports.all),
+        // Required for Widgetbook accessibility tooling, experimental usage is expected
+        // ignore: experimental_member_use
         SemanticsAddon(),
         MaterialThemeAddon(
           themes: [

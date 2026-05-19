@@ -4,24 +4,34 @@ import 'package:flutter_adaptive_template_fs/src/ast.dart';
 enum TokenType {
   /// An identifier (e.g., variable or function name).
   identifier,
+
   /// A numeric literal.
   number,
+
   /// A string literal.
   string,
+
   /// An operator (e.g., '+', '>', '&&').
   operator,
+
   /// A dot for property access.
   dot,
+
   /// A comma separating arguments.
   comma,
+
   /// A left parenthesis '('.
   leftParen,
+
   /// A right parenthesis ')'.
   rightParen,
+
   /// A left bracket '[' or '{'.
   leftBracket,
+
   /// A right bracket ']' or '}'.
   rightBracket,
+
   /// End of file/input.
   eof,
 }
@@ -54,8 +64,21 @@ class Lexer {
 
   /// The list of supported operators.
   static const operators = [
-    '==', '!=', '<=', '>=', '&&', '||',
-    '<', '>', '+', '-', '*', '/', '%', '^', '!',
+    '==',
+    '!=',
+    '<=',
+    '>=',
+    '&&',
+    '||',
+    '<',
+    '>',
+    '+',
+    '-',
+    '*',
+    '/',
+    '%',
+    '^',
+    '!',
   ];
 
   /// Returns the next token in the input stream.
@@ -89,7 +112,7 @@ class Lexer {
     }
     if (c == '}') {
       pos++;
-      return const Token(TokenType.rightBracket, '}'); 
+      return const Token(TokenType.rightBracket, '}');
     }
     if (c == '.') {
       pos++;
@@ -247,9 +270,9 @@ class ExpressionParser {
     var node = _parseAdditive();
     while (_current.type == TokenType.operator &&
         (_current.value == '<' ||
-         _current.value == '>' ||
-         _current.value == '<=' ||
-         _current.value == '>=')) {
+            _current.value == '>' ||
+            _current.value == '<=' ||
+            _current.value == '>=')) {
       final op = _current.value;
       _advance();
       node = BinaryExpressionNode(op, node, _parseAdditive());
@@ -271,7 +294,9 @@ class ExpressionParser {
   AstNode _parseMultiplicative() {
     var node = _parseExponential();
     while (_current.type == TokenType.operator &&
-        (_current.value == '*' || _current.value == '/' || _current.value == '%')) {
+        (_current.value == '*' ||
+            _current.value == '/' ||
+            _current.value == '%')) {
       final op = _current.value;
       _advance();
       node = BinaryExpressionNode(op, node, _parseExponential());
@@ -292,8 +317,8 @@ class ExpressionParser {
   AstNode _parseUnary() {
     if (_current.type == TokenType.operator &&
         (_current.value == '!' ||
-         _current.value == '-' ||
-         _current.value == '+')) {
+            _current.value == '-' ||
+            _current.value == '+')) {
       final op = _current.value;
       _advance();
       return UnaryExpressionNode(op, _parseUnary());
@@ -308,19 +333,19 @@ class ExpressionParser {
       _expect(TokenType.rightParen);
       return _parseAccessors(node);
     }
-    
+
     if (_matchType(TokenType.string)) {
       final val = _current.value;
       _advance();
       return _parseAccessors(LiteralNode(val));
     }
-    
+
     if (_matchType(TokenType.number)) {
       final numVal = num.tryParse(_current.value);
       _advance();
       return _parseAccessors(LiteralNode(numVal));
     }
-    
+
     if (_matchType(TokenType.identifier)) {
       final text = _current.value;
       _advance(); // consume identifier
@@ -358,7 +383,7 @@ class ExpressionParser {
       if (_matchType(TokenType.dot)) {
         _advance();
         if (!_matchType(TokenType.identifier)) {
-           throw const FormatException('Expected identifier after dot');
+          throw const FormatException('Expected identifier after dot');
         }
         final propName = _current.value;
         _advance();

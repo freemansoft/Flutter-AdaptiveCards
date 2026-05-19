@@ -201,16 +201,11 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
         ],
       );
     } else {
-      final List<Widget> actionWidgets = activeActions.map((action) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: action,
-        );
-      }).toList();
-
-      actionWidget = Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: actionWidgets,
+      actionWidget = Wrap(
+        spacing: 8.0,
+        runSpacing: 8.0,
+        alignment: WrapAlignment.start,
+        children: activeActions,
       );
     }
     widgetChildren.add(actionWidget);

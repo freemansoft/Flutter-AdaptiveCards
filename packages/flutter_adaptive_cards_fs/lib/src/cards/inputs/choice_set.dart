@@ -109,7 +109,9 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       if (value.isNotEmpty) {
         _selectedChoices.addAll(value.split(','));
       }
-      controller.text = _selectedChoices.isNotEmpty ? _selectedChoices.first : '';
+      controller.text = _selectedChoices.isNotEmpty
+          ? _selectedChoices.first
+          : '';
       stateHasError = false;
     });
   }

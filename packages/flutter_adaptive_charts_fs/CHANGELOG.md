@@ -1,6 +1,8 @@
+# Changelog
+
 ## [0.7.0]
 
-# Changelog
+- no changes yet
 
 ## [0.6.0]
 
