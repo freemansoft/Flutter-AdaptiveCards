@@ -265,7 +265,7 @@ class _HomePageState extends State<HomePage>
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isLandscape = constraints.maxWidth > constraints.maxHeight;
+        final isLandscape = constraints.maxWidth > 800.0;
         final previewWidget = _buildPreview();
         final editorWidget = _buildEditorTabView();
 
@@ -345,12 +345,17 @@ class _HomePageState extends State<HomePage>
     }
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: AdaptiveCardsCanvas.map(
-        key: ValueKey(jsonEncode(cardData)),
-        content: cardData,
-        hostConfigs: HostConfigs(),
-        showDebugJson: false,
-        listView: true,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: AdaptiveCardsCanvas.map(
+            key: ValueKey(jsonEncode(cardData)),
+            content: cardData,
+            hostConfigs: HostConfigs(),
+            showDebugJson: false,
+            listView: true,
+          ),
+        ),
       ),
     );
   }

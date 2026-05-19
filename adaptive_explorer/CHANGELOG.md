@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.0]
+
+- Change landscape / portrait breakpoint handling
+
 ## [0.6.0]
 
 - Bumped versions to 0.6.0 for next development cycle

@@ -2,6 +2,8 @@
 
 ## [0.7.0]
 
+- no changes yet
+
 ## [0.6.0]
 
 - Bumped versions to 0.6.0 for next development cycle

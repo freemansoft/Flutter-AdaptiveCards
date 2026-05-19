@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.0]
 
+- change landscape / portrait breakpoint handling for AdaptiveCardElement
+
 ## [0.6.0]
 
 - Bumped versions to 0.6.0 for next development cycle
