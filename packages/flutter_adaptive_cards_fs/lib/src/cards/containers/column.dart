@@ -38,6 +38,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
   late MainAxisAlignment verticalAlignment;
   late CrossAxisAlignment horizontalAlignment;
   late Alignment? containerHorizontalAlignment;
+  double? minHeight;
 
   @override
   void initState() {
@@ -96,6 +97,8 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
     containerHorizontalAlignment = styleResolver.resolveContainerAlignment(
       adaptiveMap['horizontalAlignment'],
     );
+
+    minHeight = parseMinHeight(adaptiveMap['minHeight']);
   }
 
   @override
@@ -112,6 +115,32 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
             style: style,
           );
 
+    final bool hasChildren = items.isNotEmpty;
+    final bool hasBackgroundImage = backgroundImageSpecified(adaptiveMap);
+
+    Widget containerChild;
+    if (!hasChildren && hasBackgroundImage) {
+      containerChild =
+          getBackgroundImageFromMap(adaptiveMap) ?? const SizedBox();
+    } else {
+      containerChild = ChildStyler(
+        adaptiveMap: adaptiveMap,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: horizontalAlignment,
+          mainAxisAlignment: verticalAlignment,
+          children: [...items.map((it) => it)],
+        ),
+      );
+    }
+
+    final decoration = hasChildren
+        ? getDecorationFromMap(
+            adaptiveMap,
+            backgroundColor: backgroundColor,
+          )
+        : BoxDecoration(color: backgroundColor);
+
     final Widget child = Visibility(
       visible: isVisible,
       child: SeparatorElement(
@@ -124,19 +153,11 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
             // and for the decoration
             alignment: containerHorizontalAlignment,
             padding: EdgeInsets.only(left: preceedingSpacing),
-            decoration: getDecorationFromMap(
-              adaptiveMap,
-              backgroundColor: backgroundColor,
-            ),
-            child: ChildStyler(
-              adaptiveMap: adaptiveMap,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: horizontalAlignment,
-                mainAxisAlignment: verticalAlignment,
-                children: [...items.map((it) => it)],
-              ),
-            ),
+            constraints: minHeight != null
+                ? BoxConstraints(minHeight: minHeight!)
+                : null,
+            decoration: decoration,
+            child: containerChild,
           ),
         ),
       ),

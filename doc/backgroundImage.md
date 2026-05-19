@@ -30,3 +30,10 @@ The text version is
 
 1. Test cases must be created to verify that the backgroundImage url is identified correctly.
 1. The image itself doesnt need to be downloaded. Just that the URL is correct and the fillMode is correct.
+
+## Verification & Sizing Status
+
+* **Verification Completed**: Confirmed both string and object background image formats parse and render correctly.
+* **Layout Sizing & minHeight**: Implemented parsing and container layout-level constraints for `minHeight` on `AdaptiveContainer` and `AdaptiveColumn`.
+* **Aspect Ratio Preservation**: Added specialized rendering behavior where containers or columns containing **only** a `backgroundImage` render it as a direct child widget (rather than in `BoxDecoration`), letting Flutter's layout engine dynamically scale the unconstrained dimension to perfectly preserve the original image's aspect ratio.
+* **Tests**: Automated widget test cases added to `test/elements/background_image_test.dart` to verify this exact layout-level aspect ratio behavior.

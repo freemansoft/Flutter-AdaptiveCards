@@ -30,6 +30,7 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
   late List<Widget> children;
   late double spacing;
   late Color? backgroundColor;
+  double? minHeight;
 
   @override
   void didChangeDependencies() {
@@ -62,10 +63,40 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
         : styleResolver.resolveContainerBackgroundColor(
             style: style,
           );
+
+    minHeight = parseMinHeight(adaptiveMap['minHeight']);
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool hasChildren = children.isNotEmpty;
+    final bool hasBackgroundImage = backgroundImageSpecified(adaptiveMap);
+
+    Widget containerChild;
+    if (!hasChildren && hasBackgroundImage) {
+      containerChild =
+          getBackgroundImageFromMap(adaptiveMap) ?? const SizedBox();
+    } else {
+      containerChild = Padding(
+        // padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: EdgeInsets.symmetric(
+          vertical: spacing,
+          horizontal: spacing,
+        ),
+        child: Column(
+          mainAxisAlignment: verticalContentAlignment,
+          children: children.toList(),
+        ),
+      );
+    }
+
+    final decoration = hasChildren
+        ? getDecorationFromMap(
+            adaptiveMap,
+            backgroundColor: backgroundColor,
+          )
+        : BoxDecoration(color: backgroundColor);
+
     return Visibility(
       visible: isVisible,
       child: ChildStyler(
@@ -75,21 +106,11 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
           child: SeparatorElement(
             adaptiveMap: adaptiveMap,
             child: Container(
-              decoration: getDecorationFromMap(
-                adaptiveMap,
-                backgroundColor: backgroundColor,
-              ),
-              child: Padding(
-                // padding: const EdgeInsets.symmetric(vertical: 8.0),
-                padding: EdgeInsets.symmetric(
-                  vertical: spacing,
-                  horizontal: spacing,
-                ),
-                child: Column(
-                  mainAxisAlignment: verticalContentAlignment,
-                  children: children.toList(),
-                ),
-              ),
+              constraints: minHeight != null
+                  ? BoxConstraints(minHeight: minHeight!)
+                  : null,
+              decoration: decoration,
+              child: containerChild,
             ),
           ),
         ),
