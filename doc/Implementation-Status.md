@@ -53,6 +53,9 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 | Input.ChoiceSet | [spec](https://adaptivecards.io/explorer/Input.ChoiceSet.html) | ✅ Complete    | ✅ Yes | [Using-Flutter-Form-Inputs.md](./Using-Flutter-Form-Inputs.md) | Compact & multiselect           |
 | Input.Choice    | [spec](https://adaptivecards.io/explorer/Input.Choice.html)    | ⚠️ Map         | ❌ No  | -                                                              | Implemented as map in ChoiceSet |
 
+> [!NOTE]
+> All standard input implementations (`Input.Text`, `Input.Number`, `Input.Date`, `Input.Time`, `Input.Toggle`, `Input.ChoiceSet`) fully implement `appendInput()`, `initInput()`, `checkRequired()`, and `resetInput()` methods. These elements have been verified to use the mixin-inherited `value` property exclusively, without directly accessing `adaptiveMap['value']` after initialization.
+
 ---
 
 ## Actions
@@ -209,5 +212,5 @@ flutter test --exclude-tags=golden
 
 ---
 
-_Last Updated: 2026-05-15_  
+_Last Updated: 2026-05-19_  
 _Based on v1.6.0 of Microsoft Adaptive Cards specification_
