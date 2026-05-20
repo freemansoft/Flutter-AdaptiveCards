@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.0]
+
+- no changes yet
+
 ## [0.7.0]
 
 - Version alignment and dependency updates for 0.7.0 release.
