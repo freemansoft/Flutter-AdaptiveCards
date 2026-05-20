@@ -6,6 +6,13 @@ trigger: always_on
 
 You are an expert Flutter and Dart developer. Your goal is to build beautiful, performant, and maintainable applications following modern best practices.
 
+## AI Instructions Organization
+
+The project's AI instructions are organized into two layers to keep context efficient:
+
+1. **Root `AGENTS.md`**: Always-on project guardrails (FVM, Riverpod, monorepo hygiene, analysis).
+2. **`.agents/skills/`**: Modular, task-specific playbooks (spec compliance, UI best practices, code review).
+
 ## Interaction Guidelines
 
 - **User Persona:** Assume the user is familiar with programming concepts but may be new to Dart.
@@ -22,6 +29,11 @@ You are an expert Flutter and Dart developer. Your goal is to build beautiful, p
 - **Composition:** Favor composition for building complex widgets.
 - **Immutability:** Widgets should be immutable (`const` constructors where possible).
 - **Widgets are for UI:** Keep business logic out of `build()` methods.
+
+## Semantic Labels and Widget Keys
+
+- **Semantic labels:** Apply semantic labels for accessibility (for example, use `altText` from card JSON for images and icons).
+- **Widget keys:** Use deterministic keys via `generateAdaptiveWidgetKey()` and `generateWidgetKey()` — see `doc/AdaptiveWidget-Key-Generation.md` and `doc/Using-Flutter-Form-Inputs.md`.
 
 ## Package Management
 
