@@ -189,10 +189,12 @@ fvm flutter analyze
 
 ## Changelog Updates
 
-Whenever you make changes to one of the published packages (e.g., `flutter_adaptive_cards_fs`, `flutter_adaptive_charts_fs`, `flutter_adaptive_template_fs`):
+Whenever you make changes to a package or app:
 
-1. **Always** append your changes to the corresponding `CHANGELOG.md` file in that package's directory.
-2. If introducing new features or bug fixes, you should add an `## Unreleased` section to the `CHANGELOG.md` to document the changes properly.
+1. **Always** document changes under the current top `## [<version>]` section in that package's `CHANGELOG.md` (and in `adaptive_explorer` / `widgetbook` changelogs when those apps change).
+2. During a development cycle, edit the existing top section; do not add a second heading for the same version.
+
+After a release is published to pub.dev, follow the **`release-engineer`** skill §6: minor version bump across all `pubspec.yaml` files, new `## [<version>]` sections in all five changelogs, and `flutter_adaptive_cards_fs: ^<version>` in `flutter_adaptive_charts_fs`.
 
 ---
 
