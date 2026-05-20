@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 void main() {
-  // TODO(username): add missing tests - date, time
+  // TODO(username): add missing reset tests for date, time
   testWidgets('ResetInputs action resets all fields to original values', (
     WidgetTester tester,
   ) async {

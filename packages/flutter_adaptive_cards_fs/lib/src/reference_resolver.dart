@@ -486,12 +486,11 @@ class ReferenceResolver {
 
   /// JSON Schema definition "VerticalAlignment"
   ///   Used in Table and Table Row
-  ///   Used in BackgroundImage
+  ///   Used in Column
+  ///   Used in Container
   ///
-  /// JSON Schema definition "VerticalContentAlignment"
+  /// JSON Schema definition "VerticalContentAlignment" "VerticalCellContentAlignment"
   ///   Defines how content should be aligned vertically within the container
-  ///
-  // TODO(username): Implemented on column an table add to all containers
   ///
   /// Resolves vertical alignment from a string value
   ///
