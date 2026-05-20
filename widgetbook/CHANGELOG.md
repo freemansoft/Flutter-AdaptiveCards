@@ -2,7 +2,7 @@
 
 ## [0.7.0]
 
-- no changes yet
+- Version alignment and dependency updates for 0.7.0 release.
 
 ## [0.6.0]
 
