@@ -17,6 +17,7 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 - [ ] **FVM usage**: Are all commands (`flutter`, `dart`) executed via `fvm`?
 - [ ] **Analysis**: Does the code pass `fvm flutter analyze`? (Compliance with `very_good_analysis`).
 - [ ] **Changelog**: Has `CHANGELOG.md` been updated in the affected packages following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)?
+- [ ] **Release / post-publish** (if applicable): Follow `release-engineer` — all five `version:` fields match, five changelogs have matching top `## [<version>]` sections, and `flutter_adaptive_charts_fs` uses `flutter_adaptive_cards_fs: ^<version>`.
 - [ ] **Formatting**: Has `dart_format` been run on all modified files?
 
 ---
