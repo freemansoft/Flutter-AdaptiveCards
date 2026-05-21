@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 ///
@@ -46,8 +45,7 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
     } else {
       children = [];
     }
-    spacing = SpacingsConfig.resolveSpacing(
-      styleResolver.getSpacingsConfig(),
+    spacing = styleResolver.resolveSpacing(
       adaptiveMap['spacing'],
     );
 

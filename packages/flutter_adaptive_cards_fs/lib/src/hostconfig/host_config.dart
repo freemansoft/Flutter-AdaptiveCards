@@ -4,14 +4,18 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dar
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/chart_colors_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_sizes_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_weights_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/foreground_colors_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/inputs_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/media_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_style_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/separator_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_block_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_styles_config.dart';
 
 class HostConfigs {
   HostConfigs({

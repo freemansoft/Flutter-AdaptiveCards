@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_sizes_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_weights_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

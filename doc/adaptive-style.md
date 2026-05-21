@@ -132,20 +132,22 @@ The reference resolver should accept a json hostconfig as its constructor parame
 
 ## Changes to the existing code that calls ReferenceResolver
 
-Change the existing code that uses ReferenceResolver to use the new host and type oriented.  In some places the same could is used by two different classes or completely different types. Those calls to the same function should be split so they can each looik in their own type based configuration.
+All widgets should access configuration values through the `ReferenceResolver` (often exposed via the `styleResolver` mixin property) rather than importing or accessing the underlying config objects directly (e.g., `SpacingsConfig`, `FontSizesConfig`).
 
-There are places in the code that call `InheritedReferenceResolver.of...` `.resolve<something>` like `resolveImageSizes()` those calls should all call the correct property getter on the correct configuration object.
+The `ReferenceResolver` acts as a facade, providing resolution methods like `resolveSpacing(spacing)` or `resolveImageSizes(sizeDescription)`. This insulates the UI components from the underlying configuration class structures.
 
-A call from `ImageSet` to get the image sizes
+A call from `ImageSet` to get the image sizes should NOT directly access the configuration class:
 ```dart
- InheritedReferenceResolver.of(
-      context,).resolver.resolveImageSizes(sizeDescription);
-```
-
-would become
-```dart
+// AVOID: Accessing the config object directly
 InheritedReferenceResolver.of(
       context,).resolver.getImageSetConfig().imageSize(sizeDescription);
+```
+
+Instead, use the `ReferenceResolver` convenience methods:
+```dart
+// PREFER: Using the resolver method
+InheritedReferenceResolver.of(
+      context,).resolver.resolveImageSizes(sizeDescription);
 ```
 
 ## Testing

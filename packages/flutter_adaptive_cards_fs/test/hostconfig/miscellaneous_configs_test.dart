@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/media_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/separator_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_block_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

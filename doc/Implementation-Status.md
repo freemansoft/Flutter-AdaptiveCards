@@ -45,12 +45,12 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 | Input           | Microsoft Spec                                                 | Implementation | Tests  | Documentation                                                  | Notes                           |
 | --------------- | -------------------------------------------------------------- | -------------- | ------ | -------------------------------------------------------------- | ------------------------------- |
-| Input.Text      | [spec](https://adaptivecards.io/explorer/Input.Text.html)      | ✅ Complete    | ✅ Yes | [Using-Flutter-Form-Inputs.md](./Using-Flutter-Form-Inputs.md) | Flutter Form-based              |
-| Input.Number    | [spec](https://adaptivecards.io/explorer/Input.Number.html)    | ✅ Complete    | ✅ Yes | [Using-Flutter-Form-Inputs.md](./Using-Flutter-Form-Inputs.md) | Flutter Form-based              |
-| Input.Date      | [spec](https://adaptivecards.io/explorer/Input.Date.html)      | ✅ Complete    | ✅ Yes | [Using-Flutter-Form-Inputs.md](./Using-Flutter-Form-Inputs.md) | Material/Cupertino pickers      |
-| Input.Time      | [spec](https://adaptivecards.io/explorer/Input.Time.html)      | ✅ Complete    | ✅ Yes | [Using-Flutter-Form-Inputs.md](./Using-Flutter-Form-Inputs.md) | Material/Cupertino pickers      |
-| Input.Toggle    | [spec](https://adaptivecards.io/explorer/Input.Toggle.html)    | ✅ Complete    | ✅ Yes | [Using-Flutter-Form-Inputs.md](./Using-Flutter-Form-Inputs.md) | Flutter Form-based              |
-| Input.ChoiceSet | [spec](https://adaptivecards.io/explorer/Input.ChoiceSet.html) | ✅ Complete    | ✅ Yes | [Using-Flutter-Form-Inputs.md](./Using-Flutter-Form-Inputs.md) | Compact & multiselect           |
+| Input.Text      | [spec](https://adaptivecards.io/explorer/Input.Text.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based              |
+| Input.Number    | [spec](https://adaptivecards.io/explorer/Input.Number.html)    | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based              |
+| Input.Date      | [spec](https://adaptivecards.io/explorer/Input.Date.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers      |
+| Input.Time      | [spec](https://adaptivecards.io/explorer/Input.Time.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers      |
+| Input.Toggle    | [spec](https://adaptivecards.io/explorer/Input.Toggle.html)    | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based              |
+| Input.ChoiceSet | [spec](https://adaptivecards.io/explorer/Input.ChoiceSet.html) | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Compact & multiselect           |
 | Input.Choice    | [spec](https://adaptivecards.io/explorer/Input.Choice.html)    | ⚠️ Map         | ❌ No  | -                                                              | Implemented as map in ChoiceSet |
 
 > [!NOTE]
@@ -78,28 +78,28 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 | Config Component       | Microsoft Spec                                                                          | Implementation | Tests  | Documentation                        | Notes              |
 | ---------------------- | --------------------------------------------------------------------------------------- | -------------- | ------ | ------------------------------------ | ------------------ |
-| HostConfig (root)      | [schema](https://github.com/microsoft/AdaptiveCards/blob/main/schemas/host-config.json) | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | Main config object |
-| AdaptiveCardConfig     | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| ActionsConfig          | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| ContainerStylesConfig  | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| ContainerStyleConfig   | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| ForegroundColorsConfig | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| FontColorConfig        | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| FontSizesConfig        | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| FontWeightsConfig      | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| FactSetConfig          | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| ImageSetConfig         | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| ImageSizesConfig       | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| InputsConfig           | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| LabelConfig            | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| ErrorMessageConfig     | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| MediaConfig            | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| SeparatorConfig        | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| ShowCardConfig         | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| SpacingsConfig         | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
-| TextStylesConfig       | schema                                                                                  | ✅ Complete    | ✅ Yes | [Style-Design.md](./Style-Design.md) | -                  |
+| HostConfig (root)      | [schema](https://github.com/microsoft/AdaptiveCards/blob/main/schemas/host-config.json) | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | Main config object |
+| AdaptiveCardConfig     | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| ActionsConfig          | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| ContainerStylesConfig  | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| ContainerStyleConfig   | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| ForegroundColorsConfig | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| FontColorConfig        | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| FontSizesConfig        | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| FontWeightsConfig      | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| FactSetConfig          | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| ImageSetConfig         | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| ImageSizesConfig       | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| InputsConfig           | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| LabelConfig            | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| ErrorMessageConfig     | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| MediaConfig            | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| SeparatorConfig        | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| ShowCardConfig         | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| SpacingsConfig         | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| TextStylesConfig       | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
 
-**Total HostConfig Classes**: 19 entities implemented (per `lib/src/hostconfig/`)
+**Total HostConfig Classes**: All HostConfig classes have been extracted to individual files (per `lib/src/hostconfig/`).
 
 ---
 
@@ -107,14 +107,14 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 | Feature              | Microsoft Spec                                                                                                           | Implementation | Tests  | Documentation                                        | Notes                                                                                           |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------- | ------ | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Template Expansion   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/)                                                     | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | `Evaluator` in `flutter_adaptive_template_fs`                                                   |
-| `$data` Scoping      | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | `_dataStack` in `Evaluator`                                                                     |
-| `$root` Reference    | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | Scoped via `_scopeStack`                                                                        |
-| `$index` in Arrays   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | Available during array repetition                                                               |
-| Array Binding        | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | `$data` pointing to array triggers repeater                                                     |
-| `$when` Conditional  | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | `null`/`false` → element excluded                                                               |
-| `json()` Function    | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | Parses embedded JSON strings                                                                    |
-| `if()` Expressions   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [JSON-Template-Design.md](./JSON-Template-Design.md) | Conditional value selection                                                                     |
+| Template Expansion   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/)                                                     | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | `Evaluator` in `flutter_adaptive_template_fs`                                                   |
+| `$data` Scoping      | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | `_dataStack` in `Evaluator`                                                                     |
+| `$root` Reference    | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | Scoped via `_scopeStack`                                                                        |
+| `$index` in Arrays   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | Available during array repetition                                                               |
+| Array Binding        | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | `$data` pointing to array triggers repeater                                                     |
+| `$when` Conditional  | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | `null`/`false` → element excluded                                                               |
+| `json()` Function    | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | Parses embedded JSON strings                                                                    |
+| `if()` Expressions   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | Conditional value selection                                                                     |
 | Adaptive Expressions | [spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) | ⚠️ Partial     | ✅ Yes | -                                                    | Operators, string, math, logic implemented; Date/Time and advanced collection functions missing |
 
 ---
@@ -134,6 +134,18 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 | `requires`            | All elements    | ❌ Missing     | -                                                                                      | Version requirement validation not implemented                                                                                                                          |
 | `selectAction`        | Some elements   | ✅ Complete    | -                                                                                      | Confirmed on Container, Column, ColumnSet, Image, and TableCell.                                                                                                        |
 | `backgroundImage`     | Card/Container  | ✅ Complete    | [backgroundImage.md](./backgroundImage.md)                                             | Parsed via mixin for Container, Column, ColumnSet, TableCell; fully tested (both string and object forms), including empty aspect-ratio sizing and `minHeight` support. |
+
+---
+
+## Known Gaps
+
+The following spec compliance gaps are known across the codebase:
+
+- **`requires`**: Version requirement validation is not implemented.
+- **Action Fallback**: `_getActionWidget` ends in `assert(false)` with no fallback check.
+- **Dark Mode**: Some specific color invert issues or missing HostConfig support.
+- **Version Gating**: Missing support to skip rendering elements with a higher version requirement.
+- **`RichTextBlock` & `TextRun`**: Missing elements required since AC spec v1.2.
 
 ---
 
