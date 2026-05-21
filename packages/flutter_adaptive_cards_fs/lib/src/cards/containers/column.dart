@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 ///
@@ -103,8 +102,7 @@ class AdaptiveColumnState extends State<AdaptiveColumn>
 
   @override
   Widget build(BuildContext context) {
-    final double preceedingSpacing = SpacingsConfig.resolveSpacing(
-      styleResolver.getSpacingsConfig(),
+    final double preceedingSpacing = styleResolver.resolveSpacing(
       adaptiveMap['spacing'],
     );
 

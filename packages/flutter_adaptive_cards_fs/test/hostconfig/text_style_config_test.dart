@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_style_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_styles_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

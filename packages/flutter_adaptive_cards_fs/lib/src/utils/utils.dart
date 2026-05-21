@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -203,8 +202,7 @@ Widget loadLabel({
     labelConfig?.weight ?? 'default',
   );
 
-  final double bottomPadding = SpacingsConfig.resolveSpacing(
-    resolver.getSpacingsConfig(),
+  final double bottomPadding = resolver.resolveSpacing(
     inputsConfig?.label.inputSpacing,
   );
 
@@ -277,8 +275,7 @@ Widget loadErrorMessage({
   final FontWeight fontWeight = resolver.resolveFontWeight(
     errorMessageConfig?.weight ?? 'default',
   );
-  final double topPadding = SpacingsConfig.resolveSpacing(
-    resolver.getSpacingsConfig(),
+  final double topPadding = resolver.resolveSpacing(
     errorMessageConfig?.spacing,
   );
 

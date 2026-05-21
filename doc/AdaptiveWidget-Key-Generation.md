@@ -14,8 +14,7 @@ content widget.
 | `generateAdaptiveWidgetKey(Map)` | `ValueKey('${id}_adaptive')` | The outer `StatefulWidget` (the card wrapper) |
 | `generateWidgetKey(Map, {String? suffix})` | `ValueKey(id)` or `ValueKey('${id}_suffix')` | The inner input/content widget |
 
-The full key naming convention is documented in
-[Using-Flutter-Form-Inputs.md](./Using-Flutter-Form-Inputs.md).
+Key formats in adaptive card layouts are deterministic to ease integration testing and state tracking, particularly with form inputs as detailed in [form-inputs.md](./form-inputs.md).
 
 ---
 

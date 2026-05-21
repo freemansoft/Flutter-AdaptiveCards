@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/miscellaneous_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// Additional widget classes used to frame out the rendering of cards
+// Not part of the Adaptive-card standard
+
+/// Class that adds a separator to the element
 class SeparatorElement extends StatelessWidget {
   const SeparatorElement({
     super.key,
@@ -19,12 +22,14 @@ class SeparatorElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topSpacing = SpacingsConfig.resolveSpacing(
-      ProviderScope.containerOf(
-        context,
-      ).read(styleReferenceResolverProvider).getSpacingsConfig(),
-      adaptiveMap['spacing'],
-    );
+    final topSpacing =
+        ProviderScope.containerOf(
+              context,
+            )
+            .read(styleReferenceResolverProvider)
+            .resolveSpacing(
+              adaptiveMap['spacing'],
+            );
 
     final separator = adaptiveMap['separator'] as bool? ?? false;
     if (!separator) {

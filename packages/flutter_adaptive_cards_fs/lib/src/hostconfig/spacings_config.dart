@@ -1,42 +1,5 @@
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 
-class MediaConfig {
-  MediaConfig({
-    required this.defaultPoster,
-    required this.playButton,
-    required this.allowInlinePlayback,
-  });
-
-  factory MediaConfig.fromJson(Map<String, dynamic> json) {
-    return MediaConfig(
-      defaultPoster: json['defaultPoster']?.toString() ?? '',
-      playButton: json['playButton']?.toString() ?? '',
-      allowInlinePlayback: json['allowInlinePlayback'] as bool? ?? true,
-    );
-  }
-
-  final String defaultPoster;
-  final String playButton;
-  final bool allowInlinePlayback;
-}
-
-class SeparatorConfig {
-  SeparatorConfig({
-    required this.lineThickness,
-    required this.lineColor,
-  });
-
-  factory SeparatorConfig.fromJson(Map<String, dynamic> json) {
-    return SeparatorConfig(
-      lineThickness: json['lineThickness'] as int? ?? 1,
-      lineColor: json['lineColor']?.toString() ?? '#B2000000',
-    );
-  }
-
-  final int lineThickness;
-  final String lineColor;
-}
-
 class SpacingsConfig {
   SpacingsConfig({
     required this.small,
@@ -96,18 +59,4 @@ class SpacingsConfig {
         return myConfig.defaultSpacing.toDouble();
     }
   }
-}
-
-class TextBlockConfig {
-  TextBlockConfig({
-    required this.headingLevel,
-  });
-
-  factory TextBlockConfig.fromJson(Map<String, dynamic> json) {
-    return TextBlockConfig(
-      headingLevel: json['headingLevel'] as int? ?? 2,
-    );
-  }
-
-  final int headingLevel;
 }

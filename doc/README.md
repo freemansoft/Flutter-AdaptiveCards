@@ -32,11 +32,17 @@ Comprehensive matrix tracking implementation status of all Adaptive Cards elemen
 
 Describes the action system architecture using Generic interfaces, Default implementations, and ActionTypeRegistry pattern. Essential reading for understanding action handling.
 
-### [Style-Design.md](./Style-Design.md)
+### [adaptive-style.md](./adaptive-style.md)
 
 **Status**: ✅ Current | **Category**: Architecture
 
 Comprehensive specification for HostConfig implementation and mapping to Flutter themes. Documents all configuration classes based on Microsoft's host-config.json schema.
+
+### [Architecture-Overview.md](./Architecture-Overview.md)
+
+**Status**: ✅ Current | **Category**: Architecture
+
+High-level system architecture showing package structure, widget hierarchy, and state management (Riverpod internals vs consumer API).
 
 ---
 
@@ -48,7 +54,7 @@ Comprehensive specification for HostConfig implementation and mapping to Flutter
 
 Widget key generation pattern using `generateWidgetKey()` for all AdaptiveElementWidget classes. Shows constructor pattern for reliable state binding.
 
-### [Using-Flutter-Form-Inputs.md](./Using-Flutter-Form-Inputs.md)
+### [form-inputs.md](./form-inputs.md)
 
 **Status**: ✅ Current | **Category**: Implementation Guide
 
@@ -74,7 +80,7 @@ Describes support for `backgroundImage` in both string (URL) and object (URL + f
 
 ## Feature Specifications
 
-### [JSON-Template-Design.md](./JSON-Template-Design.md)
+### [adaptive-template-design.md](./adaptive-template-design.md)
 
 **Status**: ✅ Current | **Category**: Feature Spec
 
@@ -120,11 +126,11 @@ Documents bug where AdaptiveColumns in an AdaptiveColumnSet have inconsistent he
 
 ## Reference Material
 
-### [Adaptive-expressions-and-prebuilt-functions.md](./Adaptive-expressions-and-prebuilt-functions.md)
+### [adaptive-template-design.md](./adaptive-template-design.md)
 
 **Status**: ⚠️ Future Reference Only | **Category**: Reference
 
-**NOT part of standard Adaptive Cards specification.** Documents Azure Bot Service expression functions for potential future integration. For standard templating, see [JSON-Template-Design.md](./JSON-Template-Design.md).
+**NOT part of standard Adaptive Cards specification.** Documents Azure Bot Service expression functions for potential future integration. For standard templating, see [adaptive-template-design.md](./adaptive-template-design.md).
 
 ---
 
@@ -133,8 +139,6 @@ Documents bug where AdaptiveColumns in an AdaptiveColumnSet have inconsistent he
 Based on the current state of the codebase, the following documents would be valuable additions:
 
 - **Custom-Extensions.md**: Reference for all non-spec elements and actions (Rating, CodeBlock, CompoundButton, Carousel, Accordion, Badge, ProgressBar, ProgressRing, TabSet, Action.ResetInputs, Action.Popover, Action.InsertImage, Action.OpenUrlDialog) with JSON type strings, required properties, and behavior
-- **Architecture-Overview.md**: High-level system architecture showing package structure, widget hierarchy, and state management (Riverpod internals vs consumer API)
-- **Known-Gaps.md**: Consolidate all spec compliance gaps (`requires`, action fallback, dark mode, version gating, `RichTextBlock`, `TextRun`) currently spread across multiple files
 
 ---
 
