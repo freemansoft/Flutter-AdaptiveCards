@@ -124,14 +124,10 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
               ),
             )
             .toList();
-    final String stringAxis = styleResolver.resolveOrientation(
-      'actionsOrientation',
-    );
-    if (stringAxis == 'Horizontal') {
-      actionsOrientation = Axis.horizontal;
-    } else if (stringAxis == 'Vertical') {
-      actionsOrientation = Axis.vertical;
-    }
+    final String stringAxis = styleResolver.resolveOrientation(null);
+    actionsOrientation = stringAxis == 'Vertical'
+        ? Axis.vertical
+        : Axis.horizontal;
   }
 
   /// This is for actions directly on an AdaptiveCardElement
@@ -185,29 +181,15 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
         .toList();
 
     Widget actionWidget;
-    if (actionsOrientation == Axis.vertical) {
-      final List<Widget> actionWidgets = activeActions.map((action) {
-        return SizedBox(width: double.infinity, child: action);
-      }).toList();
 
-      actionWidget = Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: actionWidgets,
-            ),
-          ),
-        ],
-      );
-    } else {
-      actionWidget = Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        alignment: WrapAlignment.start,
-        children: activeActions,
-      );
-    }
+    actionWidget = Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      alignment: WrapAlignment.start,
+      direction: actionsOrientation,
+      children: activeActions,
+    );
+
     widgetChildren.add(actionWidget);
 
     if (currentCard != null) {

@@ -1,14 +1,19 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/actions_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
 
 // Helper to load widget from a subdirectory of samples
 // Not needed here
-Widget getSampleForGoldenTest(Key key, String sampleName) {
-  return getTestWidgetFromPath(path: '$sampleName.json', key: key);
+Widget getSampleForGoldenTest(Key key, String testSource) {
+  return getTestWidgetFromPath(path: '$testSource.json', key: key);
 }
 
 void configureTestView() {
@@ -92,6 +97,54 @@ void main() {
     await expectLater(
       find.byKey(key),
       matchesGoldenFile(getGoldenPath('sample2_snooze.png')),
+    );
+  }, tags: ['golden']);
+
+  testWidgets('Golden Sample 2 Vertical', (tester) async {
+    configureTestView();
+
+    const ValueKey key = ValueKey('paint');
+
+    // Load actions config with vertical orientation
+    final actionsFile = File('test/hostconfig/actions_config_vertical.json');
+    final Map<String, dynamic> actionsJson =
+        json.decode(actionsFile.readAsStringSync()) as Map<String, dynamic>;
+    final actionsConfig = ActionsConfig.fromJson(actionsJson);
+    final hostConfig = HostConfig(actions: actionsConfig);
+    final hostConfigs = HostConfigs(light: hostConfig, dark: hostConfig);
+
+    final Widget sample = getTestWidgetFromPath(
+      path: 'example2.json',
+      key: key,
+      hostConfigs: hostConfigs,
+    );
+
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('sample2_vertical-base.png')),
+    );
+
+    expect(find.widgetWithText(ElevatedButton, "I'll be late"), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(ElevatedButton, "I'll be late"));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('sample2_vertical_ill_be_late.png')),
+    );
+
+    expect(find.widgetWithText(ElevatedButton, 'Snooze'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Snooze'));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('sample2_vertical_snooze.png')),
     );
   }, tags: ['golden']);
 

@@ -1,0 +1,14 @@
+{
+  "actionsOrientation": "horizontal",
+  "actionAlignment": "center",
+  "buttonSpacing": 20,
+  "maxActions": 10,
+  "spacing": "large",
+  "showCard": {
+    "actionMode": "popup",
+    "style": "default",
+    "inlineTopMargin": 32
+  },
+  "iconPlacement": "leftOfTitle",
+  "iconSize": 40
+}
