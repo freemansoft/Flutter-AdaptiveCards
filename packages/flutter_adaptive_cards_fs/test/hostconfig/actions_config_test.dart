@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('ActionsConfig', () {
     test('should deserialize correctly from JSON', () {
-      final file = File('test/hostconfig/actions_config.json');
+      final file = File('test/hostconfig/actions_config_vertical.json');
       final jsonString = file.readAsStringSync();
       final Map<String, dynamic> jsonMap =
           json.decode(jsonString) as Map<String, dynamic>;
@@ -28,6 +28,8 @@ void main() {
       expect(config.iconSize, 40);
     });
 
+    /// We know the default is horizontal
+    /// we could create a test that uses actions_config_horizontal.json
     test('should use default values when JSON is empty', () {
       final config = ActionsConfig.fromJson({});
 
