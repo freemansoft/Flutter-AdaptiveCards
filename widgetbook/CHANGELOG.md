@@ -2,7 +2,8 @@
 
 ## [0.8.0]
 
-- no changes yet
+- Updated to Dart SDK 3.12 and Flutter 3.44
+- Migrated to Swift Package Manager from CocoaPods
 
 ## [0.7.0]
 
