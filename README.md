@@ -97,7 +97,6 @@ The dart-lang [skills](https://github.com/dart-lang/skills)
 - dart-build-cli-app
 - dart-collect-coverage
 - dart-fix-runtime-errors
-- dart-fix-static-analysis-errors
 - dart-generate-test-mocks
 - dart-migrate-to-checks-package
 - dart-resolve-package-conflicts
