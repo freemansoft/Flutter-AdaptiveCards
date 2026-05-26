@@ -19,7 +19,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 0.8.0
 
 environment:
-  sdk: ^3.11.0
+  sdk: ^3.12.0
 resolution: workspace
 
 # Dependencies specify other packages that your package needs in order to work.
@@ -67,6 +67,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  config:
+      enable-swift-package-manager: true
 
   # Assets for AdaptiveCard samples
   assets:

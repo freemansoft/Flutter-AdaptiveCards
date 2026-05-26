@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0]
 
+- Updated to Dart SDK 3.12 and Flutter 3.44
+- Regenerated golden test images for Flutter 3.44 rendering changes
 - Refactored `HostConfig` classes by extracting bundled classes (e.g. from `miscellaneous_configs.dart` and `font_config.dart`) into dedicated individual files under `lib/src/hostconfig/` to improve maintainability.
 - Updated `AdaptiveColumn`, `AdaptiveContainer`, and internal utilities to strictly use `ReferenceResolver` as a facade for accessing HostConfig values (e.g. `resolveSpacing()`), removing direct dependencies on underlying config objects like `SpacingsConfig`.
 - Created `doc/Architecture-Overview.md` to document system architecture, package structure, internal state management, and extensibility points.

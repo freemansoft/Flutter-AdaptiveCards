@@ -149,17 +149,17 @@ Flutter versioning is managed with `fvm`. The current Flutter version is as foll
 
 ```powershell
 PS C:\dev\flutter> flutter --version
-Flutter 3.41.2 • channel stable • https://github.com/flutter/flutter.git
-Framework • revision 90673a4eef (2 months ago) • 2026-02-18 13:54:59 -0800
-Engine • hash d96704abcce17ff165bbef9d77123407ef961017 (revision 6c0baaebf7) (2 months ago) • 2026-02-18 19:22:23.000Z
-Tools • Dart 3.11.0 • DevTools 2.54.1
+Flutter 3.44.0 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision 559ffa3f75 (10 days ago) • 2026-05-15 14:13:13 -0700
+Engine • hash fcf463a2242790d1fdcd9d044f533080f5022e18 (revision 4c525dac5e) (10 days ago) • 2026-05-15 19:00:04.000Z
+Tools • Dart 3.12.0 • DevTools 2.57.0
 ```
 
 You can move to this version of flutter by installing fvm and then:
 
 ```zsh
-fvm install 3.41.2
-#fvm use 3.41.2
+fvm install 3.44.0
+#fvm use 3.44.0
 ```
 
 Released Flutter / Dart bundling versions are located here: <https://docs.flutter.dev/release/archive?tab=windows>
