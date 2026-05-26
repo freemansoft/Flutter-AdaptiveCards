@@ -5,15 +5,17 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Fri, 24 Apr 2026 15:09:34 GMT
 ---
-> [!IMPORTANT]
-> **Project override — Flutter-AdaptiveCards monorepo:**
-> This project pins its Flutter/Dart SDK via [fvm](https://fvm.app/).
-> Replace every bare `dart` or `flutter` command in this skill with its `fvm`-prefixed equivalent:
-> - `dart analyze` → `fvm flutter analyze` (run from repo root to cover all packages)
-> - `dart fix --apply` → `fvm dart fix --apply` (run from the specific package directory)
-> - `dart format .` → `fvm dart format .`
->
-> See the `dart-monorepo-workspace` skill for the correct working directory per command.
+
+[!IMPORTANT]
+**Project override — Flutter-AdaptiveCards monorepo:**
+This project pins its Flutter/Dart SDK via [fvm](https://fvm.app/).
+Replace every bare `dart` or `flutter` command in this skill with its `fvm`-prefixed equivalent:
+
+- `dart analyze` → `fvm flutter analyze` (run from repo root to cover all packages)
+- `dart fix --apply` → `fvm dart fix --apply` (run from the specific package directory)
+- `dart format .` → `fvm dart format .`
+
+See the `dart-monorepo-workspace` skill for the correct working directory per command.
 
 # Analyzing and Fixing Dart Code
 
@@ -26,7 +28,7 @@ metadata:
 
 ## Analysis Configuration
 
-Configure the Dart analyzer using the `analysis_options.yaml` file located at the package root. 
+Configure the Dart analyzer using the `analysis_options.yaml` file located at the package root.
 
 - **Base Configuration:** Always include a standard rule set (e.g., `package:lints/recommended.yaml` or `package:flutter_lints/flutter.yaml`) using the `include:` directive.
 - **Strict Type Checks:** Enable strict type checks under the `analyzer: language:` node to prevent implicit downcasts and dynamic inferences. Set `strict-casts: true`, `strict-inference: true`, and `strict-raw-types: true`.
@@ -107,8 +109,8 @@ formatter:
 void processData() {
   // Suppress for a specific line
   // ignore: invalid_assignment
-  int x = ''; 
-  
+  int x = '';
+
   const y = 10; // ignore: constant_identifier_names
 }
 ```

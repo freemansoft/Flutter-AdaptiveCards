@@ -25,12 +25,6 @@
       "skillPath": "skills/dart-fix-runtime-errors/SKILL.md",
       "computedHash": "afdd8e4830f87e850f90d4ca3af1d3cbe871d629ec997c32edb5f081324e6915"
     },
-    "dart-fix-static-analysis-errors": {
-      "source": "dart-lang/skills",
-      "sourceType": "github",
-      "skillPath": "skills/dart-fix-static-analysis-errors/SKILL.md",
-      "computedHash": "5ad262d921e5e2a40d684adcda6d90212b8787f61dd2897e0cea3ae682b65aba"
-    },
     "dart-generate-test-mocks": {
       "source": "dart-lang/skills",
       "sourceType": "github",
