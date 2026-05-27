@@ -5,18 +5,6 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Fri, 24 Apr 2026 15:13:22 GMT
 ---
-
-[!IMPORTANT]
-
-**Project override — Flutter-AdaptiveCards monorepo:**
-This project pins its Flutter/Dart SDK via [fvm](https://fvm.app/).
-Replace every bare `dart` or `flutter` command in this skill with its `fvm`-prefixed equivalent:
-
-- `dart analyze` → `fvm flutter analyze` (run from repo root to cover all packages)
-- `dart fix --apply` → `fvm dart fix --apply` (run from the specific package directory)
-- `dart test` → `fvm flutter test` (run from the specific package directory)
-
-See the `dart-monorepo-workspace` skill for the correct working directory per command.
 # Resolving Dart Static Analysis Errors
 
 ## Contents
