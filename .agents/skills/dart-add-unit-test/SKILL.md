@@ -5,25 +5,6 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Fri, 24 Apr 2026 15:07:58 GMT
 ---
-[!IMPORTANT]
-
-**Project override — Flutter-AdaptiveCards monorepo:**
-
-**For tests inside `packages/flutter_adaptive_cards_fs/test/`**, use the `flutter-adaptive-cards-testing` skill instead of this one. It defines the mandatory project conventions:
-
-- Use `getTestWidgetFromPath` helper (not raw `pumpWidget`)
-- Find widgets by `ValueKey` first (key-first testing)
-- Always run with `--exclude-tags golden` locally (golden images are Linux/CI only)
-- Run tests from the package directory: `cd packages/flutter_adaptive_cards_fs && fvm flutter test`
-
-This skill may still be used for unit tests in `dart`-only packages
-(`flutter_adaptive_template_fs`) or for pure logic tests with no widget tree.
-
-**fvm command substitutions** (this project pins its SDK via fvm):
-
-- `dart test` → `fvm flutter test` (from the package directory)
-- `dart run build_runner build` → `fvm dart run build_runner build`
-
 # Testing Dart and Flutter Applications
 
 ## Contents

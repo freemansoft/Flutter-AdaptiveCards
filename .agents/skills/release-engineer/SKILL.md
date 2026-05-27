@@ -8,6 +8,9 @@ description: >
 
 # Release Engineer Protocol
 
+> Shell commands below use bare `flutter` / `dart`. In this repo, apply
+> **`adaptive-cards-dart-flutter-fvm`** before running them.
+
 As a release engineer, you are responsible for managing version numbers, tagging the repository, and publishing packages to pub.dev. Follow this procedure strictly to ensure consistency across the monorepo.
 
 ## 1. Versioning Standard
@@ -59,8 +62,8 @@ Before tagging and publishing:
 1. All `version:` fields match the release you are about to ship (e.g. `0.7.0`).
 2. Every `CHANGELOG.md` has a `## [<version>]` section at the top with complete release notes for that version.
 3. `flutter_adaptive_charts_fs` declares `flutter_adaptive_cards_fs: ^<same-release-version>`.
-4. `fvm flutter pub get` (from repo root) succeeds.
-5. `fvm flutter analyze` and `fvm flutter test` pass.
+4. `flutter pub get` (from repo root) succeeds.
+5. `flutter analyze` and `flutter test` pass.
 
 ## 4. Tagging the Repository
 
@@ -83,8 +86,8 @@ From each package directory:
 
 ```bash
 cd packages/flutter_adaptive_cards_fs
-fvm flutter pub publish --dry-run   # verify first
-fvm flutter pub publish             # requires pub.dev credentials / token
+flutter pub publish --dry-run   # verify first
+flutter pub publish             # requires pub.dev credentials / token
 ```
 
 Repeat for `flutter_adaptive_template_fs` and `flutter_adaptive_charts_fs`.
@@ -134,9 +137,9 @@ Replace `<next-version>` with the new version (e.g. `## [0.8.0]`). Move or refin
 ### 6.5 Verify and commit
 
 ```bash
-fvm flutter pub get    # from repo root
-fvm flutter analyze
-fvm flutter test       # or per-package as needed
+flutter pub get    # from repo root
+flutter analyze
+flutter test       # or per-package as needed
 ```
 
 Commit with a message such as: `Bump monorepo to <next-version> for next development cycle`.

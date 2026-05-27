@@ -16,7 +16,8 @@ All library tests live under:
 packages/flutter_adaptive_cards_fs/test/
 ```
 
-Tests are run **from that package directory**, not the monorepo root:
+Tests are run **from that package directory**, not the monorepo root.
+Prefix commands with `fvm` per **`adaptive-cards-dart-flutter-fvm`**.
 
 ```bash
 cd packages/flutter_adaptive_cards_fs

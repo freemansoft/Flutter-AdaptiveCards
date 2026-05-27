@@ -5,18 +5,6 @@ metadata:
   model: models/gemini-3.1-pro-preview
   last_modified: Fri, 24 Apr 2026 15:09:34 GMT
 ---
-
-[!IMPORTANT]
-**Project override — Flutter-AdaptiveCards monorepo:**
-This project pins its Flutter/Dart SDK via [fvm](https://fvm.app/).
-Replace every bare `dart` or `flutter` command in this skill with its `fvm`-prefixed equivalent:
-
-- `dart analyze` → `fvm flutter analyze` (run from repo root to cover all packages)
-- `dart fix --apply` → `fvm dart fix --apply` (run from the specific package directory)
-- `dart format .` → `fvm dart format .`
-
-See the `dart-monorepo-workspace` skill for the correct working directory per command.
-
 # Analyzing and Fixing Dart Code
 
 ## Contents
@@ -110,7 +98,7 @@ void processData() {
   // Suppress for a specific line
   // ignore: invalid_assignment
   int x = '';
-
+  
   const y = 10; // ignore: constant_identifier_names
 }
 ```
