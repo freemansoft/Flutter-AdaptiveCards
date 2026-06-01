@@ -139,15 +139,18 @@ The `ReferenceResolver` acts as a facade, providing resolution methods like `res
 A call from `ImageSet` to get the image sizes should NOT directly access the configuration class:
 ```dart
 // AVOID: Accessing the config object directly
-InheritedReferenceResolver.of(
-      context,).resolver.getImageSetConfig().imageSize(sizeDescription);
+InheritedReferenceResolver.rawCardScopeOf(context)
+      .resolver
+      .getImageSetConfig()
+      .imageSize(sizeDescription);
 ```
 
 Instead, use the `ReferenceResolver` convenience methods:
 ```dart
 // PREFER: Using the resolver method
-InheritedReferenceResolver.of(
-      context,).resolver.resolveImageSizes(sizeDescription);
+InheritedReferenceResolver.rawCardScopeOf(context)
+      .resolver
+      .resolveImageSizes(sizeDescription);
 ```
 
 ## Testing

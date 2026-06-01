@@ -32,7 +32,7 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 
 ### Theming & Styling
 
-- [ ] **ReferenceResolver**: Does the element use `styleReferenceResolverProvider` for all colors, font sizes, and spacing?
+- [ ] **ReferenceResolver**: Does the element use `styleResolver` / `InheritedReferenceResolver.rawCardScopeOf` for all colors, font sizes, and spacing?
 - [ ] **Theme Awareness**: Has it been verified in both **Light** and **Dark** modes?
 - [ ] **HostConfig**: Does it respect spacing, separator, and padding properties from JSON via `SeparatorElement`?
 

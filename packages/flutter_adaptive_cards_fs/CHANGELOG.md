@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0]
 
+### Removed
+
+- **`flutter_riverpod` dependency** — the package no longer pulls Riverpod transitively.
+  - riverpod wasn't used in any reactive fashion
+- **`riverpod_providers.dart`** and all nested `ProviderScope` / provider overrides.
+
+### Changed
+
+- **Scoped dependency injection** now uses nested **`InheritedReferenceResolver`** widgets instead of Riverpod:
+  - Outer scope (from `RawAdaptiveCard`): `resolver` (includes `cardTypeRegistry` / `actionTypeRegistry`), `rawAdaptiveCardState` — read via `InheritedReferenceResolver.rawCardScopeOf(context)`.
+  - Inner scope (from each `AdaptiveCardElement`): `adaptiveCardElementState` — read via `InheritedReferenceResolver.elementScopeOf(context)`.
+- **`ProviderScopeMixin`** unchanged by name; implementations now read the inherited scopes above (no `ref`, `ConsumerWidget`, or app-level `ProviderScope` required).
+- Host-facing callbacks remain on **`InheritedAdaptiveCardHandlers`**.
+- See [`doc/replace-riverpod.md`](../../doc/replace-riverpod.md) for the migration map from former provider names.
+
 - Updated to Dart SDK 3.12 and Flutter 3.44
 - Regenerated golden test images for Flutter 3.44 rendering changes
 - Refactored `HostConfig` classes by extracting bundled classes (e.g. from `miscellaneous_configs.dart` and `font_config.dart`) into dedicated individual files under `lib/src/hostconfig/` to improve maintainability.

@@ -38,7 +38,7 @@ every element widget via a Riverpod `Provider` override.
 | `lib/src/reference_resolver.dart`          | `ReferenceResolver` — all resolution logic         |
 | `lib/src/hostconfig/fallback_configs.dart` | Hardcoded defaults used when HostConfig is absent  |
 | `lib/src/hostconfig/*.dart`                | Typed config classes for each subsection           |
-| `lib/src/riverpod_providers.dart`          | `styleReferenceResolverProvider` Riverpod provider |
+| `lib/src/inherited_reference_resolver.dart` | Exposes `ReferenceResolver` and card scopes to the tree |
 | `lib/src/flutter_raw_adaptive_card.dart`   | Where `ReferenceResolver` is created and scoped    |
 
 ---
@@ -97,15 +97,19 @@ In `RawAdaptiveCardState.initState()`:
 _resolver = ReferenceResolver(hostConfigs: widget.hostConfigs);
 ```
 
-In `RawAdaptiveCardState.build()`, it is injected into the
-`ProviderScope` that wraps all element widgets:
+In `RawAdaptiveCardState.build()`, it is injected via
+`InheritedReferenceResolver`:
 
 ```dart
-return ProviderScope(
-  overrides: [
-    styleReferenceResolverProvider.overrideWithValue(_resolver),
-    // ... other providers
-  ],
+_resolver = ReferenceResolver(
+  hostConfigs: widget.hostConfigs,
+  cardTypeRegistry: widget.cardTypeRegistry,
+  actionTypeRegistry: widget.actionTypeRegistry,
+);
+
+return InheritedReferenceResolver(
+  resolver: _resolver,
+  rawAdaptiveCardState: this,
   child: Card(color: backgroundColor, child: child),
 );
 ```
@@ -121,23 +125,21 @@ final childResolver = resolver.copyWith(style: 'emphasis');
 
 ## Reading the Resolver in an Element
 
-Inside any element's `build()` method, get the resolver via Riverpod:
+Inside any element `State` with `ProviderScopeMixin`, use `styleResolver`.
+Stateless helpers use the inherited scope directly:
 
 ```dart
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
 
 @override
 Widget build(BuildContext context) {
-  final resolver = ProviderScope.containerOf(context)
-      .read(styleReferenceResolverProvider);
+  final resolver = InheritedReferenceResolver.rawCardScopeOf(context).resolver;
 
   // Now use resolver.resolve*() methods...
 }
 ```
 
-> **Never** call `ProviderScope.containerOf(context).watch(...)` — always use
-> `read()`. Elements rebuild via `setState`, not reactive watching.
+Elements rebuild via `setState`, not inherited-widget listening.
 
 ---
 

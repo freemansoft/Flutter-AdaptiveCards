@@ -10,7 +10,7 @@ You are an expert Flutter and Dart developer. Your goal is to build beautiful, p
 
 The project's AI instructions are organized into two layers to keep context efficient:
 
-1. **Root `AGENTS.md`**: Always-on project guardrails (FVM, Riverpod, monorepo hygiene, analysis).
+1. **Root `AGENTS.md`**: Always-on project guardrails (FVM, monorepo hygiene, analysis).
 2. **`.agents/skills/`**: Modular, task-specific playbooks (spec compliance, UI best practices, code review).
 
 ## Interaction Guidelines
@@ -40,14 +40,17 @@ The project's AI instructions are organized into two layers to keep context effi
 - **FVM:** Always prefix commands with `fvm` (e.g. `fvm flutter pub get`).
 - **Dev Dependencies:** Use `fvm flutter pub add dev:<package>`.
 
-## State Management (Riverpod)
+## State management (`flutter_adaptive_cards_fs`)
 
-The project uses **Riverpod** for application state management.
+Scoped DI uses **`InheritedReferenceResolver`** (nested raw-card / element scopes) and **`InheritedAdaptiveCardHandlers`**. See [`doc/replace-riverpod.md`](doc/replace-riverpod.md).
 
-- **Prefer AsyncNotifier/Notifier:** Use for complex state logic.
-- **ProviderScope:** Ensure the app is wrapped in a `ProviderScope`.
-- **ConsumerWidget/ConsumerStatefulWidget:** Use for widgets that need to listen to providers.
-- **Ref usage:** Avoid passing `WidgetRef` deep into the tree; pass data or callbacks instead.
+When working in **`packages/flutter_adaptive_cards_fs`**:
+
+- **Do** use `ProviderScopeMixin` for registries/resolver/card state, `AdaptiveInputMixin` + `setState` for inputs, and `InheritedAdaptiveCardHandlers` for host callbacks.
+- **Do not** add Riverpod or other DI frameworks to the cards package without an explicit architectural decision.
+- **Use** `InheritedReferenceResolver.rawCardScopeOf` / `elementScopeOf` for shared services; do not reintroduce separate scope widgets.
+
+For **sample apps and `adaptive_explorer`**, use normal Flutter state patterns (`StatefulWidget`, etc.).
 
 ## Code Quality
 

@@ -6,8 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
 import 'package:url_launcher/url_launcher.dart';
 // Default action handlers with basic behavior
 // including forwarding to the InheritedAdaptiveCardHandlers
@@ -45,14 +44,10 @@ class DefaultSubmitAction extends GenericSubmitAction {
       element.visitChildren(visitor);
     }
 
-    // We need the context of the nearest ancestor AdaptiveCardElement
-    ProviderScope.containerOf(
-          context,
-        )
-        .read(adaptiveCardElementStateProvider)
+    InheritedReferenceResolver.elementScopeOf(context)
+        .adaptiveCardElementState!
         .context
         .visitChildElements(visitor);
-    //context.visitChildElements(visitor);
 
     if (valid) {
       final foo = InheritedAdaptiveCardHandlers.of(context);
@@ -106,14 +101,10 @@ class DefaultExecuteAction extends GenericExecuteAction {
       element.visitChildren(visitor);
     }
 
-    // We need the context of the nearest ancestor AdaptiveCardElement
-    ProviderScope.containerOf(
-          context,
-        )
-        .read(adaptiveCardElementStateProvider)
+    InheritedReferenceResolver.elementScopeOf(context)
+        .adaptiveCardElementState!
         .context
         .visitChildElements(visitor);
-    //context.visitChildElements(visitor);
 
     if (valid) {
       final foo = InheritedAdaptiveCardHandlers.of(context);
@@ -228,14 +219,10 @@ class DefaultResetInputsAction extends GenericActionResetInputs {
       element.visitChildren(visitor);
     }
 
-    // We need the context of the nearest ancestor AdaptiveCardElement
-    ProviderScope.containerOf(
-          context,
-        )
-        .read(adaptiveCardElementStateProvider)
+    InheritedReferenceResolver.elementScopeOf(context)
+        .adaptiveCardElementState!
         .context
         .visitChildElements(visitor);
-    //context.visitChildElements(visitor);
   }
 }
 

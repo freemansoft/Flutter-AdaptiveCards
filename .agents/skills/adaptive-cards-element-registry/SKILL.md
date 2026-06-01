@@ -196,30 +196,23 @@ From within a State's `build()` method, read the `ReferenceResolver` to apply
 theme-aware colors, font sizes, and spacing:
 
 ```dart
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+// In element State with ProviderScopeMixin:
+final resolver = styleResolver;
 
-@override
-Widget build(BuildContext context) {
-  final resolver = ProviderScope.containerOf(context)
-      .read(styleReferenceResolverProvider);
-
-  final Color foreground = resolver.resolveContainerForegroundColor(
-    style: style ?? 'default',
-    isSubtle: false,
-  );
-  final double fontSize = resolver.resolveFontSize(
-    context: context,
-    sizeString: adaptiveMap['size']?.toString() ?? 'default',
-  );
-  // ...
-}
+final Color foreground = resolver.resolveContainerForegroundColor(
+  style: style ?? 'default',
+  isSubtle: false,
+);
+final double fontSize = resolver.resolveFontSize(
+  context: context,
+  sizeString: adaptiveMap['size']?.toString() ?? 'default',
+);
+// ...
 ```
 
-> **Note:** Riverpod is used **internally only** to thread shared state
-> (registry, resolver, card state) through the widget tree. Do not use
-> `ConsumerWidget` or `ref.watch()` in new elements — use
-> `ProviderScope.containerOf(context).read(...)` as shown above.
+> **Note:** Shared services (registry, resolver, card state) come from
+> `InheritedReferenceResolver.rawCardScopeOf` / `elementScopeOf` via
+> `ProviderScopeMixin`. Do not add Riverpod to new elements.
 
 ---
 

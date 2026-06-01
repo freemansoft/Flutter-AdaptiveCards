@@ -20,27 +20,36 @@ When an Adaptive Card is rendered, the JSON is recursively parsed into a hierarc
 1. **`AdaptiveCardCanvas`**: The root widget that initializes the `CardTypeRegistry`, `ActionTypeRegistry`, and provides the `HostConfig` context. It wraps the entire card in necessary providers.
 2. **`AdaptiveCardWidget`**: Represents the `AdaptiveCard` root element, applying the overall padding, background color, and layout constraints.
 3. **Containers and Elements**: Elements like `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveTextBlock`, and `AdaptiveImage` are rendered as individual Flutter widgets (often wrapping standard Flutter widgets like `Column`, `Row`, `Text`, and `Image`).
-4. **Inputs**: Form inputs (`Input.Text`, `Input.Date`, etc.) are rendered using standard Flutter form controls, with their values tracked within the card's state.
-5. **Actions**: The action bar (e.g., `Action.Submit`, `Action.OpenUrl`) is typically rendered at the bottom of the card or within an `ActionSet`. Actions trigger callbacks that are routed through the `GenericAction` handlers.
+4. **Inputs**: Form inputs (`Input.Text`, `Input.Date`, etc.) are rendered using standard Flutter form controls. Values and validation live in per-input `StatefulWidget` state (`AdaptiveInputMixin` + `setState`), not in Riverpod.
+5. **Actions**: The action bar (e.g., `Action.Submit`, `Action.OpenUrl`) is typically rendered at the bottom of the card or within an `ActionSet`. Actions trigger callbacks routed through `GenericAction` handlers and, for default behaviors, `InheritedAdaptiveCardHandlers`.
 
-## State Management
+## State and dependency injection
 
-The core library uses **Riverpod** for internal state management, primarily for handling input values, visibility toggling, and data fetching (e.g., dynamic choice sets).
+The core library uses **`InheritedWidget` scopes** for cross-cutting services (not Riverpod). See [`doc/replace-riverpod.md`](replace-riverpod.md) for the migration notes and scope map.
 
-### Riverpod Internals
+### Where state actually lives
 
-- **`RawAdaptiveCardState`**: The central state object that holds the current values of all inputs, tracks which elements are visible/hidden, and manages the execution of actions.
-- **Providers**: Various Riverpod providers are used to expose state to the widget tree. For example, a `StateNotifierProvider` might track the selected items in a `ChoiceSet` or the text in a `TextInput`.
-- **Consumer Widgets**: Deeply nested widgets that need to read or update state use Riverpod's `ConsumerWidget` or `ConsumerStatefulWidget` to access the providers without passing callbacks manually down the tree.
+| Concern | Mechanism |
+| --- | --- |
+| Input values, visibility, show-card targets | `StatefulWidget` + `AdaptiveInputMixin` / `AdaptiveVisibilityMixin` and per-`AdaptiveCardElement` `Form` state |
+| Host callbacks (`onSubmit`, `onChange`, …) | `InheritedAdaptiveCardHandlers` |
+| Registries, `ReferenceResolver`, root card state | `InheritedReferenceResolver.resolver` (outer, via `rawCardScopeOf`) |
+| Per-card form, widget registry, show-card | `InheritedReferenceResolver` (inner, via `elementScopeOf`) |
+| Theme / `HostConfig` updates | `RawAdaptiveCardState.didChangeDependencies` + `setState` |
+
+### Inherited scopes
+
+`RawAdaptiveCard` and each `AdaptiveCardElement` install nested `InheritedReferenceResolver` nodes (outer vs inner). Element and action `State` classes use `ProviderScopeMixin` to read `rawCardScopeOf` / `elementScopeOf` without constructor drilling.
 
 ### Consumer API
 
-From the perspective of a consumer integrating `flutter_adaptive_cards_fs`:
+From the perspective of a host integrating `flutter_adaptive_cards_fs`:
 
-1. The consumer provides the JSON payload and a `HostConfig` to the `AdaptiveCardCanvas`.
-2. The consumer registers custom element or action handlers if needed.
-3. The consumer listens to events, such as `onSubmit` (when an `Action.Submit` is triggered), receiving the gathered input data as a Dart `Map`.
-4. The internal Riverpod state is abstracted away from the consumer. They interact primarily through the widget's constructor parameters and event callbacks.
+1. Provide JSON and `HostConfig` via `AdaptiveCardsCanvas` (or `RawAdaptiveCard`).
+2. Optionally pass custom `CardTypeRegistry` / `ActionTypeRegistry`, or wrap the tree with `InheritedAdaptiveCardHandlers` for submit/execute/open-url/change callbacks.
+3. Listen to events such as `onSubmit` and receive gathered input data as a `Map`.
+
+No third-party DI package is required at the app level.
 
 ## Extension Points
 

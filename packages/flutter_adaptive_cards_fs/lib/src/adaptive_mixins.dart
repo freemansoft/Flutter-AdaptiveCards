@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Mixin for widgets that are adaptive elements- widget and not state
 
@@ -24,25 +23,27 @@ mixin AdaptiveElementWidgetMixin on StatefulWidget {
 }
 
 mixin ProviderScopeMixin<T extends StatefulWidget> on State<T> {
-  RawAdaptiveCardState get rawRootCardWidgetState => ProviderScope.containerOf(
-    context,
-    listen: false,
-  ).read(rawAdaptiveCardStateProvider);
+  InheritedReferenceResolver get _rawCardScope =>
+      InheritedReferenceResolver.rawCardScopeOf(context);
 
-  CardTypeRegistry get cardTypeRegistry =>
-      ProviderScope.containerOf(context).read(cardTypeRegistryProvider);
+  RawAdaptiveCardState get rawRootCardWidgetState =>
+      _rawCardScope.rawAdaptiveCardState!;
+
+  CardTypeRegistry get cardTypeRegistry => _rawCardScope.resolver.cardTypeRegistry;
 
   ActionTypeRegistry get actionTypeRegistry =>
-      ProviderScope.containerOf(context).read(actionTypeRegistryProvider);
+      _rawCardScope.resolver.actionTypeRegistry;
 
   AdaptiveCardElementState get adaptiveCardElementState =>
-      ProviderScope.containerOf(context).read(adaptiveCardElementStateProvider);
+      InheritedReferenceResolver.elementScopeOf(context)
+          .adaptiveCardElementState!;
 
-  ReferenceResolver get styleResolver =>
-      ProviderScope.containerOf(context).read(styleReferenceResolverProvider);
+  ReferenceResolver get styleResolver => _rawCardScope.resolver;
 }
 
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
+  AdaptiveCardElementState? _cardElementScopeState;
+
   String get id => widget.id;
 
   String? get style => (adaptiveMap['style'] as String?)?.toLowerCase();
@@ -57,14 +58,14 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _cardElementScopeState = InheritedReferenceResolver.maybeElementStateOf(
+      context,
+    );
     // only register cards with IDs so we can target them
     if (idIsNatural(adaptiveMap)) {
       // register cards with IDs so we can target them
       // At one time this was only used for showCard
-      ProviderScope.containerOf(
-        context,
-        listen: false,
-      ).read(adaptiveCardElementStateProvider).registerCardWidget(id, widget);
+      _cardElementScopeState?.registerCardWidget(id, widget);
     } else {
       // a lot of them don't have ids
       assert(() {
@@ -90,16 +91,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   @override
   void dispose() {
     if (idIsNatural(adaptiveMap)) {
-      try {
-        ProviderScope.containerOf(
-          context,
-          listen: false,
-        ).read(adaptiveCardElementStateProvider).unregisterCardWidget(id);
-        // no idea what could pop up here if there is an error
-        // ignore: avoid_catches_without_on_clauses
-      } catch (_) {
-        // May fail if ProviderScope is already disposed
-      }
+      _cardElementScopeState?.unregisterCardWidget(id);
     }
     super.dispose();
   }
