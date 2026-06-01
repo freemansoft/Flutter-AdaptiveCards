@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
 import 'package:intl/intl.dart';
 
 class FadeAnimation extends StatefulWidget {
@@ -182,9 +181,7 @@ Widget loadLabel({
     return const SizedBox();
   }
 
-  final resolver = ProviderScope.containerOf(
-    context,
-  ).read(styleReferenceResolverProvider);
+  final resolver = InheritedReferenceResolver.rawCardScopeOf(context).resolver;
   final inputsConfig = resolver.getInputsConfig();
   final labelConfig = isRequired
       ? inputsConfig?.label.requiredInputs
@@ -258,9 +255,7 @@ Widget loadErrorMessage({
     return const SizedBox();
   }
 
-  final resolver = ProviderScope.containerOf(
-    context,
-  ).read(styleReferenceResolverProvider);
+  final resolver = InheritedReferenceResolver.rawCardScopeOf(context).resolver;
   final inputsConfig = resolver.getInputsConfig();
   final errorMessageConfig = inputsConfig?.errorMessage;
 

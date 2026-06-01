@@ -70,7 +70,7 @@ This project uses the [AGENTS.md](AGENTS.md) file to provide instructions to LLM
 Changes from the verson created by the Flutter team:
 
 - Linting rules changed from default to use VGV linter
-- Use `riverpod` instead of `provider`
+- Cards package uses `InheritedWidget` scopes for DI (Riverpod removed)
 - Added **Semantic Label Keys** rule
 - Added internationalizaiton and localization rules
 

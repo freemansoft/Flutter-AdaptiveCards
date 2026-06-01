@@ -86,7 +86,7 @@ These helpers load an Adaptive Card (from a file or a Map) and return a fully-wr
 > **Mandatory Usage**: Always use these helpers instead of `RawAdaptiveCard.fromMap` or `AdaptiveCardsCanvas` directly. They ensure that:
 >
 > 1. **ID Injection**: Missing IDs are recursively injected into the JSON map.
-> 2. **Context**: Necessary `ProviderScope` and `InheritedAdaptiveCardHandlers` are provided.
+> 2. **Context**: Inherited card scopes and `InheritedAdaptiveCardHandlers` are provided via the helpers.
 > 3. **UI Context**: The card is wrapped in a `MaterialApp`, `Scaffold`, and `RepaintBoundary`.
 
 **Architecture Note**: These helpers automatically wrap the card in:

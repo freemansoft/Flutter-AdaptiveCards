@@ -15,12 +15,14 @@ void main() {
     Map<String, dynamic> map, {
     required Function(String) onOpenUrl,
     required Function(Map) onSubmit,
+    required Function(Map) onExecute,
   }) {
     return getTestWidgetFromMap(
       map: map,
       title: 'a test',
       onOpenUrl: onOpenUrl,
       onSubmit: onSubmit,
+      onExecute: onExecute,
     );
   }
 
@@ -45,7 +47,12 @@ void main() {
     };
 
     await tester.pumpWidget(
-      buildCard(map, onOpenUrl: (url) => opened = true, onSubmit: (_) {}),
+      buildCard(
+        map,
+        onOpenUrl: (url) => opened = true,
+        onSubmit: (_) {},
+        onExecute: (_) {},
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -81,7 +88,12 @@ void main() {
     };
 
     await tester.pumpWidget(
-      buildCard(map, onOpenUrl: (url) => opened = true, onSubmit: (_) {}),
+      buildCard(
+        map,
+        onOpenUrl: (url) => opened = true,
+        onSubmit: (_) {},
+        onExecute: (_) {},
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -121,7 +133,12 @@ void main() {
     };
 
     await tester.pumpWidget(
-      buildCard(map, onOpenUrl: (url) => opened = true, onSubmit: (_) {}),
+      buildCard(
+        map,
+        onOpenUrl: (url) => opened = true,
+        onSubmit: (_) {},
+        onExecute: (_) {},
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -169,7 +186,12 @@ void main() {
     };
 
     await tester.pumpWidget(
-      buildCard(map, onOpenUrl: (url) => opened = true, onSubmit: (_) {}),
+      buildCard(
+        map,
+        onOpenUrl: (url) => opened = true,
+        onSubmit: (_) {},
+        onExecute: (_) {},
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -206,7 +228,12 @@ void main() {
     };
 
     await tester.pumpWidget(
-      buildCard(map, onOpenUrl: (url) => opened = true, onSubmit: (_) {}),
+      buildCard(
+        map,
+        onOpenUrl: (url) => opened = true,
+        onSubmit: (_) {},
+        onExecute: (_) {},
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -248,13 +275,60 @@ void main() {
       };
 
       await tester.pumpWidget(
-        buildCard(map, onOpenUrl: (_) {}, onSubmit: (map) => submitted = map),
+        buildCard(
+          map,
+          onOpenUrl: (_) {},
+          onSubmit: (map) => submitted = map,
+          onExecute: (_) {},
+        ),
       );
       await tester.pumpAndSettle();
 
       expect(find.text('Submit container'), findsOneWidget);
 
       await tester.tap(find.text('Submit container'));
+      await tester.pumpAndSettle();
+
+      expect(submitted, isNotNull);
+      expect(submitted!['foo'], 'bar');
+    },
+  );
+
+  testWidgets(
+    'AdaptiveContainer selectAction (Execute) calls onSubmit with provided data',
+    (tester) async {
+      Map? submitted;
+
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'version': '1.0',
+        'body': [
+          {
+            'type': 'Container',
+            'selectAction': {
+              'type': 'Action.Execute',
+              'data': {'foo': 'bar'},
+            },
+            'items': [
+              {'type': 'TextBlock', 'text': 'Execute container'},
+            ],
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        buildCard(
+          map,
+          onOpenUrl: (_) {},
+          onSubmit: (_) {},
+          onExecute: (map) => submitted = map,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Execute container'), findsOneWidget);
+
+      await tester.tap(find.text('Execute container'));
       await tester.pumpAndSettle();
 
       expect(submitted, isNotNull);

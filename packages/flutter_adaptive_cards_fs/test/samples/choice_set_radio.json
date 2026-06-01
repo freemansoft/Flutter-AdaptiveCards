@@ -21,6 +21,11 @@
   ],
   "actions": [
     {
+      "type": "Action.Execute",
+      "title": "Execute"
+    }
+,
+    {
       "type": "Action.Submit",
       "title": "Submit"
     }

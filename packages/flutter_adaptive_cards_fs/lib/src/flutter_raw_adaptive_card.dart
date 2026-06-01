@@ -10,11 +10,10 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The working root of an adaptive card tree when operating against the map
 ///
@@ -110,6 +109,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     _resolver = ReferenceResolver(
       hostConfigs: widget.hostConfigs,
+      cardTypeRegistry: widget.cardTypeRegistry,
+      actionTypeRegistry: widget.actionTypeRegistry,
     );
   }
 
@@ -472,13 +473,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       style: widget.map['style']?.toString().toLowerCase(),
     );
 
-    return ProviderScope(
-      overrides: [
-        rawAdaptiveCardStateProvider.overrideWithValue(this),
-        cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
-        actionTypeRegistryProvider.overrideWithValue(widget.actionTypeRegistry),
-        styleReferenceResolverProvider.overrideWithValue(_resolver),
-      ],
+    return InheritedReferenceResolver(
+      resolver: _resolver,
+      rawAdaptiveCardState: this,
       child: Card(color: backgroundColor, child: child),
     );
   }

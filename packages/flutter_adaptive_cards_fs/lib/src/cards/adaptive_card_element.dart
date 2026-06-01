@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/show_card.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod_providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The implementation of the `AdaptiveCard` card type.
 ///
@@ -222,11 +221,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       );
     }
 
-    // provider is scoped to the AdaptiveCardElement
-    return ProviderScope(
-      overrides: [
-        adaptiveCardElementStateProvider.overrideWithValue(this),
-      ],
+    return InheritedReferenceResolver(
+      resolver: InheritedReferenceResolver.rawCardScopeOf(context).resolver,
+      adaptiveCardElementState: this,
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
         child: Form(key: formKey, child: result),
