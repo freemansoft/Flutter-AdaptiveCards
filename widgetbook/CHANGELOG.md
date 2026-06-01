@@ -4,6 +4,7 @@
 
 - Updated to Dart SDK 3.12 and Flutter 3.44
 - Migrated to Swift Package Manager from CocoaPods
+- Fixed home pane bottom overflow on short windows: `AdaptiveCardsWidgetbookHome` now uses a `SingleChildScrollView` while keeping content vertically centered when it fits
 
 ## [0.7.0]
 

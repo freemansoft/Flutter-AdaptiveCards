@@ -9,77 +9,89 @@ class AdaptiveCardsWidgetbookHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Adaptive Cards for Flutter',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.displaySmall,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'New',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-            const Wrap(
-              children: [
-                _Card(
-                  title: '🚀 Adaptive Cards Hub',
-                  url: 'https://adaptivecards.microsoft.com/',
-                  description: 'The "new" Adaptive Cards hub.',
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Adaptive Cards for Flutter',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'New',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                    const Wrap(
+                      children: [
+                        _Card(
+                          title: '🚀 Adaptive Cards Hub',
+                          url: 'https://adaptivecards.microsoft.com/',
+                          description: 'The "new" Adaptive Cards hub.',
+                        ),
+                        _Card(
+                          title: '📝 Layout Designer',
+                          url:
+                              'https://adaptivecards.microsoft.com/designer.html',
+                          description: 'Experiment with in the designer.',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Legacy',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                    const Wrap(
+                      children: [
+                        _Card(
+                          title: '📖 Microsoft Docs',
+                          url: 'https://adaptivecards.io/',
+                          description: 'Learn more about Adaptive Cards.',
+                        ),
+                        _Card(
+                          title: '📍 Schema Explorer',
+                          url: 'https://adaptivecards.io/explorer/',
+                          description: 'Learn more about Adaptive Cards.',
+                        ),
+                        _Card(
+                          title: '🔬 Samples and Templates',
+                          url: 'https://adaptivecards.io/samples/',
+                          description: 'Learn more about Adaptive Cards.',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'This repository',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                    const Wrap(
+                      children: [
+                        _Card(
+                          title: '✨ Flutter-AdaptiveCards',
+                          url:
+                              'https://github.com/freemansoft/Flutter-AdaptiveCards',
+                          description: 'This project and examples on GitHub',
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                _Card(
-                  title: '📝 Layout Designer',
-                  url: 'https://adaptivecards.microsoft.com/designer.html',
-                  description: 'Experiment with in the designer.',
-                ),
-              ],
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Legacy',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-            const Wrap(
-              children: [
-                _Card(
-                  title: '📖 Microsoft Docs',
-                  url: 'https://adaptivecards.io/',
-                  description: 'Learn more about Adaptive Cards.',
-                ),
-                _Card(
-                  title: '📍 Schema Explorer',
-                  url: 'https://adaptivecards.io/explorer/',
-                  description: 'Learn more about Adaptive Cards.',
-                ),
-                _Card(
-                  title: '🔬 Samples and Templates',
-                  url: 'https://adaptivecards.io/samples/',
-                  description: 'Learn more about Adaptive Cards.',
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'This repository',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-            const Wrap(
-              children: [
-                _Card(
-                  title: '✨ Flutter-AdaptiveCards',
-                  url: 'https://github.com/freemansoft/Flutter-AdaptiveCards',
-                  description: 'This project and examples on GitHub',
-                ),
-              ],
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
