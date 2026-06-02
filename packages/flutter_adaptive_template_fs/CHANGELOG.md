@@ -3,6 +3,9 @@
 ## [0.8.0]
 
 - Updated to Dart SDK 3.12 and Flutter 3.44
+- Added Unit tests for `Resolver` path resolution (`test/unit/resolver_test.dart`).
+- Added Unit tests for `Lexer`, `ExpressionParser`, and AST node shapes (`test/unit/expression_parser_test.dart`).
+- Added Expression evaluation matrix tests for operators, builtins, member access, and parse-failure behavior (`test/unit/evaluator_expressions_test.dart`).
 
 ## [0.7.0]
 
