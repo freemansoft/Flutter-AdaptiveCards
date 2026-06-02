@@ -1,9 +1,37 @@
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../utils/test_utils.dart';
+
+RawAdaptiveCardState _cardState(WidgetTester tester) {
+  return tester.state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard));
+}
+
+Map<String, dynamic> _dataQueryChoiceSetCard() {
+  return {
+    'type': 'AdaptiveCard',
+    'version': '1.5',
+    'body': [
+      {
+        'type': 'Input.ChoiceSet',
+        'id': 'selectedUser',
+        'placeholder': 'Search for a user...',
+        'choices': [
+          {'title': 'Static choice example', 'value': 'static_value'},
+        ],
+        'choices.data': {
+          'type': 'Data.Query',
+          'dataset': 'graph.microsoft.com/users',
+        },
+        'style': 'expanded',
+      },
+    ],
+  };
+}
 
 void main() {
   testWidgets('Input.ChoiceSet with Data.Query passes dataQuery to onChange', (
@@ -176,6 +204,165 @@ void main() {
       expect(
         capturedDataQuery!.dataset,
         equals('graph.microsoft.com/users'),
+      );
+    },
+  );
+
+  testWidgets('loadInput after mount refreshes ChoiceSet with choices.data', (
+    WidgetTester tester,
+  ) async {
+    final map = _dataQueryChoiceSetCard();
+    final elementMap = map['body'][0] as Map<String, dynamic>;
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(
+        map: map,
+        title: 'Data.Query loadInput refresh',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(
+        generateWidgetKey(elementMap, suffix: 'Static choice example'),
+      ),
+      findsOneWidget,
+    );
+
+    _cardState(tester).loadInput('selectedUser', {
+      'User A': 'user_a',
+      'User B': 'user_b',
+    });
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(
+        generateWidgetKey(elementMap, suffix: 'Static choice example'),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.byKey(generateWidgetKey(elementMap, suffix: 'User A')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(generateWidgetKey(elementMap, suffix: 'User B')),
+      findsOneWidget,
+    );
+
+    final container = ProviderScope.containerOf(
+      tester.element(
+        find.byKey(generateWidgetKey(elementMap, suffix: 'User A')),
+      ),
+    );
+    final choices =
+        container.read(resolvedElementProvider('selectedUser'))?['choices']
+            as List<dynamic>?;
+    expect(choices?.length, 2);
+    final titles = choices!
+        .map((c) => (c as Map<String, dynamic>)['title'] as String)
+        .toList();
+    expect(titles, containsAll(['User A', 'User B']));
+  });
+
+  testWidgets(
+    'onChange with Data.Query then loadInput replaces choices in UI',
+    (
+      WidgetTester tester,
+    ) async {
+      final map = _dataQueryChoiceSetCard();
+      final elementMap = map['body'][0] as Map<String, dynamic>;
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'Data.Query onChange loadInput',
+          onChange:
+              (
+                String id,
+                dynamic value,
+                DataQuery? dataQuery,
+                RawAdaptiveCardState cardState,
+              ) {
+                expect(dataQuery, isNotNull);
+                expect(dataQuery!.dataset, 'graph.microsoft.com/users');
+                cardState.loadInput(id, {
+                  'Fetched User': 'fetched_1',
+                });
+              },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.byKey(
+          generateWidgetKey(elementMap, suffix: 'Static choice example'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(
+          generateWidgetKey(elementMap, suffix: 'Static choice example'),
+        ),
+        findsNothing,
+      );
+      expect(
+        find.byKey(generateWidgetKey(elementMap, suffix: 'Fetched User')),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'setDataQuerySession updates resolved choices.data count and skip',
+    (WidgetTester tester) async {
+      final map = _dataQueryChoiceSetCard();
+      final elementMap = map['body'][0] as Map<String, dynamic>;
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'Data.Query session overlay',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(
+          find.byKey(
+            generateWidgetKey(elementMap, suffix: 'Static choice example'),
+          ),
+        ),
+      );
+      container
+          .read(adaptiveCardDocumentProvider.notifier)
+          .setDataQuerySession(
+            'selectedUser',
+            count: 25,
+            skip: 50,
+            searchText: 'alice',
+          );
+      await tester.pump();
+
+      final resolved = container.read(resolvedElementProvider('selectedUser'));
+      final choicesData = resolved?['choices.data'] as Map<String, dynamic>?;
+      expect(choicesData?['dataset'], 'graph.microsoft.com/users');
+      expect(choicesData?['count'], 25);
+      expect(choicesData?['skip'], 50);
+      expect(choicesData?.containsKey('searchText'), isFalse);
+
+      final overlay = container
+          .read(adaptiveCardDocumentProvider)
+          .overlaysById['selectedUser'];
+      expect(overlay?.querySearchText, 'alice');
+
+      // Session-only changes do not refresh choice tiles without loadInput.
+      expect(
+        find.byKey(
+          generateWidgetKey(elementMap, suffix: 'Static choice example'),
+        ),
+        findsOneWidget,
       );
     },
   );

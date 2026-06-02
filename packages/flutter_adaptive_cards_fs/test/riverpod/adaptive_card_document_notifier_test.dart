@@ -31,6 +31,26 @@ Map<String, dynamic> _baselineFixture() {
   };
 }
 
+Map<String, dynamic> _dataQueryChoiceBaseline() {
+  return {
+    'type': 'AdaptiveCard',
+    'version': '1.5',
+    'body': [
+      {
+        'type': 'Input.ChoiceSet',
+        'id': 'queryChoice',
+        'choices': [
+          {'title': 'Static', 'value': 'static'},
+        ],
+        'choices.data': {
+          'type': 'Data.Query',
+          'dataset': 'test/dataset',
+        },
+      },
+    ],
+  };
+}
+
 ProviderContainer _createContainer(Map<String, dynamic> baseline) {
   return ProviderContainer(
     overrides: [
@@ -172,5 +192,68 @@ void main() {
       expect(notifier.state.overlaysById['myChoice']?.choices?.length, 1);
       expect(notifier.state.overlaysById['myChoice']?.inputValue, 'dyn');
     });
+
+    test(
+      'setDataQuerySession merges count and skip into resolved choices.data',
+      () {
+        final dataQueryContainer = _createContainer(_dataQueryChoiceBaseline());
+        addTearDown(dataQueryContainer.dispose);
+
+        dataQueryContainer
+            .read(adaptiveCardDocumentProvider.notifier)
+            .setDataQuerySession(
+              'queryChoice',
+              count: 10,
+              skip: 20,
+              searchText: 'search-term',
+            );
+
+        final resolved = dataQueryContainer.read(
+          resolvedElementProvider('queryChoice'),
+        );
+        final choicesData = resolved?['choices.data'] as Map<String, dynamic>?;
+        expect(choicesData?['dataset'], 'test/dataset');
+        expect(choicesData?['count'], 10);
+        expect(choicesData?['skip'], 20);
+        expect(choicesData?.containsKey('searchText'), isFalse);
+
+        final overlay = dataQueryContainer
+            .read(adaptiveCardDocumentProvider)
+            .overlaysById['queryChoice'];
+        expect(overlay?.querySearchText, 'search-term');
+      },
+    );
+
+    test(
+      'setDataQuerySession preserves choices overlay when updating session',
+      () {
+        final dataQueryContainer = _createContainer(_dataQueryChoiceBaseline());
+        addTearDown(dataQueryContainer.dispose);
+
+        final notifier =
+            dataQueryContainer.read(
+                adaptiveCardDocumentProvider.notifier,
+              )
+              ..setChoices('queryChoice', const [
+                Choice(title: 'Dynamic', value: 'dyn'),
+              ])
+              ..setDataQuerySession('queryChoice', count: 5);
+
+        final resolved = dataQueryContainer.read(
+          resolvedElementProvider('queryChoice'),
+        );
+        final choices = resolved?['choices'] as List<dynamic>?;
+        expect(choices?.length, 1);
+        expect(choices?.first['value'], 'dyn');
+
+        final choicesData = resolved?['choices.data'] as Map<String, dynamic>?;
+        expect(choicesData?['count'], 5);
+
+        expect(
+          notifier.state.overlaysById['queryChoice']?.choices?.length,
+          1,
+        );
+      },
+    );
   });
 }

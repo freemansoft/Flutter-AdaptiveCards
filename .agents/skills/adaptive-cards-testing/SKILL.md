@@ -225,6 +225,7 @@ Input values, visibility, and ChoiceSet choices are backed by Riverpod document 
 - **initData overlays**: `test/inputs/init_data_overlay_test.dart` — assert both UI and `resolvedElementProvider(id)` after `initData` or programmatic `initInput`.
 - **Submit / reset**: pump user interactions, then assert `onSubmit` mock received expected values, or tap Reset and assert UI reverts to baseline JSON values. See `test/inherited_reference_resolver_test.dart`, `test/elements/is_visible_test.dart`, `test/inputs/action_reset_inputs_test.dart`, and input tests under `test/inputs/`.
 - **Dynamic choices**: `test/inputs/choice_set_overlay_test.dart` — `loadInput`, `appendChoices`, selection clear, dedupe, `resetAllInputs` clearing choice overlays.
+- **Data.Query / typeahead**: `test/inputs/choice_set_data_query_test.dart` — `onChange` passes `DataQuery`, `loadInput` refresh with `choices.data`, `setDataQuerySession` on resolved `choices.data`; notifier tests for session merge in `test/riverpod/adaptive_card_document_notifier_test.dart`.
 - **ToggleVisibility**: assert widgets appear/disappear after the action without relying on imperative tree walks.
 - **Provider scope**: use `ProviderScope.containerOf(elementContext)` to read `adaptiveCardDocumentProvider` or `resolvedElementProvider(id)` when asserting document state directly.
 

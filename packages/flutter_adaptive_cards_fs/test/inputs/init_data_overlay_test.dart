@@ -92,6 +92,54 @@ void main() {
     expect(sw.value, isTrue);
   });
 
+  testWidgets(
+    'initData seeds ChoiceSet selection when card has choices.data',
+    (WidgetTester tester) async {
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'body': [
+          {
+            'type': 'Input.ChoiceSet',
+            'id': 'myChoice',
+            'style': 'expanded',
+            'choices': [
+              {'title': 'Choice 1', 'value': '1'},
+              {'title': 'Choice 2', 'value': '2'},
+            ],
+            'choices.data': {
+              'type': 'Data.Query',
+              'dataset': 'example.com/items',
+            },
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'initData choice with Data.Query',
+          initData: const {'myChoice': '2'},
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final choiceMap = map['body'][0] as Map<String, dynamic>;
+      final inputFinder = find.byKey(
+        generateWidgetKey(choiceMap, suffix: 'Choice 2'),
+      );
+      final container = _documentContainer(tester, inputFinder);
+
+      expect(
+        container.read(resolvedElementProvider('myChoice'))?['value'],
+        '2',
+      );
+      final choicesData =
+          container.read(resolvedElementProvider('myChoice'))?['choices.data']
+              as Map<String, dynamic>?;
+      expect(choicesData?['dataset'], 'example.com/items');
+    },
+  );
+
   testWidgets('initData seeds ChoiceSet selection in resolved overlay', (
     WidgetTester tester,
   ) async {
