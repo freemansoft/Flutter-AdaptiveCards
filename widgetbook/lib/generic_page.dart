@@ -56,19 +56,19 @@ class GenericPage extends StatelessWidget {
               return true;
             }());
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  format(
-                    'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
-                    id,
-                    value,
-                    dataQuery,
-                    state,
-                  ),
-                ),
-              ),
-            );
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     SnackBar(
+            //       content: Text(
+            //         format(
+            //           'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
+            //           id,
+            //           value,
+            //           dataQuery,
+            //           state,
+            //         ),
+            //       ),
+            //     ),snackBarAnimationStyle:
+            //   );
           },
 
           hostConfigs: HostConfigs(),

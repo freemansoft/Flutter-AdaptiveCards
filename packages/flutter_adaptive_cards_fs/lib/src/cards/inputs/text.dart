@@ -32,6 +32,8 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
   TextEditingController controller = TextEditingController();
+  bool _controllerListenerInstalled = false;
+  bool _isUpdatingFromDocument = false;
 
   String? label;
   late bool isRequired;
@@ -48,6 +50,26 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
     maxLength = adaptiveMap['maxLength'] as int? ?? 20;
     inputStyle = resolveTextInputType(style);
     controller.text = value;
+    stateHasError = false;
+
+    if (!_controllerListenerInstalled) {
+      _controllerListenerInstalled = true;
+      controller.addListener(() {
+        if (_isUpdatingFromDocument) return;
+        final text = controller.text;
+        setDocumentInputValue(text);
+        rawRootCardWidgetState.changeValue(id, text);
+      });
+    }
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString() ?? '';
+    if (controller.text == next) return;
+    _isUpdatingFromDocument = true;
+    controller.text = next;
+    _isUpdatingFromDocument = false;
     stateHasError = false;
   }
 
@@ -145,9 +167,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      setState(() {
-        controller.text = map[id] as String;
-      });
+      setDocumentInputValue(map[id]);
     }
   }
 

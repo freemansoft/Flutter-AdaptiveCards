@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/text_block.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
@@ -57,18 +59,20 @@ void main() {
       find.byWidget(thing2Widget),
     );
 
+    Future<void> setThing2Visibility({required bool visible}) async {
+      thing2State.setIsVisible(visible: visible);
+      await tester.pumpAndSettle();
+    }
+
     // Change visibility to true
-    // ignore: cascade_invocations
-    thing2State.setIsVisible(visible: true);
-    await tester.pumpAndSettle();
+    await setThing2Visibility(visible: true);
 
     // Verify both texts are now visible
     expect(find.text('thing1'), findsOneWidget);
     expect(find.text('thing2'), findsOneWidget);
 
     // Change thing2 visibility back to false
-    thing2State.setIsVisible(visible: false);
-    await tester.pumpAndSettle();
+    await setThing2Visibility(visible: false);
 
     // Verify thing2 is hidden again
     expect(find.text('thing1'), findsOneWidget);
@@ -114,30 +118,33 @@ void main() {
     final rawAdaptiveCardFinder = find.byType(RawAdaptiveCard);
     expect(rawAdaptiveCardFinder, findsOneWidget);
 
-    final RawAdaptiveCardState cardState = tester.state<RawAdaptiveCardState>(
-      rawAdaptiveCardFinder,
+    final scopeContext = tester.element(
+      find.byType(AdaptiveTextBlock).first,
     );
+    final container = ProviderScope.containerOf(scopeContext);
+    final notifier = container.read(adaptiveCardDocumentProvider.notifier);
 
-    // Hide element2 using RawAdaptiveCardState.setIsVisible
-    // ignore: cascade_invocations
-    cardState.setIsVisible(id: 'element2', isVisible: false);
-    await tester.pumpAndSettle();
+    Future<void> setVisibility(String id, {required bool visible}) async {
+      notifier.setVisibility(id, visible: visible);
+      await tester.pumpAndSettle();
+    }
+
+    // Hide element2
+    await setVisibility('element2', visible: false);
 
     // Verify element1 is still visible and element2 is hidden
     expect(find.text('Element 1'), findsOneWidget);
     expect(find.text('Element 2'), findsNothing);
 
     // Show element2 again
-    cardState.setIsVisible(id: 'element2', isVisible: true);
-    await tester.pumpAndSettle();
+    await setVisibility('element2', visible: true);
 
     // Verify both elements are visible again
     expect(find.text('Element 1'), findsOneWidget);
     expect(find.text('Element 2'), findsOneWidget);
 
     // Hide element1
-    cardState.setIsVisible(id: 'element1', isVisible: false);
-    await tester.pumpAndSettle();
+    await setVisibility('element1', visible: false);
 
     // Verify element1 is hidden and element2 is still visible
     expect(find.text('Element 1'), findsNothing);
@@ -145,7 +152,7 @@ void main() {
   });
 
   testWidgets(
-    'RawAdaptiveCardState.toggleVisibility can toggle element visibility',
+    'Document notifier toggleVisibility can toggle element visibility',
     (
       WidgetTester tester,
     ) async {
@@ -185,39 +192,40 @@ void main() {
       final rawAdaptiveCardFinder = find.byType(RawAdaptiveCard);
       expect(rawAdaptiveCardFinder, findsOneWidget);
 
-      final RawAdaptiveCardState cardState = tester.state<RawAdaptiveCardState>(
-        rawAdaptiveCardFinder,
+      final scopeContext = tester.element(
+        find.byType(AdaptiveTextBlock).first,
       );
+      final container = ProviderScope.containerOf(scopeContext);
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier);
+
+      Future<void> toggle(String id) async {
+        notifier.toggleVisibility(id);
+        await tester.pumpAndSettle();
+      }
 
       // Toggle toggle1 (should hide it)
-      // clearer for test
-      // ignore: cascade_invocations
-      cardState.toggleVisibility(id: 'toggle1');
-      await tester.pumpAndSettle();
+      await toggle('toggle1');
 
       // Verify toggle1 is now hidden, toggle2 still hidden
       expect(find.text('Toggle Element 1'), findsNothing);
       expect(find.text('Toggle Element 2'), findsNothing);
 
       // Toggle toggle2 (should show it)
-      cardState.toggleVisibility(id: 'toggle2');
-      await tester.pumpAndSettle();
+      await toggle('toggle2');
 
       // Verify toggle1 still hidden, toggle2 now visible
       expect(find.text('Toggle Element 1'), findsNothing);
       expect(find.text('Toggle Element 2'), findsOneWidget);
 
       // Toggle toggle1 again (should show it)
-      cardState.toggleVisibility(id: 'toggle1');
-      await tester.pumpAndSettle();
+      await toggle('toggle1');
 
       // Verify both are now visible
       expect(find.text('Toggle Element 1'), findsOneWidget);
       expect(find.text('Toggle Element 2'), findsOneWidget);
 
       // Toggle toggle2 again (should hide it)
-      cardState.toggleVisibility(id: 'toggle2');
-      await tester.pumpAndSettle();
+      await toggle('toggle2');
 
       // Verify toggle1 visible, toggle2 hidden
       expect(find.text('Toggle Element 1'), findsOneWidget);

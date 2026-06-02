@@ -91,6 +91,10 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
                 setState(() {
                   selectedTime = result;
                 });
+                final value =
+                    '${result.hour.toString().padLeft(2, '0')}:${result.minute.toString().padLeft(2, '0')}';
+                setDocumentInputValue(value);
+                rawRootCardWidgetState.changeValue(id, value);
               }
             } else {
               setState(() {
@@ -110,18 +114,31 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
 
   @override
   void appendInput(Map map) {
-    map[id] = selectedTime.toString();
+    map[id] = selectedTime == null
+        ? null
+        : '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}';
   }
 
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      selectedTime = parseTime(map[id]);
+      setDocumentInputValue(map[id]);
     }
   }
 
   @override
   bool checkRequired() {
     return true;
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString();
+    final parsed = parseTime(next);
+    if (parsed?.hour == selectedTime?.hour &&
+        parsed?.minute == selectedTime?.minute) {
+      return;
+    }
+    selectedTime = parsed;
   }
 }

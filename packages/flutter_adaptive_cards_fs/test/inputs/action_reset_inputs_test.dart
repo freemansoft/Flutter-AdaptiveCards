@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -99,4 +100,45 @@ void main() {
     choiceState.appendInput(resetChoiceOut);
     expect(resetChoiceOut['myChoiceSet'], equals(''));
   });
+
+  testWidgets(
+    'ResetInputs action restores static choices after loadInput dynamic overlay',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        getTestWidgetFromPath(path: 'action_reset_inputs.json'),
+      );
+      await tester.pumpAndSettle();
+
+      tester
+          .state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
+          .loadInput('myChoiceSet', {
+            'Dynamic Only': 'dyn',
+          });
+      await tester.pumpAndSettle();
+
+      expect(find.text('Dynamic Only'), findsOneWidget);
+      expect(find.text('Choice 1'), findsNothing);
+
+      await tester.tap(find.text('Dynamic Only'));
+      await tester.pumpAndSettle();
+
+      final choiceState = tester.state<AdaptiveChoiceSetState>(
+        find.byType(AdaptiveChoiceSet),
+      );
+      final Map<String, dynamic> selected = {};
+      choiceState.appendInput(selected);
+      expect(selected['myChoiceSet'], 'dyn');
+
+      await tester.tap(find.text('Reset Inputs'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choice 1'), findsOneWidget);
+      expect(find.text('Choice 2'), findsOneWidget);
+      expect(find.text('Dynamic Only'), findsNothing);
+
+      final Map<String, dynamic> resetChoiceOut = {};
+      choiceState.appendInput(resetChoiceOut);
+      expect(resetChoiceOut['myChoiceSet'], equals(''));
+    },
+  );
 }

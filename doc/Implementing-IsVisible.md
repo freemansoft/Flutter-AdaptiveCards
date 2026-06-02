@@ -2,7 +2,19 @@
 
 This document provides guidance to an LLM when implementing hide/show or visible yes/no behavior.
 
-## Design Plan
+## Current implementation (Riverpod overlays)
+
+Visibility is driven by the document overlay model, not by mutating JSON or walking the widget tree:
+
+- Baseline `"isVisible"` comes from the adaptive map at load time.
+- Runtime changes (e.g. `Action.ToggleVisibility`) call `AdaptiveCardDocumentNotifier.setVisibility` / `toggleVisibility`, which write `ElementOverlay.isVisible`.
+- `AdaptiveVisibilityMixin` listens to `resolvedElementProvider(id)` and rebuilds when the **merged** `isVisible` changes.
+
+See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+
+---
+
+## Design Plan (original widget-local approach)
 
 Enable flag driven card visibility on all Adaptive Elements using a boolean property `isVisible` that is stored in a widget state variable and initialized at Widget `initState()` from the adaptivemap from `adaptiveMap['isVisible']`. External code can update widget state `isVisible` value and `setState()`.
 

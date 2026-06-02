@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
-import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
-import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Mixin for widgets that are adaptive elements- widget and not state
 
@@ -23,27 +23,23 @@ mixin AdaptiveElementWidgetMixin on StatefulWidget {
 }
 
 mixin ProviderScopeMixin<T extends StatefulWidget> on State<T> {
-  InheritedReferenceResolver get _rawCardScope =>
-      InheritedReferenceResolver.rawCardScopeOf(context);
+  ProviderContainer get _container => ProviderScope.containerOf(context);
 
   RawAdaptiveCardState get rawRootCardWidgetState =>
-      _rawCardScope.rawAdaptiveCardState!;
+      _container.read(rawAdaptiveCardStateProvider);
 
-  CardTypeRegistry get cardTypeRegistry => _rawCardScope.resolver.cardTypeRegistry;
+  CardTypeRegistry get cardTypeRegistry => _container.read(cardTypeRegistryProvider);
 
   ActionTypeRegistry get actionTypeRegistry =>
-      _rawCardScope.resolver.actionTypeRegistry;
+      _container.read(actionTypeRegistryProvider);
 
   AdaptiveCardElementState get adaptiveCardElementState =>
-      InheritedReferenceResolver.elementScopeOf(context)
-          .adaptiveCardElementState!;
+      _container.read(adaptiveCardElementStateProvider);
 
-  ReferenceResolver get styleResolver => _rawCardScope.resolver;
+  ReferenceResolver get styleResolver => _container.read(styleReferenceResolverProvider);
 }
 
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
-  AdaptiveCardElementState? _cardElementScopeState;
-
   String get id => widget.id;
 
   String? get style => (adaptiveMap['style'] as String?)?.toLowerCase();
@@ -58,24 +54,6 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _cardElementScopeState = InheritedReferenceResolver.maybeElementStateOf(
-      context,
-    );
-    // only register cards with IDs so we can target them
-    if (idIsNatural(adaptiveMap)) {
-      // register cards with IDs so we can target them
-      // At one time this was only used for showCard
-      _cardElementScopeState?.registerCardWidget(id, widget);
-    } else {
-      // a lot of them don't have ids
-      assert(() {
-        developer.log(
-          'Did not register $id No natural id found for type: $runtimeType',
-          name: runtimeType.toString(),
-        );
-        return true;
-      }());
-    }
   }
 
   @override
@@ -90,9 +68,6 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   @override
   void dispose() {
-    if (idIsNatural(adaptiveMap)) {
-      _cardElementScopeState?.unregisterCardWidget(id);
-    }
     super.dispose();
   }
 
@@ -221,6 +196,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   late String value;
   late String placeholder;
   late String? errorMessage;
+  ProviderSubscription<Map<String, dynamic>?>? _inputValueSubscription;
 
   @override
   void initState() {
@@ -236,6 +212,41 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
 
     errorMessage = adaptiveMap['errorMessage'] as String?;
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _inputValueSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _inputValueSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        final nextValue = next?['value'];
+        final nextString = nextValue?.toString() ?? '';
+        if (nextString == value) return;
+        setState(() {
+          value = nextString;
+          onDocumentValueChanged(nextValue);
+        });
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _inputValueSubscription?.close();
+    _inputValueSubscription = null;
+    super.dispose();
+  }
+
+  void setDocumentInputValue(Object? newValue) {
+    final container = ProviderScope.containerOf(context);
+    container.read(adaptiveCardDocumentProvider.notifier).setInputValue(id, newValue);
+  }
+
+  /// Subclasses can override to sync controllers from document changes.
+  void onDocumentValueChanged(Object? valueFromDocument) {}
 
   /// Input cards implement this to copy their state **to** the map
   void appendInput(Map map);
@@ -287,30 +298,50 @@ mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>
 mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   late bool isVisible;
+  ProviderSubscription<Map<String, dynamic>?>? _visibilitySubscription;
+
+  bool _parseIsVisible(Object? value) {
+    if (value == null) return true;
+    if (value is bool) return value;
+    if (value is String) return value.toLowerCase() == 'true';
+    return true;
+  }
 
   @override
   void initState() {
     super.initState();
-    // Parse isVisible from adaptiveMap
-    // Handle: 'true'/'false' strings, boolean, null/absent (default true)
-    final isVisibleValue = adaptiveMap['isVisible'];
-    if (isVisibleValue == null) {
-      isVisible = true;
-    } else if (isVisibleValue is bool) {
-      isVisible = isVisibleValue;
-    } else if (isVisibleValue is String) {
-      isVisible = isVisibleValue.toLowerCase() == 'true';
-    } else {
-      isVisible = true; // default
-    }
+    isVisible = true;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _visibilitySubscription?.close();
+
+    final container = ProviderScope.containerOf(context);
+    _visibilitySubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        final visible = _parseIsVisible(next?['isVisible']);
+        if (visible == isVisible) return;
+        setState(() => isVisible = visible);
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _visibilitySubscription?.close();
+    _visibilitySubscription = null;
+    super.dispose();
   }
 
   /// Update visibility and trigger rebuild
   void setIsVisible({required bool visible}) {
-    if (isVisible != visible) {
-      setState(() {
-        isVisible = visible;
-      });
-    }
+    final container = ProviderScope.containerOf(context);
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setVisibility(id, visible: visible);
   }
 }

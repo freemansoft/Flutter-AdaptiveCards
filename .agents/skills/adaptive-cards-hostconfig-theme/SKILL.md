@@ -32,14 +32,14 @@ every element widget via a Riverpod `Provider` override.
 
 ## Key Files
 
-| File                                       | Purpose                                            |
-| ------------------------------------------ | -------------------------------------------------- |
-| `lib/src/hostconfig/host_config.dart`      | `HostConfig` + `HostConfigs` classes               |
-| `lib/src/reference_resolver.dart`          | `ReferenceResolver` — all resolution logic         |
-| `lib/src/hostconfig/fallback_configs.dart` | Hardcoded defaults used when HostConfig is absent  |
-| `lib/src/hostconfig/*.dart`                | Typed config classes for each subsection           |
-| `lib/src/inherited_reference_resolver.dart` | Exposes `ReferenceResolver` and card scopes to the tree |
-| `lib/src/flutter_raw_adaptive_card.dart`   | Where `ReferenceResolver` is created and scoped    |
+| File                                       | Purpose                                                             |
+| ------------------------------------------ | ------------------------------------------------------------------- |
+| `lib/src/hostconfig/host_config.dart`      | `HostConfig` + `HostConfigs` classes                                |
+| `lib/src/reference_resolver.dart`          | `ReferenceResolver` — HostConfig/style resolution only              |
+| `lib/src/hostconfig/fallback_configs.dart` | Hardcoded defaults used when HostConfig is absent                   |
+| `lib/src/hostconfig/*.dart`                | Typed config classes for each subsection                            |
+| `lib/src/riverpod/providers.dart`          | Card-scoped Riverpod providers (registries, resolver, document)     |
+| `lib/src/flutter_raw_adaptive_card.dart`   | Where `ReferenceResolver` is created and scoped via `ProviderScope` |
 
 ---
 
@@ -91,25 +91,22 @@ class HostConfig {
 
 ## How `ReferenceResolver` is Created and Distributed
 
-In `RawAdaptiveCardState.initState()`:
+In `RawAdaptiveCardState._updateResolver()` (called from `initState` / `didUpdateWidget`):
 
 ```dart
 _resolver = ReferenceResolver(hostConfigs: widget.hostConfigs);
 ```
 
-In `RawAdaptiveCardState.build()`, it is injected via
-`InheritedReferenceResolver`:
+Registries are **not** passed to `ReferenceResolver`. They are supplied separately via Riverpod overrides in `build()`:
 
 ```dart
-_resolver = ReferenceResolver(
-  hostConfigs: widget.hostConfigs,
-  cardTypeRegistry: widget.cardTypeRegistry,
-  actionTypeRegistry: widget.actionTypeRegistry,
-);
-
-return InheritedReferenceResolver(
-  resolver: _resolver,
-  rawAdaptiveCardState: this,
+return ProviderScope(
+  overrides: [
+    cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
+    actionTypeRegistryProvider.overrideWithValue(widget.actionTypeRegistry),
+    styleReferenceResolverProvider.overrideWithValue(_resolver),
+    // ... document and card-state providers
+  ],
   child: Card(color: backgroundColor, child: child),
 );
 ```
@@ -118,28 +115,32 @@ return InheritedReferenceResolver(
 container style, maintaining proper style inheritance down the tree:
 
 ```dart
-final childResolver = resolver.copyWith(style: 'emphasis');
+final childResolver = styleResolver.copyWith(style: 'emphasis');
 ```
 
 ---
 
 ## Reading the Resolver in an Element
 
-Inside any element `State` with `ProviderScopeMixin`, use `styleResolver`.
-Stateless helpers use the inherited scope directly:
+Inside any element `State` with `ProviderScopeMixin`, use `styleResolver`:
 
 ```dart
-import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
-
 @override
 Widget build(BuildContext context) {
-  final resolver = InheritedReferenceResolver.rawCardScopeOf(context).resolver;
+  final resolver = styleResolver;
 
   // Now use resolver.resolve*() methods...
 }
 ```
 
-Elements rebuild via `setState`, not inherited-widget listening.
+Stateless helpers can read the resolver from the card-scoped container:
+
+```dart
+final resolver = ProviderScope.containerOf(context)
+    .read(styleReferenceResolverProvider);
+```
+
+Elements rebuild via `setState` or `ref.watch`, not by listening to an inherited widget.
 
 ---
 

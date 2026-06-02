@@ -3,7 +3,9 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
@@ -50,7 +52,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
-  // Map from title to value
+  /// Map from title to value; synced from [resolvedElementProvider].
   final Map<String, String> _choices = {};
 
   // Contains the values (the things to send as request)
@@ -65,6 +67,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
   TextEditingController controller = TextEditingController();
   bool stateHasError = false;
+  ProviderSubscription<Map<String, dynamic>?>? _choicesSubscription;
 
   @override
   void initState() {
@@ -72,19 +75,6 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
     label = adaptiveMap['label'] as String?;
     isRequired = adaptiveMap['isRequired'] as bool? ?? false;
-
-    if (adaptiveMap['choices'] != null) {
-      final List<Choice> choices =
-          (adaptiveMap['choices'] as List<dynamic>?)
-              ?.map((e) => Choice.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [];
-
-      /// https://adaptivecards.io/explorer/Input.Choice.html
-      for (final Choice choice in choices) {
-        _choices[choice.title] = choice.value;
-      }
-    }
 
     if (adaptiveMap.containsKey('choices.data')) {
       dataQuery = DataQuery.fromJson(
@@ -99,6 +89,53 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     if (value.isNotEmpty) {
       _selectedChoices.addAll(value.split(','));
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _choicesSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _choicesSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (Map<String, dynamic>? previous, Map<String, dynamic>? next) {
+        final parsed = _parseChoices(next?['choices']);
+        if (_mapsEqual(_choices, parsed)) return;
+        setState(() {
+          _choices
+            ..clear()
+            ..addAll(parsed);
+        });
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _choicesSubscription?.close();
+    _choicesSubscription = null;
+    controller.dispose();
+    super.dispose();
+  }
+
+  Map<String, String> _parseChoices(Object? raw) {
+    if (raw is! List) return const {};
+    final result = <String, String>{};
+    for (final entry in raw) {
+      if (entry is! Map) continue;
+      final choice = Choice.fromJson(Map<String, dynamic>.from(entry));
+      result[choice.title] = choice.value;
+    }
+    return result;
+  }
+
+  bool _mapsEqual(Map<String, String> a, Map<String, String> b) {
+    if (a.length != b.length) return false;
+    for (final key in a.keys) {
+      if (a[key] != b[key]) return false;
+    }
+    return true;
   }
 
   @override
@@ -124,15 +161,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      setState(() {
-        _selectedChoices
-          ..clear()
-          ..add(map[id]);
-
-        controller.text = _selectedChoices.isNotEmpty
-            ? _selectedChoices.first
-            : '';
-      });
+      setDocumentInputValue(map[id]);
     }
   }
 
@@ -148,18 +177,6 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
       stateHasError = false;
     });
     return true;
-  }
-
-  @override
-  void loadInput(Map map) {
-    setState(() {
-      _choices.clear();
-      _selectedChoices.clear();
-
-      map.forEach((key, value) {
-        _choices[key] = value.toString();
-      });
-    });
   }
 
   @override
@@ -352,11 +369,23 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
     /// notify the card that the value has changed so it can invoke custom behavior
     rawRootCardWidgetState.changeValue(id, choice, dataQuery: dataQuery);
+    setDocumentInputValue(_selectedChoices.join(','));
     setState(() {
       controller.text = _selectedChoices.isNotEmpty
           ? _selectedChoices.first
           : '';
     });
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString() ?? '';
+    _selectedChoices
+      ..clear()
+      ..addAll(
+        next.isEmpty ? const <String>[] : next.split(','),
+      );
+    controller.text = _selectedChoices.isNotEmpty ? _selectedChoices.first : '';
   }
 
   /// JSON Schema definition "ChoiceInputStyle"

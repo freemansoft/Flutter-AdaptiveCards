@@ -5,15 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.8.0]
+## [Unreleased]
 
-### Removed
-
-- **`flutter_riverpod` dependency** — the package no longer pulls Riverpod transitively.
-  - riverpod wasn't used in any reactive fashion
-- **`riverpod_providers.dart`** and all nested `ProviderScope` / provider overrides.
+### Added
 
 ### Changed
+
+## [0.8.0]
+
+### Added 0.8.0
+
+### Changed 0.8.0
 
 - **Scoped dependency injection** now uses nested **`InheritedReferenceResolver`** widgets instead of Riverpod:
   - Outer scope (from `RawAdaptiveCard`): `resolver` (includes `cardTypeRegistry` / `actionTypeRegistry`), `rawAdaptiveCardState` — read via `InheritedReferenceResolver.rawCardScopeOf(context)`.
@@ -28,6 +30,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `AdaptiveColumn`, `AdaptiveContainer`, and internal utilities to strictly use `ReferenceResolver` as a facade for accessing HostConfig values (e.g. `resolveSpacing()`), removing direct dependencies on underlying config objects like `SpacingsConfig`.
 - Created `doc/Architecture-Overview.md` to document system architecture, package structure, internal state management, and extensibility points.
 - Consolidated documentation around known gaps and priority issues into `doc/Implementation-Status.md`.
+- **`ReferenceResolver`** no longer carries `cardTypeRegistry` or `actionTypeRegistry`. It is a HostConfig/theme facade only. Element and action factories are provided via Riverpod `cardTypeRegistryProvider` and `actionTypeRegistryProvider` (see [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md)).
+- **`Input.ChoiceSet`** reads effective choices from `resolvedElementProvider` instead of local-only state.
+- **`RawAdaptiveCardState.loadInput`** and **`initInput`** delegate to the document notifier (no element-tree walk).
+- **`initData`** seeds input overlays via `seedInputValues` post-frame.
+- **`resetAllInputs`** clears dynamic `choices` overlays in addition to input values.
+- **`ElementOverlay.choices`** — runtime overlay for `Input.ChoiceSet` dynamic option lists; merged via `resolvedElementProvider`.
+- Document notifier APIs: `setChoices`, `appendChoices`, `seedInputValues`, `setDataQuerySession`.
+- **`DataQuery.count` / `DataQuery.skip`** — spec fields for typeahead pagination.
 
 ## [0.7.0]
 

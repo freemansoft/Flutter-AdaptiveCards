@@ -34,6 +34,8 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
   TextEditingController controller = TextEditingController();
+  bool _controllerListenerInstalled = false;
+  bool _isUpdatingFromDocument = false;
   bool stateHasError = false;
 
   String? label;
@@ -52,6 +54,30 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     stateHasError = false;
     min = adaptiveMap['min'] as int? ?? 0;
     max = adaptiveMap['max'] as int? ?? 100;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_controllerListenerInstalled) {
+      _controllerListenerInstalled = true;
+      controller.addListener(() {
+        if (_isUpdatingFromDocument) return;
+        final text = controller.text;
+        setDocumentInputValue(text);
+        rawRootCardWidgetState.changeValue(id, text);
+      });
+    }
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString() ?? '';
+    if (controller.text == next) return;
+    _isUpdatingFromDocument = true;
+    controller.text = next;
+    _isUpdatingFromDocument = false;
+    stateHasError = false;
   }
 
   @override
@@ -149,7 +175,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      controller.text = map[id].toString();
+      setDocumentInputValue(map[id]);
     }
   }
 

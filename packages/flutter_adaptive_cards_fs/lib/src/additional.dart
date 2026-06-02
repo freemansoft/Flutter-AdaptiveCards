@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Additional widget classes used to frame out the rendering of cards
 // Not part of the Adaptive-card standard
@@ -21,11 +22,10 @@ class SeparatorElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topSpacing = InheritedReferenceResolver.rawCardScopeOf(context)
-        .resolver
-        .resolveSpacing(
-          adaptiveMap['spacing'],
-        );
+    final resolver = ProviderScope.containerOf(context).read(
+      styleReferenceResolverProvider,
+    );
+    final topSpacing = resolver.resolveSpacing(adaptiveMap['spacing']);
 
     final separator = adaptiveMap['separator'] as bool? ?? false;
     if (!separator) {
@@ -40,9 +40,6 @@ class SeparatorElement extends StatelessWidget {
       }
     } else {
       // separator is true
-      final resolver = InheritedReferenceResolver.rawCardScopeOf(
-        context,
-      ).resolver;
       final color = resolver.resolveSeparatorColor();
       final thickness = resolver.resolveSeparatorThickness();
 

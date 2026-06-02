@@ -174,6 +174,9 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
                           ? placeholder
                           : inputFormat.format(selectedDateTime!);
                     });
+                    final iso = selectedDateTime!.toIso8601String();
+                    setDocumentInputValue(iso);
+                    rawRootCardWidgetState.changeValue(id, iso);
                   }
                 },
               ),
@@ -199,20 +202,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      try {
-        setState(() {
-          selectedDateTime = inputFormat.parse(map[id]);
-          controller.text = selectedDateTime == null
-              ? placeholder
-              : inputFormat.format(selectedDateTime!);
-        });
-        // catch them all
-      } on Exception catch (formatException) {
-        developer.log(
-          '$formatException',
-          name: runtimeType.toString(),
-        );
-      }
+      setDocumentInputValue(map[id]);
     }
   }
 
@@ -222,5 +212,28 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
     final formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString();
+    if (next == null || next.isEmpty) {
+      selectedDateTime = null;
+      controller.text = placeholder;
+      return;
+    }
+    try {
+      selectedDateTime = DateTime.parse(next);
+      controller.text = inputFormat.format(selectedDateTime!);
+    } on Exception {
+      // If baseline uses yyyy-MM-dd, fall back to that.
+      try {
+        selectedDateTime = inputFormat.parse(next);
+        controller.text = inputFormat.format(selectedDateTime!);
+      } on Exception {
+        selectedDateTime = null;
+        controller.text = '';
+      }
+    }
   }
 }

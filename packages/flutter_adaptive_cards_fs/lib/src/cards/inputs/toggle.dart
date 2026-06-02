@@ -70,6 +70,9 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
                 setState(() {
                   boolValue = newValue;
                 });
+                final docValue = boolValue ? valueOn : valueOff;
+                setDocumentInputValue(docValue);
+                rawRootCardWidgetState.changeValue(id, docValue);
               },
             ),
             Expanded(
@@ -88,13 +91,21 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
 
   @override
   void initInput(Map map) {
-    if (map[id] != null) {
-      setState(() {
-        if (map[id] != null) {
-          boolValue = map[id] as bool;
-        }
-      });
+    if (map[id] == null) return;
+    final raw = map[id];
+    if (raw is bool) {
+      setDocumentInputValue(raw ? valueOn : valueOff);
+    } else {
+      setDocumentInputValue(raw);
     }
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString().toLowerCase();
+    final nextBool = next == valueOn;
+    if (nextBool == boolValue) return;
+    boolValue = nextBool;
   }
 
   @override

@@ -2,6 +2,20 @@
 
 All input types have a choice of using basic flutter widgets or using flutter form widgets. This project is standardizing on flutter forms.
 
+## Runtime values (baseline + overlays)
+
+Input **initial** values come from the card JSON (`adaptiveMap['value']`) when the widget is first built. User edits and programmatic reset/submit do **not** mutate that map.
+
+Runtime state is stored in Riverpod document **overlays** keyed by input id:
+
+- User typing → `setInputValue(id, value)` → overlay `inputValue`
+- Submit → `collectInputValues()` returns `overlay.inputValue ?? baseline['value']` per input id
+- ResetInputs → `resetAllInputs()` clears input overlays; UI falls back to baseline values
+
+`AdaptiveInputMixin` listens to `resolvedElementProvider(id)` so controllers stay in sync when overlays change. New inputs must call `setDocumentInputValue(...)` on change and handle `onDocumentValueChanged` when syncing controllers from document updates.
+
+See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+
 ## Input.xxx Adaptive card inputs
 
 - AdaptiveCard inputs are located in `flutter_adaptive_cards_fs/lib/src/cards/inputs`. Each class there should have its own associated unit test class in `flutter_adaptive_cards_fs/test/inputs`.

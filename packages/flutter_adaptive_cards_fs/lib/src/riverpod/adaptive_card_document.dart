@@ -1,0 +1,107 @@
+// The patch tool sometimes drops the trailing newline; silence until stable.
+
+import 'package:flutter/foundation.dart';
+
+/// Immutable snapshot of a rendered Adaptive Card's document state.
+///
+/// Combines an unchanged **baseline** (deep copy of host JSON) with sparse
+/// **overlays** for runtime patches. Widgets and actions should read merged
+/// element maps via `resolvedElementProvider`, not mutate [baseline] directly.
+@immutable
+class AdaptiveCardDocument {
+  /// Creates a document snapshot.
+  const AdaptiveCardDocument({
+    required this.baseline,
+    required this.nodesById,
+    required this.overlaysById,
+    required this.revision,
+  });
+
+  /// Deep-copied card JSON baseline (host input).
+  final Map<String, dynamic> baseline;
+
+  /// Index of baseline nodes by element id (natural ids only).
+  final Map<String, Map<String, dynamic>> nodesById;
+
+  /// Sparse runtime overlays keyed by element id.
+  final Map<String, ElementOverlay> overlaysById;
+
+  /// Monotonic revision to force provider updates when internals change.
+  final int revision;
+
+  /// Returns a copy with the given fields replaced.
+  AdaptiveCardDocument copyWith({
+    Map<String, dynamic>? baseline,
+    Map<String, Map<String, dynamic>>? nodesById,
+    Map<String, ElementOverlay>? overlaysById,
+    int? revision,
+  }) {
+    return AdaptiveCardDocument(
+      baseline: baseline ?? this.baseline,
+      nodesById: nodesById ?? this.nodesById,
+      overlaysById: overlaysById ?? this.overlaysById,
+      revision: revision ?? this.revision,
+    );
+  }
+}
+
+/// Runtime overlay for a single element id.
+///
+/// Only non-null fields override the corresponding baseline JSON properties
+/// when merged by `resolvedElementProvider`.
+@immutable
+class ElementOverlay {
+  /// Creates an overlay patch for one element.
+  const ElementOverlay({
+    this.isVisible,
+    this.inputValue,
+    this.choices,
+    this.queryCount,
+    this.querySkip,
+    this.querySearchText,
+  });
+
+  /// Overrides baseline `"isVisible"` when non-null.
+  final bool? isVisible;
+
+  /// Overrides baseline `"value"` on input elements when non-null.
+  final Object? inputValue;
+
+  /// Overrides baseline `"choices"` on `Input.ChoiceSet` when non-null.
+  final List<Map<String, dynamic>>? choices;
+
+  /// Session override for `choices.data.count` (typeahead pagination).
+  final int? queryCount;
+
+  /// Session override for `choices.data.skip` (typeahead pagination).
+  final int? querySkip;
+
+  /// Current typeahead search text; not merged into resolved element JSON.
+  final String? querySearchText;
+
+  /// Returns a copy with the given fields replaced.
+  ElementOverlay copyWith({
+    bool? isVisible,
+    Object? inputValue,
+    List<Map<String, dynamic>>? choices,
+    int? queryCount,
+    int? querySkip,
+    String? querySearchText,
+    bool clearInputValue = false,
+    bool clearChoices = false,
+    bool clearQueryCount = false,
+    bool clearQuerySkip = false,
+    bool clearQuerySearchText = false,
+  }) {
+    return ElementOverlay(
+      isVisible: isVisible ?? this.isVisible,
+      inputValue: clearInputValue ? null : (inputValue ?? this.inputValue),
+      choices: clearChoices ? null : (choices ?? this.choices),
+      queryCount: clearQueryCount ? null : (queryCount ?? this.queryCount),
+      querySkip: clearQuerySkip ? null : (querySkip ?? this.querySkip),
+      querySearchText: clearQuerySearchText
+          ? null
+          : (querySearchText ?? this.querySearchText),
+    );
+  }
+}

@@ -44,6 +44,12 @@ Comprehensive specification for HostConfig implementation and mapping to Flutter
 
 High-level system architecture showing package structure, widget hierarchy, and state management (Riverpod internals vs consumer API).
 
+### [reactive-riverpod.md](./reactive-riverpod.md)
+
+**Status**: ✅ Current | **Category**: Architecture
+
+Riverpod scopes, document notifier, and the **baseline + overlay** model for reactive inputs, visibility, show-card UI, and submit/reset without mutating host JSON.
+
 ---
 
 ## Implementation Guides
@@ -58,7 +64,7 @@ Widget key generation pattern using `generateWidgetKey()` for all AdaptiveElemen
 
 **Status**: ✅ Current | **Category**: Implementation Guide
 
-Guide for Flutter Form-based input implementation. Documents key naming conventions:
+Guide for Flutter Form-based input implementation. Documents runtime **baseline + overlay** value flow, key naming conventions:
 
 - Card widget: `{id}_adaptive`
 - Input field: `{id}`
@@ -68,7 +74,7 @@ Guide for Flutter Form-based input implementation. Documents key naming conventi
 
 **Status**: ✅ Current | **Category**: Implementation Guide
 
-Implementation of `isVisible` property for showing/hiding adaptive elements using Flutter's `Visibility` widget.
+Implementation of `isVisible` for show/hide. Runtime toggles use document overlays and `resolvedElementProvider`; see also [`reactive-riverpod.md`](reactive-riverpod.md).
 
 ### [backgroundImage.md](./backgroundImage.md)
 

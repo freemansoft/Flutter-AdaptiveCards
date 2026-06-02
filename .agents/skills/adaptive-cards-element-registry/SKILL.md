@@ -135,31 +135,54 @@ If consumers need to subclass or reference your element, add it to:
 
 Mixins provide shared behavior. Apply them to the **State** class:
 
-| Mixin                        | Applied to       | Provides                                                                                                  |
-| ---------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------- |
-| `AdaptiveElementWidgetMixin` | `StatefulWidget` | `adaptiveMap`, `id` abstract getters                                                                      |
-| `AdaptiveElementMixin<T>`    | `State<T>`       | `id`, `cardTypeRegistry`, `actionTypeRegistry`, `rawRootCardWidgetState`, `style`, `adaptiveMap`          |
-| `AdaptiveVisibilityMixin<T>` | `State<T>`       | `isVisible`, `setIsVisible()` — reads `"isVisible"` JSON prop                                             |
-| `AdaptiveActionMixin<T>`     | `State<T>`       | `title`, `tooltip` — for action widgets                                                                   |
-| `AdaptiveInputMixin<T>`      | `State<T>`       | `value`, `placeholder`, `errorMessage`, `appendInput()`, `initInput()`, `checkRequired()`, `resetInput()` |
+| Mixin                        | Applied to       | Provides                                                                                                                 |
+| ---------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `AdaptiveElementWidgetMixin` | `StatefulWidget` | `adaptiveMap`, `id` abstract getters                                                                                     |
+| `ProviderScopeMixin<T>`      | `State<T>`       | `cardTypeRegistry`, `actionTypeRegistry`, `styleResolver`, `rawRootCardWidgetState`, `adaptiveCardElementState`          |
+| `AdaptiveElementMixin<T>`    | `State<T>`       | `id`, `style`, `adaptiveMap` (combine with `ProviderScopeMixin` for registries/resolver)                                 |
+| `AdaptiveVisibilityMixin<T>` | `State<T>`       | `isVisible`, `setIsVisible()` — listens to `resolvedElementProvider(id)` for merged `"isVisible"`                        |
+| `AdaptiveActionMixin<T>`     | `State<T>`       | `title`, `tooltip` — for action widgets                                                                                  |
+| `AdaptiveInputMixin<T>`      | `State<T>`       | `value`, `setDocumentInputValue()`, listens to `resolvedElementProvider(id)`; also `appendInput()`, `resetInput()`, etc. |
 
 **Typical element (non-input):**
 
 ```dart
-with AdaptiveElementMixin, AdaptiveVisibilityMixin
+with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin
 ```
 
 **Typical input element:**
 
 ```dart
-with AdaptiveElementMixin, AdaptiveVisibilityMixin, AdaptiveInputMixin
+with AdaptiveElementMixin, AdaptiveVisibilityMixin, AdaptiveInputMixin, ProviderScopeMixin
 ```
 
 **Typical action widget:**
 
 ```dart
-with AdaptiveElementMixin, AdaptiveActionMixin
+with AdaptiveElementMixin, AdaptiveActionMixin, ProviderScopeMixin
 ```
+
+---
+
+## Runtime state: baseline + overlays
+
+Card JSON is deep-copied into a **baseline** at render time. Runtime changes (input values, visibility, ChoiceSet choices) are stored in sparse **overlays** per element id — the host map is never mutated.
+
+| Phase                         | Source                                                            |
+| ----------------------------- | ----------------------------------------------------------------- |
+| Initial UI                    | `adaptiveMap` at widget construction (`initState`)                |
+| User edits / ToggleVisibility | `AdaptiveCardDocumentNotifier` → `overlaysById[id]`               |
+| What widgets read             | `resolvedElementProvider(id)` — baseline node merged with overlay |
+
+**Inputs:** call `setDocumentInputValue(value)` when the user changes the field; implement `onDocumentValueChanged` to sync controllers when overlays change (e.g. reset). Subscribe via `AdaptiveInputMixin` (already wired in `didChangeDependencies`). Do **not** call `setState` from `initInput` — write the overlay and let the mixin listener rebuild (see [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card)).
+
+**ChoiceSet:** subscribe to resolved `choices` (see `AdaptiveChoiceSet`); host-driven updates use `setChoices` / `appendChoices` or `RawAdaptiveCardState.loadInput`.
+
+**Visibility:** call `setIsVisible(visible: …)` or rely on `Action.ToggleVisibility`; `AdaptiveVisibilityMixin` listens to resolved `isVisible`.
+
+**Submit / reset:** `collectInputValues()` and `resetAllInputs()` on the document notifier — do not walk the widget tree.
+
+Full detail: [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
 ---
 
@@ -210,9 +233,10 @@ final double fontSize = resolver.resolveFontSize(
 // ...
 ```
 
-> **Note:** Shared services (registry, resolver, card state) come from
-> `InheritedReferenceResolver.rawCardScopeOf` / `elementScopeOf` via
-> `ProviderScopeMixin`. Do not add Riverpod to new elements.
+> **Note:** Shared services (registries, resolver, card state) come from
+> `ProviderScopeMixin`, which reads card-scoped Riverpod providers installed by
+> `RawAdaptiveCard` / `AdaptiveCardElement`. See
+> [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md).
 
 ---
 

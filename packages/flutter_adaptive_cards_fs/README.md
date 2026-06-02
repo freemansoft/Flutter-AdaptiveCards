@@ -107,14 +107,13 @@ flowchart
 
 ## Loading Data into fields outside of the AdaptiveCard JSON with `initData` / `initInput`
 
-You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will be passed across the AdaptiveCard widget Tree.
-`initData` is demonstrated in the sample app on the `initData` button overriding values from the JSON. `loadData` was in the sample app but was removed and needs to be re-added.
+You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will seed input overlays on the document notifier.
 
-- `InitData` / `InitInput` can be used for late binding data into a widget tree
-  - `initData` injected directly into a widget tree and visited across the tree in `InitInput`
-  - `initInput(initData)` used to replace values in inputs. `initData` is a widget parameter.
-  - `initInput` is called if initData exists on component
-- `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
+- `initData` is a widget parameter on `RawAdaptiveCard` / `AdaptiveCardsCanvas`.
+- On first frame, values are written to the document notifier via `seedInputValues` (reactive; inputs listen to `resolvedElementProvider`).
+- `initInput(map)` on `RawAdaptiveCardState` also delegates to `seedInputValues` for programmatic late binding.
+- **`initInput` does not call `setState` on the card** — input widgets rebuild when their `resolvedElementProvider` listener fires. See [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card).
+- `loadInput(id, map)` replaces `Input.ChoiceSet` choices for [id] via `setChoices` (title → value map converted to `Input.Choice` list).
 
 ## Event Handlers
 
@@ -193,7 +192,7 @@ A fair amoiunt of development has been done using Antigravity
 
 ## Widget Hierarchy with Flutter-AdaptiveCards
 
-The Widgets marked with `(*)`are Flutter-AdaptiveCars specific including those build using the `Provider` framework.
+The Widgets marked with `(*)`are Flutter-AdaptiveCars specific including those scoped via Riverpod `ProviderScope`.
 
 ```txt
 Demo Adaptive Card*
@@ -202,16 +201,18 @@ Demo Adaptive Card*
 │       └── Column
 │           └── AdaptiveCardsCanvas(*)
 │               └── RawAdaptiveCard(*)
-│                   ├── Provider<RawAdaptiveCardState>(*)
-│                   ├── Provider<CardTypeRegistry>(*)
-│                   ├── Provider<ActionTypeRegistry>(*)
-│                   └── Provider<ReferenceResolver>(*)
-│                               └── Card
-│                                   └── Column
-│                                       ├── TextButton
-│                                       ├── Divider
-│                                       └── AdaptiveCardElement(*)
-│                                           └── Provider<AdaptiveCardElement>(*)
+│                   └── ProviderScope(*)
+│                       ├── cardTypeRegistryProvider override
+│                       ├── actionTypeRegistryProvider override
+│                       ├── styleReferenceResolverProvider override (HostConfig only)
+│                       └── adaptiveCardDocumentProvider
+│                           └── Card
+│                               └── Column
+│                                   ├── TextButton
+│                                   ├── Divider
+│                                   └── AdaptiveCardElement(*)
+│                                       └── ProviderScope(*)
+│                                           └── expandedShowCardIdProvider
 │                                               └── Form
 │                                                   └── Container
 │                                                       └── Column

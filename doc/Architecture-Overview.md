@@ -20,26 +20,34 @@ When an Adaptive Card is rendered, the JSON is recursively parsed into a hierarc
 1. **`AdaptiveCardCanvas`**: The root widget that initializes the `CardTypeRegistry`, `ActionTypeRegistry`, and provides the `HostConfig` context. It wraps the entire card in necessary providers.
 2. **`AdaptiveCardWidget`**: Represents the `AdaptiveCard` root element, applying the overall padding, background color, and layout constraints.
 3. **Containers and Elements**: Elements like `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveTextBlock`, and `AdaptiveImage` are rendered as individual Flutter widgets (often wrapping standard Flutter widgets like `Column`, `Row`, `Text`, and `Image`).
-4. **Inputs**: Form inputs (`Input.Text`, `Input.Date`, etc.) are rendered using standard Flutter form controls. Values and validation live in per-input `StatefulWidget` state (`AdaptiveInputMixin` + `setState`), not in Riverpod.
+4. **Inputs**: Form inputs (`Input.Text`, `Input.Date`, etc.) use Flutter form controls. **Initial** values come from the adaptive map at widget construction; **runtime** values and visibility are stored in Riverpod document **overlays** (baseline JSON is never mutated). Inputs sync via `AdaptiveInputMixin` + `resolvedElementProvider(id)`. See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 5. **Actions**: The action bar (e.g., `Action.Submit`, `Action.OpenUrl`) is typically rendered at the bottom of the card or within an `ActionSet`. Actions trigger callbacks routed through `GenericAction` handlers and, for default behaviors, `InheritedAdaptiveCardHandlers`.
 
 ## State and dependency injection
 
-The core library uses **`InheritedWidget` scopes** for cross-cutting services (not Riverpod). See [`doc/replace-riverpod.md`](replace-riverpod.md) for the migration notes and scope map.
+`flutter_adaptive_cards_fs` uses **Riverpod (v3.x)** internally for card-scoped dependency injection and **reactive** document/UI state. The library installs its own `ProviderScope` per rendered card subtree, so host apps do not need to set up Riverpod to use the package.
+
+See [`doc/reactive-riverpod.md`](reactive-riverpod.md) for the scope map, provider architecture, and **baseline + overlay** document model.
+
+### Document overlays (inputs and visibility)
+
+Runtime changes to input values and element visibility do not mutate the host JSON. The document notifier keeps a deep-copied **baseline** plus sparse **overlays** per element id; widgets read a merged **resolved** view via `resolvedElementProvider(id)`. Submit and reset use the notifier (`collectInputValues`, `resetAllInputs`). Details: [How overlays change values](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
 ### Where state actually lives
 
 | Concern | Mechanism |
 | --- | --- |
-| Input values, visibility, show-card targets | `StatefulWidget` + `AdaptiveInputMixin` / `AdaptiveVisibilityMixin` and per-`AdaptiveCardElement` `Form` state |
+| Card JSON + runtime overlays (inputs, visibility) | Riverpod document notifier (baseline JSON + overlay tables) |
+| Show-card expanded/collapsed state | Riverpod per-`AdaptiveCardElement` UI notifier |
 | Host callbacks (`onSubmit`, `onChange`, …) | `InheritedAdaptiveCardHandlers` |
-| Registries, `ReferenceResolver`, root card state | `InheritedReferenceResolver.resolver` (outer, via `rawCardScopeOf`) |
-| Per-card form, widget registry, show-card | `InheritedReferenceResolver` (inner, via `elementScopeOf`) |
-| Theme / `HostConfig` updates | `RawAdaptiveCardState.didChangeDependencies` + `setState` |
+| `CardTypeRegistry` / `ActionTypeRegistry` | Riverpod `cardTypeRegistryProvider` / `actionTypeRegistryProvider` (overridden per raw-card scope) |
+| `ReferenceResolver` (HostConfig / theme) | Riverpod `styleReferenceResolverProvider` (overridden per raw-card scope; **does not** carry registries) |
+| Root card scope (`RawAdaptiveCardState`) | Riverpod `rawAdaptiveCardStateProvider` |
+| Theme / `HostConfig` updates | `ReferenceResolver` rebuilt when host/theme changes (card-scoped) |
 
 ### Inherited scopes
 
-`RawAdaptiveCard` and each `AdaptiveCardElement` install nested `InheritedReferenceResolver` nodes (outer vs inner). Element and action `State` classes use `ProviderScopeMixin` to read `rawCardScopeOf` / `elementScopeOf` without constructor drilling.
+Host callbacks remain an `InheritedWidget` (`InheritedAdaptiveCardHandlers`). Most other cross-cutting services and reactive state live in Riverpod providers scoped to the card subtree.
 
 ### Consumer API
 
