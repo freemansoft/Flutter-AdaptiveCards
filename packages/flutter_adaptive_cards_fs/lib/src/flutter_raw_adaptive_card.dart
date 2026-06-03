@@ -14,6 +14,7 @@ import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The working root of an adaptive card tree when operating against the map
@@ -60,6 +61,8 @@ class RawAdaptiveCard extends StatefulWidget {
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
 }
 
+/// The working root of adaptive card state tree when operating against the map
+///
 class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   ///.  Wrapper around the host config
   late ReferenceResolver _resolver;
@@ -67,16 +70,28 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   // The root element that is loaded from the map
   late Widget _adaptiveElement;
 
+  /// Deep-copied baseline for [baselineMapProvider]; stable across [build]
+  /// so runtime overlays are not cleared when the host rebuilds this card.
+  late Map<String, dynamic> _baselineMap;
+
   /// Set by [_AdaptiveCardDocumentLifecycle] for host APIs outside the scope.
   ProviderContainer? documentContainer;
+
+  /// creates a deep copy with ids injected
+  static Map<String, dynamic> _deepCopyBaseline(Map<String, dynamic> map) {
+    final copy = json.decode(json.encode(map)) as Map<String, dynamic>;
+    injectIds(copy);
+    return copy;
+  }
 
   @override
   void initState() {
     super.initState();
     // Resolver initialization moved to didChangeDependencies to access context Theme
 
+    _baselineMap = _deepCopyBaseline(widget.map);
     _adaptiveElement = widget.cardTypeRegistry.getElement(
-      map: widget.map,
+      map: _baselineMap,
     );
   }
 
@@ -89,10 +104,14 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.map != widget.map ||
-        oldWidget.cardTypeRegistry != widget.cardTypeRegistry) {
+    if (oldWidget.map != widget.map) {
+      _baselineMap = _deepCopyBaseline(widget.map);
       _adaptiveElement = widget.cardTypeRegistry.getElement(
-        map: widget.map,
+        map: _baselineMap,
+      );
+    } else if (oldWidget.cardTypeRegistry != widget.cardTypeRegistry) {
+      _adaptiveElement = widget.cardTypeRegistry.getElement(
+        map: _baselineMap,
       );
     }
     _updateResolver();
@@ -123,6 +142,53 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     container
         .read(adaptiveCardDocumentProvider.notifier)
         .seedInputValues(Map<String, Object?>.from(map));
+  }
+
+  /// Sets host-driven validation overlays for input [id].
+  void setInputError(
+    String id, {
+    String? message,
+    bool isInvalid = true,
+  }) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputError(
+          id,
+          errorMessage: message,
+          isInvalid: isInvalid,
+        );
+  }
+
+  /// Clears validation overlays for input [id].
+  void clearInputError(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).clearInputError(id);
+  }
+
+  /// Replaces effective `"text"` for element [id] (e.g. `TextBlock`).
+  void setText(String id, String text) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).setText(id, text);
+  }
+
+  /// Clears text overlay for element [id].
+  void clearText(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).clearText(id);
+  }
+
+  /// Sets whether action [id] is enabled (AC 1.5).
+  void setActionEnabled(String id, {required bool enabled}) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setActionEnabled(id, enabled: enabled);
   }
 
   /// Replaces `Input.ChoiceSet` choices for [id] via the document overlay.
@@ -394,16 +460,13 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       style: widget.map['style']?.toString().toLowerCase(),
     );
 
-    final baseline =
-        json.decode(json.encode(widget.map)) as Map<String, dynamic>;
-
     return ProviderScope(
       overrides: [
         cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
         actionTypeRegistryProvider.overrideWithValue(widget.actionTypeRegistry),
         rawAdaptiveCardStateProvider.overrideWithValue(this),
         styleReferenceResolverProvider.overrideWithValue(_resolver),
-        baselineMapProvider.overrideWithValue(baseline),
+        baselineMapProvider.overrideWithValue(_baselineMap),
       ],
       child: _AdaptiveCardDocumentLifecycle(
         cardState: this,

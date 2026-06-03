@@ -59,13 +59,17 @@ class AdaptiveActionShowCardState extends ConsumerState<AdaptiveActionShowCard>
   Widget build(BuildContext context) {
     final resolver = styleResolver;
     final expandedId = ref.watch(expandedShowCardIdProvider);
+    final resolved = ref.watch(resolvedActionProvider(id));
+    final enabled = resolved?['isEnabled'] != false;
 
     final theButton = ElevatedButton(
-      onPressed: () {
-        final targetId = _targetCardId;
-        if (targetId == null) return;
-        ref.read(expandedShowCardIdProvider.notifier).toggle(targetId);
-      },
+      onPressed: enabled
+          ? () {
+              final targetId = _targetCardId;
+              if (targetId == null) return;
+              ref.read(expandedShowCardIdProvider.notifier).toggle(targetId);
+            }
+          : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: resolver.resolveButtonBackgroundColor(
           context: context,

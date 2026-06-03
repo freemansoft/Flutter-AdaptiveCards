@@ -14,13 +14,37 @@ Runtime state is stored in Riverpod document **overlays** keyed by input id:
 
 `AdaptiveInputMixin` listens to `resolvedElementProvider(id)` so controllers stay in sync when overlays change. New inputs must call `setDocumentInputValue(...)` on change and handle `onDocumentValueChanged` when syncing controllers from document updates.
 
+## Host-driven validation
+
+After submit or server-side checks, hosts can set validation overlays without mutating card JSON:
+
+- `RawAdaptiveCardState.setInputError(id, message:, isInvalid: true)` → document notifier `setInputError`
+- `RawAdaptiveCardState.clearInputError(id)` → clears overlay `errorMessage` and `isInvalid`
+
+`AdaptiveInputMixin` merges overlay `errorMessage` / `isInvalid` into the resolved listener; `showValidationError` drives `loadErrorMessage`. User edits call `setInputValue`, which clears validation overlays so typing dismisses host errors.
+
 See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+
+For **TextBlock** runtime copy and **action** `isEnabled`, use the same document notifier (`setText`, `setActionEnabled`, …) — not input mixins. See the overlay tables in [`reactive-riverpod.md`](reactive-riverpod.md).
+
+## Overlay tests
+
+Dedicated overlay tests (beyond per-input layout tests under `test/inputs/`):
+
+| Concern | File |
+| --- | --- |
+| `initData` / `initInput` | `test/inputs/init_data_overlay_test.dart` |
+| Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/input_error_overlay_test.dart` (Input.Text, Input.Number) |
+| ChoiceSet dynamic choices | `test/inputs/choice_set_overlay_test.dart` |
+| Notifier contract | `test/riverpod/adaptive_card_document_notifier_test.dart` |
+
+See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage) for the full list and gaps.
 
 ## Input.xxx Adaptive card inputs
 
 - AdaptiveCard inputs are located in `flutter_adaptive_cards_fs/lib/src/cards/inputs`. Each class there should have its own associated unit test class in `flutter_adaptive_cards_fs/test/inputs`.
 
-## Comoponent field implementations
+## Component field implementations
 
 All of the data entry components in lib/src/cards/inputs should be form componets instead of plain flutter inputs.
 

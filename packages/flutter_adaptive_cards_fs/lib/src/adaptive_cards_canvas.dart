@@ -219,14 +219,17 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
   @override
   void initState() {
     super.initState();
+    // async because we don't know if provider is synchronous or asynchronous
     unawaited(
       widget.adaptiveCardContentProvider.loadAdaptiveCardContent().then((
-        adaptiveMap,
+        loadedMap,
       ) {
         if (mounted) {
-          injectIds(adaptiveMap);
+          // this class does not use the map so id injection is out of scope
+          // also we should only mutate a copy of the map
+          //injectIds(adaptiveMap);
           setState(() {
-            map = adaptiveMap;
+            map = loadedMap;
           });
         }
       }),

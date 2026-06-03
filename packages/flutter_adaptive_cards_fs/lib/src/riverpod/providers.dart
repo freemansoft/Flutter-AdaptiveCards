@@ -76,6 +76,15 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
     if (overlay?.choices != null) {
       merged['choices'] = overlay!.choices;
     }
+    if (overlay?.errorMessage != null) {
+      merged['errorMessage'] = overlay!.errorMessage;
+    }
+    if (overlay?.isInvalid != null) {
+      merged['isInvalid'] = overlay!.isInvalid;
+    }
+    if (overlay?.text != null) {
+      merged['text'] = overlay!.text;
+    }
     if (overlay?.queryCount != null || overlay?.querySkip != null) {
       final choicesData = Map<String, dynamic>.from(
         (merged['choices.data'] as Map<dynamic, dynamic>?)?.map(
@@ -90,6 +99,25 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
         choicesData['skip'] = overlay.querySkip;
       }
       merged['choices.data'] = choicesData;
+    }
+    return merged;
+  },
+).call;
+
+/// Merged baseline + overlay map for the given action id; `null` if unknown.
+final Provider<Map<String, dynamic>?> Function(String id) resolvedActionProvider =
+    Provider.family<Map<String, dynamic>?, String>(
+  (ref, id) {
+    final doc = ref.watch(adaptiveCardDocumentProvider);
+    final baselineNode = doc.nodesById[id];
+    if (baselineNode == null) return null;
+    final type = baselineNode['type'] as String?;
+    if (type == null || !type.startsWith('Action.')) return null;
+
+    final overlay = doc.actionOverlaysById[id];
+    final merged = Map<String, dynamic>.from(baselineNode);
+    if (overlay?.isEnabled != null) {
+      merged['isEnabled'] = overlay!.isEnabled;
     }
     return merged;
   },

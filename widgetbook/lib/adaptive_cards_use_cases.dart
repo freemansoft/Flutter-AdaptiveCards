@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/generic_page.dart';
 import 'package:widgetbook_workspace/network_page.dart';
+import 'package:widgetbook_workspace/text_block_overlay_page.dart';
 import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
 
 // =============================================================================
@@ -271,6 +272,15 @@ Widget buildTextBlockExample11(BuildContext context) {
     url: 'lib/samples/text_block/example11.json',
     supportMarkdown: false,
   );
+}
+
+@widgetbook.UseCase(
+  name: 'Text overlay (knob)',
+  type: widget_types.TextBlock,
+  path: '[Components]',
+)
+Widget buildTextBlockTextOverlay(BuildContext context) {
+  return TextBlockOverlayPage(key: textBlockOverlayPageKey);
 }
 
 // =============================================================================
@@ -646,8 +656,19 @@ Widget buildActionSubmitExample1(BuildContext context) {
   return const GenericPage(url: 'lib/samples/action_submit/example1.json');
 }
 
+@widgetbook.UseCase(
+  name: 'Action.isEnabled Example 1',
+  type: widget_types.Actions,
+  path: '[Components]',
+)
+Widget buildActionIsEnabledExample1(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/action_enable/action_is_enabled.json',
+  );
+}
+
 // =============================================================================
-// ACTION SUBMIT Component
+// ACTION EXECUTE Component
 // =============================================================================
 
 @widgetbook.UseCase(

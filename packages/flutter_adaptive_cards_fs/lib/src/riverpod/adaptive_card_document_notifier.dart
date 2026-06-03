@@ -1,5 +1,3 @@
-// The patch tool sometimes drops the trailing newline; silence until stable.
-
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
@@ -20,6 +18,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
       baseline: baseline,
       nodesById: nodesById,
       overlaysById: const {},
+      actionOverlaysById: const {},
       revision: 0,
     );
   }
@@ -46,12 +45,82 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   }
 
   /// Records [value] for input [id], preserving other overlay fields.
+  ///
+  /// Clears host-driven validation overlays so editing clears error state.
   void setInputValue(String id, Object? value) {
     _updateOverlay(
       id,
       (current) => (current ?? const ElementOverlay()).copyWith(
         inputValue: value,
+        clearIsInvalid: true,
+        clearErrorMessage: true,
       ),
+    );
+  }
+
+  /// Sets host-driven validation state for input [id].
+  void setInputError(
+    String id, {
+    String? errorMessage,
+    bool? isInvalid,
+  }) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(
+        errorMessage: errorMessage,
+        isInvalid: isInvalid,
+      ),
+    );
+  }
+
+  /// Replaces effective `"text"` for element [id] (e.g. `TextBlock`).
+  void setText(String id, String text) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(text: text),
+    );
+  }
+
+  /// Clears text overlay for element [id].
+  void clearText(String id) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(clearText: true),
+    );
+  }
+
+  /// Clears validation overlays for input [id].
+  void clearInputError(String id) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(
+        clearErrorMessage: true,
+        clearIsInvalid: true,
+      ),
+    );
+  }
+
+  /// Sets whether action [id] is enabled (AC 1.5 `isEnabled`).
+  void setActionEnabled(String id, {required bool enabled}) {
+    _updateActionOverlay(
+      id,
+      (current) => (current ?? const ActionOverlay()).copyWith(
+        isEnabled: enabled,
+      ),
+    );
+  }
+
+  /// Bulk-updates action enabled state by id.
+  void setActionsEnabled(Map<String, bool> states) {
+    final overlays = Map<String, ActionOverlay>.from(state.actionOverlaysById);
+    for (final entry in states.entries) {
+      if (!_isActionId(entry.key)) continue;
+      overlays[entry.key] = (overlays[entry.key] ?? const ActionOverlay())
+          .copyWith(isEnabled: entry.value);
+    }
+    state = state.copyWith(
+      actionOverlaysById: overlays,
+      revision: state.revision + 1,
     );
   }
 
@@ -112,8 +181,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     );
   }
 
-  /// Clears input value and dynamic choice overlays so resolved values fall
-  /// back to baseline JSON. Visibility overlays are preserved.
+  /// Clears input value, choices, and validation overlays so resolved values
+  /// fall back to baseline JSON. Visibility and action overlays are preserved.
   void resetAllInputs() {
     final overlays = Map<String, ElementOverlay>.from(state.overlaysById);
     final inputIds = state.nodesById.entries
@@ -165,6 +234,23 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     );
   }
 
+  void _updateActionOverlay(
+    String id,
+    ActionOverlay Function(ActionOverlay? current) merge,
+  ) {
+    final overlays = Map<String, ActionOverlay>.from(state.actionOverlaysById);
+    overlays[id] = merge(overlays[id]);
+    state = state.copyWith(
+      actionOverlaysById: overlays,
+      revision: state.revision + 1,
+    );
+  }
+
+  bool _isActionId(String id) {
+    final type = state.nodesById[id]?['type'] as String?;
+    return type != null && type.startsWith('Action.');
+  }
+
   List<Map<String, dynamic>> _effectiveChoiceJson(String id) {
     final baselineNode = state.nodesById[id];
     if (baselineNode == null) return const [];
@@ -189,9 +275,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     void visitNode(Object? node) {
       if (node is Map) {
         final map = Map<String, dynamic>.from(node);
-        if (idIsNatural(map)) {
-          final id = loadId(map);
-          result[id] = map;
+        if (map.containsKey('type') && map.containsKey('id')) {
+          result[loadId(map)] = map;
         }
 
         map.values.forEach(visitNode);

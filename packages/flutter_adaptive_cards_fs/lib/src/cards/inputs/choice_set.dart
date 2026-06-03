@@ -66,7 +66,6 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   DataQuery? dataQuery;
 
   TextEditingController controller = TextEditingController();
-  bool stateHasError = false;
   ProviderSubscription<Map<String, dynamic>?>? _choicesSubscription;
 
   @override
@@ -214,7 +213,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
             loadErrorMessage(
               context: context,
               errorMessage: errorMessage,
-              stateHasError: stateHasError,
+              stateHasError: showValidationError,
             ),
           ],
         ),

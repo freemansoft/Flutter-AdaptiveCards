@@ -1,6 +1,6 @@
-# Hiding Adaptive elements based on the isVisble flag.
+# Hiding Adaptive elements based on the `isVisible` flag
 
-This document provides guidance to an LLM when implementing hide/show or visible yes/no behavior.
+This document provides guidance when implementing hide/show or visible yes/no behavior.
 
 ## Current implementation (Riverpod overlays)
 
@@ -10,37 +10,30 @@ Visibility is driven by the document overlay model, not by mutating JSON or walk
 - Runtime changes (e.g. `Action.ToggleVisibility`) call `AdaptiveCardDocumentNotifier.setVisibility` / `toggleVisibility`, which write `ElementOverlay.isVisible`.
 - `AdaptiveVisibilityMixin` listens to `resolvedElementProvider(id)` and rebuilds when the **merged** `isVisible` changes.
 
+Other element overlays (e.g. **TextBlock** `text` via `setText`) use the same provider; see [`reactive-riverpod.md`](reactive-riverpod.md).
+
 See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
----
+### Widget implementation
 
-## Design Plan (original widget-local approach)
+- Elements with `AdaptiveVisibilityMixin` wrap content in a `Visibility` widget using the merged `isVisible` from `resolvedElementProvider(id)`.
+- Baseline JSON may omit `isVisible` (defaults to visible) or set `"isVisible": false`.
+- Host code can call `RawAdaptiveCardState.setIsVisible` or use `Action.ToggleVisibility`; both update the document notifier (`setVisibility` / `toggleVisibility`).
 
-Enable flag driven card visibility on all Adaptive Elements using a boolean property `isVisible` that is stored in a widget state variable and initialized at Widget `initState()` from the adaptivemap from `adaptiveMap['isVisible']`. External code can update widget state `isVisible` value and `setState()`.
+### Baseline `isVisible` values
 
-Show/Hide is actually implemented using the flag and a `Visibility` widget in each widget's `build()` code. The `Visibility` widget should be at the outermost layer of the Adaptive Card's widget tree, essentially hiding all the rendering if `!isVisible`.
+| `adaptiveMap['isVisible']` | Effective visible |
+| --- | --- |
+| `true` / omitted / null | Visible |
+| `false` | Hidden |
 
-An adaptive Map may have 3 values for isVisible.
+### Tests
 
-| adaptiveMap['isVisible'] | isVisible | isOffStage |
-| ------------------------ | --------- | ---------- |
-| `'true'`                 | True      | False      |
-| `'false'`                | False     | True       |
-| not set or null          | True      | False      |
+Coverage lives in [`test/elements/is_visible_test.dart`](../packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart):
 
-## Implementation.
+- JSON `isVisible` on elements
+- `RawAdaptiveCardState.setIsVisible` and notifier `toggleVisibility`
+- `Action.ToggleVisibility`
+- Visibility overlay survives `RawAdaptiveCard.rebuild()`
 
-1. An AdaptiveCard's JSON may optionally include an `isVisible` `boolean` property at the Adaptive Card level that we will use to control visibility.
-1. AdaptiveCardElement State objects all have an `isVisible` property that is populated from AdaptiveCard JSON in the card widget's `initState()` function.
-1. Each AdaptiveElement Widget rendering is is to be modified so that `Visibility` instance wrap the existing `Separator` that exists in or near each build method.
-1. The Value of an `isVisible` property is passed to the `Visibility` as the `visible` paramter.
-1. Progams can change the value of the AdaptiveCardState `isVisible` property via a `setIsVisible(visible)` on the mixin function on a mixin that is already on every adaptive card element. Changing `isVisible` property cause a rebuild on that object and below.
-
-## Testing
-
-Create a single test.
-
-1. Create a test that verifies both hide and show opeations.
-1. The test should have two Adaptive Text Adaptive cards with `id`s thing1 and thing2 and text values `thing1` and `thing2`. One widget will have `isVisible:true` and one with `isVisible:false`.
-1. The test can validate that one is visible and the other does not exist by searching by the widget tree by text value.
-1. The test should validate that changing the isVisible values changes the filled displayed
+See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage).

@@ -191,12 +191,52 @@ mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   String? get tooltip => adaptiveMap['tooltip'] as String?;
 }
 
+/// Subscribes to [resolvedActionProvider] for AC 1.5 `isEnabled` (default true).
+mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
+    implements AdaptiveElementMixin<T> {
+  bool _actionEnabled = true;
+  ProviderSubscription<Map<String, dynamic>?>? _actionStateSubscription;
+
+  /// Whether the action accepts presses per merged baseline + overlay.
+  bool get actionEnabled => _actionEnabled;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _actionStateSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _actionStateSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedActionProvider(id),
+      (previous, next) {
+        final enabled = next?['isEnabled'] != false;
+        if (enabled == _actionEnabled) return;
+        setState(() => _actionEnabled = enabled);
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _actionStateSubscription?.close();
+    _actionStateSubscription = null;
+    super.dispose();
+  }
+}
+
 mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   late String value;
   late String placeholder;
   late String? errorMessage;
+  bool overlayValidationError = false;
   ProviderSubscription<Map<String, dynamic>?>? _inputValueSubscription;
+
+  /// Local required-field / validator error OR host overlay `isInvalid`.
+  bool get showValidationError => stateHasError || overlayValidationError;
+
+  /// Widget-local validation flag (required checks, Form validators).
+  bool stateHasError = false;
 
   @override
   void initState() {
@@ -211,6 +251,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         '';
 
     errorMessage = adaptiveMap['errorMessage'] as String?;
+    overlayValidationError = adaptiveMap['isInvalid'] == true;
   }
 
   @override
@@ -223,10 +264,21 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
       (previous, next) {
         final nextValue = next?['value'];
         final nextString = nextValue?.toString() ?? '';
-        if (nextString == value) return;
+        final nextError = next?['errorMessage'] as String?;
+        final nextInvalid = next?['isInvalid'] == true;
+        final valueChanged = nextString != value;
+        final errorChanged =
+            nextError != errorMessage || nextInvalid != overlayValidationError;
+        if (!valueChanged && !errorChanged) return;
         setState(() {
-          value = nextString;
-          onDocumentValueChanged(nextValue);
+          if (valueChanged) {
+            value = nextString;
+            onDocumentValueChanged(nextValue);
+          }
+          if (errorChanged) {
+            errorMessage = nextError;
+            overlayValidationError = nextInvalid;
+          }
         });
       },
       fireImmediately: true,

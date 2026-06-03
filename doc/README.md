@@ -48,7 +48,7 @@ High-level system architecture showing package structure, widget hierarchy, and 
 
 **Status**: ✅ Current | **Category**: Architecture
 
-Riverpod scopes, document notifier, and the **baseline + overlay** model for reactive inputs, visibility, show-card UI, and submit/reset without mutating host JSON.
+Riverpod scopes, document notifier, cached baseline on rebuild, **baseline + overlay** model, [overlay test coverage](./reactive-riverpod.md#overlay-test-coverage), and reactive inputs, visibility, TextBlock text, validation, action `isEnabled`, show-card UI, and submit/reset without mutating host JSON.
 
 ---
 
@@ -118,7 +118,14 @@ Test requirements for HostConfig serialization. Each HostConfig entity should ha
 - JSON file: `packages/flutter_adaptive_cards_fs/test/hostconfig/{name}.json`
 - Validation against schema
 
+### Overlay / document notifier tests
+
+**Status**: ✅ Current | **Category**: Test Requirements
+
+Riverpod document **overlay** tests (notifier unit tests + widget integration) are catalogued in [reactive-riverpod.md — Overlay test coverage](./reactive-riverpod.md#overlay-test-coverage). Run from `packages/flutter_adaptive_cards_fs` with `fvm flutter test` on the listed paths.
+
 ---
+
 
 ## Known Issues & Future Work
 
@@ -132,11 +139,11 @@ Documents bug where AdaptiveColumns in an AdaptiveColumnSet have inconsistent he
 
 ## Reference Material
 
-### [adaptive-template-design.md](./adaptive-template-design.md)
+### [Adaptive-expressions-and-prebuilt-functions.md](./Adaptive-expressions-and-prebuilt-functions.md)
 
 **Status**: ⚠️ Future Reference Only | **Category**: Reference
 
-**NOT part of standard Adaptive Cards specification.** Documents Azure Bot Service expression functions for potential future integration. For standard templating, see [adaptive-template-design.md](./adaptive-template-design.md).
+**NOT part of the standard Adaptive Cards specification.** Documents Azure Bot Service expression functions for potential future integration. For standard templating, see [adaptive-template-design.md](./adaptive-template-design.md).
 
 ---
 
@@ -162,4 +169,4 @@ When adding or updating documentation:
 
 ---
 
-Last Updated: 2026-02-13
+Last Updated: 2026-06-01

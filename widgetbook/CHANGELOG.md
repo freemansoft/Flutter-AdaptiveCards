@@ -5,6 +5,8 @@
 - Updated to Dart SDK 3.12 and Flutter 3.44
 - Migrated to Swift Package Manager from CocoaPods
 - Fixed home pane bottom overflow on short windows: `AdaptiveCardsWidgetbookHome` now uses a `SingleChildScrollView` while keeping content vertically centered when it fits
+- Added **TextBlock → Text overlay (knob)** use case (`text_overlay_demo.json`, `TextBlockOverlayPage`) demonstrating host `setText` on a `TextBlock`
+- **Knob-driven use cases that must keep state:** Widgetbook 3 keys `UseCaseBuilder` with `ValueKey(state.uri)`, so each knob edit changes the URI and remounts the use-case subtree (full card flicker, spinner, debug chrome). Use a module-level `GlobalKey` on the stable host widget—see `textBlockOverlayPageKey` in `lib/text_block_overlay_page.dart`—and read knobs inside that widget’s `build` so only overlay APIs (e.g. `setText`) run on change. Reuse this pattern for other interactive knobs over `RawAdaptiveCard`
 
 ## [0.7.0]
 

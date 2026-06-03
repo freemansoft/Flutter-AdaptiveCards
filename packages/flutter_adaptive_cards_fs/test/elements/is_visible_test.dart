@@ -151,6 +151,52 @@ void main() {
     expect(find.text('Element 2'), findsOneWidget);
   });
 
+  testWidgets('visibility overlay survives RawAdaptiveCard rebuild', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> cardMap = {
+      'type': 'AdaptiveCard',
+      'version': '1.5',
+      'body': [
+        {
+          'type': 'TextBlock',
+          'id': 'element1',
+          'text': 'Element 1',
+        },
+        {
+          'type': 'TextBlock',
+          'id': 'element2',
+          'text': 'Element 2',
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(
+        map: cardMap,
+        title: 'visibility survives rebuild',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final cardState = tester.state<RawAdaptiveCardState>(
+      find.byType(RawAdaptiveCard),
+    );
+    final scopeContext = tester.element(find.byType(AdaptiveTextBlock).first);
+    final notifier = ProviderScope.containerOf(scopeContext)
+        .read(adaptiveCardDocumentProvider.notifier);
+
+    notifier.setVisibility('element2', visible: false);
+    await tester.pump();
+    expect(find.text('Element 2'), findsNothing);
+
+    cardState.rebuild();
+    await tester.pump();
+
+    expect(find.text('Element 1'), findsOneWidget);
+    expect(find.text('Element 2'), findsNothing);
+  });
+
   testWidgets(
     'Document notifier toggleVisibility can toggle element visibility',
     (

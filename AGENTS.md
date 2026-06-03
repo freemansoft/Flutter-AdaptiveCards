@@ -49,9 +49,9 @@ When working in **`packages/flutter_adaptive_cards_fs`**:
 
 - **Do** use `ProviderScope` + provider overrides for card-scoped registries, resolver (HostConfig only), and document state.
 - **Do** keep registries and `ReferenceResolver` as **separate** scoped providers (`cardTypeRegistryProvider` / `actionTypeRegistryProvider` vs `styleReferenceResolverProvider`).
-- **Do** model reactive behaviors (visibility, inputs, show-card UI) with Riverpod `Notifier`s + `ref.watch` (avoid element-tree walks and widget instance registries).
+- **Do** model reactive behaviors (visibility, inputs, TextBlock text, validation, action `isEnabled`, show-card UI) with Riverpod `Notifier`s + `ref.watch` / `container.listen` on resolved providers (avoid element-tree walks and widget instance registries).
 - **Do** keep host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onChange`, …) on `InheritedAdaptiveCardHandlers`.
-- **Do not** mutate the host-provided JSON map in place for runtime state; store runtime overlays in the document notifier (`setInputValue`, `setVisibility`, `setChoices`, …) and read merged state via `resolvedElementProvider(id)` (see [`doc/reactive-riverpod.md`](doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map)).
+- **Do not** mutate the host-provided JSON map in place for runtime state; store runtime overlays in the document notifier (`setInputValue`, `setVisibility`, `setChoices`, `setText`, `setInputError`, `setActionEnabled`, …) and read merged state via `resolvedElementProvider(id)` / `resolvedActionProvider(id)` (see [`doc/reactive-riverpod.md`](doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map)).
 
 For **sample apps and `adaptive_explorer`**, use normal Flutter state patterns (`StatefulWidget`, etc.).
 

@@ -76,10 +76,18 @@ class MySubmitAction implements GenericSubmitAction {
 
 ---
 
+## Action `isEnabled` (AC 1.5)
+
+Runtime enable/disable does not mutate action JSON. Hosts call `RawAdaptiveCardState.setActionEnabled` or `setActionsEnabled`; merged state is read via `resolvedActionProvider(id)`. Submit and other actions that use `IconButtonAction` + `AdaptiveActionStateMixin` react to overlay changes; `Action.ShowCard` watches the same provider for its expand button.
+
+Tests: [`test/actions/action_enabled_overlay_test.dart`](../packages/flutter_adaptive_cards_fs/test/actions/action_enabled_overlay_test.dart), [`test/actions/show_card_enabled_overlay_test.dart`](../packages/flutter_adaptive_cards_fs/test/actions/show_card_enabled_overlay_test.dart). See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage).
+
+---
+
 ## Tests & Migration Notes ⚠️
 
 - Existing consumers should continue to rely on `Generic*` types; concrete `Default*` classes are only used by the default registry.
-- Non-golden tests run with: `flutter test --exclude-tags=golden` (golden tests are tagged as `['golden']`).
+- Non-golden tests run with: `fvm flutter test --exclude-tags=golden` (golden tests are tagged as `['golden']`).
 - Golden tests are platform-specific and stored in subdirectories (e.g., `gold_files/linux/`, `gold_files/macos/`).
 - If you previously relied on passing `adaptiveMap` into action constructors, migrate to calling `tap(..., adaptiveMap: ...)` instead.
 

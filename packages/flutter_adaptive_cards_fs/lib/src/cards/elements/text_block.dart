@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/TextBlock.html
@@ -39,30 +41,49 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   late TextAlign textAlign;
   late String text;
   late String? fontFamily;
+  ProviderSubscription<Map<String, dynamic>?>? _textSubscription;
 
   ///We're assuming that the only type of action on a text block is an open url
   late GenericActionOpenUrl action;
+
+  String? _localeOf(BuildContext context) {
+    try {
+      return Localizations.maybeLocaleOf(context)?.toString();
+      // Localization lookup can throw outside a MaterialApp in tests.
+      // ignore: avoid_catches_without_on_clauses
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _formatDisplayText(String rawFromResolved) {
+    final parsed = parseTextString(rawFromResolved, locale: _localeOf(context));
+    return DateTimeUtils.formatText(parsed);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    text = _formatDisplayText(widget.adaptiveMap['text']?.toString() ?? '');
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // We look up locale here so it updates if the system language changes
-    final String? locale = () {
-      try {
-        return Localizations.maybeLocaleOf(context)?.toString();
-        // catch everything
-        // ignore: avoid_catches_without_on_clauses
-      } catch (_) {
-        return null;
-      }
-    }();
-
-    final rawText = parseTextString(
-      adaptiveMap['text'] ?? '',
-      locale: locale,
+    _textSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _textSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        if (next == null) return;
+        final nextRaw = next['text']?.toString() ?? '';
+        final nextDisplay = _formatDisplayText(nextRaw);
+        if (nextDisplay == text) return;
+        setState(() => text = nextDisplay);
+      },
+      fireImmediately: true,
     );
-    text = DateTimeUtils.formatText(rawText);
 
     // gag me with a hack - the api is built against a type key in a map
     action =
@@ -91,6 +112,13 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       wrap: adaptiveMap['wrap'],
       maxLines: adaptiveMap['maxLines'],
     );
+  }
+
+  @override
+  void dispose() {
+    _textSubscription?.close();
+    _textSubscription = null;
+    super.dispose();
   }
 
   /*child: */
@@ -196,6 +224,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
             fontSize: fontSize,
             color: color,
           );
+
 
     final TextStyle aStyle = TextStyle(
       fontWeight: fontWeight,

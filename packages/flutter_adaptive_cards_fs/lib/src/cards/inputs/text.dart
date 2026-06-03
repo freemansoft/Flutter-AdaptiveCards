@@ -50,7 +50,6 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
     maxLength = adaptiveMap['maxLength'] as int? ?? 20;
     inputStyle = resolveTextInputType(style);
     controller.text = value;
-    stateHasError = false;
 
     if (!_controllerListenerInstalled) {
       _controllerListenerInstalled = true;
@@ -81,8 +80,6 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
       stateHasError = false;
     });
   }
-
-  bool stateHasError = false;
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +148,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
             loadErrorMessage(
               context: context,
               errorMessage: errorMessage,
-              stateHasError: stateHasError,
+              stateHasError: showValidationError,
             ),
           ],
         ),

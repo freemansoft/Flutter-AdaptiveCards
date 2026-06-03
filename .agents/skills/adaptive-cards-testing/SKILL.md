@@ -27,6 +27,14 @@ fvm flutter test --tags golden          # only golden image tests
 fvm flutter test --update-goldens       # regenerate golden images
 ```
 
+**Before declaring library work done**, run at least:
+
+```bash
+cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden
+```
+
+Re-run targeted files when you touched related behavior (inputs, overlays, actions, goldens).
+
 ---
 
 ## Key-First Testing (Mandatory)
@@ -217,17 +225,20 @@ flutter test --exclude-tags golden
 
 ---
 
-## Reactive document tests (inputs, visibility, submit)
+## Reactive document tests (overlays, submit, reset)
 
-Input values, visibility, and ChoiceSet choices are backed by Riverpod document **overlays**, not mutated JSON. When testing:
+Input values, visibility, TextBlock text, validation, ChoiceSet choices, and action `isEnabled` are backed by Riverpod document **overlays**, not mutated JSON. When testing:
 
 - **Notifier unit tests**: `test/riverpod/adaptive_card_document_notifier_test.dart` — use a `ProviderContainer` with `baselineMapProvider.overrideWithValue(...)`, read `adaptiveCardDocumentProvider.notifier`, assert `resolvedElementProvider(id)` and `overlaysById` without building widgets.
 - **initData overlays**: `test/inputs/init_data_overlay_test.dart` — assert both UI and `resolvedElementProvider(id)` after `initData` or programmatic `initInput`.
 - **Submit / reset**: pump user interactions, then assert `onSubmit` mock received expected values, or tap Reset and assert UI reverts to baseline JSON values. See `test/inherited_reference_resolver_test.dart`, `test/elements/is_visible_test.dart`, `test/inputs/action_reset_inputs_test.dart`, and input tests under `test/inputs/`.
 - **Dynamic choices**: `test/inputs/choice_set_overlay_test.dart` — `loadInput`, `appendChoices`, selection clear, dedupe, `resetAllInputs` clearing choice overlays.
 - **Data.Query / typeahead**: `test/inputs/choice_set_data_query_test.dart` — `onChange` passes `DataQuery`, `loadInput` refresh with `choices.data`, `setDataQuerySession` on resolved `choices.data`; notifier tests for session merge in `test/riverpod/adaptive_card_document_notifier_test.dart`.
-- **ToggleVisibility**: assert widgets appear/disappear after the action without relying on imperative tree walks.
-- **Provider scope**: use `ProviderScope.containerOf(elementContext)` to read `adaptiveCardDocumentProvider` or `resolvedElementProvider(id)` when asserting document state directly.
+- **Input validation overlays**: `test/inputs/input_error_overlay_test.dart` — `setInputError` / `clearInputError`, edit clears overlay, host `clearInputError`, Input.Number; notifier group in `adaptive_card_document_notifier_test.dart`.
+- **Action `isEnabled` overlays**: `test/actions/action_enabled_overlay_test.dart` — sample `test/samples/v1.5/action_is_enabled.json`, Submit baseline + `setActionEnabled`; `test/actions/show_card_enabled_overlay_test.dart` — ShowCard expand button; notifier `setActionsEnabled` in `adaptive_card_document_notifier_test.dart`.
+- **TextBlock `text` overlays**: `test/elements/text_block_text_overlay_test.dart` — `setText` / `clearText`, host `setText`; notifier group in `adaptive_card_document_notifier_test.dart` (`TextBlock text overlays`).
+- **ToggleVisibility**: assert widgets appear/disappear after the action without relying on imperative tree walks; `is_visible_test.dart` includes visibility overlay surviving `RawAdaptiveCard.rebuild()`.
+- **Provider scope**: use `ProviderScope.containerOf(elementContext)` to read `adaptiveCardDocumentProvider`, `resolvedElementProvider(id)`, or `resolvedActionProvider(id)` when asserting document state directly.
 
 Example notifier unit-test harness:
 
@@ -242,6 +253,10 @@ expect(container.read(resolvedElementProvider('myText'))?['value'], 'seeded');
 ```
 
 Baseline + overlay model: [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+
+### Coverage gaps
+
+Per-field and per-type overlay coverage (what is tested vs missing) lives in the **element-registry** skill — [Overlay test coverage](../adaptive-cards-element-registry/SKILL.md#overlay-test-coverage). Use that matrix when adding a new overlay field or deciding whether a widget test is required for a specific `Input.*` / `Action.*` type.
 
 ---
 

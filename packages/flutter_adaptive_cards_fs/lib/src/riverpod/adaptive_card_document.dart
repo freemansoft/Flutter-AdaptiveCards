@@ -1,12 +1,11 @@
-// The patch tool sometimes drops the trailing newline; silence until stable.
-
 import 'package:flutter/foundation.dart';
 
 /// Immutable snapshot of a rendered Adaptive Card's document state.
 ///
 /// Combines an unchanged **baseline** (deep copy of host JSON) with sparse
 /// **overlays** for runtime patches. Widgets and actions should read merged
-/// element maps via `resolvedElementProvider`, not mutate [baseline] directly.
+/// maps via resolved element/action providers, not mutate
+/// [baseline] directly.
 @immutable
 class AdaptiveCardDocument {
   /// Creates a document snapshot.
@@ -14,6 +13,7 @@ class AdaptiveCardDocument {
     required this.baseline,
     required this.nodesById,
     required this.overlaysById,
+    required this.actionOverlaysById,
     required this.revision,
   });
 
@@ -26,6 +26,9 @@ class AdaptiveCardDocument {
   /// Sparse runtime overlays keyed by element id.
   final Map<String, ElementOverlay> overlaysById;
 
+  /// Sparse runtime overlays keyed by action id.
+  final Map<String, ActionOverlay> actionOverlaysById;
+
   /// Monotonic revision to force provider updates when internals change.
   final int revision;
 
@@ -34,12 +37,14 @@ class AdaptiveCardDocument {
     Map<String, dynamic>? baseline,
     Map<String, Map<String, dynamic>>? nodesById,
     Map<String, ElementOverlay>? overlaysById,
+    Map<String, ActionOverlay>? actionOverlaysById,
     int? revision,
   }) {
     return AdaptiveCardDocument(
       baseline: baseline ?? this.baseline,
       nodesById: nodesById ?? this.nodesById,
       overlaysById: overlaysById ?? this.overlaysById,
+      actionOverlaysById: actionOverlaysById ?? this.actionOverlaysById,
       revision: revision ?? this.revision,
     );
   }
@@ -59,6 +64,9 @@ class ElementOverlay {
     this.queryCount,
     this.querySkip,
     this.querySearchText,
+    this.errorMessage,
+    this.isInvalid,
+    this.text,
   });
 
   /// Overrides baseline `"isVisible"` when non-null.
@@ -79,6 +87,15 @@ class ElementOverlay {
   /// Current typeahead search text; not merged into resolved element JSON.
   final String? querySearchText;
 
+  /// Overrides baseline `"errorMessage"` on input elements when non-null.
+  final String? errorMessage;
+
+  /// Host-driven validation flag merged into resolved `"isInvalid"`.
+  final bool? isInvalid;
+
+  /// Overrides baseline `"text"` on elements such as `TextBlock` when non-null.
+  final String? text;
+
   /// Returns a copy with the given fields replaced.
   ElementOverlay copyWith({
     bool? isVisible,
@@ -87,11 +104,17 @@ class ElementOverlay {
     int? queryCount,
     int? querySkip,
     String? querySearchText,
+    String? errorMessage,
+    bool? isInvalid,
+    String? text,
     bool clearInputValue = false,
     bool clearChoices = false,
     bool clearQueryCount = false,
     bool clearQuerySkip = false,
     bool clearQuerySearchText = false,
+    bool clearErrorMessage = false,
+    bool clearIsInvalid = false,
+    bool clearText = false,
   }) {
     return ElementOverlay(
       isVisible: isVisible ?? this.isVisible,
@@ -102,6 +125,28 @@ class ElementOverlay {
       querySearchText: clearQuerySearchText
           ? null
           : (querySearchText ?? this.querySearchText),
+      errorMessage:
+          clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      isInvalid: clearIsInvalid ? null : (isInvalid ?? this.isInvalid),
+      text: clearText ? null : (text ?? this.text),
     );
+  }
+}
+
+/// Runtime overlay for a single action id.
+///
+/// Only non-null fields override the corresponding baseline JSON properties
+/// when merged by the resolved action provider.
+@immutable
+class ActionOverlay {
+  /// Creates an overlay patch for one action.
+  const ActionOverlay({this.isEnabled});
+
+  /// Overrides baseline `"isEnabled"` when non-null (AC 1.5, default true).
+  final bool? isEnabled;
+
+  /// Returns a copy with the given fields replaced.
+  ActionOverlay copyWith({bool? isEnabled}) {
+    return ActionOverlay(isEnabled: isEnabled ?? this.isEnabled);
   }
 }

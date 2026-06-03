@@ -40,8 +40,6 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
   DateTime? max;
   final inputFormat = DateFormat('yyyy-MM-dd');
   TextEditingController controller = TextEditingController();
-  bool stateHasError = false;
-
   @override
   void initState() {
     super.initState();
@@ -184,7 +182,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
             loadErrorMessage(
               context: context,
               errorMessage: errorMessage,
-              stateHasError: stateHasError,
+              stateHasError: showValidationError,
             ),
           ],
         ),

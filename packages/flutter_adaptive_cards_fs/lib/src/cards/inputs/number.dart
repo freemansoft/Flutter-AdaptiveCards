@@ -36,8 +36,6 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   TextEditingController controller = TextEditingController();
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
-  bool stateHasError = false;
-
   String? label;
   late bool isRequired;
   late int min;
@@ -159,7 +157,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
             loadErrorMessage(
               context: context,
               errorMessage: errorMessage,
-              stateHasError: stateHasError,
+              stateHasError: showValidationError,
             ),
           ],
         ),

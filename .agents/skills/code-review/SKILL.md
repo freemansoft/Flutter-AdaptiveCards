@@ -30,6 +30,9 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 - [ ] **Mixins**: Does the element correctly implement `AdaptiveElementWidgetMixin` (Widget) and `AdaptiveElementMixin` + `AdaptiveVisibilityMixin` (State)?
 - [ ] **Inputs**: Does the input use `AdaptiveInputMixin`? On user change, does it call `setDocumentInputValue(...)`? Does it sync controllers in `onDocumentValueChanged` when overlays change (reset)?
 - [ ] **Visibility**: If visibility can change at runtime, does the element use `AdaptiveVisibilityMixin` and write via `setIsVisible` / document notifier (not local-only `setState`)?
+- [ ] **TextBlock text**: If runtime text can change, does `AdaptiveTextBlock` read display copy from `resolvedElementProvider(id)` (not only stale `adaptiveMap['text']`)?
+- [ ] **Actions**: Do action buttons respect `isEnabled` via `AdaptiveActionStateMixin` / `resolvedActionProvider` when host-driven enable/disable matters?
+- [ ] **Overlays**: Are host/runtime patches written through the document notifier (`setInputValue`, `setText`, `setInputError`, …) rather than mutating the host JSON map?
 
 ### Theming & Styling
 

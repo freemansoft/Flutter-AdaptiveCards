@@ -31,6 +31,35 @@ Map<String, dynamic> _baselineFixture() {
   };
 }
 
+Map<String, dynamic> _actionAndInputBaseline() {
+  return {
+    'type': 'AdaptiveCard',
+    'version': '1.5',
+    'body': [
+      {
+        'type': 'Input.Text',
+        'id': 'myText',
+        'value': 'baseline',
+        'errorMessage': 'baseline error',
+      },
+    ],
+    'actions': [
+      {
+        'type': 'Action.Submit',
+        'id': 'submitEnabled',
+        'title': 'Enabled',
+        'isEnabled': true,
+      },
+      {
+        'type': 'Action.Submit',
+        'id': 'submitDisabled',
+        'title': 'Disabled',
+        'isEnabled': false,
+      },
+    ],
+  };
+}
+
 Map<String, dynamic> _dataQueryChoiceBaseline() {
   return {
     'type': 'AdaptiveCard',
@@ -255,5 +284,218 @@ void main() {
         );
       },
     );
+
+    group('validation and action overlays', () {
+      late ProviderContainer actionContainer;
+
+      setUp(() {
+        actionContainer = _createContainer(_actionAndInputBaseline());
+      });
+
+      tearDown(() {
+        actionContainer.dispose();
+      });
+
+      test('setInputError merges errorMessage and isInvalid', () {
+        actionContainer
+            .read(adaptiveCardDocumentProvider.notifier)
+            .setInputError(
+              'myText',
+              errorMessage: 'Host error',
+              isInvalid: true,
+            );
+
+        final resolved = actionContainer.read(resolvedElementProvider('myText'));
+        expect(resolved?['errorMessage'], 'Host error');
+        expect(resolved?['isInvalid'], isTrue);
+      });
+
+      test('clearInputError restores baseline validation fields', () {
+        final notifier = actionContainer.read(
+          adaptiveCardDocumentProvider.notifier,
+        )
+          ..setInputError('myText', errorMessage: 'Host error', isInvalid: true)
+          ..clearInputError('myText');
+
+        expect(
+          notifier.state.overlaysById['myText']?.errorMessage,
+          isNull,
+        );
+        expect(notifier.state.overlaysById['myText']?.isInvalid, isNull);
+
+        final resolved = actionContainer.read(resolvedElementProvider('myText'));
+        expect(resolved?['errorMessage'], 'baseline error');
+        expect(resolved?.containsKey('isInvalid'), isFalse);
+      });
+
+      test('resetAllInputs clears validation overlays on inputs', () {
+        final notifier = actionContainer.read(
+          adaptiveCardDocumentProvider.notifier,
+        )
+          ..setInputError('myText', errorMessage: 'Host error', isInvalid: true)
+          ..resetAllInputs();
+
+        expect(
+          notifier.state.overlaysById['myText']?.errorMessage,
+          isNull,
+        );
+        expect(notifier.state.overlaysById['myText']?.isInvalid, isNull);
+
+        final resolved = actionContainer.read(resolvedElementProvider('myText'));
+        expect(resolved?['errorMessage'], 'baseline error');
+      });
+
+      test('setInputValue clears validation overlays', () {
+        final notifier = actionContainer.read(
+          adaptiveCardDocumentProvider.notifier,
+        )
+          ..setInputError('myText', errorMessage: 'Host error', isInvalid: true)
+          ..setInputValue('myText', 'edited');
+
+        expect(
+          notifier.state.overlaysById['myText']?.errorMessage,
+          isNull,
+        );
+        expect(notifier.state.overlaysById['myText']?.isInvalid, isNull);
+      });
+
+      test('setActionEnabled merges into resolvedActionProvider', () {
+        actionContainer
+            .read(adaptiveCardDocumentProvider.notifier)
+            .setActionEnabled('submitEnabled', enabled: false);
+
+        final resolved = actionContainer.read(
+          resolvedActionProvider('submitEnabled'),
+        );
+        expect(resolved?['isEnabled'], isFalse);
+      });
+
+      test('setActionsEnabled bulk-updates multiple actions', () {
+        actionContainer
+            .read(adaptiveCardDocumentProvider.notifier)
+            .setActionsEnabled({
+          'submitEnabled': false,
+          'submitDisabled': true,
+        });
+
+        expect(
+          actionContainer.read(
+            resolvedActionProvider('submitEnabled'),
+          )?['isEnabled'],
+          isFalse,
+        );
+        expect(
+          actionContainer.read(
+            resolvedActionProvider('submitDisabled'),
+          )?['isEnabled'],
+          isTrue,
+        );
+        expect(
+          actionContainer
+              .read(adaptiveCardDocumentProvider)
+              .actionOverlaysById['submitEnabled']
+              ?.isEnabled,
+          isFalse,
+        );
+        expect(
+          actionContainer
+              .read(adaptiveCardDocumentProvider)
+              .actionOverlaysById['submitDisabled']
+              ?.isEnabled,
+          isTrue,
+        );
+      });
+
+      test('baseline isEnabled false without overlay stays false', () {
+        final resolved = actionContainer.read(
+          resolvedActionProvider('submitDisabled'),
+        );
+        expect(resolved?['isEnabled'], isFalse);
+      });
+
+      test('resetAllInputs preserves actionOverlaysById', () {
+        final notifier = actionContainer.read(
+          adaptiveCardDocumentProvider.notifier,
+        )
+          ..setActionEnabled('submitEnabled', enabled: false)
+          ..setInputError('myText', errorMessage: 'Host error', isInvalid: true)
+          ..resetAllInputs();
+
+        expect(
+          notifier.state.actionOverlaysById['submitEnabled']?.isEnabled,
+          isFalse,
+        );
+        expect(
+          notifier.state.overlaysById['myText']?.errorMessage,
+          isNull,
+        );
+      });
+    });
+
+    group('TextBlock text overlays', () {
+      late ProviderContainer textContainer;
+
+      setUp(() {
+        textContainer = _createContainer({
+          'type': 'AdaptiveCard',
+          'version': '1.5',
+          'body': [
+            {
+              'type': 'TextBlock',
+              'id': 'status',
+              'text': 'Baseline status',
+            },
+            {
+              'type': 'Input.Text',
+              'id': 'myText',
+              'value': '',
+            },
+          ],
+        });
+      });
+
+      tearDown(() {
+        textContainer.dispose();
+      });
+
+      test('setText merges into resolvedElementProvider', () {
+        textContainer
+            .read(adaptiveCardDocumentProvider.notifier)
+            .setText('status', 'Updated status');
+
+        final resolved = textContainer.read(resolvedElementProvider('status'));
+        expect(resolved?['text'], 'Updated status');
+      });
+
+      test('clearText restores baseline text', () {
+        final notifier = textContainer.read(
+          adaptiveCardDocumentProvider.notifier,
+        )
+          ..setText('status', 'Updated status')
+          ..clearText('status');
+
+        expect(notifier.state.overlaysById['status']?.text, isNull);
+
+        final resolved = textContainer.read(resolvedElementProvider('status'));
+        expect(resolved?['text'], 'Baseline status');
+      });
+
+      test('resetAllInputs preserves TextBlock text overlay', () {
+        final notifier = textContainer.read(
+          adaptiveCardDocumentProvider.notifier,
+        )
+          ..setText('status', 'Updated status')
+          ..setInputValue('myText', 'typed')
+          ..resetAllInputs();
+
+        expect(notifier.state.overlaysById['status']?.text, 'Updated status');
+        expect(notifier.state.overlaysById['myText']?.inputValue, isNull);
+
+        final resolvedStatus = textContainer.read(
+          resolvedElementProvider('status'),
+        );
+        expect(resolvedStatus?['text'], 'Updated status');
+      });
+    });
   });
 }

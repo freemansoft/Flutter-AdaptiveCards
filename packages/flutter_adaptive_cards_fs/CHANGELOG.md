@@ -5,12 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Added
-
-### Changed
-
 ## [0.8.0]
 
 ### Added 0.8.0
@@ -38,6 +32,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`ElementOverlay.choices`** — runtime overlay for `Input.ChoiceSet` dynamic option lists; merged via `resolvedElementProvider`.
 - Document notifier APIs: `setChoices`, `appendChoices`, `seedInputValues`, `setDataQuerySession`.
 - **`DataQuery.count` / `DataQuery.skip`** — spec fields for typeahead pagination.
+- **`ActionOverlay`** and `actionOverlaysById` on `AdaptiveCardDocument` for AC 1.5 action `isEnabled`.
+- **`resolvedActionProvider(id)`** — merged baseline + action overlay map for `Action.*` nodes.
+- Document notifier: `setInputError`, `clearInputError`, `setActionEnabled`, `setActionsEnabled`.
+- **`ElementOverlay.errorMessage`** and **`ElementOverlay.isInvalid`** merged via `resolvedElementProvider`.
+- **`AdaptiveActionStateMixin`** — reactive `isEnabled` for `IconButtonAction` and `Action.ShowCard`.
+- Host helpers on **`RawAdaptiveCardState`**: `setInputError`, `clearInputError`, `setActionEnabled`.
+- **`ElementOverlay.text`** — runtime replacement of `TextBlock` `"text"`; merged via `resolvedElementProvider`.
+- Document notifier: `setText`, `clearText`; **`AdaptiveTextBlock`** listens for resolved `text`.
+- Host helpers: **`RawAdaptiveCardState.setText`** / **`clearText`**.
+- Tests: `test/elements/text_block_text_overlay_test.dart`.
+- Tests: `test/inputs/input_error_overlay_test.dart`, `test/actions/action_enabled_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json`.
+- **`resetAllInputs`** clears validation overlays on inputs; preserves `actionOverlaysById`.
+- **`setInputValue`** clears host validation overlays when the user edits an input.
 
 ## [0.7.0]
 

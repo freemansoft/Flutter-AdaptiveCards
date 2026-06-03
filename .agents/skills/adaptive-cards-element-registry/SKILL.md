@@ -166,7 +166,7 @@ with AdaptiveElementMixin, AdaptiveActionMixin, ProviderScopeMixin
 
 ## Runtime state: baseline + overlays
 
-Card JSON is deep-copied into a **baseline** at render time. Runtime changes (input values, visibility, ChoiceSet choices) are stored in sparse **overlays** per element id — the host map is never mutated.
+Card JSON is deep-copied into a **baseline** at render time. Runtime changes (input values, visibility, TextBlock text, validation, ChoiceSet choices) are stored in sparse **`overlaysById`** entries — the host map is never mutated. Action `isEnabled` uses **`actionOverlaysById`** + `resolvedActionProvider(id)`.
 
 | Phase                         | Source                                                            |
 | ----------------------------- | ----------------------------------------------------------------- |
@@ -180,9 +180,78 @@ Card JSON is deep-copied into a **baseline** at render time. Runtime changes (in
 
 **Visibility:** call `setIsVisible(visible: …)` or rely on `Action.ToggleVisibility`; `AdaptiveVisibilityMixin` listens to resolved `isVisible`.
 
-**Submit / reset:** `collectInputValues()` and `resetAllInputs()` on the document notifier — do not walk the widget tree.
+**TextBlock:** host-driven copy changes use `setText` / `clearText` on the document notifier (or `RawAdaptiveCardState`); `AdaptiveTextBlock` listens to resolved `text` — do not mutate `adaptiveMap['text']` in place.
+
+**Validation (inputs):** `setInputError` / `clearInputError`; `AdaptiveInputMixin` merges resolved `errorMessage` / `isInvalid`.
+
+**Actions (`isEnabled`):** `setActionEnabled` + `AdaptiveActionStateMixin` / `resolvedActionProvider` — not `ElementOverlay`.
+
+**Submit / reset:** `collectInputValues()` and `resetAllInputs()` on the document notifier — do not walk the widget tree. `resetAllInputs` clears **input** overlays only.
 
 Full detail: [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+
+---
+
+## Overlay test coverage
+
+### Verdict
+
+| Layer | Confidence |
+| --- | --- |
+| **Notifier + `resolvedElementProvider` / `resolvedActionProvider`** | High — [`adaptive_card_document_notifier_test.dart`](../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart) covers most `AdaptiveCardDocumentNotifier` APIs |
+| **Widget / host API per element or action type** | Partial — representative paths only; not every `Input.*` or `Action.*` has overlay-specific widget tests |
+
+**Enough** to guard the overlay model and primary host integration paths. **Not enough** to claim exhaustive per-type validation without adding tests listed under [Gaps](#gaps).
+
+Overlay fields are defined in [`adaptive_card_document.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart). Merge logic lives in [`providers.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart).
+
+### Element overlays
+
+| Field | Notifier tests | Widget / integration | Gap |
+| --- | --- | --- | --- |
+| `isVisible` | Yes | [`is_visible_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart) | — |
+| `inputValue` | Yes | [`init_data_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/init_data_overlay_test.dart) (Text, Toggle, ChoiceSet) | Number, Date, Time, Rating — no overlay-specific widget tests |
+| `choices` / append | Yes | [`choice_set_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_overlay_test.dart) | — |
+| `queryCount` / `querySkip` | Yes | [`choice_set_data_query_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart) | `querySearchText` — notifier only |
+| `errorMessage` / `isInvalid` | Yes | [`input_error_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/input_error_overlay_test.dart) — Input.Text, Input.Number; host `clearInputError` | Date, Time, Rating |
+| `text` | Yes | [`text_block_text_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/text_block_text_overlay_test.dart) — **TextBlock only** | Only element type using `text` overlay |
+
+### Action overlays
+
+| API | Notifier | Widget | Gap |
+| --- | --- | --- | --- |
+| `setActionEnabled` | Yes | Submit: [`action_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/action_enabled_overlay_test.dart); ShowCard: [`show_card_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/show_card_enabled_overlay_test.dart) | OpenUrl, Execute, other action types |
+| `setActionsEnabled` (bulk) | Yes | — | Widget test not required (notifier merge) |
+
+Reactive wiring:
+
+- **Elements:** `AdaptiveVisibilityMixin`, `AdaptiveInputMixin`, `AdaptiveTextBlock` → `resolvedElementProvider`
+- **Actions:** `AdaptiveActionStateMixin` on [`icon_button.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/cards/actions/icon_button.dart); [`show_card.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/cards/actions/show_card.dart) watches `resolvedActionProvider` directly
+
+### Cross-cutting
+
+| Concern | Status |
+| --- | --- |
+| `resetAllInputs` preserves visibility, action overlays, TextBlock text | Notifier + ChoiceSet widget |
+| `collectInputValues` | Notifier only |
+| Host APIs (`setText`, `setInputError`, `setActionEnabled`) | Partial delegate tests in overlay test files |
+| Rebuild does not wipe overlays | TextBlock + visibility widget tests; cached `_baselineMap` in `RawAdaptiveCard` |
+
+### Gaps
+
+Optional follow-up if tightening regressions:
+
+1. Validation overlay widget tests for **Input.Date**, **Input.Time**, **Input.Rating**
+2. `setActionEnabled` on action types beyond Submit / ShowCard (OpenUrl, Execute, …)
+3. Rebuild survival with **input value** overlay (visibility and TextBlock covered)
+
+### How to add tests for a new overlay field
+
+1. **Notifier first** — extend [`adaptive_card_document_notifier_test.dart`](../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart): `ProviderContainer` + `baselineMapProvider.overrideWithValue`, assert `overlaysById` and `resolvedElementProvider` / `resolvedActionProvider`.
+2. **Widget test** — sample JSON under `test/samples/`, `getTestWidgetFromMap` / `getTestWidgetFromPath`, key-first finders per [`adaptive-cards-testing`](../adaptive-cards-testing/SKILL.md).
+3. **Host API** — if exposed on `RawAdaptiveCardState`, add a delegate test mirroring `setText` / `setInputError` patterns.
+
+Full test file catalog: [`adaptive-cards-testing` skill — Reactive document tests](../adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
 
 ---
 
@@ -278,6 +347,8 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs_extend.dart'
 ---
 
 ## Testing a New Element
+
+If the element reads runtime state via `resolvedElementProvider` (visibility, input value, validation, `text`, etc.), add **notifier unit tests** and at least one **focused widget test** for that overlay field. Do not assume other element types are covered — see [Overlay test coverage](#overlay-test-coverage).
 
 1. **Create a sample JSON** in `packages/flutter_adaptive_cards_fs/test/samples/`:
 

@@ -115,6 +115,18 @@ You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in
 - **`initInput` does not call `setState` on the card** — input widgets rebuild when their `resolvedElementProvider` listener fires. See [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card).
 - `loadInput(id, map)` replaces `Input.ChoiceSet` choices for [id] via `setChoices` (title → value map converted to `Input.Choice` list).
 
+### Runtime overlays (host API on `RawAdaptiveCardState`)
+
+Without mutating card JSON, hosts can patch document state via:
+
+| API | Use |
+| --- | --- |
+| `setText(id, text)` / `clearText(id)` | Replace `TextBlock` display text |
+| `setInputError(id, message:, isInvalid:)` / `clearInputError(id)` | Host validation on inputs |
+| `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)` | Enable/disable `Action.*` (AC 1.5) |
+
+See [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+
 ## Event Handlers
 
 You can insert a `DefaultAdaptiveCardHandlers` in the Widget tree prior to loading the `AdaptiveCard`s. Those handlers will be used for all actions.

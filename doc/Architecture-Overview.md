@@ -17,11 +17,13 @@ The repository is organized as a monorepo containing multiple related packages:
 
 When an Adaptive Card is rendered, the JSON is recursively parsed into a hierarchy of Flutter widgets:
 
-1. **`AdaptiveCardCanvas`**: The root widget that initializes the `CardTypeRegistry`, `ActionTypeRegistry`, and provides the `HostConfig` context. It wraps the entire card in necessary providers.
-2. **`AdaptiveCardWidget`**: Represents the `AdaptiveCard` root element, applying the overall padding, background color, and layout constraints.
-3. **Containers and Elements**: Elements like `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveTextBlock`, and `AdaptiveImage` are rendered as individual Flutter widgets (often wrapping standard Flutter widgets like `Column`, `Row`, `Text`, and `Image`).
-4. **Inputs**: Form inputs (`Input.Text`, `Input.Date`, etc.) use Flutter form controls. **Initial** values come from the adaptive map at widget construction; **runtime** values and visibility are stored in Riverpod document **overlays** (baseline JSON is never mutated). Inputs sync via `AdaptiveInputMixin` + `resolvedElementProvider(id)`. See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
-5. **Actions**: The action bar (e.g., `Action.Submit`, `Action.OpenUrl`) is typically rendered at the bottom of the card or within an `ActionSet`. Actions trigger callbacks routed through `GenericAction` handlers and, for default behaviors, `InheritedAdaptiveCardHandlers`.
+1. **`AdaptiveCardsCanvas`**: Host entry widget that loads card JSON (asset, network, or in-memory) and builds a **`RawAdaptiveCard`** when content is ready.
+2. **`RawAdaptiveCard`**: Installs the card-scoped `ProviderScope` (document notifier, registries, `ReferenceResolver`) and renders the parsed root element tree inside a `Card`.
+3. **`AdaptiveCardElement`**: Represents the `AdaptiveCard` JSON root (`body`, `actions`), applying padding, background, and action layout.
+4. **Containers and Elements**: Elements like `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveTextBlock`, and `AdaptiveImage` are rendered as individual Flutter widgets (often wrapping standard Flutter widgets like `Column`, `Row`, `Text`, and `Image`).
+5. **Inputs**: Form inputs (`Input.Text`, `Input.Date`, etc.) use Flutter form controls. **Initial** values come from the adaptive map at widget construction; **runtime** values, validation, and visibility are stored in Riverpod document **overlays** (baseline JSON is never mutated). Inputs sync via `AdaptiveInputMixin` + `resolvedElementProvider(id)`. See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+6. **Display elements**: `TextBlock` and other elements with natural ids can use the same overlay model (e.g. runtime `text` replacement via `setText` / `resolvedElementProvider`).
+7. **Actions**: The action bar (e.g., `Action.Submit`, `Action.OpenUrl`) is typically rendered at the bottom of the card or within an `ActionSet`. Actions trigger callbacks routed through `GenericAction` handlers and, for default behaviors, `InheritedAdaptiveCardHandlers`. AC 1.5 `isEnabled` is reactive via `resolvedActionProvider(id)`.
 
 ## State and dependency injection
 
@@ -29,15 +31,15 @@ When an Adaptive Card is rendered, the JSON is recursively parsed into a hierarc
 
 See [`doc/reactive-riverpod.md`](reactive-riverpod.md) for the scope map, provider architecture, and **baseline + overlay** document model.
 
-### Document overlays (inputs and visibility)
+### Document overlays (elements and actions)
 
-Runtime changes to input values and element visibility do not mutate the host JSON. The document notifier keeps a deep-copied **baseline** plus sparse **overlays** per element id; widgets read a merged **resolved** view via `resolvedElementProvider(id)`. Submit and reset use the notifier (`collectInputValues`, `resetAllInputs`). Details: [How overlays change values](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+Runtime changes (input values, visibility, TextBlock text, validation, ChoiceSet choices, action enabled state) do not mutate the host JSON. The document notifier keeps a deep-copied **baseline** (cached on `RawAdaptiveCardState` so host rebuilds do not reset overlays) plus sparse **overlays** (`overlaysById`, `actionOverlaysById`); widgets read merged maps via `resolvedElementProvider(id)` and `resolvedActionProvider(id)`. Submit and reset use the notifier (`collectInputValues`, `resetAllInputs`). Details: [How overlays change values](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). Test inventory: [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage).
 
 ### Where state actually lives
 
 | Concern | Mechanism |
 | --- | --- |
-| Card JSON + runtime overlays (inputs, visibility) | Riverpod document notifier (baseline JSON + overlay tables) |
+| Card JSON + runtime overlays | Riverpod document notifier (`ElementOverlay` + `ActionOverlay` tables) |
 | Show-card expanded/collapsed state | Riverpod per-`AdaptiveCardElement` UI notifier |
 | Host callbacks (`onSubmit`, `onChange`, …) | `InheritedAdaptiveCardHandlers` |
 | `CardTypeRegistry` / `ActionTypeRegistry` | Riverpod `cardTypeRegistryProvider` / `actionTypeRegistryProvider` (overridden per raw-card scope) |
