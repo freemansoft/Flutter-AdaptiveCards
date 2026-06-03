@@ -63,57 +63,36 @@ Many!
 
 ## LLM Agent Support
 
-### AGENTS.md
+This repo is configured for Cursor, Antigravity, Claude Code, and other coding agents. Full setup, install commands, and update procedures are in **[doc/AI-Agent-Support.md](doc/AI-Agent-Support.md)**.
 
-This project uses the [AGENTS.md](AGENTS.md) file to provide instructions to LLM agents, Antigravity, Cursor, and others. The contents came from the Flutter team's recommendation <https://docs.flutter.dev/ai/ai-rules>. This is the shorter 10K character version because of Antigravity's rule file character limit of 12,000 [antigravity user-rules](https://docs.antigravity.ai/user-rules#agents.md).
+### Always-on rules — [AGENTS.md](AGENTS.md)
 
-Changes from the verson created by the Flutter team:
+Always-on project guardrails (FVM, monorepo hygiene, Very Good Analysis, Riverpod document overlays, semantic labels, localization). Derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules), trimmed for Antigravity’s ~12K character limit.
 
-- Linting rules changed from default to use VGV linter
-- Cards package uses `InheritedWidget` scopes for DI (Riverpod removed)
-- Added **Semantic Label Keys** rule
-- Added internationalizaiton and localization rules
+### Task playbooks — [`.agents/skills/`](.agents/skills/)
 
-### Skills
+Modular skills loaded when a task matches. Vendored upstream skills are tracked in [`skills-lock.json`](skills-lock.json).
 
-`.agents/skills/` contains the skills used by LLM agents.
+| Source | Repository | Count |
+| ------ | ---------- | ----- |
+| Dart team | [dart-lang/skills](https://github.com/dart-lang/skills) | 9 |
+| Flutter team | [flutter/skills](https://github.com/flutter/skills) | 10 |
+| Superpowers | [obra/superpowers](https://github.com/obra/superpowers) | 14 |
+| Project-specific | (authored in-repo) | 11 |
 
-The Flutter team's [skills](https://github.com/flutter/skills)
+**Project-specific skills:** `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-testing`, `code-review`, `release-engineer`, `release-flutter-upgrade-sdk`.
 
-- flutter-add-integration-tests
-- flutter-add-widget-preview
-- flutter-add-widget-tests
-- flutter-apply-architecture-best-practices
-- flutter-build-responsive-layout
-- flutter-fix-layout-issues
-- flutter-implement-json-serialization
-- flutter-setup-declarative-routing
-- flutter-setup-localization
-- flutter-use-http-package
+**Superpowers highlights:** `brainstorming`, `writing-plans`, `test-driven-development`, `systematic-debugging`, `subagent-driven-development`, and related collaboration workflows.
 
-The dart-lang [skills](https://github.com/dart-lang/skills)
+### Quick install (from repo root)
 
-- dart-add-unit-test
-- dart-build-cli-app
-- dart-collect-coverage
-- dart-fix-runtime-errors
-- dart-generate-test-mocks
-- dart-migrate-to-checks-package
-- dart-resolve-package-conflicts
-- dart-run-static-analysis
-- dart-use-pattern-matching
+```bash
+npx skills add dart-lang/skills --skill '*' --agent universal --yes
+npx skills add flutter/skills --skill '*' --agent universal --yes
+npx skills add obra/superpowers --skill '*' --agent universal --yes
+```
 
-The following skills were created for this project using Antigravity LLM prompts
-
-- adaptive-cards-monorepo-workspace
-- adaptive-cards-element-registry
-- adaptive-cards-flutter-standard-practices
-- adaptive-cards-hostconfig-theme
-- adaptive-cards-spec-compliance
-- adaptive-cards-templating
-- adaptive-cards-testing
-- code-revew
-- release-engineer
+Update vendored skills: `npx skills update`. For Cursor user-level Superpowers and the optional `/add-plugin superpowers` hook, see [doc/AI-Agent-Support.md](doc/AI-Agent-Support.md).
 
 ## More about adaptive cards and available SDKs
 

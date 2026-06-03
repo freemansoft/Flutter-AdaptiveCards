@@ -4,6 +4,7 @@ This directory contains design documents, implementation guides, and architectur
 
 ## Quick Links
 
+- **AI / LLM agents**: [AI-Agent-Support.md](./AI-Agent-Support.md)
 - **Main Project**: [Repository README](/README.md)
 - **Library README**: [flutter_adaptive_cards_fs README](/packages/flutter_adaptive_cards_fs/README.md)
 - **Microsoft Standards**:
@@ -21,6 +22,16 @@ This directory contains design documents, implementation guides, and architectur
 **Status**: ✅ Current | **Category**: Status Matrix
 
 Comprehensive matrix tracking implementation status of all Adaptive Cards elements, containers, inputs, actions, HostConfig, and templating against the Microsoft v1.6 specification. Includes custom/extended elements, known gaps, and priority recommendations.
+
+---
+
+## AI & Agent Configuration
+
+### [AI-Agent-Support.md](./AI-Agent-Support.md)
+
+**Status**: ✅ Current | **Category**: Reference
+
+Describes how LLM agents are configured for this repo: `AGENTS.md`, `.agents/skills/`, `skills-lock.json`, installation commands for [dart-lang/skills](https://github.com/dart-lang/skills), [flutter/skills](https://github.com/flutter/skills), and [obra/superpowers](https://github.com/obra/superpowers), plus project-specific skills and update procedures.
 
 ---
 
@@ -169,4 +180,4 @@ When adding or updating documentation:
 
 ---
 
-Last Updated: 2026-06-01
+Last Updated: 2026-06-03
