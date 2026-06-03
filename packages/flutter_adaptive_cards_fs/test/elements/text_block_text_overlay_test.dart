@@ -41,7 +41,9 @@ void main() {
     );
     final container = _documentContainer(tester, textFinder);
 
-    container.read(adaptiveCardDocumentProvider.notifier).setText(
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setText(
           'status',
           'Replaced status',
         );
@@ -77,9 +79,9 @@ void main() {
     final textFinder = find.byWidgetPredicate(
       (widget) => widget is AdaptiveTextBlock && widget.id == 'status',
     );
-    final notifier = _documentContainer(tester, textFinder)
-        .read(adaptiveCardDocumentProvider.notifier)
-      ..setText('status', 'Replaced status');
+    final notifier = _documentContainer(tester, textFinder).read(
+      adaptiveCardDocumentProvider.notifier,
+    )..setText('status', 'Replaced status');
     await tester.pump();
     expect(find.text('Replaced status'), findsOneWidget);
 
@@ -145,8 +147,7 @@ void main() {
 
     final cardState = tester.state<RawAdaptiveCardState>(
       find.byType(RawAdaptiveCard),
-    );
-    cardState.setText('status', 'Overlay after rebuild');
+    )..setText('status', 'Overlay after rebuild');
     await tester.pump();
     expect(find.text('Overlay after rebuild'), findsOneWidget);
 

@@ -135,7 +135,9 @@ void main() {
     await tester.pump();
 
     expect(
-      container.read(adaptiveCardDocumentProvider).overlaysById['errText']
+      container
+          .read(adaptiveCardDocumentProvider)
+          .overlaysById['errText']
           ?.isInvalid,
       isNull,
     );
@@ -196,9 +198,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final cardState = tester.state<RawAdaptiveCardState>(
-      find.byType(RawAdaptiveCard),
-    )
+    tester.state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
       ..setInputError('errText', message: 'From host')
       ..clearInputError('errText');
     await tester.pump();
@@ -233,7 +233,9 @@ void main() {
     final inputFinder = find.byKey(generateWidgetKey(numMap));
     final container = _documentContainer(tester, inputFinder);
 
-    container.read(adaptiveCardDocumentProvider.notifier).setInputError(
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputError(
           'errNumber',
           errorMessage: 'Invalid age',
           isInvalid: true,

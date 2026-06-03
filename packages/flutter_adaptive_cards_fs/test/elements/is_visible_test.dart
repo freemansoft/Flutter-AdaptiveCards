@@ -183,10 +183,9 @@ void main() {
       find.byType(RawAdaptiveCard),
     );
     final scopeContext = tester.element(find.byType(AdaptiveTextBlock).first);
-    final notifier = ProviderScope.containerOf(scopeContext)
-        .read(adaptiveCardDocumentProvider.notifier);
-
-    notifier.setVisibility('element2', visible: false);
+    ProviderScope.containerOf(scopeContext)
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setVisibility('element2', visible: false);
     await tester.pump();
     expect(find.text('Element 2'), findsNothing);
 

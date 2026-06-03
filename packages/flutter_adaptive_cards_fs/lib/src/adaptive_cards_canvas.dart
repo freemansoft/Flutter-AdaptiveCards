@@ -9,7 +9,6 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
-import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:http/http.dart' as http;
 
 /// Core definition for AdaptiveCardContent providers.
