@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -131,8 +132,12 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
                   errorStyle: const TextStyle(height: 0),
                 ),
                 validator: (value) {
-                  if (!input.isRequired) return null;
-                  if (value == null || value.isEmpty) {
+                  final regexPattern = adaptiveMap['regex'] as String?;
+                  if (!textInputValueIsValid(
+                    value: value,
+                    isRequired: input.isRequired,
+                    regexPattern: regexPattern,
+                  )) {
                     setLocalValidationError();
                     return '';
                   }

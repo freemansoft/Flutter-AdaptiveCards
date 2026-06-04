@@ -115,21 +115,21 @@ flowchart LR
 
 Changes go **only** into overlays via the document notifier:
 
-| Action                            | Notifier API                                                                                         | Overlay field                                                                                                                |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| User edits an input               | `setInputValue(id, value)`                                                                           | `inputValue`                                                                                                                 |
-| Host initData / late binding      | `seedInputValues(map)` → `applyUpdates` (value only)                                                 | `inputValue` per id                                                                                                          |
-| Bulk host / handler patches       | `applyUpdates` / `applyUpdatesFromMap`                                                               | multiple fields per id                                                                                                       |
-| Dynamic ChoiceSet options         | `setChoices(id, choices)` / `appendChoices(id, choices)`                                             | `choices`                                                                                                                    |
-| Typeahead pagination (optional)   | `setDataQuerySession(id, count:, skip:, searchText:)`                                                | `queryCount`, `querySkip`, `querySearchText`                                                                                 |
-| ToggleVisibility / set visibility | `setVisibility(id, visible: …)` / `toggleVisibility(id)`                                             | `isVisible`                                                                                                                  |
-| Host validation after submit      | `setInputError(id, errorMessage:, isInvalid:)` / `clearInputError(id)`                               | `errorMessage`, `isInvalid`                                                                                                  |
-| ResetInputs / per-id reset        | `resetAllInputs()` / `resetInput(id)` — see [Reset semantics](#reset-semantics)                      | factory reset on **`Input.*`**: clears value, choices, validation, **`isRequired`**, **`label`**, **`placeholder`** overlays |
-| Submit / Execute                  | `collectInputValues()` + required scan via `validateRequiredInputs()`                                | reads overlay ?? baseline `"value"`; marks failing required inputs with `setInputError(isInvalid: true)`                     |
-| Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                            | delegates to `setChoices`                                                                                                    |
-| Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                          | `ActionOverlay.isEnabled`                                                                                                    |
-| Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                | `text`                                                                                                                       |
-| Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `applyUpdates` | delegates to document notifier                                                                                               |
+| Action                            | Notifier API                                                                                         | Overlay field                                                                                                                   |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| User edits an input               | `setInputValue(id, value)`                                                                           | `inputValue`                                                                                                                    |
+| Host initData / late binding      | `seedInputValues(map)` → `applyUpdates` (value only)                                                 | `inputValue` per id                                                                                                             |
+| Bulk host / handler patches       | `applyUpdates` / `applyUpdatesFromMap`                                                               | multiple fields per id                                                                                                          |
+| Dynamic ChoiceSet options         | `setChoices(id, choices)` / `appendChoices(id, choices)`                                             | `choices`                                                                                                                       |
+| Typeahead pagination (optional)   | `setDataQuerySession(id, count:, skip:, searchText:)`                                                | `queryCount`, `querySkip`, `querySearchText`                                                                                    |
+| ToggleVisibility / set visibility | `setVisibility(id, visible: …)` / `toggleVisibility(id)`                                             | `isVisible`                                                                                                                     |
+| Host validation after submit      | `setInputError(id, errorMessage:, isInvalid:)` / `clearInputError(id)`                               | `errorMessage`, `isInvalid`                                                                                                     |
+| ResetInputs / per-id reset        | `resetAllInputs()` / `resetInput(id)` — see [Reset semantics](#reset-semantics)                      | factory reset on **`Input.*`**: clears value, choices, validation, **`isRequired`**, **`label`**, **`placeholder`** overlays    |
+| Submit / Execute                  | `collectInputValues()` + validation via `validateInputs()`                                           | reads overlay ?? baseline `"value"`; marks failing inputs with `setInputError(isInvalid: true)` (required + `Input.Text` regex) |
+| Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                            | delegates to `setChoices`                                                                                                       |
+| Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                          | `ActionOverlay.isEnabled`                                                                                                       |
+| Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                | `text`                                                                                                                          |
+| Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `applyUpdates` | delegates to document notifier                                                                                                  |
 
 The host’s map instance is never mutated in place.
 
@@ -292,21 +292,21 @@ This section is a **planning inventory**: which JSON properties are already driv
 
 ### Recommended future overlays (prioritized)
 
-**Body / display elements**
+#### Body / display elements
 
 | Property | Element(s)          | Host use case       | Priority                                               |
 | -------- | ------------------- | ------------------- | ------------------------------------------------------ |
 | `url`    | `Image`, `Media`    | Signed URL rotation | Implemented                                            |
 | `text`   | `Badge` (extension) | Dynamic badge label | Low (reuse `ElementOverlay.text` + listener if needed) |
 
-**Inputs — defer**
+#### Inputs — defer
 
 | Property                  | Notes                                                                 |
 | ------------------------- | --------------------------------------------------------------------- |
 | `placeholder`, `label`    | Hint/label changes without changing submit `value`                    |
 | `choices.data.parameters` | Typeahead parameter binding (separate from count/skip session fields) |
 
-**Actions — defer**
+#### Actions — defer
 
 | Property             | Notes                                                                  |
 | -------------------- | ---------------------------------------------------------------------- |
@@ -314,6 +314,6 @@ This section is a **planning inventory**: which JSON properties are already driv
 | `tooltip`, `iconUrl` | Runtime UX tweaks on actions                                           |
 | `mode`, `style`      | AC 1.5+; lower host demand                                             |
 
-**Session-only (overlay field present, not merged into resolved JSON)**
+#### Session-only (overlay field present, not merged into resolved JSON)
 
 - `querySearchText` — ChoiceSet typeahead search text (existing pattern; merged `count`/`skip` go into `choices.data`)

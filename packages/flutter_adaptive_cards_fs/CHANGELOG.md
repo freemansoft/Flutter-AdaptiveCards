@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tier 3 overlays:** **`label`**, **`placeholder`** on inputs; **`title`**, **`tooltip`** on actions; merged via **`applyUpdates`** / **`applyUpdatesFromMap`**; **`AdaptiveInputMixin`** and **`AdaptiveActionStateMixin`** update UI reactively.
 - **`initData`** supports scalar values or per-id patch maps; **`seedInputValues`** delegates to **`applyUpdates`** (single revision).
 - Default **Submit** / **Execute** required-field checks use resolved **`isRequired`** (overlay ?? baseline).
+- **`Input.Text`** **`regex`** validation (AC 1.3): pattern checked on field blur and on **Submit** / **Execute** via shared **`textInputValueIsValid`**; invalid values set **`isInvalid`** and show **`errorMessage`**.
 - Tests: `test/riverpod/apply_updates_test.dart`, `test/inputs/cascade_choice_set_test.dart`, `test/inputs/is_required_overlay_test.dart`, `test/elements/image_url_overlay_test.dart`, `test/actions/submit_required_overlay_test.dart`.
+- Tests: `test/inputs/input_text_validation_test.dart`, `test/inputs/input_text_regex_test.dart`, `test/golden_input_text_regex_test.dart` (sample `test/samples/ac-qv-event.json`).
 - Design spec: [`docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md`](../../docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md).
 - **`resetInput(id)`** on the document notifier and **`RawAdaptiveCardState`**; **`AdaptiveInputMixin.resetInput()`** delegates to the notifier.
 - Factory reset clears input overlays including **`label`**, **`placeholder`**, and **`isRequired`** (resolved → baseline JSON). See [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#reset-semantics).

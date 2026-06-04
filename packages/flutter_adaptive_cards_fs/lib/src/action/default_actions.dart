@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,9 +12,9 @@ import 'package:url_launcher/url_launcher.dart';
 // Default action handlers with basic behavior
 // including forwarding to the InheritedAdaptiveCardHandlers
 
-/// Returns `false` when any overlay-required input is empty and marks each
-/// failing input invalid via the document notifier.
-bool validateRequiredInputs(ProviderContainer container) {
+/// Returns `false` when any input fails validation and marks each failing
+/// input invalid via the document notifier.
+bool validateInputs(ProviderContainer container) {
   final doc = container.read(adaptiveCardDocumentProvider);
   final values = container
       .read(adaptiveCardDocumentProvider.notifier)
@@ -27,8 +28,22 @@ bool validateRequiredInputs(ProviderContainer container) {
     if (type == null || !type.startsWith('Input.')) continue;
     final resolved = container.read(resolvedElementProvider(entry.key));
     final isRequired = resolved?['isRequired'] as bool? ?? false;
-    if (!isRequired) continue;
     final value = values[entry.key];
+
+    if (type == 'Input.Text') {
+      final regexPattern = node['regex'] as String?;
+      if (!textInputValueIsValid(
+        value: value?.toString(),
+        isRequired: isRequired,
+        regexPattern: regexPattern,
+      )) {
+        valid = false;
+        notifier.setInputError(entry.key, isInvalid: true);
+      }
+      continue;
+    }
+
+    if (!isRequired) continue;
     if (value == null) {
       valid = false;
       notifier.setInputError(entry.key, isInvalid: true);
@@ -66,7 +81,7 @@ class DefaultSubmitAction extends GenericSubmitAction {
 
     data.addAll(values);
 
-    if (!validateRequiredInputs(container)) return;
+    if (!validateInputs(container)) return;
 
     final foo = InheritedAdaptiveCardHandlers.of(context);
     if (foo != null) {
@@ -106,7 +121,7 @@ class DefaultExecuteAction extends GenericExecuteAction {
         .collectInputValues();
 
     data.addAll(values);
-    if (!validateRequiredInputs(container)) return;
+    if (!validateInputs(container)) return;
 
     final foo = InheritedAdaptiveCardHandlers.of(context);
     if (foo != null) {

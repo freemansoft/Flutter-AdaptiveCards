@@ -135,13 +135,13 @@ If consumers need to subclass or reference your element, add it to:
 
 Mixins provide shared behavior. Apply them to the **State** class:
 
-| Mixin                        | Applied to         | Provides                                                                                                                                                                                                       |
-| ---------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AdaptiveElementWidgetMixin` | `StatefulWidget`   | `adaptiveMap`, `id` abstract getters                                                                                                                                                                           |
-| `ProviderScopeMixin<T>`      | `State<T>`         | `cardTypeRegistry`, `actionTypeRegistry`, `styleResolver`, `rawRootCardWidgetState`, `adaptiveCardElementState`                                                                                                |
-| `AdaptiveElementMixin<T>`    | `State<T>`         | `id`, `style`, `adaptiveMap` (combine with `ProviderScopeMixin` for registries/resolver)                                                                                                                       |
-| `AdaptiveVisibilityMixin<T>` | `State<T>`         | `isVisible`, `setIsVisible()` — listens to `resolvedElementProvider(id)` for merged `"isVisible"`                                                                                                              |
-| `AdaptiveActionMixin<T>`     | `State<T>`         | `title`, `tooltip` — for action widgets                                                                                                                                                                        |
+| Mixin                        | Applied to         | Provides                                                                                                                                                                                                                                    |
+| ---------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AdaptiveElementWidgetMixin` | `StatefulWidget`   | `adaptiveMap`, `id` abstract getters                                                                                                                                                                                                        |
+| `ProviderScopeMixin<T>`      | `State<T>`         | `cardTypeRegistry`, `actionTypeRegistry`, `styleResolver`, `rawRootCardWidgetState`, `adaptiveCardElementState`                                                                                                                             |
+| `AdaptiveElementMixin<T>`    | `State<T>`         | `id`, `style`, `adaptiveMap` (combine with `ProviderScopeMixin` for registries/resolver)                                                                                                                                                    |
+| `AdaptiveVisibilityMixin<T>` | `State<T>`         | `isVisible`, `setIsVisible()` — listens to `resolvedElementProvider(id)` for merged `"isVisible"`                                                                                                                                           |
+| `AdaptiveActionMixin<T>`     | `State<T>`         | `title`, `tooltip` — for action widgets                                                                                                                                                                                                     |
 | `AdaptiveInputMixin<T>`      | `ConsumerState<T>` | `watchResolvedInput()` / `readResolvedInput()`, `setDocumentInputValue()`, `setLocalValidationError()` / `clearLocalValidationError()`, `listenForResolvedValueChanges()`; `appendInput()`, `resetInput()`, etc. No cached overlay mirrors. |
 
 **Typical element (non-input):**
@@ -184,7 +184,7 @@ Card JSON is deep-copied into a **baseline** at render time. Runtime changes (in
 
 **TextBlock:** host-driven copy changes use `setText` / `clearText` on the document notifier (or `RawAdaptiveCardState`); `AdaptiveTextBlock` listens to resolved `text` — do not mutate `adaptiveMap['text']` in place.
 
-**Validation (inputs):** All validation display uses resolved **`isInvalid`** / **`errorMessage`**. Host code: `setInputError` / `clearInputError`. Form validators and `checkRequired`: **`setLocalValidationError()`** / **`clearLocalValidationError()`** on `AdaptiveInputMixin`. User edits (`setInputValue`) and factory reset clear validation overlays.
+**Validation (inputs):** All validation display uses resolved **`isInvalid`** / **`errorMessage`**. Host code: `setInputError` / `clearInputError`. Form validators and `checkRequired`: **`setLocalValidationError()`** / **`clearLocalValidationError()`** on `AdaptiveInputMixin`. **`Input.Text`** supports baseline **`regex`** (validated in the Form validator and on Submit via `validateInputs()`). User edits (`setInputValue`) and factory reset clear validation overlays.
 
 **Actions (`isEnabled`):** `setActionEnabled` + `AdaptiveActionStateMixin` / `resolvedActionProvider` — not `ElementOverlay`.
 
