@@ -4,7 +4,10 @@ This directory contains design documents, implementation guides, and architectur
 
 ## Quick Links
 
-- **AI / LLM agents**: [AI-Agent-Support.md](./AI-Agent-Support.md)
+- **Hand Crafted Specs and Docs**: [docs](/docs)
+- **Cursor and Antigravity created plans** copied from ~/.cursor/plans : [plans](/docs/plans/)
+- **Superpowers created specs** [specs](/docs/superpowers/specs/)
+- **AI / LLM agents**: [AI-Agent-Support.md](/docs/AI-Agent-Support.md)
 - **Main Project**: [Repository README](/README.md)
 - **Library README**: [flutter_adaptive_cards_fs README](/packages/flutter_adaptive_cards_fs/README.md)
 - **Microsoft Standards**:

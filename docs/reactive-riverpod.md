@@ -58,10 +58,10 @@ Instead, overlays isolate runtime changes while keeping baseline patches (host/t
 
 ### Two layers
 
-| Layer | Source | Mutated at runtime? |
-| --- | --- | --- |
-| **Baseline** | Deep copy of host JSON (`baselineMapProvider` → `AdaptiveCardDocument.baseline`) | No |
-| **Overlay** | Sparse `overlaysById[id]` entries (`ElementOverlay`) | Yes |
+| Layer        | Source                                                                           | Mutated at runtime? |
+| ------------ | -------------------------------------------------------------------------------- | ------------------- |
+| **Baseline** | Deep copy of host JSON (`baselineMapProvider` → `AdaptiveCardDocument.baseline`) | No                  |
+| **Overlay**  | Sparse `overlaysById[id]` entries (`ElementOverlay`)                             | Yes                 |
 
 Each overlay holds optional patches for that element id:
 
@@ -72,7 +72,9 @@ Each overlay holds optional patches for that element id:
 - `querySearchText` — typeahead search text (overlay only; not merged into resolved JSON)
 - `errorMessage` — overrides baseline `"errorMessage"` on input elements (host validation)
 - `isInvalid` — merged into resolved `"isInvalid"` (host-driven validation flag)
+- `isRequired` — overrides baseline `"isRequired"` on input elements (conditional required)
 - `text` — overrides baseline `"text"` on elements such as `TextBlock` (dynamic status, i18n)
+- `url` — overrides baseline `"url"` on `Image` / `Media` (signed URL rotation)
 
 **Action overlays** (`actionOverlaysById`, `ActionOverlay`):
 
@@ -113,20 +115,21 @@ flowchart LR
 
 Changes go **only** into overlays via the document notifier:
 
-| Action | Notifier API | Overlay field |
-| --- | --- | --- |
-| User edits an input | `setInputValue(id, value)` | `inputValue` |
-| Host initData / late binding | `seedInputValues(map)` | `inputValue` per id |
-| Dynamic ChoiceSet options | `setChoices(id, choices)` / `appendChoices(id, choices)` | `choices` |
-| Typeahead pagination (optional) | `setDataQuerySession(id, count:, skip:, searchText:)` | `queryCount`, `querySkip`, `querySearchText` |
-| ToggleVisibility / set visibility | `setVisibility(id, visible: …)` / `toggleVisibility(id)` | `isVisible` |
-| Host validation after submit | `setInputError(id, errorMessage:, isInvalid:)` / `clearInputError(id)` | `errorMessage`, `isInvalid` |
-| ResetInputs | `resetAllInputs()` | clears `inputValue`, `choices`, and validation on **`Input.*`** ids only; preserves `isVisible`, TextBlock `text`, and `actionOverlaysById` |
-| Submit / Execute | `collectInputValues()` | reads overlay ?? baseline `"value"` (no error fields in payload) |
-| Host loadInput API | `RawAdaptiveCardState.loadInput(id, map)` | delegates to `setChoices` |
-| Enable/disable actions | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)` | `ActionOverlay.isEnabled` |
-| Replace TextBlock text | `setText(id, text)` / `clearText(id)` | `text` |
-| Host helpers | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` | delegates to document notifier |
+| Action                            | Notifier API                                                                                         | Overlay field                                                                                                                               |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| User edits an input               | `setInputValue(id, value)`                                                                           | `inputValue`                                                                                                                                |
+| Host initData / late binding      | `seedInputValues(map)` → `applyUpdates` (value only)                                                 | `inputValue` per id                                                                                                                         |
+| Bulk host / handler patches       | `applyUpdates` / `applyUpdatesFromMap`                                                               | multiple fields per id                                                                                                                      |
+| Dynamic ChoiceSet options         | `setChoices(id, choices)` / `appendChoices(id, choices)`                                             | `choices`                                                                                                                                   |
+| Typeahead pagination (optional)   | `setDataQuerySession(id, count:, skip:, searchText:)`                                                | `queryCount`, `querySkip`, `querySearchText`                                                                                                |
+| ToggleVisibility / set visibility | `setVisibility(id, visible: …)` / `toggleVisibility(id)`                                             | `isVisible`                                                                                                                                 |
+| Host validation after submit      | `setInputError(id, errorMessage:, isInvalid:)` / `clearInputError(id)`                               | `errorMessage`, `isInvalid`                                                                                                                 |
+| ResetInputs                       | `resetAllInputs()`                                                                                   | clears `inputValue`, `choices`, and validation on **`Input.*`** ids only; preserves `isVisible`, TextBlock `text`, and `actionOverlaysById` |
+| Submit / Execute                  | `collectInputValues()`                                                                               | reads overlay ?? baseline `"value"` (no error fields in payload)                                                                            |
+| Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                            | delegates to `setChoices`                                                                                                                   |
+| Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                          | `ActionOverlay.isEnabled`                                                                                                                   |
+| Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                | `text`                                                                                                                                      |
+| Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `applyUpdates` | delegates to document notifier                                                                                                              |
 
 The host’s map instance is never mutated in place.
 
@@ -142,6 +145,8 @@ if (overlay?.choices != null) merged['choices'] = overlay!.choices;
 if (overlay?.errorMessage != null) merged['errorMessage'] = overlay!.errorMessage;
 if (overlay?.isInvalid != null) merged['isInvalid'] = overlay!.isInvalid;
 if (overlay?.text != null) merged['text'] = overlay!.text;
+if (overlay?.isRequired != null) merged['isRequired'] = overlay!.isRequired;
+if (overlay?.url != null) merged['url'] = overlay!.url;
 // queryCount/querySkip merge into choices.data when present
 ```
 
@@ -192,26 +197,26 @@ Host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onChange`, …) remain on
 
 ### Verdict
 
-| Layer | Confidence |
-| --- | --- |
-| **Notifier + merge providers** | High — `test/riverpod/adaptive_card_document_notifier_test.dart` |
-| **Widget tests per `Input.*` / `Action.*`** | Partial — representative paths, not every type |
+| Layer                                       | Confidence                                                       |
+| ------------------------------------------- | ---------------------------------------------------------------- |
+| **Notifier + merge providers**              | High — `test/riverpod/adaptive_card_document_notifier_test.dart` |
+| **Widget tests per `Input.*` / `Action.*`** | Partial — representative paths, not every type                   |
 
 The overlay **model** is well guarded; adding a new overlay field still requires notifier tests plus at least one focused widget test for the element types that consume it. A fuller matrix and gap list also lives in the agent skill [adaptive-cards-element-registry](../.agents/skills/adaptive-cards-element-registry/SKILL.md#overlay-test-coverage) (for implementers).
 
 ### Primary test files
 
-| Concern | Test file |
-| --- | --- |
-| Notifier contract (inputs, visibility, choices, validation, text, actions) | `test/riverpod/adaptive_card_document_notifier_test.dart` |
-| `initData` / `initInput` | `test/inputs/init_data_overlay_test.dart` |
-| ChoiceSet `loadInput` / `appendChoices` / reset | `test/inputs/choice_set_overlay_test.dart`, `test/inputs/action_reset_inputs_test.dart` |
-| Data.Query session merge | `test/inputs/choice_set_data_query_test.dart` |
-| Input validation overlays | `test/inputs/input_error_overlay_test.dart` |
-| TextBlock `text` | `test/elements/text_block_text_overlay_test.dart` |
-| Visibility / ToggleVisibility | `test/elements/is_visible_test.dart` |
-| Action `isEnabled` (Submit) | `test/actions/action_enabled_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json` |
-| Action `isEnabled` (ShowCard) | `test/actions/show_card_enabled_overlay_test.dart` |
+| Concern                                                                    | Test file                                                                                          |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Notifier contract (inputs, visibility, choices, validation, text, actions) | `test/riverpod/adaptive_card_document_notifier_test.dart`                                          |
+| `initData` / `initInput`                                                   | `test/inputs/init_data_overlay_test.dart`                                                          |
+| ChoiceSet `loadInput` / `appendChoices` / reset                            | `test/inputs/choice_set_overlay_test.dart`, `test/inputs/action_reset_inputs_test.dart`            |
+| Data.Query session merge                                                   | `test/inputs/choice_set_data_query_test.dart`                                                      |
+| Input validation overlays                                                  | `test/inputs/input_error_overlay_test.dart`                                                        |
+| TextBlock `text`                                                           | `test/elements/text_block_text_overlay_test.dart`                                                  |
+| Visibility / ToggleVisibility                                              | `test/elements/is_visible_test.dart`                                                               |
+| Action `isEnabled` (Submit)                                                | `test/actions/action_enabled_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json` |
+| Action `isEnabled` (ShowCard)                                              | `test/actions/show_card_enabled_overlay_test.dart`                                                 |
 
 ### How to add tests
 
@@ -245,37 +250,37 @@ This section is a **planning inventory**: which JSON properties are already driv
 
 ### Already implemented
 
-| Target | Overlay / provider |
-| --- | --- |
-| Any element with `id` | `isVisible` → `resolvedElementProvider` |
-| `Input.*` | `inputValue`, `errorMessage`, `isInvalid`, `choices`, query session fields (`queryCount`, `querySkip`, `querySearchText`) |
-| `TextBlock` | `text` → `resolvedElementProvider` (`setText` / `clearText`) |
-| `Action.*` | `isEnabled` → `resolvedActionProvider` |
+| Target                | Overlay / provider                                                                       |
+| --------------------- | ---------------------------------------------------------------------------------------- |
+| Any element with `id` | `isVisible` → `resolvedElementProvider`                                                  |
+| `Input.*`             | `inputValue`, `errorMessage`, `isInvalid`, `isRequired`, `choices`, query session fields |
+| `TextBlock`           | `text` → `resolvedElementProvider` (`setText` / `clearText`)                             |
+| `Image`, `Media`      | `url` → `resolvedElementProvider`                                                        |
+| `Action.*`            | `isEnabled` → `resolvedActionProvider`                                                   |
 
 ### Recommended future overlays (prioritized)
 
 **Body / display elements**
 
-| Property | Element(s) | Host use case | Priority |
-| --- | --- | --- | --- |
-| `url` | `Image`, `Media` | Signed URL rotation | Medium |
-| `text` | `Badge` (extension) | Dynamic badge label | Low (reuse `ElementOverlay.text` + listener if needed) |
+| Property | Element(s)          | Host use case       | Priority                                               |
+| -------- | ------------------- | ------------------- | ------------------------------------------------------ |
+| `url`    | `Image`, `Media`    | Signed URL rotation | Implemented                                            |
+| `text`   | `Badge` (extension) | Dynamic badge label | Low (reuse `ElementOverlay.text` + listener if needed) |
 
 **Inputs — defer**
 
-| Property | Notes |
-| --- | --- |
-| `placeholder`, `label` | Hint/label changes without changing submit `value` |
-| `isRequired` | Conditional required-field validation |
+| Property                  | Notes                                                                 |
+| ------------------------- | --------------------------------------------------------------------- |
+| `placeholder`, `label`    | Hint/label changes without changing submit `value`                    |
 | `choices.data.parameters` | Typeahead parameter binding (separate from count/skip session fields) |
 
 **Actions — defer**
 
-| Property | Notes |
-| --- | --- |
-| `title` | Button label updates (`AdaptiveActionMixin` reads `adaptiveMap` today) |
-| `tooltip`, `iconUrl` | Runtime UX tweaks on actions |
-| `mode`, `style` | AC 1.5+; lower host demand |
+| Property             | Notes                                                                  |
+| -------------------- | ---------------------------------------------------------------------- |
+| `title`              | Button label updates (`AdaptiveActionMixin` reads `adaptiveMap` today) |
+| `tooltip`, `iconUrl` | Runtime UX tweaks on actions                                           |
+| `mode`, `style`      | AC 1.5+; lower host demand                                             |
 
 **Session-only (overlay field present, not merged into resolved JSON)**
 

@@ -14,18 +14,47 @@ Runtime state is stored in Riverpod document **overlays** keyed by input id:
 
 `AdaptiveInputMixin` listens to `resolvedElementProvider(id)` so controllers stay in sync when overlays change. New inputs must call `setDocumentInputValue(...)` on change and handle `onDocumentValueChanged` when syncing controllers from document updates.
 
-## Host-driven validation
+## Host-driven validation and bulk updates
 
 After submit or server-side checks, hosts can set validation overlays without mutating card JSON:
 
 - `RawAdaptiveCardState.setInputError(id, message:, isInvalid: true)` → document notifier `setInputError`
 - `RawAdaptiveCardState.clearInputError(id)` → clears overlay `errorMessage` and `isInvalid`
+- `RawAdaptiveCardState.applyUpdates(...)` / `applyUpdatesFromMap(...)` → batch validation, visibility, choices, values, and action `isEnabled` in one call
 
-`AdaptiveInputMixin` merges overlay `errorMessage` / `isInvalid` into the resolved listener; `showValidationError` drives `loadErrorMessage`. User edits call `setInputValue`, which clears validation overlays so typing dismisses host errors.
+Example remote validation after `onSubmit`:
+
+```dart
+onSubmit: (data) async {
+  final errors = await validate(data);
+  cardState.applyUpdates(
+    elements: errors.entries.map(
+      (e) => AdaptiveElementUpdate(
+        id: e.key,
+        errorMessage: e.value,
+        isInvalid: true,
+      ),
+    ),
+  );
+},
+```
+
+## initData / initInput vs applyUpdates
+
+| Scenario | API |
+| --- | --- |
+| Simple prefill at card load | `initData: {'name': 'Jane'}` |
+| Async value-only late bind | `cardState.initInput({'name': fetched})` |
+| Rich load-time or handler patches | `cardState.applyUpdates(...)` or `applyUpdatesFromMap` |
+| Patch-map `initData` | `initData: {'state': {'choices': [...], 'value': 'CA'}}` |
+
+`seedInputValues` is implemented as value-only `applyUpdates` (single revision bump).
 
 See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
-For **TextBlock** runtime copy and **action** `isEnabled`, use the same document notifier (`setText`, `setActionEnabled`, …) — not input mixins. See the overlay tables in [`reactive-riverpod.md`](reactive-riverpod.md).
+`AdaptiveInputMixin` merges overlay `errorMessage` / `isInvalid` / `isRequired` into the resolved listener; `showValidationError` drives `loadErrorMessage`. User edits call `setInputValue`, which clears validation overlays so typing dismisses host errors.
+
+For **TextBlock** runtime copy, **Image** signed URLs, and **action** `isEnabled`, use the same document notifier (`setText`, `setUrl`, `setActionEnabled`, `applyUpdates`, …) — not input mixins. See the overlay tables in [`reactive-riverpod.md`](reactive-riverpod.md).
 
 ## Overlay tests
 
@@ -33,7 +62,7 @@ Dedicated overlay tests (beyond per-input layout tests under `test/inputs/`):
 
 | Concern | File |
 | --- | --- |
-| `initData` / `initInput` | `test/inputs/init_data_overlay_test.dart` |
+| `initData` / `initInput` / `applyUpdates` | `test/inputs/init_data_overlay_test.dart`, `test/riverpod/apply_updates_test.dart` |
 | Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/input_error_overlay_test.dart` (Input.Text, Input.Number) |
 | ChoiceSet dynamic choices | `test/inputs/choice_set_overlay_test.dart` |
 | Notifier contract | `test/riverpod/adaptive_card_document_notifier_test.dart` |
