@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Time.html
 ///
-class AdaptiveTimeInput extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveTimeInput extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   AdaptiveTimeInput({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -24,32 +26,36 @@ class AdaptiveTimeInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTimeInputState createState() => AdaptiveTimeInputState();
 }
 
-class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
+class AdaptiveTimeInputState extends ConsumerState<AdaptiveTimeInput>
     with
         AdaptiveTextualInputMixin,
         AdaptiveElementMixin,
         AdaptiveInputMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
-  late TimeOfDay? selectedTime;
+  TimeOfDay? selectedTime;
   late TimeOfDay min;
   late TimeOfDay max;
+  bool _initialValueSynced = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    selectedTime = parseTime(value) ?? TimeOfDay.now();
     min = parseTime(adaptiveMap['min']) ?? const TimeOfDay(minute: 0, hour: 0);
     max =
         parseTime(adaptiveMap['max']) ?? const TimeOfDay(minute: 59, hour: 23);
+
+    if (!_initialValueSynced) {
+      _initialValueSynced = true;
+      selectedTime =
+          parseTime(readResolvedInput().valueAsString) ?? TimeOfDay.now();
+    }
   }
 
   @override
   void resetInput() {
     super.resetInput();
-    setState(() {
-      selectedTime = value.isNotEmpty ? parseTime(value) : null;
-    });
+    setState(() {});
   }
 
   TimeOfDay? parseTime(String? time) {
@@ -61,6 +67,9 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
 
   @override
   Widget build(BuildContext context) {
+    listenForResolvedValueChanges();
+    final input = watchResolvedInput();
+
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
@@ -104,7 +113,7 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
           },
           child: Text(
             selectedTime == null
-                ? placeholder
+                ? input.placeholder
                 : selectedTime!.format(rawRootCardWidgetState.context),
           ),
         ),
@@ -139,6 +148,8 @@ class AdaptiveTimeInputState extends State<AdaptiveTimeInput>
         parsed?.minute == selectedTime?.minute) {
       return;
     }
-    selectedTime = parsed;
+    setState(() {
+      selectedTime = parsed;
+    });
   }
 }

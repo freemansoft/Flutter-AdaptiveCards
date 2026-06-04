@@ -471,29 +471,52 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     );
   }
 
-  /// Clears input value, choices, and validation overlays so resolved values
-  /// fall back to baseline JSON. Visibility and action overlays are preserved.
+  /// Factory-resets one input id: clears value, choices, validation,
+  /// [ElementOverlay.isRequired], [ElementOverlay.label], and
+  /// [ElementOverlay.placeholder] overlays so resolved fields match baseline
+  /// JSON. Preserves input [ElementOverlay.isVisible] and typeahead session
+  /// fields on that id.
+  ///
+  /// See [resetAllInputs] for batch reset and
+  /// `docs/reactive-riverpod.md#reset-semantics`.
+  void resetInput(String id) {
+    final node = state.nodesById[id];
+    if (node == null) return;
+    final type = node['type'] as String?;
+    if (type == null || !type.startsWith('Input.')) return;
+
+    final overlays = Map<String, ElementOverlay>.from(state.overlaysById);
+    final current = overlays[id];
+    if (current == null) return;
+
+    _applyFactoryResetToOverlayMap(overlays, id, current);
+    state = state.copyWith(
+      overlaysById: overlays,
+      revision: state.revision + 1,
+    );
+  }
+
+  /// Factory-resets every `Input.*` id using the same rules as [resetInput].
+  ///
+  /// Clears overlay value, choices, validation, `isRequired`, `label`, and
+  /// `placeholder` on inputs. Preserves input visibility and typeahead session
+  /// overlays. Does not modify TextBlock text, Image url, or action overlays.
   void resetAllInputs() {
     final overlays = Map<String, ElementOverlay>.from(state.overlaysById);
-    final inputIds = state.nodesById.entries
-        .where(
-          (e) => (e.value['type'] as String?)?.startsWith('Input.') ?? false,
-        )
-        .map((e) => e.key);
+    var changed = false;
 
-    for (final id in inputIds) {
-      final current = overlays[id];
+    for (final entry in state.nodesById.entries) {
+      final type = entry.value['type'] as String?;
+      if (type == null || !type.startsWith('Input.')) continue;
+
+      final current = overlays[entry.key];
       if (current == null) continue;
-      overlays[id] = ElementOverlay(
-        isVisible: current.isVisible,
-        queryCount: current.queryCount,
-        querySkip: current.querySkip,
-        querySearchText: current.querySearchText,
-        label: current.label,
-        placeholder: current.placeholder,
-        isRequired: current.isRequired,
-      );
+
+      _applyFactoryResetToOverlayMap(overlays, entry.key, current);
+      changed = true;
     }
+
+    if (!changed) return;
 
     state = state.copyWith(
       overlaysById: overlays,
@@ -513,6 +536,35 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
       result[entry.key] = overlay?.inputValue ?? node['value'];
     }
     return result;
+  }
+
+  /// Keeps visibility and typeahead session fields; strips factory-reset fields.
+  void _applyFactoryResetToOverlayMap(
+    Map<String, ElementOverlay> overlays,
+    String id,
+    ElementOverlay current,
+  ) {
+    final preserved = _factoryResetInputOverlay(current);
+    if (preserved == null) {
+      overlays.remove(id);
+    } else {
+      overlays[id] = preserved;
+    }
+  }
+
+  ElementOverlay? _factoryResetInputOverlay(ElementOverlay current) {
+    if (current.isVisible == null &&
+        current.queryCount == null &&
+        current.querySkip == null &&
+        current.querySearchText == null) {
+      return null;
+    }
+    return ElementOverlay(
+      isVisible: current.isVisible,
+      queryCount: current.queryCount,
+      querySkip: current.querySkip,
+      querySearchText: current.querySearchText,
+    );
   }
 
   void _updateOverlay(

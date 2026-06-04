@@ -1,11 +1,10 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/resolved_input_state.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -251,105 +250,57 @@ mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   }
 }
 
-mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
-    implements AdaptiveElementMixin<T> {
-  late String value;
-  late String placeholder;
-  String? inputLabel;
-  late String? errorMessage;
-  late bool isRequired;
-  bool overlayValidationError = false;
-  ProviderSubscription<Map<String, dynamic>?>? _inputValueSubscription;
+mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
+  AdaptiveElementWidgetMixin get _inputElement =>
+      widget as AdaptiveElementWidgetMixin;
 
-  /// Local required-field / validator error OR host overlay `isInvalid`.
-  bool get showValidationError => stateHasError || overlayValidationError;
+  String get _inputId => _inputElement.id;
 
-  /// Widget-local validation flag (required checks, Form validators).
-  bool stateHasError = false;
+  Map<String, dynamic> get _inputAdaptiveMap => _inputElement.adaptiveMap;
 
-  @override
-  void initState() {
-    super.initState();
-    value = adaptiveMap['value'].toString() == 'null'
-        ? ''
-        : adaptiveMap['value'].toString();
-
-    inputLabel = adaptiveMap['label'] as String?;
-    placeholder = _effectivePlaceholder(adaptiveMap);
-
-    errorMessage = adaptiveMap['errorMessage'] as String?;
-    overlayValidationError = adaptiveMap['isInvalid'] == true;
-    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _inputValueSubscription?.close();
-    final container = ProviderScope.containerOf(context);
-    _inputValueSubscription = container.listen<Map<String, dynamic>?>(
-      resolvedElementProvider(id),
-      (previous, next) {
-        final nextValue = next?['value'];
-        final nextString = nextValue?.toString() ?? '';
-        final nextError = next?['errorMessage'] as String?;
-        final nextInvalid = next?['isInvalid'] == true;
-        final nextRequired = next?['isRequired'] as bool? ?? false;
-        final nextLabel = next?['label'] as String?;
-        final nextPlaceholder = _effectivePlaceholder(next ?? adaptiveMap);
-        final valueChanged = nextString != value;
-        final errorChanged =
-            nextError != errorMessage || nextInvalid != overlayValidationError;
-        final requiredChanged = nextRequired != isRequired;
-        final labelChanged = nextLabel != inputLabel;
-        final placeholderChanged = nextPlaceholder != placeholder;
-        if (!valueChanged &&
-            !errorChanged &&
-            !requiredChanged &&
-            !labelChanged &&
-            !placeholderChanged) {
-          return;
-        }
-        setState(() {
-          if (valueChanged) {
-            value = nextString;
-            onDocumentValueChanged(nextValue);
-          }
-          if (errorChanged) {
-            errorMessage = nextError;
-            overlayValidationError = nextInvalid;
-          }
-          if (requiredChanged) {
-            isRequired = nextRequired;
-          }
-          if (labelChanged) {
-            inputLabel = nextLabel;
-          }
-          if (placeholderChanged) {
-            placeholder = nextPlaceholder;
-          }
-        });
-      },
-      fireImmediately: true,
+  /// Marks this input invalid via the document notifier (Form validators,
+  /// [checkRequired]). Omit [errorMessage] to use baseline JSON message.
+  void setLocalValidationError({String? errorMessage}) {
+    ref.read(adaptiveCardDocumentProvider.notifier).setInputError(
+      _inputId,
+      errorMessage: errorMessage,
+      isInvalid: true,
     );
   }
 
-  @override
-  void dispose() {
-    _inputValueSubscription?.close();
-    _inputValueSubscription = null;
-    super.dispose();
+  /// Clears validation overlays for this input (e.g. when Form validation passes).
+  void clearLocalValidationError() {
+    ref.read(adaptiveCardDocumentProvider.notifier).clearInputError(_inputId);
   }
 
-  static String _effectivePlaceholder(Map<String, dynamic> map) {
-    return map['placeholder'] as String? ?? map['label'] as String? ?? '';
+  /// Subscribes during [build]; returns merged baseline + overlay input state.
+  ResolvedInputState watchResolvedInput() {
+    final resolved = ref.watch(resolvedElementProvider(_inputId));
+    return ResolvedInputState(resolved ?? _inputAdaptiveMap);
+  }
+
+  /// Imperative read for [checkRequired], [resetInput], and init seeding.
+  ResolvedInputState readResolvedInput() {
+    final resolved = ref.read(resolvedElementProvider(_inputId));
+    return ResolvedInputState(resolved ?? _inputAdaptiveMap);
+  }
+
+  /// Call at the top of [build] to sync controllers when resolved value changes.
+  void listenForResolvedValueChanges() {
+    ref.listen(resolvedElementProvider(_inputId), (previous, next) {
+      if (previous?['value'] == next?['value']) return;
+      final value = next?['value'];
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        onDocumentValueChanged(value);
+      });
+    });
   }
 
   void setDocumentInputValue(Object? newValue) {
-    final container = ProviderScope.containerOf(context);
-    container
+    ref
         .read(adaptiveCardDocumentProvider.notifier)
-        .setInputValue(id, newValue);
+        .setInputValue(_inputId, newValue);
   }
 
   /// Subclasses can override to sync controllers from document changes.
@@ -368,39 +319,19 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   /// to check if they are required and there is a value
   bool checkRequired();
 
+  /// Factory-resets this input via the document notifier, then syncs local UI
+  /// from resolved state via [onDocumentValueChanged].
+  ///
+  /// Subclasses should override only to sync controllers or selection UI;
+  /// do not clear overlays locally. See `docs/reactive-riverpod.md#reset-semantics`.
   void resetInput() {
-    // Default implementation: reset to initial value to the map value
-    if (adaptiveMap.containsKey('value')) {
-      assert(() {
-        developer.log(
-          'resetting value to ${adaptiveMap['value']} string for $id',
-          name: runtimeType.toString(),
-        );
-        return true;
-      }());
-      value = adaptiveMap['value'].toString();
-    } else {
-      assert(() {
-        developer.log(
-          'resetting value to empty string for $id',
-          name: runtimeType.toString(),
-        );
-        return true;
-      }());
-      value = ''; // default value for inputs that don't have one
-    }
-    // Subclasses should override update their text controllers etc.
+    ref.read(adaptiveCardDocumentProvider.notifier).resetInput(_inputId);
+    onDocumentValueChanged(readResolvedInput().valueRaw);
   }
 }
 
-mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>
-    on State<T>
-    implements AdaptiveInputMixin<T> {
-  @override
-  void initState() {
-    super.initState();
-  }
-}
+mixin AdaptiveTextualInputMixin<T extends ConsumerStatefulWidget>
+    on ConsumerState<T> {}
 
 mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {

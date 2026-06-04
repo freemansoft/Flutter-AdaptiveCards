@@ -135,14 +135,14 @@ If consumers need to subclass or reference your element, add it to:
 
 Mixins provide shared behavior. Apply them to the **State** class:
 
-| Mixin                        | Applied to       | Provides                                                                                                                 |
-| ---------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `AdaptiveElementWidgetMixin` | `StatefulWidget` | `adaptiveMap`, `id` abstract getters                                                                                     |
-| `ProviderScopeMixin<T>`      | `State<T>`       | `cardTypeRegistry`, `actionTypeRegistry`, `styleResolver`, `rawRootCardWidgetState`, `adaptiveCardElementState`          |
-| `AdaptiveElementMixin<T>`    | `State<T>`       | `id`, `style`, `adaptiveMap` (combine with `ProviderScopeMixin` for registries/resolver)                                 |
-| `AdaptiveVisibilityMixin<T>` | `State<T>`       | `isVisible`, `setIsVisible()` — listens to `resolvedElementProvider(id)` for merged `"isVisible"`                        |
-| `AdaptiveActionMixin<T>`     | `State<T>`       | `title`, `tooltip` — for action widgets                                                                                  |
-| `AdaptiveInputMixin<T>`      | `State<T>`       | `value`, `setDocumentInputValue()`, listens to `resolvedElementProvider(id)`; also `appendInput()`, `resetInput()`, etc. |
+| Mixin                        | Applied to         | Provides                                                                                                                                                                                                       |
+| ---------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AdaptiveElementWidgetMixin` | `StatefulWidget`   | `adaptiveMap`, `id` abstract getters                                                                                                                                                                           |
+| `ProviderScopeMixin<T>`      | `State<T>`         | `cardTypeRegistry`, `actionTypeRegistry`, `styleResolver`, `rawRootCardWidgetState`, `adaptiveCardElementState`                                                                                                |
+| `AdaptiveElementMixin<T>`    | `State<T>`         | `id`, `style`, `adaptiveMap` (combine with `ProviderScopeMixin` for registries/resolver)                                                                                                                       |
+| `AdaptiveVisibilityMixin<T>` | `State<T>`         | `isVisible`, `setIsVisible()` — listens to `resolvedElementProvider(id)` for merged `"isVisible"`                                                                                                              |
+| `AdaptiveActionMixin<T>`     | `State<T>`         | `title`, `tooltip` — for action widgets                                                                                                                                                                        |
+| `AdaptiveInputMixin<T>`      | `ConsumerState<T>` | `watchResolvedInput()` / `readResolvedInput()`, `setDocumentInputValue()`, `setLocalValidationError()` / `clearLocalValidationError()`, `listenForResolvedValueChanges()`; `appendInput()`, `resetInput()`, etc. No cached overlay mirrors. |
 
 **Typical element (non-input):**
 
@@ -150,11 +150,13 @@ Mixins provide shared behavior. Apply them to the **State** class:
 with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin
 ```
 
-**Typical input element:**
+**Typical input element** (`ConsumerStatefulWidget` / `ConsumerState`):
 
 ```dart
 with AdaptiveElementMixin, AdaptiveVisibilityMixin, AdaptiveInputMixin, ProviderScopeMixin
 ```
+
+In `build()`: `listenForResolvedValueChanges(); final input = watchResolvedInput();` — use `input.label`, `input.isRequired`, etc. Imperative paths (`checkRequired`, `resetInput` overrides): `readResolvedInput()`.
 
 **Typical action widget:**
 
@@ -168,13 +170,13 @@ with AdaptiveElementMixin, AdaptiveActionMixin, ProviderScopeMixin
 
 Card JSON is deep-copied into a **baseline** at render time. Runtime changes (input values, visibility, TextBlock text, validation, ChoiceSet choices) are stored in sparse **`overlaysById`** entries — the host map is never mutated. Action `isEnabled` uses **`actionOverlaysById`** + `resolvedActionProvider(id)`.
 
-| Phase                         | Source                                                            |
-| ----------------------------- | ----------------------------------------------------------------- |
-| Initial UI                    | `adaptiveMap` at widget construction (`initState`)                |
-| User edits / ToggleVisibility | `AdaptiveCardDocumentNotifier` → `overlaysById[id]`               |
-| What widgets read             | `resolvedElementProvider(id)` — baseline node merged with overlay |
+| Phase                         | Source                                                              |
+| ----------------------------- | ------------------------------------------------------------------- |
+| Initial UI                    | `resolvedElementProvider(id)` (baseline until overlays are written) |
+| User edits / ToggleVisibility | `AdaptiveCardDocumentNotifier` → `overlaysById[id]`                 |
+| What inputs read in build     | `watchResolvedInput()` — merged baseline + overlay                  |
 
-**Inputs:** call `setDocumentInputValue(value)` when the user changes the field; implement `onDocumentValueChanged` to sync controllers when overlays change (e.g. reset). Subscribe via `AdaptiveInputMixin` (already wired in `didChangeDependencies`). Do **not** call `setState` from `initInput` — write the overlay and let the mixin listener rebuild (see [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card)).
+**Inputs:** call `setDocumentInputValue(value)` when the user changes the field; implement `onDocumentValueChanged` to sync controllers when resolved value changes (reset, initData). Use `watchResolvedInput()` in `build()` for label / placeholder / validation / required — do **not** cache overlay fields on the mixin. Do **not** call `setState` from `initInput` — write the overlay and let `ref.watch` / `ref.listen` rebuild (see [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card)).
 
 **ChoiceSet:** subscribe to resolved `choices` (see `AdaptiveChoiceSet`); host-driven updates use `setChoices` / `appendChoices` or `RawAdaptiveCardState.loadInput`.
 
@@ -182,11 +184,11 @@ Card JSON is deep-copied into a **baseline** at render time. Runtime changes (in
 
 **TextBlock:** host-driven copy changes use `setText` / `clearText` on the document notifier (or `RawAdaptiveCardState`); `AdaptiveTextBlock` listens to resolved `text` — do not mutate `adaptiveMap['text']` in place.
 
-**Validation (inputs):** `setInputError` / `clearInputError`; `AdaptiveInputMixin` merges resolved `errorMessage` / `isInvalid`.
+**Validation (inputs):** All validation display uses resolved **`isInvalid`** / **`errorMessage`**. Host code: `setInputError` / `clearInputError`. Form validators and `checkRequired`: **`setLocalValidationError()`** / **`clearLocalValidationError()`** on `AdaptiveInputMixin`. User edits (`setInputValue`) and factory reset clear validation overlays.
 
 **Actions (`isEnabled`):** `setActionEnabled` + `AdaptiveActionStateMixin` / `resolvedActionProvider` — not `ElementOverlay`.
 
-**Submit / reset:** `collectInputValues()` and `resetAllInputs()` on the document notifier — do not walk the widget tree. `resetAllInputs` clears **input** overlays only.
+**Submit / reset:** `collectInputValues()` and `resetAllInputs()` / `resetInput(id)` on the document notifier — do not walk the widget tree. Factory reset clears input overlays including **`label`**, **`placeholder`**, and **`isRequired`** (resolved → baseline); preserves input `isVisible` and typeahead session fields. See [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md#reset-semantics).
 
 Full detail: [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
@@ -196,10 +198,10 @@ Full detail: [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-ove
 
 ### Verdict
 
-| Layer | Confidence |
-| --- | --- |
+| Layer                                                               | Confidence                                                                                                                                                                                             |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Notifier + `resolvedElementProvider` / `resolvedActionProvider`** | High — [`adaptive_card_document_notifier_test.dart`](../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart) covers most `AdaptiveCardDocumentNotifier` APIs |
-| **Widget / host API per element or action type** | Partial — representative paths only; not every `Input.*` or `Action.*` has overlay-specific widget tests |
+| **Widget / host API per element or action type**                    | Partial — representative paths only; not every `Input.*` or `Action.*` has overlay-specific widget tests                                                                                               |
 
 **Enough** to guard the overlay model and primary host integration paths. **Not enough** to claim exhaustive per-type validation without adding tests listed under [Gaps](#gaps).
 
@@ -207,21 +209,21 @@ Overlay fields are defined in [`adaptive_card_document.dart`](../../packages/flu
 
 ### Element overlays
 
-| Field | Notifier tests | Widget / integration | Gap |
-| --- | --- | --- | --- |
-| `isVisible` | Yes | [`is_visible_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart) | — |
-| `inputValue` | Yes | [`init_data_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/init_data_overlay_test.dart) (Text, Toggle, ChoiceSet) | Number, Date, Time, Rating — no overlay-specific widget tests |
-| `choices` / append | Yes | [`choice_set_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_overlay_test.dart) | — |
-| `queryCount` / `querySkip` | Yes | [`choice_set_data_query_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart) | `querySearchText` — notifier only |
-| `errorMessage` / `isInvalid` | Yes | [`input_error_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/input_error_overlay_test.dart) — Input.Text, Input.Number; host `clearInputError` | Date, Time, Rating |
-| `text` | Yes | [`text_block_text_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/text_block_text_overlay_test.dart) — **TextBlock only** | Only element type using `text` overlay |
+| Field                        | Notifier tests | Widget / integration                                                                                                                                                     | Gap                                                           |
+| ---------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| `isVisible`                  | Yes            | [`is_visible_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart)                                                                    | —                                                             |
+| `inputValue`                 | Yes            | [`init_data_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/init_data_overlay_test.dart) (Text, Toggle, ChoiceSet)                              | Number, Date, Time, Rating — no overlay-specific widget tests |
+| `choices` / append           | Yes            | [`choice_set_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_overlay_test.dart)                                                      | —                                                             |
+| `queryCount` / `querySkip`   | Yes            | [`choice_set_data_query_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart)                                                | `querySearchText` — notifier only                             |
+| `errorMessage` / `isInvalid` | Yes            | [`input_error_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/input_error_overlay_test.dart) — Input.Text, Input.Number; host `clearInputError` | Date, Time, Rating                                            |
+| `text`                       | Yes            | [`text_block_text_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/text_block_text_overlay_test.dart) — **TextBlock only**                     | Only element type using `text` overlay                        |
 
 ### Action overlays
 
-| API | Notifier | Widget | Gap |
-| --- | --- | --- | --- |
-| `setActionEnabled` | Yes | Submit: [`action_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/action_enabled_overlay_test.dart); ShowCard: [`show_card_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/show_card_enabled_overlay_test.dart) | OpenUrl, Execute, other action types |
-| `setActionsEnabled` (bulk) | Yes | — | Widget test not required (notifier merge) |
+| API                        | Notifier | Widget                                                                                                                                                                                                                                                                             | Gap                                       |
+| -------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `setActionEnabled`         | Yes      | Submit: [`action_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/action_enabled_overlay_test.dart); ShowCard: [`show_card_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/show_card_enabled_overlay_test.dart) | OpenUrl, Execute, other action types      |
+| `setActionsEnabled` (bulk) | Yes      | —                                                                                                                                                                                                                                                                                  | Widget test not required (notifier merge) |
 
 Reactive wiring:
 
@@ -230,12 +232,12 @@ Reactive wiring:
 
 ### Cross-cutting
 
-| Concern | Status |
-| --- | --- |
-| `resetAllInputs` preserves visibility, action overlays, TextBlock text | Notifier + ChoiceSet widget |
-| `collectInputValues` | Notifier only |
-| Host APIs (`setText`, `setInputError`, `setActionEnabled`) | Partial delegate tests in overlay test files |
-| Rebuild does not wipe overlays | TextBlock + visibility widget tests; cached `_baselineMap` in `RawAdaptiveCard` |
+| Concern                                                                | Status                                                                          |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `resetAllInputs` preserves visibility, action overlays, TextBlock text | Notifier + ChoiceSet widget                                                     |
+| `collectInputValues`                                                   | Notifier only                                                                   |
+| Host APIs (`setText`, `setInputError`, `setActionEnabled`)             | Partial delegate tests in overlay test files                                    |
+| Rebuild does not wipe overlays                                         | TextBlock + visibility widget tests; cached `_baselineMap` in `RawAdaptiveCard` |
 
 ### Gaps
 

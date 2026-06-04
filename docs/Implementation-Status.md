@@ -43,18 +43,18 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## Inputs
 
-| Input           | Microsoft Spec                                                 | Implementation | Tests  | Documentation                                                  | Notes                           |
-| --------------- | -------------------------------------------------------------- | -------------- | ------ | -------------------------------------------------------------- | ------------------------------- |
+| Input           | Microsoft Spec                                                 | Implementation | Tests  | Documentation                      | Notes                           |
+| --------------- | -------------------------------------------------------------- | -------------- | ------ | ---------------------------------- | ------------------------------- |
 | Input.Text      | [spec](https://adaptivecards.io/explorer/Input.Text.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based              |
 | Input.Number    | [spec](https://adaptivecards.io/explorer/Input.Number.html)    | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based              |
 | Input.Date      | [spec](https://adaptivecards.io/explorer/Input.Date.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers      |
 | Input.Time      | [spec](https://adaptivecards.io/explorer/Input.Time.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers      |
 | Input.Toggle    | [spec](https://adaptivecards.io/explorer/Input.Toggle.html)    | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based              |
 | Input.ChoiceSet | [spec](https://adaptivecards.io/explorer/Input.ChoiceSet.html) | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Compact & multiselect           |
-| Input.Choice    | [spec](https://adaptivecards.io/explorer/Input.Choice.html)    | ⚠️ Map         | ❌ No  | -                                                              | Implemented as map in ChoiceSet |
+| Input.Choice    | [spec](https://adaptivecards.io/explorer/Input.Choice.html)    | ⚠️ Map         | ❌ No  | -                                  | Implemented as map in ChoiceSet |
 
 > [!NOTE]
-> All standard input implementations (`Input.Text`, `Input.Number`, `Input.Date`, `Input.Time`, `Input.Toggle`, `Input.ChoiceSet`) fully implement `appendInput()`, `initInput()`, `checkRequired()`, and `resetInput()` methods. These elements have been verified to use the mixin-inherited `value` property exclusively, without directly accessing `adaptiveMap['value']` after initialization.
+> All standard input implementations (`Input.Text`, `Input.Number`, `Input.Date`, `Input.Time`, `Input.Toggle`, `Input.ChoiceSet`) fully implement `appendInput()`, `initInput()`, `checkRequired()`, and `resetInput()` methods. These elements have been verified to use the mixin-inherited `value` property exclusively, without directly accessing `adaptiveMap['value']` after initialization. **`Action.ResetInputs`** and host **`resetInput(id)`** / **`resetAllInputs()`** factory-reset input overlays (including `label`, `placeholder`, `isRequired`) to baseline — see [Reset semantics](./reactive-riverpod.md#reset-semantics) and [form-inputs.md](./form-inputs.md#reset-behavior-resetallinputs--resetinput).
 
 ---
 
@@ -76,8 +76,8 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## HostConfig
 
-| Config Component       | Microsoft Spec                                                                          | Implementation | Tests  | Documentation                        | Notes              |
-| ---------------------- | --------------------------------------------------------------------------------------- | -------------- | ------ | ------------------------------------ | ------------------ |
+| Config Component       | Microsoft Spec                                                                          | Implementation | Tests  | Documentation                            | Notes              |
+| ---------------------- | --------------------------------------------------------------------------------------- | -------------- | ------ | ---------------------------------------- | ------------------ |
 | HostConfig (root)      | [schema](https://github.com/microsoft/AdaptiveCards/blob/main/schemas/host-config.json) | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | Main config object |
 | AdaptiveCardConfig     | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
 | ActionsConfig          | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
@@ -105,8 +105,8 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## Templating (flutter_adaptive_template_fs package)
 
-| Feature              | Microsoft Spec                                                                                                           | Implementation | Tests  | Documentation                                        | Notes                                                                                           |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------- | ------ | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Feature              | Microsoft Spec                                                                                                           | Implementation | Tests  | Documentation                                                | Notes                                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------- | ------ | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
 | Template Expansion   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/)                                                     | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | `Evaluator` in `flutter_adaptive_template_fs`                                                   |
 | `$data` Scoping      | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | `_dataStack` in `Evaluator`                                                                     |
 | `$root` Reference    | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | Scoped via `_scopeStack`                                                                        |
@@ -115,7 +115,7 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 | `$when` Conditional  | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | `null`/`false` → element excluded                                                               |
 | `json()` Function    | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | Parses embedded JSON strings                                                                    |
 | `if()` Expressions   | [spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)                                             | ✅ Complete    | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) | Conditional value selection                                                                     |
-| Adaptive Expressions | [spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) | ⚠️ Partial     | ✅ Yes | -                                                    | Operators, string, math, logic implemented; Date/Time and advanced collection functions missing |
+| Adaptive Expressions | [spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) | ⚠️ Partial     | ✅ Yes | -                                                            | Operators, string, math, logic implemented; Date/Time and advanced collection functions missing |
 
 ---
 

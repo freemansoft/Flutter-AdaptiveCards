@@ -10,7 +10,7 @@ Runtime state is stored in Riverpod document **overlays** keyed by input id:
 
 - User typing → `setInputValue(id, value)` → overlay `inputValue`
 - Submit → `collectInputValues()` returns `overlay.inputValue ?? baseline['value']` per input id
-- ResetInputs → `resetAllInputs()` clears input overlays; UI falls back to baseline values
+- Reset → `resetAllInputs()` (or per-id `resetInput(id)`) clears **input** overlays so UI matches **baseline JSON** for `value`, `choices`, validation, **`isRequired`**, **`label`**, and **`placeholder`**. See [Reset semantics in reactive-riverpod.md](reactive-riverpod.md#reset-semantics).
 
 `AdaptiveInputMixin` listens to `resolvedElementProvider(id)` so controllers stay in sync when overlays change. New inputs must call `setDocumentInputValue(...)` on change and handle `onDocumentValueChanged` when syncing controllers from document updates.
 
@@ -39,6 +39,8 @@ onSubmit: (data) async {
 },
 ```
 
+`AdaptiveInputMixin` merges overlay `errorMessage` / `isInvalid` / `isRequired` into the resolved listener; `showValidationError` drives `loadErrorMessage`. User edits call `setInputValue`, which clears validation overlays so typing dismisses host errors.
+
 ## initData / initInput vs applyUpdates
 
 | Scenario | API |
@@ -50,11 +52,21 @@ onSubmit: (data) async {
 
 `seedInputValues` is implemented as value-only `applyUpdates` (single revision bump).
 
-See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+See [`reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
-`AdaptiveInputMixin` merges overlay `errorMessage` / `isInvalid` / `isRequired` into the resolved listener; `showValidationError` drives `loadErrorMessage`. User edits call `setInputValue`, which clears validation overlays so typing dismisses host errors.
+## Reset behavior (`resetAllInputs` / `resetInput`)
 
-For **TextBlock** runtime copy, **Image** signed URLs, and **action** `isEnabled`, use the same document notifier (`setText`, `setUrl`, `setActionEnabled`, `applyUpdates`, …) — not input mixins. See the overlay tables in [`reactive-riverpod.md`](reactive-riverpod.md).
+`Action.ResetInputs` calls **`resetAllInputs()`** on the document notifier. Hosts can reset a single field with **`resetInput(id)`** (notifier; mixin delegates for widget sync).
+
+Both APIs use the same **factory reset to baseline** for `Input.*` elements:
+
+- **Cleared:** `value`, `choices`, `errorMessage`, `isInvalid`, **`isRequired`**, **`label`**, **`placeholder`** (overlay removed → baseline JSON wins)
+- **Preserved on that input:** `isVisible`, typeahead session (`queryCount` / `querySkip` / `querySearchText`)
+- **Not reset:** TextBlock text, Image url, action `isEnabled`, other non-input overlays
+
+To restore host-driven state after reset, call `initInput`, `applyUpdates`, or `applyUpdatesFromMap` again.
+
+Full detail: [Reset semantics](reactive-riverpod.md#reset-semantics). Spec: [`docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md`](superpowers/specs/2026-06-03-overlay-reset-semantics-design.md).
 
 ## Overlay tests
 

@@ -11,6 +11,37 @@ import 'package:url_launcher/url_launcher.dart';
 // Default action handlers with basic behavior
 // including forwarding to the InheritedAdaptiveCardHandlers
 
+/// Returns `false` when any overlay-required input is empty and marks each
+/// failing input invalid via the document notifier.
+bool validateRequiredInputs(ProviderContainer container) {
+  final doc = container.read(adaptiveCardDocumentProvider);
+  final values = container
+      .read(adaptiveCardDocumentProvider.notifier)
+      .collectInputValues();
+  final notifier = container.read(adaptiveCardDocumentProvider.notifier);
+
+  var valid = true;
+  for (final entry in doc.nodesById.entries) {
+    final node = entry.value;
+    final type = node['type'] as String?;
+    if (type == null || !type.startsWith('Input.')) continue;
+    final resolved = container.read(resolvedElementProvider(entry.key));
+    final isRequired = resolved?['isRequired'] as bool? ?? false;
+    if (!isRequired) continue;
+    final value = values[entry.key];
+    if (value == null) {
+      valid = false;
+      notifier.setInputError(entry.key, isInvalid: true);
+      continue;
+    }
+    if (value is String && value.isEmpty) {
+      valid = false;
+      notifier.setInputError(entry.key, isInvalid: true);
+    }
+  }
+  return valid;
+}
+
 /// Default actions for onTaps for Action.Submit
 /// Expects there to be supplementary data in 'data' property
 class DefaultSubmitAction extends GenericSubmitAction {
@@ -29,33 +60,13 @@ class DefaultSubmitAction extends GenericSubmitAction {
         : <String, dynamic>{};
 
     final container = ProviderScope.containerOf(context);
-    final doc = container.read(adaptiveCardDocumentProvider);
     final values = container
         .read(adaptiveCardDocumentProvider.notifier)
         .collectInputValues();
 
-    var valid = true;
-    for (final entry in doc.nodesById.entries) {
-      final node = entry.value;
-      final type = node['type'] as String?;
-      if (type == null || !type.startsWith('Input.')) continue;
-      final resolved = container.read(resolvedElementProvider(entry.key));
-      final isRequired = resolved?['isRequired'] as bool? ?? false;
-      if (!isRequired) continue;
-      final value = values[entry.key];
-      if (value == null) {
-        valid = false;
-        break;
-      }
-      if (value is String && value.isEmpty) {
-        valid = false;
-        break;
-      }
-    }
-
     data.addAll(values);
 
-    if (!valid) return;
+    if (!validateRequiredInputs(container)) return;
 
     final foo = InheritedAdaptiveCardHandlers.of(context);
     if (foo != null) {
@@ -90,32 +101,12 @@ class DefaultExecuteAction extends GenericExecuteAction {
         : <String, dynamic>{};
 
     final container = ProviderScope.containerOf(context);
-    final doc = container.read(adaptiveCardDocumentProvider);
     final values = container
         .read(adaptiveCardDocumentProvider.notifier)
         .collectInputValues();
 
-    var valid = true;
-    for (final entry in doc.nodesById.entries) {
-      final node = entry.value;
-      final type = node['type'] as String?;
-      if (type == null || !type.startsWith('Input.')) continue;
-      final resolved = container.read(resolvedElementProvider(entry.key));
-      final isRequired = resolved?['isRequired'] as bool? ?? false;
-      if (!isRequired) continue;
-      final value = values[entry.key];
-      if (value == null) {
-        valid = false;
-        break;
-      }
-      if (value is String && value.isEmpty) {
-        valid = false;
-        break;
-      }
-    }
-
     data.addAll(values);
-    if (!valid) return;
+    if (!validateRequiredInputs(container)) return;
 
     final foo = InheritedAdaptiveCardHandlers.of(context);
     if (foo != null) {

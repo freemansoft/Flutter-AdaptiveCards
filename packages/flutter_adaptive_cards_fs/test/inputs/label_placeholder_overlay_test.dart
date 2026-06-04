@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
@@ -59,6 +58,57 @@ void main() {
     expect(
       container.read(resolvedElementProvider('name'))?['placeholder'],
       'Type here',
+    );
+  });
+
+  testWidgets('resetAllInputs restores baseline label and placeholder', (
+    WidgetTester tester,
+  ) async {
+    final map = <String, dynamic>{
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.Text',
+          'id': 'name',
+          'label': 'Name',
+          'placeholder': 'Enter name',
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(map: map, title: 'reset label placeholder'),
+    );
+    await tester.pumpAndSettle();
+
+    _cardState(tester).applyUpdates(
+      elements: const [
+        AdaptiveElementUpdate(
+          id: 'name',
+          label: 'Full name',
+          placeholder: 'Type here',
+        ),
+      ],
+    );
+    await tester.pump();
+    expect(find.text('Full name'), findsOneWidget);
+
+    _cardState(tester).documentContainer!
+        .read(adaptiveCardDocumentProvider.notifier)
+        .resetAllInputs();
+    await tester.pump();
+
+    expect(find.text('Name'), findsOneWidget);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byKey(generateWidgetKey(map['body'][0]))),
+    );
+    expect(
+      container.read(resolvedElementProvider('name'))?['label'],
+      'Name',
+    );
+    expect(
+      container.read(resolvedElementProvider('name'))?['placeholder'],
+      'Enter name',
     );
   });
 }

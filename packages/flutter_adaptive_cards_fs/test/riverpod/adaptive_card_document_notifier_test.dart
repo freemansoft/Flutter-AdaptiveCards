@@ -287,6 +287,28 @@ void main() {
       },
     );
 
+    test('resetInput clears overlays for one input only', () {
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+        ..setInputValue('myText', 'typed')
+        ..applyUpdates(
+          elements: const [
+            AdaptiveElementUpdate(
+              id: 'myText',
+              label: 'Only this field',
+              isRequired: true,
+            ),
+          ],
+        )
+        ..setInputValue('myChoice', 'dynamic')
+        ..resetInput('myText');
+
+      expect(notifier.state.overlaysById['myText'], isNull);
+      expect(notifier.state.overlaysById['myChoice']?.inputValue, 'dynamic');
+
+      final resolvedText = container.read(resolvedElementProvider('myText'));
+      expect(resolvedText?['value'], 'baseline');
+    });
+
     group('validation and action overlays', () {
       late ProviderContainer actionContainer;
 
@@ -457,6 +479,64 @@ void main() {
           notifier.state.overlaysById['myText']?.errorMessage,
           isNull,
         );
+      });
+
+      test(
+        'resetAllInputs clears label placeholder and isRequired overlays',
+        () {
+          final notifier =
+              actionContainer.read(
+                  adaptiveCardDocumentProvider.notifier,
+                )
+                ..applyUpdates(
+                  elements: const [
+                    AdaptiveElementUpdate(
+                      id: 'myText',
+                      label: 'Dynamic label',
+                      placeholder: 'Dynamic placeholder',
+                      isRequired: true,
+                    ),
+                  ],
+                )
+                ..resetAllInputs();
+
+          expect(notifier.state.overlaysById['myText']?.label, isNull);
+          expect(notifier.state.overlaysById['myText']?.placeholder, isNull);
+          expect(notifier.state.overlaysById['myText']?.isRequired, isNull);
+
+          final resolved = actionContainer.read(
+            resolvedElementProvider('myText'),
+          );
+          expect(resolved?['label'], isNull);
+          expect(resolved?['placeholder'], isNull);
+          expect(resolved?.containsKey('isRequired'), isFalse);
+        },
+      );
+
+      test('resetInput preserves isVisible and typeahead session', () {
+        final dataQueryContainer = _createContainer(_dataQueryChoiceBaseline());
+        addTearDown(dataQueryContainer.dispose);
+
+        final notifier =
+            dataQueryContainer.read(
+                adaptiveCardDocumentProvider.notifier,
+              )
+              ..setVisibility('queryChoice', visible: false)
+              ..setDataQuerySession(
+                'queryChoice',
+                count: 3,
+                skip: 7,
+                searchText: 'q',
+              )
+              ..setInputValue('queryChoice', 'dyn')
+              ..resetInput('queryChoice');
+
+        final overlay = notifier.state.overlaysById['queryChoice'];
+        expect(overlay?.inputValue, isNull);
+        expect(overlay?.isVisible, isFalse);
+        expect(overlay?.queryCount, 3);
+        expect(overlay?.querySkip, 7);
+        expect(overlay?.querySearchText, 'q');
       });
     });
 

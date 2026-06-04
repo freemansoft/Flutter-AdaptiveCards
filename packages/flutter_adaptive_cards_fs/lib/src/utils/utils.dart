@@ -252,9 +252,9 @@ Widget loadLabel({
 Widget loadErrorMessage({
   required BuildContext context,
   String? errorMessage,
-  bool stateHasError = false,
+  bool showError = false,
 }) {
-  if (errorMessage == null || !stateHasError) {
+  if (errorMessage == null || !showError) {
     return const SizedBox();
   }
 

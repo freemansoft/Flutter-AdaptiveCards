@@ -84,7 +84,7 @@ Implementation: [`adaptive_card_document.dart`](../packages/flutter_adaptive_car
 
 ### Initialization (first paint and initData)
 
-Widgets seed local state from the **original** `adaptiveMap` at construction (e.g. `AdaptiveInputMixin.initState()` reads `adaptiveMap['value']`). Host-provided [`initData`](../../packages/flutter_adaptive_cards_fs/README.md#loading-data-into-fields-outside-of-the-adaptivecard-json-with-initdata--initinput) is applied via `seedInputValues` on the document notifier (post-frame), not by walking the element tree.
+Widgets read overlay-backed fields from **`resolvedElementProvider(id)`** via `watchResolvedInput()` in `build()` (inputs are `ConsumerStatefulWidget`s). Controllers and selection state remain local edit buffers. Host-provided [`initData`](../../packages/flutter_adaptive_cards_fs/README.md#loading-data-into-fields-outside-of-the-adaptivecard-json-with-initdata--initinput) is applied via `seedInputValues` on the document notifier (post-frame), not by walking the element tree.
 
 #### Why `initInput` does not call `setState` on the card
 
@@ -93,8 +93,8 @@ Previously, `RawAdaptiveCardState.initInput` walked the element tree and each in
 The overlay model inverts that flow:
 
 1. **`initInput` / `seedInputValues` only write overlays** — `RawAdaptiveCardState.initInput` delegates to `AdaptiveCardDocumentNotifier.seedInputValues`; per-input `initInput` overrides call `setDocumentInputValue`. Neither path calls `setState` on the card or input directly.
-2. **Elements subscribe in `didChangeDependencies`** — `AdaptiveInputMixin`, `AdaptiveChoiceSet`, `AdaptiveVisibilityMixin`, and `AdaptiveTextBlock` register a `container.listen` on `resolvedElementProvider(id)` (actions use `resolvedActionProvider`).
-3. **The listener calls `setState` on the input widget** — when the overlay changes, the listener runs `setState(() { … onDocumentValueChanged(…) })`, which syncs controllers and other local UI state.
+2. **Inputs watch resolved state in `build()`** — `AdaptiveInputMixin` uses `ref.watch(resolvedElementProvider(id))` for label, placeholder, `isRequired`, validation, and value display; `ref.listen` syncs controllers via `onDocumentValueChanged`. `AdaptiveVisibilityMixin`, `AdaptiveChoiceSet` (choices), and `AdaptiveTextBlock` still use `container.listen` in `didChangeDependencies` where not yet migrated.
+3. **Overlay changes trigger rebuilds** — `ref.watch` / listeners update controllers and call `setState` where needed without walking the element tree.
 
 So rebuilds still happen via `setState`; the call site moved from `initInput` to the resolved-element listener. That keeps one reactive path for `initData`, user typing, `ResetInputs`, and `ToggleVisibility` without tree walks.
 
@@ -103,35 +103,67 @@ flowchart LR
   initData[initData / initInput] --> seed[seedInputValues]
   seed --> overlay[inputValue overlay]
   overlay --> resolved[resolvedElementProvider id]
-  resolved --> listener[AdaptiveInputMixin listener]
-  listener --> setState["setState + onDocumentValueChanged"]
+  resolved --> listener["ref.watch / ref.listen"]
+  listener --> setState["onDocumentValueChanged + rebuild"]
 ```
 
-**Timing:** `_AdaptiveCardDocumentLifecycle` seeds `initData` in a post-frame callback after inputs have mounted and registered their listeners.
+**Timing:** `_AdaptiveCardDocumentLifecycle` seeds `initData` in a post-frame callback after inputs have mounted.
 
-**When the UI may not update:** the listener skips rebuild if the resolved value equals the current `value`; `initInput` is a no-op if `documentContainer` is not registered yet; or the id is not in `nodesById`.
+**When the UI may not update:** `initInput` is a no-op if `documentContainer` is not registered yet; or the id is not in `nodesById`.
 
 ### Runtime writes (user input, actions)
 
 Changes go **only** into overlays via the document notifier:
 
-| Action                            | Notifier API                                                                                         | Overlay field                                                                                                                               |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| User edits an input               | `setInputValue(id, value)`                                                                           | `inputValue`                                                                                                                                |
-| Host initData / late binding      | `seedInputValues(map)` → `applyUpdates` (value only)                                                 | `inputValue` per id                                                                                                                         |
-| Bulk host / handler patches       | `applyUpdates` / `applyUpdatesFromMap`                                                               | multiple fields per id                                                                                                                      |
-| Dynamic ChoiceSet options         | `setChoices(id, choices)` / `appendChoices(id, choices)`                                             | `choices`                                                                                                                                   |
-| Typeahead pagination (optional)   | `setDataQuerySession(id, count:, skip:, searchText:)`                                                | `queryCount`, `querySkip`, `querySearchText`                                                                                                |
-| ToggleVisibility / set visibility | `setVisibility(id, visible: …)` / `toggleVisibility(id)`                                             | `isVisible`                                                                                                                                 |
-| Host validation after submit      | `setInputError(id, errorMessage:, isInvalid:)` / `clearInputError(id)`                               | `errorMessage`, `isInvalid`                                                                                                                 |
-| ResetInputs                       | `resetAllInputs()`                                                                                   | clears `inputValue`, `choices`, and validation on **`Input.*`** ids only; preserves `isVisible`, TextBlock `text`, and `actionOverlaysById` |
-| Submit / Execute                  | `collectInputValues()`                                                                               | reads overlay ?? baseline `"value"` (no error fields in payload)                                                                            |
-| Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                            | delegates to `setChoices`                                                                                                                   |
-| Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                          | `ActionOverlay.isEnabled`                                                                                                                   |
-| Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                | `text`                                                                                                                                      |
-| Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `applyUpdates` | delegates to document notifier                                                                                                              |
+| Action                            | Notifier API                                                                                         | Overlay field                                                                                                                |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| User edits an input               | `setInputValue(id, value)`                                                                           | `inputValue`                                                                                                                 |
+| Host initData / late binding      | `seedInputValues(map)` → `applyUpdates` (value only)                                                 | `inputValue` per id                                                                                                          |
+| Bulk host / handler patches       | `applyUpdates` / `applyUpdatesFromMap`                                                               | multiple fields per id                                                                                                       |
+| Dynamic ChoiceSet options         | `setChoices(id, choices)` / `appendChoices(id, choices)`                                             | `choices`                                                                                                                    |
+| Typeahead pagination (optional)   | `setDataQuerySession(id, count:, skip:, searchText:)`                                                | `queryCount`, `querySkip`, `querySearchText`                                                                                 |
+| ToggleVisibility / set visibility | `setVisibility(id, visible: …)` / `toggleVisibility(id)`                                             | `isVisible`                                                                                                                  |
+| Host validation after submit      | `setInputError(id, errorMessage:, isInvalid:)` / `clearInputError(id)`                               | `errorMessage`, `isInvalid`                                                                                                  |
+| ResetInputs / per-id reset        | `resetAllInputs()` / `resetInput(id)` — see [Reset semantics](#reset-semantics)                      | factory reset on **`Input.*`**: clears value, choices, validation, **`isRequired`**, **`label`**, **`placeholder`** overlays |
+| Submit / Execute                  | `collectInputValues()` + required scan via `validateRequiredInputs()`                                | reads overlay ?? baseline `"value"`; marks failing required inputs with `setInputError(isInvalid: true)`                     |
+| Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                            | delegates to `setChoices`                                                                                                    |
+| Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                          | `ActionOverlay.isEnabled`                                                                                                    |
+| Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                | `text`                                                                                                                       |
+| Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `applyUpdates` | delegates to document notifier                                                                                               |
 
 The host’s map instance is never mutated in place.
+
+### Reset semantics
+
+`resetAllInputs()` and `resetInput(id)` apply the **same factory-reset policy**. Each affected `Input.*` id clears runtime overlays so **resolved fields match baseline JSON** for:
+
+| Cleared to baseline    | Overlay fields                                   |
+| ---------------------- | ------------------------------------------------ |
+| Value & options        | `inputValue` → `value`, `choices` → `choices`    |
+| Validation             | `errorMessage`, `isInvalid`                      |
+| Dynamic input metadata | **`isRequired`**, **`label`**, **`placeholder`** |
+
+**Preserved on that input id** (not part of “form values” reset):
+
+| Preserved         | Overlay fields                               |
+| ----------------- | -------------------------------------------- |
+| Visibility        | `isVisible`                                  |
+| Typeahead session | `queryCount`, `querySkip`, `querySearchText` |
+
+**Never modified** by input reset: TextBlock `text`, Image `url`, non-input visibility, **`actionOverlaysById`**, and the host baseline map.
+
+#### Call paths
+
+| API                                             | Scope                           | Typical caller                                               |
+| ----------------------------------------------- | ------------------------------- | ------------------------------------------------------------ |
+| `AdaptiveCardDocumentNotifier.resetAllInputs()` | All `Input.*` ids, one revision | `Action.ResetInputs` (`DefaultResetInputsAction`), host code |
+| `AdaptiveCardDocumentNotifier.resetInput(id)`   | One input id                    | Host code; invoked from mixin `resetInput()`                 |
+
+`AdaptiveInputMixin.resetInput()` should delegate to the notifier so overlay clear and UI stay in sync via `resolvedElementProvider(id)`. Subclass overrides sync controllers only — they must not be the sole reset path.
+
+After reset, hosts can re-seed runtime state with `initInput`, `applyUpdates`, or `applyUpdatesFromMap`.
+
+Spec: [`docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md`](superpowers/specs/2026-06-03-overlay-reset-semantics-design.md).
 
 ### Resolved view (what widgets and actions read)
 
@@ -161,11 +193,11 @@ Effective value rules:
 
 ### Keeping UI in sync
 
-`AdaptiveInputMixin`, `AdaptiveVisibilityMixin`, `AdaptiveChoiceSet`, and **`AdaptiveTextBlock`** subscribe to `resolvedElementProvider(id)` in `didChangeDependencies`. When an overlay changes (typing, reset, ToggleVisibility, dynamic choices, validation, text replacement), the listener updates local state/controllers so the widget rebuilds without walking the element tree.
+**Inputs** (`ConsumerStatefulWidget` + `AdaptiveInputMixin`): `watchResolvedInput()` at the start of `build()` for label, placeholder, `isRequired`, validation (`isInvalid` / `errorMessage`), and resolved value; `listenForResolvedValueChanges()` / `ref.listen` syncs controllers via `onDocumentValueChanged`. Form validators and `checkRequired` write validation via **`setLocalValidationError()`** / **`clearLocalValidationError()`** (notifier overlays). Error UI uses **`loadErrorMessage(..., showError: input.isInvalid)`** only.
 
-`AdaptiveActionStateMixin` (used by `IconButtonAction`) and `Action.ShowCard` subscribe to `resolvedActionProvider(id)` for `isEnabled`.
+`AdaptiveVisibilityMixin`, **`AdaptiveChoiceSet`** (dynamic `choices`), and **`AdaptiveTextBlock`** use `container.listen` on `resolvedElementProvider(id)` in `didChangeDependencies`. `AdaptiveActionStateMixin` and `Action.ShowCard` use `resolvedActionProvider(id)` for action overlays.
 
-Input widgets call `setDocumentInputValue(...)` on user edits (which clears validation overlays); reset clears input overlays so resolved values fall back to baseline again.
+Input widgets call `setDocumentInputValue(...)` on user edits (which clears validation overlays). **`resetAllInputs()` / `resetInput(id)`** clear input overlays (including **`label`**, **`placeholder`**, **`isRequired`**) so resolved values fall back to baseline; see [Reset semantics](#reset-semantics).
 
 ```mermaid
 flowchart TB

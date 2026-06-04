@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Default **Submit** / **Execute** required-field checks use resolved **`isRequired`** (overlay ?? baseline).
 - Tests: `test/riverpod/apply_updates_test.dart`, `test/inputs/cascade_choice_set_test.dart`, `test/inputs/is_required_overlay_test.dart`, `test/elements/image_url_overlay_test.dart`, `test/actions/submit_required_overlay_test.dart`.
 - Design spec: [`docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md`](../../docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md).
+- **`resetInput(id)`** on the document notifier and **`RawAdaptiveCardState`**; **`AdaptiveInputMixin.resetInput()`** delegates to the notifier.
+- Factory reset clears input overlays including **`label`**, **`placeholder`**, and **`isRequired`** (resolved → baseline JSON). See [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#reset-semantics).
+- Design spec: [`docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md`](../../docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md).
 
 ### Changed 0.8.0
 
@@ -36,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`Input.ChoiceSet`** reads effective choices from `resolvedElementProvider` instead of local-only state.
 - **`RawAdaptiveCardState.loadInput`** and **`initInput`** delegate to the document notifier (no element-tree walk).
 - **`initData`** seeds input overlays via `seedInputValues` post-frame.
-- **`resetAllInputs`** clears dynamic `choices` overlays in addition to input values.
+- **`resetAllInputs`** / **`resetInput(id)`** factory-reset input overlays to baseline (value, choices, validation, **`isRequired`**, **`label`**, **`placeholder`**); preserve input `isVisible` and typeahead session fields only.
 - **`ElementOverlay.choices`** — runtime overlay for `Input.ChoiceSet` dynamic option lists; merged via `resolvedElementProvider`.
 - Document notifier APIs: `setChoices`, `appendChoices`, `seedInputValues`, `setDataQuerySession`.
 - **`DataQuery.count` / `DataQuery.skip`** — spec fields for typeahead pagination.

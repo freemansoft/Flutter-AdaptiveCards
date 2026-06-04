@@ -207,6 +207,16 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     container.read(adaptiveCardDocumentProvider.notifier).clearInputError(id);
   }
 
+  /// Factory-resets one input id (same rules as Action.ResetInputs per field).
+  ///
+  /// Clears overlay value, choices, validation, `isRequired`, `label`, and
+  /// `placeholder` for [id]. See `docs/reactive-riverpod.md#reset-semantics`.
+  void resetInput(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).resetInput(id);
+  }
+
   /// Replaces effective `"text"` for element [id] (e.g. `TextBlock`).
   void setText(String id, String text) {
     final container = documentContainer;

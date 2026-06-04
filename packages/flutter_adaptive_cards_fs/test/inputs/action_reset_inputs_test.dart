@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../utils/test_utils.dart';
@@ -141,4 +143,33 @@ void main() {
       expect(resetChoiceOut['myChoiceSet'], equals(''));
     },
   );
+
+  testWidgets('ResetInputs clears validation overlays on inputs', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      getTestWidgetFromPath(path: 'action_reset_inputs.json'),
+    );
+    await tester.pumpAndSettle();
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byKey(generateWidgetKeyFromId('myText1'))),
+    );
+    container.read(adaptiveCardDocumentProvider.notifier).setInputError(
+      'myText1',
+      errorMessage: 'Invalid value',
+      isInvalid: true,
+    );
+    await tester.pump();
+    expect(find.text('Invalid value'), findsOneWidget);
+
+    await tester.tap(find.text('Reset Inputs'));
+    await tester.pump();
+
+    expect(find.text('Invalid value'), findsNothing);
+    expect(
+      container.read(resolvedElementProvider('myText1'))?['isInvalid'],
+      isNull,
+    );
+  });
 }

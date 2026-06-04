@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
-import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -48,9 +46,9 @@ void main() {
 
     _cardState(tester).applyUpdates(
       elements: [
-        AdaptiveElementUpdate(
+        const AdaptiveElementUpdate(
           id: 'state',
-          choices: const [
+          choices: [
             Choice(title: 'California', value: 'CA'),
             Choice(title: 'Texas', value: 'TX'),
           ],

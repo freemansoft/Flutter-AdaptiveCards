@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/image.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,3 +1,4 @@
+import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
@@ -282,4 +283,127 @@ void main() {
 
     expect(find.text('Invalid email'), findsOneWidget);
   });
+
+  testWidgets('Form required failure sets overlay isInvalid', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.Text',
+          'id': 'requiredText',
+          'label': 'Required',
+          'isRequired': true,
+          'errorMessage': 'This field is required',
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(map: map, title: 'form overlay validation'),
+    );
+    await tester.pumpAndSettle();
+
+    final textMap = map['body'][0] as Map<String, dynamic>;
+    final container = _documentContainer(
+      tester,
+      find.byKey(generateWidgetKey(textMap)),
+    );
+
+    expect(
+      container.read(resolvedElementProvider('requiredText'))?['isInvalid'],
+      isNot(true),
+    );
+
+    final cardState = tester.state<AdaptiveCardElementState>(
+      find.byType(AdaptiveCardElement),
+    );
+    expect(cardState.formKey.currentState!.validate(), isFalse);
+    await tester.pump();
+
+    expect(
+      container.read(resolvedElementProvider('requiredText'))?['isInvalid'],
+      isTrue,
+    );
+    expect(find.text('This field is required'), findsOneWidget);
+
+    await tester.enterText(find.byKey(generateWidgetKey(textMap)), 'ok');
+    await tester.pump();
+
+    expect(
+      container.read(resolvedElementProvider('requiredText'))?['isInvalid'],
+      isNull,
+    );
+  });
+
+  testWidgets(
+    'isInvalid overlay shows baseline errorMessage then overlay replaces it',
+    (WidgetTester tester) async {
+      const baselineMessage = 'Baseline message';
+      const overlayMessage = 'Overlay message';
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'version': '1.5',
+        'body': [
+          {
+            'type': 'Input.Text',
+            'id': 'errText',
+            'label': 'Name',
+            'errorMessage': baselineMessage,
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'baseline then overlay errorMessage',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final textMap = map['body'][0] as Map<String, dynamic>;
+      final container = _documentContainer(
+        tester,
+        find.byKey(generateWidgetKey(textMap)),
+      );
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier);
+
+      expect(find.text(baselineMessage), findsNothing);
+      expect(find.text(overlayMessage), findsNothing);
+
+      notifier.setInputError('errText', isInvalid: true);
+      await tester.pump();
+
+      expect(find.text(baselineMessage), findsOneWidget);
+      expect(find.text(overlayMessage), findsNothing);
+      expect(
+        container.read(resolvedElementProvider('errText'))?['isInvalid'],
+        isTrue,
+      );
+      expect(
+        container.read(resolvedElementProvider('errText'))?['errorMessage'],
+        baselineMessage,
+      );
+
+      notifier.setInputError(
+        'errText',
+        errorMessage: overlayMessage,
+        isInvalid: true,
+      );
+      await tester.pump();
+
+      expect(find.text(baselineMessage), findsNothing);
+      expect(find.text(overlayMessage), findsOneWidget);
+      expect(
+        container.read(resolvedElementProvider('errText'))?['errorMessage'],
+        overlayMessage,
+      );
+      expect(
+        container.read(resolvedElementProvider('errText'))?['isInvalid'],
+        isTrue,
+      );
+    },
+  );
 }

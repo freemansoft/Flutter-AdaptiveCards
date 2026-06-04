@@ -3,12 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Number.html
 ///
 // ignore_for_file: unnecessary_const
-class AdaptiveNumberInput extends StatefulWidget
+class AdaptiveNumberInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveNumberInput({
     required this.adaptiveMap,
@@ -26,7 +27,7 @@ class AdaptiveNumberInput extends StatefulWidget
   AdaptiveNumberInputState createState() => AdaptiveNumberInputState();
 }
 
-class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
+class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
     with
         AdaptiveTextualInputMixin,
         AdaptiveInputMixin,
@@ -36,15 +37,13 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   TextEditingController controller = TextEditingController();
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
+  bool _initialValueSynced = false;
   late int min;
   late int max;
 
   @override
   void initState() {
     super.initState();
-
-    controller.text = value;
-    stateHasError = false;
     min = adaptiveMap['min'] as int? ?? 0;
     max = adaptiveMap['max'] as int? ?? 100;
   }
@@ -52,6 +51,12 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    if (!_initialValueSynced) {
+      _initialValueSynced = true;
+      onDocumentValueChanged(readResolvedInput().valueRaw);
+    }
+
     if (!_controllerListenerInstalled) {
       _controllerListenerInstalled = true;
       controller.addListener(() {
@@ -70,20 +75,13 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     _isUpdatingFromDocument = true;
     controller.text = next;
     _isUpdatingFromDocument = false;
-    stateHasError = false;
-  }
-
-  @override
-  void resetInput() {
-    super.resetInput();
-    setState(() {
-      controller.text = value;
-      stateHasError = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    listenForResolvedValueChanges();
+    final input = watchResolvedInput();
+
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
@@ -93,8 +91,8 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
           children: [
             loadLabel(
               context: context,
-              label: inputLabel,
-              isRequired: isRequired,
+              label: input.label,
+              isRequired: input.isRequired,
             ),
             SizedBox(
               height: 40,
@@ -129,30 +127,26 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
                     context: context,
                     style: null,
                   ),
-                  hintText: placeholder,
+                  hintText: input.placeholder,
                   // required or box will exist even though field is hidden or half height
                   hintStyle: const TextStyle(),
                   errorStyle: const TextStyle(height: 0),
                 ),
                 validator: (value) {
-                  if (!isRequired) return null;
+                  if (!input.isRequired) return null;
                   if (value == null || value.isEmpty) {
-                    setState(() {
-                      stateHasError = true;
-                    });
+                    setLocalValidationError();
                     return '';
                   }
-                  setState(() {
-                    stateHasError = false;
-                  });
+                  clearLocalValidationError();
                   return null;
                 },
               ),
             ),
             loadErrorMessage(
               context: context,
-              errorMessage: errorMessage,
-              stateHasError: showValidationError,
+              errorMessage: input.errorMessage,
+              showError: input.isInvalid,
             ),
           ],
         ),

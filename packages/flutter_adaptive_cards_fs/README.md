@@ -273,7 +273,7 @@ TODO for the example programs moved to [example README](example/README.md)
   - Font line spacing is subtly different between platforms. You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
   - Using default flutter fonts instead of roboto <https://github.com/flutter/flutter/issues/56383>
   - Golden toolkit fonts loaded but it will show black bars for text inside of text fields instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
-- resetInputs() needs to be overridden in every input field that needs something other than '' when no value was set in the json.
+- Input reset uses document notifier **`resetAllInputs()`** / **`resetInput(id)`** (factory reset to baseline JSON). Subclass **`resetInput()`** overrides sync controllers only — see [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#reset-semantics).
 - mandatory inputs checks may not include all inputs because possible overrides may not be implement
 - Visitors are at the raw adaptive card level meaning all adaptive cards and their children are in scope. All forms are impacted at that level.
 - Possibly add the deprecated `Action.HTTP`
