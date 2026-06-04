@@ -91,6 +91,12 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
     if (overlay?.url != null) {
       merged['url'] = overlay!.url;
     }
+    if (overlay?.label != null) {
+      merged['label'] = overlay!.label;
+    }
+    if (overlay?.placeholder != null) {
+      merged['placeholder'] = overlay!.placeholder;
+    }
     if (overlay?.queryCount != null || overlay?.querySkip != null) {
       final choicesData = Map<String, dynamic>.from(
         (merged['choices.data'] as Map<dynamic, dynamic>?)?.map(
@@ -124,6 +130,12 @@ resolvedActionProvider = Provider.family<Map<String, dynamic>?, String>(
     final merged = Map<String, dynamic>.from(baselineNode);
     if (overlay?.isEnabled != null) {
       merged['isEnabled'] = overlay!.isEnabled;
+    }
+    if (overlay?.title != null) {
+      merged['title'] = overlay!.title;
+    }
+    if (overlay?.tooltip != null) {
+      merged['tooltip'] = overlay!.tooltip;
     }
     return merged;
   },

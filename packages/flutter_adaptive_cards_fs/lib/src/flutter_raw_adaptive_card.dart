@@ -14,7 +14,6 @@ import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
-import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document_notifier.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -173,7 +172,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void applyUpdatesFromMap(Map<String, Object?> byId) {
     final container = documentContainer;
     if (container == null) return;
-    final parsed = AdaptiveCardDocumentNotifier.updatesFromPatchMap(byId);
+    final parsed = container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .updatesFromPatchMap(byId);
     container
         .read(adaptiveCardDocumentProvider.notifier)
         .applyUpdates(

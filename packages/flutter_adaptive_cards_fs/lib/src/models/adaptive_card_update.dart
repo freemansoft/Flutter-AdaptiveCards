@@ -18,12 +18,16 @@ class AdaptiveElementUpdate {
     this.queryCount,
     this.querySkip,
     this.querySearchText,
+    this.label,
+    this.placeholder,
     this.clearValue = false,
     this.clearError = false,
     this.clearChoices = false,
     this.clearText = false,
     this.clearIsRequired = false,
     this.clearUrl = false,
+    this.clearLabel = false,
+    this.clearPlaceholder = false,
   });
 
   /// Target element or input id from card JSON.
@@ -62,6 +66,12 @@ class AdaptiveElementUpdate {
   /// Typeahead search text (overlay only).
   final String? querySearchText;
 
+  /// Overrides baseline `"label"` on inputs.
+  final String? label;
+
+  /// Overrides baseline `"placeholder"` on inputs.
+  final String? placeholder;
+
   /// Clears the `inputValue` overlay.
   final bool clearValue;
 
@@ -79,6 +89,12 @@ class AdaptiveElementUpdate {
 
   /// Clears the `url` overlay.
   final bool clearUrl;
+
+  /// Clears the `label` overlay.
+  final bool clearLabel;
+
+  /// Clears the `placeholder` overlay.
+  final bool clearPlaceholder;
 }
 
 /// Action overlay patch for `Action.*` nodes.
@@ -88,6 +104,10 @@ class AdaptiveActionUpdate {
   const AdaptiveActionUpdate({
     required this.id,
     this.isEnabled,
+    this.title,
+    this.tooltip,
+    this.clearTitle = false,
+    this.clearTooltip = false,
   });
 
   /// Target action id from card JSON.
@@ -95,4 +115,16 @@ class AdaptiveActionUpdate {
 
   /// Overrides baseline `"isEnabled"`.
   final bool? isEnabled;
+
+  /// Overrides baseline `"title"`.
+  final String? title;
+
+  /// Overrides baseline `"tooltip"`.
+  final String? tooltip;
+
+  /// Clears the `title` overlay.
+  final bool clearTitle;
+
+  /// Clears the `tooltip` overlay.
+  final bool clearTooltip;
 }

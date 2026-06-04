@@ -33,7 +33,6 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
         AdaptiveInputMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
-  String? label;
   DateTime? selectedDateTime;
   DateTime? min;
   DateTime? max;
@@ -43,7 +42,6 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
   void initState() {
     super.initState();
 
-    label = adaptiveMap['label'] as String?;
     try {
       // set the value from the card as the current selected
       selectedDateTime = inputFormat.parse(value);
@@ -101,7 +99,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
           children: [
             loadLabel(
               context: context,
-              label: label,
+              label: inputLabel,
               isRequired: isRequired,
             ),
             SizedBox(

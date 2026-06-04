@@ -58,7 +58,6 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   // Contains the values (the things to send as request)
   final Set<String> _selectedChoices = {};
 
-  String? label;
   late bool isFiltered;
   late bool isCompact;
   late bool isMultiSelect;
@@ -70,8 +69,6 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   @override
   void initState() {
     super.initState();
-
-    label = adaptiveMap['label'] as String?;
 
     if (adaptiveMap.containsKey('choices.data')) {
       dataQuery = DataQuery.fromJson(
@@ -204,7 +201,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           children: [
             loadLabel(
               context: context,
-              label: label,
+              label: inputLabel,
               isRequired: isRequired,
             ),
             widget,

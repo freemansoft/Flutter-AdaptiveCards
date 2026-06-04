@@ -36,15 +36,12 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   TextEditingController controller = TextEditingController();
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
-  String? label;
   late int min;
   late int max;
 
   @override
   void initState() {
     super.initState();
-
-    label = adaptiveMap['label']?.toString();
 
     controller.text = value;
     stateHasError = false;
@@ -96,7 +93,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
           children: [
             loadLabel(
               context: context,
-              label: label,
+              label: inputLabel,
               isRequired: isRequired,
             ),
             SizedBox(

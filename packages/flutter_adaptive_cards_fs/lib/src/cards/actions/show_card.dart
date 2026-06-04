@@ -31,6 +31,7 @@ class AdaptiveActionShowCard extends ConsumerStatefulWidget
 class AdaptiveActionShowCardState extends ConsumerState<AdaptiveActionShowCard>
     with
         AdaptiveActionMixin,
+        AdaptiveActionStateMixin,
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
@@ -59,11 +60,8 @@ class AdaptiveActionShowCardState extends ConsumerState<AdaptiveActionShowCard>
   Widget build(BuildContext context) {
     final resolver = styleResolver;
     final expandedId = ref.watch(expandedShowCardIdProvider);
-    final resolved = ref.watch(resolvedActionProvider(id));
-    final enabled = resolved?['isEnabled'] != false;
-
     final theButton = ElevatedButton(
-      onPressed: enabled
+      onPressed: actionEnabled
           ? () {
               final targetId = _targetCardId;
               if (targetId == null) return;

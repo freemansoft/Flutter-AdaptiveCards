@@ -35,7 +35,6 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
 
-  String? label;
   late bool isMultiline;
   late int maxLength;
   TextInputType? inputStyle;
@@ -43,7 +42,6 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    label = adaptiveMap['label']?.toString();
     isMultiline = adaptiveMap['isMultiline'] as bool? ?? false;
     maxLength = adaptiveMap['maxLength'] as int? ?? 20;
     inputStyle = resolveTextInputType(style);
@@ -88,7 +86,11 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            loadLabel(context: context, label: label, isRequired: isRequired),
+            loadLabel(
+              context: context,
+              label: inputLabel,
+              isRequired: isRequired,
+            ),
             SizedBox(
               height: 40,
               child: TextFormField(

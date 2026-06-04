@@ -161,10 +161,10 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
 
     for (final update in actions) {
       if (!_isActionId(update.id)) continue;
-      actionOverlays[update.id] =
-          (actionOverlays[update.id] ?? const ActionOverlay()).copyWith(
-            isEnabled: update.isEnabled,
-          );
+      actionOverlays[update.id] = _mergeActionUpdate(
+        actionOverlays[update.id],
+        update,
+      );
       changed = true;
     }
 
@@ -214,29 +214,50 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   }
 
   /// Parses initData / server patch maps into element and action updates.
-  static ({
+  ({
     List<AdaptiveElementUpdate> elements,
     List<AdaptiveActionUpdate> actions,
   })
   updatesFromPatchMap(Map<String, Object?> byId) {
+    return AdaptiveCardDocumentNotifier.updatesFromPatchMapWithNodes(
+      byId,
+      nodesById: state.nodesById,
+    );
+  }
+
+  /// Parses patch maps using [nodesById] to route `Action.*` ids correctly.
+  static ({
+    List<AdaptiveElementUpdate> elements,
+    List<AdaptiveActionUpdate> actions,
+  })
+  updatesFromPatchMapWithNodes(
+    Map<String, Object?> byId, {
+    required Map<String, Map<String, dynamic>> nodesById,
+  }) {
     final elements = <AdaptiveElementUpdate>[];
     final actions = <AdaptiveActionUpdate>[];
 
     for (final entry in byId.entries) {
       final id = entry.key;
       final raw = entry.value;
+      final isAction = _isActionIdStatic(id, nodesById);
 
       if (raw is! Map) {
+        if (isAction) continue;
         elements.add(AdaptiveElementUpdate(id: id, value: raw));
         continue;
       }
 
       final patch = Map<String, dynamic>.from(raw);
-      if (patch.containsKey('isEnabled')) {
+      if (isAction) {
         actions.add(
           AdaptiveActionUpdate(
             id: id,
             isEnabled: patch['isEnabled'] as bool?,
+            title: patch['title'] as String?,
+            tooltip: patch['tooltip'] as String?,
+            clearTitle: patch['clearTitle'] == true,
+            clearTooltip: patch['clearTooltip'] == true,
           ),
         );
         continue;
@@ -254,6 +275,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
           isRequired: patch['isRequired'] as bool?,
           url: patch['url'] as String?,
           text: patch['text'] as String?,
+          label: patch['label'] as String?,
+          placeholder: patch['placeholder'] as String?,
           choices: _choicesFromPatch(patch['choices']),
           queryCount: patch['queryCount'] as int?,
           querySkip: patch['querySkip'] as int?,
@@ -266,11 +289,21 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
           clearText: patch['clearText'] == true,
           clearIsRequired: patch['clearIsRequired'] == true,
           clearUrl: patch['clearUrl'] == true,
+          clearLabel: patch['clearLabel'] == true,
+          clearPlaceholder: patch['clearPlaceholder'] == true,
         ),
       );
     }
 
     return (elements: elements, actions: actions);
+  }
+
+  static bool _isActionIdStatic(
+    String id,
+    Map<String, Map<String, dynamic>> nodesById,
+  ) {
+    final type = nodesById[id]?['type'] as String?;
+    return type != null && type.startsWith('Action.');
   }
 
   ElementOverlay _mergeElementUpdate(
@@ -297,6 +330,12 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     if (update.clearUrl) {
       overlay = overlay.copyWith(clearUrl: true);
     }
+    if (update.clearLabel) {
+      overlay = overlay.copyWith(clearLabel: true);
+    }
+    if (update.clearPlaceholder) {
+      overlay = overlay.copyWith(clearPlaceholder: true);
+    }
 
     if (update.isVisible != null) {
       overlay = overlay.copyWith(isVisible: update.isVisible);
@@ -315,6 +354,12 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     }
     if (update.url != null) {
       overlay = overlay.copyWith(url: update.url);
+    }
+    if (update.label != null) {
+      overlay = overlay.copyWith(label: update.label);
+    }
+    if (update.placeholder != null) {
+      overlay = overlay.copyWith(placeholder: update.placeholder);
     }
     if (update.queryCount != null ||
         update.querySkip != null ||
@@ -339,6 +384,31 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
         clearIsInvalid: true,
         clearErrorMessage: true,
       );
+    }
+
+    return overlay;
+  }
+
+  ActionOverlay _mergeActionUpdate(
+    ActionOverlay? current,
+    AdaptiveActionUpdate update,
+  ) {
+    var overlay = current ?? const ActionOverlay();
+
+    if (update.clearTitle) {
+      overlay = overlay.copyWith(clearTitle: true);
+    }
+    if (update.clearTooltip) {
+      overlay = overlay.copyWith(clearTooltip: true);
+    }
+    if (update.isEnabled != null) {
+      overlay = overlay.copyWith(isEnabled: update.isEnabled);
+    }
+    if (update.title != null) {
+      overlay = overlay.copyWith(title: update.title);
+    }
+    if (update.tooltip != null) {
+      overlay = overlay.copyWith(tooltip: update.tooltip);
     }
 
     return overlay;
@@ -419,6 +489,9 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
         queryCount: current.queryCount,
         querySkip: current.querySkip,
         querySearchText: current.querySearchText,
+        label: current.label,
+        placeholder: current.placeholder,
+        isRequired: current.isRequired,
       );
     }
 

@@ -307,17 +307,24 @@ void main() {
               isInvalid: true,
             );
 
-        final resolved = actionContainer.read(resolvedElementProvider('myText'));
+        final resolved = actionContainer.read(
+          resolvedElementProvider('myText'),
+        );
         expect(resolved?['errorMessage'], 'Host error');
         expect(resolved?['isInvalid'], isTrue);
       });
 
       test('clearInputError restores baseline validation fields', () {
-        final notifier = actionContainer.read(
-          adaptiveCardDocumentProvider.notifier,
-        )
-          ..setInputError('myText', errorMessage: 'Host error', isInvalid: true)
-          ..clearInputError('myText');
+        final notifier =
+            actionContainer.read(
+                adaptiveCardDocumentProvider.notifier,
+              )
+              ..setInputError(
+                'myText',
+                errorMessage: 'Host error',
+                isInvalid: true,
+              )
+              ..clearInputError('myText');
 
         expect(
           notifier.state.overlaysById['myText']?.errorMessage,
@@ -325,17 +332,24 @@ void main() {
         );
         expect(notifier.state.overlaysById['myText']?.isInvalid, isNull);
 
-        final resolved = actionContainer.read(resolvedElementProvider('myText'));
+        final resolved = actionContainer.read(
+          resolvedElementProvider('myText'),
+        );
         expect(resolved?['errorMessage'], 'baseline error');
         expect(resolved?.containsKey('isInvalid'), isFalse);
       });
 
       test('resetAllInputs clears validation overlays on inputs', () {
-        final notifier = actionContainer.read(
-          adaptiveCardDocumentProvider.notifier,
-        )
-          ..setInputError('myText', errorMessage: 'Host error', isInvalid: true)
-          ..resetAllInputs();
+        final notifier =
+            actionContainer.read(
+                adaptiveCardDocumentProvider.notifier,
+              )
+              ..setInputError(
+                'myText',
+                errorMessage: 'Host error',
+                isInvalid: true,
+              )
+              ..resetAllInputs();
 
         expect(
           notifier.state.overlaysById['myText']?.errorMessage,
@@ -343,16 +357,23 @@ void main() {
         );
         expect(notifier.state.overlaysById['myText']?.isInvalid, isNull);
 
-        final resolved = actionContainer.read(resolvedElementProvider('myText'));
+        final resolved = actionContainer.read(
+          resolvedElementProvider('myText'),
+        );
         expect(resolved?['errorMessage'], 'baseline error');
       });
 
       test('setInputValue clears validation overlays', () {
-        final notifier = actionContainer.read(
-          adaptiveCardDocumentProvider.notifier,
-        )
-          ..setInputError('myText', errorMessage: 'Host error', isInvalid: true)
-          ..setInputValue('myText', 'edited');
+        final notifier =
+            actionContainer.read(
+                adaptiveCardDocumentProvider.notifier,
+              )
+              ..setInputError(
+                'myText',
+                errorMessage: 'Host error',
+                isInvalid: true,
+              )
+              ..setInputValue('myText', 'edited');
 
         expect(
           notifier.state.overlaysById['myText']?.errorMessage,
@@ -376,9 +397,9 @@ void main() {
         actionContainer
             .read(adaptiveCardDocumentProvider.notifier)
             .setActionsEnabled({
-          'submitEnabled': false,
-          'submitDisabled': true,
-        });
+              'submitEnabled': false,
+              'submitDisabled': true,
+            });
 
         expect(
           actionContainer.read(
@@ -416,12 +437,17 @@ void main() {
       });
 
       test('resetAllInputs preserves actionOverlaysById', () {
-        final notifier = actionContainer.read(
-          adaptiveCardDocumentProvider.notifier,
-        )
-          ..setActionEnabled('submitEnabled', enabled: false)
-          ..setInputError('myText', errorMessage: 'Host error', isInvalid: true)
-          ..resetAllInputs();
+        final notifier =
+            actionContainer.read(
+                adaptiveCardDocumentProvider.notifier,
+              )
+              ..setActionEnabled('submitEnabled', enabled: false)
+              ..setInputError(
+                'myText',
+                errorMessage: 'Host error',
+                isInvalid: true,
+              )
+              ..resetAllInputs();
 
         expect(
           notifier.state.actionOverlaysById['submitEnabled']?.isEnabled,
@@ -470,11 +496,12 @@ void main() {
       });
 
       test('clearText restores baseline text', () {
-        final notifier = textContainer.read(
-          adaptiveCardDocumentProvider.notifier,
-        )
-          ..setText('status', 'Updated status')
-          ..clearText('status');
+        final notifier =
+            textContainer.read(
+                adaptiveCardDocumentProvider.notifier,
+              )
+              ..setText('status', 'Updated status')
+              ..clearText('status');
 
         expect(notifier.state.overlaysById['status']?.text, isNull);
 
@@ -483,12 +510,13 @@ void main() {
       });
 
       test('resetAllInputs preserves TextBlock text overlay', () {
-        final notifier = textContainer.read(
-          adaptiveCardDocumentProvider.notifier,
-        )
-          ..setText('status', 'Updated status')
-          ..setInputValue('myText', 'typed')
-          ..resetAllInputs();
+        final notifier =
+            textContainer.read(
+                adaptiveCardDocumentProvider.notifier,
+              )
+              ..setText('status', 'Updated status')
+              ..setInputValue('myText', 'typed')
+              ..resetAllInputs();
 
         expect(notifier.state.overlaysById['status']?.text, 'Updated status');
         expect(notifier.state.overlaysById['myText']?.inputValue, isNull);
@@ -597,10 +625,14 @@ void main() {
       });
 
       test('updatesFromPatchMap parses scalar and patch entries', () {
-        final parsed = AdaptiveCardDocumentNotifier.updatesFromPatchMap({
-          'myText': 'scalar',
-          'visibleBlock': {'text': 'Hi', 'isVisible': false},
-        });
+        final parsed =
+            AdaptiveCardDocumentNotifier.updatesFromPatchMapWithNodes(
+              {
+                'myText': 'scalar',
+                'visibleBlock': {'text': 'Hi', 'isVisible': false},
+              },
+              nodesById: container.read(adaptiveCardDocumentProvider).nodesById,
+            );
 
         expect(parsed.elements, hasLength(2));
         expect(parsed.elements.first.id, 'myText');
@@ -625,20 +657,116 @@ void main() {
           ],
         });
 
-        final notifier = imageBaseline.read(adaptiveCardDocumentProvider.notifier)
-          ..setUrl('img', 'https://signed.example/image.png')
-          ..setIsRequired('reqField', required: true);
+        final notifier =
+            imageBaseline.read(adaptiveCardDocumentProvider.notifier)
+              ..setUrl('img', 'https://signed.example/image.png')
+              ..setIsRequired('reqField', required: true);
 
         expect(
           imageBaseline.read(resolvedElementProvider('img'))?['url'],
           'https://signed.example/image.png',
         );
         expect(
-          imageBaseline.read(resolvedElementProvider('reqField'))?['isRequired'],
+          imageBaseline.read(
+            resolvedElementProvider('reqField'),
+          )?['isRequired'],
           isTrue,
         );
 
         imageBaseline.dispose();
+      });
+
+      test('applyUpdates merges label, placeholder, title, and tooltip', () {
+        final actionCard = _createContainer({
+          'type': 'AdaptiveCard',
+          'body': [
+            {
+              'type': 'Input.Text',
+              'id': 'name',
+              'label': 'Name',
+              'placeholder': 'Enter name',
+            },
+          ],
+          'actions': [
+            {
+              'type': 'Action.Submit',
+              'id': 'submit',
+              'title': 'Send',
+              'tooltip': 'Submit form',
+            },
+          ],
+        });
+
+        actionCard
+            .read(adaptiveCardDocumentProvider.notifier)
+            .applyUpdates(
+              elements: const [
+                AdaptiveElementUpdate(
+                  id: 'name',
+                  label: 'Full name',
+                  placeholder: 'Type here',
+                ),
+              ],
+              actions: const [
+                AdaptiveActionUpdate(
+                  id: 'submit',
+                  title: 'Submit now',
+                  tooltip: 'Send the form',
+                ),
+              ],
+            );
+
+        expect(
+          actionCard.read(resolvedElementProvider('name'))?['label'],
+          'Full name',
+        );
+        expect(
+          actionCard.read(resolvedElementProvider('name'))?['placeholder'],
+          'Type here',
+        );
+        expect(
+          actionCard.read(resolvedActionProvider('submit'))?['title'],
+          'Submit now',
+        );
+        expect(
+          actionCard.read(resolvedActionProvider('submit'))?['tooltip'],
+          'Send the form',
+        );
+
+        actionCard.dispose();
+      });
+
+      test('updatesFromPatchMap routes action title patches by node type', () {
+        final nodes = {
+          'submit': {
+            'type': 'Action.Submit',
+            'id': 'submit',
+            'title': 'Send',
+          },
+        };
+        final parsed =
+            AdaptiveCardDocumentNotifier.updatesFromPatchMapWithNodes(
+              {
+                'submit': {'title': 'Go'},
+              },
+              nodesById: nodes,
+            );
+
+        expect(parsed.elements, isEmpty);
+        expect(parsed.actions, hasLength(1));
+        expect(parsed.actions.single.title, 'Go');
+
+        final parsedInput =
+            AdaptiveCardDocumentNotifier.updatesFromPatchMapWithNodes(
+              {
+                'name': {'label': 'Name'},
+              },
+              nodesById: {
+                'name': {'type': 'Input.Text', 'id': 'name'},
+              },
+            );
+        expect(parsedInput.actions, isEmpty);
+        expect(parsedInput.elements.single.label, 'Name');
       });
     });
   });

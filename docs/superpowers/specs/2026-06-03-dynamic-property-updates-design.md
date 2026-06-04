@@ -26,9 +26,13 @@ Hosts update rendered cards at runtime via sparse **overlays** on the Riverpod d
 
 `isRequired` (inputs), `url` (`Image`, `Media`)
 
-### Tier 3 (deferred)
+### Tier 3 (implemented)
 
-`label`, `placeholder`, action `title`/`tooltip`, `choices.data.parameters`
+`label`, `placeholder` (inputs), action `title`/`tooltip` — via `ElementOverlay` / `ActionOverlay`, `applyUpdates`, and reactive listeners on `AdaptiveInputMixin` / `AdaptiveActionStateMixin`.
+
+### Tier 3 backlog
+
+`choices.data.parameters`, action `iconUrl`/`mode`/`style`
 
 ## Core API
 

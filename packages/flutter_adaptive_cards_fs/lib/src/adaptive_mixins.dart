@@ -190,17 +190,32 @@ bool backgroundImageSpecified(Map element) {
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   String get title => adaptiveMap['title'] as String? ?? '';
+
   String? get tooltip => adaptiveMap['tooltip'] as String?;
 }
 
-/// Subscribes to [resolvedActionProvider] for AC 1.5 `isEnabled` (default true).
+/// Subscribes to [resolvedActionProvider] for `isEnabled`, `title`, and `tooltip`.
 mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   bool _actionEnabled = true;
+  String _actionTitle = '';
+  String? _actionTooltip;
   ProviderSubscription<Map<String, dynamic>?>? _actionStateSubscription;
 
   /// Whether the action accepts presses per merged baseline + overlay.
   bool get actionEnabled => _actionEnabled;
+
+  String get title => _actionTitle;
+
+  String? get tooltip => _actionTooltip;
+
+  @override
+  void initState() {
+    super.initState();
+    _actionTitle = adaptiveMap['title'] as String? ?? '';
+    _actionTooltip = adaptiveMap['tooltip'] as String?;
+    _actionEnabled = adaptiveMap['isEnabled'] != false;
+  }
 
   @override
   void didChangeDependencies() {
@@ -211,8 +226,18 @@ mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
       resolvedActionProvider(id),
       (previous, next) {
         final enabled = next?['isEnabled'] != false;
-        if (enabled == _actionEnabled) return;
-        setState(() => _actionEnabled = enabled);
+        final nextTitle = next?['title'] as String? ?? '';
+        final nextTooltip = next?['tooltip'] as String?;
+        if (enabled == _actionEnabled &&
+            nextTitle == _actionTitle &&
+            nextTooltip == _actionTooltip) {
+          return;
+        }
+        setState(() {
+          _actionEnabled = enabled;
+          _actionTitle = nextTitle;
+          _actionTooltip = nextTooltip;
+        });
       },
       fireImmediately: true,
     );
@@ -230,6 +255,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   late String value;
   late String placeholder;
+  String? inputLabel;
   late String? errorMessage;
   late bool isRequired;
   bool overlayValidationError = false;
@@ -248,10 +274,8 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         ? ''
         : adaptiveMap['value'].toString();
 
-    placeholder =
-        adaptiveMap['placeholder'] as String? ??
-        adaptiveMap['label'] as String? ??
-        '';
+    inputLabel = adaptiveMap['label'] as String?;
+    placeholder = _effectivePlaceholder(adaptiveMap);
 
     errorMessage = adaptiveMap['errorMessage'] as String?;
     overlayValidationError = adaptiveMap['isInvalid'] == true;
@@ -271,11 +295,21 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         final nextError = next?['errorMessage'] as String?;
         final nextInvalid = next?['isInvalid'] == true;
         final nextRequired = next?['isRequired'] as bool? ?? false;
+        final nextLabel = next?['label'] as String?;
+        final nextPlaceholder = _effectivePlaceholder(next ?? adaptiveMap);
         final valueChanged = nextString != value;
         final errorChanged =
             nextError != errorMessage || nextInvalid != overlayValidationError;
         final requiredChanged = nextRequired != isRequired;
-        if (!valueChanged && !errorChanged && !requiredChanged) return;
+        final labelChanged = nextLabel != inputLabel;
+        final placeholderChanged = nextPlaceholder != placeholder;
+        if (!valueChanged &&
+            !errorChanged &&
+            !requiredChanged &&
+            !labelChanged &&
+            !placeholderChanged) {
+          return;
+        }
         setState(() {
           if (valueChanged) {
             value = nextString;
@@ -288,6 +322,12 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
           if (requiredChanged) {
             isRequired = nextRequired;
           }
+          if (labelChanged) {
+            inputLabel = nextLabel;
+          }
+          if (placeholderChanged) {
+            placeholder = nextPlaceholder;
+          }
         });
       },
       fireImmediately: true,
@@ -299,6 +339,10 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     _inputValueSubscription?.close();
     _inputValueSubscription = null;
     super.dispose();
+  }
+
+  static String _effectivePlaceholder(Map<String, dynamic> map) {
+    return map['placeholder'] as String? ?? map['label'] as String? ?? '';
   }
 
   void setDocumentInputValue(Object? newValue) {

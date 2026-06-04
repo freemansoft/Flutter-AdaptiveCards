@@ -69,6 +69,8 @@ class ElementOverlay {
     this.text,
     this.isRequired,
     this.url,
+    this.label,
+    this.placeholder,
   });
 
   /// Overrides baseline `"isVisible"` when non-null.
@@ -104,6 +106,12 @@ class ElementOverlay {
   /// Overrides baseline `"url"` on `Image` / `Media` when non-null.
   final String? url;
 
+  /// Overrides baseline `"label"` on inputs when non-null.
+  final String? label;
+
+  /// Overrides baseline `"placeholder"` on inputs when non-null.
+  final String? placeholder;
+
   /// Returns a copy with the given fields replaced.
   ElementOverlay copyWith({
     bool? isVisible,
@@ -117,6 +125,8 @@ class ElementOverlay {
     String? text,
     bool? isRequired,
     String? url,
+    String? label,
+    String? placeholder,
     bool clearInputValue = false,
     bool clearChoices = false,
     bool clearQueryCount = false,
@@ -127,6 +137,8 @@ class ElementOverlay {
     bool clearText = false,
     bool clearIsRequired = false,
     bool clearUrl = false,
+    bool clearLabel = false,
+    bool clearPlaceholder = false,
   }) {
     return ElementOverlay(
       isVisible: isVisible ?? this.isVisible,
@@ -144,6 +156,8 @@ class ElementOverlay {
       text: clearText ? null : (text ?? this.text),
       isRequired: clearIsRequired ? null : (isRequired ?? this.isRequired),
       url: clearUrl ? null : (url ?? this.url),
+      label: clearLabel ? null : (label ?? this.label),
+      placeholder: clearPlaceholder ? null : (placeholder ?? this.placeholder),
     );
   }
 }
@@ -155,13 +169,33 @@ class ElementOverlay {
 @immutable
 class ActionOverlay {
   /// Creates an overlay patch for one action.
-  const ActionOverlay({this.isEnabled});
+  const ActionOverlay({
+    this.isEnabled,
+    this.title,
+    this.tooltip,
+  });
 
   /// Overrides baseline `"isEnabled"` when non-null (AC 1.5, default true).
   final bool? isEnabled;
 
+  /// Overrides baseline `"title"` when non-null.
+  final String? title;
+
+  /// Overrides baseline `"tooltip"` when non-null.
+  final String? tooltip;
+
   /// Returns a copy with the given fields replaced.
-  ActionOverlay copyWith({bool? isEnabled}) {
-    return ActionOverlay(isEnabled: isEnabled ?? this.isEnabled);
+  ActionOverlay copyWith({
+    bool? isEnabled,
+    String? title,
+    String? tooltip,
+    bool clearTitle = false,
+    bool clearTooltip = false,
+  }) {
+    return ActionOverlay(
+      isEnabled: isEnabled ?? this.isEnabled,
+      title: clearTitle ? null : (title ?? this.title),
+      tooltip: clearTooltip ? null : (tooltip ?? this.tooltip),
+    );
   }
 }

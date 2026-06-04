@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`AdaptiveElementUpdate`** / **`AdaptiveActionUpdate`** and bulk **`applyUpdates`** / **`applyUpdatesFromMap`** on the document notifier and **`RawAdaptiveCardState`**.
 - **`ElementOverlay.isRequired`** and **`ElementOverlay.url`**; **`AdaptiveInputMixin`** listens for resolved `isRequired`; **`AdaptiveImage`** listens for resolved `url`.
+- **Tier 3 overlays:** **`label`**, **`placeholder`** on inputs; **`title`**, **`tooltip`** on actions; merged via **`applyUpdates`** / **`applyUpdatesFromMap`**; **`AdaptiveInputMixin`** and **`AdaptiveActionStateMixin`** update UI reactively.
 - **`initData`** supports scalar values or per-id patch maps; **`seedInputValues`** delegates to **`applyUpdates`** (single revision).
 - Default **Submit** / **Execute** required-field checks use resolved **`isRequired`** (overlay ?? baseline).
 - Tests: `test/riverpod/apply_updates_test.dart`, `test/inputs/cascade_choice_set_test.dart`, `test/inputs/is_required_overlay_test.dart`, `test/elements/image_url_overlay_test.dart`, `test/actions/submit_required_overlay_test.dart`.
