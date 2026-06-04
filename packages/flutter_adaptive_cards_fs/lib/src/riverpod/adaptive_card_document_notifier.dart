@@ -1,3 +1,4 @@
+import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
@@ -85,7 +86,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   void clearText(String id) {
     _updateOverlay(
       id,
-      (current) => (current ?? const ElementOverlay()).copyWith(clearText: true),
+      (current) =>
+          (current ?? const ElementOverlay()).copyWith(clearText: true),
     );
   }
 
@@ -126,11 +128,229 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
 
   /// Seeds input values from a host map (e.g. `RawAdaptiveCard.initData`).
   void seedInputValues(Map<String, Object?> values) {
-    for (final entry in values.entries) {
-      if (state.nodesById.containsKey(entry.key)) {
-        setInputValue(entry.key, entry.value);
-      }
+    applyUpdates(
+      elements: values.entries
+          .where((e) => state.nodesById.containsKey(e.key))
+          .map((e) => AdaptiveElementUpdate(id: e.key, value: e.value)),
+    );
+  }
+
+  /// Applies sparse overlay patches in one revision bump.
+  void applyUpdates({
+    Iterable<AdaptiveElementUpdate> elements = const [],
+    Iterable<AdaptiveActionUpdate> actions = const [],
+  }) {
+    final elementOverlays = Map<String, ElementOverlay>.from(
+      state.overlaysById,
+    );
+    final actionOverlays = Map<String, ActionOverlay>.from(
+      state.actionOverlaysById,
+    );
+    var changed = false;
+
+    for (final update in elements) {
+      if (!state.nodesById.containsKey(update.id)) continue;
+      if (_isActionId(update.id)) continue;
+
+      elementOverlays[update.id] = _mergeElementUpdate(
+        elementOverlays[update.id],
+        update,
+      );
+      changed = true;
     }
+
+    for (final update in actions) {
+      if (!_isActionId(update.id)) continue;
+      actionOverlays[update.id] =
+          (actionOverlays[update.id] ?? const ActionOverlay()).copyWith(
+            isEnabled: update.isEnabled,
+          );
+      changed = true;
+    }
+
+    if (!changed) return;
+
+    state = state.copyWith(
+      overlaysById: elementOverlays,
+      actionOverlaysById: actionOverlays,
+      revision: state.revision + 1,
+    );
+  }
+
+  /// Sets whether input [id] is required at runtime.
+  void setIsRequired(String id, {required bool required}) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(
+        isRequired: required,
+      ),
+    );
+  }
+
+  /// Clears `isRequired` overlay for [id].
+  void clearIsRequired(String id) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(
+        clearIsRequired: true,
+      ),
+    );
+  }
+
+  /// Replaces effective `"url"` for element [id] (e.g. `Image`).
+  void setUrl(String id, String url) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(url: url),
+    );
+  }
+
+  /// Clears `url` overlay for [id].
+  void clearUrl(String id) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(clearUrl: true),
+    );
+  }
+
+  /// Parses initData / server patch maps into element and action updates.
+  static ({
+    List<AdaptiveElementUpdate> elements,
+    List<AdaptiveActionUpdate> actions,
+  })
+  updatesFromPatchMap(Map<String, Object?> byId) {
+    final elements = <AdaptiveElementUpdate>[];
+    final actions = <AdaptiveActionUpdate>[];
+
+    for (final entry in byId.entries) {
+      final id = entry.key;
+      final raw = entry.value;
+
+      if (raw is! Map) {
+        elements.add(AdaptiveElementUpdate(id: id, value: raw));
+        continue;
+      }
+
+      final patch = Map<String, dynamic>.from(raw);
+      if (patch.containsKey('isEnabled')) {
+        actions.add(
+          AdaptiveActionUpdate(
+            id: id,
+            isEnabled: patch['isEnabled'] as bool?,
+          ),
+        );
+        continue;
+      }
+
+      elements.add(
+        AdaptiveElementUpdate(
+          id: id,
+          isVisible: patch['isVisible'] as bool?,
+          value: patch.containsKey('value') && patch['value'] != null
+              ? patch['value']
+              : null,
+          errorMessage: patch['errorMessage'] as String?,
+          isInvalid: patch['isInvalid'] as bool?,
+          isRequired: patch['isRequired'] as bool?,
+          url: patch['url'] as String?,
+          text: patch['text'] as String?,
+          choices: _choicesFromPatch(patch['choices']),
+          queryCount: patch['queryCount'] as int?,
+          querySkip: patch['querySkip'] as int?,
+          querySearchText: patch['querySearchText'] as String?,
+          clearValue:
+              patch['clearValue'] == true ||
+              (patch.containsKey('value') && patch['value'] == null),
+          clearError: patch['clearError'] == true,
+          clearChoices: patch['clearChoices'] == true,
+          clearText: patch['clearText'] == true,
+          clearIsRequired: patch['clearIsRequired'] == true,
+          clearUrl: patch['clearUrl'] == true,
+        ),
+      );
+    }
+
+    return (elements: elements, actions: actions);
+  }
+
+  ElementOverlay _mergeElementUpdate(
+    ElementOverlay? current,
+    AdaptiveElementUpdate update,
+  ) {
+    var overlay = current ?? const ElementOverlay();
+
+    if (update.clearError) {
+      overlay = overlay.copyWith(clearErrorMessage: true, clearIsInvalid: true);
+    }
+    if (update.clearValue) {
+      overlay = overlay.copyWith(clearInputValue: true);
+    }
+    if (update.clearChoices) {
+      overlay = overlay.copyWith(clearChoices: true);
+    }
+    if (update.clearText) {
+      overlay = overlay.copyWith(clearText: true);
+    }
+    if (update.clearIsRequired) {
+      overlay = overlay.copyWith(clearIsRequired: true);
+    }
+    if (update.clearUrl) {
+      overlay = overlay.copyWith(clearUrl: true);
+    }
+
+    if (update.isVisible != null) {
+      overlay = overlay.copyWith(isVisible: update.isVisible);
+    }
+    if (update.errorMessage != null || update.isInvalid != null) {
+      overlay = overlay.copyWith(
+        errorMessage: update.errorMessage,
+        isInvalid: update.isInvalid,
+      );
+    }
+    if (update.text != null) {
+      overlay = overlay.copyWith(text: update.text);
+    }
+    if (update.isRequired != null) {
+      overlay = overlay.copyWith(isRequired: update.isRequired);
+    }
+    if (update.url != null) {
+      overlay = overlay.copyWith(url: update.url);
+    }
+    if (update.queryCount != null ||
+        update.querySkip != null ||
+        update.querySearchText != null) {
+      overlay = overlay.copyWith(
+        queryCount: update.queryCount,
+        querySkip: update.querySkip,
+        querySearchText: update.querySearchText,
+      );
+    }
+
+    if (update.choices != null) {
+      overlay = overlay.copyWith(
+        choices: update.choices!.map((c) => c.toJson()).toList(),
+        clearInputValue: update.value == null && !update.clearValue,
+      );
+    }
+
+    if (update.value != null) {
+      overlay = overlay.copyWith(
+        inputValue: update.value,
+        clearIsInvalid: true,
+        clearErrorMessage: true,
+      );
+    }
+
+    return overlay;
+  }
+
+  static List<Choice>? _choicesFromPatch(Object? raw) {
+    if (raw is! List) return null;
+    return raw
+        .map(
+          (e) => Choice.fromJson(Map<String, dynamic>.from(e as Map)),
+        )
+        .toList();
   }
 
   /// Replaces effective `choices` for `Input.ChoiceSet` [id].

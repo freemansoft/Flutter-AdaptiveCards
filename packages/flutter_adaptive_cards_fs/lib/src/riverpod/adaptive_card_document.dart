@@ -67,6 +67,8 @@ class ElementOverlay {
     this.errorMessage,
     this.isInvalid,
     this.text,
+    this.isRequired,
+    this.url,
   });
 
   /// Overrides baseline `"isVisible"` when non-null.
@@ -96,6 +98,12 @@ class ElementOverlay {
   /// Overrides baseline `"text"` on elements such as `TextBlock` when non-null.
   final String? text;
 
+  /// Overrides baseline `"isRequired"` on input elements when non-null.
+  final bool? isRequired;
+
+  /// Overrides baseline `"url"` on `Image` / `Media` when non-null.
+  final String? url;
+
   /// Returns a copy with the given fields replaced.
   ElementOverlay copyWith({
     bool? isVisible,
@@ -107,6 +115,8 @@ class ElementOverlay {
     String? errorMessage,
     bool? isInvalid,
     String? text,
+    bool? isRequired,
+    String? url,
     bool clearInputValue = false,
     bool clearChoices = false,
     bool clearQueryCount = false,
@@ -115,6 +125,8 @@ class ElementOverlay {
     bool clearErrorMessage = false,
     bool clearIsInvalid = false,
     bool clearText = false,
+    bool clearIsRequired = false,
+    bool clearUrl = false,
   }) {
     return ElementOverlay(
       isVisible: isVisible ?? this.isVisible,
@@ -125,10 +137,13 @@ class ElementOverlay {
       querySearchText: clearQuerySearchText
           ? null
           : (querySearchText ?? this.querySearchText),
-      errorMessage:
-          clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: clearErrorMessage
+          ? null
+          : (errorMessage ?? this.errorMessage),
       isInvalid: clearIsInvalid ? null : (isInvalid ?? this.isInvalid),
       text: clearText ? null : (text ?? this.text),
+      isRequired: clearIsRequired ? null : (isRequired ?? this.isRequired),
+      url: clearUrl ? null : (url ?? this.url),
     );
   }
 }

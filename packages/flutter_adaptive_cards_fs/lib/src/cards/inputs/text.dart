@@ -36,7 +36,6 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   bool _isUpdatingFromDocument = false;
 
   String? label;
-  late bool isRequired;
   late bool isMultiline;
   late int maxLength;
   TextInputType? inputStyle;
@@ -45,7 +44,6 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   void didChangeDependencies() {
     super.didChangeDependencies();
     label = adaptiveMap['label']?.toString();
-    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
     isMultiline = adaptiveMap['isMultiline'] as bool? ?? false;
     maxLength = adaptiveMap['maxLength'] as int? ?? 20;
     inputStyle = resolveTextInputType(style);

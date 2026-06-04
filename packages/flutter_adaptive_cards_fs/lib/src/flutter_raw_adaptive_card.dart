@@ -9,10 +9,12 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_cards_canvas.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document_notifier.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -136,12 +138,48 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   /// Seeds input overlays from [map] (e.g. `RawAdaptiveCard.initData`).
+  ///
+  /// Flat maps `{id: value}` seed input values only. Maps whose values are
+  /// patch objects `{id: {choices: …, value: …}}` delegate to [applyUpdatesFromMap].
   void initInput(Map map) {
+    final container = documentContainer;
+    if (container == null) return;
+    final normalized = Map<String, Object?>.from(map);
+    if (normalized.values.any((value) => value is Map)) {
+      applyUpdatesFromMap(normalized);
+      return;
+    }
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .seedInputValues(normalized);
+  }
+
+  /// Applies sparse overlay patches without mutating baseline JSON.
+  void applyUpdates({
+    Iterable<AdaptiveElementUpdate> elements = const [],
+    Iterable<AdaptiveActionUpdate> actions = const [],
+  }) {
     final container = documentContainer;
     if (container == null) return;
     container
         .read(adaptiveCardDocumentProvider.notifier)
-        .seedInputValues(Map<String, Object?>.from(map));
+        .applyUpdates(
+          elements: elements,
+          actions: actions,
+        );
+  }
+
+  /// Parses [byId] patch maps (Adaptive Card property names) into overlay updates.
+  void applyUpdatesFromMap(Map<String, Object?> byId) {
+    final container = documentContainer;
+    if (container == null) return;
+    final parsed = AdaptiveCardDocumentNotifier.updatesFromPatchMap(byId);
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .applyUpdates(
+          elements: parsed.elements,
+          actions: parsed.actions,
+        );
   }
 
   /// Sets host-driven validation overlays for input [id].
@@ -519,7 +557,15 @@ class _AdaptiveCardDocumentLifecycleState
   void _seedInitData() {
     final initData = widget.initData;
     if (initData == null || initData.isEmpty) return;
-    widget.cardState.initInput(initData);
+    final normalized = <String, Object?>{};
+    for (final entry in initData.entries) {
+      if (entry.value is Map) {
+        normalized[entry.key.toString()] = entry.value;
+      } else {
+        normalized[entry.key.toString()] = {'value': entry.value};
+      }
+    }
+    widget.cardState.applyUpdatesFromMap(normalized);
   }
 
   @override

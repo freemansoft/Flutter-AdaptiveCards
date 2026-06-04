@@ -30,14 +30,17 @@ class DefaultSubmitAction extends GenericSubmitAction {
 
     final container = ProviderScope.containerOf(context);
     final doc = container.read(adaptiveCardDocumentProvider);
-    final values = container.read(adaptiveCardDocumentProvider.notifier).collectInputValues();
+    final values = container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .collectInputValues();
 
     var valid = true;
     for (final entry in doc.nodesById.entries) {
       final node = entry.value;
       final type = node['type'] as String?;
       if (type == null || !type.startsWith('Input.')) continue;
-      final isRequired = node['isRequired'] as bool? ?? false;
+      final resolved = container.read(resolvedElementProvider(entry.key));
+      final isRequired = resolved?['isRequired'] as bool? ?? false;
       if (!isRequired) continue;
       final value = values[entry.key];
       if (value == null) {
@@ -88,14 +91,17 @@ class DefaultExecuteAction extends GenericExecuteAction {
 
     final container = ProviderScope.containerOf(context);
     final doc = container.read(adaptiveCardDocumentProvider);
-    final values = container.read(adaptiveCardDocumentProvider.notifier).collectInputValues();
+    final values = container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .collectInputValues();
 
     var valid = true;
     for (final entry in doc.nodesById.entries) {
       final node = entry.value;
       final type = node['type'] as String?;
       if (type == null || !type.startsWith('Input.')) continue;
-      final isRequired = node['isRequired'] as bool? ?? false;
+      final resolved = container.read(resolvedElementProvider(entry.key));
+      final isRequired = resolved?['isRequired'] as bool? ?? false;
       if (!isRequired) continue;
       final value = values[entry.key];
       if (value == null) {
@@ -249,7 +255,9 @@ class DefaultToggleVisibilityAction extends GenericActionToggleVisibility {
     }
     for (final elementId in targetElementIds) {
       final container = ProviderScope.containerOf(context);
-      container.read(adaptiveCardDocumentProvider.notifier).toggleVisibility(
+      container
+          .read(adaptiveCardDocumentProvider.notifier)
+          .toggleVisibility(
             elementId,
           );
     }

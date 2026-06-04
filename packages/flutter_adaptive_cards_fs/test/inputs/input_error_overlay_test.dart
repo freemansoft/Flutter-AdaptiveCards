@@ -1,4 +1,5 @@
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -247,5 +248,38 @@ void main() {
       container.read(resolvedElementProvider('errNumber'))?['isInvalid'],
       isTrue,
     );
+  });
+
+  testWidgets('applyUpdates sets validation on multiple inputs', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {'type': 'Input.Text', 'id': 'email', 'label': 'Email'},
+        {'type': 'Input.Text', 'id': 'phone', 'label': 'Phone'},
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(map: map, title: 'batch validation'),
+    );
+    await tester.pumpAndSettle();
+
+    tester
+        .state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
+        .applyUpdates(
+          elements: const [
+            AdaptiveElementUpdate(
+              id: 'email',
+              errorMessage: 'Invalid email',
+              isInvalid: true,
+            ),
+            AdaptiveElementUpdate(id: 'phone', clearError: true),
+          ],
+        );
+    await tester.pump();
+
+    expect(find.text('Invalid email'), findsOneWidget);
   });
 }

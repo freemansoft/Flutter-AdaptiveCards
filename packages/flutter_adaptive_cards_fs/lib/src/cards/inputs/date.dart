@@ -34,7 +34,6 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
   String? label;
-  late bool isRequired;
   DateTime? selectedDateTime;
   DateTime? min;
   DateTime? max;
@@ -45,7 +44,6 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
     super.initState();
 
     label = adaptiveMap['label'] as String?;
-    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
     try {
       // set the value from the card as the current selected
       selectedDateTime = inputFormat.parse(value);

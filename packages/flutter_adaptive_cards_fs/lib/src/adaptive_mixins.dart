@@ -28,7 +28,8 @@ mixin ProviderScopeMixin<T extends StatefulWidget> on State<T> {
   RawAdaptiveCardState get rawRootCardWidgetState =>
       _container.read(rawAdaptiveCardStateProvider);
 
-  CardTypeRegistry get cardTypeRegistry => _container.read(cardTypeRegistryProvider);
+  CardTypeRegistry get cardTypeRegistry =>
+      _container.read(cardTypeRegistryProvider);
 
   ActionTypeRegistry get actionTypeRegistry =>
       _container.read(actionTypeRegistryProvider);
@@ -36,7 +37,8 @@ mixin ProviderScopeMixin<T extends StatefulWidget> on State<T> {
   AdaptiveCardElementState get adaptiveCardElementState =>
       _container.read(adaptiveCardElementStateProvider);
 
-  ReferenceResolver get styleResolver => _container.read(styleReferenceResolverProvider);
+  ReferenceResolver get styleResolver =>
+      _container.read(styleReferenceResolverProvider);
 }
 
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
@@ -229,6 +231,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   late String value;
   late String placeholder;
   late String? errorMessage;
+  late bool isRequired;
   bool overlayValidationError = false;
   ProviderSubscription<Map<String, dynamic>?>? _inputValueSubscription;
 
@@ -252,6 +255,7 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
 
     errorMessage = adaptiveMap['errorMessage'] as String?;
     overlayValidationError = adaptiveMap['isInvalid'] == true;
+    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
   }
 
   @override
@@ -266,10 +270,12 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         final nextString = nextValue?.toString() ?? '';
         final nextError = next?['errorMessage'] as String?;
         final nextInvalid = next?['isInvalid'] == true;
+        final nextRequired = next?['isRequired'] as bool? ?? false;
         final valueChanged = nextString != value;
         final errorChanged =
             nextError != errorMessage || nextInvalid != overlayValidationError;
-        if (!valueChanged && !errorChanged) return;
+        final requiredChanged = nextRequired != isRequired;
+        if (!valueChanged && !errorChanged && !requiredChanged) return;
         setState(() {
           if (valueChanged) {
             value = nextString;
@@ -278,6 +284,9 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
           if (errorChanged) {
             errorMessage = nextError;
             overlayValidationError = nextInvalid;
+          }
+          if (requiredChanged) {
+            isRequired = nextRequired;
           }
         });
       },
@@ -294,7 +303,9 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
 
   void setDocumentInputValue(Object? newValue) {
     final container = ProviderScope.containerOf(context);
-    container.read(adaptiveCardDocumentProvider.notifier).setInputValue(id, newValue);
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputValue(id, newValue);
   }
 
   /// Subclasses can override to sync controllers from document changes.

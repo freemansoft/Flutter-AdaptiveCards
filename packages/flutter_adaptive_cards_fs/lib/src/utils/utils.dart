@@ -182,8 +182,9 @@ Widget loadLabel({
     return const SizedBox();
   }
 
-  final resolver =
-      ProviderScope.containerOf(context).read(styleReferenceResolverProvider);
+  final resolver = ProviderScope.containerOf(
+    context,
+  ).read(styleReferenceResolverProvider);
   final inputsConfig = resolver.getInputsConfig();
   final labelConfig = isRequired
       ? inputsConfig?.label.requiredInputs
@@ -257,8 +258,9 @@ Widget loadErrorMessage({
     return const SizedBox();
   }
 
-  final resolver =
-      ProviderScope.containerOf(context).read(styleReferenceResolverProvider);
+  final resolver = ProviderScope.containerOf(
+    context,
+  ).read(styleReferenceResolverProvider);
   final inputsConfig = resolver.getInputsConfig();
   final errorMessageConfig = inputsConfig?.errorMessage;
 

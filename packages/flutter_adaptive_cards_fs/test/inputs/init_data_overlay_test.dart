@@ -251,4 +251,102 @@ void main() {
     final field = tester.widget<TextFormField>(inputFinder);
     expect(field.controller!.text, 'late bound');
   });
+
+  testWidgets('initData patch map seeds choices via applyUpdatesFromMap', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.ChoiceSet',
+          'id': 'myChoice',
+          'style': 'expanded',
+          'choices': [
+            {'title': 'Old', 'value': 'old'},
+          ],
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(
+        map: map,
+        title: 'initData patch map',
+        initData: {
+          'myChoice': {
+            'choices': [
+              {'title': 'New', 'value': 'new'},
+            ],
+            'value': 'new',
+          },
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final choiceMap = map['body'][0] as Map<String, dynamic>;
+    final container = _documentContainer(
+      tester,
+      find.byKey(generateWidgetKey(choiceMap, suffix: 'New')),
+    );
+
+    expect(
+      container.read(resolvedElementProvider('myChoice'))?['value'],
+      'new',
+    );
+    expect(
+      container.read(resolvedElementProvider('myChoice'))?['choices'],
+      [
+        {'title': 'New', 'value': 'new'},
+      ],
+    );
+  });
+
+  testWidgets('initInput then applyUpdates enrich without conflict', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.Text',
+          'id': 'email',
+        },
+        {
+          'type': 'TextBlock',
+          'id': 'status',
+          'text': 'Loading',
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(map: map, title: 'initInput applyUpdates'),
+    );
+    await tester.pumpAndSettle();
+
+    _cardState(tester).initInput({'email': 'user@example.com'});
+    await tester.pumpAndSettle();
+
+    _cardState(tester).applyUpdatesFromMap({
+      'status': {'text': 'Ready'},
+    });
+    await tester.pumpAndSettle();
+
+    final textMap = map['body'][0] as Map<String, dynamic>;
+    final container = _documentContainer(
+      tester,
+      find.byKey(generateWidgetKey(textMap)),
+    );
+
+    expect(
+      container.read(resolvedElementProvider('email'))?['value'],
+      'user@example.com',
+    );
+    expect(
+      container.read(resolvedElementProvider('status'))?['text'],
+      'Ready',
+    );
+  });
 }

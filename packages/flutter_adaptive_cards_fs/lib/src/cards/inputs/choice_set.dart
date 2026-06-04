@@ -59,7 +59,6 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   final Set<String> _selectedChoices = {};
 
   String? label;
-  late bool isRequired;
   late bool isFiltered;
   late bool isCompact;
   late bool isMultiSelect;
@@ -73,7 +72,6 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     super.initState();
 
     label = adaptiveMap['label'] as String?;
-    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
 
     if (adaptiveMap.containsKey('choices.data')) {
       dataQuery = DataQuery.fromJson(

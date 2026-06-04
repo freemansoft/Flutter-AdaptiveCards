@@ -1,4 +1,6 @@
+import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document_notifier.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -495,6 +497,148 @@ void main() {
           resolvedElementProvider('status'),
         );
         expect(resolvedStatus?['text'], 'Updated status');
+      });
+    });
+
+    group('applyUpdates', () {
+      test('bulk merge updates multiple properties in one revision', () {
+        final notifier = container.read(adaptiveCardDocumentProvider.notifier);
+        final startRevision = notifier.state.revision;
+
+        notifier.applyUpdates(
+          elements: [
+            const AdaptiveElementUpdate(
+              id: 'myText',
+              value: 'patched',
+            ),
+            const AdaptiveElementUpdate(
+              id: 'visibleBlock',
+              isVisible: false,
+              text: 'Updated',
+            ),
+          ],
+        );
+
+        expect(notifier.state.revision, startRevision + 1);
+        expect(
+          container.read(resolvedElementProvider('myText'))?['value'],
+          'patched',
+        );
+        expect(
+          container.read(resolvedElementProvider('visibleBlock'))?['isVisible'],
+          isFalse,
+        );
+        expect(
+          container.read(resolvedElementProvider('visibleBlock'))?['text'],
+          'Updated',
+        );
+      });
+
+      test('applyUpdates ignores unknown ids', () {
+        final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+          ..applyUpdates(
+            elements: [
+              const AdaptiveElementUpdate(id: 'missing', value: 'x'),
+            ],
+          );
+
+        expect(notifier.state.overlaysById.containsKey('missing'), isFalse);
+      });
+
+      test('applyUpdates clear flags work', () {
+        final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+          ..setInputError('myText', errorMessage: 'err', isInvalid: true)
+          ..setInputValue('myText', 'typed')
+          ..applyUpdates(
+            elements: const [
+              AdaptiveElementUpdate(id: 'myText', clearError: true),
+            ],
+          );
+
+        expect(notifier.state.overlaysById['myText']?.errorMessage, isNull);
+        expect(notifier.state.overlaysById['myText']?.inputValue, 'typed');
+      });
+
+      test('applyUpdates choices clears value unless value also set', () {
+        final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+          ..setInputValue('myChoice', 'static')
+          ..applyUpdates(
+            elements: const [
+              AdaptiveElementUpdate(
+                id: 'myChoice',
+                choices: [Choice(title: 'New', value: 'new')],
+              ),
+            ],
+          );
+
+        expect(
+          container.read(resolvedElementProvider('myChoice'))?['choices'],
+          [
+            {'title': 'New', 'value': 'new'},
+          ],
+        );
+        expect(
+          notifier.state.overlaysById['myChoice']?.inputValue,
+          isNull,
+        );
+        expect(
+          container.read(resolvedElementProvider('myChoice'))?['value'],
+          'static',
+        );
+      });
+
+      test('seedInputValues matches applyUpdates value-only semantics', () {
+        final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+          ..setInputError('myText', errorMessage: 'err', isInvalid: true)
+          ..seedInputValues({'myText': 'seeded'});
+
+        expect(notifier.state.overlaysById['myText']?.inputValue, 'seeded');
+        expect(notifier.state.overlaysById['myText']?.errorMessage, isNull);
+      });
+
+      test('updatesFromPatchMap parses scalar and patch entries', () {
+        final parsed = AdaptiveCardDocumentNotifier.updatesFromPatchMap({
+          'myText': 'scalar',
+          'visibleBlock': {'text': 'Hi', 'isVisible': false},
+        });
+
+        expect(parsed.elements, hasLength(2));
+        expect(parsed.elements.first.id, 'myText');
+        expect(parsed.elements.first.value, 'scalar');
+        expect(parsed.elements.last.text, 'Hi');
+      });
+
+      test('setIsRequired and setUrl merge into resolved element', () {
+        final imageBaseline = _createContainer({
+          'type': 'AdaptiveCard',
+          'body': [
+            {
+              'type': 'Image',
+              'id': 'img',
+              'url': 'https://baseline.example/image.png',
+            },
+            {
+              'type': 'Input.Text',
+              'id': 'reqField',
+              'isRequired': false,
+            },
+          ],
+        });
+
+        final notifier = imageBaseline.read(adaptiveCardDocumentProvider.notifier)
+          ..setUrl('img', 'https://signed.example/image.png')
+          ..setIsRequired('reqField', required: true);
+
+        expect(
+          imageBaseline.read(resolvedElementProvider('img'))?['url'],
+          'https://signed.example/image.png',
+        );
+        expect(
+          imageBaseline.read(resolvedElementProvider('reqField'))?['isRequired'],
+          isTrue,
+        );
+
+        imageBaseline.dispose();
       });
     });
   });

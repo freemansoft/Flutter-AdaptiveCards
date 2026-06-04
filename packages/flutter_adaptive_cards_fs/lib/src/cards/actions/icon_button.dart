@@ -54,9 +54,7 @@ class IconButtonActionState extends State<IconButtonAction>
       ),
     );
 
-    final onPressed = actionEnabled
-        ? () => widget.onTapped(context)
-        : null;
+    final onPressed = actionEnabled ? () => widget.onTapped(context) : null;
 
     final theButton = (iconUrl != null)
         ? ElevatedButton.icon(

@@ -225,7 +225,6 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
             color: color,
           );
 
-
     final TextStyle aStyle = TextStyle(
       fontWeight: fontWeight,
       fontSize: fontSize,

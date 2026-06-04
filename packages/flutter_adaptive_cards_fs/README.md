@@ -110,8 +110,8 @@ flowchart
 You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will seed input overlays on the document notifier.
 
 - `initData` is a widget parameter on `RawAdaptiveCard` / `AdaptiveCardsCanvas`.
-- On first frame, values are written to the document notifier via `seedInputValues` (reactive; inputs listen to `resolvedElementProvider`).
-- `initInput(map)` on `RawAdaptiveCardState` also delegates to `seedInputValues` for programmatic late binding.
+- On first frame, values are written to the document notifier (scalar entries become `{value: …}` patches; map entries are full per-id patches via `applyUpdatesFromMap`).
+- `initInput(map)` on `RawAdaptiveCardState` seeds flat `{id: value}` maps or patch maps when values are objects.
 - **`initInput` does not call `setState` on the card** — input widgets rebuild when their `resolvedElementProvider` listener fires. See [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card).
 - `loadInput(id, map)` replaces `Input.ChoiceSet` choices for [id] via `setChoices` (title → value map converted to `Input.Choice` list).
 
@@ -121,6 +121,8 @@ Without mutating card JSON, hosts can patch document state via:
 
 | API | Use |
 | --- | --- |
+| `applyUpdates(elements:, actions:)` | Bulk sparse patches (`AdaptiveElementUpdate` / `AdaptiveActionUpdate`) |
+| `applyUpdatesFromMap(byId)` | Server-style `{ id: { value, choices, … } }` payloads |
 | `setText(id, text)` / `clearText(id)` | Replace `TextBlock` display text |
 | `setInputError(id, message:, isInvalid:)` / `clearInputError(id)` | Host validation on inputs |
 | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)` | Enable/disable `Action.*` (AC 1.5) |

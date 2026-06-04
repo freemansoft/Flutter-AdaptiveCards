@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 0.8.0
 
+- **`AdaptiveElementUpdate`** / **`AdaptiveActionUpdate`** and bulk **`applyUpdates`** / **`applyUpdatesFromMap`** on the document notifier and **`RawAdaptiveCardState`**.
+- **`ElementOverlay.isRequired`** and **`ElementOverlay.url`**; **`AdaptiveInputMixin`** listens for resolved `isRequired`; **`AdaptiveImage`** listens for resolved `url`.
+- **`initData`** supports scalar values or per-id patch maps; **`seedInputValues`** delegates to **`applyUpdates`** (single revision).
+- Default **Submit** / **Execute** required-field checks use resolved **`isRequired`** (overlay ?? baseline).
+- Tests: `test/riverpod/apply_updates_test.dart`, `test/inputs/cascade_choice_set_test.dart`, `test/inputs/is_required_overlay_test.dart`, `test/elements/image_url_overlay_test.dart`, `test/actions/submit_required_overlay_test.dart`.
+- Design spec: [`docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md`](../../docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md).
+
 ### Changed 0.8.0
 
 - **Scoped dependency injection** now uses nested **`InheritedReferenceResolver`** widgets instead of Riverpod:

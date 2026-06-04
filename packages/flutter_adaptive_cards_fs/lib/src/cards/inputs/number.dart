@@ -37,7 +37,6 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
   String? label;
-  late bool isRequired;
   late int min;
   late int max;
 
@@ -46,7 +45,6 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
     super.initState();
 
     label = adaptiveMap['label']?.toString();
-    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
 
     controller.text = value;
     stateHasError = false;
