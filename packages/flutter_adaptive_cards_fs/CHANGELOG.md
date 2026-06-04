@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0]
 
+- Migrated all modifyable state to be reactive using riverpod via overlay on top of adaptive card json: [ElementOverlay and ActionOverlay](lib/src/riverpod/adaptive_card_document.dart)
+  - Elements value, error messages, error state, isVisble and many other attributes
+  - Actions isEnabled and other attributes
+- Implemented regex validation in input field
+- Added AI skills flutter and dart provided by flutter and dart teams.
+- Added AI superpowers
+
 ### Added 0.8.0
 
 - **`AdaptiveElementUpdate`** / **`AdaptiveActionUpdate`** and bulk **`applyUpdates`** / **`applyUpdatesFromMap`** on the document notifier and **`RawAdaptiveCardState`**.
