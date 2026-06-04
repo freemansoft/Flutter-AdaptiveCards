@@ -657,10 +657,9 @@ void main() {
           ],
         });
 
-        final notifier =
-            imageBaseline.read(adaptiveCardDocumentProvider.notifier)
-              ..setUrl('img', 'https://signed.example/image.png')
-              ..setIsRequired('reqField', required: true);
+        imageBaseline.read(adaptiveCardDocumentProvider.notifier)
+          ..setUrl('img', 'https://signed.example/image.png')
+          ..setIsRequired('reqField', required: true);
 
         expect(
           imageBaseline.read(resolvedElementProvider('img'))?['url'],

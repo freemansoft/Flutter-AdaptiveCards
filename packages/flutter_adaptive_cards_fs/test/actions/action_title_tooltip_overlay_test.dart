@@ -80,6 +80,8 @@ void main() {
   ) async {
     final map = <String, dynamic>{
       'type': 'AdaptiveCard',
+      // cause its a test and I don't care
+      // ignore: inference_failure_on_collection_literal
       'body': [],
       'actions': [_submitAction],
     };

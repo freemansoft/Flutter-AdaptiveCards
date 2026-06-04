@@ -45,6 +45,7 @@ class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
     return IconButtonAction(
       adaptiveMap: adaptiveMap,
       onTapped: (BuildContext context) {
+        // [GenericActionOpenUrl]
         action.tap(
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,
