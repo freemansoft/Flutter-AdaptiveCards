@@ -10,23 +10,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
 ///
+/// One row in the filtered ChoiceSet search modal.
+///
+/// [title] is shown in the list and matched during typeahead search.
+/// [value] is submitted via [AdaptiveChoiceSetState.select] and passed to
+/// `onChange` / `collectInputValues`.
 class SearchModel {
-  SearchModel({required this.id, required this.name});
-  final String id;
-  final String name;
+  SearchModel({required this.title, required this.value});
+
+  /// Choice display text (Adaptive Card `choices[].title`).
+  final String title;
+
+  /// Choice submit value (Adaptive Card `choices[].value`).
+  final String value;
 
   ///this method will prevent the override of toString
   String modelAsString() {
-    return '#$id $name';
+    return '#$title $value';
   }
 
   ///custom comparing function to check if two users are equal
   bool isEqual(SearchModel model) {
-    return id == model.id;
+    return value == model.value;
   }
 
   @override
-  String toString() => name;
+  String toString() => title;
 }
 
 class AdaptiveChoiceSet extends ConsumerStatefulWidget
@@ -88,9 +97,14 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
       _selectedChoices.addAll(
         next.isEmpty ? const <String>[] : next.split(','),
       );
-      controller.text = _selectedChoices.isNotEmpty
-          ? _selectedChoices.first
-          : '';
+      if (isFiltered) {
+        final choices = _parseChoices(readResolvedInput().map['choices']);
+        _syncFilteredControllerText(choices);
+      } else {
+        controller.text = _selectedChoices.isNotEmpty
+            ? _selectedChoices.first
+            : '';
+      }
     }
   }
 
@@ -109,6 +123,27 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
       result[choice.title] = choice.value;
     }
     return result;
+  }
+
+  String _titleForStoredValue(
+    String storedValue,
+    Map<String, String> choices,
+  ) {
+    for (final entry in choices.entries) {
+      if (entry.value == storedValue) {
+        return entry.key;
+      }
+    }
+    return storedValue;
+  }
+
+  void _syncFilteredControllerText(Map<String, String> choices) {
+    if (!isFiltered) {
+      return;
+    }
+    controller.text = _selectedChoices.isEmpty
+        ? ''
+        : _titleForStoredValue(_selectedChoices.first, choices);
   }
 
   @override
@@ -223,12 +258,14 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
           return null;
         },
         onTap: () async {
-          final list = choices.keys
-              .map((key) => SearchModel(id: key, name: choices[key] ?? ''))
+          final list = choices.entries
+              .map(
+                (entry) => SearchModel(title: entry.key, value: entry.value),
+              )
               .toList();
           await rawRootCardWidgetState.searchList(list, (dynamic value) {
             setState(() {
-              select(value?.id, choices);
+              select(value?.value, choices);
             });
           }, inputId: id);
         },
@@ -334,9 +371,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     setDocumentInputValue(joined);
     notifyUserInputValueChanged(joined, committed: true);
     setState(() {
-      controller.text = _selectedChoices.isNotEmpty
-          ? _selectedChoices.first
-          : '';
+      _syncFilteredControllerText(choices);
     });
   }
 
@@ -349,9 +384,14 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
         ..addAll(
           next.isEmpty ? const <String>[] : next.split(','),
         );
-      controller.text = _selectedChoices.isNotEmpty
-          ? _selectedChoices.first
-          : '';
+      if (isFiltered) {
+        final choices = _parseChoices(readResolvedInput().map['choices']);
+        _syncFilteredControllerText(choices);
+      } else {
+        controller.text = _selectedChoices.isNotEmpty
+            ? _selectedChoices.first
+            : '';
+      }
     });
   }
 

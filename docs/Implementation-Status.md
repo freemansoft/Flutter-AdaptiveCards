@@ -43,15 +43,15 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## Inputs
 
-| Input           | Microsoft Spec                                                 | Implementation | Tests  | Documentation                      | Notes                           |
-| --------------- | -------------------------------------------------------------- | -------------- | ------ | ---------------------------------- | ------------------------------- |
-| Input.Text      | [spec](https://adaptivecards.io/explorer/Input.Text.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based              |
-| Input.Number    | [spec](https://adaptivecards.io/explorer/Input.Number.html)    | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based              |
-| Input.Date      | [spec](https://adaptivecards.io/explorer/Input.Date.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers      |
-| Input.Time      | [spec](https://adaptivecards.io/explorer/Input.Time.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers      |
-| Input.Toggle    | [spec](https://adaptivecards.io/explorer/Input.Toggle.html)    | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based              |
-| Input.ChoiceSet | [spec](https://adaptivecards.io/explorer/Input.ChoiceSet.html) | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Compact & multiselect           |
-| Input.Choice    | [spec](https://adaptivecards.io/explorer/Input.Choice.html)    | ⚠️ Map         | ❌ No  | -                                  | Implemented as map in ChoiceSet |
+| Input           | Microsoft Spec                                                 | Implementation | Tests  | Documentation                      | Notes                                                                                                                                                                         |
+| --------------- | -------------------------------------------------------------- | -------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Input.Text      | [spec](https://adaptivecards.io/explorer/Input.Text.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based                                                                                                                                                            |
+| Input.Number    | [spec](https://adaptivecards.io/explorer/Input.Number.html)    | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based                                                                                                                                                            |
+| Input.Date      | [spec](https://adaptivecards.io/explorer/Input.Date.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers                                                                                                                                                    |
+| Input.Time      | [spec](https://adaptivecards.io/explorer/Input.Time.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers                                                                                                                                                    |
+| Input.Toggle    | [spec](https://adaptivecards.io/explorer/Input.Toggle.html)    | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based                                                                                                                                                            |
+| Input.ChoiceSet | [spec](https://adaptivecards.io/explorer/Input.ChoiceSet.html) | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Compact, multiselect, filtered (search/list **titles**; submit **values**); `choices.data` / `Data.Query`; **`associatedInputs` not applied** — see [Known Gaps](#known-gaps) |
+| Input.Choice    | [spec](https://adaptivecards.io/explorer/Input.Choice.html)    | ⚠️ Map         | ❌ No  | -                                  | Implemented as map in ChoiceSet                                                                                                                                               |
 
 > [!NOTE]
 > All standard input implementations (`Input.Text`, `Input.Number`, `Input.Date`, `Input.Time`, `Input.Toggle`, `Input.ChoiceSet`) fully implement `appendInput()`, `initInput()`, `checkRequired()`, and `resetInput()` methods. These elements have been verified to use the mixin-inherited `value` property exclusively, without directly accessing `adaptiveMap['value']` after initialization. **`Action.ResetInputs`** and host **`resetInput(id)`** / **`resetAllInputs()`** factory-reset input overlays (including `label`, `placeholder`, `isRequired`) to baseline — see [Reset semantics](./reactive-riverpod.md#reset-semantics) and [form-inputs.md](./form-inputs.md#reset-behavior-resetallinputs--resetinput).
@@ -146,6 +146,7 @@ The following spec compliance gaps are known across the codebase:
 - **Dark Mode**: Some specific color invert issues or missing HostConfig support.
 - **Version Gating**: Missing support to skip rendering elements with a higher version requirement.
 - **`RichTextBlock` & `TextRun`**: Missing elements required since AC spec v1.2.
+- **`Data.Query.associatedInputs`**: Parsed on `choices.data` but not merged into host `onChange` / `DataQuery` (Teams dependent-input sibling values). Widgetbook demonstrates the workaround — [form-inputs.md § Dependent ChoiceSet](./form-inputs.md#dependent-choiceset-country--city).
 
 ---
 

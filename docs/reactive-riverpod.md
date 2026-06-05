@@ -244,6 +244,7 @@ The overlay **model** is well guarded; adding a new overlay field still requires
 | Notifier contract (inputs, visibility, choices, validation, text, actions) | `test/riverpod/adaptive_card_document_notifier_test.dart`                                          |
 | `initData` / `initInput`                                                   | `test/inputs/init_data_overlay_test.dart`                                                          |
 | ChoiceSet `loadInput` / `appendChoices` / reset                            | `test/inputs/choice_set_overlay_test.dart`, `test/inputs/action_reset_inputs_test.dart`            |
+| Cascaded country → dependent ChoiceSet (`applyUpdates`)                    | `test/inputs/cascade_choice_set_test.dart`                                                         |
 | Data.Query session merge                                                   | `test/inputs/choice_set_data_query_test.dart`                                                      |
 | Input validation overlays                                                  | `test/inputs/input_error_overlay_test.dart`                                                        |
 | TextBlock `text`                                                           | `test/elements/text_block_text_overlay_test.dart`                                                  |
@@ -259,6 +260,7 @@ The overlay **model** is well guarded; adding a new overlay field still requires
 
 ### Remaining gaps (optional)
 
+- **`Data.Query.associatedInputs`**: parsed but sibling input values are not merged into host `onChange` / `DataQuery` (Teams dependent-input gap). Widgetbook workaround: [form-inputs.md § Dependent ChoiceSet](form-inputs.md#dependent-choiceset-country--city).
 - Validation overlay widget tests for `Input.Date`, `Input.Time`, `Input.Rating` (Text and Number covered in `input_error_overlay_test.dart`).
 - `setActionEnabled` on action types beyond Submit and ShowCard.
 - Input-value overlay surviving `RawAdaptiveCard.rebuild()` (visibility and TextBlock covered).

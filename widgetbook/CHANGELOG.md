@@ -2,7 +2,8 @@
 
 ## [0.9.0]
 
-- no changes yet
+- Added **Input.ChoiceSet → Value changed action (host cascade)** and **Value changed action (Teams Data.Query)** use cases with shared [`lib/dependent_choice_set_demo_page.dart`](lib/dependent_choice_set_demo_page.dart) — demonstrates Teams dependent-input pattern (`valueChangedAction` reset + host `applyUpdates` for country → city)
+- Sample JSON: `lib/samples/inputs/input_choice_set/value_changed_action_dependent_query.json` (Teams-shaped `choices.data` on city field)
 
 ## [0.8.0]
 

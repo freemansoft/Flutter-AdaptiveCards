@@ -196,7 +196,7 @@ Only implement when adding typeahead UI that paginates; Phase 1 `choices` overla
 
 1. **Phase 1** — unblocks ChoiceSet reactive updates and removes `loadInput` tree walk (highest ROI, aligns with spec Step 4 from [#3924](https://github.com/microsoft/AdaptiveCards/issues/3924))
 2. **Phase 2** — consolidates `initData` with overlay model (small diff, high consistency)
-3. **Phase 3** — when implementing filtered/typeahead pagination UI
+3. **Phase 3** — when implementing filtered/typeahead pagination UI. Filtered modal search matches choice **titles** and displays titles; submit/`onChange` use **values** (see [form-inputs.md § Filtered ChoiceSet](../../docs/form-inputs.md#filtered-choiceset-style-style-filtered)).
 
 ## Risk notes
 

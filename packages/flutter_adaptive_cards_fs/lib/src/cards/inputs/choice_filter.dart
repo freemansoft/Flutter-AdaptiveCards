@@ -36,7 +36,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
     }
 
     for (final item in _data) {
-      if (item.name.toLowerCase().contains(text.toLowerCase())) {
+      if (item.title.toLowerCase().contains(text.toLowerCase())) {
         setState(() {
           _searchResult.add(item);
         });
@@ -107,8 +107,10 @@ class ChoiceFilterState extends State<ChoiceFilter> {
                         ? (widget.key! as ValueKey<String>).value
                         : 'choiceFilter';
                     return ListTile(
-                      key: ValueKey('${keyValue}_${_searchResult[index].id}'),
-                      title: Text(_searchResult[index].name),
+                      key: ValueKey(
+                        '${keyValue}_${_searchResult[index].title}',
+                      ),
+                      title: Text(_searchResult[index].title),
                       onTap: () {
                         Navigator.pop(context);
                         widget.callback?.call(_searchResult[index]);
@@ -123,8 +125,8 @@ class ChoiceFilterState extends State<ChoiceFilter> {
                         ? (widget.key! as ValueKey<String>).value
                         : 'choiceFilter';
                     return ListTile(
-                      key: ValueKey('${keyValue}_${_data[index].id}'),
-                      title: Text(_data[index].name),
+                      key: ValueKey('${keyValue}_${_data[index].title}'),
+                      title: Text(_data[index].title),
                       onTap: () {
                         Navigator.pop(context);
                         widget.callback?.call(_data[index]);

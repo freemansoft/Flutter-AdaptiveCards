@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.9.0]
 
 - Fixed semantic binding error dismissal of filtered modal panel
+- Filtered `Input.ChoiceSet` modal lists and typeahead search match choice **titles**; submit, `onChange`, and `Data.Query` use choice **values**
 
 ## [0.8.0]
 

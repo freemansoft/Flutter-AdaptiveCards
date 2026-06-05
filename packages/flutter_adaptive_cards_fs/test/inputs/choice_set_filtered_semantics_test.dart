@@ -69,7 +69,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        await tester.tap(find.text('france').first);
+        await tester.tap(find.text('France').first);
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 100));
         await tester.pumpAndSettle();

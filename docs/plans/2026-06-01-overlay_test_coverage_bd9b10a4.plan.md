@@ -76,7 +76,7 @@ isProject: false
 ### Out of scope / deferred (still medium priority)
 
 - Dedicated `data_query_test.dart` for full typeahead stub
-- Filtered ChoiceSet + `data_query_filtered.json` beyond existing [`choice_set_data_query_test.dart`](packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart)
+- Filtered ChoiceSet + `data_query_filtered.json` beyond existing [`choice_set_data_query_test.dart`](packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart). Filtered UI searches/displays **titles**; values used for submit/`onChange` ([form-inputs.md § Filtered ChoiceSet](../../docs/form-inputs.md#filtered-choiceset-style-style-filtered)).
 
 ---
 

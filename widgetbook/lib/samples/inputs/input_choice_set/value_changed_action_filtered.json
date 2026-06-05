@@ -1,0 +1,73 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Changing country resets the city (card valueChangedAction). City choices are repopulated by the Widgetbook host onChange handler.",
+      "weight": ""
+    },
+    {
+      "type": "TextBlock",
+      "text": "Country / City",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "country",
+      "style": "filtered",
+      "label": "Country",
+      "isRequired": true,
+      "errorMessage": "Please select a country",
+      "choices": [
+        {
+          "title": "USA",
+          "value": "usa"
+        },
+        {
+          "title": "France",
+          "value": "france"
+        },
+        {
+          "title": "India",
+          "value": "india"
+        }
+      ],
+      "valueChangedAction": {
+        "type": "Action.ResetInputs",
+        "targetInputIds": [
+          "city"
+        ]
+      }
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "city",
+      "style": "compact",
+      "label": "City",
+      "isRequired": true,
+      "errorMessage": "Please select a city",
+      "choices": [
+        {
+          "title": "None Selected",
+          "value": ""
+        },
+        {
+          "title": "Paris",
+          "value": "paris"
+        },
+        {
+          "title": "Lyon",
+          "value": "lyon"
+        }
+      ],
+      "value": ""
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Submit"
+    }
+  ]
+}

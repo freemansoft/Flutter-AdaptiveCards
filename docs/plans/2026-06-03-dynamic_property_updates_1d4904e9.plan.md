@@ -336,6 +336,8 @@ Document that `choices` update **clears value** (matches `setChoices` / `loadInp
 
 Keep existing [`setDataQuerySession`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart) for pagination; bulk API may optionally accept `queryCount` / `querySkip` on `AdaptiveElementUpdate` for parity. Primary refresh path remains `choices` overlay after search API returns.
 
+**Filtered ChoiceSet UI (implemented):** modal list and typeahead filter on choice **titles**; `onChange`, submit, and `Data.Query` use choice **values**. Documented in [form-inputs.md § Filtered ChoiceSet](../form-inputs.md#filtered-choiceset-style-style-filtered).
+
 ### Local rules in handler
 
 Same `applyUpdates` API — hosts apply visibility, errors, and enabled flags synchronously without network call.

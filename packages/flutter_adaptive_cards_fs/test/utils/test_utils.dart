@@ -302,6 +302,7 @@ Widget getTestWidgetFromMap({
     // so dislable them in the golden images
     showDebugJson: false,
     initData: initData,
+    onChange: onChange,
     hostConfigs: hostConfigs ?? HostConfigs(),
     listView: listView,
   );
