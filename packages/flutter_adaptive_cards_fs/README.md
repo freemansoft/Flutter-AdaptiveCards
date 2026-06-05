@@ -101,23 +101,87 @@ flowchart
   good[widget style good] --> container
   attention[widget style attention] --> container
   warning[widget style warning] --> container
-  unrecognized --> <tbd>
+  unrecognized["Unrecognized widget style"] --> hostConfig["Resolved from host_config"]
   end
 ```
 
-## Loading Data into fields outside of the AdaptiveCard JSON with `initData` / `initInput`
+## How runtime overlays work
 
-You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will seed input overlays on the document notifier.
+Host card JSON is stored as a **baseline** (deep-copied when the card loads; not mutated in place at runtime). User edits, visibility, validation, dynamic labels, and other runtime changes live in sparse **overlays** keyed by element `id` inside `AdaptiveCardDocumentNotifier`. Widgets render from a **resolved** view: baseline merged with overlays via `resolvedElementProvider(id)` and `resolvedActionProvider(id)`. The library installs a per-card `ProviderScope`; hosts call `RawAdaptiveCardState` APIs and do not need Riverpod in the app.
+
+```mermaid
+flowchart TB
+  hostMap["Host JSON map"] --> deepCopy["baseline deep copy"]
+  deepCopy --> index["nodesById index"]
+  deepCopy --> baselineNodes["Baseline nodes unchanged"]
+  userEdit["User input and host patches"] --> notifier["AdaptiveCardDocumentNotifier"]
+  notifier --> elemOver["overlaysById ElementOverlay"]
+  notifier --> actOver["actionOverlaysById ActionOverlay"]
+  baselineNodes --> mergeElem["resolvedElementProvider"]
+  elemOver --> mergeElem
+  baselineNodes --> mergeAct["resolvedActionProvider"]
+  actOver --> mergeAct
+  mergeElem --> widgets["Elements and inputs rebuild"]
+  mergeAct --> actions["Action buttons isEnabled"]
+  submitAction["Action.Submit"] --> collect["collectInputValues"]
+```
+
+Element overlays and action overlays are separate tables so input reset and merge logic stay isolated from `Action.*` nodes:
+
+```mermaid
+flowchart TB
+  subgraph adaptiveDoc ["AdaptiveCardDocument"]
+    baseline["baseline and nodesById"]
+    elemOver["overlaysById"]
+    actOver["actionOverlaysById"]
+  end
+  baseline --> resolvedElem["resolvedElementProvider"]
+  elemOver --> resolvedElem
+  baseline --> resolvedAct["resolvedActionProvider"]
+  actOver --> resolvedAct
+  resolvedElem --> inputs["Inputs TextBlock ChoiceSet visibility"]
+  resolvedAct --> actionUi["Submit ShowCard Action buttons"]
+```
+
+### Overlay fields (summary)
+
+| Overlay (element) | Resolved JSON key | Typical host API |
+| --- | --- | --- |
+| `inputValue` | `value` | `initInput`, user edit, `setInputValue` |
+| `choices`, query session | `choices` / `choices.data` | `loadInput`, `setChoices`, typeahead |
+| `isVisible` | `isVisible` | `setVisibility`, ToggleVisibility |
+| `errorMessage`, `isInvalid` | same | `setInputError`, Submit validation |
+| `isRequired`, `label`, `placeholder` | same | `applyUpdates` |
+| `text`, `url` | `text`, `url` | `setText`, dynamic media URLs |
+
+| Overlay (action) | Resolved key | API |
+| --- | --- | --- |
+| `isEnabled` | `isEnabled` | `setActionEnabled`, `setActionsEnabled` |
+
+For the full runtime-writes matrix and merge rules, see [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+
+### Seeding values (`initData` / `initInput`)
+
+You can load an Adaptive Card from JSON and pass a separate data map that seeds overlays on the document notifier:
 
 - `initData` is a widget parameter on `RawAdaptiveCard` / `AdaptiveCardsCanvas`.
 - On first frame, values are written to the document notifier (scalar entries become `{value: …}` patches; map entries are full per-id patches via `applyUpdatesFromMap`).
 - `initInput(map)` on `RawAdaptiveCardState` seeds flat `{id: value}` maps or patch maps when values are objects.
-- **`initInput` does not call `setState` on the card** — input widgets rebuild when their `resolvedElementProvider` listener fires. See [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card).
-- `loadInput(id, map)` replaces `Input.ChoiceSet` choices for [id] via `setChoices` (title → value map converted to `Input.Choice` list).
+- **`initInput` does not call `setState` on the card** — input widgets rebuild when `resolvedElementProvider` updates. See [Why initInput does not call setState](../../docs/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card).
+- `loadInput(id, map)` replaces `Input.ChoiceSet` choices for `id` via `setChoices` (title → value map converted to `Input.Choice` list).
 
-### Runtime overlays (host API on `RawAdaptiveCardState`)
+```mermaid
+flowchart LR
+  initDataNode["initData and initInput"] --> seed["seedInputValues"]
+  seed --> overlayNode["inputValue overlay"]
+  overlayNode --> resolved["resolvedElementProvider"]
+  resolved --> listener["ref.watch and ref.listen"]
+  listener --> rebuild["onDocumentValueChanged and rebuild"]
+```
 
-Without mutating card JSON, hosts can patch document state via:
+### Host APIs without mutating JSON
+
+Hosts patch document state via `RawAdaptiveCardState` (delegates to the document notifier). Bulk patches use typed `AdaptiveElementUpdate` / `AdaptiveActionUpdate` objects:
 
 | API | Use |
 | --- | --- |
@@ -127,7 +191,35 @@ Without mutating card JSON, hosts can patch document state via:
 | `setInputError(id, message:, isInvalid:)` / `clearInputError(id)` | Host validation on inputs |
 | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)` | Enable/disable `Action.*` (AC 1.5) |
 
-See [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+### Reset semantics
+
+`resetAllInputs()` and `resetInput(id)` perform a **factory reset** on `Input.*` elements: resolved `value`, `choices`, validation, `isRequired`, `label`, and `placeholder` return to baseline JSON. **Preserved:** `isVisible` and typeahead session fields on that input. **Not reset:** TextBlock `text`, Image `url`, and action overlays (`isEnabled`). Re-seed after reset with `initInput`, `applyUpdates`, or `applyUpdatesFromMap`.
+
+```mermaid
+flowchart TB
+  subgraph actionPath ["Action.ResetInputs"]
+    ActionReset["Action.ResetInputs"]
+    DefaultReset["DefaultResetInputsAction"]
+    ResetAll["resetAllInputs"]
+    ActionReset --> DefaultReset --> ResetAll
+  end
+  subgraph perInput ["Per-input factory reset"]
+    ResetOne["resetInput on notifier"]
+    MixinReset["AdaptiveInputMixin resetInput"]
+    MixinReset --> ResetOne
+    ResetAll --> ResetOne
+  end
+  ResetOne --> Overlays["Strip input overlay fields"]
+  Overlays --> Resolved["resolvedElementProvider"]
+  Resolved --> UI["Controllers validators labels rebuild"]
+```
+
+Details: [`docs/reactive-riverpod.md` — Reset semantics](../../docs/reactive-riverpod.md#reset-semantics). Form-focused summary: [`docs/form-inputs.md` — Reset behavior](../../docs/form-inputs.md#reset-behavior-resetallinputs--resetinput--resetinputs).
+
+### Further reading
+
+- [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md) — canonical overlay model, provider scopes, test matrix, backlog
+- [`docs/form-inputs.md`](../../docs/form-inputs.md) — form inputs, validation, and reset from a host perspective
 
 ## Event Handlers
 
