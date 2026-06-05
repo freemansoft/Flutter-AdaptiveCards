@@ -164,6 +164,7 @@ class AdaptiveDateInputState extends ConsumerState<AdaptiveDateInput>
                     final iso = selectedDateTime!.toIso8601String();
                     setDocumentInputValue(iso);
                     rawRootCardWidgetState.changeValue(id, iso);
+                    notifyUserInputValueChanged(iso, committed: true);
                   }
                 },
               ),

@@ -309,6 +309,41 @@ void main() {
       expect(resolvedText?['value'], 'baseline');
     });
 
+    test('resetInputs clears only listed ids in one revision', () {
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+        ..setInputValue('myText', 'typed text')
+        ..setInputValue('myChoice', 'dynamic choice');
+
+      final revisionBefore = notifier.state.revision;
+      notifier.resetInputs(['myText']);
+
+      expect(notifier.state.revision, revisionBefore + 1);
+      expect(notifier.state.overlaysById['myText'], isNull);
+      expect(
+        notifier.state.overlaysById['myChoice']?.inputValue,
+        'dynamic choice',
+      );
+    });
+
+    test('resetInputs with empty list is a no-op', () {
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+        ..setInputValue('myText', 'typed text');
+
+      final revisionBefore = notifier.state.revision;
+      notifier.resetInputs([]);
+
+      expect(notifier.state.revision, revisionBefore);
+      expect(notifier.state.overlaysById['myText']?.inputValue, 'typed text');
+    });
+
+    test('resetInputs skips unknown ids silently', () {
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+        ..setInputValue('myText', 'typed text')
+        ..resetInputs(['missing', 'visibleBlock', 'myText']);
+
+      expect(notifier.state.overlaysById['myText'], isNull);
+    });
+
     group('validation and action overlays', () {
       late ProviderContainer actionContainer;
 

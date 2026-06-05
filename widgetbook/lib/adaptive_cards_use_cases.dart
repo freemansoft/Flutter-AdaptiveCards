@@ -997,6 +997,17 @@ Widget buildV16ActionsReset(BuildContext context) {
 }
 
 @widgetbook.UseCase(
+  name: 'Actions.Reset (targeted)',
+  type: widget_types.Actions,
+  path: '[Components]',
+)
+Widget buildV16ActionsResetTargeted(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/v1.6/action_reset_inputs_targeted.json',
+  );
+}
+
+@widgetbook.UseCase(
   name: 'Actions.OpenUrlDialog',
   type: widget_types.Actions,
   path: '[Components]',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/action/reset_inputs_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
@@ -258,14 +259,53 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   Map<String, dynamic> get _inputAdaptiveMap => _inputElement.adaptiveMap;
 
+  Object? _lastValueChangedActionTriggeredValue;
+
+  bool get _inputRequiresCommittedValueChangedAction {
+    final type = _inputAdaptiveMap['type'] as String?;
+    return type == 'Input.Text' || type == 'Input.Number';
+  }
+
+  /// Runs embedded `valueChangedAction` when the user changes this input.
+  ///
+  /// Discrete inputs pass [committed] as `true` on each change. Text and
+  /// number inputs pass `true` only on focus loss or editing complete.
+  void notifyUserInputValueChanged(
+    Object? value, {
+    required bool committed,
+  }) {
+    if (_inputRequiresCommittedValueChangedAction && !committed) {
+      return;
+    }
+
+    if (_lastValueChangedActionTriggeredValue == value) {
+      return;
+    }
+
+    final actionRaw = _inputAdaptiveMap['valueChangedAction'];
+    if (actionRaw is! Map) {
+      return;
+    }
+
+    final actionMap = Map<String, dynamic>.from(actionRaw);
+    if (actionMap['type'] != 'Action.ResetInputs') {
+      return;
+    }
+
+    _lastValueChangedActionTriggeredValue = value;
+    executeResetInputsAction(context, actionMap);
+  }
+
   /// Marks this input invalid via the document notifier (Form validators,
   /// [checkRequired]). Omit [errorMessage] to use baseline JSON message.
   void setLocalValidationError({String? errorMessage}) {
-    ref.read(adaptiveCardDocumentProvider.notifier).setInputError(
-      _inputId,
-      errorMessage: errorMessage,
-      isInvalid: true,
-    );
+    ref
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputError(
+          _inputId,
+          errorMessage: errorMessage,
+          isInvalid: true,
+        );
   }
 
   /// Clears validation overlays for this input (e.g. when Form validation passes).

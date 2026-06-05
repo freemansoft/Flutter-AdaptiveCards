@@ -28,6 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`resetInput(id)`** on the document notifier and **`RawAdaptiveCardState`**; **`AdaptiveInputMixin.resetInput()`** delegates to the notifier.
 - Factory reset clears input overlays including **`label`**, **`placeholder`**, and **`isRequired`** (resolved → baseline JSON). See [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#reset-semantics).
 - Design spec: [`docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md`](../../docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md).
+- **`Action.ResetInputs`** **`targetInputIds`**: reset only listed input ids; omitted property resets all inputs; empty array resets nothing. Shared executor used by action button tap and input **`valueChangedAction`**.
+- **`valueChangedAction`** on **`Input.*`**: when the user changes a field, runs embedded **`Action.ResetInputs`** (e.g. dependent ChoiceSet / country–city). Discrete inputs fire immediately; **`Input.Text`** / **`Input.Number`** fire on focus loss or editing complete, not each keystroke.
+- Document notifier **`resetInputs(List<String> ids)`** — batch factory reset in one revision (same overlay rules as **`resetInput(id)`**).
+- Sample `test/samples/action_reset_inputs_targeted.json`; tests for targeted reset and **`valueChangedAction`**; Widgetbook **`Actions.Reset (targeted)`** use case.
+- Design spec: [`docs/superpowers/specs/2026-06-04-action-resetinputs-targetinputids-design.md`](../../docs/superpowers/specs/2026-06-04-action-resetinputs-targetinputids-design.md).
 
 ### Changed 0.8.0
 

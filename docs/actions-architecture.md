@@ -84,6 +84,20 @@ Tests: [`test/actions/action_enabled_overlay_test.dart`](../packages/flutter_ada
 
 ---
 
+## Action.ResetInputs (Teams extension)
+
+`Action.ResetInputs` factory-resets input overlays to baseline JSON. **`targetInputIds`** (optional array of input ids) limits which fields are reset; when omitted, all inputs reset. An empty array is a no-op.
+
+**`DefaultResetInputsAction`** delegates to **`executeResetInputsAction`** in `lib/src/action/reset_inputs_executor.dart`.
+
+Input elements may embed **`valueChangedAction`** with `{ "type": "Action.ResetInputs", "targetInputIds": [...] }` so changing one field resets dependents (e.g. country → city). **`AdaptiveInputMixin.notifyUserInputValueChanged`** handles this from each input widget.
+
+Tests: [`test/inputs/action_reset_inputs_test.dart`](../packages/flutter_adaptive_cards_fs/test/inputs/action_reset_inputs_test.dart), [`test/inputs/action_reset_inputs_targeted_test.dart`](../packages/flutter_adaptive_cards_fs/test/inputs/action_reset_inputs_targeted_test.dart), [`test/inputs/value_changed_action_reset_test.dart`](../packages/flutter_adaptive_cards_fs/test/inputs/value_changed_action_reset_test.dart). Widgetbook: **Actions.Reset (targeted)**.
+
+Spec: [`docs/superpowers/specs/2026-06-04-action-resetinputs-targetinputids-design.md`](superpowers/specs/2026-06-04-action-resetinputs-targetinputids-design.md).
+
+---
+
 ## Tests & Migration Notes ⚠️
 
 - Existing consumers should continue to rely on `Generic*` types; concrete `Default*` classes are only used by the default registry.
@@ -97,6 +111,7 @@ Tests: [`test/actions/action_enabled_overlay_test.dart`](../packages/flutter_ada
 
 - `lib/src/action/generic_action.dart` — abstract `Generic*` interfaces
 - `lib/src/action/default_actions.dart` — concrete `Default*` implementations
+- `lib/src/action/reset_inputs_executor.dart` — `Action.ResetInputs` / `targetInputIds` dispatch
 - `lib/src/action/action_type_registry.dart` — default registry mapping action types to implementations
 - `lib/src/cards/actions/*` — action widgets and call sites
 

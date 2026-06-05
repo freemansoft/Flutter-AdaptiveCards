@@ -106,6 +106,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildV16ActionsReset,
           ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Actions.Reset (targeted)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ActionsResetTargeted,
+          ),
         ],
       ),
       _widgetbook.WidgetbookComponent(

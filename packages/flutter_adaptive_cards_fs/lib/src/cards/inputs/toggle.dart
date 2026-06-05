@@ -75,6 +75,7 @@ class AdaptiveToggleState extends ConsumerState<AdaptiveToggle>
                 final docValue = boolValue ? valueOn : valueOff;
                 setDocumentInputValue(docValue);
                 rawRootCardWidgetState.changeValue(id, docValue);
+                notifyUserInputValueChanged(docValue, committed: true);
               },
             ),
             Expanded(

@@ -35,13 +35,38 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
   TextEditingController controller = TextEditingController();
+  late FocusNode _focusNode;
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
   bool _initialValueSynced = false;
 
-  late bool isMultiline;
   late int maxLength;
   TextInputType? inputStyle;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus || _isUpdatingFromDocument) {
+      return;
+    }
+    notifyUserInputValueChanged(controller.text, committed: true);
+  }
+
+  @override
+  void dispose() {
+    _focusNode
+      ..removeListener(_onFocusChange)
+      ..dispose();
+    controller.dispose();
+    super.dispose();
+  }
+
+  late bool isMultiline;
 
   @override
   void didChangeDependencies() {
@@ -96,6 +121,7 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
               height: 40,
               child: TextFormField(
                 key: generateWidgetKey(adaptiveMap),
+                focusNode: _focusNode,
                 style: const TextStyle(),
                 controller: controller,
                 // maxLength: maxLength,
@@ -143,6 +169,9 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
                   }
                   clearLocalValidationError();
                   return null;
+                },
+                onEditingComplete: () {
+                  notifyUserInputValueChanged(controller.text, committed: true);
                 },
               ),
             ),

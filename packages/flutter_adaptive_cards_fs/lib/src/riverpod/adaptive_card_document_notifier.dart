@@ -480,16 +480,30 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   /// See [resetAllInputs] for batch reset and
   /// `docs/reactive-riverpod.md#reset-semantics`.
   void resetInput(String id) {
-    final node = state.nodesById[id];
-    if (node == null) return;
-    final type = node['type'] as String?;
-    if (type == null || !type.startsWith('Input.')) return;
+    resetInputs([id]);
+  }
 
+  /// Factory-resets the listed input ids in one revision using the same rules
+  /// as [resetInput]. Unknown or non-input ids are skipped silently.
+  void resetInputs(List<String> ids) {
     final overlays = Map<String, ElementOverlay>.from(state.overlaysById);
-    final current = overlays[id];
-    if (current == null) return;
+    var changed = false;
 
-    _applyFactoryResetToOverlayMap(overlays, id, current);
+    for (final id in ids) {
+      final node = state.nodesById[id];
+      if (node == null) continue;
+      final type = node['type'] as String?;
+      if (type == null || !type.startsWith('Input.')) continue;
+
+      final current = overlays[id];
+      if (current == null) continue;
+
+      _applyFactoryResetToOverlayMap(overlays, id, current);
+      changed = true;
+    }
+
+    if (!changed) return;
+
     state = state.copyWith(
       overlaysById: overlays,
       revision: state.revision + 1,

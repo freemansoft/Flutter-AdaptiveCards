@@ -330,7 +330,9 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
 
     /// notify the card that the value has changed so it can invoke custom behavior
     rawRootCardWidgetState.changeValue(id, choice, dataQuery: dataQuery);
-    setDocumentInputValue(_selectedChoices.join(','));
+    final joined = _selectedChoices.join(',');
+    setDocumentInputValue(joined);
+    notifyUserInputValueChanged(joined, committed: true);
     setState(() {
       controller.text = _selectedChoices.isNotEmpty
           ? _selectedChoices.first

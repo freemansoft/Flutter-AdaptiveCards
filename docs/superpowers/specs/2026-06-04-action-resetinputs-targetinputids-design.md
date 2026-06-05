@@ -1,7 +1,7 @@
 # Action.ResetInputs `targetInputIds` and `valueChangedAction`
 
-**Date:** 2026-06-04  
-**Status:** Approved  
+**Date:** 2026-06-04
+**Status:** Implemented (2026-06-04)
 **Related:** [Overlay reset semantics](2026-06-03-overlay-reset-semantics-design.md), [Teams dependent inputs](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/dynamic-search#dependent-inputs), [`docs/reactive-riverpod.md`](../../reactive-riverpod.md), [`docs/form-inputs.md`](../../form-inputs.md)
 
 ## Summary
@@ -146,7 +146,7 @@ void resetInputs(List<String> ids);
 
 ### Sample: targeted button reset
 
-**File:** `packages/flutter_adaptive_cards_fs/test/samples/action_reset_inputs_targeted.json`  
+**File:** `packages/flutter_adaptive_cards_fs/test/samples/action_reset_inputs_targeted.json`
 **Mirror:** `widgetbook/lib/samples/v1.6/action_reset_inputs_targeted.json`
 
 Card contents:
@@ -197,7 +197,7 @@ Keep existing `Actions.Reset` full-reset sample unchanged.
 | [`docs/actions-architecture.md`](../../actions-architecture.md) | `Action.ResetInputs` section: `targetInputIds`, executor, Teams extension note |
 | [`docs/Implementation-Status.md`](../../Implementation-Status.md) | `Action.ResetInputs` tests ✅; `valueChangedAction` ✅ |
 | [`2026-06-03-overlay-reset-semantics-design.md`](2026-06-03-overlay-reset-semantics-design.md) | Short cross-link to targeted reset / `valueChangedAction` |
-| [`packages/flutter_adaptive_cards_fs/CHANGELOG.md`](../../../packages/flutter_adaptive_cards_fs/CHANGELOG.md) | Feature entry under Unreleased |
+| [`packages/flutter_adaptive_cards_fs/CHANGELOG.md`](../../../packages/flutter_adaptive_cards_fs/CHANGELOG.md) | Feature entry under `[0.8.0]` Added (updated with spec) |
 
 ## Out of scope
 

@@ -54,9 +54,11 @@ onSubmit: (data) async {
 
 See [`reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
-## Reset behavior (`resetAllInputs` / `resetInput`)
+## Reset behavior (`resetAllInputs` / `resetInput` / `resetInputs`)
 
-`Action.ResetInputs` calls **`resetAllInputs()`** on the document notifier. Hosts can reset a single field with **`resetInput(id)`** (notifier; mixin delegates for widget sync).
+`Action.ResetInputs` uses **`executeResetInputsAction`**: omitted **`targetInputIds`** → **`resetAllInputs()`**; non-empty list → **`resetInputs(ids)`**; empty **`[]`** → no-op. Hosts can reset one field with **`resetInput(id)`** (notifier; mixin delegates for widget sync).
+
+Input elements may define **`valueChangedAction`** with embedded **`Action.ResetInputs`** (Teams dependent-input pattern). When the user changes the field, listed targets are factory-reset. **`Input.ChoiceSet`**, **`Input.Date`**, **`Input.Time`**, and **`Input.Toggle`** fire immediately; **`Input.Text`** and **`Input.Number`** fire on focus loss or editing complete (not each keystroke).
 
 Both APIs use the same **factory reset to baseline** for `Input.*` elements:
 
@@ -66,7 +68,7 @@ Both APIs use the same **factory reset to baseline** for `Input.*` elements:
 
 To restore host-driven state after reset, call `initInput`, `applyUpdates`, or `applyUpdatesFromMap` again.
 
-Full detail: [Reset semantics](reactive-riverpod.md#reset-semantics). Spec: [`docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md`](superpowers/specs/2026-06-03-overlay-reset-semantics-design.md).
+Full detail: [Reset semantics](reactive-riverpod.md#reset-semantics). Specs: [`2026-06-03-overlay-reset-semantics-design.md`](superpowers/specs/2026-06-03-overlay-reset-semantics-design.md), [`2026-06-04-action-resetinputs-targetinputids-design.md`](superpowers/specs/2026-06-04-action-resetinputs-targetinputids-design.md).
 
 ## Overlay tests
 
@@ -78,6 +80,7 @@ Dedicated overlay tests (beyond per-input layout tests under `test/inputs/`):
 | Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/input_error_overlay_test.dart` (Input.Text, Input.Number) |
 | ChoiceSet dynamic choices | `test/inputs/choice_set_overlay_test.dart` |
 | Notifier contract | `test/riverpod/adaptive_card_document_notifier_test.dart` |
+| Targeted reset / `valueChangedAction` | `test/inputs/action_reset_inputs_targeted_test.dart`, `test/inputs/value_changed_action_reset_test.dart` |
 
 See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage) for the full list and gaps.
 

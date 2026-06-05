@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
+import 'package:flutter_adaptive_cards_fs/src/action/reset_inputs_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
@@ -223,8 +224,7 @@ class DefaultResetInputsAction extends GenericActionResetInputs {
     required RawAdaptiveCardState rawAdaptiveCardState,
     required Map<String, dynamic> adaptiveMap,
   }) {
-    final container = ProviderScope.containerOf(context);
-    container.read(adaptiveCardDocumentProvider.notifier).resetAllInputs();
+    executeResetInputsAction(context, adaptiveMap);
   }
 }
 

@@ -158,3 +158,5 @@ Documentation items 1–3 are complete in-repo. Remaining code work:
 ## Open questions
 
 None for v1 — factory reset policy is fixed as above. If product later wants “soft reset” (preserve conditional required/labels), add a separate `softResetInput` API; do not overload `resetInput`.
+
+**Related:** targeted reset via `Action.ResetInputs` **`targetInputIds`** and input **`valueChangedAction`** — [`2026-06-04-action-resetinputs-targetinputids-design.md`](2026-06-04-action-resetinputs-targetinputids-design.md).

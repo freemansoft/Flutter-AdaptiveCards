@@ -35,6 +35,7 @@ class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
   TextEditingController controller = TextEditingController();
+  late FocusNode _focusNode;
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
   bool _initialValueSynced = false;
@@ -46,6 +47,24 @@ class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
     super.initState();
     min = adaptiveMap['min'] as int? ?? 0;
     max = adaptiveMap['max'] as int? ?? 100;
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus || _isUpdatingFromDocument) {
+      return;
+    }
+    notifyUserInputValueChanged(controller.text, committed: true);
+  }
+
+  @override
+  void dispose() {
+    _focusNode
+      ..removeListener(_onFocusChange)
+      ..dispose();
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -98,6 +117,7 @@ class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
               height: 40,
               child: TextFormField(
                 key: generateWidgetKey(adaptiveMap),
+                focusNode: _focusNode,
                 style: const TextStyle(),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -140,6 +160,9 @@ class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
                   }
                   clearLocalValidationError();
                   return null;
+                },
+                onEditingComplete: () {
+                  notifyUserInputValueChanged(controller.text, committed: true);
                 },
               ),
             ),

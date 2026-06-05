@@ -156,14 +156,15 @@ The host’s map instance is never mutated in place.
 
 | API                                             | Scope                           | Typical caller                                               |
 | ----------------------------------------------- | ------------------------------- | ------------------------------------------------------------ |
-| `AdaptiveCardDocumentNotifier.resetAllInputs()` | All `Input.*` ids, one revision | `Action.ResetInputs` (`DefaultResetInputsAction`), host code |
+| `AdaptiveCardDocumentNotifier.resetAllInputs()` | All `Input.*` ids, one revision | `Action.ResetInputs` without `targetInputIds`, host code     |
+| `AdaptiveCardDocumentNotifier.resetInputs(ids)` | Listed input ids, one revision  | `Action.ResetInputs` with `targetInputIds`, `valueChangedAction` |
 | `AdaptiveCardDocumentNotifier.resetInput(id)`   | One input id                    | Host code; invoked from mixin `resetInput()`                 |
 
 `AdaptiveInputMixin.resetInput()` should delegate to the notifier so overlay clear and UI stay in sync via `resolvedElementProvider(id)`. Subclass overrides sync controllers only — they must not be the sole reset path.
 
 After reset, hosts can re-seed runtime state with `initInput`, `applyUpdates`, or `applyUpdatesFromMap`.
 
-Spec: [`docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md`](superpowers/specs/2026-06-03-overlay-reset-semantics-design.md).
+Spec: [`docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md`](superpowers/specs/2026-06-03-overlay-reset-semantics-design.md). Targeted reset and `valueChangedAction`: [`2026-06-04-action-resetinputs-targetinputids-design.md`](superpowers/specs/2026-06-04-action-resetinputs-targetinputids-design.md).
 
 ### Resolved view (what widgets and actions read)
 

@@ -104,6 +104,7 @@ class AdaptiveTimeInputState extends ConsumerState<AdaptiveTimeInput>
                     '${result.hour.toString().padLeft(2, '0')}:${result.minute.toString().padLeft(2, '0')}';
                 setDocumentInputValue(value);
                 rawRootCardWidgetState.changeValue(id, value);
+                notifyUserInputValueChanged(value, committed: true);
               }
             } else {
               setState(() {
