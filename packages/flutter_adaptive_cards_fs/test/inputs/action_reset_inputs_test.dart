@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../utils/test_utils.dart';
@@ -98,5 +101,75 @@ void main() {
     final Map<String, dynamic> resetChoiceOut = {};
     choiceState.appendInput(resetChoiceOut);
     expect(resetChoiceOut['myChoiceSet'], equals(''));
+  });
+
+  testWidgets(
+    'ResetInputs action restores static choices after loadInput dynamic overlay',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        getTestWidgetFromPath(path: 'action_reset_inputs.json'),
+      );
+      await tester.pumpAndSettle();
+
+      tester
+          .state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
+          .loadInput('myChoiceSet', {
+            'Dynamic Only': 'dyn',
+          });
+      await tester.pumpAndSettle();
+
+      expect(find.text('Dynamic Only'), findsOneWidget);
+      expect(find.text('Choice 1'), findsNothing);
+
+      await tester.tap(find.text('Dynamic Only'));
+      await tester.pumpAndSettle();
+
+      final choiceState = tester.state<AdaptiveChoiceSetState>(
+        find.byType(AdaptiveChoiceSet),
+      );
+      final Map<String, dynamic> selected = {};
+      choiceState.appendInput(selected);
+      expect(selected['myChoiceSet'], 'dyn');
+
+      await tester.tap(find.text('Reset Inputs'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choice 1'), findsOneWidget);
+      expect(find.text('Choice 2'), findsOneWidget);
+      expect(find.text('Dynamic Only'), findsNothing);
+
+      final Map<String, dynamic> resetChoiceOut = {};
+      choiceState.appendInput(resetChoiceOut);
+      expect(resetChoiceOut['myChoiceSet'], equals(''));
+    },
+  );
+
+  testWidgets('ResetInputs clears validation overlays on inputs', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      getTestWidgetFromPath(path: 'action_reset_inputs.json'),
+    );
+    await tester.pumpAndSettle();
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byKey(generateWidgetKeyFromId('myText1'))),
+    );
+    container.read(adaptiveCardDocumentProvider.notifier).setInputError(
+      'myText1',
+      errorMessage: 'Invalid value',
+      isInvalid: true,
+    );
+    await tester.pump();
+    expect(find.text('Invalid value'), findsOneWidget);
+
+    await tester.tap(find.text('Reset Inputs'));
+    await tester.pump();
+
+    expect(find.text('Invalid value'), findsNothing);
+    expect(
+      container.read(resolvedElementProvider('myText1'))?['isInvalid'],
+      isNull,
+    );
   });
 }

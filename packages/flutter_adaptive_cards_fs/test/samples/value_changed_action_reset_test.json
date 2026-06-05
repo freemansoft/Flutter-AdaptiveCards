@@ -1,0 +1,52 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Country / City",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "country",
+      "style": "expanded",
+      "label": "Country",
+      "choices": [
+        {
+          "title": "USA",
+          "value": "usa"
+        },
+        {
+          "title": "France",
+          "value": "france"
+        },
+        {
+          "title": "India",
+          "value": "india"
+        }
+      ],
+      "valueChangedAction": {
+        "type": "Action.ResetInputs",
+        "targetInputIds": ["city"]
+      }
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "city",
+      "style": "expanded",
+      "label": "City",
+      "choices": [
+        {
+          "title": "Paris",
+          "value": "paris"
+        },
+        {
+          "title": "Lyon",
+          "value": "lyon"
+        }
+      ],
+      "value": "paris"
+    }
+  ]
+}

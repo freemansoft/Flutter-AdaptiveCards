@@ -40,19 +40,19 @@ class NetworkPage extends StatelessWidget {
               return true;
             }());
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  format(
-                    'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
-                    id,
-                    value,
-                    dataQuery,
-                    state,
-                  ),
-                ),
-              ),
-            );
+            // ScaffoldMessenger.of(context).showSnackBar(
+            //   SnackBar(
+            //     content: Text(
+            //       format(
+            //         'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
+            //         id,
+            //         value,
+            //         dataQuery,
+            //         state,
+            //       ),
+            //     ),
+            //   ),
+            // );
           },
 
           hostConfigs: HostConfigs(),

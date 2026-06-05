@@ -44,6 +44,7 @@ class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
     return IconButtonAction(
       adaptiveMap: adaptiveMap,
       onTapped: (BuildContext context) {
+        // [GenericExecuteAction]
         action.tap(
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,

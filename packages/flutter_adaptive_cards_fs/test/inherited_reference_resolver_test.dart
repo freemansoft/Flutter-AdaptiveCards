@@ -1,13 +1,14 @@
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/text_block.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
-import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
 
 void main() {
-  testWidgets('InheritedReferenceResolver rawCardScopeOf exposes outer services', (
+  testWidgets('ProviderScope exposes raw-card scoped services', (
     WidgetTester tester,
   ) async {
     final map = <String, dynamic>{
@@ -34,17 +35,18 @@ void main() {
       find.byType(AdaptiveTextBlock),
     );
 
-    final scope = InheritedReferenceResolver.rawCardScopeOf(textState.context);
+    final container = ProviderScope.containerOf(textState.context);
 
-    expect(scope.rawAdaptiveCardState, same(rawState));
+    expect(container.read(rawAdaptiveCardStateProvider), same(rawState));
     expect(textState.rawRootCardWidgetState, same(rawState));
-    expect(scope.resolver, isNotNull);
-    expect(scope.resolver.cardTypeRegistry, isNotNull);
-    expect(scope.resolver.actionTypeRegistry, isNotNull);
+    final resolver = container.read(styleReferenceResolverProvider);
+    expect(resolver, isNotNull);
+    expect(container.read(cardTypeRegistryProvider), isNotNull);
+    expect(container.read(actionTypeRegistryProvider), isNotNull);
   });
 
   testWidgets(
-    'InheritedReferenceResolver elementScopeOf exposes per-card element state',
+    'ProviderScope exposes per-card element state',
     (WidgetTester tester) async {
       final map = <String, dynamic>{
         'type': 'AdaptiveCard',
@@ -70,11 +72,12 @@ void main() {
         find.byType(AdaptiveTextBlock),
       );
 
-      final elementScope = InheritedReferenceResolver.elementScopeOf(
-        textState.context,
-      );
+      final container = ProviderScope.containerOf(textState.context);
 
-      expect(elementScope.adaptiveCardElementState, same(cardElementState));
+      expect(
+        container.read(adaptiveCardElementStateProvider),
+        same(cardElementState),
+      );
       expect(textState.adaptiveCardElementState, same(cardElementState));
     },
   );

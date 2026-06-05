@@ -28,6 +28,7 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
 class IconButtonActionState extends State<IconButtonAction>
     with
         AdaptiveActionMixin,
+        AdaptiveActionStateMixin,
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
@@ -53,9 +54,11 @@ class IconButtonActionState extends State<IconButtonAction>
       ),
     );
 
+    final onPressed = actionEnabled ? () => widget.onTapped(context) : null;
+
     final theButton = (iconUrl != null)
         ? ElevatedButton.icon(
-            onPressed: () => widget.onTapped(context),
+            onPressed: onPressed,
             style: buttonStyle,
             icon: AdaptiveImageUtils.getImage(
               iconUrl!,
@@ -65,7 +68,7 @@ class IconButtonActionState extends State<IconButtonAction>
             label: Text(title),
           )
         : ElevatedButton(
-            onPressed: () => widget.onTapped(context),
+            onPressed: onPressed,
             style: buttonStyle,
             child: Text(title),
           );

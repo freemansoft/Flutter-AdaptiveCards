@@ -1,14 +1,14 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/action/reset_inputs_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
-import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/resolved_input_state.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
-import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Mixin for widgets that are adaptive elements- widget and not state
 
@@ -23,27 +23,25 @@ mixin AdaptiveElementWidgetMixin on StatefulWidget {
 }
 
 mixin ProviderScopeMixin<T extends StatefulWidget> on State<T> {
-  InheritedReferenceResolver get _rawCardScope =>
-      InheritedReferenceResolver.rawCardScopeOf(context);
+  ProviderContainer get _container => ProviderScope.containerOf(context);
 
   RawAdaptiveCardState get rawRootCardWidgetState =>
-      _rawCardScope.rawAdaptiveCardState!;
+      _container.read(rawAdaptiveCardStateProvider);
 
-  CardTypeRegistry get cardTypeRegistry => _rawCardScope.resolver.cardTypeRegistry;
+  CardTypeRegistry get cardTypeRegistry =>
+      _container.read(cardTypeRegistryProvider);
 
   ActionTypeRegistry get actionTypeRegistry =>
-      _rawCardScope.resolver.actionTypeRegistry;
+      _container.read(actionTypeRegistryProvider);
 
   AdaptiveCardElementState get adaptiveCardElementState =>
-      InheritedReferenceResolver.elementScopeOf(context)
-          .adaptiveCardElementState!;
+      _container.read(adaptiveCardElementStateProvider);
 
-  ReferenceResolver get styleResolver => _rawCardScope.resolver;
+  ReferenceResolver get styleResolver =>
+      _container.read(styleReferenceResolverProvider);
 }
 
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
-  AdaptiveCardElementState? _cardElementScopeState;
-
   String get id => widget.id;
 
   String? get style => (adaptiveMap['style'] as String?)?.toLowerCase();
@@ -58,24 +56,6 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _cardElementScopeState = InheritedReferenceResolver.maybeElementStateOf(
-      context,
-    );
-    // only register cards with IDs so we can target them
-    if (idIsNatural(adaptiveMap)) {
-      // register cards with IDs so we can target them
-      // At one time this was only used for showCard
-      _cardElementScopeState?.registerCardWidget(id, widget);
-    } else {
-      // a lot of them don't have ids
-      assert(() {
-        developer.log(
-          'Did not register $id No natural id found for type: $runtimeType',
-          name: runtimeType.toString(),
-        );
-        return true;
-      }());
-    }
   }
 
   @override
@@ -90,9 +70,6 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
 
   @override
   void dispose() {
-    if (idIsNatural(adaptiveMap)) {
-      _cardElementScopeState?.unregisterCardWidget(id);
-    }
     super.dispose();
   }
 
@@ -213,29 +190,161 @@ bool backgroundImageSpecified(Map element) {
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   String get title => adaptiveMap['title'] as String? ?? '';
+
   String? get tooltip => adaptiveMap['tooltip'] as String?;
 }
 
-mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
+/// Subscribes to [resolvedActionProvider] for `isEnabled`, `title`, and `tooltip`.
+mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
-  late String value;
-  late String placeholder;
-  late String? errorMessage;
+  bool _actionEnabled = true;
+  String _actionTitle = '';
+  String? _actionTooltip;
+  ProviderSubscription<Map<String, dynamic>?>? _actionStateSubscription;
+
+  /// Whether the action accepts presses per merged baseline + overlay.
+  bool get actionEnabled => _actionEnabled;
+
+  String get title => _actionTitle;
+
+  String? get tooltip => _actionTooltip;
 
   @override
   void initState() {
     super.initState();
-    value = adaptiveMap['value'].toString() == 'null'
-        ? ''
-        : adaptiveMap['value'].toString();
-
-    placeholder =
-        adaptiveMap['placeholder'] as String? ??
-        adaptiveMap['label'] as String? ??
-        '';
-
-    errorMessage = adaptiveMap['errorMessage'] as String?;
+    _actionTitle = adaptiveMap['title'] as String? ?? '';
+    _actionTooltip = adaptiveMap['tooltip'] as String?;
+    _actionEnabled = adaptiveMap['isEnabled'] != false;
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _actionStateSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _actionStateSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedActionProvider(id),
+      (previous, next) {
+        final enabled = next?['isEnabled'] != false;
+        final nextTitle = next?['title'] as String? ?? '';
+        final nextTooltip = next?['tooltip'] as String?;
+        if (enabled == _actionEnabled &&
+            nextTitle == _actionTitle &&
+            nextTooltip == _actionTooltip) {
+          return;
+        }
+        setState(() {
+          _actionEnabled = enabled;
+          _actionTitle = nextTitle;
+          _actionTooltip = nextTooltip;
+        });
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _actionStateSubscription?.close();
+    _actionStateSubscription = null;
+    super.dispose();
+  }
+}
+
+mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
+  AdaptiveElementWidgetMixin get _inputElement =>
+      widget as AdaptiveElementWidgetMixin;
+
+  String get _inputId => _inputElement.id;
+
+  Map<String, dynamic> get _inputAdaptiveMap => _inputElement.adaptiveMap;
+
+  Object? _lastValueChangedActionTriggeredValue;
+
+  bool get _inputRequiresCommittedValueChangedAction {
+    final type = _inputAdaptiveMap['type'] as String?;
+    return type == 'Input.Text' || type == 'Input.Number';
+  }
+
+  /// Runs embedded `valueChangedAction` when the user changes this input.
+  ///
+  /// Discrete inputs pass [committed] as `true` on each change. Text and
+  /// number inputs pass `true` only on focus loss or editing complete.
+  void notifyUserInputValueChanged(
+    Object? value, {
+    required bool committed,
+  }) {
+    if (_inputRequiresCommittedValueChangedAction && !committed) {
+      return;
+    }
+
+    if (_lastValueChangedActionTriggeredValue == value) {
+      return;
+    }
+
+    final actionRaw = _inputAdaptiveMap['valueChangedAction'];
+    if (actionRaw is! Map) {
+      return;
+    }
+
+    final actionMap = Map<String, dynamic>.from(actionRaw);
+    if (actionMap['type'] != 'Action.ResetInputs') {
+      return;
+    }
+
+    _lastValueChangedActionTriggeredValue = value;
+    executeResetInputsAction(context, actionMap);
+  }
+
+  /// Marks this input invalid via the document notifier (Form validators,
+  /// [checkRequired]). Omit [errorMessage] to use baseline JSON message.
+  void setLocalValidationError({String? errorMessage}) {
+    ref
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputError(
+          _inputId,
+          errorMessage: errorMessage,
+          isInvalid: true,
+        );
+  }
+
+  /// Clears validation overlays for this input (e.g. when Form validation passes).
+  void clearLocalValidationError() {
+    ref.read(adaptiveCardDocumentProvider.notifier).clearInputError(_inputId);
+  }
+
+  /// Subscribes during [build]; returns merged baseline + overlay input state.
+  ResolvedInputState watchResolvedInput() {
+    final resolved = ref.watch(resolvedElementProvider(_inputId));
+    return ResolvedInputState(resolved ?? _inputAdaptiveMap);
+  }
+
+  /// Imperative read for [checkRequired], [resetInput], and init seeding.
+  ResolvedInputState readResolvedInput() {
+    final resolved = ref.read(resolvedElementProvider(_inputId));
+    return ResolvedInputState(resolved ?? _inputAdaptiveMap);
+  }
+
+  /// Call at the top of [build] to sync controllers when resolved value changes.
+  void listenForResolvedValueChanges() {
+    ref.listen(resolvedElementProvider(_inputId), (previous, next) {
+      if (previous?['value'] == next?['value']) return;
+      final value = next?['value'];
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        onDocumentValueChanged(value);
+      });
+    });
+  }
+
+  void setDocumentInputValue(Object? newValue) {
+    ref
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputValue(_inputId, newValue);
+  }
+
+  /// Subclasses can override to sync controllers from document changes.
+  void onDocumentValueChanged(Object? valueFromDocument) {}
 
   /// Input cards implement this to copy their state **to** the map
   void appendInput(Map map);
@@ -250,67 +359,67 @@ mixin AdaptiveInputMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   /// to check if they are required and there is a value
   bool checkRequired();
 
+  /// Factory-resets this input via the document notifier, then syncs local UI
+  /// from resolved state via [onDocumentValueChanged].
+  ///
+  /// Subclasses should override only to sync controllers or selection UI;
+  /// do not clear overlays locally. See `docs/reactive-riverpod.md#reset-semantics`.
   void resetInput() {
-    // Default implementation: reset to initial value to the map value
-    if (adaptiveMap.containsKey('value')) {
-      assert(() {
-        developer.log(
-          'resetting value to ${adaptiveMap['value']} string for $id',
-          name: runtimeType.toString(),
-        );
-        return true;
-      }());
-      value = adaptiveMap['value'].toString();
-    } else {
-      assert(() {
-        developer.log(
-          'resetting value to empty string for $id',
-          name: runtimeType.toString(),
-        );
-        return true;
-      }());
-      value = ''; // default value for inputs that don't have one
-    }
-    // Subclasses should override update their text controllers etc.
+    ref.read(adaptiveCardDocumentProvider.notifier).resetInput(_inputId);
+    onDocumentValueChanged(readResolvedInput().valueRaw);
   }
 }
 
-mixin AdaptiveTextualInputMixin<T extends AdaptiveElementWidgetMixin>
-    on State<T>
-    implements AdaptiveInputMixin<T> {
-  @override
-  void initState() {
-    super.initState();
-  }
-}
+mixin AdaptiveTextualInputMixin<T extends ConsumerStatefulWidget>
+    on ConsumerState<T> {}
 
 mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   late bool isVisible;
+  ProviderSubscription<Map<String, dynamic>?>? _visibilitySubscription;
+
+  bool _parseIsVisible(Object? value) {
+    if (value == null) return true;
+    if (value is bool) return value;
+    if (value is String) return value.toLowerCase() == 'true';
+    return true;
+  }
 
   @override
   void initState() {
     super.initState();
-    // Parse isVisible from adaptiveMap
-    // Handle: 'true'/'false' strings, boolean, null/absent (default true)
-    final isVisibleValue = adaptiveMap['isVisible'];
-    if (isVisibleValue == null) {
-      isVisible = true;
-    } else if (isVisibleValue is bool) {
-      isVisible = isVisibleValue;
-    } else if (isVisibleValue is String) {
-      isVisible = isVisibleValue.toLowerCase() == 'true';
-    } else {
-      isVisible = true; // default
-    }
+    isVisible = true;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _visibilitySubscription?.close();
+
+    final container = ProviderScope.containerOf(context);
+    _visibilitySubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        final visible = _parseIsVisible(next?['isVisible']);
+        if (visible == isVisible) return;
+        setState(() => isVisible = visible);
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _visibilitySubscription?.close();
+    _visibilitySubscription = null;
+    super.dispose();
   }
 
   /// Update visibility and trigger rebuild
   void setIsVisible({required bool visible}) {
-    if (isVisible != visible) {
-      setState(() {
-        isVisible = visible;
-      });
-    }
+    final container = ProviderScope.containerOf(context);
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setVisibility(id, visible: visible);
   }
 }

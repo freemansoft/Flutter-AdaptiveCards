@@ -3,7 +3,9 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
+import 'package:flutter_adaptive_cards_fs/src/resolved_input_state.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
@@ -27,7 +29,8 @@ class SearchModel {
   String toString() => name;
 }
 
-class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveChoiceSet extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   AdaptiveChoiceSet({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -44,47 +47,26 @@ class AdaptiveChoiceSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveChoiceSetState createState() => AdaptiveChoiceSetState();
 }
 
-class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
+class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     with
         AdaptiveInputMixin,
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
-  // Map from title to value
-  final Map<String, String> _choices = {};
-
   // Contains the values (the things to send as request)
   final Set<String> _selectedChoices = {};
 
-  String? label;
-  late bool isRequired;
   late bool isFiltered;
   late bool isCompact;
   late bool isMultiSelect;
   DataQuery? dataQuery;
 
   TextEditingController controller = TextEditingController();
-  bool stateHasError = false;
+  bool _initialValueSynced = false;
 
   @override
   void initState() {
     super.initState();
-
-    label = adaptiveMap['label'] as String?;
-    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
-
-    if (adaptiveMap['choices'] != null) {
-      final List<Choice> choices =
-          (adaptiveMap['choices'] as List<dynamic>?)
-              ?.map((e) => Choice.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [];
-
-      /// https://adaptivecards.io/explorer/Input.Choice.html
-      for (final Choice choice in choices) {
-        _choices[choice.title] = choice.value;
-      }
-    }
 
     if (adaptiveMap.containsKey('choices.data')) {
       dataQuery = DataQuery.fromJson(
@@ -95,25 +77,38 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     isFiltered = loadFiltered();
     isCompact = loadCompact();
     isMultiSelect = adaptiveMap['isMultiSelect'] as bool? ?? false;
+  }
 
-    if (value.isNotEmpty) {
-      _selectedChoices.addAll(value.split(','));
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialValueSynced) {
+      _initialValueSynced = true;
+      final next = readResolvedInput().valueAsString;
+      _selectedChoices.addAll(
+        next.isEmpty ? const <String>[] : next.split(','),
+      );
+      controller.text = _selectedChoices.isNotEmpty
+          ? _selectedChoices.first
+          : '';
     }
   }
 
   @override
-  void resetInput() {
-    super.resetInput();
-    setState(() {
-      _selectedChoices.clear();
-      if (value.isNotEmpty) {
-        _selectedChoices.addAll(value.split(','));
-      }
-      controller.text = _selectedChoices.isNotEmpty
-          ? _selectedChoices.first
-          : '';
-      stateHasError = false;
-    });
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  Map<String, String> _parseChoices(Object? raw) {
+    if (raw is! List) return const {};
+    final result = <String, String>{};
+    for (final entry in raw) {
+      if (entry is! Map) continue;
+      final choice = Choice.fromJson(Map<String, dynamic>.from(entry));
+      result[choice.title] = choice.value;
+    }
+    return result;
   }
 
   @override
@@ -124,60 +119,41 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      setState(() {
-        _selectedChoices
-          ..clear()
-          ..add(map[id]);
-
-        controller.text = _selectedChoices.isNotEmpty
-            ? _selectedChoices.first
-            : '';
-      });
+      setDocumentInputValue(map[id]);
     }
   }
 
   @override
   bool checkRequired() {
-    if (isRequired && value.isEmpty) {
-      setState(() {
-        stateHasError = true;
-      });
+    final input = readResolvedInput();
+    if (input.isRequired && input.valueAsString.isEmpty) {
+      setLocalValidationError();
       return false;
     }
-    setState(() {
-      stateHasError = false;
-    });
+    clearLocalValidationError();
     return true;
   }
 
   @override
-  void loadInput(Map map) {
-    setState(() {
-      _choices.clear();
-      _selectedChoices.clear();
-
-      map.forEach((key, value) {
-        _choices[key] = value.toString();
-      });
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    listenForResolvedValueChanges();
+    final input = watchResolvedInput();
+    final choices = _parseChoices(input.map['choices']);
+
     late Widget widget;
     if (isFiltered) {
-      widget = _buildFiltered();
+      widget = _buildFiltered(input, choices);
     } else if (isCompact) {
       if (isMultiSelect) {
-        widget = _buildExpandedMultiSelect();
+        widget = _buildExpandedMultiSelect(choices);
       } else {
-        widget = _buildCompact();
+        widget = _buildCompact(choices);
       }
     } else {
       if (isMultiSelect) {
-        widget = _buildExpandedMultiSelect();
+        widget = _buildExpandedMultiSelect(choices);
       } else {
-        widget = _buildExpandedSingleSelect();
+        widget = _buildExpandedSingleSelect(choices);
       }
     }
 
@@ -190,14 +166,14 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           children: [
             loadLabel(
               context: context,
-              label: label,
-              isRequired: isRequired,
+              label: input.label,
+              isRequired: input.isRequired,
             ),
             widget,
             loadErrorMessage(
               context: context,
-              errorMessage: errorMessage,
-              stateHasError: stateHasError,
+              errorMessage: input.errorMessage,
+              showError: input.isInvalid,
             ),
           ],
         ),
@@ -205,7 +181,10 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     );
   }
 
-  Widget _buildFiltered() {
+  Widget _buildFiltered(
+    ResolvedInputState input,
+    Map<String, String> choices,
+  ) {
     return SizedBox(
       width: double.infinity,
       height: 40,
@@ -231,25 +210,25 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
           ),
           filled: true,
           suffixIcon: const Icon(Icons.arrow_drop_down),
-          hintText: placeholder,
+          hintText: input.placeholder,
           // required or box will exist even though field is hidden or half height
           hintStyle: const TextStyle(),
           errorStyle: const TextStyle(height: 0),
         ),
         validator: (value) {
-          if (!isRequired) return null;
+          if (!input.isRequired) return null;
           if (value == null || value.isEmpty) {
             return '';
           }
           return null;
         },
         onTap: () async {
-          final list = _choices.keys
-              .map((key) => SearchModel(id: key, name: _choices[key] ?? ''))
+          final list = choices.keys
+              .map((key) => SearchModel(id: key, name: choices[key] ?? ''))
               .toList();
           await rawRootCardWidgetState.searchList(list, (dynamic value) {
             setState(() {
-              select(value?.id);
+              select(value?.id, choices);
             });
           }, inputId: id);
         },
@@ -258,7 +237,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
   }
 
   /// This is built when multiSelect is false and isCompact is true
-  Widget _buildCompact() {
+  Widget _buildCompact(Map<String, String> choices) {
     return Container(
       padding: const EdgeInsets.all(8),
       height: 40,
@@ -282,34 +261,33 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
               style: null,
             ),
           ),
-          items: _choices.keys
+          items: choices.keys
               .map(
                 (key) => DropdownMenuItem<String>(
                   key: generateWidgetKey(adaptiveMap, suffix: key),
-                  value: _choices[key],
+                  value: choices[key],
                   child: Text(key),
                 ),
               )
               .toList(),
-          onChanged: select,
+          onChanged: (choice) => select(choice, choices),
           value: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
         ),
       ),
     );
   }
 
-  Widget _buildExpandedSingleSelect() {
+  Widget _buildExpandedSingleSelect(Map<String, String> choices) {
     return RadioGroup<String>(
       key: generateWidgetKey(adaptiveMap),
-      //key: generateWidgetKeyFromId(widget.id),
       groupValue: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
-      onChanged: select,
+      onChanged: (choice) => select(choice, choices),
       child: Column(
-        children: _choices.keys.map((key) {
+        children: choices.keys.map((key) {
           return RadioListTile<String>(
             key: generateWidgetKey(adaptiveMap, suffix: key),
 
-            value: _choices[key]!,
+            value: choices[key]!,
             title: Text(key),
           );
         }).toList(),
@@ -317,16 +295,16 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     );
   }
 
-  Widget _buildExpandedMultiSelect() {
+  Widget _buildExpandedMultiSelect(Map<String, String> choices) {
     return Column(
-      children: _choices.keys.map((key) {
+      children: choices.keys.map((key) {
         return CheckboxListTile(
           key: generateWidgetKey(adaptiveMap, suffix: key),
 
           controlAffinity: ListTileControlAffinity.leading,
-          value: _selectedChoices.contains(_choices[key]),
+          value: _selectedChoices.contains(choices[key]),
           onChanged: (value) {
-            select(_choices[key]);
+            select(choices[key], choices);
           },
           title: Text(key),
         );
@@ -334,7 +312,7 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
     );
   }
 
-  void select(String? choice) {
+  void select(String? choice, Map<String, String> choices) {
     if (!isMultiSelect) {
       _selectedChoices.clear();
       if (choice != null) {
@@ -352,7 +330,25 @@ class AdaptiveChoiceSetState extends State<AdaptiveChoiceSet>
 
     /// notify the card that the value has changed so it can invoke custom behavior
     rawRootCardWidgetState.changeValue(id, choice, dataQuery: dataQuery);
+    final joined = _selectedChoices.join(',');
+    setDocumentInputValue(joined);
+    notifyUserInputValueChanged(joined, committed: true);
     setState(() {
+      controller.text = _selectedChoices.isNotEmpty
+          ? _selectedChoices.first
+          : '';
+    });
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString() ?? '';
+    setState(() {
+      _selectedChoices
+        ..clear()
+        ..addAll(
+          next.isEmpty ? const <String>[] : next.split(','),
+        );
       controller.text = _selectedChoices.isNotEmpty
           ? _selectedChoices.first
           : '';

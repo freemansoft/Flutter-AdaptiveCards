@@ -1,0 +1,39 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "TextBlock text overlay",
+      "weight": "Bolder",
+      "size": "Medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Edit the title in the card. Change body text from the Widgetbook knob panel.",
+      "isSubtle": true,
+      "wrap": true,
+      "spacing": "Small"
+    },
+    {
+      "type": "Input.Text",
+      "id": "titleInput",
+      "label": "Title",
+      "placeholder": "Enter a title",
+      "value": "Sample title"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Body",
+      "weight": "Bolder",
+      "spacing": "Medium"
+    },
+    {
+      "type": "TextBlock",
+      "id": "bodyText",
+      "text": "Initial body from card JSON.",
+      "wrap": true
+    }
+  ]
+}

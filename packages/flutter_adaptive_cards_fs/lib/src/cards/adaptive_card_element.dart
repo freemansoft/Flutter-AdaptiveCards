@@ -1,11 +1,10 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/show_card.dart';
-import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The implementation of the `AdaptiveCard` card type.
 ///
@@ -35,10 +34,6 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     with AdaptiveElementMixin, ProviderScopeMixin {
   String? version;
 
-  /// The current card that is being shown via a showCard action
-  /// A subtype of Widget!
-  AdaptiveCardElement? currentCard;
-
   late List<Widget> bodyChildren;
 
   List<Widget> activeActions = [];
@@ -55,49 +50,10 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   /// Support only one form per AdaptiveCardElement
   final formKey = GlobalKey<FormState>();
 
-  /// Cards that exist under the AdaptiveCardElement by ID
-  final Map<String, Widget> _registeredCards = {};
-
   /// "metadata": {
   ///   "webUrl": "https://example.com/card-content"
   /// },
   String? get metadataUrl => adaptiveMap['metadata']?['webUrl']?.toString();
-
-  /// Register a card to the registry so we can refer to it later
-  /// We want all cards that have a user provided id to be registered
-  /// We also register the adaptive Card element itself because showCard
-  /// actions target an AdaptiveCardElement which does not have an id
-  void registerCardWidget(String registrationId, Widget it) {
-    // this is a hack because it was hard to make this a generic widget
-    // had the same problem with Selectable but made it a stateless widget
-    if (it is AdaptiveTappable) {
-      return;
-    }
-    _registeredCards[registrationId] = it;
-    assert(() {
-      developer.log(
-        'Registered card with id:$registrationId type:$it',
-        name: runtimeType.toString(),
-      );
-      return true;
-    }());
-  }
-
-  /// Unregister a card from the registry so we don't refer to it after it's been disposed
-  void unregisterCardWidget(
-    String registrationId,
-  ) {
-    if (_registeredCards.containsKey(registrationId)) {
-      _registeredCards.remove(registrationId);
-      assert(() {
-        developer.log(
-          'Unregistered card with id:$registrationId ',
-          name: runtimeType.toString(),
-        );
-        return true;
-      }());
-    }
-  }
 
   @override
   void initState() {
@@ -155,15 +111,6 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
             )
             .toList(),
       );
-      assert(() {
-        if (showCardActions.isNotEmpty) {
-          developer.log(
-            'showCardElements for $id constructed to ${showCardTargetElements.map((card) => card.id).toList()}',
-            name: runtimeType.toString(),
-          );
-        }
-        return true;
-      }());
     }
   }
 
@@ -189,11 +136,21 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       children: activeActions,
     );
 
-    widgetChildren.add(actionWidget);
-
-    if (currentCard != null) {
-      widgetChildren.add(currentCard!);
-    }
+    widgetChildren
+      ..add(actionWidget)
+      ..add(
+        Consumer(
+          builder: (context, ref, _) {
+            final expandedId = ref.watch(expandedShowCardIdProvider);
+            if (expandedId == null) return const SizedBox.shrink();
+            final target = showCardTargetElements.where(
+              (c) => c.id == expandedId,
+            );
+            if (target.isEmpty) return const SizedBox.shrink();
+            return target.first;
+          },
+        ),
+      );
 
     // default to result without a background image
     Widget result = Container(
@@ -221,25 +178,14 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       );
     }
 
-    return InheritedReferenceResolver(
-      resolver: InheritedReferenceResolver.rawCardScopeOf(context).resolver,
-      adaptiveCardElementState: this,
+    return ProviderScope(
+      overrides: [
+        adaptiveCardElementStateProvider.overrideWithValue(this),
+      ],
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
         child: Form(key: formKey, child: result),
       ),
     );
-  }
-
-  /// This is called when an [AdaptiveActionShowCard] triggers it.
-  void showCard(AdaptiveCardElement card) {
-    // relies on identity check
-    if (currentCard == card) {
-      // essentially hide/show (toggle) behavior
-      currentCard = null;
-    } else {
-      currentCard = card;
-    }
-    setState(() {});
   }
 }

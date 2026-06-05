@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Toggle.html
 ///
-class AdaptiveToggle extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveToggle extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   AdaptiveToggle({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -24,7 +26,7 @@ class AdaptiveToggle extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveToggleState createState() => AdaptiveToggleState();
 }
 
-class AdaptiveToggleState extends State<AdaptiveToggle>
+class AdaptiveToggleState extends ConsumerState<AdaptiveToggle>
     with
         AdaptiveInputMixin,
         AdaptiveElementMixin,
@@ -43,20 +45,20 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
 
     valueOff = adaptiveMap['valueOff']?.toString().toLowerCase() ?? 'false';
     valueOn = adaptiveMap['valueOn']?.toString().toLowerCase() ?? 'true';
-    boolValue = value == valueOn;
     title = adaptiveMap['title']?.toString() ?? '';
+    boolValue = readResolvedInput().valueAsString == valueOn;
   }
 
   @override
   void resetInput() {
     super.resetInput();
-    setState(() {
-      boolValue = value == valueOn;
-    });
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    listenForResolvedValueChanges();
+
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
@@ -70,6 +72,10 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
                 setState(() {
                   boolValue = newValue;
                 });
+                final docValue = boolValue ? valueOn : valueOff;
+                setDocumentInputValue(docValue);
+                rawRootCardWidgetState.changeValue(id, docValue);
+                notifyUserInputValueChanged(docValue, committed: true);
               },
             ),
             Expanded(
@@ -88,13 +94,23 @@ class AdaptiveToggleState extends State<AdaptiveToggle>
 
   @override
   void initInput(Map map) {
-    if (map[id] != null) {
-      setState(() {
-        if (map[id] != null) {
-          boolValue = map[id] as bool;
-        }
-      });
+    if (map[id] == null) return;
+    final raw = map[id];
+    if (raw is bool) {
+      setDocumentInputValue(raw ? valueOn : valueOff);
+    } else {
+      setDocumentInputValue(raw);
     }
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString().toLowerCase();
+    final nextBool = next == valueOn;
+    if (nextBool == boolValue) return;
+    setState(() {
+      boolValue = nextBool;
+    });
   }
 
   @override

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_sizes_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Image.html
@@ -36,11 +38,14 @@ class AdaptiveImageState extends State<AdaptiveImage>
   double? width;
   double? height;
   late Alignment horizontalAlignment;
+  late String url;
+  ProviderSubscription<Map<String, dynamic>?>? _urlSubscription;
 
   @override
   void initState() {
     super.initState();
     isPerson = loadIsPerson();
+    url = widget.adaptiveMap['url']?.toString() ?? '';
   }
 
   @override
@@ -50,6 +55,24 @@ class AdaptiveImageState extends State<AdaptiveImage>
     horizontalAlignment = styleResolver.resolveAlignment(
       adaptiveMap['horizontalAlignment'],
     );
+    _urlSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _urlSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        final nextUrl = next?['url']?.toString() ?? '';
+        if (nextUrl == url) return;
+        setState(() => url = nextUrl);
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _urlSubscription?.close();
+    _urlSubscription = null;
+    super.dispose();
   }
 
   @override
@@ -107,8 +130,6 @@ class AdaptiveImageState extends State<AdaptiveImage>
     }
     return true;
   }
-
-  String get url => adaptiveMap['url']?.toString() ?? '';
 
   void loadSize() {
     String sizeDescription = adaptiveMap['size']?.toString() ?? 'auto';

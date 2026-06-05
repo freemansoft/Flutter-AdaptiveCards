@@ -7,13 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0]
 
-### Removed
+- Migrated all modifyable state to be reactive using riverpod via overlay on top of adaptive card json: [ElementOverlay and ActionOverlay](lib/src/riverpod/adaptive_card_document.dart)
+  - Elements value, error messages, error state, isVisble and many other attributes
+  - Actions isEnabled and other attributes
+- Implemented regex validation in input field
+- Added AI skills flutter and dart provided by flutter and dart teams.
+- Added AI superpowers
 
-- **`flutter_riverpod` dependency** — the package no longer pulls Riverpod transitively.
-  - riverpod wasn't used in any reactive fashion
-- **`riverpod_providers.dart`** and all nested `ProviderScope` / provider overrides.
+### Added 0.8.0
 
-### Changed
+- **`AdaptiveElementUpdate`** / **`AdaptiveActionUpdate`** and bulk **`applyUpdates`** / **`applyUpdatesFromMap`** on the document notifier and **`RawAdaptiveCardState`**.
+- **`ElementOverlay.isRequired`** and **`ElementOverlay.url`**; **`AdaptiveInputMixin`** listens for resolved `isRequired`; **`AdaptiveImage`** listens for resolved `url`.
+- **Tier 3 overlays:** **`label`**, **`placeholder`** on inputs; **`title`**, **`tooltip`** on actions; merged via **`applyUpdates`** / **`applyUpdatesFromMap`**; **`AdaptiveInputMixin`** and **`AdaptiveActionStateMixin`** update UI reactively.
+- **`initData`** supports scalar values or per-id patch maps; **`seedInputValues`** delegates to **`applyUpdates`** (single revision).
+- Default **Submit** / **Execute** required-field checks use resolved **`isRequired`** (overlay ?? baseline).
+- **`Input.Text`** **`regex`** validation (AC 1.3): pattern checked on field blur and on **Submit** / **Execute** via shared **`textInputValueIsValid`**; invalid values set **`isInvalid`** and show **`errorMessage`**.
+- Tests: `test/riverpod/apply_updates_test.dart`, `test/inputs/cascade_choice_set_test.dart`, `test/inputs/is_required_overlay_test.dart`, `test/elements/image_url_overlay_test.dart`, `test/actions/submit_required_overlay_test.dart`.
+- Tests: `test/inputs/input_text_validation_test.dart`, `test/inputs/input_text_regex_test.dart`, `test/golden_input_text_regex_test.dart` (sample `test/samples/ac-qv-event.json`).
+- Design spec: [`docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md`](../../docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md).
+- **`resetInput(id)`** on the document notifier and **`RawAdaptiveCardState`**; **`AdaptiveInputMixin.resetInput()`** delegates to the notifier.
+- Factory reset clears input overlays including **`label`**, **`placeholder`**, and **`isRequired`** (resolved → baseline JSON). See [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#reset-semantics).
+- Design spec: [`docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md`](../../docs/superpowers/specs/2026-06-03-overlay-reset-semantics-design.md).
+- **`Action.ResetInputs`** **`targetInputIds`**: reset only listed input ids; omitted property resets all inputs; empty array resets nothing. Shared executor used by action button tap and input **`valueChangedAction`**.
+- **`valueChangedAction`** on **`Input.*`**: when the user changes a field, runs embedded **`Action.ResetInputs`** (e.g. dependent ChoiceSet / country–city). Discrete inputs fire immediately; **`Input.Text`** / **`Input.Number`** fire on focus loss or editing complete, not each keystroke.
+- Document notifier **`resetInputs(List<String> ids)`** — batch factory reset in one revision (same overlay rules as **`resetInput(id)`**).
+- Sample `test/samples/action_reset_inputs_targeted.json`; tests for targeted reset and **`valueChangedAction`**; Widgetbook **`Actions.Reset (targeted)`** use case.
+- Design spec: [`docs/superpowers/specs/2026-06-04-action-resetinputs-targetinputids-design.md`](../../docs/superpowers/specs/2026-06-04-action-resetinputs-targetinputids-design.md).
+
+### Changed 0.8.0
 
 - **Scoped dependency injection** now uses nested **`InheritedReferenceResolver`** widgets instead of Riverpod:
   - Outer scope (from `RawAdaptiveCard`): `resolver` (includes `cardTypeRegistry` / `actionTypeRegistry`), `rawAdaptiveCardState` — read via `InheritedReferenceResolver.rawCardScopeOf(context)`.
@@ -28,6 +49,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `AdaptiveColumn`, `AdaptiveContainer`, and internal utilities to strictly use `ReferenceResolver` as a facade for accessing HostConfig values (e.g. `resolveSpacing()`), removing direct dependencies on underlying config objects like `SpacingsConfig`.
 - Created `doc/Architecture-Overview.md` to document system architecture, package structure, internal state management, and extensibility points.
 - Consolidated documentation around known gaps and priority issues into `doc/Implementation-Status.md`.
+- **`ReferenceResolver`** no longer carries `cardTypeRegistry` or `actionTypeRegistry`. It is a HostConfig/theme facade only. Element and action factories are provided via Riverpod `cardTypeRegistryProvider` and `actionTypeRegistryProvider` (see [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md)).
+- **`Input.ChoiceSet`** reads effective choices from `resolvedElementProvider` instead of local-only state.
+- **`RawAdaptiveCardState.loadInput`** and **`initInput`** delegate to the document notifier (no element-tree walk).
+- **`initData`** seeds input overlays via `seedInputValues` post-frame.
+- **`resetAllInputs`** / **`resetInput(id)`** factory-reset input overlays to baseline (value, choices, validation, **`isRequired`**, **`label`**, **`placeholder`**); preserve input `isVisible` and typeahead session fields only.
+- **`ElementOverlay.choices`** — runtime overlay for `Input.ChoiceSet` dynamic option lists; merged via `resolvedElementProvider`.
+- Document notifier APIs: `setChoices`, `appendChoices`, `seedInputValues`, `setDataQuerySession`.
+- **`DataQuery.count` / `DataQuery.skip`** — spec fields for typeahead pagination.
+- **`ActionOverlay`** and `actionOverlaysById` on `AdaptiveCardDocument` for AC 1.5 action `isEnabled`.
+- **`resolvedActionProvider(id)`** — merged baseline + action overlay map for `Action.*` nodes.
+- Document notifier: `setInputError`, `clearInputError`, `setActionEnabled`, `setActionsEnabled`.
+- **`ElementOverlay.errorMessage`** and **`ElementOverlay.isInvalid`** merged via `resolvedElementProvider`.
+- **`AdaptiveActionStateMixin`** — reactive `isEnabled` for `IconButtonAction` and `Action.ShowCard`.
+- Host helpers on **`RawAdaptiveCardState`**: `setInputError`, `clearInputError`, `setActionEnabled`.
+- **`ElementOverlay.text`** — runtime replacement of `TextBlock` `"text"`; merged via `resolvedElementProvider`.
+- Document notifier: `setText`, `clearText`; **`AdaptiveTextBlock`** listens for resolved `text`.
+- Host helpers: **`RawAdaptiveCardState.setText`** / **`clearText`**.
+- Tests: `test/elements/text_block_text_overlay_test.dart`.
+- Tests: `test/inputs/input_error_overlay_test.dart`, `test/actions/action_enabled_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json`.
+- **`resetAllInputs`** clears validation overlays on inputs; preserves `actionOverlaysById`.
+- **`setInputValue`** clears host validation overlays when the user edits an input.
 
 ## [0.7.0]
 
@@ -39,6 +81,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Insured `AdaptiveElementMixin` properly unregisters widgets on `dispose`.
 - Fixed `minHeight` parameter parsing and constraint application on `AdaptiveColumn` and `AdaptiveContainer` elements (supporting raw pixel and integer formats).
 - Fixed background image aspect-ratio sizing on `AdaptiveColumn` and `AdaptiveContainer` elements when they only contain a `backgroundImage` and have `minHeight` or pixel `width` constraints set, ensuring the other dimension scales dynamically to preserve original image proportions.
+- Tests for `Data.Query` ChoiceSet flows: `loadInput` refresh after mount and from
+  `onChange`, `setDataQuerySession` merge into resolved `choices.data`, and
+  `initData` with `choices.data` (`choice_set_data_query_test.dart`,
+  `init_data_overlay_test.dart`, `adaptive_card_document_notifier_test.dart`).
 
 ## [0.6.0]
 

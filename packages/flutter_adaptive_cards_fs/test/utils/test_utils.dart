@@ -8,42 +8,113 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
-import 'package:mockito/mockito.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 class MyTestHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    return _createMockImageHttpClient(context);
+    return _TestImageHttpClient();
   }
 }
 
-HttpClient _createMockImageHttpClient(SecurityContext? context) {
-  return _MockHttpClient();
-}
-
-class _MockHttpClient extends Mock implements HttpClient {
+class _TestImageHttpClient extends Fake implements HttpClient {
   @override
-  Future<HttpClientRequest> getUrl(Uri url) async => _MockHttpClientRequest();
+  bool autoUncompress = true;
+
+  @override
+  Future<HttpClientRequest> getUrl(Uri url) async =>
+      _TestImageHttpClientRequest(url);
 
   @override
   Future<HttpClientRequest> openUrl(String method, Uri url) async =>
-      _MockHttpClientRequest();
-}
-
-class _MockHttpClientRequest extends Mock implements HttpClientRequest {
-  @override
-  HttpHeaders get headers => _MockHttpHeaders();
+      _TestImageHttpClientRequest(url);
 
   @override
-  Future<HttpClientResponse> close() async => _MockHttpClientResponse();
+  void close({bool force = false}) {}
 }
 
-class _MockHttpClientResponse extends Mock implements HttpClientResponse {
+class _TestImageHttpClientRequest extends Fake implements HttpClientRequest {
+  _TestImageHttpClientRequest(this.uri);
+
+  @override
+  final Uri uri;
+
+  @override
+  HttpHeaders get headers => _TestImageHttpHeaders();
+
+  @override
+  bool followRedirects = true;
+
+  @override
+  int maxRedirects = 5;
+
+  @override
+  bool persistentConnection = true;
+
+  @override
+  int contentLength = 0;
+
+  @override
+  void add(List<int> data) {}
+
+  @override
+  void write(Object? object) {}
+
+  @override
+  Future<void> addStream(Stream<List<int>> stream) => stream.drain<void>();
+
+  @override
+  Future<HttpClientResponse> close() async =>
+      _TestImageHttpClientResponse(uri: uri);
+}
+
+class _TestImageHttpClientResponse extends Fake implements HttpClientResponse {
+  _TestImageHttpClientResponse({required this.uri});
+
+  final Uri uri;
+
+  List<int> get _bytes {
+    final path = uri.path.toLowerCase();
+    if (path.endsWith('.svg')) {
+      return utf8.encode(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1">'
+        ' <rect width="1" height="1"/>'
+        ' </svg>',
+      );
+    }
+    return TransparentImage.bytes;
+  }
+
+  String get _contentType {
+    final path = uri.path.toLowerCase();
+    if (path.endsWith('.svg')) {
+      return 'image/svg+xml';
+    }
+    return 'image/png';
+  }
+
   @override
   int get statusCode => 200;
 
   @override
-  int get contentLength => TransparentImage.bytes.length;
+  String get reasonPhrase => 'OK';
+
+  @override
+  HttpHeaders get headers => _TestImageHttpHeaders({
+    'content-type': [_contentType],
+  });
+
+  @override
+  bool get isRedirect => false;
+
+  @override
+  bool get persistentConnection => true;
+
+  @override
+  List<RedirectInfo> get redirects => const [];
+
+  @override
+  int get contentLength => _bytes.length;
 
   @override
   HttpClientResponseCompressionState get compressionState =>
@@ -56,10 +127,7 @@ class _MockHttpClientResponse extends Mock implements HttpClientResponse {
     void Function()? onDone,
     bool? cancelOnError,
   }) {
-    return Stream<List<int>>.fromIterable(<List<int>>[
-      TransparentImage.bytes,
-      //Blue8x8Image.bytes,
-    ]).listen(
+    return Stream<List<int>>.fromIterable(<List<int>>[_bytes]).listen(
       onData,
       onDone: onDone,
       onError: onError,
@@ -68,7 +136,22 @@ class _MockHttpClientResponse extends Mock implements HttpClientResponse {
   }
 }
 
-class _MockHttpHeaders extends Mock implements HttpHeaders {}
+class _TestImageHttpHeaders extends Fake implements HttpHeaders {
+  _TestImageHttpHeaders([this._headers = const {}]);
+
+  final Map<String, List<String>> _headers;
+
+  @override
+  void forEach(void Function(String name, List<String> values) action) {
+    _headers.forEach(action);
+  }
+
+  @override
+  List<String>? operator [](String name) => _headers[name];
+
+  @override
+  String? value(String name) => _headers[name]?.first;
+}
 
 class TransparentImage {
   static final List<int> bytes = [
@@ -171,6 +254,7 @@ Widget getTestWidgetFromPath({
   Map? initData,
   HostConfigs? hostConfigs,
   bool listView = false,
+  bool scrollable = false,
 }) {
   final File file = File('test/samples/$path');
   final Map<String, dynamic> map =
@@ -187,6 +271,7 @@ Widget getTestWidgetFromPath({
     initData: initData,
     hostConfigs: hostConfigs,
     listView: listView,
+    scrollable: scrollable,
   );
 }
 
@@ -209,6 +294,7 @@ Widget getTestWidgetFromMap({
   Map? initData,
   HostConfigs? hostConfigs,
   bool listView = false,
+  bool scrollable = false,
 }) {
   final Widget adaptiveCard = AdaptiveCardsCanvas.map(
     content: map,
@@ -219,6 +305,13 @@ Widget getTestWidgetFromMap({
     hostConfigs: hostConfigs ?? HostConfigs(),
     listView: listView,
   );
+
+  Widget wrapBody(Widget child) {
+    if (scrollable) {
+      return SingleChildScrollView(child: child);
+    }
+    return Center(child: child);
+  }
 
   // this should generate an action handler set instead but the LLM
   // saw that we could rely on InheritedAdaptiveCardHandlers here
@@ -234,8 +327,8 @@ Widget getTestWidgetFromMap({
         // tests look for this value key as the root for golden
         body: RepaintBoundary(
           key: key,
-          child: Center(
-            child: InheritedAdaptiveCardHandlers(
+          child: wrapBody(
+            InheritedAdaptiveCardHandlers(
               // this a test so we can look at this later
               // ignore: inference_failure_on_collection_literal
               onOpenUrl: onOpenUrl ?? (String _) => {},
@@ -271,9 +364,7 @@ Widget getTestWidgetFromMap({
         // tests look for this value key as the root for golden
         body: RepaintBoundary(
           key: key,
-          child: Center(
-            child: adaptiveCard,
-          ),
+          child: wrapBody(adaptiveCard),
         ),
       ),
     );
