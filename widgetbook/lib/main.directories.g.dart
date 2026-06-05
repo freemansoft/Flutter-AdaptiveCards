@@ -396,6 +396,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildInputChoiceSetExample1,
           ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Value changed action',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildInputChoiceSetValueChangedAction,
+          ),
         ],
       ),
       _widgetbook.WidgetbookComponent(
