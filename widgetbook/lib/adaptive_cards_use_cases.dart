@@ -829,6 +829,17 @@ Widget buildInputChoiceSetExample1(BuildContext context) {
   );
 }
 
+@widgetbook.UseCase(
+  name: 'Value changed action',
+  type: widget_types.InputChoiceSet,
+  path: '[Components]',
+)
+Widget buildInputChoiceSetValueChangedAction(BuildContext context) {
+  return const GenericPage(
+    url: 'lib/samples/inputs/input_choice_set/value_changed_action_reset.json',
+  );
+}
+
 // =============================================================================
 // TABLE Component
 // =============================================================================

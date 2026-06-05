@@ -4,6 +4,11 @@
   "body": [
     {
       "type": "TextBlock",
+      "text": "Not fully functional because this Input.ChoiceSet doesn't filter cities via Data.Queries while typing country",
+      "weight": ""
+    },
+    {
+      "type": "TextBlock",
       "text": "Country / City",
       "weight": "Bolder"
     },
