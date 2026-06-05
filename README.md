@@ -40,13 +40,13 @@ git remote set-head origin -a
 
 The [widgetbook](widgetbook/) app is a **component gallery** for this project. It renders Adaptive Card JSON samples grouped by element and action type so you can browse layouts, inputs, actions, v1.6 extensions, and chart samples without writing a host app.
 
-**What you can do**
+### What you can do widgetbook
 
 - Browse use cases in the Widgetbook sidebar (TextBlock, inputs, actions, tables, charts, and more).
 - Switch **light / dark** themes and viewport sizes from the Widgetbook toolbar.
 - Inspect rendered cards from JSON under `widgetbook/lib/samples/` (each use case points at a sample file).
 
-**Run from the repo root**
+### Run Widgetbook from the repo root
 
 ```bash
 cd widgetbook
@@ -56,7 +56,7 @@ fvm flutter run
 
 Pick a desktop, web, or mobile device when prompted. On macOS, enable outgoing network connections in Runner signing if samples load remote images.
 
-**After adding or renaming use cases**
+### After adding or renaming use cases
 
 Use cases are declared in `widgetbook/lib/adaptive_cards_use_cases.dart`. Regenerate the Widgetbook directory tree, then restart the app:
 
@@ -66,7 +66,7 @@ fvm dart run build_runner build
 fvm flutter run
 ```
 
-**Adding new sample JSON**
+### Adding new sample JSON
 
 1. Place files under `widgetbook/lib/samples/` (mirror the existing folder layout).
 2. Register the folder in `widgetbook/pubspec.yaml` under `flutter: assets:` if you create a new directory.
@@ -78,7 +78,7 @@ More detail: [widgetbook/README.md](widgetbook/README.md).
 
 The [adaptive_explorer](adaptive_explorer/) app is a **desktop design studio** for authoring and previewing Adaptive Cards. It combines a live preview with JSON editors for template, data, and merged output—useful when you are editing card JSON in an external editor or testing templating.
 
-**What you can do**
+### What you can do adaptive explorer
 
 - **Open Template** — load an Adaptive Card template or fully resolved card JSON.
 - **Open Data** (optional) — load a data file; the app merges template + data with `flutter_adaptive_template_fs` and previews the result.
@@ -86,11 +86,11 @@ The [adaptive_explorer](adaptive_explorer/) app is a **desktop design studio** f
 - Watch the filesystem: when the open template or data file changes on disk, the preview refreshes automatically.
 - Resize the split between preview and editor with the divider (preview above editor in portrait, side-by-side in landscape).
 
-**Supported platforms**
+### Supported platforms
 
 macOS, Windows, and Linux (desktop only).
 
-**Run from the repo root**
+### Run adaptive explorer from the repo root
 
 ```bash
 cd adaptive_explorer
@@ -100,7 +100,7 @@ fvm flutter run
 
 On macOS, the app uses `file_picker` and needs appropriate signing and entitlements for file access and network images (see [adaptive_explorer/README.md](adaptive_explorer/README.md#macos-specifics)).
 
-**Typical workflow**
+### Typical workflow
 
 1. Start the app.
 2. Click **Open Template** and choose a `.json` file (template or resolved card).
