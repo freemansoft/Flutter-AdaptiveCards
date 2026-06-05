@@ -6,7 +6,8 @@ This project is a Flutter implementation of the Adaptive Cards specification. Th
 
 Adaptive Cards is a way of implementing Server Driven UI (SDUI) using a JSON based schema to deliver user interfaces specifications across platforms.
 
-1. See the [Getting Started](/packages/flutter_adaptive_cards_fs/README.md) page for more information about this library.
+1. See the [AdaptiveCards Getting Started](/packages/flutter_adaptive_cards_fs/README.md) page for more information about the core AdaptiveCards library.
+2. See the [AdaptiveTemplating Getting Started](/packages/flutter_adaptive_template_fs/) for more info about the templating library that can sit in front of adaptive cards.
 
 ## GitHub notes
 
@@ -21,11 +22,8 @@ git branch -u origin/main main
 git remote set-head origin -a
 ```
 
-## This project: Packages and tools
+## This project: Packages
 
-1. Tools
-   1. You can view demonstrations of this implementation by running the [Widgetbook](widgetbook)
-   1. There is an editor / preview tool at [adaptive_explorer](adaptive_explorer/README.md)
 1. Libraries
    1. The Adaptive Card library is in [packages/flutter_adaptive_cards_fs](/packages/flutter_adaptive_cards_fs/README.md)
    1. The Adaptive Card library CHANGELOG is in [packages/flutter_adaptive_cards_fs/CHANGELOG.md](/packages/flutter_adaptive_cards_fs/CHANGELOG.md)
@@ -37,6 +35,79 @@ git remote set-head origin -a
 
 1. azure bot service expressions are not currently supported.
    1. [Adaptive Expressions specification](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions?view=azure-bot-service-4.0)
+
+## Widgetbook
+
+The [widgetbook](widgetbook/) app is a **component gallery** for this project. It renders Adaptive Card JSON samples grouped by element and action type so you can browse layouts, inputs, actions, v1.6 extensions, and chart samples without writing a host app.
+
+**What you can do**
+
+- Browse use cases in the Widgetbook sidebar (TextBlock, inputs, actions, tables, charts, and more).
+- Switch **light / dark** themes and viewport sizes from the Widgetbook toolbar.
+- Inspect rendered cards from JSON under `widgetbook/lib/samples/` (each use case points at a sample file).
+
+**Run from the repo root**
+
+```bash
+cd widgetbook
+fvm flutter pub get
+fvm flutter run
+```
+
+Pick a desktop, web, or mobile device when prompted. On macOS, enable outgoing network connections in Runner signing if samples load remote images.
+
+**After adding or renaming use cases**
+
+Use cases are declared in `widgetbook/lib/adaptive_cards_use_cases.dart`. Regenerate the Widgetbook directory tree, then restart the app:
+
+```bash
+cd widgetbook
+fvm dart run build_runner build
+fvm flutter run
+```
+
+**Adding new sample JSON**
+
+1. Place files under `widgetbook/lib/samples/` (mirror the existing folder layout).
+2. Register the folder in `widgetbook/pubspec.yaml` under `flutter: assets:` if you create a new directory.
+3. Add a `@widgetbook.UseCase` in `adaptive_cards_use_cases.dart` and run `build_runner` as above.
+
+More detail: [widgetbook/README.md](widgetbook/README.md).
+
+## adaptive_explorer
+
+The [adaptive_explorer](adaptive_explorer/) app is a **desktop design studio** for authoring and previewing Adaptive Cards. It combines a live preview with JSON editors for template, data, and merged output—useful when you are editing card JSON in an external editor or testing templating.
+
+**What you can do**
+
+- **Open Template** — load an Adaptive Card template or fully resolved card JSON.
+- **Open Data** (optional) — load a data file; the app merges template + data with `flutter_adaptive_template_fs` and previews the result.
+- Edit template, data, or merged JSON in tabs (`json_editor_flutter`) and save changes.
+- Watch the filesystem: when the open template or data file changes on disk, the preview refreshes automatically.
+- Resize the split between preview and editor with the divider (preview above editor in portrait, side-by-side in landscape).
+
+**Supported platforms**
+
+macOS, Windows, and Linux (desktop only).
+
+**Run from the repo root**
+
+```bash
+cd adaptive_explorer
+fvm flutter pub get
+fvm flutter run
+```
+
+On macOS, the app uses `file_picker` and needs appropriate signing and entitlements for file access and network images (see [adaptive_explorer/README.md](adaptive_explorer/README.md#macos-specifics)).
+
+**Typical workflow**
+
+1. Start the app.
+2. Click **Open Template** and choose a `.json` file (template or resolved card).
+3. Optionally click **Open Data** and choose a companion data file.
+4. Use the Template / Data / Merged tabs to edit; the preview updates as you work or when files change externally.
+
+More detail: [adaptive_explorer/README.md](adaptive_explorer/README.md).
 
 ## Platform Support
 
