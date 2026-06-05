@@ -8,9 +8,9 @@ void main() {
     WidgetTester tester,
   ) async {
     final data = [
-      SearchModel(id: '1', name: 'Alice'),
-      SearchModel(id: '2', name: 'Bob'),
-      SearchModel(id: '3', name: 'Carol'),
+      SearchModel(title: 'Alice', value: '1'),
+      SearchModel(title: 'Bob', value: '2'),
+      SearchModel(title: 'Carol', value: '3'),
     ];
 
     final Widget widget = MaterialApp(

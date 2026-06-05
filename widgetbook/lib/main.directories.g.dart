@@ -397,9 +397,14 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildInputChoiceSetExample1,
           ),
           _widgetbook.WidgetbookUseCase(
-            name: 'Value changed action',
+            name: 'Value changed action (Teams Data.Query)',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
-                .buildInputChoiceSetValueChangedAction,
+                .buildInputChoiceSetValueChangedActionTeamsDataQuery,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Value changed action (host cascade)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildInputChoiceSetValueChangedActionHostCascade,
           ),
         ],
       ),

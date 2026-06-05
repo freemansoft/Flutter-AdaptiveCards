@@ -188,11 +188,18 @@ New use case in `widgetbook/lib/adaptive_cards_use_cases.dart`:
 
 Keep existing `Actions.Reset` full-reset sample unchanged.
 
+**Dependent ChoiceSet (implemented):** under **Input.ChoiceSet** in Widgetbook:
+
+- **Value changed action (host cascade)** — `lib/samples/inputs/input_choice_set/value_changed_action_filtered.json` + `lib/dependent_choice_set_demo_page.dart`
+- **Value changed action (Teams Data.Query)** — `lib/samples/inputs/input_choice_set/value_changed_action_dependent_query.json` (same page/handler)
+
+See [form-inputs.md § Dependent ChoiceSet](../../form-inputs.md#dependent-choiceset-country--city).
+
 ## Documentation updates
 
 | Document | Updates |
 | --- | --- |
-| [`docs/form-inputs.md`](../../form-inputs.md) | `targetInputIds`, `valueChangedAction`, committed-change rules for Text/Number |
+| [`docs/form-inputs.md`](../../form-inputs.md) | `targetInputIds`, `valueChangedAction`, committed-change rules for Text/Number; filtered ChoiceSet title search / value submit |
 | [`docs/reactive-riverpod.md`](../../reactive-riverpod.md) | `resetInputs(ids)` API; extend call-paths table; link this spec |
 | [`docs/actions-architecture.md`](../../actions-architecture.md) | `Action.ResetInputs` section: `targetInputIds`, executor, Teams extension note |
 | [`docs/Implementation-Status.md`](../../Implementation-Status.md) | `Action.ResetInputs` tests ✅; `valueChangedAction` ✅ |

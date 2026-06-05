@@ -449,6 +449,7 @@ TODO for the example programs moved to [example README](example/README.md)
   - **Parent card keys** for input widgets use `ValueKey('${id}_adaptive')` to avoid collisions with the inner field.
   - **Selector item keys** use `ValueKey('${id}_${itemKey}')` (useful for targeting specific options in tests).
 - `RawAdaptiveCard.searchList` accepts an optional `inputId` that is propagated to the modal search `ChoiceFilter` so the modal's search field receives a predictable key.
+- **Filtered** `Input.ChoiceSet` (`style: "filtered"`) lists and typeahead-searches choice **titles**; stored/submitted values use choice **values** (see [`docs/form-inputs.md`](../../docs/form-inputs.md#filtered-choiceset-style-style-filtered)).
 - Actions missing implementations and features
 - _Tests_
   - Font line spacing is subtly different between platforms. You can see this if you use the "fade" view when looking at diffs on a golden png in the repo

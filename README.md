@@ -45,6 +45,7 @@ The [widgetbook](widgetbook/) app is a **component gallery** for this project. I
 - Browse use cases in the Widgetbook sidebar (TextBlock, inputs, actions, tables, charts, and more).
 - Switch **light / dark** themes and viewport sizes from the Widgetbook toolbar.
 - Inspect rendered cards from JSON under `widgetbook/lib/samples/` (each use case points at a sample file).
+- Try **interactive host demos** that go beyond static JSON: **TextBlock → Text overlay** (knob-driven `setText`) and **Input.ChoiceSet → dependent country/city** (`valueChangedAction` reset + host `onChange` / `applyUpdates`) — see [form-inputs.md](docs/form-inputs.md#dependent-choiceset-country--city).
 
 ### Run Widgetbook from the repo root
 

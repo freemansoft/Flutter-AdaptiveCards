@@ -209,13 +209,50 @@ void main() {
     // After opening modal, the card field, the ChoiceFilter widget and the modal search field share the key
     expect(find.byKey(generateWidgetKey(choiceMap)), findsNWidgets(3));
 
-    // The modal lists values (names) '1' and '2' — tap '2'
-    final modalItem = find.text('2');
+    // The modal lists choice titles — tap 'Choice 2'
+    final modalItem = find.text('Choice 2');
     expect(modalItem, findsWidgets);
     await tester.tap(modalItem.first);
     await tester.pumpAndSettle();
 
-    // Filtered mode returns the choice **title** as the onChange payload (Select uses id)
-    expect(selectedValue, equals('Choice 2'));
+    // Filtered mode returns the choice **value** as the onChange payload
+    expect(selectedValue, equals('2'));
+  });
+
+  testWidgets('AdaptiveChoiceSet filtered search matches choice titles', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.ChoiceSet',
+          'id': 'myChoiceSet',
+          'style': 'filtered',
+          'choices': [
+            {'title': 'New York', 'value': 'nyc'},
+            {'title': 'Los Angeles', 'value': 'la'},
+          ],
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(
+        map: map,
+        title: 'ChoiceSet Filtered Title Search',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final choiceMap = map['body'][0] as Map<String, dynamic>;
+    await tester.tap(find.byKey(generateWidgetKey(choiceMap)));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(generateWidgetKey(choiceMap)).last, 'angeles');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Los Angeles'), findsOneWidget);
+    expect(find.text('New York'), findsNothing);
   });
 }

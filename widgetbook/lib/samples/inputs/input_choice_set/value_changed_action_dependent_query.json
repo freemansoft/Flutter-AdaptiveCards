@@ -1,0 +1,65 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "City choices are loaded by the Widgetbook host onChange handler after you pick a country. The city field uses choices.data (Teams Data.Query shape).",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Country / City",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "country",
+      "style": "filtered",
+      "label": "Country",
+      "isRequired": true,
+      "errorMessage": "Please select a country",
+      "choices": [
+        {
+          "title": "USA",
+          "value": "usa"
+        },
+        {
+          "title": "France",
+          "value": "france"
+        },
+        {
+          "title": "India",
+          "value": "india"
+        }
+      ],
+      "valueChangedAction": {
+        "type": "Action.ResetInputs",
+        "targetInputIds": [
+          "city"
+        ]
+      }
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "city",
+      "style": "filtered",
+      "label": "City",
+      "placeholder": "Type to search for a city in the selected country",
+      "isRequired": true,
+      "errorMessage": "Please select a city",
+      "choices": [],
+      "choices.data": {
+        "type": "Data.Query",
+        "dataset": "cities",
+        "associatedInputs": "auto"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Submit"
+    }
+  ]
+}

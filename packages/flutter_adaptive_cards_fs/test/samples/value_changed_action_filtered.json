@@ -4,7 +4,7 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "Not fully functional because this Input.ChoiceSet doesn't filter cities via Data.Queries while typing country",
+      "text": "Changing country resets the city (card valueChangedAction). City choices are repopulated by the host onChange handler.",
       "weight": ""
     },
     {
@@ -17,6 +17,8 @@
       "id": "country",
       "style": "filtered",
       "label": "Country",
+      "isRequired": true,
+      "errorMessage": "Please select a country",
       "choices": [
         {
           "title": "USA",
@@ -43,6 +45,8 @@
       "id": "city",
       "style": "compact",
       "label": "City",
+      "isRequired": true,
+      "errorMessage": "Please select a city",
       "choices": [
         {
           "title": "None Selected",
@@ -58,6 +62,12 @@
         }
       ],
       "value": ""
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Submit"
     }
   ]
 }

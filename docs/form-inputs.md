@@ -43,12 +43,12 @@ onSubmit: (data) async {
 
 ## initData / initInput vs applyUpdates
 
-| Scenario | API |
-| --- | --- |
-| Simple prefill at card load | `initData: {'name': 'Jane'}` |
-| Async value-only late bind | `cardState.initInput({'name': fetched})` |
-| Rich load-time or handler patches | `cardState.applyUpdates(...)` or `applyUpdatesFromMap` |
-| Patch-map `initData` | `initData: {'state': {'choices': [...], 'value': 'CA'}}` |
+| Scenario                          | API                                                      |
+| --------------------------------- | -------------------------------------------------------- |
+| Simple prefill at card load       | `initData: {'name': 'Jane'}`                             |
+| Async value-only late bind        | `cardState.initInput({'name': fetched})`                 |
+| Rich load-time or handler patches | `cardState.applyUpdates(...)` or `applyUpdatesFromMap`   |
+| Patch-map `initData`              | `initData: {'state': {'choices': [...], 'value': 'CA'}}` |
 
 `seedInputValues` is implemented as value-only `applyUpdates` (single revision bump).
 
@@ -70,17 +70,75 @@ To restore host-driven state after reset, call `initInput`, `applyUpdates`, or `
 
 Full detail: [Reset semantics](reactive-riverpod.md#reset-semantics). Specs: [`2026-06-03-overlay-reset-semantics-design.md`](superpowers/specs/2026-06-03-overlay-reset-semantics-design.md), [`2026-06-04-action-resetinputs-targetinputids-design.md`](superpowers/specs/2026-06-04-action-resetinputs-targetinputids-design.md).
 
-## Overlay tests
+## Dependent ChoiceSet (country → city)
+
+Teams/Bot Framework [dependent inputs](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/dynamic-search#dependent-inputs) combine two mechanisms:
+
+1. **Card JSON — reset only:** Parent input (e.g. `country`) defines `valueChangedAction` → `Action.ResetInputs` with `targetInputIds: ["city"]`. Changing country factory-resets the city **value** (and other overlays) to baseline JSON. It does **not** change the city **choices** list.
+2. **Host — repopulate choices:** Wire `onChange` on `RawAdaptiveCard` / `AdaptiveCardsCanvas` and call `applyUpdates` (or `loadInput`) with country-specific choices for the dependent field.
+
+`valueChangedAction` reset runs inside the library before your `onChange` handler; use `onChange` to restore dependent choices after reset.
+
+```dart
+onChange: (id, value, dataQuery, cardState) {
+  if (id == 'country') {
+    cardState.applyUpdates(
+      elements: [
+        AdaptiveElementUpdate(
+          id: 'city',
+          choices: citiesForCountry(value),
+          clearValue: true,
+          clearError: true,
+        ),
+      ],
+    );
+  }
+},
+```
+
+**Widgetbook demos** (both use the same handler — [`widgetbook/lib/dependent_choice_set_demo_page.dart`](../widgetbook/lib/dependent_choice_set_demo_page.dart)):
+
+| Use case                                    | Sample JSON                                                                                | What differs                                                                        |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| **Value changed action (host cascade)**     | `widgetbook/lib/samples/inputs/input_choice_set/value_changed_action_filtered.json`        | City is **compact** with static baseline choices in JSON                            |
+| **Value changed action (Teams Data.Query)** | `widgetbook/lib/samples/inputs/input_choice_set/value_changed_action_dependent_query.json` | City is **filtered** with `choices.data` (`Data.Query`, `associatedInputs: "auto"`) |
+
+Shared handler `handleDependentChoiceSetChange`:
+
+- **`id == 'country'`** — runs for **both** demos: `applyUpdates` with `citiesByCountry`.
+- **`id == 'city' && dataQuery?.dataset == 'cities'`** — runs for **Option 2 only** (city has `choices.data`); Phase 1 logs in debug. Option 1 never hits this branch because `dataQuery` is null.
+
+**Gap (planned):** `choices.data.associatedInputs: "auto"` is parsed but not applied — sibling input values are not merged into `DataQuery` for `onChange` yet. Phase 1 preloads city choices on country change; a future library change will let the city branch read `dataQuery.parameters['country']` instead.
+
+Tests: `test/inputs/cascade_choice_set_test.dart`, `test/inputs/value_changed_action_reset_test.dart`, `test/inputs/choice_set_data_query_test.dart`, `test/inputs/dependent_choice_set_test.dart`.
+
+## Filtered ChoiceSet style (`style: "filtered"`)
+
+Filtered inputs open a typeahead modal ([`ChoiceFilter`](../packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_filter.dart)) over resolved `choices`:
+
+| Surface                          | Uses                                  |
+| -------------------------------- | ------------------------------------- |
+| Modal list labels                | Choice **titles** (`choices[].title`) |
+| Typeahead search                 | Case-insensitive match on **titles**  |
+| Read-only field after pick       | Selected choice **title**             |
+| `onChange`, submit, `Data.Query` | Choice **values** (`choices[].value`) |
+
+Values are never shown in the filter UI unless a title happens to equal its value. Host `onChange` and `collectInputValues()` always receive stored **values**, consistent with compact and expanded styles.
+
+Tests: `test/inputs/choice_filter_test.dart`, `test/inputs/choice_set_test.dart` (filtered modal + title search).
+
+---
 
 Dedicated overlay tests (beyond per-input layout tests under `test/inputs/`):
 
-| Concern | File |
-| --- | --- |
-| `initData` / `initInput` / `applyUpdates` | `test/inputs/init_data_overlay_test.dart`, `test/riverpod/apply_updates_test.dart` |
-| Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/input_error_overlay_test.dart` (Input.Text, Input.Number) |
-| ChoiceSet dynamic choices | `test/inputs/choice_set_overlay_test.dart` |
-| Notifier contract | `test/riverpod/adaptive_card_document_notifier_test.dart` |
-| Targeted reset / `valueChangedAction` | `test/inputs/action_reset_inputs_targeted_test.dart`, `test/inputs/value_changed_action_reset_test.dart` |
+| Concern                                                           | File                                                                                                     |
+| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `initData` / `initInput` / `applyUpdates`                         | `test/inputs/init_data_overlay_test.dart`, `test/riverpod/apply_updates_test.dart`                       |
+| Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/input_error_overlay_test.dart` (Input.Text, Input.Number)                                   |
+| ChoiceSet dynamic choices                                         | `test/inputs/choice_set_overlay_test.dart`                                                               |
+| Cascaded country → dependent ChoiceSet                            | `test/inputs/cascade_choice_set_test.dart`                                                               |
+| Notifier contract                                                 | `test/riverpod/adaptive_card_document_notifier_test.dart`                                                |
+| Targeted reset / `valueChangedAction`                             | `test/inputs/action_reset_inputs_targeted_test.dart`, `test/inputs/value_changed_action_reset_test.dart` |
 
 See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage) for the full list and gaps.
 

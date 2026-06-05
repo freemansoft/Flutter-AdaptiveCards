@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
 import 'package:widgetbook_workspace/network_page.dart';
 import 'package:widgetbook_workspace/text_block_overlay_page.dart';
@@ -830,13 +831,28 @@ Widget buildInputChoiceSetExample1(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Value changed action',
+  name: 'Value changed action (host cascade)',
   type: widget_types.InputChoiceSet,
   path: '[Components]',
 )
-Widget buildInputChoiceSetValueChangedAction(BuildContext context) {
-  return const GenericPage(
-    url: 'lib/samples/inputs/input_choice_set/value_changed_action_reset.json',
+Widget buildInputChoiceSetValueChangedActionHostCascade(BuildContext context) {
+  return const DependentChoiceSetDemoPage(
+    assetPath:
+        'lib/samples/inputs/input_choice_set/value_changed_action_filtered.json',
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Value changed action (Teams Data.Query)',
+  type: widget_types.InputChoiceSet,
+  path: '[Components]',
+)
+Widget buildInputChoiceSetValueChangedActionTeamsDataQuery(
+  BuildContext context,
+) {
+  return const DependentChoiceSetDemoPage(
+    assetPath:
+        'lib/samples/inputs/input_choice_set/value_changed_action_dependent_query.json',
   );
 }
 
