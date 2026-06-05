@@ -15,7 +15,7 @@
     {
       "type": "Input.ChoiceSet",
       "id": "country",
-      "style": "expanded",
+      "style": "filtered",
       "label": "Country",
       "choices": [
         {
@@ -41,9 +41,13 @@
     {
       "type": "Input.ChoiceSet",
       "id": "city",
-      "style": "expanded",
+      "style": "compact",
       "label": "City",
       "choices": [
+        {
+          "title": "None Selected",
+          "value": ""
+        },
         {
           "title": "Paris",
           "value": "paris"
@@ -53,7 +57,7 @@
           "value": "lyon"
         }
       ],
-      "value": "paris"
+      "value": ""
     }
   ]
 }
