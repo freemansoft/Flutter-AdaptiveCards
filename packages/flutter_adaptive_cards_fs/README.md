@@ -109,6 +109,97 @@ flowchart
 
 Host card JSON is stored as a **baseline** (deep-copied when the card loads; not mutated in place at runtime). User edits, visibility, validation, dynamic labels, and other runtime changes live in sparse **overlays** keyed by element `id` inside `AdaptiveCardDocumentNotifier`. Widgets render from a **resolved** view: baseline merged with overlays via `resolvedElementProvider(id)` and `resolvedActionProvider(id)`. The library installs a per-card `ProviderScope`; hosts call `RawAdaptiveCardState` APIs and do not need Riverpod in the app.
 
+The implementation keeps **two parallel structures** for each `RawAdaptiveCard`: a Flutter **widget tree** (built from JSON via `CardTypeRegistry`) and a Riverpod **document + overlay state** (indexed by the same element `id`s). They are not the same object — widgets are not updated by mutating `widget.adaptiveMap` at runtime — but they stay aligned because reactive widgets **watch** `resolvedElementProvider(id)` / `resolvedActionProvider(id)` for their `id`.
+
+### Parallel trees: widget tree and Riverpod state
+
+| | Widget tree | Riverpod / overlay state |
+| --- | --- | --- |
+| **Built from** | `CardTypeRegistry.getElement` / `getAction` walks baseline JSON once per reload | `AdaptiveCardDocumentNotifier` indexes baseline into `nodesById` |
+| **Structure** | `AdaptiveCardElement` → `Form` → body/actions children | `baseline` + sparse `overlaysById` / `actionOverlaysById` |
+| **Runtime values** | `Consumer` inputs call `watchResolvedInput()`; visibility/text/choices listen on `resolvedElementProvider(id)` | Overlay patches merged in family providers |
+| **Scope** | Outer `ProviderScope` on [`RawAdaptiveCard`](lib/src/flutter_raw_adaptive_card.dart); inner scope per [`AdaptiveCardElement`](lib/src/cards/adaptive_card_element.dart) for form + show-card UI | **One document per raw card** (ShowCard nested cards share it); `expandedShowCardIdProvider` is per inner `AdaptiveCardElement` only |
+| **Host entry** | `InheritedAdaptiveCardHandlers` (`onSubmit`, `onChange`, …) | `RawAdaptiveCardState` → `documentContainer` → notifier (`initInput`, `applyUpdates`, …) |
+
+```mermaid
+flowchart TB
+  subgraph widgetTree ["Flutter widget tree"]
+    direction TB
+    canvas["AdaptiveCardsCanvas"]
+    raw["RawAdaptiveCard"]
+    scopeRaw["ProviderScope raw card overrides"]
+    cardWidget["Card"]
+    ace["AdaptiveCardElement"]
+    scopeElem["ProviderScope element overrides"]
+    formW["Form"]
+    inputW["Input.Text id email"]
+    textW["TextBlock id title"]
+    submitW["Action.Submit id submit"]
+    canvas --> raw --> scopeRaw --> cardWidget --> ace
+    ace --> scopeElem --> formW
+    formW --> inputW
+    formW --> textW
+    formW --> submitW
+  end
+
+  subgraph riverpodState ["Riverpod state same RawAdaptiveCard scope"]
+    direction TB
+    baselineProv["baselineMapProvider"]
+    docProv["adaptiveCardDocumentProvider"]
+    nodesIdx["nodesById"]
+    elemOverlays["overlaysById"]
+    actOverlays["actionOverlaysById"]
+    resolvedEl["resolvedElementProvider id"]
+    resolvedAct["resolvedActionProvider id"]
+    showExpanded["expandedShowCardIdProvider per AdaptiveCardElement"]
+    baselineProv --> docProv
+    docProv --> nodesIdx
+    docProv --> elemOverlays
+    docProv --> actOverlays
+    nodesIdx --> resolvedEl
+    elemOverlays --> resolvedEl
+    nodesIdx --> resolvedAct
+    actOverlays --> resolvedAct
+    scopeElem -.-> showExpanded
+  end
+
+  inputW -.->|"watch id email"| resolvedEl
+  textW -.->|"listen id title"| resolvedEl
+  submitW -.->|"watch id submit"| resolvedAct
+  ace -.->|"ShowCard body when expanded"| showExpanded
+```
+
+**How they connect:** at build time, the registry instantiates widgets with a baseline `adaptiveMap` snapshot. At runtime, writes go to the notifier only; `resolvedElementProvider("email")` merges `nodesById["email"]` with `overlaysById["email"]`, and `Input.Text` rebuilds from that merged map. Show-card expand/collapse does not use overlays — it uses `expandedShowCardIdProvider` in the inner element scope while the expanded target remains another `AdaptiveCardElement` in the widget tree.
+
+### Host APIs, overlays, and Riverpod together
+
+```mermaid
+sequenceDiagram
+  participant Host as Host app
+  participant API as RawAdaptiveCardState
+  participant Life as AdaptiveCardDocumentLifecycle
+  participant Notifier as AdaptiveCardDocumentNotifier
+  participant Resolved as resolvedElementProvider
+  participant Widget as Input or Action widget
+
+  Host->>API: initData initInput applyUpdates
+  Life->>API: documentContainer after first frame
+  API->>Notifier: seedInputValues or applyUpdates
+  Notifier->>Notifier: overlaysById revision bump
+  Notifier->>Resolved: merge baseline plus overlay
+  Resolved->>Widget: ref.watch or container.listen
+  Widget->>API: onChange via handlers
+  Widget->>Notifier: setInputValue on user edit
+```
+
+| Step | What happens |
+| --- | --- |
+| Load | Host passes JSON → `RawAdaptiveCard` deep-copies **baseline** → registry builds widget tree; notifier builds `nodesById` from the same baseline |
+| Seed | `initData` / `initInput` → `RawAdaptiveCardState` → notifier writes **overlays** (not baseline) |
+| Render | Widget `build` watches **resolved** map for its `id` (label, value, `isVisible`, errors, …) |
+| Edit | User types → `setInputValue` → overlay → resolved provider → same widget rebuilds |
+| Submit | `Action.Submit` → `collectInputValues()` reads overlay ?? baseline per input id → `onSubmit` handler |
+
 ```mermaid
 flowchart TB
   hostMap["Host JSON map"] --> deepCopy["baseline deep copy"]
@@ -298,7 +389,7 @@ A fair amoiunt of development has been done using Antigravity
 
 ## Widget Hierarchy with Flutter-AdaptiveCards
 
-The Widgets marked with `(*)`are Flutter-AdaptiveCars specific including those scoped via Riverpod `ProviderScope`.
+The widgets marked with `(*)` are library-specific, including those under Riverpod `ProviderScope`. For how that widget tree lines up with `adaptiveCardDocumentProvider`, overlays, and `resolvedElementProvider(id)` by the same `id`, see [Parallel trees: widget tree and Riverpod state](#parallel-trees-widget-tree-and-riverpod-state) above.
 
 ```txt
 Demo Adaptive Card*
