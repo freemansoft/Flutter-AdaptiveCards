@@ -107,14 +107,27 @@ flowchart
 
 ## Loading Data into fields outside of the AdaptiveCard JSON with `initData` / `initInput`
 
-You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will be passed across the AdaptiveCard widget Tree.
-`initData` is demonstrated in the sample app on the `initData` button overriding values from the JSON. `loadData` was in the sample app but was removed and needs to be re-added.
+You can create an AdaptiveCard stack with the AdaptiveCard json and also pass in a data map that will seed input overlays on the document notifier.
 
-- `InitData` / `InitInput` can be used for late binding data into a widget tree
-  - `initData` injected directly into a widget tree and visited across the tree in `InitInput`
-  - `initInput(initData)` used to replace values in inputs. `initData` is a widget parameter.
-  - `initInput` is called if initData exists on component
-- `loadInput` used for choice selector lists only, at runtime, in choice set. bound by id
+- `initData` is a widget parameter on `RawAdaptiveCard` / `AdaptiveCardsCanvas`.
+- On first frame, values are written to the document notifier (scalar entries become `{value: …}` patches; map entries are full per-id patches via `applyUpdatesFromMap`).
+- `initInput(map)` on `RawAdaptiveCardState` seeds flat `{id: value}` maps or patch maps when values are objects.
+- **`initInput` does not call `setState` on the card** — input widgets rebuild when their `resolvedElementProvider` listener fires. See [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card).
+- `loadInput(id, map)` replaces `Input.ChoiceSet` choices for [id] via `setChoices` (title → value map converted to `Input.Choice` list).
+
+### Runtime overlays (host API on `RawAdaptiveCardState`)
+
+Without mutating card JSON, hosts can patch document state via:
+
+| API | Use |
+| --- | --- |
+| `applyUpdates(elements:, actions:)` | Bulk sparse patches (`AdaptiveElementUpdate` / `AdaptiveActionUpdate`) |
+| `applyUpdatesFromMap(byId)` | Server-style `{ id: { value, choices, … } }` payloads |
+| `setText(id, text)` / `clearText(id)` | Replace `TextBlock` display text |
+| `setInputError(id, message:, isInvalid:)` / `clearInputError(id)` | Host validation on inputs |
+| `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)` | Enable/disable `Action.*` (AC 1.5) |
+
+See [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
 ## Event Handlers
 
@@ -193,7 +206,7 @@ A fair amoiunt of development has been done using Antigravity
 
 ## Widget Hierarchy with Flutter-AdaptiveCards
 
-The Widgets marked with `(*)`are Flutter-AdaptiveCars specific including those build using the `Provider` framework.
+The Widgets marked with `(*)`are Flutter-AdaptiveCars specific including those scoped via Riverpod `ProviderScope`.
 
 ```txt
 Demo Adaptive Card*
@@ -202,16 +215,18 @@ Demo Adaptive Card*
 │       └── Column
 │           └── AdaptiveCardsCanvas(*)
 │               └── RawAdaptiveCard(*)
-│                   ├── Provider<RawAdaptiveCardState>(*)
-│                   ├── Provider<CardTypeRegistry>(*)
-│                   ├── Provider<ActionTypeRegistry>(*)
-│                   └── Provider<ReferenceResolver>(*)
-│                               └── Card
-│                                   └── Column
-│                                       ├── TextButton
-│                                       ├── Divider
-│                                       └── AdaptiveCardElement(*)
-│                                           └── Provider<AdaptiveCardElement>(*)
+│                   └── ProviderScope(*)
+│                       ├── cardTypeRegistryProvider override
+│                       ├── actionTypeRegistryProvider override
+│                       ├── styleReferenceResolverProvider override (HostConfig only)
+│                       └── adaptiveCardDocumentProvider
+│                           └── Card
+│                               └── Column
+│                                   ├── TextButton
+│                                   ├── Divider
+│                                   └── AdaptiveCardElement(*)
+│                                       └── ProviderScope(*)
+│                                           └── expandedShowCardIdProvider
 │                                               └── Form
 │                                                   └── Container
 │                                                       └── Column
@@ -236,8 +251,6 @@ TODO for the example programs moved to [example README](example/README.md)
 
 - `initData` does not appear to be working on date fields. The `initData` button in the sample program demonstrates this
 - Currently uses `Provider` for inherited state. Determine if this 3rd party dependency is a good idea given `Provider`` is essentially EOL or frozen.
-- Find out if there is any regex validation tag or extension
-  - add support for regex validation
 - There is currently no way to unset a container style inside a child container. This means you can't get back to a card background color in a nested container if you set it somewhere in the widget tree betwen you and the card.
 - Make a single purpose dart file for consumer imports with no code in it in place of `flutter_adaptive_cards_fs.dart` or move the code in that file.
 - Inject locale behavior into money, time and dates including parsing
@@ -258,7 +271,7 @@ TODO for the example programs moved to [example README](example/README.md)
   - Font line spacing is subtly different between platforms. You can see this if you use the "fade" view when looking at diffs on a golden png in the repo
   - Using default flutter fonts instead of roboto <https://github.com/flutter/flutter/issues/56383>
   - Golden toolkit fonts loaded but it will show black bars for text inside of text fields instead of text if font isn't loaded <https://pub.dev/packages/golden_toolkit>
-- resetInputs() needs to be overridden in every input field that needs something other than '' when no value was set in the json.
+- Input reset uses document notifier **`resetAllInputs()`** / **`resetInput(id)`** (factory reset to baseline JSON). Subclass **`resetInput()`** overrides sync controllers only — see [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#reset-semantics).
 - mandatory inputs checks may not include all inputs because possible overrides may not be implement
 - Visitors are at the raw adaptive card level meaning all adaptive cards and their children are in scope. All forms are impacted at that level.
 - Possibly add the deprecated `Action.HTTP`

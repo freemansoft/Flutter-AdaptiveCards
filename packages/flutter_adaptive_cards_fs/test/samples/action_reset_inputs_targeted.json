@@ -1,0 +1,48 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Targeted Reset Inputs",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Input.Text",
+      "id": "fieldA",
+      "label": "Field A",
+      "placeholder": "Empty baseline"
+    },
+    {
+      "type": "Input.Text",
+      "id": "fieldB",
+      "label": "Field B",
+      "value": "Baseline B"
+    },
+    {
+      "type": "Input.Text",
+      "id": "fieldC",
+      "label": "Field C",
+      "value": "Baseline C"
+    },
+    {
+      "type": "Input.Text",
+      "id": "fieldD",
+      "label": "Field D",
+      "placeholder": "Empty baseline"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.ResetInputs",
+      "title": "Reset A & B",
+      "targetInputIds": ["fieldA", "fieldB"]
+    },
+    {
+      "type": "Action.ResetInputs",
+      "title": "Reset C & D",
+      "targetInputIds": ["fieldC", "fieldD"]
+    }
+  ]
+}

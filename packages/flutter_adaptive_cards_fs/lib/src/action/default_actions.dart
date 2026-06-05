@@ -4,12 +4,59 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
-import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards_fs/src/action/reset_inputs_executor.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
-import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 // Default action handlers with basic behavior
 // including forwarding to the InheritedAdaptiveCardHandlers
+
+/// Returns `false` when any input fails validation and marks each failing
+/// input invalid via the document notifier.
+bool validateInputs(ProviderContainer container) {
+  final doc = container.read(adaptiveCardDocumentProvider);
+  final values = container
+      .read(adaptiveCardDocumentProvider.notifier)
+      .collectInputValues();
+  final notifier = container.read(adaptiveCardDocumentProvider.notifier);
+
+  var valid = true;
+  for (final entry in doc.nodesById.entries) {
+    final node = entry.value;
+    final type = node['type'] as String?;
+    if (type == null || !type.startsWith('Input.')) continue;
+    final resolved = container.read(resolvedElementProvider(entry.key));
+    final isRequired = resolved?['isRequired'] as bool? ?? false;
+    final value = values[entry.key];
+
+    if (type == 'Input.Text') {
+      final regexPattern = node['regex'] as String?;
+      if (!textInputValueIsValid(
+        value: value?.toString(),
+        isRequired: isRequired,
+        regexPattern: regexPattern,
+      )) {
+        valid = false;
+        notifier.setInputError(entry.key, isInvalid: true);
+      }
+      continue;
+    }
+
+    if (!isRequired) continue;
+    if (value == null) {
+      valid = false;
+      notifier.setInputError(entry.key, isInvalid: true);
+      continue;
+    }
+    if (value is String && value.isEmpty) {
+      valid = false;
+      notifier.setInputError(entry.key, isInvalid: true);
+    }
+  }
+  return valid;
+}
 
 /// Default actions for onTaps for Action.Submit
 /// Expects there to be supplementary data in 'data' property
@@ -22,48 +69,32 @@ class DefaultSubmitAction extends GenericSubmitAction {
     required RawAdaptiveCardState rawAdaptiveCardState,
     required Map<String, dynamic> adaptiveMap,
   }) {
-    bool valid = true;
-
     // Pull initial submit data from the map
     final Map<String, dynamic> data =
         (adaptiveMap['data'] as Map<String, dynamic>?) != null
         ? Map<String, dynamic>.from(adaptiveMap['data'] as Map)
         : <String, dynamic>{};
 
-    // Recursively visits all inputs and determines if all the inputs are valid
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveInputMixin) {
-          if ((element.state as AdaptiveInputMixin).checkRequired()) {
-            (element.state as AdaptiveInputMixin).appendInput(data);
-          } else {
-            valid = false;
-          }
-        }
-      }
-      element.visitChildren(visitor);
-    }
+    final container = ProviderScope.containerOf(context);
+    final values = container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .collectInputValues();
 
-    InheritedReferenceResolver.elementScopeOf(context)
-        .adaptiveCardElementState!
-        .context
-        .visitChildElements(visitor);
+    data.addAll(values);
 
-    if (valid) {
-      final foo = InheritedAdaptiveCardHandlers.of(context);
-      if (foo != null) {
-        foo.onSubmit(data);
-      } else if (kDebugMode) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'No custom handler found for onSubmit: \n $data',
-            ),
+    if (!validateInputs(container)) return;
+
+    final foo = InheritedAdaptiveCardHandlers.of(context);
+    if (foo != null) {
+      foo.onSubmit(data);
+    } else if (kDebugMode) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'No custom handler found for onSubmit: \n $data',
           ),
-        );
-      } else {
-        // no handler and not in debug mode so do nothing
-      }
+        ),
+      );
     }
   }
 }
@@ -80,47 +111,30 @@ class DefaultExecuteAction extends GenericExecuteAction {
     required Map<String, dynamic> adaptiveMap,
     String? verb, // added in schema 1.6
   }) {
-    bool valid = true;
-
     final Map<String, dynamic> data =
         (adaptiveMap['data'] as Map<String, dynamic>?) != null
         ? Map<String, dynamic>.from(adaptiveMap['data'] as Map)
         : <String, dynamic>{};
 
-    // Recursively visits all inputs and determines if all the inputs are valid
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveInputMixin) {
-          if ((element.state as AdaptiveInputMixin).checkRequired()) {
-            (element.state as AdaptiveInputMixin).appendInput(data);
-          } else {
-            valid = false;
-          }
-        }
-      }
-      element.visitChildren(visitor);
-    }
+    final container = ProviderScope.containerOf(context);
+    final values = container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .collectInputValues();
 
-    InheritedReferenceResolver.elementScopeOf(context)
-        .adaptiveCardElementState!
-        .context
-        .visitChildElements(visitor);
+    data.addAll(values);
+    if (!validateInputs(container)) return;
 
-    if (valid) {
-      final foo = InheritedAdaptiveCardHandlers.of(context);
-      if (foo != null) {
-        foo.onExecute(data);
-      } else if (kDebugMode) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'No custom handler found for onExecute: verb: $verb \n $data',
-            ),
+    final foo = InheritedAdaptiveCardHandlers.of(context);
+    if (foo != null) {
+      foo.onExecute(data);
+    } else if (kDebugMode) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'No custom handler found for onExecute: verb: $verb \n $data',
           ),
-        );
-      } else {
-        // no handler and not in debug mode so do nothing
-      }
+        ),
+      );
     }
   }
 }
@@ -210,19 +224,7 @@ class DefaultResetInputsAction extends GenericActionResetInputs {
     required RawAdaptiveCardState rawAdaptiveCardState,
     required Map<String, dynamic> adaptiveMap,
   }) {
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveInputMixin) {
-          (element.state as AdaptiveInputMixin).resetInput();
-        }
-      }
-      element.visitChildren(visitor);
-    }
-
-    InheritedReferenceResolver.elementScopeOf(context)
-        .adaptiveCardElementState!
-        .context
-        .visitChildElements(visitor);
+    executeResetInputsAction(context, adaptiveMap);
   }
 }
 
@@ -258,7 +260,12 @@ class DefaultToggleVisibilityAction extends GenericActionToggleVisibility {
       }
     }
     for (final elementId in targetElementIds) {
-      rawAdaptiveCardState.toggleVisibility(id: elementId);
+      final container = ProviderScope.containerOf(context);
+      container
+          .read(adaptiveCardDocumentProvider.notifier)
+          .toggleVisibility(
+            elementId,
+          );
     }
   }
 }

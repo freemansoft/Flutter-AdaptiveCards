@@ -82,6 +82,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildActionToggleVisibilityExample1,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Action.isEnabled Example 1',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionIsEnabledExample1,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Actions.InsertImage',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildV16ActionsInsertImage,
@@ -100,6 +105,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Actions.Reset',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildV16ActionsReset,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Actions.Reset (targeted)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ActionsResetTargeted,
           ),
         ],
       ),
@@ -142,9 +152,19 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildV16ChartBarHorizontal,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Bar Horizontal Stacked',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ChartBarHorizontalStacked,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Bar Vertical',
             builder:
                 _widgetbook_workspace_adaptive_cards_use_cases.buildV16ChartBar,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Bar Vertical Grouped',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ChartBarVerticalGrouped,
           ),
           _widgetbook.WidgetbookUseCase(
             name: 'Donut',
@@ -550,6 +570,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Example 9',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildTextBlockExample9,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Text overlay (knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildTextBlockTextOverlay,
           ),
         ],
       ),

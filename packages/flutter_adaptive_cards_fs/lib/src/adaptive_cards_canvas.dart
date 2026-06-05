@@ -9,7 +9,6 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
-import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:http/http.dart' as http;
 
 /// Core definition for AdaptiveCardContent providers.
@@ -219,14 +218,17 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
   @override
   void initState() {
     super.initState();
+    // async because we don't know if provider is synchronous or asynchronous
     unawaited(
       widget.adaptiveCardContentProvider.loadAdaptiveCardContent().then((
-        adaptiveMap,
+        loadedMap,
       ) {
         if (mounted) {
-          injectIds(adaptiveMap);
+          // this class does not use the map so id injection is out of scope
+          // also we should only mutate a copy of the map
+          //injectIds(adaptiveMap);
           setState(() {
-            map = adaptiveMap;
+            map = loadedMap;
           });
         }
       }),

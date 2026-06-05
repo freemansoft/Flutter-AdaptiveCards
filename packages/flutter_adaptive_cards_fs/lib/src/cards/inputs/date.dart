@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Date.html
 ///
-class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveDateInput extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   AdaptiveDateInput({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -26,40 +28,32 @@ class AdaptiveDateInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveDateInputState createState() => AdaptiveDateInputState();
 }
 
-class AdaptiveDateInputState extends State<AdaptiveDateInput>
+class AdaptiveDateInputState extends ConsumerState<AdaptiveDateInput>
     with
         AdaptiveTextualInputMixin,
         AdaptiveElementMixin,
         AdaptiveInputMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
-  String? label;
-  late bool isRequired;
   DateTime? selectedDateTime;
   DateTime? min;
   DateTime? max;
   final inputFormat = DateFormat('yyyy-MM-dd');
   TextEditingController controller = TextEditingController();
-  bool stateHasError = false;
+  bool _initialValueSynced = false;
 
   @override
   void initState() {
     super.initState();
 
-    label = adaptiveMap['label'] as String?;
-    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
     try {
-      // set the value from the card as the current selected
-      selectedDateTime = inputFormat.parse(value);
       if (adaptiveMap.containsKey('min')) {
         min = inputFormat.parse(adaptiveMap['min']);
       }
       if (adaptiveMap.containsKey('max')) {
         max = inputFormat.parse(adaptiveMap['max']);
       }
-      // catch them all
     } on Exception catch (formatException) {
-      // what should we do here?
       assert(() {
         developer.log(
           'failed to init state $formatException.',
@@ -71,22 +65,19 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
   }
 
   @override
-  void resetInput() {
-    super.resetInput();
-    setState(() {
-      try {
-        selectedDateTime = value.isNotEmpty ? inputFormat.parse(value) : null;
-      } on Exception {
-        selectedDateTime = null;
-      }
-      controller.text = selectedDateTime == null
-          ? placeholder
-          : inputFormat.format(selectedDateTime!);
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialValueSynced) {
+      _initialValueSynced = true;
+      onDocumentValueChanged(readResolvedInput().valueRaw);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    listenForResolvedValueChanges();
+    final input = watchResolvedInput();
+
     final Locale myLocale = Localizations.localeOf(context);
     assert(() {
       developer.log(
@@ -105,8 +96,8 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
           children: [
             loadLabel(
               context: context,
-              label: label,
-              isRequired: isRequired,
+              label: input.label,
+              isRequired: input.isRequired,
             ),
             SizedBox(
               width: double.infinity,
@@ -141,22 +132,18 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
                     style: null,
                   ),
                   suffixIcon: const Icon(Icons.calendar_today, size: 15),
-                  hintText: placeholder,
+                  hintText: input.placeholder,
                   // required or box will exist even though field is hidden or half height
                   hintStyle: const TextStyle(),
                   errorStyle: const TextStyle(height: 0),
                 ),
                 validator: (value) {
-                  if (!isRequired) return null;
+                  if (!input.isRequired) return null;
                   if (value == null || value.isEmpty) {
-                    setState(() {
-                      stateHasError = true;
-                    });
+                    setLocalValidationError();
                     return '';
                   }
-                  setState(() {
-                    stateHasError = false;
-                  });
+                  clearLocalValidationError();
                   return null;
                 },
                 onTap: () async {
@@ -171,17 +158,21 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
                     setState(() {
                       selectedDateTime = result;
                       controller.text = selectedDateTime == null
-                          ? placeholder
+                          ? input.placeholder
                           : inputFormat.format(selectedDateTime!);
                     });
+                    final iso = selectedDateTime!.toIso8601String();
+                    setDocumentInputValue(iso);
+                    rawRootCardWidgetState.changeValue(id, iso);
+                    notifyUserInputValueChanged(iso, committed: true);
                   }
                 },
               ),
             ),
             loadErrorMessage(
               context: context,
-              errorMessage: errorMessage,
-              stateHasError: stateHasError,
+              errorMessage: input.errorMessage,
+              showError: input.isInvalid,
             ),
           ],
         ),
@@ -199,20 +190,7 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      try {
-        setState(() {
-          selectedDateTime = inputFormat.parse(map[id]);
-          controller.text = selectedDateTime == null
-              ? placeholder
-              : inputFormat.format(selectedDateTime!);
-        });
-        // catch them all
-      } on Exception catch (formatException) {
-        developer.log(
-          '$formatException',
-          name: runtimeType.toString(),
-        );
-      }
+      setDocumentInputValue(map[id]);
     }
   }
 
@@ -222,5 +200,29 @@ class AdaptiveDateInputState extends State<AdaptiveDateInput>
     final formKey = adaptiveCardElement.formKey;
 
     return formKey.currentState!.validate();
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final input = readResolvedInput();
+    final next = valueFromDocument?.toString();
+    if (next == null || next.isEmpty) {
+      selectedDateTime = null;
+      controller.text = input.placeholder;
+      return;
+    }
+    try {
+      selectedDateTime = DateTime.parse(next);
+      controller.text = inputFormat.format(selectedDateTime!);
+    } on Exception {
+      // If baseline uses yyyy-MM-dd, fall back to that.
+      try {
+        selectedDateTime = inputFormat.parse(next);
+        controller.text = inputFormat.format(selectedDateTime!);
+      } on Exception {
+        selectedDateTime = null;
+        controller.text = '';
+      }
+    }
   }
 }

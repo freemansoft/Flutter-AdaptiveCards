@@ -42,6 +42,7 @@ class AdaptiveActionResetInputsState extends State<AdaptiveActionResetInputs>
     return IconButtonAction(
       adaptiveMap: adaptiveMap,
       onTapped: (BuildContext context) {
+        // [GenericActionResetInputs]
         action.tap(
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,

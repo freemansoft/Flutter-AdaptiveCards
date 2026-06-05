@@ -42,13 +42,16 @@ The project's AI instructions are organized into two layers to keep context effi
 
 ## State management (`flutter_adaptive_cards_fs`)
 
-Scoped DI uses **`InheritedReferenceResolver`** (nested raw-card / element scopes) and **`InheritedAdaptiveCardHandlers`**. See [`doc/replace-riverpod.md`](doc/replace-riverpod.md).
+`flutter_adaptive_cards_fs` uses **Riverpod** (v3.x) internally for **reactive** document + UI state, scoped per rendered card subtree (the library installs its own `ProviderScope` so host apps don't need to).
+Host callbacks remain on **`InheritedAdaptiveCardHandlers`**. See [`doc/reactive-riverpod.md`](doc/reactive-riverpod.md).
 
 When working in **`packages/flutter_adaptive_cards_fs`**:
 
-- **Do** use `ProviderScopeMixin` for registries/resolver/card state, `AdaptiveInputMixin` + `setState` for inputs, and `InheritedAdaptiveCardHandlers` for host callbacks.
-- **Do not** add Riverpod or other DI frameworks to the cards package without an explicit architectural decision.
-- **Use** `InheritedReferenceResolver.rawCardScopeOf` / `elementScopeOf` for shared services; do not reintroduce separate scope widgets.
+- **Do** use `ProviderScope` + provider overrides for card-scoped registries, resolver (HostConfig only), and document state.
+- **Do** keep registries and `ReferenceResolver` as **separate** scoped providers (`cardTypeRegistryProvider` / `actionTypeRegistryProvider` vs `styleReferenceResolverProvider`).
+- **Do** model reactive behaviors (visibility, inputs, TextBlock text, validation, action `isEnabled`, show-card UI) with Riverpod `Notifier`s + `ref.watch` / `container.listen` on resolved providers (avoid element-tree walks and widget instance registries).
+- **Do** keep host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onChange`, …) on `InheritedAdaptiveCardHandlers`.
+- **Do not** mutate the host-provided JSON map in place for runtime state; store runtime overlays in the document notifier (`setInputValue`, `setVisibility`, `setChoices`, `setText`, `setInputError`, `setActionEnabled`, …) and read merged state via `resolvedElementProvider(id)` / `resolvedActionProvider(id)` (see [`doc/reactive-riverpod.md`](doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map)).
 
 For **sample apps and `adaptive_explorer`**, use normal Flutter state patterns (`StatefulWidget`, etc.).
 

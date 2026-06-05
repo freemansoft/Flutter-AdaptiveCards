@@ -1,7 +1,6 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/actions_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/adaptive_card_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
@@ -23,39 +22,33 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/separator_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_block_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_styles_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
+/// HostConfig and container-style resolution facade.
 ///
-/// All JSON values can also be null, in that case the default is used or null
+/// Element and action factories are provided separately via Riverpod
+/// `cardTypeRegistryProvider` and `actionTypeRegistryProvider`.
+///
+/// All JSON values can also be null, in that case the default is used or null.
 ///
 /// https://github.com/microsoft/AdaptiveCards/blob/main/schemas/1.5.0/adaptive-card.json
 ///
-/// Styles not implemented even though we have configs
-/// ImageStyle
-/// Spacing
-/// TextBlockStyle
-///
+/// Styles not implemented even though we have configs:
+/// ImageStyle, Spacing, TextBlockStyle.
 class ReferenceResolver {
   ReferenceResolver({
     this.currentContainerStyle,
     required this.hostConfigs,
-    this.cardTypeRegistry = const CardTypeRegistry(),
-    this.actionTypeRegistry = const DefaultActionTypeRegistry(),
   });
 
   ReferenceResolver._({
     this.currentContainerStyle,
     required this.hostConfigs,
-    required this.cardTypeRegistry,
-    required this.actionTypeRegistry,
   });
 
   /// Locally used for containers
   final String? currentContainerStyle;
   final HostConfigs hostConfigs;
-  final CardTypeRegistry cardTypeRegistry;
-  final ActionTypeRegistry actionTypeRegistry;
 
   HostConfigs getHostConfigs() => hostConfigs;
   ImageSetConfig? getImageSetConfig() => hostConfigs.current.imageSet;
@@ -333,8 +326,6 @@ class ReferenceResolver {
     return ReferenceResolver._(
       currentContainerStyle: myStyle,
       hostConfigs: hostConfigs,
-      cardTypeRegistry: cardTypeRegistry,
-      actionTypeRegistry: actionTypeRegistry,
     );
   }
 

@@ -1,16 +1,16 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.ShowCard.html
 ///
 
-class AdaptiveActionShowCard extends StatefulWidget
+class AdaptiveActionShowCard extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveActionShowCard({
     required this.adaptiveMap,
@@ -28,13 +28,15 @@ class AdaptiveActionShowCard extends StatefulWidget
   AdaptiveActionShowCardState createState() => AdaptiveActionShowCardState();
 }
 
-class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
+class AdaptiveActionShowCardState extends ConsumerState<AdaptiveActionShowCard>
     with
         AdaptiveActionMixin,
+        AdaptiveActionStateMixin,
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
   AdaptiveCardElement? targetCard;
+  String? _targetCardId;
 
   @override
   void didChangeDependencies() {
@@ -45,31 +47,11 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
       map: adaptiveMap['card'],
     );
     if (possibleTargetCard is AdaptiveCardElement) {
-      // AdaptiveCard Element doesn't actually have natural id in the map
-      // so it won't be registered by default
-      // for show card, though we know the AdaptiveCard Element
-      // needs to be registered because we need to show/hide it
-      // in this case we override that behavior when getElement is called
       targetCard = possibleTargetCard;
-      // this feels like a hack because it should have gotten called when created
-      // do we need it because dependenciesDidChange doesn't get called so the mixin doesn't fire?
-      adaptiveCardElementState.registerCardWidget(targetCard!.id, targetCard!);
-      assert(() {
-        developer.log(
-          'targetCard of $id has id ${possibleTargetCard.id} built for $possibleTargetCard',
-          name: runtimeType.toString(),
-        );
-        return true;
-      }());
+      _targetCardId = possibleTargetCard.id;
     } else if (possibleTargetCard is AdaptiveElementWidgetMixin) {
       // we have a card but not the mandatory type
-      assert(() {
-        developer.log(
-          'target card Time must be AdaptiveCardElement for $id built for $possibleTargetCard',
-          name: runtimeType.toString(),
-        );
-        return true;
-      }());
+      _targetCardId = null;
     }
     super.didChangeDependencies();
   }
@@ -77,13 +59,15 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
   @override
   Widget build(BuildContext context) {
     final resolver = styleResolver;
-
+    final expandedId = ref.watch(expandedShowCardIdProvider);
     final theButton = ElevatedButton(
-      onPressed: () {
-        if (targetCard != null) {
-          adaptiveCardElementState.showCard(targetCard!);
-        }
-      },
+      onPressed: actionEnabled
+          ? () {
+              final targetId = _targetCardId;
+              if (targetId == null) return;
+              ref.read(expandedShowCardIdProvider.notifier).toggle(targetId);
+            }
+          : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: resolver.resolveButtonBackgroundColor(
           context: context,
@@ -99,7 +83,7 @@ class AdaptiveActionShowCardState extends State<AdaptiveActionShowCard>
         children: <Widget>[
           Text(title),
           // chevron state based on if our card being shown
-          if (adaptiveCardElementState.currentCard != targetCard)
+          if (expandedId != _targetCardId)
             const Icon(Icons.keyboard_arrow_up)
           else
             const Icon(Icons.keyboard_arrow_down),

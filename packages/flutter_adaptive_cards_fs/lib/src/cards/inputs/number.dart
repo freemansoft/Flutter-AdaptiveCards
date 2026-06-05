@@ -3,12 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Number.html
 ///
 // ignore_for_file: unnecessary_const
-class AdaptiveNumberInput extends StatefulWidget
+class AdaptiveNumberInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveNumberInput({
     required this.adaptiveMap,
@@ -26,7 +27,7 @@ class AdaptiveNumberInput extends StatefulWidget
   AdaptiveNumberInputState createState() => AdaptiveNumberInputState();
 }
 
-class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
+class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
     with
         AdaptiveTextualInputMixin,
         AdaptiveInputMixin,
@@ -34,37 +35,72 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
   TextEditingController controller = TextEditingController();
-  bool stateHasError = false;
-
-  String? label;
-  late bool isRequired;
+  late FocusNode _focusNode;
+  bool _controllerListenerInstalled = false;
+  bool _isUpdatingFromDocument = false;
+  bool _initialValueSynced = false;
   late int min;
   late int max;
 
   @override
   void initState() {
     super.initState();
-
-    label = adaptiveMap['label']?.toString();
-    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
-
-    controller.text = value;
-    stateHasError = false;
     min = adaptiveMap['min'] as int? ?? 0;
     max = adaptiveMap['max'] as int? ?? 100;
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus || _isUpdatingFromDocument) {
+      return;
+    }
+    notifyUserInputValueChanged(controller.text, committed: true);
   }
 
   @override
-  void resetInput() {
-    super.resetInput();
-    setState(() {
-      controller.text = value;
-      stateHasError = false;
-    });
+  void dispose() {
+    _focusNode
+      ..removeListener(_onFocusChange)
+      ..dispose();
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_initialValueSynced) {
+      _initialValueSynced = true;
+      onDocumentValueChanged(readResolvedInput().valueRaw);
+    }
+
+    if (!_controllerListenerInstalled) {
+      _controllerListenerInstalled = true;
+      controller.addListener(() {
+        if (_isUpdatingFromDocument) return;
+        final text = controller.text;
+        setDocumentInputValue(text);
+        rawRootCardWidgetState.changeValue(id, text);
+      });
+    }
+  }
+
+  @override
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString() ?? '';
+    if (controller.text == next) return;
+    _isUpdatingFromDocument = true;
+    controller.text = next;
+    _isUpdatingFromDocument = false;
   }
 
   @override
   Widget build(BuildContext context) {
+    listenForResolvedValueChanges();
+    final input = watchResolvedInput();
+
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
@@ -74,13 +110,14 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
           children: [
             loadLabel(
               context: context,
-              label: label,
-              isRequired: isRequired,
+              label: input.label,
+              isRequired: input.isRequired,
             ),
             SizedBox(
               height: 40,
               child: TextFormField(
                 key: generateWidgetKey(adaptiveMap),
+                focusNode: _focusNode,
                 style: const TextStyle(),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -110,30 +147,29 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
                     context: context,
                     style: null,
                   ),
-                  hintText: placeholder,
+                  hintText: input.placeholder,
                   // required or box will exist even though field is hidden or half height
                   hintStyle: const TextStyle(),
                   errorStyle: const TextStyle(height: 0),
                 ),
                 validator: (value) {
-                  if (!isRequired) return null;
+                  if (!input.isRequired) return null;
                   if (value == null || value.isEmpty) {
-                    setState(() {
-                      stateHasError = true;
-                    });
+                    setLocalValidationError();
                     return '';
                   }
-                  setState(() {
-                    stateHasError = false;
-                  });
+                  clearLocalValidationError();
                   return null;
+                },
+                onEditingComplete: () {
+                  notifyUserInputValueChanged(controller.text, committed: true);
                 },
               ),
             ),
             loadErrorMessage(
               context: context,
-              errorMessage: errorMessage,
-              stateHasError: stateHasError,
+              errorMessage: input.errorMessage,
+              showError: input.isInvalid,
             ),
           ],
         ),
@@ -149,7 +185,7 @@ class AdaptiveNumberInputState extends State<AdaptiveNumberInput>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      controller.text = map[id].toString();
+      setDocumentInputValue(map[id]);
     }
   }
 

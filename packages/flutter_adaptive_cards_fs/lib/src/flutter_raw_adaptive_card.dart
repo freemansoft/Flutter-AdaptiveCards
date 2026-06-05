@@ -6,14 +6,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_cards_canvas.dart';
-import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/inherited_reference_resolver.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The working root of an adaptive card tree when operating against the map
 ///
@@ -59,6 +62,8 @@ class RawAdaptiveCard extends StatefulWidget {
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
 }
 
+/// The working root of adaptive card state tree when operating against the map
+///
 class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   ///.  Wrapper around the host config
   late ReferenceResolver _resolver;
@@ -66,20 +71,29 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   // The root element that is loaded from the map
   late Widget _adaptiveElement;
 
+  /// Deep-copied baseline for [baselineMapProvider]; stable across [build]
+  /// so runtime overlays are not cleared when the host rebuilds this card.
+  late Map<String, dynamic> _baselineMap;
+
+  /// Set by [_AdaptiveCardDocumentLifecycle] for host APIs outside the scope.
+  ProviderContainer? documentContainer;
+
+  /// creates a deep copy with ids injected
+  static Map<String, dynamic> _deepCopyBaseline(Map<String, dynamic> map) {
+    final copy = json.decode(json.encode(map)) as Map<String, dynamic>;
+    injectIds(copy);
+    return copy;
+  }
+
   @override
   void initState() {
     super.initState();
     // Resolver initialization moved to didChangeDependencies to access context Theme
 
+    _baselineMap = _deepCopyBaseline(widget.map);
     _adaptiveElement = widget.cardTypeRegistry.getElement(
-      map: widget.map,
+      map: _baselineMap,
     );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.initData != null && widget.initData!.isNotEmpty) {
-        initInput(widget.initData!);
-      }
-    });
   }
 
   @override
@@ -91,10 +105,14 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void didUpdateWidget(RawAdaptiveCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.map != widget.map ||
-        oldWidget.cardTypeRegistry != widget.cardTypeRegistry) {
+    if (oldWidget.map != widget.map) {
+      _baselineMap = _deepCopyBaseline(widget.map);
       _adaptiveElement = widget.cardTypeRegistry.getElement(
-        map: widget.map,
+        map: _baselineMap,
+      );
+    } else if (oldWidget.cardTypeRegistry != widget.cardTypeRegistry) {
+      _adaptiveElement = widget.cardTypeRegistry.getElement(
+        map: _baselineMap,
       );
     }
     _updateResolver();
@@ -109,8 +127,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     _resolver = ReferenceResolver(
       hostConfigs: widget.hostConfigs,
-      cardTypeRegistry: widget.cardTypeRegistry,
-      actionTypeRegistry: widget.actionTypeRegistry,
     );
   }
 
@@ -120,108 +136,128 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     setState(() {});
   }
 
+  /// Seeds input overlays from [map] (e.g. `RawAdaptiveCard.initData`).
+  ///
+  /// Flat maps `{id: value}` seed input values only. Maps whose values are
+  /// patch objects `{id: {choices: …, value: …}}` delegate to [applyUpdatesFromMap].
   void initInput(Map map) {
-    // this code exists in several places
-    // but looks like it uses the visitor prior to assignment
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveInputMixin) {
-          (element.state as AdaptiveInputMixin).initInput(map);
-        }
-      }
-      element.visitChildren(visitor);
+    final container = documentContainer;
+    if (container == null) return;
+    final normalized = Map<String, Object?>.from(map);
+    if (normalized.values.any((value) => value is Map)) {
+      applyUpdatesFromMap(normalized);
+      return;
     }
-
-    context.visitChildElements(visitor);
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .seedInputValues(normalized);
   }
 
+  /// Applies sparse overlay patches without mutating baseline JSON.
+  void applyUpdates({
+    Iterable<AdaptiveElementUpdate> elements = const [],
+    Iterable<AdaptiveActionUpdate> actions = const [],
+  }) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .applyUpdates(
+          elements: elements,
+          actions: actions,
+        );
+  }
+
+  /// Parses [byId] patch maps (Adaptive Card property names) into overlay updates.
+  void applyUpdatesFromMap(Map<String, Object?> byId) {
+    final container = documentContainer;
+    if (container == null) return;
+    final parsed = container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .updatesFromPatchMap(byId);
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .applyUpdates(
+          elements: parsed.elements,
+          actions: parsed.actions,
+        );
+  }
+
+  /// Sets host-driven validation overlays for input [id].
+  void setInputError(
+    String id, {
+    String? message,
+    bool isInvalid = true,
+  }) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputError(
+          id,
+          errorMessage: message,
+          isInvalid: isInvalid,
+        );
+  }
+
+  /// Clears validation overlays for input [id].
+  void clearInputError(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).clearInputError(id);
+  }
+
+  /// Factory-resets one input id (same rules as Action.ResetInputs per field).
+  ///
+  /// Clears overlay value, choices, validation, `isRequired`, `label`, and
+  /// `placeholder` for [id]. See `docs/reactive-riverpod.md#reset-semantics`.
+  void resetInput(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).resetInput(id);
+  }
+
+  /// Replaces effective `"text"` for element [id] (e.g. `TextBlock`).
+  void setText(String id, String text) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).setText(id, text);
+  }
+
+  /// Clears text overlay for element [id].
+  void clearText(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).clearText(id);
+  }
+
+  /// Sets whether action [id] is enabled (AC 1.5).
+  void setActionEnabled(String id, {required bool enabled}) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setActionEnabled(id, enabled: enabled);
+  }
+
+  /// Replaces `Input.ChoiceSet` choices for [id] via the document overlay.
   void loadInput(String id, Map map) {
-    // this code exists in several places
-    // but looks like it uses the visitor prior to assignment
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveInputMixin) {
-          if ((element.state as AdaptiveInputMixin).id == id) {
-            (element.state as AdaptiveInputMixin).loadInput(map);
-          }
-        }
-      }
-      element.visitChildren(visitor);
-    }
-
-    context.visitChildElements(visitor);
-  }
-
-  /// Sets the visibility of any widget whose state has a id that matches
-  /// visiting the elements in the tree
-  void setIsVisible({required String id, required bool isVisible}) {
-    State<StatefulWidget>? foundElementState;
-
-    // Recursively visits all inputs and determines if all the inputs are valid
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveElementMixin) {
-          if ((element.state as AdaptiveElementMixin).id == id) {
-            foundElementState = element.state;
-            (element.state as AdaptiveVisibilityMixin).setIsVisible(
-              visible: isVisible,
-            );
-          }
-        }
-      }
-      if (foundElementState == null) {
-        element.visitChildren(visitor);
-      }
-    }
-
-    if (foundElementState == null) {
-      context.visitChildElements(visitor);
-    }
-
-    assert(() {
-      developer.log(
-        'setVisibility $isVisible on $id $foundElementState',
-        name: runtimeType.toString(),
-      );
-      return true;
-    }());
-  }
-
-  /// blind visibility flipping
-  void toggleVisibility({required String id}) {
-    State<StatefulWidget>? foundElementState;
-    bool? newVisibility;
-
-    // Recursively visits all inputs and determines if all the inputs are valid
-    void visitor(Element element) {
-      if (element is StatefulElement) {
-        if (element.state is AdaptiveElementMixin) {
-          if ((element.state as AdaptiveElementMixin).id == id) {
-            foundElementState = element.state;
-            (element.state as AdaptiveVisibilityMixin).setIsVisible(
-              visible: !(element.state as AdaptiveVisibilityMixin).isVisible,
-            );
-            newVisibility =
-                (element.state as AdaptiveVisibilityMixin).isVisible;
-          }
-        }
-      }
-      if (foundElementState == null) {
-        element.visitChildren(visitor);
-      }
-    }
-
-    if (foundElementState == null) {
-      context.visitChildElements(visitor);
-    }
-
-    assert(() {
-      developer.log(
-        'toggled visibility to ${newVisibility ?? 'nan'} on $id $foundElementState',
-        name: runtimeType.toString(),
-      );
-      return true;
-    }());
+    final container = documentContainer;
+    if (container == null) return;
+    final choices = map.entries
+        .map(
+          (entry) => Choice(
+            title: entry.key.toString(),
+            value: entry.value.toString(),
+          ),
+        )
+        .toList();
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setChoices(
+          id,
+          choices,
+        );
   }
 
   void changeValue(String id, dynamic value, {DataQuery? dataQuery}) {
@@ -473,10 +509,76 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       style: widget.map['style']?.toString().toLowerCase(),
     );
 
-    return InheritedReferenceResolver(
-      resolver: _resolver,
-      rawAdaptiveCardState: this,
-      child: Card(color: backgroundColor, child: child),
+    return ProviderScope(
+      overrides: [
+        cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
+        actionTypeRegistryProvider.overrideWithValue(widget.actionTypeRegistry),
+        rawAdaptiveCardStateProvider.overrideWithValue(this),
+        styleReferenceResolverProvider.overrideWithValue(_resolver),
+        baselineMapProvider.overrideWithValue(_baselineMap),
+      ],
+      child: _AdaptiveCardDocumentLifecycle(
+        cardState: this,
+        initData: widget.initData,
+        child: Card(color: backgroundColor, child: child),
+      ),
     );
   }
+}
+
+/// Registers the card-scoped [ProviderContainer] and seeds [initData] overlays.
+class _AdaptiveCardDocumentLifecycle extends StatefulWidget {
+  const _AdaptiveCardDocumentLifecycle({
+    required this.cardState,
+    required this.initData,
+    required this.child,
+  });
+
+  final RawAdaptiveCardState cardState;
+  final Map? initData;
+  final Widget child;
+
+  @override
+  State<_AdaptiveCardDocumentLifecycle> createState() =>
+      _AdaptiveCardDocumentLifecycleState();
+}
+
+class _AdaptiveCardDocumentLifecycleState
+    extends State<_AdaptiveCardDocumentLifecycle> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _bootstrap());
+  }
+
+  @override
+  void didUpdateWidget(covariant _AdaptiveCardDocumentLifecycle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initData != widget.initData) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _seedInitData());
+    }
+  }
+
+  void _bootstrap() {
+    if (!mounted) return;
+    widget.cardState.documentContainer = ProviderScope.containerOf(context);
+    _seedInitData();
+  }
+
+  void _seedInitData() {
+    final initData = widget.initData;
+    if (initData == null || initData.isEmpty) return;
+    final normalized = <String, Object?>{};
+    for (final entry in initData.entries) {
+      if (entry.value is Map) {
+        normalized[entry.key.toString()] = entry.value;
+      } else {
+        normalized[entry.key.toString()] = {'value': entry.value};
+      }
+    }
+    widget.cardState.applyUpdatesFromMap(normalized);
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

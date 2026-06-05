@@ -44,6 +44,7 @@ class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
     return IconButtonAction(
       adaptiveMap: adaptiveMap,
       onTapped: (BuildContext context) {
+        // [GenericSubmitAction]
         action.tap(
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,

@@ -8,5 +8,7 @@ export 'package:flutter_adaptive_cards_fs/src/adaptive_cards_canvas.dart';
 
 export 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
 
+export 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
+
 /// needed so we can create the registry to pass into the AdaptiveCard constructor
 export 'package:flutter_adaptive_cards_fs/src/registry.dart';

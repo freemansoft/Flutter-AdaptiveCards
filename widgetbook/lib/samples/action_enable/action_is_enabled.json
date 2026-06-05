@@ -1,0 +1,24 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Action isEnabled overlay sample",
+      "wrap": true
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "id": "submitEnabled",
+      "title": "Enabled Submit"
+    },
+    {
+      "type": "Action.Submit",
+      "id": "submitDisabled",
+      "title": "Disabled Submit",
+      "isEnabled": false
+    }
+  ]
+}

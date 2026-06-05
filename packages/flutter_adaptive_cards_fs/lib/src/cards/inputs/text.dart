@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// httfps://adaptivecards.io/explorer/Input.Text.html
 ///
-class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveTextInput extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   AdaptiveTextInput({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -24,7 +27,7 @@ class AdaptiveTextInput extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTextInputState createState() => AdaptiveTextInputState();
 }
 
-class AdaptiveTextInputState extends State<AdaptiveTextInput>
+class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
     with
         AdaptiveTextualInputMixin,
         AdaptiveInputMixin,
@@ -32,38 +35,76 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
   TextEditingController controller = TextEditingController();
+  late FocusNode _focusNode;
+  bool _controllerListenerInstalled = false;
+  bool _isUpdatingFromDocument = false;
+  bool _initialValueSynced = false;
 
-  String? label;
-  late bool isRequired;
-  late bool isMultiline;
   late int maxLength;
   TextInputType? inputStyle;
 
   @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus || _isUpdatingFromDocument) {
+      return;
+    }
+    notifyUserInputValueChanged(controller.text, committed: true);
+  }
+
+  @override
+  void dispose() {
+    _focusNode
+      ..removeListener(_onFocusChange)
+      ..dispose();
+    controller.dispose();
+    super.dispose();
+  }
+
+  late bool isMultiline;
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    label = adaptiveMap['label']?.toString();
-    isRequired = adaptiveMap['isRequired'] as bool? ?? false;
     isMultiline = adaptiveMap['isMultiline'] as bool? ?? false;
     maxLength = adaptiveMap['maxLength'] as int? ?? 20;
     inputStyle = resolveTextInputType(style);
-    controller.text = value;
-    stateHasError = false;
+
+    if (!_initialValueSynced) {
+      _initialValueSynced = true;
+      onDocumentValueChanged(readResolvedInput().valueRaw);
+    }
+
+    if (!_controllerListenerInstalled) {
+      _controllerListenerInstalled = true;
+      controller.addListener(() {
+        if (_isUpdatingFromDocument) return;
+        final text = controller.text;
+        setDocumentInputValue(text);
+        rawRootCardWidgetState.changeValue(id, text);
+      });
+    }
   }
 
   @override
-  void resetInput() {
-    super.resetInput();
-    setState(() {
-      controller.text = value;
-      stateHasError = false;
-    });
+  void onDocumentValueChanged(Object? valueFromDocument) {
+    final next = valueFromDocument?.toString() ?? '';
+    if (controller.text == next) return;
+    _isUpdatingFromDocument = true;
+    controller.text = next;
+    _isUpdatingFromDocument = false;
   }
-
-  bool stateHasError = false;
 
   @override
   Widget build(BuildContext context) {
+    listenForResolvedValueChanges();
+    final input = watchResolvedInput();
+
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
@@ -71,11 +112,16 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            loadLabel(context: context, label: label, isRequired: isRequired),
+            loadLabel(
+              context: context,
+              label: input.label,
+              isRequired: input.isRequired,
+            ),
             SizedBox(
               height: 40,
               child: TextFormField(
                 key: generateWidgetKey(adaptiveMap),
+                focusNode: _focusNode,
                 style: const TextStyle(),
                 controller: controller,
                 // maxLength: maxLength,
@@ -106,30 +152,33 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
                     context: context,
                     style: null,
                   ),
-                  hintText: placeholder,
+                  hintText: input.placeholder,
                   // required or box will exist even though field is hidden or half height
                   hintStyle: const TextStyle(),
                   errorStyle: const TextStyle(height: 0),
                 ),
                 validator: (value) {
-                  if (!isRequired) return null;
-                  if (value == null || value.isEmpty) {
-                    setState(() {
-                      stateHasError = true;
-                    });
+                  final regexPattern = adaptiveMap['regex'] as String?;
+                  if (!textInputValueIsValid(
+                    value: value,
+                    isRequired: input.isRequired,
+                    regexPattern: regexPattern,
+                  )) {
+                    setLocalValidationError();
                     return '';
                   }
-                  setState(() {
-                    stateHasError = false;
-                  });
+                  clearLocalValidationError();
                   return null;
+                },
+                onEditingComplete: () {
+                  notifyUserInputValueChanged(controller.text, committed: true);
                 },
               ),
             ),
             loadErrorMessage(
               context: context,
-              errorMessage: errorMessage,
-              stateHasError: stateHasError,
+              errorMessage: input.errorMessage,
+              showError: input.isInvalid,
             ),
           ],
         ),
@@ -145,9 +194,7 @@ class AdaptiveTextInputState extends State<AdaptiveTextInput>
   @override
   void initInput(Map map) {
     if (map[id] != null) {
-      setState(() {
-        controller.text = map[id] as String;
-      });
+      setDocumentInputValue(map[id]);
     }
   }
 
