@@ -57,35 +57,43 @@ class ChoiceFilterState extends State<ChoiceFilter> {
               final String keyValue = (widget.key is ValueKey<String>)
                   ? (widget.key! as ValueKey<String>).value
                   : 'choiceFilter';
-              return TextFormField(
-                key: ValueKey(keyValue),
-                autofocus: true,
-                style: const TextStyle(),
-                controller: _searchController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 8,
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
-                  filled: true,
-                  prefixIcon: const Icon(Icons.search),
-                  suffix: _searchController.text.isEmpty
-                      ? null
-                      : IconButton(
-                          icon: const Icon(Icons.cancel),
-                          onPressed: () {
-                            _searchController.clear();
-                            unawaited(onSearchTextChanged(''));
-                          },
+              // Keep the clear control out of [InputDecoration.suffix]. Suffix
+              // semantics can get an inverted rect during sheet dismiss when
+              // semantics are enabled (Widgetbook Semantics addon).
+              return Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      key: ValueKey(keyValue),
+                      autofocus: true,
+                      style: const TextStyle(),
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                ),
-                onChanged: onSearchTextChanged,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 8,
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(),
+                        ),
+                        filled: true,
+                        prefixIcon: const Icon(Icons.search),
+                      ),
+                      onChanged: onSearchTextChanged,
+                    ),
+                  ),
+                  if (_searchController.text.isNotEmpty)
+                    IconButton(
+                      icon: const Icon(Icons.cancel),
+                      onPressed: () {
+                        _searchController.clear();
+                        unawaited(onSearchTextChanged(''));
+                      },
+                    ),
+                ],
               );
             },
           ),

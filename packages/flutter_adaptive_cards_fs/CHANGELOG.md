@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.0]
 
-- no changes yet
+- Fixed semantic binding error dismissal of filtered modal panel
 
 ## [0.8.0]
 
