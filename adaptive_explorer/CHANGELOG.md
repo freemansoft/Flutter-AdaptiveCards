@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.0]
+
+- no changes yet
+
 ## [0.9.0]
 
 - Version alignment with library packages 0.9.0.
