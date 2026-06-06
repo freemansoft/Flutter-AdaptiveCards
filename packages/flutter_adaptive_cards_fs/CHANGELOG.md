@@ -5,32 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.10.0]
-
-### Changed
-
-- **`onSubmit` callback** now receives **`SubmitActionInvoke`** instead of a bare `Map`. Use `invoke.actionId` and `invoke.data` (merged action `data` + input values).
-- **`onExecute` callback** now receives **`ExecuteActionInvoke`** instead of a bare `Map`. Use `invoke.verb`, `invoke.actionId`, and `invoke.data`.
-- **`GenericExecuteAction.tap`** no longer takes a separate `verb` argument; read action metadata from `adaptiveMap` in custom implementations (or delegate to `ExecuteActionInvoke.fromActionMap`).
-
-### Removed
-
-- Unused **`onSubmit`**, **`onExecute`**, and **`onOpenUrl`** fields on **`AdaptiveCardsCanvasState`** (`adaptive_cards_canvas.dart`). Use **`InheritedAdaptiveCardHandlers`** for Submit, Execute, and OpenUrl callbacks.
-
-- **`onOpenUrl` callback** now receives **`OpenUrlActionInvoke`** (`url`, optional `actionId`) instead of a bare `String`.
-- **`onOpenUrlDialog` callback** now receives **`OpenUrlDialogActionInvoke`** (`url`, optional `actionId`) instead of a bare `String`.
-- **`onChange` callback** now receives **`InputChangeInvoke`** (`inputId`, `value`, `dataQuery`, `cardState`) instead of four separate parameters.
-- **`AdaptiveCardsCanvas.onChange`** and **`RawAdaptiveCard.onChange`** use the same **`InputChangeInvoke`** type.
+## [0.9.0]
 
 ### Added
 
+- Filtered `Input.ChoiceSet` modal lists and typeahead search; choice **titles** drive search while submit, `onChange`, and `Data.Query` use choice **values**.
+- Dependent `Input.ChoiceSet` support via `valueChangedAction` and host-driven `applyUpdates` / `Data.Query` cascade.
 - **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, and **`InputChangeInvoke`** public models exported from `flutter_adaptive_cards_fs.dart`.
 - Tests: `test/actions/open_url_action_invoke_test.dart`, `test/actions/open_url_dialog_action_invoke_test.dart`.
 
-## [0.9.0]
+### Changed
 
-- Fixed semantic binding error dismissal of filtered modal panel
-- Filtered `Input.ChoiceSet` modal lists and typeahead search match choice **titles**; submit, `onChange`, and `Data.Query` use choice **values**
+- **`onSubmit`** now receives **`SubmitActionInvoke`** instead of a bare `Map`. Use `invoke.actionId` and `invoke.data` (merged action `data` + input values).
+- **`onExecute`** now receives **`ExecuteActionInvoke`** instead of a bare `Map`. Use `invoke.verb`, `invoke.actionId`, and `invoke.data`.
+- **`GenericExecuteAction.tap`** no longer takes a separate `verb` argument; read action metadata from `adaptiveMap` in custom implementations (or delegate to `ExecuteActionInvoke.fromActionMap`).
+- **`onOpenUrl`** now receives **`OpenUrlActionInvoke`** (`url`, optional `actionId`) instead of a bare `String`.
+- **`onOpenUrlDialog`** now receives **`OpenUrlDialogActionInvoke`** (`url`, optional `actionId`) instead of a bare `String`.
+- **`onChange`** now receives **`InputChangeInvoke`** (`inputId`, `value`, `dataQuery`, `cardState`) instead of four separate parameters.
+- **`AdaptiveCardsCanvas.onChange`** and **`RawAdaptiveCard.onChange`** use the same **`InputChangeInvoke`** type.
+- Fixed semantic binding error when dismissing the filtered ChoiceSet modal panel (clear control separated from `InputDecoration.suffix`).
+
+### Removed
+
+- Unused **`onSubmit`**, **`onExecute`**, and **`onOpenUrl`** fields on **`AdaptiveCardsCanvasState`**. Use **`InheritedAdaptiveCardHandlers`** for Submit, Execute, and OpenUrl callbacks.
 
 ## [0.8.0]
 
