@@ -6,8 +6,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
-import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class MyTestHttpOverrides extends HttpOverrides {
@@ -318,17 +316,9 @@ Widget getTestWidgetFromMap({
           key: key,
           child: wrapBody(
             InheritedAdaptiveCardHandlers(
-              // this a test so we can look at this later
-              // ignore: inference_failure_on_collection_literal
               onOpenUrl: onOpenUrl ?? (_) {},
-              // this a test so we can look at this later
-              // ignore: inference_failure_on_collection_literal
               onOpenUrlDialog: onOpenUrlDialog ?? (_) {},
-              // this a test so we can look at this later
-              // ignore: inference_failure_on_collection_literal
               onSubmit: onSubmit ?? (_) {},
-              // this a test so we can look at this later
-              // ignore: inference_failure_on_collection_literal
               onExecute: onExecute ?? (_) {},
               onChange: onChange ?? (_) {},
               child: adaptiveCard,

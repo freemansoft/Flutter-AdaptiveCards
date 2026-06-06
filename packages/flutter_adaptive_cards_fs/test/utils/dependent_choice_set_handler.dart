@@ -2,7 +2,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
-import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 
 /// Mock city lists keyed by country choice value (Teams dependent-input demo data).
 const citiesByCountry = <String, List<Choice>>{

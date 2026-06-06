@@ -57,7 +57,7 @@ void main() {
     const card = {
       'type': 'AdaptiveCard',
       'version': '1.4',
-      'body': [],
+      'body': <Map<String, dynamic>>[],
       'actions': [
         {
           'type': 'Action.Execute',

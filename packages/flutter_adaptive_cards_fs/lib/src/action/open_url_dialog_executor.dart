@@ -8,7 +8,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
-/// Fetches remote content for [Action.OpenUrlDialog].
+/// Fetches remote content for `Action.OpenUrlDialog`.
 ///
 /// Returns parsed card JSON, a fallback URL string for HTML, or null.
 Future<dynamic> fetchOpenUrlDialogContent(String url) async {
