@@ -69,7 +69,7 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
 
   final String assetPath;
 
-  /// Host onChange handler shared by Option 1 and Option 2 Widgetbook use cases.
+  /// `onChange` handler shared by Option 1 and Option 2 Widgetbook use cases.
   ///
   /// Option 1 (`value_changed_action_filtered.json`) and Option 2
   /// (`value_changed_action_dependent_query.json`) differ only in card JSON;
@@ -94,6 +94,7 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
         if (!cardState.mounted) {
           return;
         }
+        // note that we are applying changes to the city input overlay
         cardState.applyUpdates(
           elements: [
             AdaptiveElementUpdate(
@@ -114,6 +115,8 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
     // Phase 1: log only — choices were already loaded in the country branch.
     // Phase 2: read dataQuery.parameters['country'] here instead of preloading.
     if (id == 'city' && dataQuery?.dataset == 'cities') {
+      // code to fetch the city list could go here
+      // dataset is essentially the target
       assert(() {
         developer.log(
           format(
