@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.0]
+
+- no changes yet
+
 ## [0.9.0]
 
 - Version alignment with `flutter_adaptive_cards_fs` 0.9.0.
