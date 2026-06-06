@@ -10,11 +10,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
 ///
-/// One row in the filtered ChoiceSet search modal.
+/// One row in the filtered ChoiceSet search modal (`ChoiceFilter`).
 ///
-/// [title] is shown in the list and matched during typeahead search.
-/// [value] is submitted via [AdaptiveChoiceSetState.select] and passed to
-/// `onChange` / `collectInputValues`.
+/// [title] is shown in the list and matched during local typeahead search.
+/// [value] is stored, submitted, and passed to host `onChange` /
+/// `AdaptiveChoiceSetState.select` / `collectInputValues`.
 class SearchModel {
   SearchModel({required this.title, required this.value});
 
@@ -24,12 +24,12 @@ class SearchModel {
   /// Choice submit value (Adaptive Card `choices[].value`).
   final String value;
 
-  ///this method will prevent the override of toString
+  /// Debug string; [toString] returns [title] for display-only contexts.
   String modelAsString() {
     return '#$title $value';
   }
 
-  ///custom comparing function to check if two users are equal
+  /// Whether two rows share the same submit [value].
   bool isEqual(SearchModel model) {
     return value == model.value;
   }
@@ -38,6 +38,12 @@ class SearchModel {
   String toString() => title;
 }
 
+/// Renders `Input.ChoiceSet` in compact, expanded, or filtered styles.
+///
+/// Filtered style opens `ChoiceFilter` via `RawAdaptiveCard.searchList` over
+/// resolved overlay `choices`. When `choices.data` is present, `dataQuery` is
+/// parsed from JSON and passed to host `onChange` on selection (baseline
+/// `DataQuery` fields only — `associatedInputs` merge is not applied yet).
 class AdaptiveChoiceSet extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveChoiceSet({
@@ -62,12 +68,14 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
-  // Contains the values (the things to send as request)
+  /// Stored submit values (`choices[].value`), not display titles.
   final Set<String> _selectedChoices = {};
 
   late bool isFiltered;
   late bool isCompact;
   late bool isMultiSelect;
+
+  /// From `choices.data` when present; forwarded on [select] only.
   DataQuery? dataQuery;
 
   TextEditingController controller = TextEditingController();
@@ -114,6 +122,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     super.dispose();
   }
 
+  /// Maps choice title → submit value from resolved `choices` JSON.
   Map<String, String> _parseChoices(Object? raw) {
     if (raw is! List) return const {};
     final result = <String, String>{};
@@ -216,6 +225,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     );
   }
 
+  /// Read-only field; tap opens `ChoiceFilter` over current resolved [choices].
   Widget _buildFiltered(
     ResolvedInputState input,
     Map<String, String> choices,
@@ -258,6 +268,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
           return null;
         },
         onTap: () async {
+          // Snapshot at open time; modal does not observe later overlay updates.
           final list = choices.entries
               .map(
                 (entry) => SearchModel(title: entry.key, value: entry.value),
@@ -365,7 +376,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
       }
     }
 
-    /// notify the card that the value has changed so it can invoke custom behavior
+    // Host callback; includes [dataQuery] when `choices.data` is configured.
     rawRootCardWidgetState.changeValue(id, choice, dataQuery: dataQuery);
     final joined = _selectedChoices.join(',');
     setDocumentInputValue(joined);
