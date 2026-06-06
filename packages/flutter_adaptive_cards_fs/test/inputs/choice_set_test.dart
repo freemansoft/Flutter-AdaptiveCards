@@ -27,9 +27,9 @@ void main() {
     final Widget widget = getTestWidgetFromMap(
       map: map,
       title: 'ChoiceSet Expanded Test',
-      onChange: (id, value, dataQuery, state) {
-        if (id == 'myChoiceSet') {
-          selectedValue = value as String?;
+      onChange: (invoke) {
+        if (invoke.inputId == 'myChoiceSet') {
+          selectedValue = invoke.value as String?;
         }
       },
     );
@@ -92,8 +92,8 @@ void main() {
       final Widget widget = getTestWidgetFromMap(
         map: map,
         title: 'ChoiceSet Compact Test',
-        onChange: (id, value, dataQuery, state) {
-          if (id == 'myChoiceSet') selectedValue = value as String?;
+        onChange: (invoke) {
+          if (invoke.inputId == 'myChoiceSet') selectedValue = invoke.value as String?;
         },
       );
 
@@ -143,8 +143,8 @@ void main() {
     final Widget widget = getTestWidgetFromMap(
       map: map,
       title: 'ChoiceSet MultiSelect Test',
-      onChange: (id, value, dataQuery, state) {
-        if (id == 'myChoiceSet') selectedValue = value as String?;
+      onChange: (invoke) {
+        if (invoke.inputId == 'myChoiceSet') selectedValue = invoke.value as String?;
       },
     );
 
@@ -190,8 +190,8 @@ void main() {
     final Widget widget = getTestWidgetFromMap(
       map: map,
       title: 'ChoiceSet Filtered Test',
-      onChange: (id, value, dataQuery, state) {
-        if (id == 'myChoiceSet') selectedValue = value as String?;
+      onChange: (invoke) {
+        if (invoke.inputId == 'myChoiceSet') selectedValue = invoke.value as String?;
       },
     );
 

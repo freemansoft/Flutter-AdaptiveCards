@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
+import 'package:flutter_adaptive_cards_fs/src/action/open_url_dialog_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/reset_inputs_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
@@ -160,24 +161,25 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
     required Map<String, dynamic> adaptiveMap,
     String? altUrl,
   }) {
-    final String? urlFromMap = adaptiveMap['url'] as String?;
-    final String? urlToOpen = altUrl ?? urlFromMap;
-    if (urlToOpen != null) {
-      final foo = InheritedAdaptiveCardHandlers.of(context);
-      if (foo != null) {
-        foo.onOpenUrl(urlToOpen);
-      } else {
-        unawaited(launchUrl(Uri.parse(urlToOpen)));
-        if (kDebugMode) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'No custom handler found for onOpenUrl: \n $urlFromMap $altUrl $urlToOpen',
-              ),
+    final invoke = OpenUrlActionInvoke.fromActionMap(
+      adaptiveMap,
+      altUrl: altUrl,
+    );
+    if (invoke.url.isEmpty) return;
+
+    final foo = InheritedAdaptiveCardHandlers.of(context);
+    if (foo != null) {
+      foo.onOpenUrl(invoke);
+    } else {
+      unawaited(launchUrl(Uri.parse(invoke.url)));
+      if (kDebugMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'No custom handler found for onOpenUrl: \n ${invoke.url}',
             ),
-          );
-        }
-        // probably should log that there is no valid url
+          ),
+        );
       }
     }
   }
@@ -196,25 +198,23 @@ class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
     required Map<String, dynamic> adaptiveMap,
     String? altUrl,
   }) {
-    final String? urlFromMap = adaptiveMap['url'] as String?;
-    final String? urlToOpen = altUrl ?? urlFromMap;
-    if (urlToOpen != null) {
-      final foo = InheritedAdaptiveCardHandlers.of(context);
-      if (foo != null) {
-        foo.onOpenUrlDialog(urlToOpen);
-      } else {
-        unawaited(launchUrl(Uri.parse(urlToOpen)));
-        if (kDebugMode) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'No custom handler found for onOpenUrlDialog: \n $urlFromMap $altUrl $urlToOpen',
-              ),
-            ),
-          );
-        }
-        // probably should log that there is no valid url
-      }
+    final invoke = OpenUrlDialogActionInvoke.fromActionMap(
+      adaptiveMap,
+      altUrl: altUrl,
+    );
+    if (invoke.url.isEmpty) return;
+
+    final foo = InheritedAdaptiveCardHandlers.of(context);
+    if (foo != null) {
+      foo.onOpenUrlDialog(invoke);
+    } else {
+      unawaited(
+        showOpenUrlDialog(
+          context: context,
+          url: invoke.url,
+          hostConfigs: rawAdaptiveCardState.widget.hostConfigs,
+        ),
+      );
     }
   }
 }

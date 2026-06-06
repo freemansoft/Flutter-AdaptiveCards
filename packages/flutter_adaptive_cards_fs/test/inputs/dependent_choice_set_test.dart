@@ -95,11 +95,11 @@ void main() {
       await tester.pumpWidget(
         getTestWidgetFromPath(
           path: 'value_changed_action_dependent_query.json',
-          onChange: (id, value, dataQuery, cardState) {
-            handleDependentChoiceSetChange(id, value, dataQuery, cardState);
-            if (id == 'city') {
-              cityChangeId = id;
-              cityDataQuery = dataQuery;
+          onChange: (invoke) {
+            handleDependentChoiceSetChange(invoke);
+            if (invoke.inputId == 'city') {
+              cityChangeId = invoke.inputId;
+              cityDataQuery = invoke.dataQuery;
             }
           },
         ),

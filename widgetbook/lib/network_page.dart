@@ -25,15 +25,15 @@ class NetworkPage extends StatelessWidget {
           cardTypeRegistry: CardTypeRegistry(
             addedElements: CardChartsRegistry.additionalChartElements,
           ),
-          onChange: (id, value, dataQuery, state) {
+          onChange: (invoke) {
             assert(() {
               developer.log(
                 format(
                   'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
-                  id,
-                  value,
-                  dataQuery,
-                  state,
+                  invoke.inputId,
+                  invoke.value,
+                  invoke.dataQuery,
+                  invoke.cardState,
                 ),
                 name: runtimeType.toString(),
               );

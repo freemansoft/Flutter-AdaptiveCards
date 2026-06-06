@@ -9,6 +9,7 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_cards_canvas.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
@@ -47,13 +48,7 @@ class RawAdaptiveCard extends StatefulWidget {
   final ActionTypeRegistry actionTypeRegistry;
   final Map? initData;
 
-  final Function(
-    String id,
-    dynamic value,
-    DataQuery? dataQuery,
-    RawAdaptiveCardState cardState,
-  )?
-  onChange;
+  final void Function(InputChangeInvoke invoke)? onChange;
 
   final bool showDebugJson;
   final bool listView;
@@ -261,9 +256,14 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   void changeValue(String id, dynamic value, {DataQuery? dataQuery}) {
-    if (widget.onChange != null) {
-      widget.onChange?.call(id, value, dataQuery, this);
-    }
+    widget.onChange?.call(
+      InputChangeInvoke(
+        inputId: id,
+        value: value,
+        dataQuery: dataQuery,
+        cardState: this,
+      ),
+    );
   }
 
   void showError(String message) {

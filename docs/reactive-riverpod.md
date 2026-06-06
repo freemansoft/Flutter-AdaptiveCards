@@ -224,7 +224,7 @@ flowchart TB
 
 ## Host callbacks
 
-Host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onChange`, …) remain on **`InheritedAdaptiveCardHandlers`**. These are host integration points, not reactive document state. **`onSubmit`** receives **`SubmitActionInvoke`** (`actionId`, merged `data`); **`onExecute`** receives **`ExecuteActionInvoke`** (`verb`, `actionId`, merged `data`). OpenUrl callbacks still receive the URL string.
+Host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onOpenUrlDialog`, `onChange`, …) remain on **`InheritedAdaptiveCardHandlers`**. These are host integration points, not reactive document state. Each callback receives a typed invoke payload: **`SubmitActionInvoke`**, **`ExecuteActionInvoke`**, **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, or **`InputChangeInvoke`**. **`AdaptiveCardsCanvas.onChange`** accepts **`InputChangeInvoke`** directly.
 
 ## Overlay test coverage
 
