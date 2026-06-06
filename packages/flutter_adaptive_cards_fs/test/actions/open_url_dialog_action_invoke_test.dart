@@ -12,7 +12,7 @@ void main() {
       const card = {
         'type': 'AdaptiveCard',
         'version': '1.0',
-        'body': [],
+        'body': <Map<String, dynamic>>[],
         'actions': [
           {
             'type': 'Action.OpenUrlDialog',
