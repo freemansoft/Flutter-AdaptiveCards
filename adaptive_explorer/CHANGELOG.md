@@ -2,7 +2,7 @@
 
 ## [0.9.0]
 
-- no changes yet
+- Version alignment with library packages 0.9.0.
 
 ## [0.8.0]
 
