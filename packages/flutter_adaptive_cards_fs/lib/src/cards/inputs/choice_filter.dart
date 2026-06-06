@@ -3,10 +3,22 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 
+/// Typeahead list inside the filtered `Input.ChoiceSet` bottom sheet.
+///
+/// Shows choice **titles**, filters locally as the user types, and returns the
+/// selected [SearchModel] via [callback] (parent stores the submit **value**).
+///
+/// Choice rows are fixed for the lifetime of the sheet: they come from the
+/// snapshot passed as [data] when the modal opens. Hosts that need fresh rows
+/// after async loads should close and reopen the picker (or apply overlay
+/// choices before the user taps the field).
 class ChoiceFilter extends StatefulWidget {
   const ChoiceFilter({super.key, required this.data, required this.callback});
 
+  /// Resolved choices at modal open time (`SearchModel.title` / `.value`).
   final List<SearchModel>? data;
+
+  /// Called with the tapped [SearchModel] after [Navigator.pop].
   final Function(dynamic value)? callback;
 
   @override
@@ -35,6 +47,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
       return;
     }
 
+    // Client-side match on choice titles only (not submit values).
     for (final item in _data) {
       if (item.title.toLowerCase().contains(text.toLowerCase())) {
         setState(() {
@@ -99,6 +112,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
           ),
         ),
         Expanded(
+          // Empty search: all [_data]. Non-empty: [_searchResult] from title match.
           child: _searchResult.isNotEmpty || _searchController.text.isNotEmpty
               ? ListView.builder(
                   itemCount: _searchResult.length,
