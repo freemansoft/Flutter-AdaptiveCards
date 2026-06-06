@@ -79,6 +79,25 @@ Teams/Bot Framework [dependent inputs](https://learn.microsoft.com/en-us/microso
 
 `valueChangedAction` reset runs inside the library before your `onChange` handler; use `onChange` to restore dependent choices after reset.
 
+End-to-end flow (both Widgetbook demos):
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant Country as country Input
+  participant Reset as valueChangedAction
+  participant Host as onChange handler
+  participant City as city Input
+
+  User->>Country: select country
+  Country->>Reset: Action.ResetInputs city
+  Country->>Host: onChange(country, value)
+  Host->>City: applyUpdates choices for country
+  User->>City: open picker / select city
+  City->>Host: onChange(city, value, dataQuery)
+  Note over Host: Option 2 only: dataQuery.dataset == cities
+```
+
 ```dart
 onChange: (id, value, dataQuery, cardState) {
   if (id == 'country') {
