@@ -22,11 +22,11 @@ After submit or server-side checks, hosts can set validation overlays without mu
 - `RawAdaptiveCardState.clearInputError(id)` → clears overlay `errorMessage` and `isInvalid`
 - `RawAdaptiveCardState.applyUpdates(...)` / `applyUpdatesFromMap(...)` → batch validation, visibility, choices, values, and action `isEnabled` in one call
 
-Example remote validation after `onSubmit`:
+Example remote validation after `onSubmit` (wire on **`InheritedAdaptiveCardHandlers`**, not on **`AdaptiveCardsCanvas`**). Use **`invoke.data`** for merged input values; use **`invoke.actionId`** when routing by action `id`:
 
 ```dart
-onSubmit: (data) async {
-  final errors = await validate(data);
+onSubmit: (SubmitActionInvoke invoke) async {
+  final errors = await validate(invoke.data);
   cardState.applyUpdates(
     elements: errors.entries.map(
       (e) => AdaptiveElementUpdate(

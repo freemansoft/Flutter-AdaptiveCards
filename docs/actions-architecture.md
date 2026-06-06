@@ -25,6 +25,32 @@ This document describes how the Adaptive Cards action system is organized and ho
 
 ---
 
+## Host action callbacks
+
+Submit, Execute, and OpenUrl are **not** configured on `AdaptiveCardsCanvas` or `AdaptiveCardsCanvasState`. Wrap the card with **`InheritedAdaptiveCardHandlers`**.
+
+## Action.Submit payload
+
+When **`DefaultSubmitAction`** runs:
+
+1. Start from action JSON **`data`** (object or empty).
+2. Merge **`collectInputValues()`** (input ids overwrite duplicate keys in `data`).
+3. Build **`SubmitActionInvoke`** with merged **`data`** and action **`id`** (`actionId`).
+4. Call **`InheritedAdaptiveCardHandlers.onSubmit(invoke)`**.
+
+## Action.Execute payload
+
+When **`DefaultExecuteAction`** runs:
+
+1. Start from action JSON **`data`** (object or empty).
+2. Merge **`collectInputValues()`** (input ids overwrite duplicate keys in `data`).
+3. Build **`ExecuteActionInvoke`** with merged **`data`**, action **`verb`**, and action **`id`** (`actionId`).
+4. Call **`InheritedAdaptiveCardHandlers.onExecute(invoke)`**.
+
+Hosts route Teams-style Execute actions on **`invoke.verb`**. **`associatedInputs`** is not yet honored for Submit or Execute — all card inputs are always collected (see [Implementation-Status.md](../Implementation-Status.md#known-gaps)).
+
+---
+
 ## Design Rationale 🔍
 
 - Keeping `Generic*` as abstract interfaces lets consumers implement custom actions without depending on concrete names.

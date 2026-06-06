@@ -49,7 +49,6 @@ class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
           context: context,
           rawAdaptiveCardState: rawRootCardWidgetState,
           adaptiveMap: adaptiveMap,
-          verb: adaptiveMap['verb']?.toString(),
         );
       },
     );

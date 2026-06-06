@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 
 /// Applications could add this above the Adaptive cards tree
@@ -31,13 +32,17 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
     required super.child,
   });
 
-  /// called when a Action.Submit submit is pressed
-  /// and we are running the default action handlers
-  final Function(Map map) onSubmit;
+  /// Called when an Action.Submit is pressed and default action handlers run.
+  ///
+  /// `invoke.data` contains merged action `data` and input values;
+  /// `invoke.actionId` is set when the action JSON defines an author `id`.
+  final void Function(SubmitActionInvoke invoke) onSubmit;
 
-  /// called when an Action.Execute execute is pressed
-  /// and we are running the default action handlers
-  final Function(Map map) onExecute;
+  /// Called when an Action.Execute is pressed and default action handlers run.
+  ///
+  /// `invoke.data` contains merged action `data` and input values;
+  /// `invoke.verb` and `invoke.actionId` come from the action JSON when set.
+  final void Function(ExecuteActionInvoke invoke) onExecute;
 
   /// called when an Action.OpenUrl openUrl is pressed
   /// and we are running the default action handlers
