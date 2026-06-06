@@ -21,15 +21,15 @@ When an Adaptive Card is rendered, the JSON is recursively parsed into a hierarc
 2. **`RawAdaptiveCard`**: Installs the card-scoped `ProviderScope` (document notifier, registries, `ReferenceResolver`) and renders the parsed root element tree inside a `Card`.
 3. **`AdaptiveCardElement`**: Represents the `AdaptiveCard` JSON root (`body`, `actions`), applying padding, background, and action layout.
 4. **Containers and Elements**: Elements like `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveTextBlock`, and `AdaptiveImage` are rendered as individual Flutter widgets (often wrapping standard Flutter widgets like `Column`, `Row`, `Text`, and `Image`).
-5. **Inputs**: Form inputs (`Input.Text`, `Input.Date`, etc.) use Flutter form controls. **Initial** values come from the adaptive map at widget construction; **runtime** values, validation, and visibility are stored in Riverpod document **overlays** (baseline JSON is never mutated). Inputs sync via `AdaptiveInputMixin` + `resolvedElementProvider(id)`. See [`doc/reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+5. **Inputs**: Form inputs (`Input.Text`, `Input.Date`, etc.) use Flutter form controls. **Initial** values come from the adaptive map at widget construction; **runtime** values, validation, and visibility are stored in Riverpod document **overlays** (baseline JSON is never mutated). Inputs sync via `AdaptiveInputMixin` + `resolvedElementProvider(id)`. See [`reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 6. **Display elements**: `TextBlock` and other elements with natural ids can use the same overlay model (e.g. runtime `text` replacement via `setText` / `resolvedElementProvider`).
-7. **Actions**: The action bar (e.g., `Action.Submit`, `Action.OpenUrl`) is typically rendered at the bottom of the card or within an `ActionSet`. Actions trigger callbacks routed through `GenericAction` handlers and, for default behaviors, `InheritedAdaptiveCardHandlers`. AC 1.5 `isEnabled` is reactive via `resolvedActionProvider(id)`.
+7. **Actions**: The action bar (e.g., `Action.Submit`, `Action.OpenUrl`) is typically rendered at the bottom of the card or within an `ActionSet`. Actions trigger callbacks routed through `GenericAction` handlers and, for default behaviors, `InheritedAdaptiveCardHandlers`. Submit/Execute payloads are typed invoke objects, not raw maps. AC 1.5 `isEnabled` is reactive via `resolvedActionProvider(id)`.
 
 ## State and dependency injection
 
 `flutter_adaptive_cards_fs` uses **Riverpod (v3.x)** internally for card-scoped dependency injection and **reactive** document/UI state. The library installs its own `ProviderScope` per rendered card subtree, so host apps do not need to set up Riverpod to use the package.
 
-See [`doc/reactive-riverpod.md`](reactive-riverpod.md) for the scope map, provider architecture, and **baseline + overlay** document model.
+See [`reactive-riverpod.md`](reactive-riverpod.md) for the scope map, provider architecture, and **baseline + overlay** document model.
 
 ### Document overlays (elements and actions)
 
@@ -57,7 +57,7 @@ From the perspective of a host integrating `flutter_adaptive_cards_fs`:
 
 1. Provide JSON and `HostConfig` via `AdaptiveCardsCanvas` (or `RawAdaptiveCard`).
 2. Optionally pass custom `CardTypeRegistry` / `ActionTypeRegistry`, or wrap the tree with `InheritedAdaptiveCardHandlers` for submit/execute/open-url/change callbacks.
-3. Listen to events such as `onSubmit` and receive gathered input data as a `Map`.
+3. Wrap the card with **`InheritedAdaptiveCardHandlers`** for Submit, Execute, OpenUrl, and input **`onChange`** callbacks. **`onSubmit`** receives **`SubmitActionInvoke`** (`actionId` + merged input/`data` map); **`onExecute`** receives **`ExecuteActionInvoke`** (`verb`, `actionId`, merged map). **`AdaptiveCardsCanvas`** accepts **`onChange`** directly; it does **not** expose Submit/Execute/OpenUrl handlers on the widget or its state.
 
 No third-party DI package is required at the app level.
 

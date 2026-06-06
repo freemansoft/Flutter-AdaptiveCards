@@ -509,20 +509,24 @@ There are several constructors which handle loading of the AC from different sou
 ### Example
 
 ```dart
-AdaptiveCardsCanvas.network(
-  placeholder: Text("Loading, please wait"),
-  url: "www.someUrlThatPoints.To/A.json",
-  hostConfigPath: "assets/host_config.json",
-  onSubmit: (map) {
-    // Send to server or handle locally
+InheritedAdaptiveCardHandlers(
+  onSubmit: (SubmitActionInvoke invoke) {
+    sendToServer(invoke.data, actionId: invoke.actionId);
+  },
+  onExecute: (ExecuteActionInvoke invoke) {
+    routeExecute(invoke.verb, invoke.data);
   },
   onOpenUrl: (url) {
     // Open url using the browser or handle differently
   },
-  // If this is set, a button will appear next to each adaptive card which when clicked shows the JSON payload.
-  // NOTE: this flag only has impact in development mode, this attribute does change nothing for realease builds.
-  // This is very useful for debugging purposes
-  showDebugJson: true,
+  onOpenUrlDialog: (_) {},
+  onChange: (_, __, ___, ____) {},
+  child: AdaptiveCardsCanvas.network(
+    placeholder: Text('Loading, please wait'),
+    url: 'https://example.com/card.json',
+    hostConfigs: HostConfigs(),
+    showDebugJson: true,
+  ),
 );
 ```
 

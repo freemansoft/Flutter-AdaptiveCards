@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0]
+
+### Changed
+
+- **`onSubmit` callback** now receives **`SubmitActionInvoke`** instead of a bare `Map`. Use `invoke.actionId` and `invoke.data` (merged action `data` + input values).
+- **`onExecute` callback** now receives **`ExecuteActionInvoke`** instead of a bare `Map`. Use `invoke.verb`, `invoke.actionId`, and `invoke.data`.
+- **`GenericExecuteAction.tap`** no longer takes a separate `verb` argument; read action metadata from `adaptiveMap` in custom implementations (or delegate to `ExecuteActionInvoke.fromActionMap`).
+
+### Removed
+
+- Unused **`onSubmit`**, **`onExecute`**, and **`onOpenUrl`** fields on **`AdaptiveCardsCanvasState`** (`adaptive_cards_canvas.dart`). Use **`InheritedAdaptiveCardHandlers`** for Submit, Execute, and OpenUrl callbacks.
+
+### Added
+
+- **`SubmitActionInvoke`** and **`ExecuteActionInvoke`** public models exported from `flutter_adaptive_cards_fs.dart`.
+- Tests: `test/actions/submit_action_invoke_test.dart`, `test/actions/execute_verb_test.dart`.
+
 ## [0.9.0]
 
 - Fixed semantic binding error dismissal of filtered modal panel

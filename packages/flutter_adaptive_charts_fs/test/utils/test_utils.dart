@@ -160,8 +160,8 @@ Widget getTestWidgetFromPath({
   Key? key,
   Function(String)? onOpenUrl,
   Function(String)? onOpenUrlDialog,
-  Function(Map<dynamic, dynamic>)? onSubmit,
-  Function(Map<dynamic, dynamic>)? onExecute,
+  void Function(SubmitActionInvoke invoke)? onSubmit,
+  void Function(ExecuteActionInvoke invoke)? onExecute,
   Function(
     String id,
     dynamic value,
@@ -192,8 +192,8 @@ Widget getTestWidgetFromMap({
   Key? key,
   Function(String)? onOpenUrl,
   Function(String)? onOpenUrlDialog,
-  Function(Map<dynamic, dynamic>)? onSubmit,
-  Function(Map<dynamic, dynamic>)? onExecute,
+  void Function(SubmitActionInvoke invoke)? onSubmit,
+  void Function(ExecuteActionInvoke invoke)? onExecute,
   Function(
     String id,
     dynamic value,
@@ -238,10 +238,10 @@ Widget getTestWidgetFromMap({
               onOpenUrlDialog: onOpenUrlDialog ?? (String _) => {},
               // this a test so we can look at this later
               // ignore: inference_failure_on_collection_literal
-              onSubmit: onSubmit ?? (Map<dynamic, dynamic> _) => {},
+              onSubmit: onSubmit ?? (_) {},
               // this a test so we can look at this later
               // ignore: inference_failure_on_collection_literal
-              onExecute: onExecute ?? (Map<dynamic, dynamic> _) => {},
+              onExecute: onExecute ?? (_) {},
               onChange:
                   onChange ??
                   (

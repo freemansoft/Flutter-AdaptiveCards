@@ -7,6 +7,7 @@ import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/reset_inputs_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -84,14 +85,17 @@ class DefaultSubmitAction extends GenericSubmitAction {
 
     if (!validateInputs(container)) return;
 
+    final invoke = SubmitActionInvoke.fromActionMap(adaptiveMap, data);
+
     final foo = InheritedAdaptiveCardHandlers.of(context);
     if (foo != null) {
-      foo.onSubmit(data);
+      foo.onSubmit(invoke);
     } else if (kDebugMode) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'No custom handler found for onSubmit: \n $data',
+            'No custom handler found for onSubmit: '
+            'id: ${invoke.actionId}\n ${invoke.data}',
           ),
         ),
       );
@@ -109,7 +113,6 @@ class DefaultExecuteAction extends GenericExecuteAction {
     required BuildContext context,
     required RawAdaptiveCardState rawAdaptiveCardState,
     required Map<String, dynamic> adaptiveMap,
-    String? verb, // added in schema 1.6
   }) {
     final Map<String, dynamic> data =
         (adaptiveMap['data'] as Map<String, dynamic>?) != null
@@ -124,14 +127,17 @@ class DefaultExecuteAction extends GenericExecuteAction {
     data.addAll(values);
     if (!validateInputs(container)) return;
 
+    final invoke = ExecuteActionInvoke.fromActionMap(adaptiveMap, data);
+
     final foo = InheritedAdaptiveCardHandlers.of(context);
     if (foo != null) {
-      foo.onExecute(data);
+      foo.onExecute(invoke);
     } else if (kDebugMode) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'No custom handler found for onExecute: verb: $verb \n $data',
+            'No custom handler found for onExecute: '
+            'verb: ${invoke.verb} id: ${invoke.actionId}\n ${invoke.data}',
           ),
         ),
       );

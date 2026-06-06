@@ -71,9 +71,15 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
 
   /// `onChange` handler shared by Option 1 and Option 2 Widgetbook use cases.
   ///
-  /// Option 1 (`value_changed_action_filtered.json`) and Option 2
-  /// (`value_changed_action_dependent_query.json`) differ only in card JSON;
+  /// Option 1 (`value_changed_action_filtered.json`) and
+  /// Option 2 (`value_changed_action_dependent_query.json`)
+  /// differ only in card JSON;
   /// this method implements both paths via two branches.
+  ///
+  /// Option 1 = host-driven cascade with a compact city dropdown;
+  /// Option 2 = same cascade plus a Teams-style filtered city field backed by choices.data.
+  /// The handler’s country branch serves both;
+  /// the city/Data.Query branch is Option 2 only.
   static void handleDependentChoiceSetChange(
     String id,
     dynamic value,
@@ -82,7 +88,9 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
   ) {
     // Option 1 and Option 2: when country changes, repopulate city choices.
     // Runs after card valueChangedAction resets city value to baseline.
+    //
     // Option 1 shows compact dropdown updating (USA vs France cities).
+    //
     // Option 2 preloads overlay choices before the filtered city picker opens.
     // Defer until after valueChangedAction reset (runs after onChange in ChoiceSet).
     if (id == 'country') {
@@ -94,7 +102,7 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
         if (!cardState.mounted) {
           return;
         }
-        // note that we are applying changes to the city input overlay
+        // We are applying changes to the city input overlay
         cardState.applyUpdates(
           elements: [
             AdaptiveElementUpdate(
@@ -110,8 +118,11 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
     }
 
     // Option 2 only: city has choices.data (dataset "cities"); onChange passes
-    // a non-null DataQuery. Option 1 city is compact with no choices.data, so
+    // a non-null DataQuery.
+    //
+    // Option 1 city is compact with no choices.data, so
     // dataQuery is null and this branch never runs.
+    //
     // Phase 1: log only — choices were already loaded in the country branch.
     // Phase 2: read dataQuery.parameters['country'] here instead of preloading.
     if (id == 'city' && dataQuery?.dataset == 'cities') {

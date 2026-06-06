@@ -206,15 +206,6 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
   )?
   onChange;
 
-  /// Environment specific function that knows how to handle submission to remote APIs
-  Function(Map map)? onSubmit;
-
-  /// Environment specific function that knows how to handle execution to remote APIs
-  Function(Map map)? onExecute;
-
-  /// Environment specific function that knows how to open a URL on this platform
-  Function(String url)? onOpenUrl;
-
   @override
   void initState() {
     super.initState();

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
@@ -14,8 +15,8 @@ void main() {
   Widget buildCard(
     Map<String, dynamic> map, {
     required Function(String) onOpenUrl,
-    required Function(Map) onSubmit,
-    required Function(Map) onExecute,
+    required void Function(SubmitActionInvoke invoke) onSubmit,
+    required void Function(ExecuteActionInvoke invoke) onExecute,
   }) {
     return getTestWidgetFromMap(
       map: map,
@@ -253,9 +254,9 @@ void main() {
   });
 
   testWidgets(
-    'AdaptiveContainer selectAction (Submit) calls onSubmit with provided data',
+    'AdaptiveContainer selectAction (Submit) calls onSubmit with actionId and data',
     (tester) async {
-      Map? submitted;
+      SubmitActionInvoke? captured;
 
       final Map<String, dynamic> map = {
         'type': 'AdaptiveCard',
@@ -265,6 +266,7 @@ void main() {
             'type': 'Container',
             'selectAction': {
               'type': 'Action.Submit',
+              'id': 'container-submit',
               'data': {'foo': 'bar'},
             },
             'items': [
@@ -278,7 +280,7 @@ void main() {
         buildCard(
           map,
           onOpenUrl: (_) {},
-          onSubmit: (map) => submitted = map,
+          onSubmit: (invoke) => captured = invoke,
           onExecute: (_) {},
         ),
       );
@@ -289,15 +291,16 @@ void main() {
       await tester.tap(find.text('Submit container'));
       await tester.pumpAndSettle();
 
-      expect(submitted, isNotNull);
-      expect(submitted!['foo'], 'bar');
+      expect(captured, isNotNull);
+      expect(captured!.actionId, 'container-submit');
+      expect(captured!.data['foo'], 'bar');
     },
   );
 
   testWidgets(
-    'AdaptiveContainer selectAction (Execute) calls onSubmit with provided data',
+    'AdaptiveContainer selectAction (Execute) calls onExecute with verb and data',
     (tester) async {
-      Map? submitted;
+      ExecuteActionInvoke? captured;
 
       final Map<String, dynamic> map = {
         'type': 'AdaptiveCard',
@@ -307,6 +310,7 @@ void main() {
             'type': 'Container',
             'selectAction': {
               'type': 'Action.Execute',
+              'verb': 'containerTap',
               'data': {'foo': 'bar'},
             },
             'items': [
@@ -321,7 +325,7 @@ void main() {
           map,
           onOpenUrl: (_) {},
           onSubmit: (_) {},
-          onExecute: (map) => submitted = map,
+          onExecute: (invoke) => captured = invoke,
         ),
       );
       await tester.pumpAndSettle();
@@ -331,8 +335,9 @@ void main() {
       await tester.tap(find.text('Execute container'));
       await tester.pumpAndSettle();
 
-      expect(submitted, isNotNull);
-      expect(submitted!['foo'], 'bar');
+      expect(captured, isNotNull);
+      expect(captured!.verb, 'containerTap');
+      expect(captured!.data['foo'], 'bar');
     },
   );
 }
