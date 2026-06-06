@@ -36,6 +36,7 @@ import 'package:flutter_adaptive_cards_fs/src/cards/inputs/text.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/time.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/toggle.dart';
 
+/// A function that creates a widget from a map of properties.
 typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 
 /// Entry point for registering adaptive cards
