@@ -7,7 +7,7 @@ import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:http/http.dart' as http;
 
@@ -169,14 +169,8 @@ class AdaptiveCardsCanvas extends StatefulWidget {
   /// data that may be copied into `Input` cards to replace their templated state
   final Map? initData;
 
-  /// Environment specific function that knows how to handle state change
-  final Function(
-    String id,
-    dynamic value,
-    DataQuery? dataQuery,
-    RawAdaptiveCardState cardState,
-  )?
-  onChange;
+  /// Environment specific function that knows how to handle input value changes.
+  final void Function(InputChangeInvoke invoke)? onChange;
 
   final bool showDebugJson;
   final bool supportMarkdown;
@@ -197,14 +191,8 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
   /// data that may be copied into `Input` cards to replace their templated state
   Map? initData;
 
-  /// Environment specific function that knows how to handle state change
-  Function(
-    String id,
-    dynamic value,
-    DataQuery? dataQuery,
-    RawAdaptiveCardState cardState,
-  )?
-  onChange;
+  /// Environment specific function that knows how to handle input value changes.
+  void Function(InputChangeInvoke invoke)? onChange;
 
   @override
   void initState() {
@@ -245,11 +233,11 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
       if (foundOnChange != null) {
         onChange = foundOnChange;
       } else {
-        onChange = (it, value, dataQuery, cardState) {
+        onChange = (invoke) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'No custom handler found for onChange: \n $it',
+                'No custom handler found for onChange: \n ${invoke.inputId}',
               ),
             ),
           );

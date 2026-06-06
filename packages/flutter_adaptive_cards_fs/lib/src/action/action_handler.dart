@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
-import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 
 /// Applications could add this above the Adaptive cards tree
 ///
@@ -16,7 +14,7 @@ import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 ///
 /// The onChange here is a little different. It isn't sourced from an Action
 /// but rather from the Input widgets themselves.
-/// It is injected into the [RawAdaptiveCardState] onChange handler
+/// It is injected into the `RawAdaptiveCard` onChange handler
 ///
 /// The handlers here will be attached to widgets in the tree
 class InheritedAdaptiveCardHandlers extends InheritedWidget {
@@ -44,22 +42,18 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
   /// `invoke.verb` and `invoke.actionId` come from the action JSON when set.
   final void Function(ExecuteActionInvoke invoke) onExecute;
 
-  /// called when an Action.OpenUrl openUrl is pressed
-  /// and we are running the default action handlers
-  final Function(String url) onOpenUrl;
+  /// Called when an Action.OpenUrl is pressed and default action handlers run.
+  ///
+  /// `invoke.url` and optional `invoke.actionId` come from the action JSON.
+  final void Function(OpenUrlActionInvoke invoke) onOpenUrl;
 
-  /// called when an Action.OpenUrlDialog openUrlDialog is pressed
-  /// and we are running the default action handlers
-  final Function(String url) onOpenUrlDialog;
+  /// Called when an Action.OpenUrlDialog is pressed and default handlers run.
+  ///
+  /// `invoke.url` and optional `invoke.actionId` come from the action JSON.
+  final void Function(OpenUrlDialogActionInvoke invoke) onOpenUrlDialog;
 
-  /// called when a value changes in an Input.ChoiceSet
-  final Function(
-    String id,
-    dynamic value,
-    DataQuery? dataQuery,
-    RawAdaptiveCardState cardState,
-  )
-  onChange;
+  /// Called when an input value changes (not sourced from an action).
+  final void Function(InputChangeInvoke invoke) onChange;
 
   static InheritedAdaptiveCardHandlers? of(BuildContext context) {
     final InheritedAdaptiveCardHandlers? handlers = context

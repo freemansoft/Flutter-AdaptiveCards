@@ -57,7 +57,7 @@ From the perspective of a host integrating `flutter_adaptive_cards_fs`:
 
 1. Provide JSON and `HostConfig` via `AdaptiveCardsCanvas` (or `RawAdaptiveCard`).
 2. Optionally pass custom `CardTypeRegistry` / `ActionTypeRegistry`, or wrap the tree with `InheritedAdaptiveCardHandlers` for submit/execute/open-url/change callbacks.
-3. Wrap the card with **`InheritedAdaptiveCardHandlers`** for Submit, Execute, OpenUrl, and input **`onChange`** callbacks. **`onSubmit`** receives **`SubmitActionInvoke`** (`actionId` + merged input/`data` map); **`onExecute`** receives **`ExecuteActionInvoke`** (`verb`, `actionId`, merged map). **`AdaptiveCardsCanvas`** accepts **`onChange`** directly; it does **not** expose Submit/Execute/OpenUrl handlers on the widget or its state.
+3. Wrap the card with **`InheritedAdaptiveCardHandlers`** for Submit, Execute, OpenUrl, and input **`onChange`** callbacks. All five callbacks receive typed invoke payloads: **`SubmitActionInvoke`**, **`ExecuteActionInvoke`**, **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, and **`InputChangeInvoke`**. **`AdaptiveCardsCanvas`** accepts **`onChange`** directly (same **`InputChangeInvoke`** type); it does **not** expose Submit/Execute/OpenUrl handlers on the widget or its state.
 
 No third-party DI package is required at the app level.
 

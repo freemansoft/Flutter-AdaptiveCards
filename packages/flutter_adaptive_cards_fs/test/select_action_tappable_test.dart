@@ -14,7 +14,7 @@ void main() {
 
   Widget buildCard(
     Map<String, dynamic> map, {
-    required Function(String) onOpenUrl,
+    required void Function(OpenUrlActionInvoke invoke) onOpenUrl,
     required void Function(SubmitActionInvoke invoke) onSubmit,
     required void Function(ExecuteActionInvoke invoke) onExecute,
   }) {
@@ -50,7 +50,7 @@ void main() {
     await tester.pumpWidget(
       buildCard(
         map,
-        onOpenUrl: (url) => opened = true,
+        onOpenUrl: (_) => opened = true,
         onSubmit: (_) {},
         onExecute: (_) {},
       ),
@@ -91,7 +91,7 @@ void main() {
     await tester.pumpWidget(
       buildCard(
         map,
-        onOpenUrl: (url) => opened = true,
+        onOpenUrl: (_) => opened = true,
         onSubmit: (_) {},
         onExecute: (_) {},
       ),
@@ -136,7 +136,7 @@ void main() {
     await tester.pumpWidget(
       buildCard(
         map,
-        onOpenUrl: (url) => opened = true,
+        onOpenUrl: (_) => opened = true,
         onSubmit: (_) {},
         onExecute: (_) {},
       ),
@@ -189,7 +189,7 @@ void main() {
     await tester.pumpWidget(
       buildCard(
         map,
-        onOpenUrl: (url) => opened = true,
+        onOpenUrl: (_) => opened = true,
         onSubmit: (_) {},
         onExecute: (_) {},
       ),
@@ -231,7 +231,7 @@ void main() {
     await tester.pumpWidget(
       buildCard(
         map,
-        onOpenUrl: (url) => opened = true,
+        onOpenUrl: (_) => opened = true,
         onSubmit: (_) {},
         onExecute: (_) {},
       ),
@@ -252,6 +252,48 @@ void main() {
 
     expect(opened, isTrue);
   });
+
+  testWidgets(
+    'AdaptiveContainer selectAction (OpenUrl) forwards actionId and url',
+    (tester) async {
+      OpenUrlActionInvoke? captured;
+
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'version': '1.0',
+        'body': [
+          {
+            'type': 'Container',
+            'selectAction': {
+              'type': 'Action.OpenUrl',
+              'id': 'container-open',
+              'url': 'https://example.com/container',
+            },
+            'items': [
+              {'type': 'TextBlock', 'text': 'Open container'},
+            ],
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        buildCard(
+          map,
+          onOpenUrl: (invoke) => captured = invoke,
+          onSubmit: (_) {},
+          onExecute: (_) {},
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Open container'));
+      await tester.pumpAndSettle();
+
+      expect(captured, isNotNull);
+      expect(captured!.actionId, 'container-open');
+      expect(captured!.url, 'https://example.com/container');
+    },
+  );
 
   testWidgets(
     'AdaptiveContainer selectAction (Submit) calls onSubmit with actionId and data',

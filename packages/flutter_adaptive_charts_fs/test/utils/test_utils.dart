@@ -158,17 +158,11 @@ class Blue8x8Image {
 Widget getTestWidgetFromPath({
   required String path,
   Key? key,
-  Function(String)? onOpenUrl,
-  Function(String)? onOpenUrlDialog,
+  void Function(OpenUrlActionInvoke invoke)? onOpenUrl,
+  void Function(OpenUrlDialogActionInvoke invoke)? onOpenUrlDialog,
   void Function(SubmitActionInvoke invoke)? onSubmit,
   void Function(ExecuteActionInvoke invoke)? onExecute,
-  Function(
-    String id,
-    dynamic value,
-    DataQuery? dataQuery,
-    RawAdaptiveCardState cardState,
-  )?
-  onChange,
+  void Function(InputChangeInvoke invoke)? onChange,
 }) {
   final File file = File('test/samples/$path');
   final Map<String, dynamic> map =
@@ -190,17 +184,11 @@ Widget getTestWidgetFromMap({
   required Map<String, dynamic> map,
   required String title,
   Key? key,
-  Function(String)? onOpenUrl,
-  Function(String)? onOpenUrlDialog,
+  void Function(OpenUrlActionInvoke invoke)? onOpenUrl,
+  void Function(OpenUrlDialogActionInvoke invoke)? onOpenUrlDialog,
   void Function(SubmitActionInvoke invoke)? onSubmit,
   void Function(ExecuteActionInvoke invoke)? onExecute,
-  Function(
-    String id,
-    dynamic value,
-    DataQuery? dataQuery,
-    RawAdaptiveCardState cardState,
-  )?
-  onChange,
+  void Function(InputChangeInvoke invoke)? onChange,
 }) {
   final Widget adaptiveCard = AdaptiveCardsCanvas.map(
     content: map,
@@ -232,26 +220,17 @@ Widget getTestWidgetFromMap({
             child: InheritedAdaptiveCardHandlers(
               // this a test so we can look at this later
               // ignore: inference_failure_on_collection_literal
-              onOpenUrl: onOpenUrl ?? (String _) => {},
+              onOpenUrl: onOpenUrl ?? (_) {},
               // this a test so we can look at this later
               // ignore: inference_failure_on_collection_literal
-              onOpenUrlDialog: onOpenUrlDialog ?? (String _) => {},
+              onOpenUrlDialog: onOpenUrlDialog ?? (_) {},
               // this a test so we can look at this later
               // ignore: inference_failure_on_collection_literal
               onSubmit: onSubmit ?? (_) {},
               // this a test so we can look at this later
               // ignore: inference_failure_on_collection_literal
               onExecute: onExecute ?? (_) {},
-              onChange:
-                  onChange ??
-                  (
-                    String id,
-                    dynamic value,
-                    DataQuery? dataQuery,
-                    RawAdaptiveCardState cardState,
-                    // this a test so we can look at this later
-                    // ignore: inference_failure_on_collection_literal
-                  ) => {},
+              onChange: onChange ?? (_) {},
               child: adaptiveCard,
             ),
           ),

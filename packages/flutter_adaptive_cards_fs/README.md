@@ -516,11 +516,17 @@ InheritedAdaptiveCardHandlers(
   onExecute: (ExecuteActionInvoke invoke) {
     routeExecute(invoke.verb, invoke.data);
   },
-  onOpenUrl: (url) {
-    // Open url using the browser or handle differently
+  onOpenUrl: (OpenUrlActionInvoke invoke) {
+    launchUrl(Uri.parse(invoke.url));
   },
-  onOpenUrlDialog: (_) {},
-  onChange: (_, __, ___, ____) {},
+  onOpenUrlDialog: (OpenUrlDialogActionInvoke invoke) {
+    showDialogFor(invoke.url);
+  },
+  onChange: (InputChangeInvoke invoke) {
+    if (invoke.inputId == 'country') {
+      invoke.cardState.applyUpdates(/* ... */);
+    }
+  },
   child: AdaptiveCardsCanvas.network(
     placeholder: Text('Loading, please wait'),
     url: 'https://example.com/card.json',

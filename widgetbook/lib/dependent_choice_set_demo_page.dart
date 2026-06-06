@@ -80,12 +80,7 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
   /// Option 2 = same cascade plus a Teams-style filtered city field backed by choices.data.
   /// The handler’s country branch serves both;
   /// the city/Data.Query branch is Option 2 only.
-  static void handleDependentChoiceSetChange(
-    String id,
-    dynamic value,
-    DataQuery? dataQuery,
-    RawAdaptiveCardState cardState,
-  ) {
+  static void handleDependentChoiceSetChange(InputChangeInvoke invoke) {
     // Option 1 and Option 2: when country changes, repopulate city choices.
     // Runs after card valueChangedAction resets city value to baseline.
     //
@@ -93,17 +88,17 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
     //
     // Option 2 preloads overlay choices before the filtered city picker opens.
     // Defer until after valueChangedAction reset (runs after onChange in ChoiceSet).
-    if (id == 'country') {
-      final countryCode = countryCodeFromOnChangeValue(value);
+    if (invoke.inputId == 'country') {
+      final countryCode = countryCodeFromOnChangeValue(invoke.value);
       final choices = countryCode == null
           ? const <Choice>[]
           : citiesByCountry[countryCode] ?? const <Choice>[];
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (!cardState.mounted) {
+        if (!invoke.cardState.mounted) {
           return;
         }
         // We are applying changes to the city input overlay
-        cardState.applyUpdates(
+        invoke.cardState.applyUpdates(
           elements: [
             AdaptiveElementUpdate(
               id: 'city',
@@ -125,15 +120,15 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
     //
     // Phase 1: log only — choices were already loaded in the country branch.
     // Phase 2: read dataQuery.parameters['country'] here instead of preloading.
-    if (id == 'city' && dataQuery?.dataset == 'cities') {
+    if (invoke.inputId == 'city' && invoke.dataQuery?.dataset == 'cities') {
       // code to fetch the city list could go here
       // dataset is essentially the target
       assert(() {
         developer.log(
           format(
             'city Data.Query onChange: value={}, dataset={}',
-            value?.toString() ?? '',
-            dataQuery?.dataset ?? '',
+            invoke.value?.toString() ?? '',
+            invoke.dataQuery?.dataset ?? '',
           ),
           name: 'DependentChoiceSetDemoPage',
         );

@@ -1,3 +1,5 @@
+import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// Reads author-defined action `id` from card JSON, or null when absent or
@@ -72,4 +74,76 @@ class ExecuteActionInvoke {
 
   /// Author-defined action `id` from card JSON, when present.
   final String? actionId;
+}
+
+/// Payload delivered to the host `onOpenUrl` callback.
+class OpenUrlActionInvoke {
+  const OpenUrlActionInvoke({
+    required this.url,
+    this.actionId,
+  });
+
+  factory OpenUrlActionInvoke.fromActionMap(
+    Map<String, dynamic> actionMap, {
+    String? altUrl,
+  }) {
+    final urlFromMap = actionMap['url'] as String?;
+    return OpenUrlActionInvoke(
+      url: altUrl ?? urlFromMap ?? '',
+      actionId: actionIdFromMap(actionMap),
+    );
+  }
+
+  /// URL from action JSON (or `altUrl` when supplied by selectAction routing).
+  final String url;
+
+  /// Author-defined action `id` from card JSON, when present.
+  final String? actionId;
+}
+
+/// Payload delivered to the host `onOpenUrlDialog` callback.
+class OpenUrlDialogActionInvoke {
+  const OpenUrlDialogActionInvoke({
+    required this.url,
+    this.actionId,
+  });
+
+  factory OpenUrlDialogActionInvoke.fromActionMap(
+    Map<String, dynamic> actionMap, {
+    String? altUrl,
+  }) {
+    final urlFromMap = actionMap['url'] as String?;
+    return OpenUrlDialogActionInvoke(
+      url: altUrl ?? urlFromMap ?? '',
+      actionId: actionIdFromMap(actionMap),
+    );
+  }
+
+  /// URL from action JSON (or `altUrl` when supplied by selectAction routing).
+  final String url;
+
+  /// Author-defined action `id` from card JSON, when present.
+  final String? actionId;
+}
+
+/// Payload delivered to the host `onChange` callback when an input value changes.
+class InputChangeInvoke {
+  const InputChangeInvoke({
+    required this.inputId,
+    required this.value,
+    required this.cardState,
+    this.dataQuery,
+  });
+
+  /// Input element `id` from card JSON.
+  final String inputId;
+
+  /// New input value (ChoiceSet stores choice `value`, not title).
+  final dynamic value;
+
+  /// Parsed `choices.data` when the input defines a Data.Query.
+  final DataQuery? dataQuery;
+
+  /// Card state for host APIs such as `applyUpdates`.
+  final RawAdaptiveCardState cardState;
 }

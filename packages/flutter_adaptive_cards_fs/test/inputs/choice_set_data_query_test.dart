@@ -64,17 +64,11 @@ void main() {
     final widget = getTestWidgetFromMap(
       map: map,
       title: 'Input.ChoiceSet with Data.Query passes dataQuery to onChange',
-      onChange:
-          (
-            String id,
-            dynamic value,
-            DataQuery? dataQuery,
-            RawAdaptiveCardState cardState,
-          ) {
-            selectedId = id;
-            selectedValue = value;
-            capturedDataQuery = dataQuery;
-          },
+      onChange: (invoke) {
+        selectedId = invoke.inputId;
+        selectedValue = invoke.value;
+        capturedDataQuery = invoke.dataQuery;
+      },
     );
 
     await tester.pumpWidget(widget);
@@ -125,17 +119,11 @@ void main() {
     final widget = getTestWidgetFromMap(
       map: map,
       title: 'Input.ChoiceSet without Data.Query passes null to onChange',
-      onChange:
-          (
-            String id,
-            dynamic value,
-            DataQuery? dataQuery,
-            RawAdaptiveCardState cardState,
-          ) {
-            selectedId = id;
-            selectedValue = value;
-            capturedDataQuery = dataQuery;
-          },
+      onChange: (invoke) {
+        selectedId = invoke.inputId;
+        selectedValue = invoke.value;
+        capturedDataQuery = invoke.dataQuery;
+      },
     );
 
     await tester.pumpWidget(widget);
@@ -166,17 +154,11 @@ void main() {
       // path is relative to test/samples/
       final widget = getTestWidgetFromPath(
         path: 'v1.6/data_query.json',
-        onChange:
-            (
-              String id,
-              dynamic value,
-              DataQuery? dataQuery,
-              RawAdaptiveCardState cardState,
-            ) {
-              selectedId = id;
-              selectedValue = value;
-              capturedDataQuery = dataQuery;
-            },
+        onChange: (invoke) {
+          selectedId = invoke.inputId;
+          selectedValue = invoke.value;
+          capturedDataQuery = invoke.dataQuery;
+        },
       );
 
       await tester.pumpWidget(widget);
@@ -277,19 +259,13 @@ void main() {
         getTestWidgetFromMap(
           map: map,
           title: 'Data.Query onChange loadInput',
-          onChange:
-              (
-                String id,
-                dynamic value,
-                DataQuery? dataQuery,
-                RawAdaptiveCardState cardState,
-              ) {
-                expect(dataQuery, isNotNull);
-                expect(dataQuery!.dataset, 'graph.microsoft.com/users');
-                cardState.loadInput(id, {
-                  'Fetched User': 'fetched_1',
-                });
-              },
+          onChange: (invoke) {
+            expect(invoke.dataQuery, isNotNull);
+            expect(invoke.dataQuery!.dataset, 'graph.microsoft.com/users');
+            invoke.cardState.loadInput(invoke.inputId, {
+              'Fetched User': 'fetched_1',
+            });
+          },
         ),
       );
       await tester.pumpAndSettle();

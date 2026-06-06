@@ -17,10 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Unused **`onSubmit`**, **`onExecute`**, and **`onOpenUrl`** fields on **`AdaptiveCardsCanvasState`** (`adaptive_cards_canvas.dart`). Use **`InheritedAdaptiveCardHandlers`** for Submit, Execute, and OpenUrl callbacks.
 
+- **`onOpenUrl` callback** now receives **`OpenUrlActionInvoke`** (`url`, optional `actionId`) instead of a bare `String`.
+- **`onOpenUrlDialog` callback** now receives **`OpenUrlDialogActionInvoke`** (`url`, optional `actionId`) instead of a bare `String`.
+- **`onChange` callback** now receives **`InputChangeInvoke`** (`inputId`, `value`, `dataQuery`, `cardState`) instead of four separate parameters.
+- **`AdaptiveCardsCanvas.onChange`** and **`RawAdaptiveCard.onChange`** use the same **`InputChangeInvoke`** type.
+
 ### Added
 
-- **`SubmitActionInvoke`** and **`ExecuteActionInvoke`** public models exported from `flutter_adaptive_cards_fs.dart`.
-- Tests: `test/actions/submit_action_invoke_test.dart`, `test/actions/execute_verb_test.dart`.
+- **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, and **`InputChangeInvoke`** public models exported from `flutter_adaptive_cards_fs.dart`.
+- Tests: `test/actions/open_url_action_invoke_test.dart`, `test/actions/open_url_dialog_action_invoke_test.dart`.
 
 ## [0.9.0]
 

@@ -49,6 +49,24 @@ When **`DefaultExecuteAction`** runs:
 
 Hosts route Teams-style Execute actions on **`invoke.verb`**. **`associatedInputs`** is not yet honored for Submit or Execute — all card inputs are always collected (see [Implementation-Status.md](../Implementation-Status.md#known-gaps)).
 
+## Action.OpenUrl payload
+
+When **`DefaultOpenUrlAction`** runs:
+
+1. Build **`OpenUrlActionInvoke`** with action **`url`** (or `altUrl` from selectAction routing) and optional action **`id`** (`actionId`).
+2. Call **`InheritedAdaptiveCardHandlers.onOpenUrl(invoke)`**.
+
+## Action.OpenUrlDialog payload
+
+When **`DefaultOpenUrlDialogAction`** runs:
+
+1. Build **`OpenUrlDialogActionInvoke`** with action **`url`** and optional action **`id`** (`actionId`).
+2. Call **`InheritedAdaptiveCardHandlers.onOpenUrlDialog(invoke)`**.
+
+## Input onChange payload
+
+When an input value changes, **`RawAdaptiveCardState.changeValue`** builds **`InputChangeInvoke`** (`inputId`, `value`, `dataQuery`, `cardState`) and calls the host **`onChange`** handler (from **`AdaptiveCardsCanvas.onChange`** or **`InheritedAdaptiveCardHandlers.onChange`**).
+
 ---
 
 ## Design Rationale 🔍
