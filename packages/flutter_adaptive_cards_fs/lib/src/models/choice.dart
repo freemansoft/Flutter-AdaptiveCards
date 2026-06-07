@@ -45,3 +45,16 @@ class Choice {
   @override
   int get hashCode => Object.hash(title, value);
 }
+
+/// Parses a JSON `choices` array into [Choice] instances.
+List<Choice> choicesFromJsonList(Object? raw) {
+  if (raw is! List) return const [];
+  return raw
+      .whereType<Map>()
+      .map((e) => Choice.fromJson(Map<String, dynamic>.from(e)))
+      .toList();
+}
+
+/// Serializes [choices] for resolved element JSON maps.
+List<Map<String, dynamic>> choicesToJsonList(List<Choice> choices) =>
+    choices.map((c) => c.toJson()).toList();

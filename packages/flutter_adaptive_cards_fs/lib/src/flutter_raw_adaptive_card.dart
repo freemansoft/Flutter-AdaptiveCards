@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_cards_canvas.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_filter.dart';
-import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
@@ -273,8 +272,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   }
 
   Future<void> searchList(
-    List<SearchModel>? data,
-    Function(dynamic value) callback, {
+    List<Choice>? data,
+    void Function(Choice? value) callback, {
     String? inputId,
   }) async {
     await showModalBottomSheet<void>(

@@ -373,7 +373,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
 
     if (update.choices != null) {
       overlay = overlay.copyWith(
-        choices: update.choices!.map((c) => c.toJson()).toList(),
+        choices: update.choices,
         clearInputValue: update.value == null && !update.clearValue,
       );
     }
@@ -416,11 +416,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
 
   static List<Choice>? _choicesFromPatch(Object? raw) {
     if (raw is! List) return null;
-    return raw
-        .map(
-          (e) => Choice.fromJson(Map<String, dynamic>.from(e as Map)),
-        )
-        .toList();
+    return choicesFromJsonList(raw);
   }
 
   /// Replaces effective `choices` for `Input.ChoiceSet` [id].
@@ -430,7 +426,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     _updateOverlay(
       id,
       (current) => (current ?? const ElementOverlay()).copyWith(
-        choices: choices.map((c) => c.toJson()).toList(),
+        choices: choices,
         clearInputValue: true,
       ),
     );
@@ -438,13 +434,12 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
 
   /// Appends [choices] to baseline static + existing overlay (deduped by value).
   void appendChoices(String id, List<Choice> choices) {
-    final byValue = <String, Map<String, dynamic>>{};
-    for (final json in _effectiveChoiceJson(id)) {
-      final value = json['value']?.toString() ?? '';
-      byValue[value] = json;
+    final byValue = <String, Choice>{};
+    for (final choice in _effectiveChoices(id)) {
+      byValue[choice.value] = choice;
     }
     for (final choice in choices) {
-      byValue[choice.value] = choice.toJson();
+      byValue[choice.value] = choice;
     }
     _updateOverlay(
       id,
@@ -610,7 +605,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     return type != null && type.startsWith('Action.');
   }
 
-  List<Map<String, dynamic>> _effectiveChoiceJson(String id) {
+  List<Choice> _effectiveChoices(String id) {
     final baselineNode = state.nodesById[id];
     if (baselineNode == null) return const [];
 
@@ -619,11 +614,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
       return overlay!.choices!;
     }
 
-    final raw = baselineNode['choices'];
-    if (raw is! List) return const [];
-    return raw
-        .map((e) => Map<String, dynamic>.from(e as Map<dynamic, dynamic>))
-        .toList();
+    return choicesFromJsonList(baselineNode['choices']);
   }
 
   Map<String, Map<String, dynamic>> _indexNodesById(

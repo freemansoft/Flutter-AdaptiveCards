@@ -7,18 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.10.0]
 
-- no changes yet
+### Added 0.10.0
+
+- Public exports for **`Choice`**, **`Fact`**, and **`MediaSource`** from `flutter_adaptive_cards_fs.dart`.
+- List parse helpers: `choicesFromJsonList` / `choicesToJsonList`, `factsFromJsonList`, `mediaSourcesFromJsonList`.
+
+### Changed 0.10.0
+
+- **`ElementOverlay.choices`** now stores `List<Choice>` internally; resolved element JSON still exposes `choices` as maps for widget compatibility.
+- **`Input.ChoiceSet`** filtered modal uses **`Choice`** instead of internal **`SearchModel`**.
+- **`AdaptiveFactSet`** and **`AdaptiveMedia`** parse child lists via shared typed helpers.
 
 ## [0.9.0]
 
-### Added
+### Added 0.9.0
 
 - Filtered `Input.ChoiceSet` modal lists and typeahead search; choice **titles** drive search while submit, `onChange`, and `Data.Query` use choice **values**.
 - Dependent `Input.ChoiceSet` support via `valueChangedAction` and host-driven `applyUpdates` / `Data.Query` cascade.
 - **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, and **`InputChangeInvoke`** public models exported from `flutter_adaptive_cards_fs.dart`.
 - Tests: `test/actions/open_url_action_invoke_test.dart`, `test/actions/open_url_dialog_action_invoke_test.dart`.
 
-### Changed
+### Changed 0.9.0
 
 - **`onSubmit`** now receives **`SubmitActionInvoke`** instead of a bare `Map`. Use `invoke.actionId` and `invoke.data` (merged action `data` + input values).
 - **`onExecute`** now receives **`ExecuteActionInvoke`** instead of a bare `Map`. Use `invoke.verb`, `invoke.actionId`, and `invoke.data`.

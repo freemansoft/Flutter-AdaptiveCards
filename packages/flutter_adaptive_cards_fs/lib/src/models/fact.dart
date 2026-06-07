@@ -46,3 +46,12 @@ class Fact {
   @override
   int get hashCode => Object.hash(title, value);
 }
+
+/// Parses a JSON `facts` array into [Fact] instances.
+List<Fact> factsFromJsonList(Object? raw) {
+  if (raw is! List) return const [];
+  return raw
+      .whereType<Map>()
+      .map((e) => Fact.fromJson(Map<String, dynamic>.from(e)))
+      .toList();
+}

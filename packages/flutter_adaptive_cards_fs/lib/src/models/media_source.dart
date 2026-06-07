@@ -47,3 +47,12 @@ class MediaSource {
   @override
   int get hashCode => Object.hash(url, mimeType);
 }
+
+/// Parses a JSON `sources` array into [MediaSource] instances.
+List<MediaSource> mediaSourcesFromJsonList(Object? raw) {
+  if (raw is! List) return const [];
+  return raw
+      .whereType<Map>()
+      .map((e) => MediaSource.fromJson(Map<String, dynamic>.from(e)))
+      .toList();
+}

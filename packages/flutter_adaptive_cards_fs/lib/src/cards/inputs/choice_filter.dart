@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 
 /// Typeahead list inside the filtered `Input.ChoiceSet` bottom sheet.
 ///
 /// Shows choice **titles**, filters locally as the user types, and returns the
-/// selected [SearchModel] via [callback] (parent stores the submit **value**).
+/// selected [Choice] via [callback] (parent stores the submit **value**).
 ///
 /// Choice rows are fixed for the lifetime of the sheet: they come from the
 /// snapshot passed as [data] when the modal opens. Hosts that need fresh rows
@@ -15,11 +15,11 @@ import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 class ChoiceFilter extends StatefulWidget {
   const ChoiceFilter({super.key, required this.data, required this.callback});
 
-  /// Resolved choices at modal open time (`SearchModel.title` / `.value`).
-  final List<SearchModel>? data;
+  /// Resolved choices at modal open time.
+  final List<Choice>? data;
 
-  /// Called with the tapped [SearchModel] after [Navigator.pop].
-  final Function(dynamic value)? callback;
+  /// Called with the tapped [Choice] after [Navigator.pop].
+  final void Function(Choice? value)? callback;
 
   @override
   ChoiceFilterState createState() => ChoiceFilterState();
@@ -28,8 +28,8 @@ class ChoiceFilter extends StatefulWidget {
 class ChoiceFilterState extends State<ChoiceFilter> {
   final TextEditingController _searchController = TextEditingController();
 
-  final List<SearchModel> _searchResult = [];
-  List<SearchModel> _data = [];
+  final List<Choice> _searchResult = [];
+  List<Choice> _data = [];
 
   @override
   void initState() {

@@ -125,6 +125,18 @@ void main() {
       expect(resolved?['value'], 'overlay');
     });
 
+    test('setChoices stores List<Choice> in overlay', () {
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+        ..setChoices('myChoice', const [
+          Choice(title: 'One', value: '1'),
+          Choice(title: 'Two', value: '2'),
+        ]);
+
+      final overlay = notifier.state.overlaysById['myChoice'];
+      expect(overlay?.choices, isA<List<Choice>>());
+      expect(overlay!.choices!.first.value, '1');
+    });
+
     test('setChoices replaces choices and clears inputValue overlay', () {
       final notifier = container.read(adaptiveCardDocumentProvider.notifier)
         ..setInputValue('myChoice', 'static')
@@ -135,7 +147,7 @@ void main() {
       expect(notifier.state.overlaysById['myChoice']?.inputValue, isNull);
       expect(notifier.state.overlaysById['myChoice']?.choices?.length, 1);
       expect(
-        notifier.state.overlaysById['myChoice']?.choices?.first['value'],
+        notifier.state.overlaysById['myChoice']?.choices?.first.value,
         'dyn',
       );
 

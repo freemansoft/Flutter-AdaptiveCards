@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document.dart';
@@ -74,7 +75,7 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
       merged['value'] = overlay!.inputValue;
     }
     if (overlay?.choices != null) {
-      merged['choices'] = overlay!.choices;
+      merged['choices'] = choicesToJsonList(overlay!.choices!);
     }
     if (overlay?.errorMessage != null) {
       merged['errorMessage'] = overlay!.errorMessage;

@@ -48,11 +48,9 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
     super.initState();
 
     // https://adaptivecards.io/explorer/MediaSource.html
-    final List<MediaSource> sources =
-        (adaptiveMap['sources'] as List<dynamic>?)
-            ?.map((e) => MediaSource.fromJson(e as Map<String, dynamic>))
-            .toList() ??
-        [];
+    final List<MediaSource> sources = mediaSourcesFromJsonList(
+      adaptiveMap['sources'],
+    );
     sourceUrl = sources.isNotEmpty ? sources[0].url : '';
 
     // https://pub.dev/packages/video_player

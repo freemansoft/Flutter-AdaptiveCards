@@ -82,5 +82,24 @@ void main() {
 
       expect(choice.toString(), 'Choice(title: Small Size, value: S)');
     });
+
+    test('choicesFromJsonList parses list of maps', () {
+      final choices = choicesFromJsonList([
+        {'title': 'A', 'value': 'a'},
+        {'title': 'B', 'value': 'b'},
+      ]);
+      expect(choices, [
+        const Choice(title: 'A', value: 'a'),
+        const Choice(title: 'B', value: 'b'),
+      ]);
+    });
+
+    test('choicesToJsonList round-trips', () {
+      const choices = [
+        Choice(title: 'A', value: 'a'),
+      ];
+      final json = choicesToJsonList(choices);
+      expect(choicesFromJsonList(json), choices);
+    });
   });
 }

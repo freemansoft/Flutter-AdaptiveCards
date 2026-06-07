@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_filter.dart';
-import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -8,9 +8,9 @@ void main() {
     WidgetTester tester,
   ) async {
     final data = [
-      SearchModel(title: 'Alice', value: '1'),
-      SearchModel(title: 'Bob', value: '2'),
-      SearchModel(title: 'Carol', value: '3'),
+      const Choice(title: 'Alice', value: '1'),
+      const Choice(title: 'Bob', value: '2'),
+      const Choice(title: 'Carol', value: '3'),
     ];
 
     final Widget widget = MaterialApp(
