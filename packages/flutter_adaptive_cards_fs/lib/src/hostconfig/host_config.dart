@@ -17,6 +17,18 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_block_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_styles_config.dart';
 
+/// How RawAdaptiveCard selects between HostConfigs.light and HostConfigs.dark.
+enum AdaptiveCardBrightnessMode {
+  /// Follow Theme brightness (default).
+  auto,
+
+  /// Always use HostConfigs.light.
+  light,
+
+  /// Always use HostConfigs.dark.
+  dark,
+}
+
 class HostConfigs {
   HostConfigs({
     this.light = const HostConfig(),

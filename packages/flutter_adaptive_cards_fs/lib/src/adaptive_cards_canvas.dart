@@ -87,6 +87,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    this.brightnessMode = AdaptiveCardBrightnessMode.auto,
     required this.hostConfigs,
   });
 
@@ -101,6 +102,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    this.brightnessMode = AdaptiveCardBrightnessMode.auto,
     required this.hostConfigs,
   }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(
          url: url,
@@ -117,6 +119,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    this.brightnessMode = AdaptiveCardBrightnessMode.auto,
     required this.hostConfigs,
   }) : adaptiveCardContentProvider = AssetAdaptiveCardContentProvider(
          path: assetPath,
@@ -133,6 +136,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    this.brightnessMode = AdaptiveCardBrightnessMode.auto,
     required this.hostConfigs,
   }) : adaptiveCardContentProvider = MemoryAdaptiveCardContentProvider(
          content: content,
@@ -149,6 +153,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.supportMarkdown = true,
+    this.brightnessMode = AdaptiveCardBrightnessMode.auto,
     required this.hostConfigs,
   }) : adaptiveCardContentProvider = JsonAdaptiveCardContentProvider(
          jsonString: jsonString,
@@ -175,6 +180,9 @@ class AdaptiveCardsCanvas extends StatefulWidget {
   final bool showDebugJson;
   final bool supportMarkdown;
   final bool listView;
+
+  /// How light vs dark [HostConfigs] are selected for this card.
+  final AdaptiveCardBrightnessMode brightnessMode;
 
   /// HostConfig for this card stack - describes string to color, etc. mappings
   final HostConfigs hostConfigs;
@@ -261,6 +269,7 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
       onChange: onChange,
       listView: widget.listView,
       showDebugJson: widget.showDebugJson,
+      brightnessMode: widget.brightnessMode,
       hostConfigs: widget.hostConfigs,
     );
   }

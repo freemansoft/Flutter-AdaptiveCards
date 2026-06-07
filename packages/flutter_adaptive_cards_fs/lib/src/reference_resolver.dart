@@ -21,7 +21,9 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/separator_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_block_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_style_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_styles_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/resolved_text_appearance.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// HostConfig and container-style resolution facade.
@@ -33,22 +35,53 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// https://github.com/microsoft/AdaptiveCards/blob/main/schemas/1.5.0/adaptive-card.json
 ///
-/// Styles not implemented even though we have configs:
-/// ImageStyle, Spacing, TextBlockStyle.
 class ReferenceResolver {
   ReferenceResolver({
-    this.currentContainerStyle,
+    this.inheritedContainerStyle,
+    this.inheritedHorizontalAlignment,
     required this.hostConfigs,
   });
 
   ReferenceResolver._({
-    this.currentContainerStyle,
+    this.inheritedContainerStyle,
+    this.inheritedHorizontalAlignment,
     required this.hostConfigs,
   });
 
-  /// Locally used for containers
-  final String? currentContainerStyle;
+  /// Foreground palette context pushed to descendants by ChildStyler.
+  final String? inheritedContainerStyle;
+
+  /// Horizontal alignment pushed to descendants when not set on an element.
+  final String? inheritedHorizontalAlignment;
+
   final HostConfigs hostConfigs;
+
+  /// Computes the container-style context children inherit after this container.
+  static String? inheritedContainerStyleForChildren({
+    required String? parentInherited,
+    required String? ownContainerStyle,
+  }) {
+    final own = ownContainerStyle?.toLowerCase();
+    if (own != null && own != 'default') {
+      return own;
+    }
+    if (own == 'default') {
+      return 'default';
+    }
+    return parentInherited;
+  }
+
+  /// Computes horizontal alignment children inherit after this container.
+  static String? inheritedHorizontalAlignmentForChildren({
+    required String? parentInherited,
+    required String? ownAlignment,
+  }) {
+    final own = ownAlignment?.toLowerCase();
+    if (own != null && own.isNotEmpty) {
+      return own;
+    }
+    return parentInherited;
+  }
 
   HostConfigs getHostConfigs() => hostConfigs;
   ImageSetConfig? getImageSetConfig() => hostConfigs.current.imageSet;
@@ -98,30 +131,24 @@ class ReferenceResolver {
     // style if passed in and not default
     // then currentcontainer style if set
     // else finally default
-    final String myStyle = (style != null && style != 'default')
-        ? style
-        : (currentContainerStyle != null && currentContainerStyle != 'default')
-        ? currentContainerStyle!
-        : 'default';
+    final String colorToken = switch (style) {
+      null || 'default' => 'default',
+      final value => value,
+    };
 
     Color? foregroundColor;
-    // Use the container styles to find the correct foreground color registry
-    final ContainerStyleConfig? containerStyle =
-        (currentContainerStyle?.toLowerCase() == 'emphasis')
-        ? getContainerStylesConfig()?.emphasis
-        : getContainerStylesConfig()?.defaultStyle;
+    final ContainerStyleConfig containerStyle =
+        _containerStyleConfigForInherited(inheritedContainerStyle);
 
-    final FontColorConfig colorConfig =
-        containerStyle?.foregroundColors.fontColorConfig(myStyle) ??
-        FallbackConfigs.containerStylesConfig.defaultStyle.foregroundColors
-            .fontColorConfig(myStyle);
+    final FontColorConfig colorConfig = containerStyle.foregroundColors
+        .fontColorConfig(colorToken);
     foregroundColor = (isSubtle ?? false)
         ? colorConfig.subtleColor
         : colorConfig.defaultColor;
 
     assert(() {
       developer.log(
-        'resolved foreground style:$myStyle color:$style subtle:$subtleOrDefault to color:$foregroundColor',
+        'resolved foreground inherited:$inheritedContainerStyle colorToken:$colorToken color:$style subtle:$subtleOrDefault to color:$foregroundColor',
         name: runtimeType.toString(),
       );
       return true;
@@ -151,13 +178,9 @@ class ReferenceResolver {
     required String? style,
     String? defaultStyle = 'default',
   }) {
-    // style if passed in and not default
-    // then currentcontainer style if set
-    // else finally default
+    // Background uses only this element's own style — never inherited context.
     final String? myStyle = (style != null && style != 'default')
         ? style.toLowerCase()
-        : (currentContainerStyle != null)
-        ? currentContainerStyle!.toLowerCase()
         : defaultStyle;
 
     Color? backgroundColor;
@@ -321,12 +344,104 @@ class ReferenceResolver {
     );
   }
 
-  ReferenceResolver copyWith({String? style}) {
-    final String myStyle = style ?? 'default';
+  ReferenceResolver copyWith({
+    String? inheritedContainerStyle,
+    String? inheritedHorizontalAlignment,
+  }) {
     return ReferenceResolver._(
-      currentContainerStyle: myStyle,
+      inheritedContainerStyle:
+          inheritedContainerStyle ?? this.inheritedContainerStyle,
+      inheritedHorizontalAlignment:
+          inheritedHorizontalAlignment ?? this.inheritedHorizontalAlignment,
       hostConfigs: hostConfigs,
     );
+  }
+
+  ContainerStyleConfig _containerStyleConfigForInherited(String? inherited) {
+    final styles =
+        getContainerStylesConfig() ?? FallbackConfigs.containerStylesConfig;
+    switch (inherited?.toLowerCase()) {
+      case 'emphasis':
+        return styles.emphasis;
+      case 'good':
+        return styles.good ?? styles.defaultStyle;
+      case 'attention':
+        return styles.attention ?? styles.defaultStyle;
+      case 'warning':
+        return styles.warning ?? styles.defaultStyle;
+      case 'accent':
+        return styles.accent ?? styles.defaultStyle;
+      case 'default':
+      default:
+        return styles.defaultStyle;
+    }
+  }
+
+  /// Element horizontalAlignment with parent inheritance applied.
+  String resolveEffectiveHorizontalAlignment(String? elementValue) {
+    return elementValue?.toLowerCase() ??
+        inheritedHorizontalAlignment ??
+        'left';
+  }
+
+  /// Whether an Image uses circular person clipping.
+  bool resolveImageIsPerson(String? imageStyle) {
+    return imageStyle?.toLowerCase() == 'person';
+  }
+
+  /// Merges [TextStylesConfig] defaults for [styleName] with element overrides.
+  ResolvedTextAppearance resolveTextBlockStyle({
+    required String? styleName,
+    String? size,
+    String? weight,
+    String? color,
+    String? fontType,
+    bool? isSubtle,
+  }) {
+    final normalized = _normalizeTextBlockStyleName(styleName);
+    if (normalized != 'default' &&
+        normalized != 'heading' &&
+        normalized != 'columnheader') {
+      assert(() {
+        developer.log(
+          'Unknown TextBlock style "$styleName"; using default',
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+    }
+
+    final TextStyleConfig? defaults = switch (normalized) {
+      'heading' => _headingTextStyleConfig(),
+      'columnheader' => _columnHeaderTextStyleConfig(),
+      _ => null,
+    };
+
+    return ResolvedTextAppearance(
+      size: size ?? defaults?.size,
+      weight: weight ?? defaults?.weight,
+      color: color ?? defaults?.color,
+      fontType: fontType ?? defaults?.fontType,
+      isSubtle: isSubtle ?? defaults?.isSubtle ?? false,
+    );
+  }
+
+  String _normalizeTextBlockStyleName(String? styleName) {
+    final normalized = styleName?.toLowerCase() ?? 'default';
+    if (normalized == 'columnheader' || normalized == 'column_header') {
+      return 'columnheader';
+    }
+    return normalized;
+  }
+
+  TextStyleConfig _headingTextStyleConfig() {
+    return getTextStylesConfig()?.heading ??
+        TextStylesConfig.fromJson(const {}).heading;
+  }
+
+  TextStyleConfig _columnHeaderTextStyleConfig() {
+    return getTextStylesConfig()?.columnHeader ??
+        TextStylesConfig.fromJson(const {}).columnHeader;
   }
 
   // "Horizontal" or "Vertical"
@@ -428,7 +543,9 @@ class ReferenceResolver {
   /// - center
   /// - right
   Alignment resolveAlignment(String? alignmentString) {
-    final String alignment = alignmentString?.toLowerCase() ?? 'left';
+    final String alignment = resolveEffectiveHorizontalAlignment(
+      alignmentString,
+    );
     switch (alignment) {
       case 'left':
         return Alignment.centerLeft;
@@ -449,8 +566,12 @@ class ReferenceResolver {
   /// - center
   /// - right
   Alignment? resolveContainerAlignment(String? horizontalAlignment) {
-    final String myHorizontalAlignment =
-        horizontalAlignment?.toLowerCase() ?? '';
+    if (horizontalAlignment == null && inheritedHorizontalAlignment == null) {
+      return null;
+    }
+    final String myHorizontalAlignment = resolveEffectiveHorizontalAlignment(
+      horizontalAlignment,
+    );
 
     switch (myHorizontalAlignment) {
       case 'left':
@@ -476,8 +597,9 @@ class ReferenceResolver {
   CrossAxisAlignment resolveHorzontalCrossAxisAlignment(
     String? horizontalAlignment,
   ) {
-    final String myHorizontalAlignment =
-        horizontalAlignment?.toLowerCase() ?? 'left';
+    final String myHorizontalAlignment = resolveEffectiveHorizontalAlignment(
+      horizontalAlignment,
+    );
     switch (myHorizontalAlignment) {
       case 'left':
         return CrossAxisAlignment.start;
@@ -534,8 +656,9 @@ class ReferenceResolver {
   MainAxisAlignment resolveHorizontalMainAxisAlignment(
     String? horizontalAlignment,
   ) {
-    final String myHorizontalAlignment =
-        horizontalAlignment?.toLowerCase() ?? 'left';
+    final String myHorizontalAlignment = resolveEffectiveHorizontalAlignment(
+      horizontalAlignment,
+    );
 
     switch (myHorizontalAlignment) {
       case 'left':
@@ -559,7 +682,9 @@ class ReferenceResolver {
   /// - center
   /// - right
   TextAlign resolveTextAlign(String? alignmentString) {
-    final String alignment = alignmentString?.toLowerCase() ?? 'left';
+    final String alignment = resolveEffectiveHorizontalAlignment(
+      alignmentString,
+    );
     switch (alignment) {
       case 'left':
         return TextAlign.start;
@@ -582,9 +707,6 @@ class ReferenceResolver {
     // int cannot be null
     return maxLines ?? 1;
   }
-
-  /// JSON Schema definition "TextBlockStyle"
-  /// TextBlockStyle not implemented
 
   /// still here until we create a config for it
   /// Resolves the font size for a Badge

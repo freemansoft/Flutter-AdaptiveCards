@@ -14,9 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed 0.10.0
 
+- **`ChildStyler`** implements container style and horizontal-alignment inheritance via nested `styleReferenceResolverProvider` overrides.
+- **`ReferenceResolver.resolveTextBlockStyle()`**, **`resolveImageIsPerson()`**, and **`resolveEffectiveHorizontalAlignment()`**.
+- **`AdaptiveCardBrightnessMode`** (`auto` / `light` / `dark`) on `RawAdaptiveCard` and `AdaptiveCardsCanvas`.
+- Style inheritance diagrams in [`docs/adaptive-style.md`](../../docs/adaptive-style.md#style-inheritance-data-flow).
+- Tests: `test/style/inheritance_test.dart`.
 - **`ElementOverlay.choices`** now stores `List<Choice>` internally; resolved element JSON still exposes `choices` as maps for widget compatibility.
 - **`Input.ChoiceSet`** filtered modal uses **`Choice`** instead of internal **`SearchModel`**.
 - **`AdaptiveFactSet`** and **`AdaptiveMedia`** parse child lists via shared typed helpers.
+- Container **background** uses only each element's own `style`; foreground palette uses **`inheritedContainerStyle`** from ancestors.
+- **`TextBlock`** applies HostConfig `TextStylesConfig` for `heading` / `columnHeader`; table header rows use `columnHeader` defaults.
+- **`Image`** `person` clipping applies only when `style` is `person` (not other style names).
+- Theme brightness changes re-resolve styles via brightness-keyed root `ProviderScope`.
 
 ## [0.9.0]
 

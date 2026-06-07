@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
+import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -147,7 +148,28 @@ class ChildStyler extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO(username): implement style changing logic for inheriting parent style
-    return child;
+    final parent = ProviderScope.containerOf(
+      context,
+    ).read(styleReferenceResolverProvider);
+
+    final childResolver = parent.copyWith(
+      inheritedContainerStyle:
+          ReferenceResolver.inheritedContainerStyleForChildren(
+            parentInherited: parent.inheritedContainerStyle,
+            ownContainerStyle: adaptiveMap['style'] as String?,
+          ),
+      inheritedHorizontalAlignment:
+          ReferenceResolver.inheritedHorizontalAlignmentForChildren(
+            parentInherited: parent.inheritedHorizontalAlignment,
+            ownAlignment: adaptiveMap['horizontalAlignment'] as String?,
+          ),
+    );
+
+    return ProviderScope(
+      overrides: [
+        styleReferenceResolverProvider.overrideWithValue(childResolver),
+      ],
+      child: child,
+    );
   }
 }
