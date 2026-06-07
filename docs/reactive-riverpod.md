@@ -2,7 +2,7 @@
 
 `flutter_adaptive_cards_fs` uses **Riverpod (v3.x)** internally as the reactive source of truth for:
 
-- Card JSON (baseline) + runtime overlays (inputs, visibility, ChoiceSet choices, TextBlock text, validation, action `isEnabled`)
+- Card JSON (baseline) + runtime overlays (inputs, visibility, ChoiceSet choices, FactSet facts, TextBlock text, validation, action `isEnabled`)
 - Per-card UI state (e.g. show-card expanded/collapsed)
 
 This is intentionally **library-owned**: the package installs its own `ProviderScope` per rendered card subtree. Host apps do not need to depend on Riverpod directly unless they want to integrate with the library at a deeper level.
@@ -79,6 +79,7 @@ Each overlay holds optional patches for that element id:
 - `isInvalid` — merged into resolved `"isInvalid"` (host-driven validation flag)
 - `isRequired` — overrides baseline `"isRequired"` on input elements (conditional required)
 - `text` — overrides baseline `"text"` on elements such as `TextBlock` (dynamic status, i18n)
+- `facts` — **replaces** baseline `"facts"` on `FactSet` when non-null (full list replacement; `clearFacts` removes overlay)
 - `url` — overrides baseline `"url"` on `Image` / `Media` (signed URL rotation)
 
 **Action overlays** (`actionOverlaysById`, `ActionOverlay`):
@@ -134,7 +135,8 @@ Changes go **only** into overlays via the document notifier:
 | Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                            | delegates to `setChoices`                                                                                                       |
 | Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                          | `ActionOverlay.isEnabled`                                                                                                       |
 | Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                | `text`                                                                                                                          |
-| Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `applyUpdates` | delegates to document notifier                                                                                                  |
+| Replace FactSet facts             | `setFacts(id, facts)` / `clearFacts(id)` / `applyUpdates` (`facts` / `clearFacts` on `AdaptiveElementUpdate` or patch `{ clearFacts: true }`) | `facts`                                                                                                                         |
+| Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `setFacts` / `clearFacts` / `applyUpdates` | delegates to document notifier                                                                                                  |
 
 The host’s map instance is never mutated in place.
 
@@ -183,6 +185,7 @@ if (overlay?.choices != null) merged['choices'] = overlay!.choices;
 if (overlay?.errorMessage != null) merged['errorMessage'] = overlay!.errorMessage;
 if (overlay?.isInvalid != null) merged['isInvalid'] = overlay!.isInvalid;
 if (overlay?.text != null) merged['text'] = overlay!.text;
+if (overlay?.facts != null) merged['facts'] = factsToJsonList(overlay!.facts!);
 if (overlay?.isRequired != null) merged['isRequired'] = overlay!.isRequired;
 if (overlay?.url != null) merged['url'] = overlay!.url;
 // queryCount/querySkip merge into choices.data when present
@@ -196,12 +199,13 @@ Effective value rules:
 - **Input value**: overlay `inputValue` if set, else baseline `"value"`.
 - **ChoiceSet choices**: overlay `choices` if set, else baseline `"choices"`.
 - **TextBlock text**: overlay `text` if set, else baseline `"text"` (display still runs `parseTextString` / `DateTimeUtils.formatText` in the widget).
+- **FactSet facts**: overlay `facts` if set (**replaces** entire baseline list), else baseline `"facts"`. `clearFacts` removes the overlay so baseline facts return.
 
 ### Keeping UI in sync
 
 **Inputs** (`ConsumerStatefulWidget` + `AdaptiveInputMixin`): `watchResolvedInput()` at the start of `build()` for label, placeholder, `isRequired`, validation (`isInvalid` / `errorMessage`), and resolved value; `listenForResolvedValueChanges()` / `ref.listen` syncs controllers via `onDocumentValueChanged`. Form validators and `checkRequired` write validation via **`setLocalValidationError()`** / **`clearLocalValidationError()`** (notifier overlays). Error UI uses **`loadErrorMessage(..., showError: input.isInvalid)`** only.
 
-`AdaptiveVisibilityMixin`, **`AdaptiveChoiceSet`** (dynamic `choices`), and **`AdaptiveTextBlock`** use `container.listen` on `resolvedElementProvider(id)` in `didChangeDependencies`. `AdaptiveActionStateMixin` and `Action.ShowCard` use `resolvedActionProvider(id)` for action overlays.
+`AdaptiveVisibilityMixin`, **`AdaptiveChoiceSet`** (dynamic `choices`), **`AdaptiveFactSet`** (dynamic `facts`), and **`AdaptiveTextBlock`** use `container.listen` on `resolvedElementProvider(id)` in `didChangeDependencies`. `AdaptiveActionStateMixin` and `Action.ShowCard` use `resolvedActionProvider(id)` for action overlays.
 
 Input widgets call `setDocumentInputValue(...)` on user edits (which clears validation overlays). **`resetAllInputs()` / `resetInput(id)`** clear input overlays (including **`label`**, **`placeholder`**, **`isRequired`**) so resolved values fall back to baseline; see [Reset semantics](#reset-semantics).
 
@@ -216,7 +220,7 @@ flowchart TB
 
   baselineNodes --> merge[resolvedElementProvider id]
   overlays --> merge
-  merge --> widgets[Inputs Visibility TextBlock ChoiceSet listen and rebuild]
+  merge --> widgets[Inputs Visibility TextBlock FactSet ChoiceSet listen and rebuild]
 
   submit[Action.Submit] --> collect[collectInputValues overlay ?? baseline]
 ```
@@ -253,6 +257,7 @@ The overlay **model** is well guarded; adding a new overlay field still requires
 | Data.Query session merge                                                   | `test/inputs/choice_set_data_query_test.dart`                                                      |
 | Input validation overlays                                                  | `test/inputs/input_error_overlay_test.dart`                                                        |
 | TextBlock `text`                                                           | `test/elements/text_block_text_overlay_test.dart`                                                  |
+| FactSet `facts`                                                            | `test/containers/fact_set_overlay_test.dart`                                                       |
 | Visibility / ToggleVisibility                                              | `test/elements/is_visible_test.dart`                                                               |
 | Action `isEnabled` (Submit)                                                | `test/actions/action_enabled_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json` |
 | Action `isEnabled` (ShowCard)                                              | `test/actions/show_card_enabled_overlay_test.dart`                                                 |
@@ -261,7 +266,9 @@ The overlay **model** is well guarded; adding a new overlay field still requires
 
 1. **Notifier** — `ProviderContainer` with `baselineMapProvider.overrideWithValue(...)`, assert `resolvedElementProvider` / `resolvedActionProvider` and `overlaysById`.
 2. **Widget** — `getTestWidgetFromMap` / `getTestWidgetFromPath`, key-first finders (`generateWidgetKey`, `generateAdaptiveWidgetKey`); see [adaptive-cards-testing skill](../.agents/skills/adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
-3. **Host API** — delegate tests on `RawAdaptiveCardState` (`setText`, `setInputError`, `clearInputError`, `setActionEnabled`, …).
+3. **Host API** — delegate tests on `RawAdaptiveCardState` (`setText`, `setFacts`, `setInputError`, `clearInputError`, `setActionEnabled`, …).
+
+Manual verification: Widgetbook **FactSet → Facts overlay (knob)** (`widgetbook/lib/fact_set_overlay_page.dart`).
 
 ### Remaining gaps (optional)
 
@@ -295,6 +302,7 @@ This section is a **planning inventory**: which JSON properties are already driv
 | Any element with `id` | `isVisible` → `resolvedElementProvider`                                                  |
 | `Input.*`             | `inputValue`, `errorMessage`, `isInvalid`, `isRequired`, `choices`, query session fields |
 | `TextBlock`           | `text` → `resolvedElementProvider` (`setText` / `clearText`)                             |
+| `FactSet`             | `facts` → `resolvedElementProvider` (`setFacts` / `clearFacts`; full list replacement)   |
 | `Image`, `Media`      | `url` → `resolvedElementProvider`                                                        |
 | `Action.*`            | `isEnabled` → `resolvedActionProvider`                                                   |
 
