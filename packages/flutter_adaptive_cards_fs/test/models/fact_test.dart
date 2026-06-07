@@ -70,5 +70,16 @@ void main() {
 
       expect(fact.toString(), 'Fact(title: Status, value: Active)');
     });
+
+    test('factsFromJsonList parses list of maps', () {
+      final facts = factsFromJsonList([
+        {'title': 'Name', 'value': 'John'},
+        {'title': 'Age', 'value': '30'},
+      ]);
+      expect(facts, [
+        const Fact(title: 'Name', value: 'John'),
+        const Fact(title: 'Age', value: '30'),
+      ]);
+    });
   });
 }

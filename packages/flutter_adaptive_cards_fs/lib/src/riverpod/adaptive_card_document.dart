@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 
 /// Immutable snapshot of a rendered Adaptive Card's document state.
 ///
@@ -80,7 +81,7 @@ class ElementOverlay {
   final Object? inputValue;
 
   /// Overrides baseline `"choices"` on `Input.ChoiceSet` when non-null.
-  final List<Map<String, dynamic>>? choices;
+  final List<Choice>? choices;
 
   /// Session override for `choices.data.count` (typeahead pagination).
   final int? queryCount;
@@ -116,7 +117,7 @@ class ElementOverlay {
   ElementOverlay copyWith({
     bool? isVisible,
     Object? inputValue,
-    List<Map<String, dynamic>>? choices,
+    List<Choice>? choices,
     int? queryCount,
     int? querySkip,
     String? querySearchText,

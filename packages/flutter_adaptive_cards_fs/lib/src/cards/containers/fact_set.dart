@@ -38,11 +38,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     super.initState();
 
     /// https://adaptivecards.io/explorer/Fact.html
-    facts =
-        (adaptiveMap['facts'] as List<dynamic>?)
-            ?.map((e) => Fact.fromJson(e as Map<String, dynamic>))
-            .toList() ??
-        [];
+    facts = factsFromJsonList(adaptiveMap['facts']);
   }
 
   @override

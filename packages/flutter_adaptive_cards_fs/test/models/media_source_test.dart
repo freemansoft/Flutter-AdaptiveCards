@@ -101,5 +101,16 @@ void main() {
 
       expect(source1.hashCode, equals(source2.hashCode));
     });
+
+    test('mediaSourcesFromJsonList parses list of maps', () {
+      final sources = mediaSourcesFromJsonList([
+        {'url': 'https://example.com/a.mp4', 'mimeType': 'video/mp4'},
+        {'url': 'https://example.com/b.mp4'},
+      ]);
+      expect(sources.length, 2);
+      expect(sources.first.url, 'https://example.com/a.mp4');
+      expect(sources.first.mimeType, 'video/mp4');
+      expect(sources.last.mimeType, isNull);
+    });
   });
 }
