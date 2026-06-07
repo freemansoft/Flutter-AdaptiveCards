@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/date_input_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -157,14 +158,12 @@ class AdaptiveDateInputState extends ConsumerState<AdaptiveDateInput>
                   if (result != null) {
                     setState(() {
                       selectedDateTime = result;
-                      controller.text = selectedDateTime == null
-                          ? input.placeholder
-                          : inputFormat.format(selectedDateTime!);
+                      controller.text = formatAdaptiveDateValue(result);
                     });
-                    final iso = selectedDateTime!.toIso8601String();
-                    setDocumentInputValue(iso);
-                    rawRootCardWidgetState.changeValue(id, iso);
-                    notifyUserInputValueChanged(iso, committed: true);
+                    final formatted = formatAdaptiveDateValue(result);
+                    setDocumentInputValue(formatted);
+                    rawRootCardWidgetState.changeValue(id, formatted);
+                    notifyUserInputValueChanged(formatted, committed: true);
                   }
                 },
               ),
@@ -183,7 +182,7 @@ class AdaptiveDateInputState extends ConsumerState<AdaptiveDateInput>
   @override
   void appendInput(Map map) {
     if (selectedDateTime != null) {
-      map[id] = selectedDateTime!.toIso8601String();
+      map[id] = formatAdaptiveDateValue(selectedDateTime!);
     }
   }
 
@@ -204,25 +203,25 @@ class AdaptiveDateInputState extends ConsumerState<AdaptiveDateInput>
 
   @override
   void onDocumentValueChanged(Object? valueFromDocument) {
-    final input = readResolvedInput();
-    final next = valueFromDocument?.toString();
-    if (next == null || next.isEmpty) {
-      selectedDateTime = null;
-      controller.text = input.placeholder;
-      return;
-    }
-    try {
-      selectedDateTime = DateTime.parse(next);
-      controller.text = inputFormat.format(selectedDateTime!);
-    } on Exception {
-      // If baseline uses yyyy-MM-dd, fall back to that.
-      try {
-        selectedDateTime = inputFormat.parse(next);
-        controller.text = inputFormat.format(selectedDateTime!);
-      } on Exception {
+    final parsed = parseAdaptiveDateValue(valueFromDocument);
+    if (parsed == null) {
+      if (selectedDateTime == null && controller.text.isEmpty) return;
+      setState(() {
         selectedDateTime = null;
         controller.text = '';
-      }
+      });
+      return;
     }
+    final formatted = formatAdaptiveDateValue(parsed);
+    if (selectedDateTime?.year == parsed.year &&
+        selectedDateTime?.month == parsed.month &&
+        selectedDateTime?.day == parsed.day &&
+        controller.text == formatted) {
+      return;
+    }
+    setState(() {
+      selectedDateTime = parsed;
+      controller.text = formatted;
+    });
   }
 }
