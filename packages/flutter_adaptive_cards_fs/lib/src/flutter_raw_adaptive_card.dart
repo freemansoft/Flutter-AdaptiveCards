@@ -38,6 +38,7 @@ class RawAdaptiveCard extends StatefulWidget {
     this.onChange,
     this.listView = false,
     this.showDebugJson = true,
+    this.brightnessMode = AdaptiveCardBrightnessMode.auto,
     required this.hostConfigs,
   });
 
@@ -51,6 +52,9 @@ class RawAdaptiveCard extends StatefulWidget {
 
   final bool showDebugJson;
   final bool listView;
+
+  /// Selects light vs dark [HostConfigs] when not [AdaptiveCardBrightnessMode.auto].
+  final AdaptiveCardBrightnessMode brightnessMode;
 
   @override
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
@@ -71,6 +75,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
   /// Set by [_AdaptiveCardDocumentLifecycle] for host APIs outside the scope.
   ProviderContainer? documentContainer;
+
+  Brightness? _resolverBrightnessKey;
 
   /// creates a deep copy with ids injected
   static Map<String, dynamic> _deepCopyBaseline(Map<String, dynamic> map) {
@@ -112,9 +118,19 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     _updateResolver();
   }
 
+  Brightness _themeBrightness() {
+    switch (widget.brightnessMode) {
+      case AdaptiveCardBrightnessMode.light:
+        return Brightness.light;
+      case AdaptiveCardBrightnessMode.dark:
+        return Brightness.dark;
+      case AdaptiveCardBrightnessMode.auto:
+        return Theme.of(context).brightness;
+    }
+  }
+
   void _updateResolver() {
-    // Dynamically toggle HostConfig light/dark mode based on the current theme brightness
-    final Brightness brightness = Theme.of(context).brightness;
+    final brightness = _themeBrightness();
     widget.hostConfigs.current = brightness == Brightness.dark
         ? widget.hostConfigs.dark
         : widget.hostConfigs.light;
@@ -122,6 +138,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     _resolver = ReferenceResolver(
       hostConfigs: widget.hostConfigs,
     );
+    _resolverBrightnessKey = brightness;
   }
 
   /// Every widget can access method of this class, meaning setting the state
@@ -509,6 +526,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     );
 
     return ProviderScope(
+      key: ValueKey<Brightness?>(_resolverBrightnessKey),
       overrides: [
         cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
         actionTypeRegistryProvider.overrideWithValue(widget.actionTypeRegistry),

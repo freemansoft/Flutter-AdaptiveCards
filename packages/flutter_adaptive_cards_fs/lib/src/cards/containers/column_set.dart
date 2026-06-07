@@ -69,11 +69,14 @@ class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
     //   'Building ColumnSet $id with ${columns!.length} columns',
     //   name: runtimeType.toString(),
     // );
-    final Widget child = IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: horizontalAlignment!,
-        children: columns!.toList(),
+    final Widget child = ChildStyler(
+      adaptiveMap: adaptiveMap,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: horizontalAlignment!,
+          children: columns!.toList(),
+        ),
       ),
     );
 
