@@ -61,6 +61,28 @@ For **sample apps and `adaptive_explorer`**, use normal Flutter state patterns (
 - **Functions:** Short (<20 lines) and single-purpose.
 - **Logging:** Use `dart:developer` `log` instead of `print`.
 
+## Plan completion gate
+
+When executing an implementation plan (`docs/superpowers/plans/`) or claiming work is complete:
+
+- **Do** run the plan's final verification section (`Final Task: Full verification` or `## Verification (full suite)`) — not only per-task or targeted tests.
+- **Do** invoke **`verification-before-completion`** and paste command output (exit code, pass/fail counts) before any success claim.
+- **Do not** invoke **`finishing-a-development-branch`** or report "plan complete" until the full suite passes.
+- **Do not** skip the full suite because per-task tests already passed.
+
+**Minimum verification commands** (run from affected package directories; at minimum the main library):
+
+```bash
+# Repo root
+fvm flutter analyze
+
+# Main library (required for any flutter_adaptive_cards_fs change)
+cd packages/flutter_adaptive_cards_fs
+fvm flutter test --exclude-tags=golden
+```
+
+If the plan touched other packages, run their suites too (`flutter_adaptive_template_fs`, `flutter_adaptive_charts_fs`, etc.). See **`adaptive-cards-monorepo-workspace`** and **`adaptive-cards-testing`** skills for directory and tagging details.
+
 ## Documentation Philosophy
 
 - **Public APIs:** ALWAYS document public classes and methods with `///`.

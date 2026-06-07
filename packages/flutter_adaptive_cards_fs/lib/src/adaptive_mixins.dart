@@ -343,6 +343,13 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         .setInputValue(_inputId, newValue);
   }
 
+  /// Clears the runtime value overlay so resolved `value` falls back to baseline.
+  void clearDocumentInputValue() {
+    ref
+        .read(adaptiveCardDocumentProvider.notifier)
+        .clearInputValue(_inputId);
+  }
+
   /// Subclasses can override to sync controllers from document changes.
   void onDocumentValueChanged(Object? valueFromDocument) {}
 

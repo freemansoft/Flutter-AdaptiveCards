@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [0.10.0]
 
 ### Added 0.10.0
@@ -13,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - List parse helpers: `choicesFromJsonList` / `choicesToJsonList`, `factsFromJsonList`, `mediaSourcesFromJsonList`.
 - Runtime **`facts`** overlay on `FactSet` elements (`setFacts`, `clearFacts`, `applyUpdates` / `applyUpdatesFromMap`).
 - Widgetbook **FactSet → Facts overlay (knob)** demo for interactive overlay testing.
+- Shared **`parseAdaptiveDateValue`** / **`formatAdaptiveDateValue`** helpers for `Input.Date` (`date_input_utils.dart`).
 
 ### Changed 0.10.0
 
@@ -28,6 +31,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`TextBlock`** applies HostConfig `TextStylesConfig` for `heading` / `columnHeader`; table header rows use `columnHeader` defaults.
 - **`Image`** `person` clipping applies only when `style` is `person` (not other style names).
 - Theme brightness changes re-resolve styles via brightness-keyed root `ProviderScope`.
+
+### Fixed 0.10.0
+
+- **`Input.Date`** `initData` / `initInput` seeding: controller no longer receives placeholder text; submit and overlay values use `yyyy-MM-dd` per spec. Hosts that relied on ISO-8601 in `onChange` callbacks should expect `yyyy-MM-dd` instead.
+- **`Input.ChoiceSet`** `loadInput`: selection reconcile clears the value overlay (`clearInputValue`) instead of writing `''`, matching legacy `loadInput` / `setChoices` behavior.
 
 ## [0.9.0]
 

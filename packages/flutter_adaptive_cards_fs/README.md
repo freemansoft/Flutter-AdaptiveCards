@@ -261,6 +261,7 @@ You can load an Adaptive Card from JSON and pass a separate data map that seeds 
 - `initInput(map)` on `RawAdaptiveCardState` seeds flat `{id: value}` maps or patch maps when values are objects.
 - **`initInput` does not call `setState` on the card** — input widgets rebuild when `resolvedElementProvider` updates. See [Why initInput does not call setState](../../docs/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card).
 - `loadInput(id, map)` replaces `Input.ChoiceSet` choices for `id` via `setChoices` (title → value map converted to `Input.Choice` list).
+- `Input.Date` accepts `yyyy-MM-dd` or ISO-8601 datetimes in `initData`. Datetime values use the calendar date portion only; time and timezone are ignored. Display and submit use `yyyy-MM-dd`.
 
 ```mermaid
 flowchart LR
@@ -434,7 +435,6 @@ Taken from the example (deleted) App
 
 TODO for the example programs moved to [example README](example/README.md)
 
-- `initData` does not appear to be working on date fields. The `initData` button in the sample program demonstrates this
 - Currently uses `Provider` for inherited state. Determine if this 3rd party dependency is a good idea given `Provider`` is essentially EOL or frozen.
 - ~~There is currently no way to unset a container style inside a child container.~~ **Fixed:** nested containers with `style: "default"` use the default surface background; see [Style inheritance data flow](../../docs/adaptive-style.md#style-inheritance-data-flow).
 - Make a single purpose dart file for consumer imports with no code in it in place of `flutter_adaptive_cards_fs.dart` or move the code in that file.
