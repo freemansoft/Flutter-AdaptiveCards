@@ -43,9 +43,13 @@ Runtime changes (input values, visibility, TextBlock text, validation, ChoiceSet
 | Show-card expanded/collapsed state | Riverpod per-`AdaptiveCardElement` UI notifier |
 | Host callbacks (`onSubmit`, `onChange`, …) | `InheritedAdaptiveCardHandlers` |
 | `CardTypeRegistry` / `ActionTypeRegistry` | Riverpod `cardTypeRegistryProvider` / `actionTypeRegistryProvider` (overridden per raw-card scope) |
-| `ReferenceResolver` (HostConfig / theme) | Riverpod `styleReferenceResolverProvider` (overridden per raw-card scope; **does not** carry registries) |
+| `ReferenceResolver` (HostConfig / theme) | Riverpod `styleReferenceResolverProvider` (overridden at card root and per subtree by `ChildStyler`; **does not** carry registries) |
 | Root card scope (`RawAdaptiveCardState`) | Riverpod `rawAdaptiveCardStateProvider` |
-| Theme / `HostConfig` updates | `ReferenceResolver` rebuilt when host/theme changes (card-scoped) |
+| Theme / `HostConfig` updates | `ReferenceResolver` rebuilt when host/theme changes; `ProviderScope` keyed on brightness so descendants re-resolve styles |
+
+### Style inheritance
+
+Container foreground context and horizontal alignment flow down the element tree via **`ChildStyler`** nested `ProviderScope` overrides. Container **background** colors use each element's own `style` property only. See [Style inheritance data flow](adaptive-style.md#style-inheritance-data-flow) and [Resolver field lifecycle](adaptive-style.md#resolver-field-lifecycle) in `adaptive-style.md`.
 
 ### Inherited scopes
 

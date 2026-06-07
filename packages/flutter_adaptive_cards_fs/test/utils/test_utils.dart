@@ -279,6 +279,8 @@ Widget getTestWidgetFromMap({
   void Function(InputChangeInvoke invoke)? onChange,
   Map? initData,
   HostConfigs? hostConfigs,
+  AdaptiveCardBrightnessMode brightnessMode =
+      AdaptiveCardBrightnessMode.auto,
   bool listView = false,
   bool scrollable = false,
 }) {
@@ -290,6 +292,7 @@ Widget getTestWidgetFromMap({
     initData: initData,
     onChange: onChange,
     hostConfigs: hostConfigs ?? HostConfigs(),
+    brightnessMode: brightnessMode,
     listView: listView,
   );
 

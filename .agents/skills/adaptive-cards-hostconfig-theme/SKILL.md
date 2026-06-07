@@ -55,10 +55,9 @@ class HostConfigs {
 }
 ```
 
-> **Known limitation:** `HostConfigs.current` is always set to `light` in the
-> constructor. Dark mode switching is structurally supported but not yet
-> automatically driven by `MediaQuery.platformBrightness`. This is a future
-> enhancement opportunity.
+> **Brightness:** `RawAdaptiveCardState._updateResolver()` sets `HostConfigs.current`
+> from `Theme.of(context).brightness` when `brightnessMode` is `auto` (default).
+> Hosts can force light or dark with `AdaptiveCardBrightnessMode.light` / `.dark`.
 
 ### `HostConfig` — The AC Spec Object
 
@@ -111,12 +110,28 @@ return ProviderScope(
 );
 ```
 
-**Containers** use `copyWith()` to create a child resolver with the current
-container style, maintaining proper style inheritance down the tree:
+**Containers** use **`ChildStyler`** to override `styleReferenceResolverProvider`
+for descendants with inherited foreground context and alignment:
 
 ```dart
-final childResolver = styleResolver.copyWith(style: 'emphasis');
+// ChildStyler (in additional.dart) — simplified
+final childResolver = parent.copyWith(
+  inheritedContainerStyle: ReferenceResolver.inheritedContainerStyleForChildren(
+    parentInherited: parent.inheritedContainerStyle,
+    ownContainerStyle: adaptiveMap['style'] as String?,
+  ),
+  inheritedHorizontalAlignment:
+      ReferenceResolver.inheritedHorizontalAlignmentForChildren(
+    parentInherited: parent.inheritedHorizontalAlignment,
+    ownAlignment: adaptiveMap['horizontalAlignment'] as String?,
+  ),
+);
 ```
+
+Container **background** uses only the element's own `style` JSON.
+**Foreground** palette uses `inheritedContainerStyle` on the scoped resolver.
+
+See [Style inheritance data flow](../../../docs/adaptive-style.md#style-inheritance-data-flow).
 
 ---
 

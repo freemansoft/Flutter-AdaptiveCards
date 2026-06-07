@@ -934,3 +934,74 @@ This feature needs test that validate loading a hostconfig json that can populat
  }
 }
 ```
+
+## Style inheritance data flow
+
+HostConfig styling is applied through `ReferenceResolver`, scoped per card via Riverpod `styleReferenceResolverProvider`. Containers and columns wrap descendants with **`ChildStyler`**, which creates a nested `ProviderScope` override so children inherit foreground palette context and horizontal alignment without inheriting the parent's **background** color.
+
+- **`inheritedContainerStyle`**: pushed by `ChildStyler`; used by `resolveContainerForegroundColor()` when an element's `color` is `default`.
+- **Element `style` JSON**: each container's own property; used only for that element's `resolveContainerBackgroundColor()`.
+- **`resolveTextBlockStyle()`**: merges `TextStylesConfig` defaults (`heading`, `columnHeader`) with per-element JSON overrides.
+- **`resolveImageIsPerson()`**: true only when Image `style` is `person`.
+- **`AdaptiveCardBrightnessMode`**: optional host override on `AdaptiveCardsCanvas` / `RawAdaptiveCard` (`auto`, `light`, `dark`).
+
+```mermaid
+flowchart TD
+  subgraph host["Host app"]
+    Theme["ThemeData.brightness"]
+    HC["HostConfigs light + dark"]
+  end
+
+  subgraph root["RawAdaptiveCard"]
+    Update["_updateResolver()"]
+    RR0["ReferenceResolver root\ninheritedContainerStyle: null\ninheritedHorizontalAlignment: null"]
+    PS0["ProviderScope\nstyleReferenceResolverProvider"]
+  end
+
+  subgraph container["Container / Column"]
+    OwnStyle["Own style JSON → background only"]
+    CS["ChildStyler"]
+    RR1["Child ReferenceResolver\ncopyWith inherited fields"]
+    PS1["Nested ProviderScope override"]
+  end
+
+  subgraph elements["Descendant elements"]
+    TB["TextBlock\nresolveTextBlockStyle + alignment"]
+    IMG["Image\nImageStyle person/default"]
+    FG["Foreground colors\nvia inheritedContainerStyle"]
+  end
+
+  Theme --> Update
+  HC --> Update
+  Update --> RR0
+  RR0 --> PS0
+  PS0 --> container
+  OwnStyle --> CS
+  CS --> RR1
+  RR1 --> PS1
+  PS1 --> elements
+  TB --> FG
+  IMG --> FG
+```
+
+### Resolver field lifecycle
+
+This sequence shows emphasis container background vs foreground inheritance for a nested `TextBlock` with `style: heading`.
+
+```mermaid
+sequenceDiagram
+  participant Card as RawAdaptiveCard
+  participant R0 as Root resolver
+  participant C as Container emphasis
+  participant CS as ChildStyler
+  participant R1 as Child resolver
+  participant TB as TextBlock
+
+  Card->>R0: create (no inheritance)
+  C->>C: background = own style emphasis
+  C->>CS: wrap children
+  CS->>R1: copyWith inheritedContainerStyle emphasis
+  TB->>R1: resolveContainerForegroundColor color default
+  R1-->>TB: emphasis palette foreground
+  Note over TB: TextBlock own style heading merges TextStylesConfig.heading
+```

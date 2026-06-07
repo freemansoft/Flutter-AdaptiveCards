@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/resolved_text_appearance.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -41,6 +42,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   late TextAlign textAlign;
   late String text;
   late String? fontFamily;
+  late ResolvedTextAppearance _textAppearance = const ResolvedTextAppearance();
   ProviderSubscription<Map<String, dynamic>?>? _textSubscription;
 
   ///We're assuming that the only type of action on a text block is an open url
@@ -93,21 +95,30 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
             as GenericActionOpenUrl;
     // should be lazily calculated because styling could have changed
     final resolver = styleResolver;
+    final appearance = resolver.resolveTextBlockStyle(
+      styleName: adaptiveMap['style'] as String?,
+      size: adaptiveMap['size'] as String?,
+      weight: adaptiveMap['weight'] as String?,
+      color: adaptiveMap['color'] as String?,
+      fontType: adaptiveMap['fontType'] as String?,
+      isSubtle: adaptiveMap['isSubtle'] as bool?,
+    );
     horizontalAlignment = resolver.resolveAlignment(
-      adaptiveMap['horizontalAlignment'],
+      adaptiveMap['horizontalAlignment'] as String?,
     );
     fontSize = resolver.resolveFontSize(
       context: context,
-      sizeString: adaptiveMap['size'],
+      sizeString: appearance.size,
     );
-    fontWeight = resolver.resolveFontWeight(adaptiveMap['weight']);
+    fontWeight = resolver.resolveFontWeight(appearance.weight);
     textAlign = resolver.resolveTextAlign(
-      adaptiveMap['horizontalAlignment'],
+      adaptiveMap['horizontalAlignment'] as String?,
     );
     fontFamily = resolver.resolveFontType(
       context,
-      adaptiveMap['fontType'],
+      appearance.fontType,
     );
+    _textAppearance = appearance;
     maxLines = resolver.resolveMaxLines(
       wrap: adaptiveMap['wrap'],
       maxLines: adaptiveMap['maxLines'],
@@ -197,8 +208,8 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   Color? getColor(BuildContext context) {
     final Color? color = styleResolver.resolveContainerForegroundColor(
-      style: adaptiveMap['color'],
-      isSubtle: adaptiveMap['isSubtle'],
+      style: _textAppearance.color,
+      isSubtle: _textAppearance.isSubtle,
     );
     return color;
   }

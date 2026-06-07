@@ -434,7 +434,7 @@ TODO for the example programs moved to [example README](example/README.md)
 
 - `initData` does not appear to be working on date fields. The `initData` button in the sample program demonstrates this
 - Currently uses `Provider` for inherited state. Determine if this 3rd party dependency is a good idea given `Provider`` is essentially EOL or frozen.
-- There is currently no way to unset a container style inside a child container. This means you can't get back to a card background color in a nested container if you set it somewhere in the widget tree betwen you and the card.
+- ~~There is currently no way to unset a container style inside a child container.~~ **Fixed:** nested containers with `style: "default"` use the default surface background; see [Style inheritance data flow](../../docs/adaptive-style.md#style-inheritance-data-flow).
 - Make a single purpose dart file for consumer imports with no code in it in place of `flutter_adaptive_cards_fs.dart` or move the code in that file.
 - Inject locale behavior into money, time and dates including parsing
 - _Card Elements_ missing implementations and features
