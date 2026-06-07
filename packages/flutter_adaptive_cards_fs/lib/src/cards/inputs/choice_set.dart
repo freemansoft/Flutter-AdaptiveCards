@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
@@ -52,6 +53,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
 
   TextEditingController controller = TextEditingController();
   bool _initialValueSynced = false;
+  bool _selectionReconcileScheduled = false;
 
   @override
   void initState() {
@@ -92,6 +94,49 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
   void dispose() {
     controller.dispose();
     super.dispose();
+  }
+
+  Set<String> _valuesFromResolved(ResolvedInputState input) {
+    final resolved = input.valueAsString;
+    if (resolved.isEmpty) {
+      return {};
+    }
+    return resolved.split(',').toSet();
+  }
+
+  String? _singleChoiceValueFor(List<Choice> choices) {
+    if (_selectedChoices.isEmpty) {
+      return null;
+    }
+    final selected = _selectedChoices.single;
+    final isValid = choices.any((choice) => choice.value == selected);
+    return isValid ? selected : null;
+  }
+
+  void _scheduleSelectionReconcile(
+    ResolvedInputState input,
+    List<Choice> choices,
+  ) {
+    final choiceValues = choices.map((choice) => choice.value).toSet();
+    final resolvedValues = _valuesFromResolved(input);
+    final localInvalid = _selectedChoices.any(
+      (value) => !choiceValues.contains(value),
+    );
+    final docMismatch = !setEquals(_selectedChoices, resolvedValues);
+    if (!localInvalid && !docMismatch) {
+      return;
+    }
+    if (_selectionReconcileScheduled) {
+      return;
+    }
+    _selectionReconcileScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _selectionReconcileScheduled = false;
+      if (!mounted) {
+        return;
+      }
+      onDocumentValueChanged(readResolvedInput().valueRaw);
+    });
   }
 
   String _titleForStoredValue(String storedValue, List<Choice> choices) {
@@ -140,6 +185,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     listenForResolvedValueChanges();
     final input = watchResolvedInput();
     final choices = choicesFromJsonList(input.map['choices']);
+    _scheduleSelectionReconcile(input, choices);
 
     late Widget widget;
     if (isFiltered) {
@@ -271,7 +317,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
               )
               .toList(),
           onChanged: (choice) => select(choice, choices),
-          value: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
+          value: _singleChoiceValueFor(choices),
         ),
       ),
     );
@@ -280,7 +326,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
   Widget _buildExpandedSingleSelect(List<Choice> choices) {
     return RadioGroup<String>(
       key: generateWidgetKey(adaptiveMap),
-      groupValue: _selectedChoices.isNotEmpty ? _selectedChoices.single : null,
+      groupValue: _singleChoiceValueFor(choices),
       onChanged: (choice) => select(choice, choices),
       child: Column(
         children: choices.map((choice) {

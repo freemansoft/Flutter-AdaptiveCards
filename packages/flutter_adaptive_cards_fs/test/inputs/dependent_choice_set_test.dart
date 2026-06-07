@@ -139,6 +139,48 @@ void main() {
   );
 
   testWidgets(
+    'changing country after city selection keeps compact city dropdown valid',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        getTestWidgetFromPath(
+          path: 'value_changed_action_filtered.json',
+          onChange: handleDependentChoiceSetChange,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await _selectFilteredCountry(tester, 'USA');
+      await tester.pumpAndSettle();
+
+      await _selectCompactChoice(tester, 'city', 'New York');
+      await tester.pumpAndSettle();
+
+      await _selectFilteredCountry(tester, 'France');
+      await tester.pump();
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(AdaptiveChoiceSet).last),
+      );
+      final resolved = container.read(resolvedElementProvider('city'));
+      expect(resolved?['choices'], [
+        {'title': 'Paris', 'value': 'paris'},
+        {'title': 'Lyon', 'value': 'lyon'},
+      ]);
+
+      final cityState = tester.state<AdaptiveChoiceSetState>(
+        find.byWidgetPredicate(
+          (widget) => widget is AdaptiveChoiceSet && widget.id == 'city',
+        ),
+      );
+      final submitted = <String, dynamic>{};
+      cityState.appendInput(submitted);
+      expect(submitted['city'], isEmpty);
+    },
+  );
+
+  testWidgets(
     'valueChangedAction resets city value when country changes before host cascade',
     (WidgetTester tester) async {
       await tester.pumpWidget(
