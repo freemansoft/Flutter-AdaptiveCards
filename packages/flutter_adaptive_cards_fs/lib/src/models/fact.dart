@@ -55,3 +55,7 @@ List<Fact> factsFromJsonList(Object? raw) {
       .map((e) => Fact.fromJson(Map<String, dynamic>.from(e)))
       .toList();
 }
+
+/// Serializes [facts] for resolved element JSON merge boundaries.
+List<Map<String, dynamic>> factsToJsonList(List<Fact> facts) =>
+    facts.map((f) => f.toJson()).toList();
