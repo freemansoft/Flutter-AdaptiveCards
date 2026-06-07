@@ -846,7 +846,11 @@ void main() {
                 },
               },
               nodesById: {
-                'summary': {'type': 'FactSet', 'id': 'summary', 'facts': []},
+                'summary': {
+                  'type': 'FactSet',
+                  'id': 'summary',
+                  'facts': <Map<String, dynamic>>[],
+                },
               },
             );
         expect(parsed.elements.single.facts, [
