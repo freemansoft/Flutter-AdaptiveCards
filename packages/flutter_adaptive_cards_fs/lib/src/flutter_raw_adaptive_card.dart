@@ -12,6 +12,7 @@ import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
@@ -240,6 +241,20 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     final container = documentContainer;
     if (container == null) return;
     container.read(adaptiveCardDocumentProvider.notifier).clearText(id);
+  }
+
+  /// Replaces effective `"facts"` for `FactSet` [id].
+  void setFacts(String id, List<Fact> facts) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).setFacts(id, facts);
+  }
+
+  /// Clears facts overlay for [id].
+  void clearFacts(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).clearFacts(id);
   }
 
   /// Sets whether action [id] is enabled (AC 1.5).
