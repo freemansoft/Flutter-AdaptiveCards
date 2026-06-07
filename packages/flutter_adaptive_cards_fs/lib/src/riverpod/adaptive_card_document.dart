@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 
 /// Immutable snapshot of a rendered Adaptive Card's document state.
 ///
@@ -72,6 +73,7 @@ class ElementOverlay {
     this.url,
     this.label,
     this.placeholder,
+    this.facts,
   });
 
   /// Overrides baseline `"isVisible"` when non-null.
@@ -113,6 +115,9 @@ class ElementOverlay {
   /// Overrides baseline `"placeholder"` on inputs when non-null.
   final String? placeholder;
 
+  /// Overrides baseline `"facts"` on `FactSet` when non-null.
+  final List<Fact>? facts;
+
   /// Returns a copy with the given fields replaced.
   ElementOverlay copyWith({
     bool? isVisible,
@@ -128,6 +133,7 @@ class ElementOverlay {
     String? url,
     String? label,
     String? placeholder,
+    List<Fact>? facts,
     bool clearInputValue = false,
     bool clearChoices = false,
     bool clearQueryCount = false,
@@ -140,6 +146,7 @@ class ElementOverlay {
     bool clearUrl = false,
     bool clearLabel = false,
     bool clearPlaceholder = false,
+    bool clearFacts = false,
   }) {
     return ElementOverlay(
       isVisible: isVisible ?? this.isVisible,
@@ -159,6 +166,7 @@ class ElementOverlay {
       url: clearUrl ? null : (url ?? this.url),
       label: clearLabel ? null : (label ?? this.label),
       placeholder: clearPlaceholder ? null : (placeholder ?? this.placeholder),
+      facts: clearFacts ? null : (facts ?? this.facts),
     );
   }
 }

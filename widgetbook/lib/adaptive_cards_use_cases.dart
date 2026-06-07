@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
+import 'package:widgetbook_workspace/fact_set_overlay_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
 import 'package:widgetbook_workspace/network_page.dart';
 import 'package:widgetbook_workspace/text_block_overlay_page.dart';
@@ -572,6 +573,15 @@ Widget buildColumnExample5(BuildContext context) {
 )
 Widget buildFactSetExample1(BuildContext context) {
   return const GenericPage(url: 'lib/samples/fact_set/example1.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Facts overlay (knob)',
+  type: widget_types.FactSet,
+  path: '[Components]',
+)
+Widget buildFactSetFactsOverlay(BuildContext context) {
+  return FactSetOverlayPage(key: factSetOverlayPageKey);
 }
 
 // =============================================================================

@@ -244,6 +244,7 @@ flowchart TB
 | `errorMessage`, `isInvalid` | same | `setInputError`, Submit validation |
 | `isRequired`, `label`, `placeholder` | same | `applyUpdates` |
 | `text`, `url` | `text`, `url` | `setText`, dynamic media URLs |
+| `facts` | `facts` | `setFacts`, `clearFacts`, `applyUpdates` |
 
 | Overlay (action) | Resolved key | API |
 | --- | --- | --- |
@@ -279,6 +280,7 @@ Hosts patch document state via `RawAdaptiveCardState` (delegates to the document
 | `applyUpdates(elements:, actions:)` | Bulk sparse patches (`AdaptiveElementUpdate` / `AdaptiveActionUpdate`) |
 | `applyUpdatesFromMap(byId)` | Server-style `{ id: { value, choices, … } }` payloads |
 | `setText(id, text)` / `clearText(id)` | Replace `TextBlock` display text |
+| `setFacts(id, facts)` / `clearFacts(id)` | Replace or clear `FactSet` facts overlay |
 | `setInputError(id, message:, isInvalid:)` / `clearInputError(id)` | Host validation on inputs |
 | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)` | Enable/disable `Action.*` (AC 1.5) |
 
