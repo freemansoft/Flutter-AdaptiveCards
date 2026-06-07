@@ -1,5 +1,6 @@
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document_notifier.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,6 +78,23 @@ Map<String, dynamic> _dataQueryChoiceBaseline() {
           'type': 'Data.Query',
           'dataset': 'test/dataset',
         },
+      },
+    ],
+  };
+}
+
+Map<String, dynamic> baselineCardWithFactSetId(String factSetId) {
+  return {
+    'type': 'AdaptiveCard',
+    'version': '1.5',
+    'body': [
+      {
+        'type': 'FactSet',
+        'id': factSetId,
+        'facts': [
+          {'title': 'Baseline A', 'value': '1'},
+          {'title': 'Baseline B', 'value': '2'},
+        ],
       },
     ],
   };
@@ -587,6 +605,72 @@ void main() {
       });
     });
 
+    group('facts overlay', () {
+      late ProviderContainer factContainer;
+
+      setUp(() {
+        factContainer = _createContainer(baselineCardWithFactSetId('summary'));
+      });
+
+      tearDown(() {
+        factContainer.dispose();
+      });
+
+      test('setFacts stores List<Fact> in overlay', () {
+        factContainer.read(adaptiveCardDocumentProvider.notifier).setFacts(
+          'summary',
+          const [
+            Fact(title: 'Status', value: 'Shipped'),
+          ],
+        );
+
+        final overlay = factContainer
+            .read(adaptiveCardDocumentProvider)
+            .overlaysById['summary'];
+        expect(overlay?.facts, isA<List<Fact>>());
+        expect(overlay!.facts!.first.value, 'Shipped');
+      });
+
+      test('setFacts merges into resolvedElementProvider', () {
+        factContainer.read(adaptiveCardDocumentProvider.notifier).setFacts(
+          'summary',
+          const [Fact(title: 'Status', value: 'Shipped')],
+        );
+
+        final resolved = factContainer.read(resolvedElementProvider('summary'));
+        final facts = resolved?['facts'] as List<dynamic>?;
+        expect(facts, hasLength(1));
+        expect(facts!.first['title'], 'Status');
+      });
+
+      test('clearFacts restores baseline facts', () {
+        final notifier =
+            factContainer.read(adaptiveCardDocumentProvider.notifier)
+              ..setFacts('summary', const [Fact(title: 'Overlay', value: 'x')])
+              ..clearFacts('summary');
+
+        expect(notifier.state.overlaysById['summary']?.facts, isNull);
+
+        final resolved = factContainer.read(resolvedElementProvider('summary'));
+        final facts = resolved?['facts'] as List<dynamic>?;
+        expect(facts, hasLength(2));
+        expect(facts!.first['title'], 'Baseline A');
+      });
+
+      test('applyUpdates clearFacts flag clears overlay', () {
+        final notifier =
+            factContainer.read(adaptiveCardDocumentProvider.notifier)
+              ..setFacts('summary', const [Fact(title: 'Overlay', value: 'x')])
+              ..applyUpdates(
+                elements: [
+                  const AdaptiveElementUpdate(id: 'summary', clearFacts: true),
+                ],
+              );
+
+        expect(notifier.state.overlaysById['summary']?.facts, isNull);
+      });
+    });
+
     group('TextBlock text overlays', () {
       late ProviderContainer textContainer;
 
@@ -749,6 +833,25 @@ void main() {
 
         expect(notifier.state.overlaysById['myText']?.inputValue, 'seeded');
         expect(notifier.state.overlaysById['myText']?.errorMessage, isNull);
+      });
+
+      test('updatesFromPatchMap parses facts array', () {
+        final parsed =
+            AdaptiveCardDocumentNotifier.updatesFromPatchMapWithNodes(
+              {
+                'summary': {
+                  'facts': [
+                    {'title': 'Red', 'value': '#FF0000'},
+                  ],
+                },
+              },
+              nodesById: {
+                'summary': {'type': 'FactSet', 'id': 'summary', 'facts': []},
+              },
+            );
+        expect(parsed.elements.single.facts, [
+          const Fact(title: 'Red', value: '#FF0000'),
+        ]);
       });
 
       test('updatesFromPatchMap parses scalar and patch entries', () {
