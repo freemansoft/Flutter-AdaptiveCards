@@ -347,11 +347,25 @@ class AdaptiveTableState extends State<AdaptiveTable>
 
     // Horizontal alignment is now handled by parent Align widget
 
-    // Apply header text styling if this is a header row
     if (isHeaderRow) {
+      final appearance = styleResolver.resolveTextBlockStyle(
+        styleName: 'columnHeader',
+      );
       content = DefaultTextStyle(
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
+        style: TextStyle(
+          fontWeight: styleResolver.resolveFontWeight(appearance.weight),
+          fontSize: styleResolver.resolveFontSize(
+            context: context,
+            sizeString: appearance.size,
+          ),
+          fontFamily: styleResolver.resolveFontType(
+            context,
+            appearance.fontType,
+          ),
+          color: styleResolver.resolveContainerForegroundColor(
+            style: appearance.color,
+            isSubtle: appearance.isSubtle,
+          ),
         ),
         child: content,
       );

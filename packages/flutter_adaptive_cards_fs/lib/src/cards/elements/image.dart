@@ -44,13 +44,13 @@ class AdaptiveImageState extends State<AdaptiveImage>
   @override
   void initState() {
     super.initState();
-    isPerson = loadIsPerson();
     url = widget.adaptiveMap['url']?.toString() ?? '';
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    isPerson = loadIsPerson();
     loadSize();
     horizontalAlignment = styleResolver.resolveAlignment(
       adaptiveMap['horizontalAlignment'],
@@ -125,10 +125,9 @@ class AdaptiveImageState extends State<AdaptiveImage>
   }
 
   bool loadIsPerson() {
-    if (style == null || style == 'default') {
-      return false;
-    }
-    return true;
+    return styleResolver.resolveImageIsPerson(
+      adaptiveMap['style'] as String?,
+    );
   }
 
   void loadSize() {
