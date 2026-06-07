@@ -1,11 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Implements
 /// https://adaptivecards.io/explorer/FactSet.html
@@ -30,16 +33,9 @@ class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 class AdaptiveFactSetState extends State<AdaptiveFactSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
-  late List<Fact> facts;
+  List<Fact> facts = const [];
   Color? backgroundColor;
-
-  @override
-  void initState() {
-    super.initState();
-
-    /// https://adaptivecards.io/explorer/Fact.html
-    facts = factsFromJsonList(adaptiveMap['facts']);
-  }
+  ProviderSubscription<Map<String, dynamic>?>? _factsSubscription;
 
   @override
   void didChangeDependencies() {
@@ -47,6 +43,26 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     backgroundColor = styleResolver.resolveContainerBackgroundColor(
       style: style,
     );
+
+    _factsSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _factsSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        if (next == null) return;
+        final nextFacts = factsFromJsonList(next['facts']);
+        if (listEquals(nextFacts, facts)) return;
+        setState(() => facts = nextFacts);
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _factsSubscription?.close();
+    _factsSubscription = null;
+    super.dispose();
   }
 
   @override

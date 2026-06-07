@@ -1,0 +1,32 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "FactSet facts overlay",
+      "weight": "Bolder",
+      "size": "Medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Use the knob to replace facts at runtime or clear the overlay.",
+      "isSubtle": true,
+      "wrap": true,
+      "spacing": "Small"
+    },
+    {
+      "type": "FactSet",
+      "id": "demoFactSet",
+      "spacing": "Medium",
+      "facts": [
+        { "title": "Fact 1", "value": "Value 1" },
+        { "title": "Fact 2", "value": "Value 2" },
+        { "title": "Fact 3", "value": "Value 3" },
+        { "title": "Fact 4", "value": "Value 4" }
+      ]
+    }
+  ]
+}

@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Public exports for **`Choice`**, **`Fact`**, and **`MediaSource`** from `flutter_adaptive_cards_fs.dart`.
 - List parse helpers: `choicesFromJsonList` / `choicesToJsonList`, `factsFromJsonList`, `mediaSourcesFromJsonList`.
+- Runtime **`facts`** overlay on `FactSet` elements (`setFacts`, `clearFacts`, `applyUpdates` / `applyUpdatesFromMap`).
+- Widgetbook **FactSet → Facts overlay (knob)** demo for interactive overlay testing.
 
 ### Changed 0.10.0
 

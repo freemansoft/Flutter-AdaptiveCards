@@ -1,5 +1,6 @@
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -88,6 +89,23 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
       id,
       (current) =>
           (current ?? const ElementOverlay()).copyWith(clearText: true),
+    );
+  }
+
+  /// Replaces effective `"facts"` for `FactSet` [id].
+  void setFacts(String id, List<Fact> facts) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(facts: facts),
+    );
+  }
+
+  /// Clears facts overlay for [id]; effective facts revert to baseline JSON.
+  void clearFacts(String id) {
+    _updateOverlay(
+      id,
+      (current) =>
+          (current ?? const ElementOverlay()).copyWith(clearFacts: true),
     );
   }
 
@@ -291,6 +309,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
           clearUrl: patch['clearUrl'] == true,
           clearLabel: patch['clearLabel'] == true,
           clearPlaceholder: patch['clearPlaceholder'] == true,
+          facts: _factsFromPatch(patch['facts']),
+          clearFacts: patch['clearFacts'] == true,
         ),
       );
     }
@@ -336,6 +356,9 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     if (update.clearPlaceholder) {
       overlay = overlay.copyWith(clearPlaceholder: true);
     }
+    if (update.clearFacts) {
+      overlay = overlay.copyWith(clearFacts: true);
+    }
 
     if (update.isVisible != null) {
       overlay = overlay.copyWith(isVisible: update.isVisible);
@@ -369,6 +392,10 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
         querySkip: update.querySkip,
         querySearchText: update.querySearchText,
       );
+    }
+
+    if (update.facts != null) {
+      overlay = overlay.copyWith(facts: update.facts);
     }
 
     if (update.choices != null) {
@@ -417,6 +444,11 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   static List<Choice>? _choicesFromPatch(Object? raw) {
     if (raw is! List) return null;
     return choicesFromJsonList(raw);
+  }
+
+  static List<Fact>? _factsFromPatch(Object? raw) {
+    if (raw is! List) return null;
+    return factsFromJsonList(raw);
   }
 
   /// Replaces effective `choices` for `Input.ChoiceSet` [id].

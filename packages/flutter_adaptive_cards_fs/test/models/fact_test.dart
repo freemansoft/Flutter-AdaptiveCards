@@ -81,5 +81,14 @@ void main() {
         const Fact(title: 'Age', value: '30'),
       ]);
     });
+
+    test('factsToJsonList round-trips', () {
+      const facts = [
+        Fact(title: 'Red', value: '#FF0000'),
+        Fact(title: 'Blue', value: '#0000FF'),
+      ];
+      final json = factsToJsonList(facts);
+      expect(factsFromJsonList(json), facts);
+    });
   });
 }

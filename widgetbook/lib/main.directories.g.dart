@@ -326,6 +326,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildFactSetExample1,
           ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Facts overlay (knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildFactSetFactsOverlay,
+          ),
         ],
       ),
       _widgetbook.WidgetbookComponent(
