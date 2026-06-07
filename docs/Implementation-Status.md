@@ -60,17 +60,17 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## Actions
 
-| Action                  | Microsoft Spec                                                                                                            | Implementation | Tests  | Documentation                                        | Notes                                                                         |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------- | ------ | ---------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Action.Execute          | [spec](https://adaptivecards.io/explorer/Action.Execute.html)                                                             | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | **`verb`** and **`id`** via **`ExecuteActionInvoke`** on `onExecute`; merged `data` + inputs. **`associatedInputs`** not implemented — see [Known Gaps](#known-gaps). |
-| Action.OpenUrl          | [spec](https://adaptivecards.io/explorer/Action.OpenUrl.html)                                                             | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                     |
-| Action.ShowCard         | [spec](https://adaptivecards.io/explorer/Action.ShowCard.html)                                                            | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                     |
+| Action                  | Microsoft Spec                                                                                                            | Implementation | Tests  | Documentation                                        | Notes                                                                                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------- | ------ | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Action.Execute          | [spec](https://adaptivecards.io/explorer/Action.Execute.html)                                                             | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | **`verb`** and **`id`** via **`ExecuteActionInvoke`** on `onExecute`; merged `data` + inputs. **`associatedInputs`** not implemented — see [Known Gaps](#known-gaps).  |
+| Action.OpenUrl          | [spec](https://adaptivecards.io/explorer/Action.OpenUrl.html)                                                             | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                                                                                                              |
+| Action.ShowCard         | [spec](https://adaptivecards.io/explorer/Action.ShowCard.html)                                                            | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                                                                                                              |
 | Action.Submit           | [spec](https://adaptivecards.io/explorer/Action.Submit.html)                                                              | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | **`id`** as **`actionId`** via **`SubmitActionInvoke`** on `onSubmit`; merged `data` + inputs. **`associatedInputs`** not implemented — see [Known Gaps](#known-gaps). |
-| Action.ToggleVisibility | [spec](https://adaptivecards.io/explorer/Action.ToggleVisibility.html)                                                    | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                     |
-| Action.OpenUrlDialog    | [Teams ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions)         | ✅ Complete    | ❌ No  | [actions-architecture.md](./actions-architecture.md) | **Teams extension** (schema v1.5+) — launches modal/task module dialog        |
-| Action.ResetInputs      | [Bot Framework ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions) | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | **`targetInputIds`**, **`valueChangedAction`**; Teams/Bot Framework extension |
-| Action.InsertImage      | Host-specific ext                                                                                                         | ✅ Complete    | ❌ No  | -                                                    | **Host extension** (Word/PowerPoint, v1.5+) — inserts image into host canvas  |
-| Action.Popover          | -                                                                                                                         | ✅ Complete    | ❌ No  | -                                                    | **Project-specific** — no known spec source; popover overlay                  |
+| Action.ToggleVisibility | [spec](https://adaptivecards.io/explorer/Action.ToggleVisibility.html)                                                    | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | Generic + Default pattern                                                                                                                                              |
+| Action.OpenUrlDialog    | [Teams ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions)         | ✅ Complete    | ❌ No  | [actions-architecture.md](./actions-architecture.md) | **Teams extension** (schema v1.5+) — launches modal/task module dialog                                                                                                 |
+| Action.ResetInputs      | [Bot Framework ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions) | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | **`targetInputIds`**, **`valueChangedAction`**; Teams/Bot Framework extension                                                                                          |
+| Action.InsertImage      | Host-specific ext                                                                                                         | ✅ Complete    | ❌ No  | -                                                    | **Host extension** (Word/PowerPoint, v1.5+) — inserts image into host canvas                                                                                           |
+| Action.Popover          | -                                                                                                                         | ✅ Complete    | ❌ No  | -                                                    | **Project-specific** — no known spec source; popover overlay                                                                                                           |
 
 ---
 
@@ -143,7 +143,6 @@ The following spec compliance gaps are known across the codebase:
 
 - **`requires`**: Version requirement validation is not implemented.
 - **Action Fallback**: `_getActionWidget` ends in `assert(false)` with no fallback check.
-- **Dark Mode**: Some specific color invert issues or missing HostConfig support.
 - **Version Gating**: Missing support to skip rendering elements with a higher version requirement.
 - **`RichTextBlock` & `TextRun`**: Missing elements required since AC spec v1.2.
 - **`Data.Query.associatedInputs`**: Parsed on `choices.data` but not merged into host `onChange` / `DataQuery` (Teams dependent-input sibling values). Widgetbook demonstrates the workaround — [form-inputs.md § Dependent ChoiceSet](./form-inputs.md#dependent-choiceset-country--city).
@@ -222,5 +221,13 @@ flutter test --exclude-tags=golden
 
 ---
 
-_Last Updated: 2026-05-19_
+### Recently completed (style pipeline, 2026-06-06)
+
+- **Container style inheritance** via `ChildStyler` — see [Style inheritance data flow](adaptive-style.md#style-inheritance-data-flow).
+- **`TextBlockStyle`** / **`TextStylesConfig`** wired through `resolveTextBlockStyle()`.
+- **`ImageStyle`** — `person` vs `default` via `resolveImageIsPerson()`.
+- **Horizontal alignment inheritance** from parent containers.
+- **`AdaptiveCardBrightnessMode`** host override; auto mode follows `Theme.of(context).brightness`.
+
+_Last Updated: 2026-06-06_
 _Based on v1.6.0 of Microsoft Adaptive Cards specification_

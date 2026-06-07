@@ -1,3 +1,5 @@
+/// Sets default properties for text of a given style
+/// https://adaptivecards.io/explorer/TextStyleConfig.html
 class TextStyleConfig {
   TextStyleConfig({
     required this.weight,

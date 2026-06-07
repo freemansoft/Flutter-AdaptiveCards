@@ -15,6 +15,11 @@ There are two nested scopes, matching the natural boundaries already present in 
   - registries (`CardTypeRegistry`, `ActionTypeRegistry`) via `cardTypeRegistryProvider` / `actionTypeRegistryProvider`
   - `ReferenceResolver` via `styleReferenceResolverProvider` — **HostConfig + theme-aware values only** (not registries)
   - document notifier (baseline JSON + overlays)
+- **Per-container style scope** (nested inside containers/columns via `ChildStyler`)
+  - `styleReferenceResolverProvider` override with updated `inheritedContainerStyle` and `inheritedHorizontalAlignment`
+
+See [Style inheritance data flow](adaptive-style.md#style-inheritance-data-flow).
+
 - **Per-card-element scope** (one per `AdaptiveCardElement`)
   - show-card UI state for that card instance
   - optional nested document fork when rendering nested card subtrees
@@ -154,11 +159,11 @@ The host’s map instance is never mutated in place.
 
 #### Call paths
 
-| API                                             | Scope                           | Typical caller                                               |
-| ----------------------------------------------- | ------------------------------- | ------------------------------------------------------------ |
-| `AdaptiveCardDocumentNotifier.resetAllInputs()` | All `Input.*` ids, one revision | `Action.ResetInputs` without `targetInputIds`, host code     |
+| API                                             | Scope                           | Typical caller                                                   |
+| ----------------------------------------------- | ------------------------------- | ---------------------------------------------------------------- |
+| `AdaptiveCardDocumentNotifier.resetAllInputs()` | All `Input.*` ids, one revision | `Action.ResetInputs` without `targetInputIds`, host code         |
 | `AdaptiveCardDocumentNotifier.resetInputs(ids)` | Listed input ids, one revision  | `Action.ResetInputs` with `targetInputIds`, `valueChangedAction` |
-| `AdaptiveCardDocumentNotifier.resetInput(id)`   | One input id                    | Host code; invoked from mixin `resetInput()`                 |
+| `AdaptiveCardDocumentNotifier.resetInput(id)`   | One input id                    | Host code; invoked from mixin `resetInput()`                     |
 
 `AdaptiveInputMixin.resetInput()` should delegate to the notifier so overlay clear and UI stay in sync via `resolvedElementProvider(id)`. Subclass overrides sync controllers only — they must not be the sole reset path.
 
