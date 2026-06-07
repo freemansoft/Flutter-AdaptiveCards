@@ -113,29 +113,59 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     return isValid ? selected : null;
   }
 
+  /// Keeps widget selection in sync when resolved [choices] change under a stale value.
+  ///
+  /// Two common paths leave `_selectedChoices` or the document overlay out of step
+  /// with the current choice list for a frame (or longer):
+  ///
+  /// - **Dependent inputs:** country `valueChangedAction` clears the city document
+  ///   value, then the host repopulates city choices on the next frame — local
+  ///   selection can still hold the previous city when the compact dropdown rebuilds.
+  /// - **Data.Query / `loadInput`:** `select()` calls host `onChange` (which may
+  ///   replace choices via `setChoices`) before `setDocumentInputValue`, so the
+  ///   document can briefly hold a value that no longer exists in the new list.
+  ///
+  /// [_singleChoiceValueFor] avoids a DropdownButton assertion on that stale frame;
+  /// this method finishes the job post-frame by syncing to the **valid intersection**
+  /// of document value(s) and current [choices], or `''` when none apply. We must
+  /// not call [onDocumentValueChanged] with the raw resolved value when it is
+  /// invalid — that re-applies the stale value and causes an infinite rebuild loop
+  /// (see `choice_set_data_query_test.dart`, loadInput-after-onChange case).
   void _scheduleSelectionReconcile(
     ResolvedInputState input,
     List<Choice> choices,
   ) {
     final choiceValues = choices.map((choice) => choice.value).toSet();
     final resolvedValues = _valuesFromResolved(input);
+    // Target is only values still present in the current list — never stale ids.
+    final validResolved = resolvedValues.where(choiceValues.contains).toSet();
+    final target = validResolved.isEmpty ? '' : validResolved.join(',');
     final localInvalid = _selectedChoices.any(
       (value) => !choiceValues.contains(value),
     );
+    final docInvalid = resolvedValues.any(
+      (value) => !choiceValues.contains(value),
+    );
     final docMismatch = !setEquals(_selectedChoices, resolvedValues);
-    if (!localInvalid && !docMismatch) {
+    if (!localInvalid && !docMismatch && !docInvalid) {
       return;
     }
     if (_selectionReconcileScheduled) {
       return;
     }
     _selectionReconcileScheduled = true;
+    // Post-frame: avoid setState while build is in progress (same pattern as
+    // [AdaptiveInputMixin.listenForResolvedValueChanges]).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _selectionReconcileScheduled = false;
       if (!mounted) {
         return;
       }
-      onDocumentValueChanged(readResolvedInput().valueRaw);
+      // Clear invalid or divergent document overlay before syncing local UI.
+      if (docInvalid || docMismatch) {
+        setDocumentInputValue(target);
+      }
+      onDocumentValueChanged(target);
     });
   }
 
