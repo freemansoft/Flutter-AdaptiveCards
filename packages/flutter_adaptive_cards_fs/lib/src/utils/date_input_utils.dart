@@ -1,3 +1,6 @@
+// don't want to bring in imports
+// ignore_for_file: comment_references
+
 import 'package:intl/intl.dart';
 
 final DateFormat _adaptiveDateFormat = DateFormat('yyyy-MM-dd');
