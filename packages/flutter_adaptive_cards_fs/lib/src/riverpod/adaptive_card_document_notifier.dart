@@ -120,6 +120,18 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     );
   }
 
+  /// Removes the runtime `inputValue` overlay for input [id].
+  void clearInputValue(String id) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(
+        clearInputValue: true,
+        clearIsInvalid: true,
+        clearErrorMessage: true,
+      ),
+    );
+  }
+
   /// Sets whether action [id] is enabled (AC 1.5 `isEnabled`).
   void setActionEnabled(String id, {required bool enabled}) {
     _updateActionOverlay(

@@ -163,7 +163,11 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
       }
       // Clear invalid or divergent document overlay before syncing local UI.
       if (docInvalid || docMismatch) {
-        setDocumentInputValue(target);
+        if (target.isEmpty) {
+          clearDocumentInputValue();
+        } else {
+          setDocumentInputValue(target);
+        }
       }
       onDocumentValueChanged(target);
     });
