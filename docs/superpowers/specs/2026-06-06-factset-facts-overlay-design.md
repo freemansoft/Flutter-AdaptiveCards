@@ -1,7 +1,7 @@
 # FactSet Facts Runtime Overlay (Full List Replacement)
 
 **Date:** 2026-06-06
-**Status:** Approved for implementation
+**Status:** Implemented
 **Package:** `flutter_adaptive_cards_fs`
 **Related:** [Dynamic property updates](2026-06-03-dynamic-property-updates-design.md), [`docs/reactive-riverpod.md`](../../reactive-riverpod.md)
 
@@ -11,11 +11,13 @@ Hosts can replace a `FactSet`'s effective `facts` array at runtime via sparse **
 
 Individual `Fact` objects have no Adaptive Cards id; only the parent `FactSet` is addressable. Store **`List<Fact>?`** on `ElementOverlay` — not a separate per-fact overlay map or `FactOverlay` storage type.
 
-## Problem
+**Implementation:** Shipped in `flutter_adaptive_cards_fs` (notifier, `AdaptiveFactSet` listener, `RawAdaptiveCardState.setFacts` / `clearFacts`, tests, docs). Widgetbook demo at **FactSet → Facts overlay (knob)**; knob uses a `baseline` enum preset and `_syncPresetKnob` (see [Widgetbook demo](#widgetbook-demo-factset-overlay-knob)).
 
-Today `AdaptiveFactSet` parses `facts` once in `initState` from baseline `adaptiveMap` and never watches `resolvedElementProvider`. Visibility updates work via `AdaptiveVisibilityMixin`, but fact titles/values are static after first frame.
+## Problem (pre-implementation)
 
-Hosts that receive refreshed summary data (order status, KPIs, templated expansions) must replace the entire card JSON to change facts — losing overlay state elsewhere on the card.
+Previously `AdaptiveFactSet` parsed `facts` once from baseline `adaptiveMap` and did not watch `resolvedElementProvider`. Visibility updates worked via `AdaptiveVisibilityMixin`, but fact titles/values were static after first frame.
+
+Hosts that received refreshed summary data (order status, KPIs, templated expansions) had to replace the entire card JSON to change facts — losing overlay state elsewhere on the card.
 
 ## Decision
 
@@ -111,14 +113,12 @@ Effective rule: overlay `facts` if set, else baseline `"facts"`.
 
 ## Widget changes
 
-Refactor `AdaptiveFactSet` to follow `AdaptiveTextBlock`:
+`AdaptiveFactSet` follows `AdaptiveTextBlock`:
 
-1. Remove one-time `initState` parsing (or treat as unused after listener).
-2. In `didChangeDependencies`, subscribe to `resolvedElementProvider(id)` via `container.listen`.
-3. On each emission, `factsFromJsonList(next['facts'])` → `setState` when list changes (compare by value equality or serialized JSON).
-4. Keep `AdaptiveVisibilityMixin` unchanged.
-
-Dispose subscription in `dispose`.
+1. No one-time `initState` fact parsing; facts start empty and load from the resolved provider.
+2. In `didChangeDependencies`, subscribe to `resolvedElementProvider(id)` via `container.listen` (`fireImmediately: true`).
+3. On each emission, `factsFromJsonList(next['facts'])` → `setState` when `listEquals` detects a change.
+4. `AdaptiveVisibilityMixin` unchanged; subscription disposed in `dispose`.
 
 ## Host usage
 
@@ -149,28 +149,34 @@ cardState.applyUpdatesFromMap({
 });
 ```
 
-### Dedicated helper (optional on `RawAdaptiveCardState`)
+### Dedicated helper on `RawAdaptiveCardState`
 
 ```dart
 void setFacts(String id, List<Fact> facts);
 void clearFacts(String id);
 ```
 
-Mirror `setText` / `setChoices` delegation pattern.
+Implemented — mirrors `setText` / `setChoices` delegation to the document notifier.
 
 ## Documentation updates
 
-| File                                                                   | Change                                                               |
-| ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `docs/reactive-riverpod.md`                                            | Add `facts` to overlay field list, merge rules, runtime-writes table |
-| `docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md` | Add `facts` to Tier 1 or new Tier 1 row                              |
-| `packages/flutter_adaptive_cards_fs/README.md`                         | Host API table entry for `setFacts` / `clearFacts` if added          |
-| `docs/Implementation-Status.md`                                        | Note FactSet supports runtime facts overlay                          |
-| `widgetbook/lib/fact_set_overlay_page.dart`                            | Knob-driven `setFacts` / `clearFacts` demo                           |
-| `widgetbook/lib/adaptive_cards_use_cases.dart`                         | Register **Facts overlay (knob)** use case                           |
-| `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`              | Baseline card with `id: demoFactSet`                                 |
+| File                                                                   | Status                                                                 |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `docs/reactive-riverpod.md`                                            | Done — `facts` overlay field, merge rules, runtime-writes table        |
+| `docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md` | Done — `facts` added to dynamic property updates                       |
+| `packages/flutter_adaptive_cards_fs/README.md`                         | Done — host API table includes `setFacts` / `clearFacts`               |
+| `docs/Implementation-Status.md`                                        | Done — FactSet runtime `facts` overlay noted                           |
+| `widgetbook/lib/fact_set_overlay_page.dart`                            | Done — knob-driven `setFacts` / `clearFacts` demo (see Widgetbook)     |
+| `widgetbook/lib/adaptive_cards_use_cases.dart`                         | Done — **Facts overlay (knob)** use case registered                    |
+| `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`              | Done — baseline card with `id: demoFactSet` and four generic facts     |
 
 ## Testing
+
+Implemented in:
+
+- `packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart` — `facts overlay` group
+- `packages/flutter_adaptive_cards_fs/test/containers/fact_set_overlay_test.dart` — widget tests
+- `packages/flutter_adaptive_cards_fs/test/models/fact_test.dart` — `factsToJsonList` round-trip
 
 | Area       | Cases                                                             |
 | ---------- | ----------------------------------------------------------------- |
@@ -181,8 +187,6 @@ Mirror `setText` / `setChoices` delegation pattern.
 | Widget     | FactSet UI updates when overlay facts change without card remount |
 | Widget     | Baseline facts shown when no overlay                              |
 | Regression | Visibility overlay on same FactSet still works                    |
-
-Follow patterns in `adaptive_card_document_notifier_test.dart` and `choice_set_overlay_test.dart`.
 
 ## Widgetbook demo (FactSet overlay knob)
 
@@ -207,34 +211,37 @@ Add `widgetbook/lib/samples/fact_set/facts_overlay_demo.json` (or extend `exampl
 - FactSet **`id`: `demoFactSet`** (required for overlay targeting)
 - Baseline **four** facts (e.g. `Fact 1` … `Fact 4` from current `example1.json`) so **no overlay** is visually distinct from overlay presets
 
-Load with `injectIds(map)` only if ids are absent elsewhere; prefer explicit `"id": "demoFactSet"` in JSON.
+Load JSON as-is; demo asset uses explicit `"id": "demoFactSet"` (no `injectIds` call).
 
 ### Knob
 
-Use `context.knobs.objectOrNull.dropdown` so the knob supports a **null** selection (no overlay):
+Uses `context.knobs.object.dropdown` with an explicit **`baseline`** enum value (not a nullable knob option):
 
 ```dart
-enum FactSetOverlayPreset { colors, cities, foods }
+enum FactSetOverlayPreset { baseline, colors, cities, foods }
 
-final preset = context.knobs.objectOrNull.dropdown<FactSetOverlayPreset>(
-  label: 'Facts overlay preset',
+final preset = context.knobs.object.dropdown<FactSetOverlayPreset>(
+  label: 'Baseline restores to preset',
   options: FactSetOverlayPreset.values,
-  initialOption: null, // start on baseline JSON facts
+  initialOption: FactSetOverlayPreset.baseline,
   labelBuilder: (value) => switch (value) {
+    FactSetOverlayPreset.baseline => 'Baseline',
     FactSetOverlayPreset.colors => 'Colors',
     FactSetOverlayPreset.cities => 'Cities',
     FactSetOverlayPreset.foods => 'Foods',
-    null => 'No overlay (baseline)',
   },
 );
+_syncPresetKnob(preset);
 ```
 
-| Knob value              | Host action                             | Effective facts                 |
-| ----------------------- | --------------------------------------- | ------------------------------- |
-| `null` (**No overlay**) | `clearFacts('demoFactSet')`             | Baseline JSON (4 generic facts) |
-| `colors`                | `setFacts('demoFactSet', _colorsFacts)` | 4 color facts                   |
-| `cities`                | `setFacts('demoFactSet', _citiesFacts)` | 4 city facts                    |
-| `foods`                 | `setFacts('demoFactSet', _foodsFacts)`  | 4 food facts                    |
+| Knob value | Host action                             | Effective facts                 |
+| ---------- | --------------------------------------- | ------------------------------- |
+| `baseline` | `clearFacts('demoFactSet')`             | Baseline JSON (4 generic facts) |
+| `colors`   | `setFacts('demoFactSet', _colorsFacts)` | 4 color facts                   |
+| `cities`   | `setFacts('demoFactSet', _citiesFacts)` | 4 city facts                    |
+| `foods`    | `setFacts('demoFactSet', _foodsFacts)`  | 4 food facts                    |
+
+**Why not `objectOrNull`:** Widgetbook’s non-nullable object dropdown serializes more reliably in the workbench; baseline is modeled as a fourth preset that maps to `clearFacts` instead of a `null` knob value.
 
 ### Preset fact lists (4 each)
 
@@ -269,19 +276,21 @@ Define as `const List<Fact>` on the page (or a small private helper file):
 
 ### Page implementation
 
-New file: `widgetbook/lib/fact_set_overlay_page.dart`
+File: `widgetbook/lib/fact_set_overlay_page.dart`
 
-Follow `TextBlockOverlayPage` patterns:
+Follows `TextBlockOverlayPage` patterns with knob-specific lifecycle guards:
 
 1. **`factSetOverlayPageKey`** — `GlobalKey` so Widgetbook knob URL changes do not remount the card and wipe document overlays.
 2. Load demo JSON from assets; **`GlobalKey<RawAdaptiveCardState>`** on `RawAdaptiveCard.fromMap`.
 3. Post-frame apply queue (`_queueFactsOverlay` / `_flushPendingOverlay`) with retry until `documentContainer` is ready (same `_maxApplyAttempts` pattern as text overlay).
-4. Track `_lastAppliedPreset` (`FactSetOverlayPreset?`, nullable) to avoid redundant notifier calls.
-5. On `preset == null` → `cardState.clearFacts(_factSetId)`.
-6. On non-null preset → `cardState.setFacts(_factSetId, presetFacts(preset))`.
-7. `showDebugJson: true` optional (match text overlay demo).
+4. Track `_lastAppliedPreset` to avoid redundant notifier calls.
+5. **`_syncPresetKnob`** — on first build, record knob value only (do not apply); on subsequent builds, queue overlay only when the knob value **changes**. Avoids re-applying `setFacts` / `clearFacts` on every Widgetbook rebuild.
+6. On `preset == FactSetOverlayPreset.baseline` → `cardState.clearFacts(_factSetId)`.
+7. On other presets → `cardState.setFacts(_factSetId, factsForPreset(preset)!)` where `factsForPreset` returns `null` for baseline.
+8. `showDebugJson: true` (matches text overlay demo).
 
 ```dart
+// Host-only demo: calls package-internal RawAdaptiveCardState.setFacts.
 // ignore_for_file: implementation_imports
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 ```
@@ -291,7 +300,7 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 1. Open **FactSet → Facts overlay (knob)**.
 2. Confirm baseline shows 4 generic facts from JSON.
 3. Select **Colors** / **Cities** / **Foods** — FactSet updates to 4 matching facts without remounting the card.
-4. Select **No overlay (baseline)** — facts revert to JSON baseline (not the last preset).
+4. Select **Baseline** — facts revert to JSON baseline (not the last preset).
 5. Toggle presets — each switch replaces the full list.
 
 ## Out of scope
@@ -304,12 +313,12 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 
 ## Self-review checklist
 
-| Requirement                                   | Covered |
-| --------------------------------------------- | ------- |
-| Pattern A full list replace                   | Yes     |
-| `List<Fact>?` on `ElementOverlay`             | Yes     |
-| No `FactOverlay` storage layer                | Yes     |
-| Resolved merge + reactive widget              | Yes     |
-| Host APIs aligned with `choices` / `text`     | Yes     |
-| Tests and docs                                | Yes     |
-| Widgetbook knob demo (`clearFacts` + presets) | Yes     |
+| Requirement                                   | Implemented |
+| --------------------------------------------- | ----------- |
+| Pattern A full list replace                   | Yes         |
+| `List<Fact>?` on `ElementOverlay`             | Yes         |
+| No `FactOverlay` storage layer                | Yes         |
+| Resolved merge + reactive widget              | Yes         |
+| Host APIs aligned with `choices` / `text`     | Yes         |
+| Tests and docs                                | Yes         |
+| Widgetbook knob demo (`clearFacts` + presets) | Yes — baseline enum + `_syncPresetKnob` |
