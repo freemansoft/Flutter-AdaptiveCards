@@ -77,6 +77,6 @@ void main() {
     final dynamic state = tester.state(find.byType(AdaptiveDateInput));
     final Map<String, dynamic> out = {};
     state.appendInput(out);
-    expect((out['initDate'] as String).startsWith('2024-01-02'), isTrue);
+    expect(out['initDate'], '2024-01-02');
   });
 }
