@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 
 /// One element's runtime overlay patch (baseline JSON unchanged).
 @immutable
@@ -20,6 +21,7 @@ class AdaptiveElementUpdate {
     this.querySearchText,
     this.label,
     this.placeholder,
+    this.facts,
     this.clearValue = false,
     this.clearError = false,
     this.clearChoices = false,
@@ -28,6 +30,7 @@ class AdaptiveElementUpdate {
     this.clearUrl = false,
     this.clearLabel = false,
     this.clearPlaceholder = false,
+    this.clearFacts = false,
   });
 
   /// Target element or input id from card JSON.
@@ -72,6 +75,9 @@ class AdaptiveElementUpdate {
   /// Overrides baseline `"placeholder"` on inputs.
   final String? placeholder;
 
+  /// Replaces `FactSet` `"facts"`.
+  final List<Fact>? facts;
+
   /// Clears the `inputValue` overlay.
   final bool clearValue;
 
@@ -95,6 +101,9 @@ class AdaptiveElementUpdate {
 
   /// Clears the `placeholder` overlay.
   final bool clearPlaceholder;
+
+  /// Clears the `facts` overlay.
+  final bool clearFacts;
 }
 
 /// Action overlay patch for `Action.*` nodes.
