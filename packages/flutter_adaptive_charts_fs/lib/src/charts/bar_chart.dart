@@ -23,6 +23,21 @@ enum BarChartType {
   horizontalStacked,
 }
 
+BarChartAlignment _toFlChartAlignment(BarChartAlignmentToken token) {
+  switch (token) {
+    case BarChartAlignmentToken.spaceBetween:
+      return BarChartAlignment.spaceBetween;
+    case BarChartAlignmentToken.spaceEvenly:
+      return BarChartAlignment.spaceEvenly;
+    case BarChartAlignmentToken.start:
+      return BarChartAlignment.start;
+    case BarChartAlignmentToken.end:
+      return BarChartAlignment.end;
+    case BarChartAlignmentToken.spaceAround:
+      return BarChartAlignment.spaceAround;
+  }
+}
+
 /// Renders Adaptive Card bar chart elements using fl_chart.
 ///
 /// Registered in the chart element dispatch table for types such as
@@ -69,10 +84,11 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
   }
 
   void _parseData() {
+    final layout = styleResolver.resolveBarChartLayout();
     final data = adaptiveMap['data'];
     barGroups = [];
     xLabels = [];
-    maxY = 10; // Default safety
+    maxY = layout.emptyMaxY;
     if (data is! List) return;
     maxY = 0;
 
@@ -89,14 +105,11 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
     debugPrint('isStacked: $isStacked, isGrouped: $isGrouped');
 
     if (isStacked || isGrouped) {
-      // Data is a list of series
       final Map<String, List<Map<String, dynamic>>> pivotData = {};
       final List<Color> defaultColors = styleResolver.resolveChartPalette();
 
       int seriesIndex = 0;
       for (final series in data) {
-        // Chart.VerticalBar.Grouped uses `data.values`
-        // Chart.HorizontalBar.Grouped uses `data.data`
         final List<dynamic>? points =
             series['data'] as List<dynamic>? ??
             series['values'] as List<dynamic>?;
@@ -149,13 +162,14 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
             BarChartRodData(
               toY: currentYSum,
               rodStackItems: stackItems,
-              width: 16,
+              width: layout.barWidth,
               color: Colors.transparent,
-              borderRadius: BorderRadius.zero,
+              borderRadius: BorderRadius.circular(
+                layout.stackedBarBorderRadius,
+              ),
             ),
           );
         } else {
-          // isGrouped
           for (final item in items) {
             final double val = (item['y'] as num).toDouble();
             if (val > maxY) maxY = val;
@@ -170,8 +184,8 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
               BarChartRodData(
                 toY: val,
                 color: color,
-                width: 16,
-                borderRadius: BorderRadius.circular(2),
+                width: layout.barWidth,
+                borderRadius: BorderRadius.circular(layout.barBorderRadius),
               ),
             );
           }
@@ -181,13 +195,12 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
           BarChartGroupData(
             x: xIndex,
             barRods: rods,
-            barsSpace: 4,
+            barsSpace: layout.barsSpace,
           ),
         );
         xIndex++;
       });
     } else {
-      // Standard simple format
       final Map<String, List<Map<String, dynamic>>> groupedData = {};
       for (final item in data) {
         final String x = item['x']?.toString() ?? 'Unknown';
@@ -212,8 +225,8 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
             BarChartRodData(
               toY: val,
               color: color,
-              width: 16, // TODO(username): make configurable
-              borderRadius: BorderRadius.circular(2),
+              width: layout.barWidth,
+              borderRadius: BorderRadius.circular(layout.barBorderRadius),
             ),
           );
         }
@@ -222,27 +235,27 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
           BarChartGroupData(
             x: xIndex,
             barRods: rods,
-            barsSpace: 4, // Space between rods in a group
+            barsSpace: layout.barsSpace,
           ),
         );
         xIndex++;
       });
     }
 
-    // Safety
-    if (maxY == 0) maxY = 10;
-    maxY *= 1.2; // padding
+    if (maxY == 0) maxY = layout.emptyMaxY;
+    maxY *= layout.maxYPaddingFactor;
   }
 
   @override
   Widget build(BuildContext context) {
+    final layout = styleResolver.resolveBarChartLayout();
     final bool isHorizontal =
         widget.type == BarChartType.horizontal ||
         widget.type == BarChartType.horizontalStacked;
 
     final sideTitles = SideTitles(
-      showTitles: true,
-      reservedSize: 32,
+      showTitles: layout.showCategoryTitles,
+      reservedSize: layout.categoryAxisReservedSize,
       getTitlesWidget: (val, meta) {
         final int index = val.toInt();
         final String text = (index >= 0 && index < xLabels.length)
@@ -252,22 +265,22 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
           meta: meta,
           child: Text(
             text,
-            style: const TextStyle(fontSize: 10),
+            style: TextStyle(fontSize: layout.categoryLabelFontSize),
           ),
         );
       },
     );
     final axisTitles = AxisTitles(sideTitles: sideTitles);
 
-    final Widget chart = SeparatorElement(
+    return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: SizedBox(
-        height: 250,
+        height: layout.height,
         child: BarChart(
           BarChartData(
             barGroups: barGroups,
             maxY: maxY,
-            alignment: BarChartAlignment.spaceAround,
+            alignment: _toFlChartAlignment(layout.alignment),
             titlesData: FlTitlesData(
               show: true,
               bottomTitles: axisTitles,
@@ -277,7 +290,5 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
         ),
       ),
     );
-
-    return chart;
   }
 }

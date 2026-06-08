@@ -1,0 +1,17 @@
+{
+  "line": {
+    "height": 300,
+    "barWidth": 4,
+    "borderColor": "#FF112233"
+  },
+  "bar": {
+    "height": 260,
+    "barWidth": 20
+  },
+  "pie": {
+    "sectionRadius": 90
+  },
+  "donut": {
+    "centerSpaceRadius": 35
+  }
+}
