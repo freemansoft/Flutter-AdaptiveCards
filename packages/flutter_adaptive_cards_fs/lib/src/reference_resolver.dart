@@ -5,6 +5,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/actions_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/adaptive_card_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/chart_colors_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_style_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
@@ -145,6 +146,10 @@ class ReferenceResolver {
 
   /// Chart color palette from HostConfig.
   ChartColorsConfig? getChartColorsConfig() => hostConfigs.current.chartColors;
+
+  /// Chart layout dimensions and chrome from HostConfig.
+  ChartsLayoutConfig? getChartsLayoutConfig() =>
+      hostConfigs.current.chartsLayout;
 
   /// JSON Schema definition "Colors"
   ///
@@ -893,6 +898,22 @@ class ReferenceResolver {
           Colors.grey[700],
     );
   }
+
+  /// Resolves layout settings for `Chart.Line`.
+  LineChartLayout resolveLineChartLayout() =>
+      ChartsLayoutConfig.resolveLineLayout(getChartsLayoutConfig());
+
+  /// Resolves layout settings for bar chart types.
+  BarChartLayout resolveBarChartLayout() =>
+      ChartsLayoutConfig.resolveBarLayout(getChartsLayoutConfig());
+
+  /// Resolves layout settings for `Chart.Pie`.
+  PieChartLayout resolvePieChartLayout() =>
+      ChartsLayoutConfig.resolvePieLayout(getChartsLayoutConfig());
+
+  /// Resolves layout settings for `Chart.Donut` and `Chart.Gauge`.
+  DonutChartLayout resolveDonutChartLayout() =>
+      ChartsLayoutConfig.resolveDonutLayout(getChartsLayoutConfig());
 
   /// Resolves the color palette for charts
   List<Color> resolveChartPalette() {

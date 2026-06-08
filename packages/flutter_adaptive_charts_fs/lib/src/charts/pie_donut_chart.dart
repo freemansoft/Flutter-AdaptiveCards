@@ -49,6 +49,9 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
   }
 
   void _parseData() {
+    final layout = widget.isDonut
+        ? styleResolver.resolveDonutChartLayout()
+        : styleResolver.resolvePieChartLayout();
     // Expected structure: data: { series: [ { data: [ { x: "Label", y: 10, color: "#FF0000" } ] } ] }
     // Or simplified: data entries.
     // We need to look at AC Chart schema.
@@ -79,11 +82,11 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
             value: value,
             title: title,
             color: color,
-            radius: widget.isDonut ? 50 : 100,
-            titleStyle: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+            radius: layout.sectionRadius,
+            titleStyle: TextStyle(
+              fontSize: layout.titleFontSize,
+              fontWeight: layout.titleFontWeight,
+              color: layout.titleColor,
             ),
           ),
         );
@@ -93,15 +96,19 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
 
   @override
   Widget build(BuildContext context) {
+    final layout = widget.isDonut
+        ? styleResolver.resolveDonutChartLayout()
+        : styleResolver.resolvePieChartLayout();
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: SizedBox(
-        height: 200,
+        height: layout.height,
         child: PieChart(
           PieChartData(
             sections: sections,
-            centerSpaceRadius: widget.isDonut ? 40 : 0,
-            sectionsSpace: 2,
+            centerSpaceRadius: layout.centerSpaceRadius,
+            sectionsSpace: layout.sectionsSpace,
           ),
         ),
       ),

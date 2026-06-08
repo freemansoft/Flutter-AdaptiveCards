@@ -155,6 +155,7 @@ class Blue8x8Image {
 Widget getTestWidgetFromPath({
   required String path,
   Key? key,
+  HostConfigs? hostConfigs,
   void Function(OpenUrlActionInvoke invoke)? onOpenUrl,
   void Function(OpenUrlDialogActionInvoke invoke)? onOpenUrlDialog,
   void Function(SubmitActionInvoke invoke)? onSubmit,
@@ -168,6 +169,7 @@ Widget getTestWidgetFromPath({
     map: map,
     key: key,
     title: path,
+    hostConfigs: hostConfigs,
     onOpenUrl: onOpenUrl,
     onOpenUrlDialog: onOpenUrlDialog,
     onSubmit: onSubmit,
@@ -181,6 +183,7 @@ Widget getTestWidgetFromMap({
   required Map<String, dynamic> map,
   required String title,
   Key? key,
+  HostConfigs? hostConfigs,
   void Function(OpenUrlActionInvoke invoke)? onOpenUrl,
   void Function(OpenUrlDialogActionInvoke invoke)? onOpenUrlDialog,
   void Function(SubmitActionInvoke invoke)? onSubmit,
@@ -196,7 +199,7 @@ Widget getTestWidgetFromMap({
     // debug "show json" panes don't show in prod
     // so dislable them in the golden images
     showDebugJson: false,
-    hostConfigs: HostConfigs(),
+    hostConfigs: hostConfigs ?? HostConfigs(),
   );
 
   // this should generate an action handler set instead but the LLM
