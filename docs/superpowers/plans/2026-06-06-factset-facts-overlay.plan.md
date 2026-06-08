@@ -1,6 +1,8 @@
 # FactSet Facts Overlay Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
+
+**Status:** **Implemented** (shipped in **0.10.0**). `setFacts`/`clearFacts`, reactive `AdaptiveFactSet`, Widgetbook knob demo. Checkboxes marked complete; do not re-implement.
 
 **Goal:** Enable runtime replacement of a `FactSet`'s `facts` array via Riverpod document overlays (full list replacement at FactSet id), reactive `AdaptiveFactSet` rendering, host APIs, tests, docs, and a Widgetbook knob demo.
 
@@ -42,7 +44,7 @@
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/models/fact.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/models/fact_test.dart`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 Add to `fact_test.dart` inside the `Fact` group:
 
@@ -57,13 +59,13 @@ test('factsToJsonList round-trips', () {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/models/fact_test.dart --name "factsToJsonList"`
 
 Expected: FAIL — `factsToJsonList` not defined
 
-- [ ] **Step 3: Implement helper**
+- [x] **Step 3: Implement helper**
 
 Add after `factsFromJsonList` in `fact.dart`:
 
@@ -73,13 +75,13 @@ List<Map<String, dynamic>> factsToJsonList(List<Fact> facts) =>
     facts.map((f) => f.toJson()).toList();
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/models/fact_test.dart`
 
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/models/fact.dart \
@@ -96,7 +98,7 @@ git commit -m "feat: add factsToJsonList helper for overlay merge"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/models/adaptive_card_update.dart`
 
-- [ ] **Step 1: Extend `ElementOverlay`**
+- [x] **Step 1: Extend `ElementOverlay`**
 
 In `adaptive_card_document.dart`:
 
@@ -121,7 +123,7 @@ bool clearFacts = false,
 facts: clearFacts ? null : (facts ?? this.facts),
 ```
 
-- [ ] **Step 2: Extend `AdaptiveElementUpdate`**
+- [x] **Step 2: Extend `AdaptiveElementUpdate`**
 
 In `adaptive_card_update.dart`:
 
@@ -141,13 +143,13 @@ final List<Fact>? facts;
 final bool clearFacts;
 ```
 
-- [ ] **Step 3: Run analyzer**
+- [x] **Step 3: Run analyzer**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter analyze lib/src/riverpod/adaptive_card_document.dart lib/src/models/adaptive_card_update.dart`
 
 Expected: no errors (tests may not compile until Task 3)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart \
@@ -164,7 +166,7 @@ git commit -m "feat: add facts field to ElementOverlay and AdaptiveElementUpdate
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart`
 
-- [ ] **Step 1: Write failing notifier tests**
+- [x] **Step 1: Write failing notifier tests**
 
 Add import: `import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';`
 
@@ -278,13 +280,13 @@ test('updatesFromPatchMap parses facts array', () {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/riverpod/adaptive_card_document_notifier_test.dart --name "facts overlay"`
 
 Expected: FAIL — `setFacts` / `clearFacts` not defined
 
-- [ ] **Step 3: Implement notifier methods**
+- [x] **Step 3: Implement notifier methods**
 
 Add import for `fact.dart` if not present.
 
@@ -340,13 +342,13 @@ facts: _factsFromPatch(patch['facts']),
 clearFacts: patch['clearFacts'] == true,
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/riverpod/adaptive_card_document_notifier_test.dart --name "facts overlay"`
 
 Expected: PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart \
@@ -362,7 +364,7 @@ git commit -m "feat: add setFacts and clearFacts to document notifier"
 
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart`
 
-- [ ] **Step 1: Add merge**
+- [x] **Step 1: Add merge**
 
 Add import: `import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';`
 
@@ -374,13 +376,13 @@ if (overlay?.facts != null) {
 }
 ```
 
-- [ ] **Step 2: Run notifier tests (resolved merge covered)**
+- [x] **Step 2: Run notifier tests (resolved merge covered)**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/riverpod/adaptive_card_document_notifier_test.dart --name "setFacts merges"`
 
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart
@@ -395,7 +397,7 @@ git commit -m "feat: merge facts overlay in resolvedElementProvider"
 
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart`
 
-- [ ] **Step 1: Add delegates**
+- [x] **Step 1: Add delegates**
 
 Add import for `Fact` model if not re-exported via main barrel (use `src/models/fact.dart` or public export).
 
@@ -417,13 +419,13 @@ void clearFacts(String id) {
 }
 ```
 
-- [ ] **Step 2: Run analyzer**
+- [x] **Step 2: Run analyzer**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter analyze lib/src/flutter_raw_adaptive_card.dart`
 
 Expected: no errors
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart
@@ -439,7 +441,7 @@ git commit -m "feat: expose setFacts and clearFacts on RawAdaptiveCardState"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/containers/fact_set.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/containers/fact_set_overlay_test.dart` (created in Task 7 — run widget test after both tasks)
 
-- [ ] **Step 1: Refactor widget**
+- [x] **Step 1: Refactor widget**
 
 Add imports:
 
@@ -487,13 +489,13 @@ super.dispose();
 
 Ensure `dispose` override exists (add if missing).
 
-- [ ] **Step 2: Run analyzer**
+- [x] **Step 2: Run analyzer**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter analyze lib/src/cards/containers/fact_set.dart`
 
 Expected: no errors
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/cards/containers/fact_set.dart
@@ -508,7 +510,7 @@ git commit -m "feat: watch resolved facts in AdaptiveFactSet"
 
 - Create: `packages/flutter_adaptive_cards_fs/test/containers/fact_set_overlay_test.dart`
 
-- [ ] **Step 1: Write widget tests**
+- [x] **Step 1: Write widget tests**
 
 ```dart
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
@@ -587,13 +589,13 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run widget tests**
+- [x] **Step 2: Run widget tests**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/containers/fact_set_overlay_test.dart`
 
 Expected: PASS (requires Tasks 3–6 complete)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/test/containers/fact_set_overlay_test.dart
@@ -610,7 +612,7 @@ git commit -m "test: FactSet overlay widget tests for setFacts and clearFacts"
 - Create: `widgetbook/lib/fact_set_overlay_page.dart`
 - Modify: `widgetbook/lib/adaptive_cards_use_cases.dart`
 
-- [ ] **Step 1: Add demo JSON**
+- [x] **Step 1: Add demo JSON**
 
 Create `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`:
 
@@ -649,7 +651,7 @@ Create `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`:
 }
 ```
 
-- [ ] **Step 2: Create overlay page**
+- [x] **Step 2: Create overlay page**
 
 Create `widgetbook/lib/fact_set_overlay_page.dart` following `text_block_overlay_page.dart`:
 
@@ -812,7 +814,7 @@ class _FactSetOverlayPageState extends State<FactSetOverlayPage> {
 }
 ```
 
-- [ ] **Step 3: Register use case**
+- [x] **Step 3: Register use case**
 
 In `widgetbook/lib/adaptive_cards_use_cases.dart`:
 
@@ -830,19 +832,19 @@ Widget buildFactSetFactsOverlay(BuildContext context) {
 }
 ```
 
-- [ ] **Step 4: Regenerate Widgetbook directories**
+- [x] **Step 4: Regenerate Widgetbook directories**
 
 Run: `cd widgetbook && fvm dart run build_runner build --delete-conflicting-outputs`
 
 Expected: `main.directories.g.dart` updated with new use case
 
-- [ ] **Step 5: Run analyzer on widgetbook**
+- [x] **Step 5: Run analyzer on widgetbook**
 
 Run: `cd widgetbook && fvm flutter analyze`
 
 Expected: no errors
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add widgetbook/lib/fact_set_overlay_page.dart \
@@ -862,7 +864,7 @@ git commit -m "feat(widgetbook): FactSet facts overlay knob demo"
 - Modify: `packages/flutter_adaptive_cards_fs/README.md`
 - Modify: `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 
-- [ ] **Step 1: Update `reactive-riverpod.md`**
+- [x] **Step 1: Update `reactive-riverpod.md`**
 
 In the overlay field list / merge rules section, add:
 
@@ -875,13 +877,13 @@ In the runtime-writes table, add row:
 
 Reference Widgetbook **FactSet → Facts overlay (knob)** for manual verification.
 
-- [ ] **Step 2: Update README host API table**
+- [x] **Step 2: Update README host API table**
 
 Add:
 
 | `setFacts(id, facts)` / `clearFacts(id)` | Replace or clear `FactSet` facts overlay |
 
-- [ ] **Step 3: Update CHANGELOG**
+- [x] **Step 3: Update CHANGELOG**
 
 Under unreleased / current version section:
 
@@ -892,7 +894,7 @@ Under unreleased / current version section:
 - Widgetbook **FactSet → Facts overlay (knob)** demo for interactive overlay testing.
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add docs/reactive-riverpod.md \
@@ -905,25 +907,25 @@ git commit -m "docs: document FactSet facts overlay APIs"
 
 ### Task 10: Full verification
 
-- [ ] **Step 1: Format**
+- [x] **Step 1: Format**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm dart format lib/ test/`
 
 Run: `cd widgetbook && fvm dart format lib/`
 
-- [ ] **Step 2: Analyze**
+- [x] **Step 2: Analyze**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter analyze`
 
 Expected: no issues
 
-- [ ] **Step 3: Test suite (non-golden)**
+- [x] **Step 3: Test suite (non-golden)**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`
 
 Expected: all PASS
 
-- [ ] **Step 4: Manual Widgetbook check**
+- [x] **Step 4: Manual Widgetbook check**
 
 Run: `cd widgetbook && fvm flutter run -d macos` (or available device)
 

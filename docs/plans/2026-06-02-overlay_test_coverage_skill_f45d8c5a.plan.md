@@ -1,20 +1,22 @@
 ---
 name: Overlay test coverage SKILL
-overview: Audit existing overlay tests in `flutter_adaptive_cards_fs`, conclude coverage is strong at the notifier/merge layer but incomplete per element and action type at the widget layer, and document the matrix plus gaps in the element-registry skill.
+overview: "Superseded by 2026-06-01-overlay_test_coverage_bd9b10a4.plan.md — skill sections added; follow-up widget tests largely completed. Retained as analysis reference."
 todos:
   - id: skill-overlay-section
     content: Add "Overlay test coverage" section with verdict, matrix, gaps, and test-add guidance to adaptive-cards-element-registry/SKILL.md
-    status: pending
+    status: completed
   - id: skill-testing-crossref
     content: Extend "Testing a New Element" + optional gaps pointer in adaptive-cards-testing/SKILL.md
-    status: pending
+    status: completed
   - id: verify-no-code-changes
     content: Doc-only update unless user requests implementing gap-filling tests
-    status: pending
+    status: completed
 isProject: false
 ---
 
 # Overlay test coverage analysis (element-registry skill)
+
+> **Status:** **Superseded / implemented.** Canonical plan with full todo history: [`2026-06-01-overlay_test_coverage_bd9b10a4.plan.md`](2026-06-01-overlay_test_coverage_bd9b10a4.plan.md). Living matrix: `.agents/skills/adaptive-cards-element-registry/SKILL.md` § Overlay test coverage.
 
 ## Verdict
 

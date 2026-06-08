@@ -1,41 +1,43 @@
 ---
 name: Reactive Riverpod in library
-overview: Reintroduce Riverpod inside `flutter_adaptive_cards_fs` as the reactive source of truth for card JSON and per-element runtime state, replacing imperative widget registration and element-tree walks. Update `AGENTS.md` and architecture docs to explicitly allow Riverpod usage in this package and reflect the new policy.
+overview: "Superseded duplicate — see 2026-05-31-reactive_riverpod_in_flutter_adaptive_cards_fs_d78f1610.plan.md (all todos completed). Riverpod reactive document state is implemented in flutter_adaptive_cards_fs."
 todos:
   - id: build-green-first
     content: Make the package compile/analyze again (add flutter_riverpod dependency, fix duplicated riverpod-based Dart files, run fvm flutter analyze)
-    status: pending
+    status: completed
   - id: policy-docs
     content: Update AGENTS.md, add doc/reactive-riverpod.md, revise replace-riverpod.md and Architecture-Overview.md
-    status: pending
+    status: completed
   - id: deps-scope
     content: Add flutter_riverpod; wrap RawAdaptiveCard/AdaptiveCardElement builds with ProviderScope + overrides
-    status: pending
+    status: completed
   - id: document-notifier
     content: Implement AdaptiveCardDocumentNotifier (JSON + visibility + inputs + show-card id)
-    status: pending
+    status: completed
   - id: toggle-visibility
     content: Migrate ToggleVisibility + AdaptiveVisibilityMixin to ref.watch/notifier; remove tree walks
-    status: pending
+    status: completed
   - id: show-card
     content: Migrate ShowCard to expandedShowCardId; remove _registeredCards and registerCardWidget
-    status: pending
+    status: completed
   - id: form-actions
     content: Migrate submit/execute/reset to collect state from document notifier
-    status: pending
+    status: completed
   - id: element-migration
     content: Convert element State classes to ConsumerState + watched slices; cleanup InheritedReferenceResolver DI
-    status: pending
+    status: completed
   - id: tests-charts
     content: Update package tests and flutter_adaptive_charts_fs mixin alignment; semver changelog
-    status: pending
+    status: completed
   - id: todo-1780280602228-zo0iu2dfo
     content: Update flutter_adaptive_charts_fs to work with the new structure
-    status: pending
+    status: completed
 isProject: false
 ---
 
 # Reactive Riverpod in flutter_adaptive_cards_fs
+
+> **Status:** **Superseded / implemented.** Canonical completed plan: [`2026-05-31-reactive_riverpod_in_flutter_adaptive_cards_fs_d78f1610.plan.md`](2026-05-31-reactive_riverpod_in_flutter_adaptive_cards_fs_d78f1610.plan.md). Retained for historical detail only.
 
 ## Scope (confirmed)
 

@@ -1,6 +1,6 @@
 ---
 name: Dependent ChoiceSet demos
-overview: "Phase 1 complete (Widgetbook demos, package tests, sample polish, filtered ChoiceSet title/value fix, docs). Phase 2 pending: library Data.Query associatedInputs parse + merge into onChange DataQuery.parameters."
+overview: "Phase 1 complete. Phase 2 (associatedInputs) implemented in backend-host-integration plan (0.10.0). Optional phase2b (typeahead onChange on keystroke) still open."
 todos:
   - id: new-json
     content: Create value_changed_action_dependent_query.json (Teams-shaped city with choices.data)
@@ -33,16 +33,16 @@ todos:
     content: form-inputs (dependent + filtered sections, sequence diagram), Implementation-Status, README, CHANGELOG, plans, testing skill
     status: completed
   - id: phase2-spec
-    content: (Future) Write design spec for Data.Query associatedInputs in docs/superpowers/specs/
-    status: pending
+    content: Design spec for Data.Query associatedInputs (docs/superpowers/specs/2026-06-07-backend-host-integration-design.md)
+    status: completed
   - id: phase2-library
-    content: (Future) Parse associatedInputs; merge sibling inputs via collectInputValues into DataQuery.parameters on onChange
-    status: pending
+    content: Parse associatedInputs; merge sibling inputs via collectInputValues into DataQuery.parameters on onChange
+    status: completed
   - id: phase2-demo
-    content: (Future) Simplify Option 2 handler to use dataQuery.parameters['country']; sync test handler
-    status: pending
+    content: Simplify Option 2 handler to use dataQuery.parameters['country']; sync test handler
+    status: completed
   - id: phase2b-typeahead
-    content: (Future, optional) onChange on filtered search keystroke + Teams invoke-on-type parity
+    content: (Optional) onChange on filtered search keystroke + Teams invoke-on-type parity — not implemented; deferred per backend-host spec
     status: pending
 isProject: false
 ---
@@ -60,9 +60,9 @@ isProject: false
 | **Option 2 — Teams Data.Query** | New copy with `choices.data`                                                                                                       | Same reset + host cascade, plus Teams-shaped dynamic city field (`filtered` + `Data.Query`) |
 
 
-Phase 1 is **Widgetbook + host handler** work, plus a **library fix** for filtered ChoiceSet (search/display **titles**, submit/`onChange` **values**) so Option 2 UX matches Teams expectations. Handlers still preload city choices on country change because `associatedInputs: "auto"` is **not implemented** in the renderer (JSON field is ignored today).
+Phase 1 is **Widgetbook + host handler** work, plus a **library fix** for filtered ChoiceSet (search/display **titles**, submit/`onChange` **values**) so Option 2 UX matches Teams expectations.
 
-**Phase 2 (future):** Library support for `Data.Query.associatedInputs` so Option 2 handlers receive sibling input values (e.g. `country`) automatically in `onChange` / `DataQuery` — see [Future Phase 2](#future-phase-2-library-associatedinputs) below.
+**Phase 2 (implemented):** `Data.Query.associatedInputs` and Submit/Execute `associatedInputs` shipped in **0.10.0** via [`docs/superpowers/plans/2026-06-07-backend-host-integration.plan.md`](../superpowers/plans/2026-06-07-backend-host-integration.plan.md). Option 2 handlers use `invoke.dataQuery?.parameters?['country']` on city `onChange`.
 
 ---
 
@@ -74,8 +74,9 @@ Phase 1 is **Widgetbook + host handler** work, plus a **library fix** for filter
 | **Phase 1 (core)**       | **Complete** | JSON samples, `DependentChoiceSetDemoPage`, two Widgetbook use cases, handler + post-frame `applyUpdates`                                                                                                                                                             |
 | **Phase 1 (follow-ups)** | **Complete** | Package tests, Submit/`isRequired` on samples, filtered title/value fix, docs + sequence diagram in [`form-inputs.md`](docs/form-inputs.md)                                                                                                                         |
 | **Phase 1 docs**         | **Complete** | [Shared handler](#shared-handler-option-1-vs-option-2); dart comments in [`dependent_choice_set_demo_page.dart`](widgetbook/lib/dependent_choice_set_demo_page.dart)                                                                                                  |
-| **Phase 2**              | **Pending**  | `associatedInputs` parse + merge; Option 2 handler simplification ([todos](#todo-list))                                                                                                                                                                               |
-| **Phase 2b (optional)**  | **Pending**  | `onChange` on filtered search keystroke (Teams invoke-on-type parity)                                                                                                                                                                                                 |
+| **Phase 2**              | **Complete** | `associatedInputs` parse + merge; Option 2 handler uses `dataQuery.parameters['country']` ([backend-host plan](../superpowers/plans/2026-06-07-backend-host-integration.plan.md))                                                                                    |
+| **Phase 2b (optional)**  | **Open**     | Typeahead `onChange` on keystroke — deferred per backend-host spec                                                                                                                                                                                                    |
+| **Phase 2b (optional)**  | **Open**     | `onChange` on filtered search keystroke (Teams invoke-on-type parity) — deferred                                                                                                                                                                                      |
 
 
 ---
@@ -307,17 +308,17 @@ No separate Phase 1 spec file. Phase 2 spec todo: `docs/superpowers/specs/…-da
 
 - Live typeahead invoke on each keystroke (Teams bot `application/search` / `application/vnd.microsoft.search.searchResponse`) — deferred to Phase 2b
 - Changes to [`GenericPage`](widgetbook/lib/generic_page.dart) — other samples keep log-only `onChange`
-- Library `associatedInputs` merge — Phase 2
+- Library `associatedInputs` merge — **done** (Phase 2, 0.10.0)
 
 **Was optional, now done:** package test mirror ([`dependent_choice_set_test.dart`](packages/flutter_adaptive_cards_fs/test/inputs/dependent_choice_set_test.dart)); reset semantics still covered by [`value_changed_action_reset_test.json`](packages/flutter_adaptive_cards_fs/test/samples/value_changed_action_reset_test.json) / targeted reset tests
 
 ---
 
-## Future Phase 2: Library `associatedInputs`
+## Phase 2: Library `associatedInputs` ✅
 
-**Status:** Planned follow-up (not part of Phase 1 implementation). Preserved here so Option 3 is not lost.
+**Status:** **Implemented** (0.10.0). Spec and plan: [`docs/superpowers/specs/2026-06-07-backend-host-integration-design.md`](../superpowers/specs/2026-06-07-backend-host-integration-design.md), [`docs/superpowers/plans/2026-06-07-backend-host-integration.plan.md`](../superpowers/plans/2026-06-07-backend-host-integration.plan.md).
 
-**Problem today:** [`DataQuery`](packages/flutter_adaptive_cards_fs/lib/src/models/data_query.dart) does **not** parse or apply `associatedInputs`. The field may appear in card JSON (`choices.data`) but is ignored. When a filtered ChoiceSet with `associatedInputs: "auto"` fires `onChange`, the host does **not** receive other card input values — unlike Teams, which includes them in the invoke payload:
+**Was the problem (pre-0.10.0):** [`DataQuery`](packages/flutter_adaptive_cards_fs/lib/src/models/data_query.dart) did not parse or apply `associatedInputs`. When a filtered ChoiceSet with `associatedInputs: "auto"` fired `onChange`, the host did not receive other card input values — unlike Teams, which includes them in the invoke payload:
 
 ```json
 "data": { "country": "<value of the country input>" }

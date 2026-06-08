@@ -1,6 +1,8 @@
 # initData on Input.Date Fix Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
+
+**Status:** **Implemented** (shipped in **0.10.0**). `date_input_utils.dart`, overlay tests, README/CHANGELOG updated. Checkboxes marked complete; do not re-implement.
 
 **Goal:** Fix `initData` / `initInput` seeding for `Input.Date` so host-provided dates appear in the field, survive submit/validation, and match other inputs' overlay semantics (Widgetbook `ac-qv-faqs.json` `bookingdate` scenario).
 
@@ -10,7 +12,7 @@
 
 **Design spec:** [`docs/superpowers/specs/2026-06-07-initdata-date-input-fix-design.md`](../specs/2026-06-07-initdata-date-input-fix-design.md)
 
-**Symptom reference:** `packages/flutter_adaptive_cards_fs/README.md` — "`initData` does not appear to be working on date fields"; Widgetbook use case `Form with initData` seeds `'bookingdate': '2023-05-08'` against `widgetbook/assets/ac-qv-faqs.json`.
+**Symptom reference (resolved):** Widgetbook use case `Form with initData` seeds `'bookingdate': '2023-05-08'` against `widgetbook/assets/ac-qv-faqs.json`. README open-issue note removed in 0.10.0.
 
 ---
 
@@ -38,7 +40,7 @@
 
 > **Note:** `date_time_utils.dart` handles TextBlock `{{DATE}}` / `{{TIME}}` macros only. Do not merge into that file — `date_input_utils.dart` is for `Input.Date` parse/format.
 
-- [ ] **Step 1: Write failing unit tests**
+- [x] **Step 1: Write failing unit tests**
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -98,13 +100,13 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/utils/date_input_utils_test.dart`
 
 Expected: FAIL — `parseAdaptiveDateValue` not defined
 
-- [ ] **Step 3: Implement helper**
+- [x] **Step 3: Implement helper**
 
 ```dart
 import 'package:intl/intl.dart';
@@ -144,13 +146,13 @@ String formatAdaptiveDateValue(DateTime date) =>
     _adaptiveDateFormat.format(date);
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/utils/date_input_utils_test.dart`
 
 Expected: All tests PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/utils/date_input_utils.dart \
@@ -170,7 +172,7 @@ git commit -m "feat: add shared Adaptive Card date parse/format helpers"
 
 All widget tests and assertion updates below (Steps 1a–1d) are done **before** editing `date.dart` so the targeted cases go red, then green after Step 3.
 
-- [ ] **Step 1: Write failing widget tests**
+- [x] **Step 1: Write failing widget tests**
 
 **1a.** Add to `date_edgecases_test.dart` — empty controller (not placeholder):
 
@@ -366,7 +368,7 @@ In `date_input_test.dart`, change the appendInput assertion from `startsWith` to
 expect(out['initDate'], '2024-01-02');
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run:
 
@@ -387,7 +389,7 @@ Expected failures **before** the fix:
 | 1c initData overlay — `selectedDateTime` | May **FAIL** if placeholder path left `selectedDateTime` null |
 | 1d `date_input_test` / edgecases appendInput | **FAIL** — ISO-8601 vs exact `yyyy-MM-dd` |
 
-- [ ] **Step 3: Update `date.dart`**
+- [x] **Step 3: Update `date.dart`**
 
 Changes:
 
@@ -443,7 +445,7 @@ rawRootCardWidgetState.changeValue(id, formatted);
 notifyUserInputValueChanged(formatted, committed: true);
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run:
 
@@ -456,7 +458,7 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test \
 
 Expected: All PASS
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/date.dart \
@@ -475,7 +477,7 @@ git commit -m "fix: sync Input.Date controller from initData without placeholder
 - `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 - `docs/Implementation-Status.md`
 
-- [ ] **Step 1: Run widgetbook or integration smoke**
+- [x] **Step 1: Run widgetbook or integration smoke**
 
 Run Widgetbook locally and open **Forms → Form with initData**. Confirm `Booking Date` shows `2023-05-08`, not placeholder text.
 
@@ -491,7 +493,7 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test \
 
 Expected: All PASS
 
-- [ ] **Step 2: Update docs and changelog**
+- [x] **Step 2: Update docs and changelog**
 
 **README** — remove or strike through:
 

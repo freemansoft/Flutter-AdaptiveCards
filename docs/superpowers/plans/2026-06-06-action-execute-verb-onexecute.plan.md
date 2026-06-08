@@ -1,8 +1,8 @@
 # Host callback invoke payloads Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
-**Status:** **Phase 1 (Tasks 1–9)** — implemented (`SubmitActionInvoke`, `ExecuteActionInvoke`, canvas handler cleanup, docs). **Phase 2 (Tasks 10–17)** — pending (`OpenUrlActionInvoke`, `OpenUrlDialogActionInvoke`, `InputChangeInvoke`).
+**Status:** **Implemented** (2026-06-07 audit). **Phase 1 (Tasks 1–9)** and **Phase 2 (Tasks 10–17)** shipped in **0.9.0** (`OpenUrlActionInvoke`, `OpenUrlDialogActionInvoke`, `InputChangeInvoke` included). Checkboxes below marked complete for tracking; do not re-implement.
 
 **Goal:** Deliver typed invoke payloads for **all** host callbacks on **`InheritedAdaptiveCardHandlers`** (and matching **`RawAdaptiveCard`** / **`AdaptiveCardsCanvas.onChange`** wiring):
 
@@ -31,9 +31,9 @@ Remove dead action handler fields from **`AdaptiveCardsCanvasState`** (Phase 1).
 
 ---
 
-## Phase 1 — Submit / Execute (implemented)
+## Phase 1 — Submit / Execute ✅
 
-See tasks below. Checkboxes left as `- [ ]` for historical record; work is done in the codebase.
+Phase 2 (Tasks 10–17) is also complete — see [Phase 2 — OpenUrl / OpenUrlDialog / onChange](#phase-2--openurl--openurldialog--onchange) below.
 
 ---
 
@@ -94,7 +94,7 @@ See tasks below. Checkboxes left as `- [ ]` for historical record; work is done 
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart`
 
-- [ ] **Step 1: Add both models + shared helper**
+- [x] **Step 1: Add both models + shared helper**
 
 ```dart
 /// Reads action `id` from card JSON as a string, or null when absent.
@@ -162,7 +162,7 @@ class ExecuteActionInvoke {
 
 Add `///` doc references to `DefaultSubmitAction` / `DefaultExecuteAction` (import not required in model file — reference by name in docs only).
 
-- [ ] **Step 2: Export from public library**
+- [x] **Step 2: Export from public library**
 
 In `flutter_adaptive_cards_fs.dart`, add:
 
@@ -170,13 +170,13 @@ In `flutter_adaptive_cards_fs.dart`, add:
 export 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 ```
 
-- [ ] **Step 3: Analyze**
+- [x] **Step 3: Analyze**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm dart analyze lib/src/models/action_invoke.dart`
 
 Expected: no issues.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart \
@@ -193,7 +193,7 @@ git commit -m "feat: add SubmitActionInvoke and ExecuteActionInvoke payload type
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/generic_action.dart`
 
-- [ ] **Step 1: Update both callbacks in `action_handler.dart`**
+- [x] **Step 1: Update both callbacks in `action_handler.dart`**
 
 Add import:
 
@@ -217,7 +217,7 @@ Change fields + docs:
   final void Function(ExecuteActionInvoke invoke) onExecute;
 ```
 
-- [ ] **Step 2: Align `GenericExecuteAction.tap` with Submit**
+- [x] **Step 2: Align `GenericExecuteAction.tap` with Submit**
 
 In `generic_action.dart`, replace the Execute override with:
 
@@ -236,13 +236,13 @@ abstract class GenericExecuteAction extends GenericAction {
 
 Remove the `String? verb` parameter entirely (read from `adaptiveMap` in default impl).
 
-- [ ] **Step 3: Analyze**
+- [x] **Step 3: Analyze**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm dart analyze lib/src/action/`
 
 Expected: errors in `default_actions.dart`, `execute.dart`, and tests — fixed in next tasks.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart \
@@ -260,7 +260,7 @@ git commit -m "refactor: type onSubmit/onExecute invoke callbacks; simplify Gene
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/test/utils/test_utils.dart`
 
-- [ ] **Step 1: Write failing Submit tests**
+- [x] **Step 1: Write failing Submit tests**
 
 Create `test/actions/submit_action_invoke_test.dart`:
 
@@ -349,7 +349,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Update `test_utils.dart` — `onSubmit` typedef**
+- [x] **Step 2: Update `test_utils.dart` — `onSubmit` typedef**
 
 Change `onSubmit` from `Function(Map<dynamic, dynamic>)?` to `void Function(SubmitActionInvoke invoke)?` (import `action_invoke.dart`).
 
@@ -362,13 +362,13 @@ onExecute: onExecute ?? (_) {},
 
 (`onExecute` typedef updated in Task 4 Step 2 — do both in one edit if preferred.)
 
-- [ ] **Step 3: Run tests — expect FAIL**
+- [x] **Step 3: Run tests — expect FAIL**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/actions/submit_action_invoke_test.dart`
 
 Expected: compile errors or FAIL.
 
-- [ ] **Step 4: Implement `DefaultSubmitAction`**
+- [x] **Step 4: Implement `DefaultSubmitAction`**
 
 In `default_actions.dart`, add import for `action_invoke.dart`.
 
@@ -392,13 +392,13 @@ Replace Submit handler tail (after validation):
     }
 ```
 
-- [ ] **Step 5: Run tests — expect PASS**
+- [x] **Step 5: Run tests — expect PASS**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/actions/submit_action_invoke_test.dart`
 
 Expected: PASS (2 tests).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart \
@@ -417,7 +417,7 @@ git commit -m "feat: deliver Action.Submit actionId and data via SubmitActionInv
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/actions/execute.dart`
 
-- [ ] **Step 1: Write failing Execute tests**
+- [x] **Step 1: Write failing Execute tests**
 
 Create `test/actions/execute_verb_test.dart`:
 
@@ -509,7 +509,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Ensure `test_utils.dart` has both invoke typedefs**
+- [x] **Step 2: Ensure `test_utils.dart` has both invoke typedefs**
 
 If not done in Task 3:
 
@@ -518,13 +518,13 @@ void Function(SubmitActionInvoke invoke)? onSubmit,
 void Function(ExecuteActionInvoke invoke)? onExecute,
 ```
 
-- [ ] **Step 3: Run tests — expect FAIL**
+- [x] **Step 3: Run tests — expect FAIL**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/actions/execute_verb_test.dart`
 
 Expected: compile errors or FAIL.
 
-- [ ] **Step 4: Implement `DefaultExecuteAction`**
+- [x] **Step 4: Implement `DefaultExecuteAction`**
 
 Replace Execute handler tail:
 
@@ -548,17 +548,17 @@ Replace Execute handler tail:
 
 Remove the unused `String? verb` parameter from `tap()`.
 
-- [ ] **Step 5: Fix `execute.dart` call site**
+- [x] **Step 5: Fix `execute.dart` call site**
 
 Remove `verb: adaptiveMap['verb']?.toString(),` from the `action.tap(...)` call.
 
-- [ ] **Step 6: Run tests — expect PASS**
+- [x] **Step 6: Run tests — expect PASS**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/actions/execute_verb_test.dart`
 
 Expected: PASS (2 tests).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart \
@@ -576,7 +576,7 @@ git commit -m "feat: deliver Action.Execute verb and id via ExecuteActionInvoke"
 - Modify: `packages/flutter_adaptive_cards_fs/test/select_action_tappable_test.dart`
 - Modify: `packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart`
 
-- [ ] **Step 1: Update selectAction helper + Submit test**
+- [x] **Step 1: Update selectAction helper + Submit test**
 
 In `select_action_tappable_test.dart`:
 
@@ -634,7 +634,7 @@ required void Function(ExecuteActionInvoke invoke) onExecute,
   );
 ```
 
-- [ ] **Step 2: Update Execute selectAction test**
+- [x] **Step 2: Update Execute selectAction test**
 
 ```dart
   testWidgets(
@@ -680,11 +680,11 @@ required void Function(ExecuteActionInvoke invoke) onExecute,
   );
 ```
 
-- [ ] **Step 3: Mirror charts `test_utils.dart`**
+- [x] **Step 3: Mirror charts `test_utils.dart`**
 
 Apply both `onSubmit` / `onExecute` typedef + import changes.
 
-- [ ] **Step 4: Run affected tests**
+- [x] **Step 4: Run affected tests**
 
 Run:
 
@@ -695,7 +695,7 @@ cd ../flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden
 
 Expected: PASS (fix compile errors in tests that still use `onSubmit: (_) {}` — no change needed if `_` accepts any single arg).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/test/select_action_tappable_test.dart \
@@ -712,7 +712,7 @@ git commit -m "test: cover Submit/Execute invoke payloads via selectAction"
 
 **Context:** `AdaptiveCardsCanvasState` declares **`onSubmit`**, **`onExecute`**, and **`onOpenUrl`** but never assigns or passes them to `RawAdaptiveCard.fromMap`. Submit, Execute, and OpenUrl routing goes through **`InheritedAdaptiveCardHandlers`** inside **`DefaultSubmitAction`**, **`DefaultExecuteAction`**, and **`DefaultOpenUrlAction`**. The canvas wires **`onChange`** only (from widget prop or inherited handlers). Host apps should wrap the card tree with **`InheritedAdaptiveCardHandlers`** for all action callbacks.
 
-- [ ] **Step 1: Delete unused fields from `AdaptiveCardsCanvasState`**
+- [x] **Step 1: Delete unused fields from `AdaptiveCardsCanvasState`**
 
 Remove these lines (approx. 209–216):
 
@@ -729,7 +729,7 @@ Remove these lines (approx. 209–216):
 
 Leave **`onChange`** resolution in `didChangeDependencies` unchanged.
 
-- [ ] **Step 2: Grep for references**
+- [x] **Step 2: Grep for references**
 
 Run:
 
@@ -739,13 +739,13 @@ rg 'AdaptiveCardsCanvasState.*on(Submit|Execute|OpenUrl)|canvasState\\.on(Submit
 
 Expected: no matches (fields were never referenced outside the declaration).
 
-- [ ] **Step 3: Analyze**
+- [x] **Step 3: Analyze**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm dart analyze lib/src/adaptive_cards_canvas.dart`
 
 Expected: no issues.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart
@@ -756,19 +756,19 @@ git commit -m "chore: remove unused action handler fields from AdaptiveCardsCanv
 
 ### Task 7: Full package verification
 
-- [ ] **Step 1: Run library test suite**
+- [x] **Step 1: Run library test suite**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`
 
 Expected: all pass. Tests that only increment a counter (`onSubmit: (_) => submitCount++`) remain valid.
 
-- [ ] **Step 2: Analyze**
+- [x] **Step 2: Analyze**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm dart analyze`
 
 Expected: no errors.
 
-- [ ] **Step 3: Commit** (only if analyzer/format fixes were needed)
+- [x] **Step 3: Commit** (only if analyzer/format fixes were needed)
 
 ---
 
@@ -778,7 +778,7 @@ Expected: no errors.
 - Modify: `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 - Modify: `packages/flutter_adaptive_cards_fs/README.md`
 
-- [ ] **Step 1: CHANGELOG (under new `## [0.10.0]` or next release section)**
+- [x] **Step 1: CHANGELOG (under new `## [0.10.0]` or next release section)**
 
 ```markdown
 ### Changed
@@ -797,7 +797,7 @@ Expected: no errors.
 - Tests: `test/actions/submit_action_invoke_test.dart`, `test/actions/execute_verb_test.dart`.
 ```
 
-- [ ] **Step 2: Fix misleading README example**
+- [x] **Step 2: Fix misleading README example**
 
 `packages/flutter_adaptive_cards_fs/README.md` shows `onSubmit` and `onOpenUrl` on `AdaptiveCardsCanvas.network(...)`, but those are not widget constructor parameters — handlers belong on **`InheritedAdaptiveCardHandlers`**. Update the example to wrap the canvas:
 
@@ -819,7 +819,7 @@ InheritedAdaptiveCardHandlers(
 )
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/CHANGELOG.md \
@@ -842,7 +842,7 @@ git commit -m "docs: changelog and README for action invoke payload migration"
 - Modify: `docs/Implementation-Status.md`
 - Modify: `docs/reactive-riverpod.md`
 
-- [ ] **Step 1: Audit for stale references**
+- [x] **Step 1: Audit for stale references**
 
 Run:
 
@@ -864,7 +864,7 @@ Expected hits to fix (minimum set):
 | `docs/Implementation-Status.md` | Action.Submit / Execute notes | Rows + Known Gaps (Step 5) |
 | `docs/reactive-riverpod.md` | Host callbacks paragraph | Invoke payload note (Step 6) |
 
-- [ ] **Step 2: `docs/actions-architecture.md` — add after "Typical Flow"**
+- [x] **Step 2: `docs/actions-architecture.md` — add after "Typical Flow"**
 
 ```markdown
 ## Host action callbacks
@@ -892,7 +892,7 @@ When **`DefaultExecuteAction`** runs:
 Hosts route Teams-style Execute actions on **`invoke.verb`**. **`associatedInputs`** is not yet honored for Submit or Execute — all card inputs are always collected (see [Implementation-Status.md](./Implementation-Status.md#known-gaps)).
 ```
 
-- [ ] **Step 3: `docs/Architecture-Overview.md`**
+- [x] **Step 3: `docs/Architecture-Overview.md`**
 
 Replace Consumer API step 3 (approx. line 60):
 
@@ -904,7 +904,7 @@ In the **Actions** bullet (step 7), optionally add: “Submit/Execute payloads a
 
 Fix broken link if present: [`doc/reactive-riverpod.md`](reactive-riverpod.md) → [`reactive-riverpod.md`](reactive-riverpod.md) (file lives under `docs/`).
 
-- [ ] **Step 4: `docs/form-inputs.md` — remote validation example**
+- [x] **Step 4: `docs/form-inputs.md` — remote validation example**
 
 Replace the example block (approx. lines 25–39):
 
@@ -925,7 +925,7 @@ onSubmit: (SubmitActionInvoke invoke) async {
 
 Add one sentence above the example: “Wire this on **`InheritedAdaptiveCardHandlers`**, not on **`AdaptiveCardsCanvas`**. Use **`invoke.data`** for merged input values; use **`invoke.actionId`** when routing by action `id`.”
 
-- [ ] **Step 5: `docs/Implementation-Status.md`**
+- [x] **Step 5: `docs/Implementation-Status.md`**
 
 **Actions table** — update Submit and Execute **Notes** columns:
 
@@ -940,7 +940,7 @@ Add one sentence above the example: “Wire this on **`InheritedAdaptiveCardHand
 - **`Action.Submit.associatedInputs`** / **`Action.Execute.associatedInputs`**: All inputs on the card are always collected and merged into invoke `data`; per-action `associatedInputs` (`auto` / `none`) is not implemented.
 ```
 
-- [ ] **Step 6: `docs/reactive-riverpod.md`**
+- [x] **Step 6: `docs/reactive-riverpod.md`**
 
 Expand the host callbacks sentence (approx. line 227):
 
@@ -948,13 +948,13 @@ Expand the host callbacks sentence (approx. line 227):
 Host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onChange`, …) remain on **`InheritedAdaptiveCardHandlers`**. These are host integration points, not reactive document state. **`onSubmit`** receives **`SubmitActionInvoke`** (`actionId`, merged `data`); **`onExecute`** receives **`ExecuteActionInvoke`** (`verb`, `actionId`, merged `data`). *(Phase 2 Task 17 documents **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, and **`InputChangeInvoke`**.)*
 ```
 
-- [ ] **Step 7: Re-run audit — expect clean**
+- [x] **Step 7: Re-run audit — expect clean**
 
 Run the Step 1 `rg` command again.
 
 Expected: no remaining stale “bare Map” handler docs in scoped files (grep hits inside this plan file or code blocks describing migration “Before” are OK).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add docs/actions-architecture.md \
@@ -967,14 +967,14 @@ git commit -m "docs: reconcile docs/ with SubmitActionInvoke and ExecuteActionIn
 
 ---
 
-## Phase 2 — OpenUrl / OpenUrlDialog / onChange
+## Phase 2 — OpenUrl / OpenUrlDialog / onChange ✅
 
 ### Task 10: OpenUrl + InputChange invoke models
 
 **Files:**
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart`
 
-- [ ] **Step 1: Add three invoke types to `action_invoke.dart`**
+- [x] **Step 1: Add three invoke types to `action_invoke.dart`**
 
 ```dart
 /// Payload delivered to the host `onOpenUrl` callback.
@@ -1039,11 +1039,11 @@ class InputChangeInvoke {
 
 Add import for `DataQuery` and `RawAdaptiveCardState` at top of `action_invoke.dart`.
 
-- [ ] **Step 2: Analyze**
+- [x] **Step 2: Analyze**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm dart analyze lib/src/models/action_invoke.dart`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart
@@ -1059,7 +1059,7 @@ git commit -m "feat: add OpenUrl and InputChange invoke payload types"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart`
 
-- [ ] **Step 1: Update `InheritedAdaptiveCardHandlers`**
+- [x] **Step 1: Update `InheritedAdaptiveCardHandlers`**
 
 ```dart
   final void Function(OpenUrlActionInvoke invoke) onOpenUrl;
@@ -1067,7 +1067,7 @@ git commit -m "feat: add OpenUrl and InputChange invoke payload types"
   final void Function(InputChangeInvoke invoke) onChange;
 ```
 
-- [ ] **Step 2: Update `RawAdaptiveCard` / `RawAdaptiveCardState` `onChange` field**
+- [x] **Step 2: Update `RawAdaptiveCard` / `RawAdaptiveCardState` `onChange` field**
 
 Replace the four-parameter function type with:
 
@@ -1094,7 +1094,7 @@ widget.onChange?.call(
 );
 ```
 
-- [ ] **Step 3: Update `AdaptiveCardsCanvas` widget + state `onChange`**
+- [x] **Step 3: Update `AdaptiveCardsCanvas` widget + state `onChange`**
 
 Change both the widget constructor field and `AdaptiveCardsCanvasState.onChange` to:
 
@@ -1116,7 +1116,7 @@ onChange = (invoke) {
 };
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart \
@@ -1135,7 +1135,7 @@ git commit -m "refactor: type onOpenUrl/onOpenUrlDialog/onChange invoke callback
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/test/utils/test_utils.dart`
 
-- [ ] **Step 1: Write failing OpenUrl tests**
+- [x] **Step 1: Write failing OpenUrl tests**
 
 ```dart
 // open_url_action_invoke_test.dart — Action.OpenUrl with id + url
@@ -1147,7 +1147,7 @@ git commit -m "refactor: type onOpenUrl/onOpenUrlDialog/onChange invoke callback
 // Same shape; hits onOpenUrlDialog callback
 ```
 
-- [ ] **Step 2: Update `test_utils.dart` typedefs**
+- [x] **Step 2: Update `test_utils.dart` typedefs**
 
 ```dart
 void Function(OpenUrlActionInvoke invoke)? onOpenUrl,
@@ -1157,7 +1157,7 @@ void Function(InputChangeInvoke invoke)? onChange,
 
 Defaults: `onOpenUrl ?? (_) {}`, etc.
 
-- [ ] **Step 3: Implement `DefaultOpenUrlAction` / `DefaultOpenUrlDialogAction`**
+- [x] **Step 3: Implement `DefaultOpenUrlAction` / `DefaultOpenUrlDialogAction`**
 
 ```dart
     final invoke = OpenUrlActionInvoke.fromActionMap(
@@ -1174,13 +1174,13 @@ Defaults: `onOpenUrl ?? (_) {}`, etc.
 
 (Same pattern for `OpenUrlDialogActionInvoke` → `onOpenUrlDialog`.)
 
-- [ ] **Step 4: Run tests — expect PASS**
+- [x] **Step 4: Run tests — expect PASS**
 
 ```bash
 cd packages/flutter_adaptive_cards_fs && fvm flutter test test/actions/open_url_action_invoke_test.dart test/actions/open_url_dialog_action_invoke_test.dart
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ---
 
@@ -1190,22 +1190,22 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test test/actions/open_url_
 - Modify: `packages/flutter_adaptive_cards_fs/test/select_action_tappable_test.dart`
 - Modify: `packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart`
 
-- [ ] **Step 1: Update `buildCard` helper signatures**
+- [x] **Step 1: Update `buildCard` helper signatures**
 
 ```dart
 required void Function(OpenUrlActionInvoke invoke) onOpenUrl,
 required void Function(InputChangeInvoke invoke)? onChange, // optional if unused
 ```
 
-- [ ] **Step 2: Add selectAction OpenUrl test with `actionId`**
+- [x] **Step 2: Add selectAction OpenUrl test with `actionId`**
 
 Container `selectAction`: `{ "type": "Action.OpenUrl", "id": "container-open", "url": "https://example.com/container" }` — assert `actionId` and `url`.
 
-- [ ] **Step 3: Update existing OpenUrl tests** — callbacks receive invoke types (`invoke.url` instead of bare url param where captured).
+- [x] **Step 3: Update existing OpenUrl tests** — callbacks receive invoke types (`invoke.url` instead of bare url param where captured).
 
-- [ ] **Step 4: Mirror charts `test_utils.dart`**
+- [x] **Step 4: Mirror charts `test_utils.dart`**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ---
 
@@ -1218,7 +1218,7 @@ Container `selectAction`: `{ "type": "Action.OpenUrl", "id": "container-open", "
 - Modify: `packages/flutter_adaptive_cards_fs/test/utils/dependent_choice_set_handler.dart`
 - Modify: `widgetbook/lib/dependent_choice_set_demo_page.dart`
 
-- [ ] **Step 1: Migrate `handleDependentChoiceSetChange`**
+- [x] **Step 1: Migrate `handleDependentChoiceSetChange`**
 
 ```dart
 void handleDependentChoiceSetChange(InputChangeInvoke invoke) {
@@ -1235,27 +1235,27 @@ void handleDependentChoiceSetChange(InputChangeInvoke invoke) {
 
 Apply the same change in **`widgetbook/lib/dependent_choice_set_demo_page.dart`**.
 
-- [ ] **Step 2: Update widget tests**
+- [x] **Step 2: Update widget tests**
 
 Replace `(id, value, dataQuery, cardState)` lambdas with `(invoke) => ...` using `invoke.inputId`, `invoke.value`, `invoke.dataQuery`, `invoke.cardState`.
 
 Key files: `choice_set_data_query_test.dart`, `choice_set_test.dart`, `dependent_choice_set_test.dart`.
 
-- [ ] **Step 3: Run affected tests**
+- [x] **Step 3: Run affected tests**
 
 ```bash
 cd packages/flutter_adaptive_cards_fs && fvm flutter test test/inputs/choice_set_data_query_test.dart test/inputs/choice_set_test.dart test/inputs/dependent_choice_set_test.dart test/select_action_tappable_test.dart --exclude-tags=golden
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ---
 
 ### Task 15: Full package verification
 
-- [ ] **Step 1:** `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`
-- [ ] **Step 2:** `cd packages/flutter_adaptive_cards_fs && fvm dart analyze lib/`
-- [ ] **Step 3:** `cd ../flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden` (if any tests exist beyond goldens)
+- [x] **Step 1:** `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`
+- [x] **Step 2:** `cd packages/flutter_adaptive_cards_fs && fvm dart analyze lib/`
+- [x] **Step 3:** `cd ../flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden` (if any tests exist beyond goldens)
 
 ---
 
@@ -1265,7 +1265,7 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test test/inputs/choice_set
 - Modify: `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 - Modify: `packages/flutter_adaptive_cards_fs/README.md`
 
-- [ ] **Step 1: Extend CHANGELOG under `## [0.10.0]` (or next release)**
+- [x] **Step 1: Extend CHANGELOG under `## [0.10.0]` (or next release)**
 
 ```markdown
 ### Changed (Phase 2)
@@ -1280,9 +1280,9 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test test/inputs/choice_set
 - **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, **`InputChangeInvoke`** exported from `flutter_adaptive_cards_fs.dart`.
 ```
 
-- [ ] **Step 2: Update README handler example** — show all five invoke types on `InheritedAdaptiveCardHandlers`.
+- [x] **Step 2: Update README handler example** — show all five invoke types on `InheritedAdaptiveCardHandlers`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ---
 
@@ -1290,7 +1290,7 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test test/inputs/choice_set
 
 **Files:** `docs/actions-architecture.md`, `docs/form-inputs.md`, `docs/Architecture-Overview.md`, `docs/reactive-riverpod.md`, `docs/Implementation-Status.md`
 
-- [ ] **Step 1: Audit**
+- [x] **Step 1: Audit**
 
 ```bash
 rg -n 'onOpenUrl|onOpenUrlDialog|onChange.*String id|Function\(String url\)' docs \
@@ -1300,7 +1300,7 @@ rg -n 'onOpenUrl|onOpenUrlDialog|onChange.*String id|Function\(String url\)' doc
   --glob '!docs/superpowers/specs/**'
 ```
 
-- [ ] **Step 2: `docs/actions-architecture.md`** — add sections:
+- [x] **Step 2: `docs/actions-architecture.md`** — add sections:
 
 ```markdown
 ## Action.OpenUrl payload
@@ -1313,13 +1313,13 @@ rg -n 'onOpenUrl|onOpenUrlDialog|onChange.*String id|Function\(String url\)' doc
 `RawAdaptiveCardState` → `InputChangeInvoke` (`inputId`, `value`, `dataQuery`, `cardState`) → `onChange`.
 ```
 
-- [ ] **Step 3: `docs/form-inputs.md`** — update dependent ChoiceSet handler example to `InputChangeInvoke`; update remote validation note if it references old onChange shape.
+- [x] **Step 3: `docs/form-inputs.md`** — update dependent ChoiceSet handler example to `InputChangeInvoke`; update remote validation note if it references old onChange shape.
 
-- [ ] **Step 4: `docs/reactive-riverpod.md` + `Architecture-Overview.md`** — document all five invoke types; note `AdaptiveCardsCanvas.onChange` accepts `InputChangeInvoke` directly.
+- [x] **Step 4: `docs/reactive-riverpod.md` + `Architecture-Overview.md`** — document all five invoke types; note `AdaptiveCardsCanvas.onChange` accepts `InputChangeInvoke` directly.
 
-- [ ] **Step 5: `docs/Implementation-Status.md`** — optional Notes tweak on Action.OpenUrl / Action.OpenUrlDialog rows mentioning invoke types.
+- [x] **Step 5: `docs/Implementation-Status.md`** — optional Notes tweak on Action.OpenUrl / Action.OpenUrlDialog rows mentioning invoke types.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ---
 
