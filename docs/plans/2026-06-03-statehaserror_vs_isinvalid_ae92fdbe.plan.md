@@ -1,35 +1,37 @@
 ---
 name: All validation via notifier
-overview: Unify client-side and host validation on overlay `isInvalid` / `errorMessage` via the document notifier. Remove `stateHasError` and `showValidationErrorFor`; local Form/required failures call `setInputError`; factory reset clears validation overlays.
+overview: "Implemented via input_resolved-only_refactor Phase 2 (2026-06-03-input_resolved-only_refactor_a09f674a.plan.md). stateHasError removed; setLocalValidationError/clearLocalValidationError delegate to notifier overlays."
 todos:
   - id: mixin-validation-helpers
     content: Remove stateHasError/showValidationErrorFor from AdaptiveInputMixin; add setLocalValidationError/clearLocalValidationError helpers delegating to notifier
-    status: pending
+    status: completed
   - id: load-error-message
     content: Update loadErrorMessage to gate on isInvalid (rename param); callers pass input.isInvalid from watchResolvedInput
-    status: pending
+    status: completed
   - id: form-validators
     content: Text/Number/Date validators call setLocalValidationError on failure and clearLocalValidationError on success; remove stateHasError setState
-    status: pending
+    status: completed
   - id: choice-set-required
     content: ChoiceSet checkRequired uses setLocalValidationError/clearLocalValidationError instead of stateHasError
-    status: pending
+    status: completed
   - id: submit-execute-errors
     content: DefaultSubmit/Execute set setInputError(isInvalid true) on failed required inputs before returning (notifier-only path, no widget walk)
-    status: pending
+    status: completed
   - id: remove-stateHasError-cleanup
     content: Remove stateHasError from resetInput overrides, onDocumentValueChanged; rely on setInputValue/resetInput factory reset to clear validation
-    status: pending
+    status: completed
   - id: validation-tests-docs
     content: Update input_error_overlay tests, action reset tests, reactive-riverpod.md, element-registry skill
-    status: pending
+    status: completed
   - id: verify-validation
     content: fvm flutter test test/inputs/ test/riverpod/ test/actions/submit_required_overlay_test.dart; fvm flutter analyze
-    status: pending
+    status: completed
 isProject: false
 ---
 
 # All validation via notifier (remove `stateHasError`)
+
+> **Status:** **Implemented.** Executed as Phase 2 of [`2026-06-03-input_resolved-only_refactor_a09f674a.plan.md`](2026-06-03-input_resolved-only_refactor_a09f674a.plan.md). `stateHasError` no longer exists in the codebase.
 
 **Decision:** Adopt unified overlay validation. **`stateHasError` is removed.** All validation display uses resolved **`isInvalid`** (and **`errorMessage`**) from `resolvedElementProvider(id)`.
 
