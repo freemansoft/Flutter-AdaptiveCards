@@ -93,7 +93,9 @@ void main() {
         map: map,
         title: 'ChoiceSet Compact Test',
         onChange: (invoke) {
-          if (invoke.inputId == 'myChoiceSet') selectedValue = invoke.value as String?;
+          if (invoke.inputId == 'myChoiceSet') {
+            selectedValue = invoke.value as String?;
+          }
         },
       );
 
@@ -144,7 +146,9 @@ void main() {
       map: map,
       title: 'ChoiceSet MultiSelect Test',
       onChange: (invoke) {
-        if (invoke.inputId == 'myChoiceSet') selectedValue = invoke.value as String?;
+        if (invoke.inputId == 'myChoiceSet') {
+          selectedValue = invoke.value as String?;
+        }
       },
     );
 
@@ -191,7 +195,9 @@ void main() {
       map: map,
       title: 'ChoiceSet Filtered Test',
       onChange: (invoke) {
-        if (invoke.inputId == 'myChoiceSet') selectedValue = invoke.value as String?;
+        if (invoke.inputId == 'myChoiceSet') {
+          selectedValue = invoke.value as String?;
+        }
       },
     );
 
@@ -249,7 +255,10 @@ void main() {
     await tester.tap(find.byKey(generateWidgetKey(choiceMap)));
     await tester.pumpAndSettle();
 
-    await tester.enterText(find.byKey(generateWidgetKey(choiceMap)).last, 'angeles');
+    await tester.enterText(
+      find.byKey(generateWidgetKey(choiceMap)).last,
+      'angeles',
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Los Angeles'), findsOneWidget);

@@ -5,7 +5,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 import 'package:mockito/mockito.dart';
 
@@ -215,7 +214,7 @@ Widget getTestWidgetFromMap({
         body: RepaintBoundary(
           key: key,
           child: Center(
-            child:             InheritedAdaptiveCardHandlers(
+            child: InheritedAdaptiveCardHandlers(
               onOpenUrl: onOpenUrl ?? (_) {},
               onOpenUrlDialog: onOpenUrlDialog ?? (_) {},
               onSubmit: onSubmit ?? (_) {},

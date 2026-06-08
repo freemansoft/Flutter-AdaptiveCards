@@ -304,54 +304,57 @@ void main() {
     );
   });
 
-  testWidgets('initData seeds date overlay visible in resolvedElementProvider', (
-    WidgetTester tester,
-  ) async {
-    final Map<String, dynamic> map = {
-      'type': 'AdaptiveCard',
-      'body': [
-        {
-          'type': 'Input.Date',
-          'id': 'bookingdate',
-          'label': 'Booking Date',
-          'placeholder': 'Enter your booking date',
-        },
-      ],
-    };
+  testWidgets(
+    'initData seeds date overlay visible in resolvedElementProvider',
+    (
+      WidgetTester tester,
+    ) async {
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'body': [
+          {
+            'type': 'Input.Date',
+            'id': 'bookingdate',
+            'label': 'Booking Date',
+            'placeholder': 'Enter your booking date',
+          },
+        ],
+      };
 
-    await tester.pumpWidget(
-      getTestWidgetFromMap(
-        map: map,
-        title: 'initData date overlay',
-        initData: const {'bookingdate': '2023-05-08'},
-      ),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'initData date overlay',
+          initData: const {'bookingdate': '2023-05-08'},
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    final dateMap = map['body'][0] as Map<String, dynamic>;
-    final inputFinder = find.byKey(generateWidgetKey(dateMap));
-    final container = _documentContainer(tester, inputFinder);
+      final dateMap = map['body'][0] as Map<String, dynamic>;
+      final inputFinder = find.byKey(generateWidgetKey(dateMap));
+      final container = _documentContainer(tester, inputFinder);
 
-    expect(
-      container.read(resolvedElementProvider('bookingdate'))?['value'],
-      '2023-05-08',
-    );
+      expect(
+        container.read(resolvedElementProvider('bookingdate'))?['value'],
+        '2023-05-08',
+      );
 
-    final field = tester.widget<TextFormField>(inputFinder);
-    expect(field.controller!.text, '2023-05-08');
+      final field = tester.widget<TextFormField>(inputFinder);
+      expect(field.controller!.text, '2023-05-08');
 
-    final state = tester.state<AdaptiveDateInputState>(
-      find.byType(AdaptiveDateInput),
-    );
-    expect(state.selectedDateTime, isNotNull);
-    expect(state.selectedDateTime!.year, 2023);
-    expect(state.selectedDateTime!.month, 5);
-    expect(state.selectedDateTime!.day, 8);
+      final state = tester.state<AdaptiveDateInputState>(
+        find.byType(AdaptiveDateInput),
+      );
+      expect(state.selectedDateTime, isNotNull);
+      expect(state.selectedDateTime!.year, 2023);
+      expect(state.selectedDateTime!.month, 5);
+      expect(state.selectedDateTime!.day, 8);
 
-    final out = <String, dynamic>{};
-    state.appendInput(out);
-    expect(out['bookingdate'], '2023-05-08');
-  });
+      final out = <String, dynamic>{};
+      state.appendInput(out);
+      expect(out['bookingdate'], '2023-05-08');
+    },
+  );
 
   testWidgets('programmatic initInput updates date field after mount', (
     WidgetTester tester,

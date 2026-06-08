@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/src/adaptive_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/execute.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/insert_image.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/open_url.dart';
@@ -43,8 +42,7 @@ typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 ///
 /// 1. Providing custom elements
 /// Add the element to [addedElements]. It takes the name of the element
-/// as its key and it takes a function which generates an [AdaptiveElement] with
-/// a given map and a widgetState
+/// as its key and an [ElementCreator] that builds a widget from the element map.
 ///
 /// 2. Overwriting custom elements
 /// Just use the same name as the element you want to override
@@ -123,7 +121,7 @@ class CardTypeRegistry {
     return _getActionWidget(map: map);
   }
 
-  /// This returns an [AdaptiveElement] with the correct type.
+  /// Returns the built-in widget for the element's `type` property.
   ///
   /// It looks at the 'type' property and decides which object to construct
   Widget _getBaseElement({

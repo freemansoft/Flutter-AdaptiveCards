@@ -1,8 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
 ## [0.10.0]
 
-- no changes yet
+- Microsoft template fixture tests deduplicated via shared **`test/ms_template_fixture_test_helper.dart`** (`registerMicrosoftTemplateFixtureTests`); **`ms_template_sample_test.dart`** and **`ms_template_examples_test.dart`** are thin callers.
 
 ## [0.9.0]
 

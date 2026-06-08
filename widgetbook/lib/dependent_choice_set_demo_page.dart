@@ -5,14 +5,12 @@
 //
 // Reset semantics and host cascade patterns:
 // ../../docs/form-inputs.md
-// ignore_for_file: implementation_imports
 
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 import 'package:format/format.dart';
 

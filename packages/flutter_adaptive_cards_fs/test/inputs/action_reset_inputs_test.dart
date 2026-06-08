@@ -155,11 +155,13 @@ void main() {
     final container = ProviderScope.containerOf(
       tester.element(find.byKey(generateWidgetKeyFromId('myText1'))),
     );
-    container.read(adaptiveCardDocumentProvider.notifier).setInputError(
-      'myText1',
-      errorMessage: 'Invalid value',
-      isInvalid: true,
-    );
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputError(
+          'myText1',
+          errorMessage: 'Invalid value',
+          isInvalid: true,
+        );
     await tester.pump();
     expect(find.text('Invalid value'), findsOneWidget);
 
