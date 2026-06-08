@@ -5,7 +5,6 @@
 //
 // Reset semantics and host cascade patterns:
 // ../../docs/form-inputs.md
-// ignore_for_file: implementation_imports
 
 import 'dart:developer' as developer;
 
