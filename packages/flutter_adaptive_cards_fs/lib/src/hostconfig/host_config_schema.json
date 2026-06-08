@@ -588,6 +588,80 @@
         }
       }
     },
+    "LineChartLayoutSection": {
+      "type": "object",
+      "description": "Layout settings for Chart.Line",
+      "properties": {
+        "height": { "type": "number", "default": 250 },
+        "emptyMinX": { "type": "number", "default": 0 },
+        "emptyMaxX": { "type": "number", "default": 10 },
+        "emptyMinY": { "type": "number", "default": 0 },
+        "emptyMaxY": { "type": "number", "default": 10 },
+        "degenerateRangeBump": { "type": "number", "default": 1 },
+        "zeroRangeFallback": { "type": "number", "default": 10 },
+        "yAxisPaddingFactor": { "type": "number", "default": 0.1 },
+        "isCurved": { "type": "boolean", "default": true },
+        "barWidth": { "type": "number", "default": 3 },
+        "isStrokeCapRound": { "type": "boolean", "default": true },
+        "showDots": { "type": "boolean", "default": false },
+        "showAreaBelow": { "type": "boolean", "default": false },
+        "showTitles": { "type": "boolean", "default": true },
+        "showRightTitles": { "type": "boolean", "default": false },
+        "showTopTitles": { "type": "boolean", "default": false },
+        "showGrid": { "type": "boolean", "default": true },
+        "showBorder": { "type": "boolean", "default": true },
+        "borderColor": { "type": "string", "default": "#37434d" },
+        "borderWidth": { "type": "number", "default": 1 }
+      }
+    },
+    "BarChartLayoutSection": {
+      "type": "object",
+      "description": "Layout settings for bar chart types",
+      "properties": {
+        "height": { "type": "number", "default": 250 },
+        "emptyMaxY": { "type": "number", "default": 10 },
+        "maxYPaddingFactor": { "type": "number", "default": 1.2 },
+        "barWidth": { "type": "number", "default": 16 },
+        "barsSpace": { "type": "number", "default": 4 },
+        "barBorderRadius": { "type": "number", "default": 2 },
+        "stackedBarBorderRadius": { "type": "number", "default": 0 },
+        "alignment": {
+          "type": "string",
+          "enum": ["spaceAround", "spaceBetween", "spaceEvenly", "start", "end"],
+          "default": "spaceAround"
+        },
+        "categoryAxisReservedSize": { "type": "number", "default": 32 },
+        "categoryLabelFontSize": { "type": "number", "default": 10 },
+        "showCategoryTitles": { "type": "boolean", "default": true }
+      }
+    },
+    "PieChartLayoutSection": {
+      "type": "object",
+      "description": "Layout settings for Chart.Pie, Chart.Donut, and Chart.Gauge",
+      "properties": {
+        "height": { "type": "number", "default": 200 },
+        "centerSpaceRadius": { "type": "number", "default": 0 },
+        "sectionsSpace": { "type": "number", "default": 2 },
+        "sectionRadius": { "type": "number", "default": 100 },
+        "titleFontSize": { "type": "number", "default": 12 },
+        "titleFontWeight": {
+          "type": "string",
+          "enum": ["normal", "bold", "bolder", "lighter", "default"],
+          "default": "bold"
+        },
+        "titleColor": { "type": "string", "default": "#FFFFFF" }
+      }
+    },
+    "ChartsLayoutConfig": {
+      "type": "object",
+      "description": "Layout settings for chart elements",
+      "properties": {
+        "line": { "$ref": "#/definitions/LineChartLayoutSection" },
+        "bar": { "$ref": "#/definitions/BarChartLayoutSection" },
+        "pie": { "$ref": "#/definitions/PieChartLayoutSection" },
+        "donut": { "$ref": "#/definitions/PieChartLayoutSection" }
+      }
+    },
     "FactSetTextConfig": {
       "type": "object",
       "description": "Parameters controlling the display of text in a fact set",
@@ -790,6 +864,9 @@
         },
         "progressColors": {
           "$ref": "#/definitions/ProgressColorsConfig"
+        },
+        "chartsLayout": {
+          "$ref": "#/definitions/ChartsLayoutConfig"
         }
       }
     }

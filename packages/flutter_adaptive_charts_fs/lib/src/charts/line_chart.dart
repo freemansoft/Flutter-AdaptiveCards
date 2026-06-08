@@ -52,18 +52,17 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
   }
 
   void _parseData() {
+    final layout = styleResolver.resolveLineChartLayout();
     final data = adaptiveMap['data'];
     lineBarsData = [];
 
-    // Auto-scale defaults
-    minY = 0;
-    maxY = 10;
-    minX = 0;
-    maxX = 10;
+    minY = layout.emptyMinY;
+    maxY = layout.emptyMaxY;
+    minX = layout.emptyMinX;
+    maxX = layout.emptyMaxX;
 
     if (data is! List || data.isEmpty) return;
 
-    // Reset for actual data
     minY = double.infinity;
     maxY = double.negativeInfinity;
     minX = double.infinity;
@@ -75,9 +74,6 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
     int seriesCount = 0;
 
     for (final item in data) {
-      // Assuming numeric X for LineChart for now.
-      // If x is a string, it will be handled as 0 due to toDouble() fallback?
-      // Actually toDouble() on a string will throw.
       final dynamic rawX = item['x'] ?? 0;
       final double x = (rawX is num) ? rawX.toDouble() : 0.0;
 
@@ -105,34 +101,31 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
       seriesSpots[series]!.add(FlSpot(x, y));
     }
 
-    if (minX == double.infinity) minX = 0;
-    if (maxX == double.negativeInfinity) maxX = 10;
-    if (minY == double.infinity) minY = 0;
-    if (maxY == double.negativeInfinity) maxY = 10;
+    if (minX == double.infinity) minX = layout.emptyMinX;
+    if (maxX == double.negativeInfinity) maxX = layout.emptyMaxX;
+    if (minY == double.infinity) minY = layout.emptyMinY;
+    if (maxY == double.negativeInfinity) maxY = layout.emptyMaxY;
 
-    // Ensure range > 0
-    if (maxX == minX) maxX += 1;
-    if (maxY == minY) maxY += 1;
+    if (maxX == minX) maxX += layout.degenerateRangeBump;
+    if (maxY == minY) maxY += layout.degenerateRangeBump;
 
-    // Padding
     double yRange = maxY - minY;
-    if (yRange == 0) yRange = 10;
-    maxY += yRange * 0.1;
-    minY -= yRange * 0.1;
+    if (yRange == 0) yRange = layout.zeroRangeFallback;
+    maxY += yRange * layout.yAxisPaddingFactor;
+    minY -= yRange * layout.yAxisPaddingFactor;
 
     seriesSpots.forEach((series, spots) {
-      // Sort spots by x
       spots.sort((a, b) => a.x.compareTo(b.x));
 
       lineBarsData.add(
         LineChartBarData(
           spots: spots,
-          isCurved: true,
+          isCurved: layout.isCurved,
           color: seriesColors[series],
-          barWidth: 3,
-          isStrokeCapRound: true,
-          dotData: const FlDotData(show: false),
-          belowBarData: BarAreaData(show: false),
+          barWidth: layout.barWidth,
+          isStrokeCapRound: layout.isStrokeCapRound,
+          dotData: FlDotData(show: layout.showDots),
+          belowBarData: BarAreaData(show: layout.showAreaBelow),
         ),
       );
     });
@@ -140,10 +133,12 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
 
   @override
   Widget build(BuildContext context) {
+    final layout = styleResolver.resolveLineChartLayout();
+
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
       child: SizedBox(
-        height: 250,
+        height: layout.height,
         child: LineChart(
           LineChartData(
             lineBarsData: lineBarsData,
@@ -151,17 +146,22 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
             maxX: maxX,
             minY: minY,
             maxY: maxY,
-            titlesData: const FlTitlesData(
-              show: true,
+            titlesData: FlTitlesData(
+              show: layout.showTitles,
               rightTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
+                sideTitles: SideTitles(showTitles: layout.showRightTitles),
               ),
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: layout.showTopTitles),
+              ),
             ),
-            gridData: const FlGridData(show: true),
+            gridData: FlGridData(show: layout.showGrid),
             borderData: FlBorderData(
-              show: true,
-              border: Border.all(color: const Color(0xff37434d), width: 1),
+              show: layout.showBorder,
+              border: Border.all(
+                color: layout.borderColor,
+                width: layout.borderWidth,
+              ),
             ),
           ),
         ),

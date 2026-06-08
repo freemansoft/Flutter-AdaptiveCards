@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/chart_colors_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_style_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_color_config.dart';
@@ -36,6 +37,9 @@ class FallbackConfigs {
   /// Background track color for progress bars when HostConfig does not specify
   /// one.
   static final Color progressBackgroundColor = Colors.grey.shade300;
+
+  /// Default `chartsLayout` values for Chart elements.
+  static const ChartsLayoutConfig chartsLayoutConfig = ChartsLayoutConfig.defaults;
 
   /// Default `chartColors` palette for Chart elements.
   static const chartColorsConfig = ChartColorsConfig(

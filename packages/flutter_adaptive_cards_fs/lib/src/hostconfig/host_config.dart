@@ -2,6 +2,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/actions_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/adaptive_card_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/chart_colors_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_sizes_config.dart';
@@ -76,6 +77,7 @@ class HostConfig {
     this.progressSizes,
     this.progressColors,
     this.chartColors,
+    this.chartsLayout,
   });
 
   /// Parses a HostConfig from JSON (all top-level HostConfig properties).
@@ -140,6 +142,9 @@ class HostConfig {
           : null,
       chartColors: (json['chartColors'] != null)
           ? ChartColorsConfig.fromJson(json['chartColors'])
+          : null,
+      chartsLayout: (json['chartsLayout'] != null)
+          ? ChartsLayoutConfig.fromJson(json['chartsLayout'])
           : null,
     );
   }
@@ -210,4 +215,7 @@ class HostConfig {
 
   /// Chart default palette (`chartColors`).
   final ChartColorsConfig? chartColors;
+
+  /// Chart layout dimensions and chrome (`chartsLayout`).
+  final ChartsLayoutConfig? chartsLayout;
 }

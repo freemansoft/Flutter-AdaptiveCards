@@ -10,5 +10,8 @@ export 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 /// so new widgets can have the same wrapper classesSeparator class, etc
 export 'package:flutter_adaptive_cards_fs/src/additional.dart';
 
+/// HostConfig chart layout types for chart element packages
+export 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.dart';
+
 /// key generation and other utils used when creating components with our key generation
 export 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';

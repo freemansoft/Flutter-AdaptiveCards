@@ -141,5 +141,17 @@ void main() {
         const Color(0xFFFFFFFF),
       );
     });
+
+    test('chartsLayout parses from top-level HostConfig JSON', () {
+      final config = HostConfig.fromJson({
+        'chartsLayout': {
+          'line': {'height': 280},
+          'bar': {'barWidth': 18},
+        },
+      });
+      expect(config.chartsLayout?.line.height, 280);
+      expect(config.chartsLayout?.bar.barWidth, 18);
+      expect(config.chartsLayout?.pie.sectionRadius, 100);
+    });
   });
 }

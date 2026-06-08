@@ -308,6 +308,26 @@ Color color = resolver.resolveChartColor(
 );
 ```
 
+#### Chart layout (`chartsLayout`)
+
+```dart
+final layout = resolver.resolveLineChartLayout();
+// Also: resolveBarChartLayout(), resolvePieChartLayout(), resolveDonutChartLayout()
+```
+
+JSON example:
+
+```json
+{
+  "chartsLayout": {
+    "line": { "height": 250, "barWidth": 3, "borderColor": "#37434d" },
+    "bar": { "height": 250, "barWidth": 16, "barsSpace": 4 },
+    "pie": { "height": 200, "sectionRadius": 100 },
+    "donut": { "centerSpaceRadius": 40, "sectionRadius": 50 }
+  }
+}
+```
+
 ### Alignment
 
 ```dart
