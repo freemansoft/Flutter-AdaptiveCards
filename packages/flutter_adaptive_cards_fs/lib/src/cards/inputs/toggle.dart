@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 class AdaptiveToggle extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates a toggle input from [adaptiveMap] JSON.
   AdaptiveToggle({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -26,17 +27,23 @@ class AdaptiveToggle extends ConsumerStatefulWidget
   AdaptiveToggleState createState() => AdaptiveToggleState();
 }
 
+/// State for [AdaptiveToggle]; maps a [Switch] to `valueOn` / `valueOff`.
 class AdaptiveToggleState extends ConsumerState<AdaptiveToggle>
     with
         AdaptiveInputMixin,
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
+  /// Current switch position derived from the document value.
   bool boolValue = false;
 
+  /// Submitted value when the switch is off (`valueOff`).
   late String valueOff;
+
+  /// Submitted value when the switch is on (`valueOn`).
   late String valueOn;
 
+  /// Label shown beside the switch (`title`).
   late String title;
 
   @override

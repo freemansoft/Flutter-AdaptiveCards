@@ -4,7 +4,11 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
+/// Renders the Adaptive Cards **Badge** element (text and optional icon).
+///
+/// See https://adaptivecards.io/explorer/Badge.html
 class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a badge from [adaptiveMap] JSON.
   AdaptiveBadge({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -21,13 +25,25 @@ class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveBadgeState createState() => AdaptiveBadgeState();
 }
 
+/// State for [AdaptiveBadge]; resolves colors and layout from HostConfig.
 class AdaptiveBadgeState extends State<AdaptiveBadge>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Badge label text from `text`.
   late String? text;
+
+  /// Optional icon URL from `iconUrl`.
   late String? iconUrl;
+
+  /// Visual style: `filled`, `tint`, `outline`, etc.
   late String appearance;
+
+  /// Size token: `small`, `medium`, or `large`.
   late String size;
+
+  /// Optional hover/accessibility tooltip from `tooltip`.
   late String? tooltip;
+
+  /// Icon placement relative to text: `left` or `right`.
   late String iconAlignment;
 
   @override

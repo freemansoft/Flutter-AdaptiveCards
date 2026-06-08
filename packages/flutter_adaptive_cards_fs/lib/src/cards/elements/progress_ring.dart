@@ -4,8 +4,12 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
+/// Renders the Adaptive Cards **ProgressRing** element.
+///
+/// See https://adaptivecards.io/explorer/ProgressRing.html
 class AdaptiveProgressRing extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates a progress ring from [adaptiveMap] JSON.
   AdaptiveProgressRing({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -22,14 +26,28 @@ class AdaptiveProgressRing extends StatefulWidget
   AdaptiveProgressRingState createState() => AdaptiveProgressRingState();
 }
 
+/// State for [AdaptiveProgressRing]; lays out ring and optional label.
 class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Completion fraction 0.0–1.0 from `value`, or null when indeterminate.
   double? percent;
+
+  /// Color token from `color`.
   late String? color;
+
+  /// Size token: `small`, `medium`, or `large`.
   late String size;
+
+  /// Optional caption from `label`.
   String? label;
+
+  /// Label placement: `above`, `below`, `left`, or `right`.
   String? labelPosition;
+
+  /// Resolved foreground color for the ring stroke.
   Color? progressColor;
+
+  /// Ring diameter in logical pixels from HostConfig.
   double sizePx = 30;
 
   @override

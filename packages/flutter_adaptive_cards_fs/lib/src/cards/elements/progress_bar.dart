@@ -4,8 +4,12 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
+/// Renders the Adaptive Cards **ProgressBar** element.
+///
+/// See https://adaptivecards.io/explorer/ProgressBar.html
 class AdaptiveProgressBar extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates a progress bar from [adaptiveMap] JSON.
   AdaptiveProgressBar({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -21,11 +25,19 @@ class AdaptiveProgressBar extends StatefulWidget
   AdaptiveProgressBarState createState() => AdaptiveProgressBarState();
 }
 
+/// State for [AdaptiveProgressBar]; maps `value` to a linear indicator.
 class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Completion fraction 0.0–1.0 from `value`, or null when indeterminate.
   double? percent;
+
+  /// Color token from `color` (resolved via HostConfig).
   late String? color;
+
+  /// Whether to show a separator below the bar.
   late bool separator;
+
+  /// Resolved foreground color for the progress indicator.
   Color? progressColor;
 
   @override

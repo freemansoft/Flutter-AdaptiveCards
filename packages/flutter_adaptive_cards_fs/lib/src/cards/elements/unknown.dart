@@ -11,6 +11,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// In debug mode these contain an error message describing the problem.
 class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a placeholder for an unrecognized element [type].
   AdaptiveUnknown({
     required this.adaptiveMap,
     required this.type,
@@ -24,12 +25,14 @@ class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
+  /// The unrecognized `type` string from card JSON.
   final String type;
 
   @override
   AdaptiveUnknownState createState() => AdaptiveUnknownState();
 }
 
+/// State for [AdaptiveUnknown]; shows [ErrorWidget] in debug builds only.
 class AdaptiveUnknownState extends State<AdaptiveUnknown>
     with AdaptiveElementMixin, ProviderScopeMixin {
   @override

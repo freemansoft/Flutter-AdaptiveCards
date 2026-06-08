@@ -11,6 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/Image.html
 ///
 class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates an image element from [adaptiveMap] JSON.
+  ///
+  /// [parentMode] controls flex behavior when nested in column/row layouts.
+  /// [supportMarkdown] enables markdown-friendly alignment when true.
   AdaptiveImage({
     required this.adaptiveMap,
     this.parentMode = 'stretch',
@@ -25,19 +29,32 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
+  /// Parent container width mode (`auto`, `stretch`, etc.).
   final String parentMode;
+
+  /// When true, uses [Align] instead of [Row] for horizontal placement.
   final bool supportMarkdown;
 
   @override
   AdaptiveImageState createState() => AdaptiveImageState();
 }
 
+/// State for [AdaptiveImage]; resolves size, style, and reactive URL updates.
 class AdaptiveImageState extends State<AdaptiveImage>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Whether to clip the image to a circle (`style: person`).
   late bool isPerson;
+
+  /// Resolved width in logical pixels, when constrained.
   double? width;
+
+  /// Resolved height in logical pixels, when constrained.
   double? height;
+
+  /// Horizontal alignment within the parent from `horizontalAlignment`.
   late Alignment horizontalAlignment;
+
+  /// Current image URL, updated from resolved element overlays.
   late String url;
   ProviderSubscription<Map<String, dynamic>?>? _urlSubscription;
 
@@ -124,12 +141,14 @@ class AdaptiveImageState extends State<AdaptiveImage>
     );
   }
 
+  /// Returns whether HostConfig marks this image as a person avatar.
   bool loadIsPerson() {
     return styleResolver.resolveImageIsPerson(
       adaptiveMap['style'] as String?,
     );
   }
 
+  /// Parses `size`, `width`, and `height` into [width] and [height].
   void loadSize() {
     String sizeDescription = adaptiveMap['size']?.toString() ?? 'auto';
     sizeDescription = sizeDescription.toLowerCase();

@@ -43,15 +43,28 @@ class RawAdaptiveCard extends StatefulWidget {
     required this.hostConfigs,
   });
 
+  /// Root Adaptive Card JSON for this subtree (ids injected at runtime).
   final Map<String, dynamic> map;
+
+  /// Light/dark HostConfig palette used for styling resolution.
   final HostConfigs hostConfigs;
+
+  /// Registry that maps element `type` strings to widgets.
   final CardTypeRegistry cardTypeRegistry;
+
+  /// Registry that maps action `type` strings to tap handlers.
   final ActionTypeRegistry actionTypeRegistry;
+
+  /// Optional seed values or patch maps applied to input overlays on load.
   final Map? initData;
 
+  /// Host callback invoked when an input value changes.
   final void Function(InputChangeInvoke invoke)? onChange;
 
+  /// When true (debug only), shows a button that displays [map] as JSON.
   final bool showDebugJson;
+
+  /// When true, the root card body scrolls as a list.
   final bool listView;
 
   /// Selects light vs dark [HostConfigs] when not [AdaptiveCardBrightnessMode.auto].
@@ -286,6 +299,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         );
   }
 
+  /// Notifies the host that input [id] changed, optionally with a [dataQuery].
   void changeValue(String id, dynamic value, {DataQuery? dataQuery}) {
     widget.onChange?.call(
       InputChangeInvoke(
@@ -297,12 +311,14 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     );
   }
 
+  /// Displays [message] in a [SnackBar] for quick host feedback.
   void showError(String message) {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  /// Presents a modal [ChoiceFilter] sheet and returns the selection via [callback].
   Future<void> searchList(
     List<Choice>? data,
     void Function(Choice? value) callback, {
@@ -325,6 +341,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     );
   }
 
+  /// Shows a platform-appropriate date picker constrained by [min] and [max].
   Future<DateTime?> datePickerForPlatform(
     BuildContext context,
     DateTime? value,
@@ -339,6 +356,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     }
   }
 
+  /// Cupertino-style date picker used on iOS and macOS.
   Future<DateTime?> datePickerCupertino(
     BuildContext context,
     DateTime? value,
@@ -396,6 +414,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     );
   }
 
+  /// Shows a platform-appropriate time picker within optional bounds.
   Future<TimeOfDay?> timePickerForPlatform(
     BuildContext context,
     TimeOfDay? defaultTime,
@@ -410,6 +429,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     }
   }
 
+  /// Cupertino-style time picker used on iOS and macOS.
   Future<TimeOfDay?> timePickerCupertino(
     BuildContext context,
     TimeOfDay? defaultTime,

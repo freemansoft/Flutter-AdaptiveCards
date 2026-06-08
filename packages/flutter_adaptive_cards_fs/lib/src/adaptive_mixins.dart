@@ -13,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Mixin for widgets that are adaptive elements- widget and not state
 
+/// Contract for adaptive element widgets that expose JSON and a stable [id].
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
   // this is an abstract method that everyone needs to implmenet
 
@@ -23,30 +24,40 @@ mixin AdaptiveElementWidgetMixin on StatefulWidget {
   String get id;
 }
 
+/// Reads card-scoped Riverpod providers from the enclosing [ProviderScope].
 mixin ProviderScopeMixin<T extends StatefulWidget> on State<T> {
   ProviderContainer get _container => ProviderScope.containerOf(context);
 
+  /// Root [RawAdaptiveCardState] for this card subtree.
   RawAdaptiveCardState get rawRootCardWidgetState =>
       _container.read(rawAdaptiveCardStateProvider);
 
+  /// Element factory registry for the current card scope.
   CardTypeRegistry get cardTypeRegistry =>
       _container.read(cardTypeRegistryProvider);
 
+  /// Action handler registry for the current card scope.
   ActionTypeRegistry get actionTypeRegistry =>
       _container.read(actionTypeRegistryProvider);
 
+  /// State of the root `AdaptiveCard` element widget.
   AdaptiveCardElementState get adaptiveCardElementState =>
       _container.read(adaptiveCardElementStateProvider);
 
+  /// HostConfig-backed style resolver for the current card scope.
   ReferenceResolver get styleResolver =>
       _container.read(styleReferenceResolverProvider);
 }
 
+/// Shared element identity and background-image helpers for adaptive widgets.
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
+  /// Stable element id from the widget.
   String get id => widget.id;
 
+  /// Lowercased `style` token from [adaptiveMap], if present.
   String? get style => (adaptiveMap['style'] as String?)?.toLowerCase();
 
+  /// Baseline JSON for this element.
   Map<String, dynamic> get adaptiveMap => widget.adaptiveMap;
 
   @override
@@ -74,6 +85,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     super.dispose();
   }
 
+  /// Maps Adaptive Card `fillMode` to a [BoxFit] for background images.
   BoxFit calculateBackgroundImageFit(String? fillMode) {
     final myFillMode = fillMode?.toLowerCase();
     switch (myFillMode) {
@@ -86,6 +98,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     }
   }
 
+  /// Maps Adaptive Card `fillMode` to [ImageRepeat] tiling behavior.
   ImageRepeat calculateBackgroundImageRepeat(String? fillMode) {
     final myFillMode = fillMode?.toLowerCase();
     switch (myFillMode) {
@@ -173,6 +186,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   }
 }
 
+/// Returns whether [element] defines a usable `backgroundImage` value.
 bool backgroundImageSpecified(Map element) {
   final backgroundImage = element['backgroundImage'];
   if (backgroundImage == null) return false;
@@ -188,10 +202,13 @@ bool backgroundImageSpecified(Map element) {
   return false;
 }
 
+/// Reads static `title` and `tooltip` from action JSON on the widget.
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
+  /// Action label from baseline JSON.
   String get title => adaptiveMap['title'] as String? ?? '';
 
+  /// Optional hover or accessibility hint from baseline JSON.
   String? get tooltip => adaptiveMap['tooltip'] as String?;
 }
 
@@ -206,8 +223,10 @@ mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   /// Whether the action accepts presses per merged baseline + overlay.
   bool get actionEnabled => _actionEnabled;
 
+  /// Merged action label from baseline JSON and runtime overlays.
   String get title => _actionTitle;
 
+  /// Merged tooltip from baseline JSON and runtime overlays.
   String? get tooltip => _actionTooltip;
 
   @override
@@ -252,6 +271,7 @@ mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   }
 }
 
+/// Document-backed input state, validation, and value-changed actions.
 mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   AdaptiveElementWidgetMixin get _inputElement =>
       widget as AdaptiveElementWidgetMixin;
@@ -338,6 +358,7 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     });
   }
 
+  /// Writes a runtime value overlay for this input id.
   void setDocumentInputValue(Object? newValue) {
     ref
         .read(adaptiveCardDocumentProvider.notifier)
@@ -376,11 +397,14 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }
 }
 
+/// Marker mixin for text-like inputs that share [AdaptiveInputMixin] behavior.
 mixin AdaptiveTextualInputMixin<T extends ConsumerStatefulWidget>
     on ConsumerState<T> {}
 
+/// Subscribes to merged `isVisible` and exposes [setIsVisible] for hosts.
 mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
+  /// Effective visibility after baseline JSON and runtime overlays.
   late bool isVisible;
   ProviderSubscription<Map<String, dynamic>?>? _visibilitySubscription;
 

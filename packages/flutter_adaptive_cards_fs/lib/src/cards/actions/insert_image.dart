@@ -3,8 +3,13 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
+///
+/// https://adaptivecards.io/explorer/Action.InsertImage.html
+///
+/// Renders `Action.InsertImage` as an elevated button (stub implementation).
 class AdaptiveActionInsertImage extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates an `Action.InsertImage` widget from [adaptiveMap].
   AdaptiveActionInsertImage({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -22,6 +27,7 @@ class AdaptiveActionInsertImage extends StatefulWidget
       AdaptiveActionInsertImageState();
 }
 
+/// State for [AdaptiveActionInsertImage].
 class AdaptiveActionInsertImageState extends State<AdaptiveActionInsertImage>
     with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
   @override

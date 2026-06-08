@@ -9,9 +9,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// https://adaptivecards.io/explorer/Action.ShowCard.html
 ///
-
+/// Renders `Action.ShowCard` as a toggle button that expands or collapses the
+/// nested `card` via [expandedShowCardIdProvider].
 class AdaptiveActionShowCard extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates an `Action.ShowCard` widget from [adaptiveMap].
   AdaptiveActionShowCard({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -28,6 +30,7 @@ class AdaptiveActionShowCard extends ConsumerStatefulWidget
   AdaptiveActionShowCardState createState() => AdaptiveActionShowCardState();
 }
 
+/// State for [AdaptiveActionShowCard].
 class AdaptiveActionShowCardState extends ConsumerState<AdaptiveActionShowCard>
     with
         AdaptiveActionMixin,
@@ -35,6 +38,7 @@ class AdaptiveActionShowCardState extends ConsumerState<AdaptiveActionShowCard>
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
+  /// Cached nested [AdaptiveCardElement] from the action's `card` property.
   AdaptiveCardElement? targetCard;
   String? _targetCardId;
 

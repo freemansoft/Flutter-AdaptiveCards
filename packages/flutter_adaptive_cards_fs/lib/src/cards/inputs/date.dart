@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 ///
 class AdaptiveDateInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates a date input from [adaptiveMap] JSON.
   AdaptiveDateInput({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -29,6 +30,7 @@ class AdaptiveDateInput extends ConsumerStatefulWidget
   AdaptiveDateInputState createState() => AdaptiveDateInputState();
 }
 
+/// State for [AdaptiveDateInput]; opens a platform date picker on tap.
 class AdaptiveDateInputState extends ConsumerState<AdaptiveDateInput>
     with
         AdaptiveTextualInputMixin,
@@ -36,10 +38,19 @@ class AdaptiveDateInputState extends ConsumerState<AdaptiveDateInput>
         AdaptiveInputMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
+  /// Currently selected date, or null when empty.
   DateTime? selectedDateTime;
+
+  /// Minimum allowed date from `min` (`yyyy-MM-dd`).
   DateTime? min;
+
+  /// Maximum allowed date from `max` (`yyyy-MM-dd`).
   DateTime? max;
+
+  /// Parser/formatter for Adaptive Cards date strings.
   final inputFormat = DateFormat('yyyy-MM-dd');
+
+  /// Read-only field showing the formatted selected date.
   TextEditingController controller = TextEditingController();
   bool _initialValueSynced = false;
 

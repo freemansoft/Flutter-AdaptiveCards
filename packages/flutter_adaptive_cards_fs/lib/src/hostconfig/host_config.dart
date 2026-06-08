@@ -29,7 +29,9 @@ enum AdaptiveCardBrightnessMode {
   dark,
 }
 
+/// Light and dark HostConfig pair with a mutable [current] selection.
 class HostConfigs {
+  /// Creates a light/dark HostConfig pair; [current] starts as [light].
   HostConfigs({
     this.light = const HostConfig(),
     this.dark = const HostConfig(),
@@ -38,18 +40,19 @@ class HostConfigs {
     current = light;
   }
 
-  /// can set this to light or dark o something else
+  /// Active HostConfig used for rendering (set to [light] or [dark]).
   late HostConfig current;
 
-  /// for the light theme
+  /// HostConfig for light theme rendering.
   final HostConfig light;
 
-  /// for the dark theme
+  /// HostConfig for dark theme rendering.
   final HostConfig dark;
 }
 
 /// Top level configuration for Adaptive Cards
 class HostConfig {
+  /// Creates a HostConfig from explicit section values.
   const HostConfig({
     this.imageBaseUrl,
     this.fontFamily,
@@ -75,6 +78,7 @@ class HostConfig {
     this.chartColors,
   });
 
+  /// Parses a HostConfig from JSON (all top-level HostConfig properties).
   factory HostConfig.fromJson(Map<String, dynamic> json) {
     return HostConfig(
       imageBaseUrl: json['imageBaseUrl']?.toString(),
@@ -140,26 +144,70 @@ class HostConfig {
     );
   }
 
+  /// Base URL prepended to relative image URLs (`imageBaseUrl`).
   final String? imageBaseUrl;
+
+  /// Default font family for card text (`fontFamily`).
   final String? fontFamily;
+
+  /// Whether interactive elements (inputs, actions) are enabled
+  /// (`supportsInteractivity`).
   final bool? supportsInteractivity;
+
+  /// Default pixel sizes for ImageSet element images (`imageSet`).
   final ImageSetConfig? imageSet;
+
+  /// Semantic foreground color mappings (`foregroundColors`).
   final ForegroundColorsConfig? foregroundColors;
+
+  /// Named text style defaults (`textStyles`).
   final TextStylesConfig? textStyles;
+
+  /// Card-level rendering rules (`adaptiveCard`).
   final AdaptiveCardConfig? adaptiveCard;
+
+  /// Action set layout and button chrome (`actions`).
   final ActionsConfig? actions;
+
+  /// Named container background/foreground styles (`containerStyles`).
   final ContainerStylesConfig? containerStyles;
+
+  /// FactSet typography and spacing (`factSet`).
   final FactSetConfig? factSet;
+
+  /// Font size token mappings (`fontSizes`).
   final FontSizesConfig? fontSizes;
+
+  /// Font weight token mappings (`fontWeights`).
   final FontWeightsConfig? fontWeights;
+
+  /// Image element size token mappings (`imageSizes`).
   final ImageSizesConfig? imageSizes;
+
+  /// Input label and error message styling (`inputs`).
   final InputsConfig? inputs;
+
+  /// Media element defaults (`media`).
   final MediaConfig? media;
+
+  /// Separator line appearance (`separator`).
   final SeparatorConfig? separator;
+
+  /// Spacing token mappings (`spacing`).
   final SpacingsConfig? spacing;
+
+  /// TextBlock heading defaults (`textBlock`).
   final TextBlockConfig? textBlock;
+
+  /// Badge style color variants (`badgeStyles`).
   final BadgeStylesConfig? badgeStyles;
+
+  /// Progress indicator size tokens (`progressSizes`).
   final ProgressSizesConfig? progressSizes;
+
+  /// Progress indicator semantic colors (`progressColors`).
   final ProgressColorsConfig? progressColors;
+
+  /// Chart default palette (`chartColors`).
   final ChartColorsConfig? chartColors;
 }

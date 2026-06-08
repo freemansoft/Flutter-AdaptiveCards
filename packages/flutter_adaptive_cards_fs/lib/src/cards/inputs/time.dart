@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 class AdaptiveTimeInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates a time input from [adaptiveMap] JSON.
   AdaptiveTimeInput({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -26,6 +27,7 @@ class AdaptiveTimeInput extends ConsumerStatefulWidget
   AdaptiveTimeInputState createState() => AdaptiveTimeInputState();
 }
 
+/// State for [AdaptiveTimeInput]; opens a platform time picker on tap.
 class AdaptiveTimeInputState extends ConsumerState<AdaptiveTimeInput>
     with
         AdaptiveTextualInputMixin,
@@ -33,8 +35,13 @@ class AdaptiveTimeInputState extends ConsumerState<AdaptiveTimeInput>
         AdaptiveInputMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
+  /// Currently selected time, or null when cleared.
   TimeOfDay? selectedTime;
+
+  /// Minimum allowed time from `min` (`HH:mm`).
   late TimeOfDay min;
+
+  /// Maximum allowed time from `max` (`HH:mm`).
   late TimeOfDay max;
   bool _initialValueSynced = false;
 
@@ -58,6 +65,7 @@ class AdaptiveTimeInputState extends ConsumerState<AdaptiveTimeInput>
     setState(() {});
   }
 
+  /// Parses an Adaptive Cards time string (`HH:mm`) into [TimeOfDay].
   TimeOfDay? parseTime(String? time) {
     if (time == null || time.isEmpty) return null;
     final List<String> times = time.split(':');

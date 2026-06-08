@@ -6,22 +6,29 @@ import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+/// Fades [child] in over [duration], then hides it when complete.
 class FadeAnimation extends StatefulWidget {
+  /// Creates a one-shot fade-in animation around [child].
   const FadeAnimation({
     super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 500),
   });
 
+  /// Widget shown while the fade animation runs.
   final Widget child;
+
+  /// Length of the fade-in animation.
   final Duration duration;
 
   @override
   FadeAnimationState createState() => FadeAnimationState();
 }
 
+/// State for [FadeAnimation]; drives the opacity [AnimationController].
 class FadeAnimationState extends State<FadeAnimation>
     with SingleTickerProviderStateMixin {
+  /// Drives opacity from 1.0 down to 0.0 over [FadeAnimation.duration].
   late AnimationController animationController;
 
   @override
@@ -67,15 +74,23 @@ class FadeAnimationState extends State<FadeAnimation>
   }
 }
 
+/// Lowercases only the first character of [s].
 String firstCharacterToLowerCase(String s) =>
     s.isNotEmpty ? s[0].toLowerCase() + s.substring(1) : '';
 
+/// Simple pair of two values.
 class Tuple<A, B> {
+  /// Creates a tuple holding [a] and [b].
   Tuple(this.a, this.b);
+
+  /// First component.
   final A a;
+
+  /// Second component.
   final B b;
 }
 
+/// Clips child content to a full rectangular bounds (used for person images).
 class FullCircleClipper extends CustomClipper<Rect> {
   @override
   Rect getClip(Size size) {
@@ -86,6 +101,7 @@ class FullCircleClipper extends CustomClipper<Rect> {
   bool shouldReclip(CustomClipper<Rect> oldClipper) => false;
 }
 
+/// Parses `#RRGGBB` or `#AARRGGBB` hex strings into [Color].
 Color? parseHexColor(String? colorValue) {
   if (colorValue == null) return null;
   // No alpha
@@ -122,6 +138,7 @@ Color? parseHostConfigColor(dynamic value) {
   return Color(int.parse(hex, radix: 16));
 }
 
+/// Returns the English ordinal suffix (`st`, `nd`, `rd`, `th`) for day [n].
 String getDayOfMonthSuffix(int n) {
   assert(n >= 1 && n <= 31, 'illegal day of month: $n');
   if (n >= 11 && n <= 13) {
@@ -195,6 +212,7 @@ String parseTextString(String text, {String? locale}) {
   });
 }
 
+/// Builds the label row above an input using HostConfig label styles.
 Widget loadLabel({
   required BuildContext context,
   String? label,
@@ -271,6 +289,7 @@ Widget loadLabel({
   );
 }
 
+/// Builds the validation error text below an input when [showError] is true.
 Widget loadErrorMessage({
   required BuildContext context,
   String? errorMessage,
@@ -390,6 +409,7 @@ class UUIDGenerator {
     return newId;
   }
 
+  /// Returns true when [id] was author-supplied (not auto-generated from [type]).
   bool isNaturalId(String? id, String? type) {
     if (id == null) return false;
     if (type == null) return true;

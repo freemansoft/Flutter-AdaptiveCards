@@ -7,7 +7,9 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// https://adaptivecards.io/explorer/ColumnSet.html
 ///
+/// Renders a `ColumnSet` as a horizontal row of [AdaptiveColumn] children.
 class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a `ColumnSet` from [adaptiveMap].
   AdaptiveColumnSet({
     required this.adaptiveMap,
     required this.supportMarkdown,
@@ -21,16 +23,23 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
+  /// Whether nested text elements may render markdown.
   final bool supportMarkdown;
 
   @override
   AdaptiveColumnSetState createState() => AdaptiveColumnSetState();
 }
 
+/// State for [AdaptiveColumnSet].
 class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Resolved `columns` (and optional separators) for the row.
   List<Widget>? columns;
+
+  /// Row alignment from `horizontalAlignment`.
   MainAxisAlignment? horizontalAlignment;
+
+  /// Background color resolved from HostConfig and column set style.
   Color? backgroundColor;
 
   @override

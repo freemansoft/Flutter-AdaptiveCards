@@ -3,7 +3,11 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
+/// Renders the Adaptive Cards **Rating** element as a row of stars.
+///
+/// See https://adaptivecards.io/explorer/Rating.html
 class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a rating display from [adaptiveMap] JSON.
   AdaptiveRating({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -20,11 +24,19 @@ class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveRatingState createState() => AdaptiveRatingState();
 }
 
+/// State for [AdaptiveRating]; renders filled and empty star icons.
 class AdaptiveRatingState extends State<AdaptiveRating>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Current rating from `value`.
   late double value;
+
+  /// Maximum star count from `max` (default 5).
   late double max;
+
+  /// Color token from `color` (`neutral`, `marigold`, `light`).
   late String color;
+
+  /// Icon size token from `size` (`medium` or `large`).
   late String size;
 
   @override

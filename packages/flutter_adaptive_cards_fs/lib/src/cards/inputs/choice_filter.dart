@@ -13,6 +13,7 @@ import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 /// after async loads should close and reopen the picker (or apply overlay
 /// choices before the user taps the field).
 class ChoiceFilter extends StatefulWidget {
+  /// Creates a searchable choice picker over [data].
   const ChoiceFilter({super.key, required this.data, required this.callback});
 
   /// Resolved choices at modal open time.
@@ -25,6 +26,7 @@ class ChoiceFilter extends StatefulWidget {
   ChoiceFilterState createState() => ChoiceFilterState();
 }
 
+/// State for [ChoiceFilter]; filters choices by title as the user types.
 class ChoiceFilterState extends State<ChoiceFilter> {
   final TextEditingController _searchController = TextEditingController();
 
@@ -40,6 +42,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
     }
   }
 
+  /// Updates [_searchResult] to choices whose titles contain [text].
   Future<void> onSearchTextChanged(String text) async {
     setState(_searchResult.clear);
 

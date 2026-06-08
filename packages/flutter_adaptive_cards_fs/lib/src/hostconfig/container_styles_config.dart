@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_style_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/foreground_colors_config.dart';
 
+/// HostConfig `containerStyles` section mapping named container styles to
+/// background and foreground colors.
 class ContainerStylesConfig {
+  /// Creates container style variants from explicit configurations.
   ContainerStylesConfig({
     required this.defaultStyle,
     required this.emphasis,
@@ -12,6 +15,7 @@ class ContainerStylesConfig {
     this.accent,
   });
 
+  /// Parses `containerStyles` from HostConfig JSON.
   factory ContainerStylesConfig.fromJson(Map<String, dynamic> json) {
     return ContainerStylesConfig(
       defaultStyle: ContainerStyleConfig.fromJson(
@@ -67,10 +71,21 @@ class ContainerStylesConfig {
     );
   }
 
+  /// Default container style (`containerStyles.default`).
   final ContainerStyleConfig defaultStyle;
+
+  /// Emphasis container style (`containerStyles.emphasis`).
   final ContainerStyleConfig emphasis;
+
+  /// Good (success) container style (`containerStyles.good`).
   final ContainerStyleConfig? good;
+
+  /// Attention (error) container style (`containerStyles.attention`).
   final ContainerStyleConfig? attention;
+
+  /// Warning container style (`containerStyles.warning`).
   final ContainerStyleConfig? warning;
+
+  /// Accent container style (`containerStyles.accent`).
   final ContainerStyleConfig? accent;
 }

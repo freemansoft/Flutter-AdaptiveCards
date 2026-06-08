@@ -14,7 +14,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/FactSet.html
 /// https://adaptivecards.io/explorer/Fact.html
 ///
+/// Renders a `FactSet` as title/value pairs in two columns, with reactive
+/// updates when overlay `facts` change.
 class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a `FactSet` from [adaptiveMap].
   AdaptiveFactSet({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -31,9 +34,13 @@ class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveFactSetState createState() => AdaptiveFactSetState();
 }
 
+/// State for [AdaptiveFactSet].
 class AdaptiveFactSetState extends State<AdaptiveFactSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Title/value pairs from `facts`, including resolved overlay updates.
   List<Fact> facts = const [];
+
+  /// Background color resolved from HostConfig and fact set style.
   Color? backgroundColor;
   ProviderSubscription<Map<String, dynamic>?>? _factsSubscription;
 
@@ -146,6 +153,7 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     );
   }
 
+  /// Builds markdown styling for fact values from HostConfig [factSetTextConfig].
   MarkdownStyleSheet loadMarkdownStyleSheet({
     required ReferenceResolver resolver,
     required BuildContext context,

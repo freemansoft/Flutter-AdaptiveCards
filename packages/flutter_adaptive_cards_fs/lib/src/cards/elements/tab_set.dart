@@ -9,7 +9,11 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 // AC usually has a "TabSet" container.
 // I will implement "AdaptiveTabSet" which looks for "TabPage" items.
 
+/// Renders the Adaptive Cards **TabSet** container with [TabBar] pages.
+///
+/// See https://adaptivecards.io/explorer/TabSet.html
 class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a tab set from [adaptiveMap] JSON.
   AdaptiveTabSet({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -26,13 +30,17 @@ class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTabSetState createState() => AdaptiveTabSetState();
 }
 
+/// State for [AdaptiveTabSet]; drives tab selection and page content.
 class AdaptiveTabSetState extends State<AdaptiveTabSet>
     with
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         TickerProviderStateMixin,
         ProviderScopeMixin {
+  /// Tab page maps from `tabs` or `items`.
   late List<Map<String, dynamic>> tabs;
+
+  /// Synchronizes [TabBar] and [TabBarView] selection.
   late TabController _tabController;
 
   @override

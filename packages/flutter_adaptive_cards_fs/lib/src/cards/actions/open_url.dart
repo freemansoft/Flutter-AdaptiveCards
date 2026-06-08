@@ -7,8 +7,11 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// https://adaptivecards.io/explorer/Action.OpenUrl.html
 ///
+/// Renders `Action.OpenUrl` as an elevated button and opens the URL via the
+/// host [GenericActionOpenUrl] handler.
 class AdaptiveActionOpenUrl extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates an `Action.OpenUrl` widget from [adaptiveMap].
   AdaptiveActionOpenUrl({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -25,9 +28,13 @@ class AdaptiveActionOpenUrl extends StatefulWidget
   AdaptiveActionOpenUrlState createState() => AdaptiveActionOpenUrlState();
 }
 
+/// State for [AdaptiveActionOpenUrl].
 class AdaptiveActionOpenUrlState extends State<AdaptiveActionOpenUrl>
     with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
+  /// Resolved `Action.OpenUrl` handler from the action type registry.
   late GenericActionOpenUrl action;
+
+  /// Optional `iconUrl` from the action JSON.
   late String? iconUrl;
 
   @override

@@ -7,8 +7,11 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// https://adaptivecards.io/explorer/Action.ToggleVisibility.html
 ///
+/// Renders `Action.ToggleVisibility` as an elevated button and updates element
+/// visibility via [GenericActionToggleVisibility].
 class AdaptiveActionToggleVisibility extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates an `Action.ToggleVisibility` widget from [adaptiveMap].
   AdaptiveActionToggleVisibility({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -26,9 +29,11 @@ class AdaptiveActionToggleVisibility extends StatefulWidget
       AdaptiveActionToggleVisibilityState();
 }
 
+/// State for [AdaptiveActionToggleVisibility].
 class AdaptiveActionToggleVisibilityState
     extends State<AdaptiveActionToggleVisibility>
     with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
+  /// Resolved `Action.ToggleVisibility` handler from the action type registry.
   late GenericActionToggleVisibility action;
 
   @override

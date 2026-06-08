@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 class AdaptiveTextInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates a text input from [adaptiveMap] JSON.
   AdaptiveTextInput({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -27,6 +28,7 @@ class AdaptiveTextInput extends ConsumerStatefulWidget
   AdaptiveTextInputState createState() => AdaptiveTextInputState();
 }
 
+/// State for [AdaptiveTextInput]; handles single- and multi-line text entry.
 class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
     with
         AdaptiveTextualInputMixin,
@@ -34,13 +36,17 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
+  /// Text field holding the current input value.
   TextEditingController controller = TextEditingController();
   late FocusNode _focusNode;
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
   bool _initialValueSynced = false;
 
+  /// Maximum character count from `maxLength`.
   late int maxLength;
+
+  /// Keyboard type derived from `style` (`tel`, `url`, `email`, etc.).
   TextInputType? inputStyle;
 
   @override
@@ -66,6 +72,7 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
     super.dispose();
   }
 
+  /// Whether the field expands for multiple lines (`isMultiline`).
   late bool isMultiline;
 
   @override

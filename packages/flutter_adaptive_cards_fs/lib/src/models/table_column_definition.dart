@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 /// * https://adaptivecards.io/explorer/Table.html
 @immutable
 class TableColumnDefinition {
+  /// Creates a column definition with optional [width].
   const TableColumnDefinition({
     this.width,
   });

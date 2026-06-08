@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// `parameters` before the host callback.
 class AdaptiveChoiceSet extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates a choice-set input from [adaptiveMap] JSON.
   AdaptiveChoiceSet({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -37,6 +38,7 @@ class AdaptiveChoiceSet extends ConsumerStatefulWidget
   AdaptiveChoiceSetState createState() => AdaptiveChoiceSetState();
 }
 
+/// State for [AdaptiveChoiceSet]; handles selection UI and host callbacks.
 class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     with
         AdaptiveInputMixin,
@@ -46,13 +48,19 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
   /// Stored submit values (`choices[].value`), not display titles.
   final Set<String> _selectedChoices = {};
 
+  /// Whether `style` is `filtered` (searchable picker).
   late bool isFiltered;
+
+  /// Whether `style` is `compact` (dropdown) vs `expanded` (radio/checkbox).
   late bool isCompact;
+
+  /// Whether multiple choices may be selected (`isMultiSelect`).
   late bool isMultiSelect;
 
   /// From `choices.data` when present; forwarded on [select] only.
   DataQuery? dataQuery;
 
+  /// Text field backing compact/filtered display of the selected title(s).
   TextEditingController controller = TextEditingController();
   bool _initialValueSynced = false;
   bool _selectionReconcileScheduled = false;
@@ -394,6 +402,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     );
   }
 
+  /// Applies a user selection, updates document state, and notifies the host.
   void select(String? choice, List<Choice> choices) {
     if (!isMultiSelect) {
       _selectedChoices.clear();
@@ -461,6 +470,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     );
   }
 
+  /// Returns true when `style` is `filtered`.
   bool loadFiltered() {
     if (style == null) return false;
     if (style?.toLowerCase() == 'filtered') {

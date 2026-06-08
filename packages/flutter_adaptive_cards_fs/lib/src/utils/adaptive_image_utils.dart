@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+/// Helpers for loading Adaptive Cards image URLs (network, SVG, data URI).
 class AdaptiveImageUtils {
+  /// Returns a widget that loads [url] as raster, SVG, or base64 image.
   static Widget getImage(
     String url, {
     double? width,
@@ -47,6 +49,7 @@ class AdaptiveImageUtils {
     }
   }
 
+  /// Returns an [ImageProvider] for [url] (memory or network).
   static ImageProvider getImageProvider(String url) {
     if (url.startsWith('data:image/') && url.contains('base64,')) {
       final String base64String = url.split('base64,')[1];

@@ -7,8 +7,11 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// https://adaptivecards.io/explorer/Action.Execute.html
 ///
+/// Renders `Action.Execute` as an elevated button and forwards taps to the host
+/// via [GenericExecuteAction].
 class AdaptiveActionExecute extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates an `Action.Execute` widget from [adaptiveMap].
   AdaptiveActionExecute({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -25,8 +28,10 @@ class AdaptiveActionExecute extends StatefulWidget
   AdaptiveActionExecuteState createState() => AdaptiveActionExecuteState();
 }
 
+/// State for [AdaptiveActionExecute].
 class AdaptiveActionExecuteState extends State<AdaptiveActionExecute>
     with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
+  /// Resolved `Action.Execute` handler from the action type registry.
   late GenericExecuteAction action;
 
   @override

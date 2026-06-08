@@ -64,6 +64,7 @@ bool validateInputs(ProviderContainer container) {
 /// Default actions for onTaps for Action.Submit
 /// Expects there to be supplementary data in 'data' property
 class DefaultSubmitAction extends GenericSubmitAction {
+  /// Validates inputs, merges `data`, and forwards to [InheritedAdaptiveCardHandlers.onSubmit].
   const DefaultSubmitAction();
 
   @override
@@ -108,6 +109,7 @@ class DefaultSubmitAction extends GenericSubmitAction {
 /// Default actions for onTaps for Action.Execute
 /// Expects there to be supplementary data in 'data' property
 class DefaultExecuteAction extends GenericExecuteAction {
+  /// Validates inputs, merges `data`, and forwards to [InheritedAdaptiveCardHandlers.onExecute].
   const DefaultExecuteAction();
 
   @override
@@ -154,6 +156,7 @@ class DefaultExecuteAction extends GenericExecuteAction {
 /// limited set of protocols are supported
 /// https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
 class DefaultOpenUrlAction extends GenericActionOpenUrl {
+  /// Forwards to [InheritedAdaptiveCardHandlers.onOpenUrl] or launches the URL.
   const DefaultOpenUrlAction();
 
   @override
@@ -191,6 +194,7 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
 ///
 /// idential to DefaultOpenUrlAction for now
 class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
+  /// Forwards to [InheritedAdaptiveCardHandlers.onOpenUrlDialog] or shows the built-in dialog.
   const DefaultOpenUrlDialogAction();
 
   @override
@@ -224,6 +228,7 @@ class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
 /// Default actions for Action.ResetInputs
 /// Resets the form
 class DefaultResetInputsAction extends GenericActionResetInputs {
+  /// Resets targeted inputs via [executeResetInputsAction].
   const DefaultResetInputsAction();
 
   @override
@@ -239,6 +244,7 @@ class DefaultResetInputsAction extends GenericActionResetInputs {
 /// Default actions for Action.ToggleVisibility
 ///
 class DefaultToggleVisibilityAction extends GenericActionToggleVisibility {
+  /// Toggles visibility for each `targetElements` entry via the document notifier.
   const DefaultToggleVisibilityAction();
 
   @override

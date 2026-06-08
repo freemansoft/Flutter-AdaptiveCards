@@ -20,11 +20,13 @@ String? actionIdFromMap(Map<String, dynamic> actionMap) {
 /// Contains merged action `data` and input values in `data`, plus optional
 /// author-defined `actionId` from the action JSON.
 class SubmitActionInvoke {
+  /// Creates a submit callback payload with merged [data] and optional [actionId].
   const SubmitActionInvoke({
     required this.data,
     this.actionId,
   });
 
+  /// Builds from action JSON and collected input [data].
   factory SubmitActionInvoke.fromActionMap(
     Map<String, dynamic> actionMap,
     Map<String, dynamic> data,
@@ -48,12 +50,14 @@ class SubmitActionInvoke {
 /// Contains merged action `data` and input values in `data`, plus optional
 /// `verb` and author-defined `actionId` from the action JSON.
 class ExecuteActionInvoke {
+  /// Creates an execute callback payload with merged [data], [verb], and [actionId].
   const ExecuteActionInvoke({
     required this.data,
     this.verb,
     this.actionId,
   });
 
+  /// Builds from action JSON and collected input [data].
   factory ExecuteActionInvoke.fromActionMap(
     Map<String, dynamic> actionMap,
     Map<String, dynamic> data,
@@ -78,11 +82,13 @@ class ExecuteActionInvoke {
 
 /// Payload delivered to the host `onOpenUrl` callback.
 class OpenUrlActionInvoke {
+  /// Creates an open-URL callback payload for [url] with optional [actionId].
   const OpenUrlActionInvoke({
     required this.url,
     this.actionId,
   });
 
+  /// Builds from action JSON, using [altUrl] when supplied by selectAction.
   factory OpenUrlActionInvoke.fromActionMap(
     Map<String, dynamic> actionMap, {
     String? altUrl,
@@ -103,11 +109,13 @@ class OpenUrlActionInvoke {
 
 /// Payload delivered to the host `onOpenUrlDialog` callback.
 class OpenUrlDialogActionInvoke {
+  /// Creates an open-URL-in-dialog callback payload for [url].
   const OpenUrlDialogActionInvoke({
     required this.url,
     this.actionId,
   });
 
+  /// Builds from action JSON, using [altUrl] when supplied by selectAction.
   factory OpenUrlDialogActionInvoke.fromActionMap(
     Map<String, dynamic> actionMap, {
     String? altUrl,
@@ -128,6 +136,7 @@ class OpenUrlDialogActionInvoke {
 
 /// Payload delivered to the host `onChange` callback when an input value changes.
 class InputChangeInvoke {
+  /// Creates an input-change callback for [inputId] with the new [value].
   const InputChangeInvoke({
     required this.inputId,
     required this.value,
