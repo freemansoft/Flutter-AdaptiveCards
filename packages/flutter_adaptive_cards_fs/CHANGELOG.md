@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- Public exports for **`RawAdaptiveCard`**, **`RawAdaptiveCardState`**, and **`DataQuery`** (host integration and backend invoke wiring).
+- **Data.Query `associatedInputs`:** sibling input values merged into `DataQuery.parameters` on `InputChangeInvoke` when `auto` (default).
+- **Action.Submit / Action.Execute `associatedInputs`:** `"none"` skips input merge into invoke `data`.
+
 ## [0.10.0]
 
 - Shared parse helpers: **`parseIsVisible()`** and **`parseHostConfigColor()`** in `utils.dart` (HostConfig color parsing and visibility baseline parsing).

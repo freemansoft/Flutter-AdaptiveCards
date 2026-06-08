@@ -54,9 +54,9 @@ String? countryCodeFromOnChangeValue(Object? value) {
 /// Card JSON defines valueChangedAction reset on the country field. This page
 /// supplies country-specific city choices via RawAdaptiveCardState.applyUpdates.
 ///
-/// Phase 1 workaround: city choices are preloaded when country changes because
-/// Data.Query associatedInputs is not yet implemented in the renderer. Filtered
-/// city UI searches resolved overlay choices (not live bot invoke on each keystroke).
+/// Phase 1: associatedInputs merges sibling input values into Data.Query
+/// parameters on city onChange. Country change preloads city choices; the city
+/// branch can also resolve choices from dataQuery.parameters['country'].
 class DependentChoiceSetDemoPage extends StatelessWidget {
   const DependentChoiceSetDemoPage({
     super.key,
@@ -109,27 +109,42 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
     }
 
     // Option 2 only: city has choices.data (dataset "cities"); onChange passes
-    // a non-null DataQuery.
+    // a non-null DataQuery with associatedInputs sibling values in parameters.
     //
     // Option 1 city is compact with no choices.data, so
     // dataQuery is null and this branch never runs.
-    //
-    // Phase 1: log only — choices were already loaded in the country branch.
-    // Phase 2: read dataQuery.parameters['country'] here instead of preloading.
     if (invoke.inputId == 'city' && invoke.dataQuery?.dataset == 'cities') {
-      // code to fetch the city list could go here
-      // dataset is essentially the target
+      final countryCode = invoke.dataQuery?.parameters?['country']?.toString();
+      final choices = countryCode == null
+          ? const <Choice>[]
+          : citiesByCountry[countryCode] ?? const <Choice>[];
       assert(() {
         developer.log(
           format(
-            'city Data.Query onChange: value={}, dataset={}',
+            'city Data.Query onChange: value={}, dataset={}, country={}',
             invoke.value?.toString() ?? '',
             invoke.dataQuery?.dataset ?? '',
+            countryCode ?? '',
           ),
           name: 'DependentChoiceSetDemoPage',
         );
         return true;
       }());
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (!invoke.cardState.mounted) {
+          return;
+        }
+        invoke.cardState.applyUpdates(
+          elements: [
+            AdaptiveElementUpdate(
+              id: 'city',
+              choices: choices,
+              clearValue: true,
+              clearError: true,
+            ),
+          ],
+        );
+      });
     }
   }
 
