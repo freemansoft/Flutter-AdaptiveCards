@@ -64,6 +64,22 @@ void handleDependentChoiceSetChange(InputChangeInvoke invoke) {
   }
 
   if (invoke.inputId == 'city' && invoke.dataQuery?.dataset == 'cities') {
-    // Phase 1: choices preloaded on country change; city branch observable in tests.
+    final countryCode = invoke.dataQuery?.parameters?['country']?.toString();
+    final choices = countryCode == null
+        ? const <Choice>[]
+        : citiesByCountry[countryCode] ?? const <Choice>[];
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (!invoke.cardState.mounted) return;
+      invoke.cardState.applyUpdates(
+        elements: [
+          AdaptiveElementUpdate(
+            id: 'city',
+            choices: choices,
+            clearValue: true,
+            clearError: true,
+          ),
+        ],
+      );
+    });
   }
 }

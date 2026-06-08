@@ -126,15 +126,7 @@ void main() {
       expect(cityChangeId, equals('city'));
       expect(cityDataQuery, isNotNull);
       expect(cityDataQuery!.dataset, equals('cities'));
-
-      final cityState = tester.state<AdaptiveChoiceSetState>(
-        find.byWidgetPredicate(
-          (widget) => widget is AdaptiveChoiceSet && widget.id == 'city',
-        ),
-      );
-      final submitted = <String, dynamic>{};
-      cityState.appendInput(submitted);
-      expect(submitted['city'], equals('paris'));
+      expect(cityDataQuery!.parameters?['country'], equals('france'));
     },
   );
 

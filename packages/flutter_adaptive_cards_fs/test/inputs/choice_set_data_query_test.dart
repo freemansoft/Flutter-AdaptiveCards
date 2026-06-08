@@ -291,6 +291,67 @@ void main() {
   );
 
   testWidgets(
+    'Data.Query associatedInputs auto merges country into parameters',
+    (
+      WidgetTester tester,
+    ) async {
+      DataQuery? captured;
+      final map = {
+        'type': 'AdaptiveCard',
+        'version': '1.5',
+        'body': [
+          {
+            'type': 'Input.ChoiceSet',
+            'id': 'country',
+            'choices': [
+              {'title': 'USA', 'value': 'usa'},
+            ],
+            'value': 'usa',
+          },
+          {
+            'type': 'Input.ChoiceSet',
+            'id': 'city',
+            'choices': [
+              {'title': 'NYC', 'value': 'nyc'},
+            ],
+            'choices.data': {
+              'type': 'Data.Query',
+              'dataset': 'cities',
+              'associatedInputs': 'auto',
+            },
+            'style': 'expanded',
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'associatedInputs merge',
+          onChange: (invoke) {
+            if (invoke.inputId == 'city') captured = invoke.dataQuery;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final cityElementMap = (map['body']! as List)[1]! as Map<String, dynamic>;
+      await tester.tap(
+        find.byKey(
+          generateWidgetKey(
+            cityElementMap,
+            suffix: 'NYC',
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(captured, isNotNull);
+      expect(captured!.parameters?['country'], 'usa');
+    },
+  );
+
+  testWidgets(
     'setDataQuerySession updates resolved choices.data count and skip',
     (WidgetTester tester) async {
       final map = _dataQueryChoiceSetCard();

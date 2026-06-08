@@ -10,6 +10,7 @@ import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 // Default action handlers with basic behavior
@@ -71,18 +72,18 @@ class DefaultSubmitAction extends GenericSubmitAction {
     required RawAdaptiveCardState rawAdaptiveCardState,
     required Map<String, dynamic> adaptiveMap,
   }) {
-    // Pull initial submit data from the map
-    final Map<String, dynamic> data =
-        (adaptiveMap['data'] as Map<String, dynamic>?) != null
-        ? Map<String, dynamic>.from(adaptiveMap['data'] as Map)
-        : <String, dynamic>{};
-
     final container = ProviderScope.containerOf(context);
     final values = container
         .read(adaptiveCardDocumentProvider.notifier)
         .collectInputValues();
 
-    data.addAll(values);
+    final data = mergeActionData(
+      actionData: (adaptiveMap['data'] as Map<String, dynamic>?) != null
+          ? Map<String, dynamic>.from(adaptiveMap['data'] as Map)
+          : <String, dynamic>{},
+      inputValues: values,
+      associatedInputs: adaptiveMap['associatedInputs'] as String?,
+    );
 
     if (!validateInputs(container)) return;
 
@@ -115,17 +116,18 @@ class DefaultExecuteAction extends GenericExecuteAction {
     required RawAdaptiveCardState rawAdaptiveCardState,
     required Map<String, dynamic> adaptiveMap,
   }) {
-    final Map<String, dynamic> data =
-        (adaptiveMap['data'] as Map<String, dynamic>?) != null
-        ? Map<String, dynamic>.from(adaptiveMap['data'] as Map)
-        : <String, dynamic>{};
-
     final container = ProviderScope.containerOf(context);
     final values = container
         .read(adaptiveCardDocumentProvider.notifier)
         .collectInputValues();
 
-    data.addAll(values);
+    final data = mergeActionData(
+      actionData: (adaptiveMap['data'] as Map<String, dynamic>?) != null
+          ? Map<String, dynamic>.from(adaptiveMap['data'] as Map)
+          : <String, dynamic>{},
+      inputValues: values,
+      associatedInputs: adaptiveMap['associatedInputs'] as String?,
+    );
     if (!validateInputs(container)) return;
 
     final invoke = ExecuteActionInvoke.fromActionMap(adaptiveMap, data);

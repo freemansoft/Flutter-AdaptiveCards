@@ -82,4 +82,49 @@ void main() {
     expect(captured!.actionId, isNull);
     expect(captured!.data['only'], 'data');
   });
+
+  testWidgets(
+    'Action.Submit with associatedInputs none excludes inputs from data',
+    (tester) async {
+      SubmitActionInvoke? captured;
+
+      const card = {
+        'type': 'AdaptiveCard',
+        'version': '1.0',
+        'body': [
+          {
+            'type': 'Input.Text',
+            'id': 'email',
+            'value': 'secret@x.com',
+          },
+        ],
+        'actions': [
+          {
+            'type': 'Action.Submit',
+            'title': 'Send',
+            'associatedInputs': 'none',
+            'data': {'actionOnly': true},
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: card,
+          title: 'submit associatedInputs none',
+          onOpenUrl: (_) {},
+          onSubmit: (invoke) => captured = invoke,
+          onExecute: (_) {},
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Send'));
+      await tester.pumpAndSettle();
+
+      expect(captured, isNotNull);
+      expect(captured!.data, {'actionOnly': true});
+      expect(captured!.data.containsKey('email'), isFalse);
+    },
+  );
 }
