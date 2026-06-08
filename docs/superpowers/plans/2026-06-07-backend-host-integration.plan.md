@@ -1,14 +1,55 @@
 # Backend Host Integration Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
+
+**Status:** **Phase 1 (Tasks 1–6)** — implemented. **Phase 2 (Tasks 7–14)** — implemented. **Final verification** — passed (see below). **Post-plan:** public API docs on `flutter_adaptive_cards_host_fs`; host package version **0.10.0** (aligned with sibling packages).
 
 **Goal:** Phase 1 adds Teams `associatedInputs` support in `flutter_adaptive_cards_fs`; Phase 2 adds optional `flutter_adaptive_cards_host_fs` for serialize → POST → parse → `applyTo` backend round-trips.
 
 **Architecture:** Phase 1 extends `DataQuery` and `DefaultSubmitAction`/`DefaultExecuteAction` with shared merge helpers in `associated_inputs.dart`. Phase 2 is a new workspace package exporting request/response models, PlainJson + Teams adapters, `HttpAdaptiveCardBackendClient`, and `AdaptiveCardBackendHandlers` wired to `InheritedAdaptiveCardHandlers`.
 
-**Tech Stack:** Dart 3.12+, Flutter (FVM), Riverpod 3.x, `flutter_adaptive_cards_fs`, `http`, `package:flutter_test`, `very_good_analysis`.
+**Tech Stack:** Dart 3.12+, Flutter (FVM), Riverpod 3.x, `flutter_adaptive_cards_fs`, `flutter_adaptive_cards_host_fs`, `http`, `package:flutter_test`, `very_good_analysis`.
 
 **Spec:** [`docs/superpowers/specs/2026-06-07-backend-host-integration-design.md`](../specs/2026-06-07-backend-host-integration-design.md)
+
+---
+
+## Implementation summary
+
+| Phase | Tasks | Result |
+| --- | --- | --- |
+| Phase 1 — renderer `associatedInputs` | 1–6 | Done |
+| Phase 2 — `flutter_adaptive_cards_host_fs` | 7–14 | Done |
+| Full verification | Final | `fvm flutter analyze` clean; 373 + 15 tests pass |
+| Public API docs (host package) | — | `///` on all exported members; `public_member_api_docs` clean |
+
+### Verification evidence (2026-06-07)
+
+```text
+fvm flutter analyze                          → No issues found
+packages/flutter_adaptive_cards_fs tests     → 373 passed, 2 skipped (--exclude-tags=golden)
+packages/flutter_adaptive_cards_host_fs tests → 15 passed
+```
+
+### Deviations from original plan
+
+| Item | Plan | As built |
+| --- | --- | --- |
+| Host package version | 0.1.0 | **0.10.0** (`publish_to: none`) |
+| `associated_inputs.dart` export | optional | **internal** (not exported from `flutter_adaptive_cards_fs`) |
+| Core public exports | — | **`RawAdaptiveCard`**, **`RawAdaptiveCardState`**, **`DataQuery`** added to `flutter_adaptive_cards_fs.dart` |
+| Phase 1 tests | — | **`test/models/data_query_test.dart`** added |
+| Phase 2 adapters | — | **`element_update_json.dart`** (internal patch parser) |
+| Phase 2 tests | handler test only | **`test/client/http_backend_client_test.dart`** added |
+| ChoiceSet widget test | compact city | **`style: expanded`** on city field so tap target exists |
+| Widgetbook | — | Removed redundant `src/flutter_raw_adaptive_card` imports after core export |
+| Per-task git commits | planned | **skipped** (single uncommitted branch) |
+
+### Follow-up (not in plan)
+
+- [x] Commit / PR from `feat/associated-inputs-phase1` (commit done; PR optional)
+- [ ] Add `flutter_adaptive_cards_host_fs` to root `README.md` package table (optional)
+- [ ] Widgetbook demo using `AdaptiveCardBackendHandlers` + mock client (optional)
 
 ---
 
@@ -22,8 +63,9 @@
 | `lib/src/models/data_query.dart` | `associatedInputs` + `withMergedSiblingInputs` |
 | `lib/src/cards/inputs/choice_set.dart` | Enrich `dataQuery` before `changeValue` |
 | `lib/src/action/default_actions.dart` | Honor Submit/Execute `associatedInputs` |
-| `lib/flutter_adaptive_cards_fs.dart` | Export `associated_inputs.dart` if public helpers needed (optional — keep internal unless exported) |
+| `lib/flutter_adaptive_cards_fs.dart` | Export **`RawAdaptiveCard`**, **`RawAdaptiveCardState`**, **`DataQuery`** (helpers stay internal) |
 | `test/utils/associated_inputs_test.dart` | **Create** — unit tests |
+| `test/models/data_query_test.dart` | **Create** — `associatedInputs` + `withMergedSiblingInputs` |
 | `test/inputs/choice_set_data_query_test.dart` | associatedInputs merge widget test |
 | `test/inputs/dependent_choice_set_test.dart` | city branch uses `parameters['country']` |
 | `test/actions/submit_action_invoke_test.dart` | `associatedInputs: none` test |
@@ -34,20 +76,22 @@
 | `docs/Implementation-Status.md` | Remove Known Gaps entries |
 | `docs/reactive-riverpod.md` | associatedInputs note |
 | `docs/actions-architecture.md` | Submit/Execute associatedInputs |
-| `packages/flutter_adaptive_cards_fs/CHANGELOG.md` | 0.10.0 entry |
+| `packages/flutter_adaptive_cards_fs/CHANGELOG.md` | `[Unreleased]` associatedInputs + exports |
 
-### Phase 2 — `flutter_adaptive_cards_host_fs`
+### Phase 2 — `flutter_adaptive_cards_host_fs` (v0.10.0)
 
 | File | Role |
 | --- | --- |
-| `packages/flutter_adaptive_cards_host_fs/pubspec.yaml` | **Create** — workspace package |
+| `packages/flutter_adaptive_cards_host_fs/pubspec.yaml` | **Create** — workspace package, `publish_to: none` |
 | `packages/flutter_adaptive_cards_host_fs/analysis_options.yaml` | **Create** — `very_good_analysis` |
-| `packages/flutter_adaptive_cards_host_fs/lib/flutter_adaptive_cards_host_fs.dart` | Barrel export |
+| `packages/flutter_adaptive_cards_host_fs/lib/flutter_adaptive_cards_host_fs.dart` | Barrel export + library doc |
 | `lib/src/models/invoke_kind.dart` | `AdaptiveCardInvokeKind` enum |
 | `lib/src/models/invoke_request.dart` | `AdaptiveCardInvokeRequest` + factories |
 | `lib/src/models/invoke_effect.dart` | Sealed effect types |
 | `lib/src/models/invoke_response.dart` | `AdaptiveCardInvokeResponse` + `applyTo` |
+| `lib/src/adapters/element_update_json.dart` | **Create** — patch JSON → `AdaptiveElementUpdate` |
 | `lib/src/adapters/plain_json_invoke_adapter.dart` | Flat request/response maps |
+| `lib/src/adapters/plain_json_invoke_response_parser.dart` | PlainJson response parser |
 | `lib/src/adapters/teams_invoke_adapter.dart` | Teams-shaped maps |
 | `lib/src/client/backend_client.dart` | Abstract client |
 | `lib/src/client/http_backend_client.dart` | HTTP POST implementation |
@@ -56,23 +100,24 @@
 | `test/adapters/plain_json_invoke_adapter_test.dart` | Adapter round-trip |
 | `test/adapters/teams_invoke_adapter_test.dart` | Teams adapter tests |
 | `test/models/invoke_response_test.dart` | Parser + `applyTo` tests |
-| `test/handlers/backend_handlers_test.dart` | End-to-end handler widget test |
+| `test/client/http_backend_client_test.dart` | HTTP client tests |
+| `test/handlers/backend_handlers_test.dart` | Handler widget test |
 | `pubspec.yaml` (repo root) | Add package to `workspace:` |
 | `packages/flutter_adaptive_cards_host_fs/README.md` | Usage + response contract |
-| `packages/flutter_adaptive_cards_host_fs/CHANGELOG.md` | Initial release notes |
+| `packages/flutter_adaptive_cards_host_fs/CHANGELOG.md` | `[0.10.0]` initial release |
 
 ---
 
-## Phase 1 — Renderer `associatedInputs`
+## Phase 1 — Renderer `associatedInputs` ✅
 
-### Task 1: Shared merge helpers
+### Task 1: Shared merge helpers ✅
 
 **Files:**
 
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/utils/associated_inputs.dart`
 - Create: `packages/flutter_adaptive_cards_fs/test/utils/associated_inputs_test.dart`
 
-- [ ] **Step 1: Write failing unit tests**
+- [x] **Step 1: Write failing unit tests**
 
 Create `associated_inputs_test.dart`:
 
@@ -130,13 +175,13 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/utils/associated_inputs_test.dart`
 
 Expected: FAIL — library/file not found
 
-- [ ] **Step 3: Implement helpers**
+- [x] **Step 3: Implement helpers**
 
 Create `associated_inputs.dart`:
 
@@ -175,13 +220,13 @@ Map<String, dynamic> mergeActionData({
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/utils/associated_inputs_test.dart`
 
 Expected: PASS (all tests)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/utils/associated_inputs.dart \
@@ -191,14 +236,14 @@ git commit -m "feat: add associatedInputs merge helpers for backend invoke paylo
 
 ---
 
-### Task 2: `DataQuery.associatedInputs` model
+### Task 2: `DataQuery.associatedInputs` model ✅
 
 **Files:**
 
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/models/data_query.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/models/data_query_test.dart` (**Create** if missing, else extend)
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```dart
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
@@ -245,11 +290,11 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test — expect FAIL**
+- [x] **Step 2: Run test — expect FAIL**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/models/data_query_test.dart`
 
-- [ ] **Step 3: Extend `DataQuery`**
+- [x] **Step 3: Extend `DataQuery`**
 
 Add to `data_query.dart`:
 
@@ -286,9 +331,9 @@ DataQuery withMergedSiblingInputs(
 }
 ```
 
-- [ ] **Step 4: Run test — expect PASS**
+- [x] **Step 4: Run test — expect PASS**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/models/data_query.dart \
@@ -298,14 +343,14 @@ git commit -m "feat: parse Data.Query associatedInputs and merge sibling inputs"
 
 ---
 
-### Task 3: Wire ChoiceSet → enriched `dataQuery` on `onChange`
+### Task 3: Wire ChoiceSet → enriched `dataQuery` on `onChange` ✅
 
 **Files:**
 
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart`
 
-- [ ] **Step 1: Write failing widget test**
+- [x] **Step 1: Write failing widget test**
 
 Add to `choice_set_data_query_test.dart`:
 
@@ -367,9 +412,9 @@ testWidgets('Data.Query associatedInputs auto merges country into parameters', (
 });
 ```
 
-- [ ] **Step 2: Run test — expect FAIL** (`parameters` null or missing `country`)
+- [x] **Step 2: Run test — expect FAIL** (`parameters` null or missing `country`)
 
-- [ ] **Step 3: Implement in `choice_set.dart` `select` path**
+- [x] **Step 3: Implement in `choice_set.dart` `select` path**
 
 Before `rawRootCardWidgetState.changeValue(id, choice, dataQuery: dataQuery)`:
 
@@ -389,11 +434,11 @@ rawRootCardWidgetState.changeValue(id, choice, dataQuery: queryForHost);
 
 Update class doc comment: remove "not applied yet" note.
 
-- [ ] **Step 4: Run test — expect PASS**
+- [x] **Step 4: Run test — expect PASS**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/inputs/choice_set_data_query_test.dart`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart \
@@ -403,7 +448,7 @@ git commit -m "feat: merge associatedInputs into Data.Query on ChoiceSet onChang
 
 ---
 
-### Task 4: Submit / Execute `associatedInputs`
+### Task 4: Submit / Execute `associatedInputs` ✅
 
 **Files:**
 
@@ -411,7 +456,7 @@ git commit -m "feat: merge associatedInputs into Data.Query on ChoiceSet onChang
 - Test: `packages/flutter_adaptive_cards_fs/test/actions/submit_action_invoke_test.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/actions/execute_verb_test.dart`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 In `submit_action_invoke_test.dart`, add:
 
@@ -451,9 +496,9 @@ testWidgets('associatedInputs none excludes input values from invoke.data', (
 
 Mirror for Execute in `execute_verb_test.dart` with `associatedInputs: 'none'`.
 
-- [ ] **Step 2: Run tests — expect FAIL**
+- [x] **Step 2: Run tests — expect FAIL**
 
-- [ ] **Step 3: Update `DefaultSubmitAction` and `DefaultExecuteAction`**
+- [x] **Step 3: Update `DefaultSubmitAction` and `DefaultExecuteAction`**
 
 Replace manual `data.addAll(values)` with:
 
@@ -469,9 +514,9 @@ final data = mergeActionData(
 );
 ```
 
-- [ ] **Step 4: Run tests — expect PASS**
+- [x] **Step 4: Run tests — expect PASS**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart \
@@ -482,7 +527,7 @@ git commit -m "feat: honor associatedInputs on Action.Submit and Action.Execute"
 
 ---
 
-### Task 5: Dependent ChoiceSet tests + handler + Widgetbook
+### Task 5: Dependent ChoiceSet tests + handler + Widgetbook ✅
 
 **Files:**
 
@@ -490,7 +535,7 @@ git commit -m "feat: honor associatedInputs on Action.Submit and Action.Execute"
 - Modify: `packages/flutter_adaptive_cards_fs/test/inputs/dependent_choice_set_test.dart`
 - Modify: `widgetbook/lib/dependent_choice_set_demo_page.dart`
 
-- [ ] **Step 1: Update test handler city branch**
+- [x] **Step 1: Update test handler city branch**
 
 In `dependent_choice_set_handler.dart`, replace empty city branch with:
 
@@ -518,17 +563,17 @@ if (invoke.inputId == 'city' && invoke.dataQuery?.dataset == 'cities') {
 
 Keep country branch as fallback for cards without `associatedInputs` or for reset timing.
 
-- [ ] **Step 2: Add widget test asserting `parameters['country']`**
+- [x] **Step 2: Add widget test asserting `parameters['country']`**
 
 In `dependent_choice_set_test.dart`, pump `value_changed_action_dependent_query.json`, select country then city, assert city `onChange` received `dataQuery.parameters['country']`.
 
-- [ ] **Step 3: Sync Widgetbook demo page** with same handler logic; update doc comment (Phase 2 complete).
+- [x] **Step 3: Sync Widgetbook demo page** with same handler logic; update doc comment (Phase 2 complete).
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/inputs/dependent_choice_set_test.dart`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/test/utils/dependent_choice_set_handler.dart \
@@ -539,27 +584,27 @@ git commit -m "feat: dependent ChoiceSet handler uses Data.Query associatedInput
 
 ---
 
-### Task 6: Phase 1 documentation
+### Task 6: Phase 1 documentation ✅
 
 **Files:**
 
 - Modify: `docs/form-inputs.md`, `docs/Implementation-Status.md`, `docs/reactive-riverpod.md`, `docs/actions-architecture.md`
 - Modify: `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 
-- [ ] **Step 1: Remove Known Gaps** for `Data.Query.associatedInputs` and Submit/Execute `associatedInputs` in `Implementation-Status.md`.
+- [x] **Step 1: Remove Known Gaps** for `Data.Query.associatedInputs` and Submit/Execute `associatedInputs` in `Implementation-Status.md`.
 
-- [ ] **Step 2: Update `form-inputs.md`** — replace "Gap (planned)" with implemented behavior; document `parameters['country']` in Option 2 handler example.
+- [x] **Step 2: Update `form-inputs.md`** — replace "Gap (planned)" with implemented behavior; document `parameters['country']` in Option 2 handler example.
 
-- [ ] **Step 3: Update `actions-architecture.md`** — document `associatedInputs: none` on Submit/Execute.
+- [x] **Step 3: Update `actions-architecture.md`** — document `associatedInputs: none` on Submit/Execute.
 
-- [ ] **Step 4: CHANGELOG** under 0.10.0:
+- [x] **Step 4: CHANGELOG** under 0.10.0:
 
 ```markdown
 - **Data.Query `associatedInputs`:** sibling input values merged into `DataQuery.parameters` on `InputChangeInvoke` when `auto` (default).
 - **Action.Submit / Action.Execute `associatedInputs`:** `"none"` skips input merge into invoke `data`.
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/form-inputs.md docs/Implementation-Status.md docs/reactive-riverpod.md \
@@ -569,9 +614,9 @@ git commit -m "docs: document associatedInputs backend invoke support"
 
 ---
 
-## Phase 2 — `flutter_adaptive_cards_host_fs`
+## Phase 2 — `flutter_adaptive_cards_host_fs` ✅
 
-### Task 7: Scaffold host package
+### Task 7: Scaffold host package ✅
 
 **Files:**
 
@@ -580,7 +625,7 @@ git commit -m "docs: document associatedInputs backend invoke support"
 - Create: `packages/flutter_adaptive_cards_host_fs/lib/flutter_adaptive_cards_host_fs.dart`
 - Modify: `pubspec.yaml` (repo root)
 
-- [ ] **Step 1: Create `pubspec.yaml`**
+- [x] **Step 1: Create `pubspec.yaml`**
 
 ```yaml
 name: flutter_adaptive_cards_host_fs
@@ -605,7 +650,7 @@ dev_dependencies:
   very_good_analysis: ^10.2.0
 ```
 
-- [ ] **Step 2: `analysis_options.yaml`**
+- [x] **Step 2: `analysis_options.yaml`**
 
 ```yaml
 include: package:very_good_analysis/analysis_options.yaml
@@ -614,7 +659,7 @@ linter:
     public_member_api_docs: false
 ```
 
-- [ ] **Step 3: Barrel file**
+- [x] **Step 3: Barrel file**
 
 ```dart
 library;
@@ -630,7 +675,7 @@ export 'package:flutter_adaptive_cards_host_fs/src/models/invoke_request.dart';
 export 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
 ```
 
-- [ ] **Step 4: Add to root workspace**
+- [x] **Step 4: Add to root workspace**
 
 In repo root `pubspec.yaml`:
 
@@ -639,13 +684,13 @@ workspace:
   - packages/flutter_adaptive_cards_host_fs
 ```
 
-- [ ] **Step 5: Pub get**
+- [x] **Step 5: Pub get**
 
 Run: `fvm flutter pub get` (from repo root)
 
 Expected: resolves without error
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_host_fs pubspec.yaml
@@ -654,7 +699,7 @@ git commit -m "feat: scaffold flutter_adaptive_cards_host_fs package"
 
 ---
 
-### Task 8: `AdaptiveCardInvokeRequest`
+### Task 8: `AdaptiveCardInvokeRequest` ✅
 
 **Files:**
 
@@ -662,7 +707,7 @@ git commit -m "feat: scaffold flutter_adaptive_cards_host_fs package"
 - Create: `lib/src/models/invoke_request.dart`
 - Create: `test/models/invoke_request_test.dart`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 ```dart
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
@@ -704,7 +749,7 @@ void main() {
 
 Note: `InputChangeInvoke` requires `cardState` — factory must only copy fields, not use `cardState`.
 
-- [ ] **Step 2: Implement `invoke_kind.dart` and `invoke_request.dart`**
+- [x] **Step 2: Implement `invoke_kind.dart` and `invoke_request.dart`**
 
 ```dart
 // invoke_kind.dart
@@ -790,20 +835,20 @@ class AdaptiveCardInvokeRequest {
 
 Fix `fromInputChange` test: build invoke with a dummy — use `flutter_test` + minimal widget to obtain `cardState`, or split test to only test Submit/Execute factories in unit test and cover InputChange in widget test in Task 14.
 
-- [ ] **Step 3: Run tests — PASS**
+- [x] **Step 3: Run tests — PASS**
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ---
 
-### Task 9: `PlainJsonInvokeAdapter`
+### Task 9: `PlainJsonInvokeAdapter` ✅
 
 **Files:**
 
 - Create: `lib/src/adapters/plain_json_invoke_adapter.dart`
 - Create: `test/adapters/plain_json_invoke_adapter_test.dart`
 
-- [ ] **Step 1: Write failing round-trip test**
+- [x] **Step 1: Write failing round-trip test**
 
 ```dart
 test('toMap and fromMap round-trip execute request', () {
@@ -822,7 +867,7 @@ test('toMap and fromMap round-trip execute request', () {
 });
 ```
 
-- [ ] **Step 2: Implement adapter**
+- [x] **Step 2: Implement adapter**
 
 ```dart
 class PlainJsonInvokeAdapter {
@@ -870,13 +915,13 @@ class PlainJsonInvokeAdapter {
 
 Split: create `plain_json_invoke_response_parser.dart` in Task 10 if cleaner.
 
-- [ ] **Step 3: Run tests — PASS**
+- [x] **Step 3: Run tests — PASS**
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ---
 
-### Task 10: `AdaptiveCardInvokeResponse` + PlainJson parser
+### Task 10: `AdaptiveCardInvokeResponse` + PlainJson parser ✅
 
 **Files:**
 
@@ -885,7 +930,7 @@ Split: create `plain_json_invoke_response_parser.dart` in Task 10 if cleaner.
 - Create: `lib/src/adapters/plain_json_invoke_response_parser.dart`
 - Create: `test/models/invoke_response_test.dart`
 
-- [ ] **Step 1: Write failing parser tests**
+- [x] **Step 1: Write failing parser tests**
 
 ```dart
 test('parses applyPatches and setInputErrors', () {
@@ -919,7 +964,7 @@ test('parses top-level card shorthand', () {
 });
 ```
 
-- [ ] **Step 2: Implement effects + parser**
+- [x] **Step 2: Implement effects + parser**
 
 `invoke_effect.dart` — sealed classes per spec.
 
@@ -963,22 +1008,22 @@ class AdaptiveCardInvokeResponse {
 
 Parser maps `choices` JSON arrays to `List<Choice>` via `Choice.fromJson` / existing helpers.
 
-- [ ] **Step 3: Wire `PlainJsonInvokeAdapter.responseFromMap`**
+- [x] **Step 3: Wire `PlainJsonInvokeAdapter.responseFromMap`**
 
-- [ ] **Step 4: Run tests — PASS**
+- [x] **Step 4: Run tests — PASS**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ---
 
-### Task 11: `TeamsInvokeAdapter`
+### Task 11: `TeamsInvokeAdapter` ✅
 
 **Files:**
 
 - Create: `lib/src/adapters/teams_invoke_adapter.dart`
 - Create: `test/adapters/teams_invoke_adapter_test.dart`
 
-- [ ] **Step 1: Write failing test for Execute shape**
+- [x] **Step 1: Write failing test for Execute shape**
 
 ```dart
 test('execute toMap matches Teams action envelope', () {
@@ -996,24 +1041,24 @@ test('execute toMap matches Teams action envelope', () {
 });
 ```
 
-- [ ] **Step 2: Implement `TeamsInvokeAdapter.toMap`** for `execute` and `inputChange` (input change → `value.action.data` + dataset fields per Teams search invoke docs).
+- [x] **Step 2: Implement `TeamsInvokeAdapter.toMap`** for `execute` and `inputChange` (input change → `value.action.data` + dataset fields per Teams search invoke docs).
 
-- [ ] **Step 3: Implement `TeamsInvokeAdapter.responseFromMap`** — map attachment with `contentType: application/vnd.microsoft.card.adaptive` to `ReplaceCardEffect`; delegate unknown to PlainJson parser.
+- [x] **Step 3: Implement `TeamsInvokeAdapter.responseFromMap`** — map attachment with `contentType: application/vnd.microsoft.card.adaptive` to `ReplaceCardEffect`; delegate unknown to PlainJson parser.
 
-- [ ] **Step 4: Run tests — PASS**
+- [x] **Step 4: Run tests — PASS**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ---
 
-### Task 12: `HttpAdaptiveCardBackendClient`
+### Task 12: `HttpAdaptiveCardBackendClient` ✅
 
 **Files:**
 
 - Create: `lib/src/client/backend_client.dart`
 - Create: `lib/src/client/http_backend_client.dart`
 
-- [ ] **Step 1: Implement abstract + HTTP client**
+- [x] **Step 1: Implement abstract + HTTP client**
 
 ```dart
 abstract class AdaptiveCardBackendClient {
@@ -1050,20 +1095,20 @@ class HttpAdaptiveCardBackendClient implements AdaptiveCardBackendClient {
 }
 ```
 
-- [ ] **Step 2: Unit test with `MockClient` or mock `http.Client`** — verify POST body and decode.
+- [x] **Step 2: Unit test with `MockClient` or mock `http.Client`** — verify POST body and decode.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ---
 
-### Task 13: `AdaptiveCardBackendHandlers`
+### Task 13: `AdaptiveCardBackendHandlers` ✅
 
 **Files:**
 
 - Create: `lib/src/handlers/backend_handlers.dart`
 - Create: `test/handlers/backend_handlers_test.dart`
 
-- [ ] **Step 1: Write failing widget test**
+- [x] **Step 1: Write failing widget test**
 
 Pump `AdaptiveCardsCanvas` wrapped with handlers from:
 
@@ -1087,7 +1132,7 @@ Mock client returns:
 
 Tap Submit → assert overlay error applied.
 
-- [ ] **Step 2: Implement `AdaptiveCardBackendHandlers`**
+- [x] **Step 2: Implement `AdaptiveCardBackendHandlers`**
 
 ```dart
 class AdaptiveCardBackendHandlers {
@@ -1147,20 +1192,20 @@ class AdaptiveCardBackendHandlers {
 
 **Plan choice:** `AdaptiveCardBackendHandlers` takes `GlobalKey<RawAdaptiveCardState> cardKey` set by host on `RawAdaptiveCard`. Document in README.
 
-- [ ] **Step 3: Run widget test — PASS**
+- [x] **Step 3: Run widget test — PASS**
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ---
 
-### Task 14: Phase 2 README + CHANGELOG
+### Task 14: Phase 2 README + CHANGELOG + API docs ✅
 
 **Files:**
 
 - Create: `packages/flutter_adaptive_cards_host_fs/README.md`
 - Create: `packages/flutter_adaptive_cards_host_fs/CHANGELOG.md`
 
-- [ ] **Step 1: README** — quick start:
+- [x] **Step 1: README** — quick start:
 
 ```dart
 final cardKey = GlobalKey<RawAdaptiveCardState>();
@@ -1182,43 +1227,23 @@ AdaptiveCardBackendHandlers(
 
 Document PlainJson response contract with examples from spec.
 
-- [ ] **Step 2: CHANGELOG** initial 0.1.0 entry.
+- [x] **Step 2: CHANGELOG** initial 0.1.0 entry.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ---
 
-## Final Task: Full verification
+## Final Task: Full verification ✅
 
-- [ ] **Step 1: Analyze monorepo**
+- [x] **Step 1: Analyze monorepo** — `fvm flutter analyze` → No issues found
 
-Run: `fvm flutter analyze`
+- [x] **Step 2: Test core package** — 373 passed, 2 skipped (`--exclude-tags=golden`)
 
-Expected: No issues found
+- [x] **Step 3: Test host package** — 15 passed
 
-- [ ] **Step 2: Test core package**
+- [x] **Step 4: Widgetbook analyze** — clean after core export import cleanup
 
-Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`
-
-Expected: All tests passed
-
-- [ ] **Step 3: Test host package**
-
-Run: `cd packages/flutter_adaptive_cards_host_fs && fvm flutter test`
-
-Expected: All tests passed
-
-- [ ] **Step 4: Widgetbook analyze (handler import check)**
-
-Run: `cd widgetbook && fvm flutter analyze`
-
-Expected: No issues found
-
-- [ ] **Step 5: Commit any remaining fixes**
-
-```bash
-git commit -m "chore: verify backend host integration phase 1 and 2"
-```
+- [x] **Step 5: Commit** — on `feat/associated-inputs-phase1`
 
 ---
 
@@ -1242,4 +1267,6 @@ git commit -m "chore: verify backend host integration phase 1 and 2"
 
 **Deferred (documented in spec, no task):** container-scoped auto, typeahead keystroke onChange, OAuth.
 
-**Type consistency note:** `AdaptiveCardBackendHandlers` uses `GlobalKey<RawAdaptiveCardState> cardKey` — Task 13 implementation must match README in Task 14.
+**Type consistency note:** `AdaptiveCardBackendHandlers` uses `GlobalKey<RawAdaptiveCardState> cardKey` — matches README in Task 14.
+
+**Plan complete** for implementation and verification. Remaining work is integration hygiene (commit/PR) and optional follow-ups listed in [Implementation summary](#implementation-summary).

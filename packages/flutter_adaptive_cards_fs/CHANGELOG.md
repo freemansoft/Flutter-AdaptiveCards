@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Public exports for **`RawAdaptiveCard`**, **`RawAdaptiveCardState`**, and **`DataQuery`** (host integration and backend invoke wiring).
+- **Data.Query `associatedInputs`:** sibling input values merged into `DataQuery.parameters` on `InputChangeInvoke` when `auto` (default).
+- **Action.Submit / Action.Execute `associatedInputs`:** `"none"` skips input merge into invoke `data`.
+
 ## [0.10.0]
 
 - Shared parse helpers: **`parseIsVisible()`** and **`parseHostConfigColor()`** in `utils.dart` (HostConfig color parsing and visibility baseline parsing).
@@ -37,9 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Theme brightness changes re-resolve styles via brightness-keyed root `ProviderScope`.
 - **`Input.Date`** `initData` / `initInput` seeding: controller no longer receives placeholder text; submit and overlay values use `yyyy-MM-dd` per spec. Hosts that relied on ISO-8601 in `onChange` callbacks should expect `yyyy-MM-dd` instead.
 - **`Input.ChoiceSet`** `loadInput`: selection reconcile clears the value overlay (`clearInputValue`) instead of writing `''`, matching legacy `loadInput` / `setChoices` behavior.
-- **Data.Query `associatedInputs`:** sibling input values merged into `DataQuery.parameters` on `InputChangeInvoke` when `auto` (default).
-- **Action.Submit / Action.Execute `associatedInputs`:** `"none"` skips input merge into invoke `data`.
-
 
 ## [0.9.0]
 
