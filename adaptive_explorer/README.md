@@ -1,6 +1,8 @@
 # Flutter Adaptive Cards adaptive_explorer
 
-A design studio for the [flutter_adaptive_cards_fs](/packages/flutter_adaptive_cards_fs/README.md), the supplemental charts library [flutter_adaptive_charts_fs](/packages/flutter_adaptive_charts_fs/README.md), and [flutter_adaptive_template_fs](/packages/flutter_adaptive_template_fs/README.md) libraries.
+A design studio for [flutter_adaptive_cards_fs](/packages/flutter_adaptive_cards_fs/README.md) and [flutter_adaptive_template_fs](/packages/flutter_adaptive_template_fs/README.md).
+
+The preview pane renders merged cards with the core Adaptive Cards library only. Chart element types from [flutter_adaptive_charts_fs](/packages/flutter_adaptive_charts_fs/README.md) are **not** registered in this app—use [widgetbook](/widgetbook/) to preview chart samples.
 
 This application contains two panes: a viewer and an editor for adaptive card JSON files, which let you open and render adaptive cards.
 
@@ -14,6 +16,7 @@ This application contains two panes: a viewer and an editor for adaptive card JS
 ## Known Issues
 
 - The editor window can have text overflow for wide json files. Making the editor window wider will fix this issue.
+- Cards that use chart element types (`Chart.Line`, `Chart.Donut`, etc.) will not render correctly here; open those samples in widgetbook instead.
 
 ## Features
 

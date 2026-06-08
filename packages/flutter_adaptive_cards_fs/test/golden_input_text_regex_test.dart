@@ -1,19 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/ac_qv_event_test_helpers.dart';
 import 'utils/test_utils.dart';
-
-void configureTestView() {
-  RendererBinding.instance.renderViews.first.configuration =
-      TestViewConfiguration.fromView(
-        size: const Size(500, 700),
-        view: PlatformDispatcher.instance.implicitView!,
-      );
-}
 
 void main() {
   testWidgets('ac-qv-event phone regex invalid golden', (tester) async {

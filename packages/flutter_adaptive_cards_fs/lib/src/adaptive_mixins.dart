@@ -8,6 +8,7 @@ import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/resolved_input_state.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Mixin for widgets that are adaptive elements- widget and not state
@@ -345,9 +346,7 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   /// Clears the runtime value overlay so resolved `value` falls back to baseline.
   void clearDocumentInputValue() {
-    ref
-        .read(adaptiveCardDocumentProvider.notifier)
-        .clearInputValue(_inputId);
+    ref.read(adaptiveCardDocumentProvider.notifier).clearInputValue(_inputId);
   }
 
   /// Subclasses can override to sync controllers from document changes.
@@ -385,13 +384,6 @@ mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   late bool isVisible;
   ProviderSubscription<Map<String, dynamic>?>? _visibilitySubscription;
 
-  bool _parseIsVisible(Object? value) {
-    if (value == null) return true;
-    if (value is bool) return value;
-    if (value is String) return value.toLowerCase() == 'true';
-    return true;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -407,7 +399,7 @@ mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     _visibilitySubscription = container.listen<Map<String, dynamic>?>(
       resolvedElementProvider(id),
       (previous, next) {
-        final visible = _parseIsVisible(next?['isVisible']);
+        final visible = parseIsVisible(next?['isVisible']);
         if (visible == isVisible) return;
         setState(() => isVisible = visible);
       },

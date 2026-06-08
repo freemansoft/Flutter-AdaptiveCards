@@ -98,8 +98,17 @@ fvm flutter test packages/flutter_adaptive_cards_fs/test/basic_test.dart
 
 ## Inter-Package Dependencies
 
-The `adaptive_explorer` and `widgetbook` apps depend on the library packages
-using **path dependencies** (resolved automatically by the workspace):
+The sample apps depend on the library packages using **path dependencies**
+(resolved automatically by the workspace):
+
+```yaml
+# adaptive_explorer/pubspec.yaml excerpt
+dependencies:
+  flutter_adaptive_cards_fs:
+    path: ../packages/flutter_adaptive_cards_fs
+  flutter_adaptive_template_fs:
+    path: ../packages/flutter_adaptive_template_fs
+```
 
 ```yaml
 # widgetbook/pubspec.yaml excerpt
@@ -108,8 +117,6 @@ dependencies:
     path: ../packages/flutter_adaptive_cards_fs
   flutter_adaptive_charts_fs:
     path: ../packages/flutter_adaptive_charts_fs
-  flutter_adaptive_template_fs:
-    path: ../packages/flutter_adaptive_template_fs
 ```
 
 Changes to a library package are **immediately reflected** in the apps without
@@ -119,9 +126,9 @@ requiring a publish step — just hot reload or restart.
 
 ```
 adaptive_explorer  ──► flutter_adaptive_cards_fs
+                   ──► flutter_adaptive_template_fs
 widgetbook         ──► flutter_adaptive_cards_fs
                    ──► flutter_adaptive_charts_fs
-                   ──► flutter_adaptive_template_fs
 flutter_adaptive_charts_fs   ──► flutter_adaptive_cards_fs
 ```
 

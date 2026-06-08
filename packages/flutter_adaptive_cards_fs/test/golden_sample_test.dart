@@ -1,28 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/actions_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
-
-// Helper to load widget from a subdirectory of samples
-// Not needed here
-Widget getSampleForGoldenTest(Key key, String testSource) {
-  return getTestWidgetFromPath(path: '$testSource.json', key: key);
-}
-
-void configureTestView() {
-  RendererBinding.instance.renderViews.first.configuration =
-      TestViewConfiguration.fromView(
-        size: const Size(500, 700),
-        view: PlatformDispatcher.instance.implicitView!,
-      );
-}
 
 void main() {
   testWidgets('Golden Sample 1', (tester) async {

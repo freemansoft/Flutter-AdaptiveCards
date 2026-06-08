@@ -4,6 +4,7 @@
 ///
 library;
 
+export 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 export 'package:flutter_adaptive_cards_fs/src/adaptive_cards_canvas.dart';
 
 export 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';

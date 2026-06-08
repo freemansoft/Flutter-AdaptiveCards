@@ -1,0 +1,21 @@
+name: flutter_adaptive_cards_test_support
+description: Shared widget and golden test helpers for flutter_adaptive_cards_fs packages.
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_adaptive_cards_fs:
+    path: ../flutter_adaptive_cards_fs
+  flutter_test:
+    sdk: flutter
+
+dev_dependencies:
+  very_good_analysis: ^10.2.0
+
+flutter:
+  uses-material-design: true

@@ -37,77 +37,83 @@ void main() {
     expect(field.controller!.text, equals(''));
   });
 
-  testWidgets('DateInput empty state keeps controller empty (placeholder via hintText)', (
-    WidgetTester tester,
-  ) async {
-    final Map<String, dynamic> map = {
-      'type': 'AdaptiveCard',
-      'body': [
-        {
-          'type': 'Input.Date',
-          'id': 'emptyDate',
-          'label': 'Date',
-          'placeholder': 'Pick a date',
-        },
-      ],
-    };
+  testWidgets(
+    'DateInput empty state keeps controller empty (placeholder via hintText)',
+    (
+      WidgetTester tester,
+    ) async {
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'body': [
+          {
+            'type': 'Input.Date',
+            'id': 'emptyDate',
+            'label': 'Date',
+            'placeholder': 'Pick a date',
+          },
+        ],
+      };
 
-    await tester.pumpWidget(
-      getTestWidgetFromMap(map: map, title: 'Date empty controller'),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        getTestWidgetFromMap(map: map, title: 'Date empty controller'),
+      );
+      await tester.pumpAndSettle();
 
-    final dateMap = map['body'][0] as Map<String, dynamic>;
-    final field = tester.widget<TextFormField>(
-      find.byKey(generateWidgetKey(dateMap)),
-    );
+      final dateMap = map['body'][0] as Map<String, dynamic>;
+      final field = tester.widget<TextFormField>(
+        find.byKey(generateWidgetKey(dateMap)),
+      );
 
-    expect(field.controller!.text, isEmpty);
+      expect(field.controller!.text, isEmpty);
 
-    final inputDecorator = tester.widget<InputDecorator>(
-      find.descendant(
-        of: find.byKey(generateWidgetKey(dateMap)),
-        matching: find.byType(InputDecorator),
-      ),
-    );
-    expect(inputDecorator.decoration.hintText, 'Pick a date');
+      final inputDecorator = tester.widget<InputDecorator>(
+        find.descendant(
+          of: find.byKey(generateWidgetKey(dateMap)),
+          matching: find.byType(InputDecorator),
+        ),
+      );
+      expect(inputDecorator.decoration.hintText, 'Pick a date');
 
-    final state = tester.state<AdaptiveDateInputState>(
-      find.byType(AdaptiveDateInput),
-    );
-    expect(state.selectedDateTime, isNull);
+      final state = tester.state<AdaptiveDateInputState>(
+        find.byType(AdaptiveDateInput),
+      );
+      expect(state.selectedDateTime, isNull);
 
-    final out = <String, dynamic>{};
-    state.appendInput(out);
-    expect(out.containsKey('emptyDate'), isFalse);
-  });
+      final out = <String, dynamic>{};
+      state.appendInput(out);
+      expect(out.containsKey('emptyDate'), isFalse);
+    },
+  );
 
-  testWidgets('DateInput required validation fails when only placeholder would show', (
-    WidgetTester tester,
-  ) async {
-    final Map<String, dynamic> map = {
-      'type': 'AdaptiveCard',
-      'body': [
-        {
-          'type': 'Input.Date',
-          'id': 'reqDate',
-          'label': 'Required Date',
-          'isRequired': true,
-          'placeholder': 'Pick a date',
-        },
-      ],
-    };
+  testWidgets(
+    'DateInput required validation fails when only placeholder would show',
+    (
+      WidgetTester tester,
+    ) async {
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'body': [
+          {
+            'type': 'Input.Date',
+            'id': 'reqDate',
+            'label': 'Required Date',
+            'isRequired': true,
+            'placeholder': 'Pick a date',
+          },
+        ],
+      };
 
-    await tester.pumpWidget(
-      getTestWidgetFromMap(map: map, title: 'Date required validation'),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        getTestWidgetFromMap(map: map, title: 'Date required validation'),
+      );
+      await tester.pumpAndSettle();
 
-    final state = tester.state<AdaptiveDateInputState>(
-      find.byType(AdaptiveDateInput),
-    );
-    expect(state.checkRequired(), isFalse);
-  });
+      final state = tester.state<AdaptiveDateInputState>(
+        find.byType(AdaptiveDateInput),
+      );
+      expect(state.checkRequired(), isFalse);
+    },
+  );
 
   testWidgets(
     'DateInput appendInput returns yyyy-MM-dd when a date is selected',

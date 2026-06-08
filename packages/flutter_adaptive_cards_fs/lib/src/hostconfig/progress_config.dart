@@ -1,7 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 class ProgressSizesConfig {
   ProgressSizesConfig({
@@ -74,11 +74,11 @@ class ProgressColorsConfig {
   /// use the FallbackConfigs if you need a default
   factory ProgressColorsConfig.fromJson(Map<String, dynamic> json) {
     return ProgressColorsConfig(
-      good: _parseColor(json['good']),
-      warning: _parseColor(json['warning']),
-      attention: _parseColor(json['attention']),
-      accent: _parseColor(json['accent']),
-      defaultColor: _parseColor(json['default']),
+      good: parseHostConfigColor(json['good']),
+      warning: parseHostConfigColor(json['warning']),
+      attention: parseHostConfigColor(json['attention']),
+      accent: parseHostConfigColor(json['accent']),
+      defaultColor: parseHostConfigColor(json['default']),
     );
   }
 
@@ -87,20 +87,6 @@ class ProgressColorsConfig {
   final Color? attention;
   final Color? accent;
   final Color? defaultColor;
-
-  static Color? _parseColor(dynamic value) {
-    if (value is! String) return null;
-    if (!value.startsWith('#')) return null;
-
-    // Handle #AARRGGBB or #RRGGBB
-    String hex = value.substring(1);
-    if (hex.length == 6) {
-      hex = 'FF$hex';
-    }
-    if (hex.length != 8) return null;
-
-    return Color(int.parse(hex, radix: 16));
-  }
 
   /// Resolves the color for ProgressBar and ProgressRing
   ///
