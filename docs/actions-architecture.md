@@ -34,7 +34,7 @@ Submit, Execute, and OpenUrl are **not** configured on `AdaptiveCardsCanvas` or 
 When **`DefaultSubmitAction`** runs:
 
 1. Start from action JSON **`data`** (object or empty).
-2. Merge **`collectInputValues()`** (input ids overwrite duplicate keys in `data`).
+2. If **`associatedInputs`** is not **`"none"`** (default / omitted = **`"auto"`**), merge **`collectInputValues()`** (input ids overwrite duplicate keys in `data`). When **`"none"`**, invoke **`data`** is action JSON **`data`** only — no input values.
 3. Build **`SubmitActionInvoke`** with merged **`data`** and action **`id`** (`actionId`).
 4. Call **`InheritedAdaptiveCardHandlers.onSubmit(invoke)`**.
 
@@ -43,11 +43,11 @@ When **`DefaultSubmitAction`** runs:
 When **`DefaultExecuteAction`** runs:
 
 1. Start from action JSON **`data`** (object or empty).
-2. Merge **`collectInputValues()`** (input ids overwrite duplicate keys in `data`).
+2. If **`associatedInputs`** is not **`"none"`** (default / omitted = **`"auto"`**), merge **`collectInputValues()`** (input ids overwrite duplicate keys in `data`). When **`"none"`**, invoke **`data`** is action JSON **`data`** only — no input values.
 3. Build **`ExecuteActionInvoke`** with merged **`data`**, action **`verb`**, and action **`id`** (`actionId`).
 4. Call **`InheritedAdaptiveCardHandlers.onExecute(invoke)`**.
 
-Hosts route Teams-style Execute actions on **`invoke.verb`**. **`associatedInputs`** is not yet honored for Submit or Execute — all card inputs are always collected (see [Implementation-Status.md](../Implementation-Status.md#known-gaps)).
+Hosts route Teams-style Execute actions on **`invoke.verb`**. Per-action **`associatedInputs`** on Submit and Execute follows the same **`auto`** / **`none`** semantics as **`Data.Query`** — see [Dependent ChoiceSet (country → city)](form-inputs.md#dependent-choiceset-country--city).
 
 ## Action.OpenUrl payload
 

@@ -5,6 +5,7 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/resolved_input_state.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,8 +16,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Filtered style opens `ChoiceFilter` via `RawAdaptiveCard.searchList` over
 /// resolved overlay `choices`. When `choices.data` is present, `dataQuery` is
-/// parsed from JSON and passed to host `onChange` on selection (baseline
-/// `DataQuery` fields only — `associatedInputs` merge is not applied yet).
+/// parsed from JSON and passed to host `onChange` on selection. When
+/// `associatedInputs` is `auto`, sibling input values are merged into
+/// `parameters` before the host callback.
 class AdaptiveChoiceSet extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   AdaptiveChoiceSet({
@@ -409,7 +411,17 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     }
 
     // Host callback; includes [dataQuery] when `choices.data` is configured.
-    rawRootCardWidgetState.changeValue(id, choice, dataQuery: dataQuery);
+    DataQuery? queryForHost = dataQuery;
+    if (dataQuery != null) {
+      final values = ref
+          .read(adaptiveCardDocumentProvider.notifier)
+          .collectInputValues();
+      queryForHost = dataQuery!.withMergedSiblingInputs(
+        values,
+        excludeInputId: id,
+      );
+    }
+    rawRootCardWidgetState.changeValue(id, choice, dataQuery: queryForHost);
     final joined = _selectedChoices.join(',');
     setDocumentInputValue(joined);
     notifyUserInputValueChanged(joined, committed: true);

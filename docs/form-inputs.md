@@ -125,9 +125,9 @@ onChange: (InputChangeInvoke invoke) {
 Shared handler `handleDependentChoiceSetChange`:
 
 - **`id == 'country'`** — runs for **both** demos: `applyUpdates` with `citiesByCountry` (via `invoke.inputId`, `invoke.value`, `invoke.cardState`).
-- **`invoke.inputId == 'city' && invoke.dataQuery?.dataset == 'cities'`** — runs for **Option 2 only** (city has `choices.data`); Phase 1 logs in debug. Option 1 never hits this branch because `dataQuery` is null.
+- **`invoke.inputId == 'city' && invoke.dataQuery?.dataset == 'cities'`** — runs for **Option 2 only** (city has `choices.data`); Option 1 never hits this branch because `dataQuery` is null.
 
-**Gap (planned):** `choices.data.associatedInputs: "auto"` is parsed but not applied — sibling input values are not merged into `DataQuery` for `onChange` yet. Phase 1 preloads city choices on country change; a future library change will let the city branch read `dataQuery.parameters['country']` instead.
+**`associatedInputs` (implemented):** When city `choices.data` sets `associatedInputs: "auto"` (default when omitted), sibling input values are merged into `invoke.dataQuery.parameters` on `InputChangeInvoke`. The changing input id is excluded; other card inputs (e.g. `country`) appear as parameter keys. Option 2 handlers can read the parent country from `invoke.dataQuery?.parameters['country']` when the city field fires `onChange` (filtered open, selection, or typeahead). Country change still preloads city choices via the shared country branch; `parameters['country']` complements that for Teams-style Data.Query callbacks.
 
 Tests: `test/inputs/cascade_choice_set_test.dart`, `test/inputs/value_changed_action_reset_test.dart`, `test/inputs/choice_set_data_query_test.dart`, `test/inputs/dependent_choice_set_test.dart`.
 
