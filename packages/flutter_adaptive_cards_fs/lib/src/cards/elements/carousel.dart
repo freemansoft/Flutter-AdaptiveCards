@@ -6,7 +6,11 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
+/// Renders the Adaptive Cards **Carousel** element with page dots.
+///
+/// See https://adaptivecards.io/explorer/Carousel.html
 class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a carousel from [adaptiveMap] JSON.
   AdaptiveCarousel({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -23,10 +27,16 @@ class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCarouselState createState() => AdaptiveCarouselState();
 }
 
+/// State for [AdaptiveCarousel]; drives [PageView] and dot controls.
 class AdaptiveCarouselState extends State<AdaptiveCarousel>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Carousel page maps from `pages`.
   late List<Map<String, dynamic>> pages;
+
+  /// Zero-based index of the page shown on first build.
   late int initialPage;
+
+  /// Controller for horizontal page swipes and dot navigation.
   late PageController pageController;
 
   int _currentIndex = 0;
@@ -146,8 +156,12 @@ class AdaptiveCarouselState extends State<AdaptiveCarousel>
   }
 }
 
+/// Renders a single **CarouselPage** inside a [AdaptiveCarousel].
+///
+/// See https://adaptivecards.io/explorer/CarouselPage.html
 class AdaptiveCarouselPage extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates a carousel page from [adaptiveMap] JSON.
   AdaptiveCarouselPage({
     super.key,
     required this.adaptiveMap,
@@ -165,8 +179,10 @@ class AdaptiveCarouselPage extends StatefulWidget
   AdaptiveCarouselPageState createState() => AdaptiveCarouselPageState();
 }
 
+/// State for [AdaptiveCarouselPage]; builds child elements from `items`.
 class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     with AdaptiveElementMixin, ProviderScopeMixin {
+  /// Child element widgets resolved from the page `items` array.
   late List<Widget> children;
 
   @override

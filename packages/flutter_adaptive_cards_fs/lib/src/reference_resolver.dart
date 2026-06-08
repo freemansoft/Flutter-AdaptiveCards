@@ -36,6 +36,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// https://github.com/microsoft/AdaptiveCards/blob/main/schemas/1.5.0/adaptive-card.json
 ///
 class ReferenceResolver {
+  /// Creates a resolver bound to [hostConfigs] and optional inherited style context.
   ReferenceResolver({
     this.inheritedContainerStyle,
     this.inheritedHorizontalAlignment,
@@ -54,6 +55,7 @@ class ReferenceResolver {
   /// Horizontal alignment pushed to descendants when not set on an element.
   final String? inheritedHorizontalAlignment;
 
+  /// Host styling configuration (light/dark selection via [HostConfigs.current]).
   final HostConfigs hostConfigs;
 
   /// Computes the container-style context children inherit after this container.
@@ -83,28 +85,65 @@ class ReferenceResolver {
     return parentInherited;
   }
 
+  /// Returns the active [HostConfigs] bundle.
   HostConfigs getHostConfigs() => hostConfigs;
+
+  /// Image set sizing and layout defaults from HostConfig.
   ImageSetConfig? getImageSetConfig() => hostConfigs.current.imageSet;
+
+  /// Action strip defaults (orientation, spacing) from HostConfig.
   ActionsConfig? getActionsConfig() => hostConfigs.current.actions;
+
+  /// Root card padding and spacing defaults from HostConfig.
   AdaptiveCardConfig? getAdaptiveCardConfig() =>
       hostConfigs.current.adaptiveCard;
+
+  /// Container style palette (default, emphasis, semantic colors).
   ContainerStylesConfig? getContainerStylesConfig() =>
       hostConfigs.current.containerStyles;
+
+  /// Fact set title/value spacing and typography from HostConfig.
   FactSetConfig? getFactSetConfig() => hostConfigs.current.factSet;
+
+  /// Named font size scale from HostConfig.
   FontSizesConfig? getFontSizesConfig() => hostConfigs.current.fontSizes;
+
+  /// Named font weight scale from HostConfig.
   FontWeightsConfig? getFontWeightsConfig() => hostConfigs.current.fontWeights;
+
+  /// Named image size scale from HostConfig.
   ImageSizesConfig? getImageSizesConfig() => hostConfigs.current.imageSizes;
+
+  /// Input label and error styling from HostConfig.
   InputsConfig? getInputsConfig() => hostConfigs.current.inputs;
+
+  /// Media playback defaults from HostConfig.
   MediaConfig? getMediaConfig() => hostConfigs.current.media;
+
+  /// Separator line color and thickness from HostConfig.
   SeparatorConfig? getSeparatorConfig() => hostConfigs.current.separator;
+
+  /// Named spacing scale from HostConfig.
   SpacingsConfig? getSpacingsConfig() => hostConfigs.current.spacing;
+
+  /// Text block wrapping and spacing defaults from HostConfig.
   TextBlockConfig? getTextBlockConfig() => hostConfigs.current.textBlock;
+
+  /// Named text styles (heading, column header) from HostConfig.
   TextStylesConfig? getTextStylesConfig() => hostConfigs.current.textStyles;
+
+  /// Badge foreground/background palettes from HostConfig.
   BadgeStylesConfig? getBadgeStylesConfig() => hostConfigs.current.badgeStyles;
+
+  /// Progress bar and ring size defaults from HostConfig.
   ProgressSizesConfig? getProgressSizesConfig() =>
       hostConfigs.current.progressSizes;
+
+  /// Progress foreground/background colors from HostConfig.
   ProgressColorsConfig? getProgressColorConfig() =>
       hostConfigs.current.progressColors;
+
+  /// Chart color palette from HostConfig.
   ChartColorsConfig? getChartColorsConfig() => hostConfigs.current.chartColors;
 
   /// JSON Schema definition "Colors"
@@ -344,6 +383,7 @@ class ReferenceResolver {
     );
   }
 
+  /// Returns a resolver with updated inherited style or alignment context.
   ReferenceResolver copyWith({
     String? inheritedContainerStyle,
     String? inheritedHorizontalAlignment,
@@ -444,7 +484,7 @@ class ReferenceResolver {
         TextStylesConfig.fromJson(const {}).columnHeader;
   }
 
-  // "Horizontal" or "Vertical"
+  /// Resolves action or layout orientation to `Horizontal` or `Vertical`.
   String resolveOrientation(String? orientation) {
     final String myOrientation =
         orientation?.toLowerCase() ??
@@ -721,15 +761,18 @@ class ReferenceResolver {
     }
   }
 
+  /// Resolves a named spacing token to logical pixels.
   double resolveSpacing(String? spacing) {
     return SpacingsConfig.resolveSpacing(getSpacingsConfig(), spacing);
   }
 
+  /// Separator line thickness from HostConfig, with library fallback.
   double resolveSeparatorThickness() {
     return getSeparatorConfig()?.lineThickness.toDouble() ??
         FallbackConfigs.separatorConfig.lineThickness.toDouble();
   }
 
+  /// Separator line color from HostConfig, with library fallback.
   Color resolveSeparatorColor() {
     return parseHexColor(getSeparatorConfig()?.lineColor) ??
         parseHexColor(FallbackConfigs.separatorConfig.lineColor) ??

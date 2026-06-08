@@ -11,14 +11,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Class that adds a separator to the element
 class SeparatorElement extends StatelessWidget {
+  /// Applies Adaptive Card `spacing` and optional `separator` above [child].
   const SeparatorElement({
     super.key,
     required this.adaptiveMap,
     required this.child,
   });
 
+  /// Element JSON supplying `spacing`, `separator`, and `type`.
   final Map<String, dynamic> adaptiveMap;
 
+  /// Content rendered below the separator or spacing inset.
   final Widget child;
 
   @override
@@ -70,6 +73,7 @@ class SeparatorElement extends StatelessWidget {
 /// Not really an Adaptive card element so we generate one-off keys for it
 /// Used in Image, Container, Column, columnSet, adaptiveCard, etc.
 class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Wraps [child] with an [InkWell] when [adaptiveMap] defines `selectAction`.
   factory AdaptiveTappable({
     required Widget child,
     required Map<String, dynamic> adaptiveMap,
@@ -92,6 +96,7 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
     required this.child,
   });
 
+  /// Visual content that receives the optional tap target.
   final Widget child;
 
   @override
@@ -105,8 +110,10 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveTappableState createState() => AdaptiveTappableState();
 }
 
+/// State for [AdaptiveTappable] that resolves and invokes `selectAction`.
 class AdaptiveTappableState extends State<AdaptiveTappable>
     with AdaptiveElementMixin, ProviderScopeMixin {
+  /// Resolved handler for `selectAction`, if present in [adaptiveMap].
   GenericAction? action;
 
   @override
@@ -137,13 +144,17 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
 
 /// Used in some containers to change the style from there on down
 class ChildStyler extends StatelessWidget {
+  /// Pushes container style and alignment context to [child] via a scoped resolver.
   const ChildStyler({
     super.key,
     required this.child,
     required this.adaptiveMap,
   });
+
+  /// Descendant subtree that inherits the updated [ReferenceResolver].
   final Widget child;
 
+  /// Container JSON whose `style` and `horizontalAlignment` update inheritance.
   final Map<String, dynamic> adaptiveMap;
 
   @override

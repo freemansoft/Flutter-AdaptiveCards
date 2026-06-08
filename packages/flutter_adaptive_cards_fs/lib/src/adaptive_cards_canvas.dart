@@ -16,13 +16,16 @@ import 'package:http/http.dart' as http;
 ///
 /// We use specialized versions for each way we get content
 abstract class AdaptiveCardContentProvider {
+  /// Loads the root Adaptive Card JSON map for [AdaptiveCardsCanvas].
   Future<Map<String, dynamic>> loadAdaptiveCardContent();
 }
 
 /// Content provider for getting card specifications from memory
 class MemoryAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
+  /// Supplies an already-parsed card map without I/O.
   MemoryAdaptiveCardContentProvider({required this.content}) : super();
 
+  /// Root Adaptive Card JSON held in memory.
   Map<String, dynamic> content;
 
   @override
@@ -33,8 +36,10 @@ class MemoryAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 
 /// Content provider for getting card specifications from a JSON string
 class JsonAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
+  /// Decodes [jsonString] when [loadAdaptiveCardContent] runs.
   JsonAdaptiveCardContentProvider({required this.jsonString}) : super();
 
+  /// Raw JSON text for the root Adaptive Card.
   String jsonString;
 
   @override
@@ -45,8 +50,10 @@ class JsonAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 
 /// Content provider for getting card specifications from the Asset tree
 class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
+  /// Loads card JSON from a Flutter asset via [path].
   AssetAdaptiveCardContentProvider({required this.path}) : super();
 
+  /// Asset bundle path to the card JSON file.
   String path;
 
   @override
@@ -59,8 +66,10 @@ class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 /// Content provider for getting card specifications from a network resource
 class NetworkAdaptiveCardContentProvider
     implements AdaptiveCardContentProvider {
+  /// Fetches card JSON from a remote [url] when content is requested.
   NetworkAdaptiveCardContentProvider({required this.url}) : super();
 
+  /// HTTP(S) location of the root Adaptive Card JSON.
   String url;
 
   @override
@@ -76,6 +85,7 @@ class NetworkAdaptiveCardContentProvider
 /// Wraps a [RawAdaptiveCard] that is the actual adaptive card element
 /// Pass in the Action handlers specific to the host program
 class AdaptiveCardsCanvas extends StatefulWidget {
+  /// Creates a canvas that loads content from [adaptiveCardContentProvider].
   const AdaptiveCardsCanvas({
     super.key,
     required this.adaptiveCardContentProvider,
@@ -91,6 +101,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
     required this.hostConfigs,
   });
 
+  /// Loads card JSON from a network [url].
   AdaptiveCardsCanvas.network({
     super.key,
     this.placeholder,
@@ -108,6 +119,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
          url: url,
        );
 
+  /// Loads card JSON from a bundled [assetPath].
   AdaptiveCardsCanvas.asset({
     super.key,
     this.placeholder,
@@ -125,6 +137,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
          path: assetPath,
        );
 
+  /// Renders an in-memory [content] map without asynchronous loading.
   AdaptiveCardsCanvas.map({
     super.key,
     this.placeholder,
@@ -142,6 +155,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
          content: content,
        );
 
+  /// Decodes [jsonString] into the root card map.
   AdaptiveCardsCanvas.json({
     super.key,
     this.placeholder,
@@ -177,8 +191,13 @@ class AdaptiveCardsCanvas extends StatefulWidget {
   /// Environment specific function that knows how to handle input value changes.
   final void Function(InputChangeInvoke invoke)? onChange;
 
+  /// When true (debug only), shows a button that displays the source JSON.
   final bool showDebugJson;
+
+  /// When false, [CardTypeRegistry] disables Markdown rendering in text elements.
   final bool supportMarkdown;
+
+  /// When true, the root adaptive card body scrolls as a list.
   final bool listView;
 
   /// How light vs dark [HostConfigs] are selected for this card.

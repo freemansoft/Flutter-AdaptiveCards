@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 /// * https://adaptivecards.io/explorer/Input.Choice.html
 @immutable
 class Choice {
+  /// Creates a choice with display [title] and submit [value].
   const Choice({
     required this.title,
     required this.value,

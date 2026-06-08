@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_color_config.dart';
 
+/// HostConfig `foregroundColors` section mapping semantic color names to
+/// default and subtle foreground colors.
 class ForegroundColorsConfig {
+  /// Creates foreground color mappings from explicit values.
   ForegroundColorsConfig({
     required this.defaultColor,
     required this.accent,
@@ -12,6 +15,7 @@ class ForegroundColorsConfig {
     required this.attention,
   });
 
+  /// Parses `foregroundColors` from HostConfig JSON.
   factory ForegroundColorsConfig.fromJson(Map<String, dynamic> json) {
     return ForegroundColorsConfig(
       defaultColor: FontColorConfig.fromJson(
@@ -66,14 +70,28 @@ class ForegroundColorsConfig {
     );
   }
 
+  /// Default foreground colors (`foregroundColors.default`).
   final FontColorConfig defaultColor;
+
+  /// Accent foreground colors (`foregroundColors.accent`).
   final FontColorConfig accent;
+
+  /// Dark foreground colors (`foregroundColors.dark`).
   final FontColorConfig dark;
+
+  /// Light foreground colors (`foregroundColors.light`).
   final FontColorConfig light;
+
+  /// Good (success) foreground colors (`foregroundColors.good`).
   final FontColorConfig good;
+
+  /// Warning foreground colors (`foregroundColors.warning`).
   final FontColorConfig warning;
+
+  /// Attention (error) foreground colors (`foregroundColors.attention`).
   final FontColorConfig attention;
 
+  /// Resolves a [FontColorConfig] for the given semantic color name token.
   FontColorConfig fontColorConfig(String? colorName) {
     switch (colorName?.toLowerCase()) {
       case 'accent':

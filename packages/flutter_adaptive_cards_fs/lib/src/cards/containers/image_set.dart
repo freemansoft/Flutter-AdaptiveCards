@@ -9,7 +9,10 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// https://adaptivecards.io/explorer/ImageSet.html
 ///
+/// Renders an `ImageSet` as a wrapped row of [AdaptiveImage] children sized by
+/// `imageSize`.
 class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates an `ImageSet` from [adaptiveMap].
   AdaptiveImageSet({
     required this.adaptiveMap,
     required this.supportMarkdown,
@@ -23,19 +26,26 @@ class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
+  /// Whether nested text elements may render markdown.
   final bool supportMarkdown;
 
   @override
   AdaptiveImageSetState createState() => AdaptiveImageSetState();
 }
 
+/// State for [AdaptiveImageSet].
 class AdaptiveImageSetState extends State<AdaptiveImageSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Child images from the `images` array.
   late List<AdaptiveImage> images;
 
+  /// Parsed `imageSize` token (`auto`, `stretch`, or a HostConfig size name).
   late String imageSize;
+
+  /// Fixed pixel width when [imageSize] maps to a HostConfig size.
   double? maybeSize;
 
+  /// Background color resolved from HostConfig and image set style.
   Color? backgroundColor;
 
   @override
@@ -99,6 +109,7 @@ class AdaptiveImageSetState extends State<AdaptiveImageSet>
     );
   }
 
+  /// Resolves [imageSize] and [maybeSize] from `imageSize` and HostConfig.
   void loadSize() {
     String sizeDescription = adaptiveMap['imageSize']?.toString() ?? 'auto';
     sizeDescription = sizeDescription.toLowerCase();

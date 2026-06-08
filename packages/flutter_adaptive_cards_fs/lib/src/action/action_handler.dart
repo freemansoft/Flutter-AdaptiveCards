@@ -18,6 +18,10 @@ import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 ///
 /// The handlers here will be attached to widgets in the tree
 class InheritedAdaptiveCardHandlers extends InheritedWidget {
+  /// Creates handlers that descendants resolve via [of].
+  ///
+  /// Wrap an `AdaptiveCardsCanvas` or `RawAdaptiveCard` subtree so action and
+  /// input callbacks are delivered to the host application.
   const InheritedAdaptiveCardHandlers({
     super.key,
 
@@ -55,6 +59,7 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
   /// Called when an input value changes (not sourced from an action).
   final void Function(InputChangeInvoke invoke) onChange;
 
+  /// Returns the nearest ancestor handlers, or `null` when none are installed.
   static InheritedAdaptiveCardHandlers? of(BuildContext context) {
     final InheritedAdaptiveCardHandlers? handlers = context
         .dependOnInheritedWidgetOfExactType<InheritedAdaptiveCardHandlers>();

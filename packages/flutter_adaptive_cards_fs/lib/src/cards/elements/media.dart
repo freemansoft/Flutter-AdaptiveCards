@@ -15,6 +15,7 @@ import 'package:video_player/video_player.dart';
 /// * https://adaptivecards.io/explorer/Media.html
 /// * https://adaptivecards.io/explorer/MediaSource.html
 class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a media player from [adaptiveMap] JSON.
   AdaptiveMedia({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -30,15 +31,25 @@ class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveMediaState createState() => AdaptiveMediaState();
 }
 
+/// State for [AdaptiveMedia]; initializes video playback and poster image.
 class AdaptiveMediaState extends State<AdaptiveMedia>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Underlying [VideoPlayerController] for the first `sources` entry.
   late VideoPlayerController videoPlayerController;
+
+  /// Chewie UI wrapper; null until the video is initialized.
   ChewieController? controller;
 
+  /// URL of the primary [MediaSource] from `sources`.
   late String sourceUrl;
+
+  /// Poster image URL from `poster` or HostConfig default.
   late String? postUrl;
+
+  /// Accessibility label for the poster image.
   late String altText;
 
+  /// Placeholder fade animation shown before the player is ready.
   FadeAnimation imageFadeAnim = const FadeAnimation(
     child: Icon(Icons.play_arrow, size: 100),
   );
@@ -81,6 +92,7 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
     if (postUrl != null && postUrl!.isEmpty) postUrl = null;
   }
 
+  /// Initializes [videoPlayerController] and [controller] from [sourceUrl].
   Future<void> initializePlayer() async {
     videoPlayerController = VideoPlayerController.networkUrl(
       Uri.parse(sourceUrl),

@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:intl/intl.dart';
 
+/// Formats Adaptive Cards `{{DATE}}` and `{{TIME}}` text macros.
 class DateTimeUtils {
   static final RegExp _dateRegex = RegExp(r'\{\{DATE\((.*?)\)\}\}');
   static final RegExp _timeRegex = RegExp(r'\{\{TIME\((.*?)\)\}\}');

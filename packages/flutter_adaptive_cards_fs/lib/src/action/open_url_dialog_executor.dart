@@ -53,6 +53,7 @@ Future<dynamic> fetchOpenUrlDialogContent(String url) async {
   }
 }
 
+/// Opens [url] in the platform browser when dialog content is HTML.
 Future<void> launchOpenUrlDialogBrowser(String url) async {
   final uri = Uri.parse(url);
   if (await canLaunchUrl(uri)) {

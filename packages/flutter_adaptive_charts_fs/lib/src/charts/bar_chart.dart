@@ -2,24 +2,35 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 
+/// Layout variants supported by [AdaptiveBarChart] for Adaptive Card bar chart types.
 ///
-/// https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar
-/// https://adaptivecards.microsoft.com/?topic=Chart.VerticalBar
-/// https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar.Stacked
-/// https://adaptivecards.microsoft.com/?topic=Chart.VerticalBar.Grouped
-///
-/// https://adaptivecards.microsoft.com/?topic=BarChartDataValue
-/// https://adaptivecards.microsoft.com/?topic=VerticalBarChartDataValue
-/// https://adaptivecards.microsoft.com/?topic=HorizontalBarChartDataValue
-///
+/// See also:
+/// * https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar
+/// * https://adaptivecards.microsoft.com/?topic=Chart.VerticalBar
+/// * https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar.Stacked
+/// * https://adaptivecards.microsoft.com/?topic=Chart.VerticalBar.Grouped
 enum BarChartType {
+  /// Vertical bar chart (`Chart.VerticalBar`).
   vertical,
+
+  /// Grouped vertical bar chart (`Chart.VerticalBar.Grouped`).
   verticalGrouped,
+
+  /// Horizontal bar chart (`Chart.HorizontalBar`).
   horizontal,
+
+  /// Stacked horizontal bar chart (`Chart.HorizontalBar.Stacked`).
   horizontalStacked,
 }
 
+/// Renders Adaptive Card bar chart elements using fl_chart.
+///
+/// Registered in the chart element dispatch table for types such as
+/// `Chart.VerticalBar`, `Chart.HorizontalBar`, and grouped or stacked variants.
+/// Uses [AdaptiveElementWidgetMixin] for element identity and is wrapped in
+/// [SeparatorElement] for card layout and spacing.
 class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a bar chart element from [adaptiveMap] with the given [type].
   AdaptiveBarChart({
     required this.adaptiveMap,
     required this.type,
@@ -32,16 +43,23 @@ class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
+  /// The bar chart layout variant derived from the card element's `type`.
   final BarChartType type;
 
   @override
   AdaptiveBarChartState createState() => AdaptiveBarChartState();
 }
 
+/// State for [AdaptiveBarChart]; parses JSON data and builds the fl_chart widget.
 class AdaptiveBarChartState extends State<AdaptiveBarChart>
     with AdaptiveElementMixin, ProviderScopeMixin {
+  /// Parsed bar groups passed to the underlying [BarChart].
   late List<BarChartGroupData> barGroups;
+
+  /// Category labels displayed on the chart axis.
   late List<String> xLabels;
+
+  /// Upper bound of the value axis after padding.
   late double maxY;
 
   @override

@@ -7,6 +7,7 @@ import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 ///
 /// Applications can inject their own custom action registry when constructing [AdaptiveCardsCanvas]
 abstract class ActionTypeRegistry {
+  /// Creates a registry that maps action JSON `type` strings to [GenericAction]s.
   const ActionTypeRegistry();
 
   /// Gets a [GenericAction] for the provided action map.
@@ -18,6 +19,7 @@ abstract class ActionTypeRegistry {
 
 /// The default action registry if none is passed into [AdaptiveCardsCanvas] constructors
 class DefaultActionTypeRegistry extends ActionTypeRegistry {
+  /// Built-in registry used when [AdaptiveCardsCanvas] does not override actions.
   const DefaultActionTypeRegistry();
 
   /// Gets a [GenericAction] for the provided action map.

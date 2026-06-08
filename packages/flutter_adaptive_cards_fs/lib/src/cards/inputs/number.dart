@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // ignore_for_file: unnecessary_const
 class AdaptiveNumberInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates a number input from [adaptiveMap] JSON.
   AdaptiveNumberInput({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -27,6 +28,7 @@ class AdaptiveNumberInput extends ConsumerStatefulWidget
   AdaptiveNumberInputState createState() => AdaptiveNumberInputState();
 }
 
+/// State for [AdaptiveNumberInput]; enforces min/max and syncs document value.
 class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
     with
         AdaptiveTextualInputMixin,
@@ -34,12 +36,17 @@ class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
+  /// Text field holding the numeric value as a string.
   TextEditingController controller = TextEditingController();
   late FocusNode _focusNode;
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
   bool _initialValueSynced = false;
+
+  /// Minimum allowed value from `min` (default 0).
   late int min;
+
+  /// Maximum allowed value from `max` (default 100).
   late int max;
 
   @override

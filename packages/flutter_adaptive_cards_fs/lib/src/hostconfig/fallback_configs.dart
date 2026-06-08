@@ -12,7 +12,9 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/separator_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
 
+/// Built-in HostConfig defaults used when JSON omits a section or property.
 class FallbackConfigs {
+  /// Default `progressSizes` values for ProgressBar and ProgressRing.
   static final fallbackProgressSizesConfig = ProgressSizesConfig(
     tiny: 10,
     small: 20,
@@ -22,6 +24,7 @@ class FallbackConfigs {
     defaultSize: 30,
   );
 
+  /// Default `progressColors` values for progress indicators.
   static final fallbackProgressColorsConfig = ProgressColorsConfig(
     good: Colors.green,
     warning: Colors.yellow,
@@ -30,8 +33,11 @@ class FallbackConfigs {
     defaultColor: Colors.grey,
   );
 
+  /// Background track color for progress bars when HostConfig does not specify
+  /// one.
   static final Color progressBackgroundColor = Colors.grey.shade300;
 
+  /// Default `chartColors` palette for Chart elements.
   static const chartColorsConfig = ChartColorsConfig(
     defaultPalette: [
       Colors.blue,
@@ -44,7 +50,7 @@ class FallbackConfigs {
     defaultColor: Colors.blue,
   );
 
-  // completely hacky fallback that will teach people to use HostConfig
+  /// Default `badgeStyles` colors for Badge elements.
   static final fallbackBadgeStylesConfig = BadgeStylesConfig(
     filled: BadgeStyleConfig(
       backgroundColors: ForegroundColorsConfig(
@@ -172,6 +178,7 @@ class FallbackConfigs {
     ),
   );
 
+  /// Default `spacing` token values in logical pixels.
   static final SpacingsConfig spacingsConfig = SpacingsConfig(
     small: 4,
     medium: 8,
@@ -181,6 +188,7 @@ class FallbackConfigs {
     padding: 20,
   );
 
+  /// Default `containerStyles` background and foreground colors.
   static final ContainerStylesConfig containerStylesConfig =
       ContainerStylesConfig(
         defaultStyle: ContainerStyleConfig(
@@ -241,19 +249,21 @@ class FallbackConfigs {
         ),
       );
 
+  /// Default `imageSizes` pixel dimensions for Image elements.
   static final imageSizesConfig = ImageSizesConfig(
     small: 32,
     medium: 64,
     large: 120,
   );
 
+  /// Default `fontWeights` numeric values.
   static final FontWeightsConfig fontWeightsConfig = FontWeightsConfig(
     lighter: FontWeight.w200.value,
     defaultWeight: FontWeight.normal.value,
     bolder: FontWeight.bold.value,
   );
 
-  /// This should come from the theme but we don't have access to the theme
+  /// Default `fontSizes` pixel values.
   static final FontSizesConfig fontSizesConfig = FontSizesConfig(
     small: 10,
     defaultSize: 12,
@@ -262,6 +272,7 @@ class FallbackConfigs {
     extraLarge: 22,
   );
 
+  /// Default `separator` line appearance.
   static final SeparatorConfig separatorConfig = SeparatorConfig(
     lineColor: Colors.grey.shade300
         .toARGB32()

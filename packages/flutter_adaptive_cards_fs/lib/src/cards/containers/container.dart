@@ -6,7 +6,10 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// https://adaptivecards.io/explorer/Container.html
 ///
+/// Renders a `Container` that vertically stacks `items` with optional
+/// background, spacing, and `minHeight`.
 class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a `Container` element from [adaptiveMap].
   AdaptiveContainer({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -23,12 +26,22 @@ class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveContainerState createState() => AdaptiveContainerState();
 }
 
+/// State for [AdaptiveContainer].
 class AdaptiveContainerState extends State<AdaptiveContainer>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Vertical alignment of child items from `verticalContentAlignment`.
   late MainAxisAlignment verticalContentAlignment;
+
+  /// Child elements from the container's `items` array.
   late List<Widget> children;
+
+  /// Resolved spacing between container children.
   late double spacing;
+
+  /// Background color when no background image is specified.
   late Color? backgroundColor;
+
+  /// Optional minimum height from `minHeight`.
   double? minHeight;
 
   @override

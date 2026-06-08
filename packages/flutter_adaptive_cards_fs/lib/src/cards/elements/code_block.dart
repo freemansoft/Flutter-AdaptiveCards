@@ -10,6 +10,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 // language specific highlighting is complex without 3p support
 //
 class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a code block from [adaptiveMap] JSON.
   AdaptiveCodeBlock({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -26,10 +27,16 @@ class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveCodeBlockState createState() => AdaptiveCodeBlockState();
 }
 
+/// State for [AdaptiveCodeBlock]; renders code with optional line numbers.
 class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Source code from `code`.
   late String codeSnippet;
+
+  /// Optional language hint from `language` (not yet used for highlighting).
   late String? language;
+
+  /// First displayed line number from `startLineNumber` (default 1).
   late int startLineNumber;
 
   @override

@@ -13,6 +13,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/TextBlock.html
 ///
 class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a text block from [adaptiveMap] JSON.
+  ///
+  /// When [supportMarkdown] is true, renders markdown and routes link taps
+  /// through `Action.OpenUrl`.
   AdaptiveTextBlock({
     required this.adaptiveMap,
     required this.supportMarkdown,
@@ -26,22 +30,38 @@ class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
+  /// Whether to render `text` as markdown instead of plain [Text].
   final bool supportMarkdown;
 
   @override
   AdaptiveTextBlockState createState() => AdaptiveTextBlockState();
 }
 
+/// State for [AdaptiveTextBlock]; resolves typography and reactive text.
 class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
-  // will be replaced later
+  /// Resolved font weight from HostConfig and element properties.
   late FontWeight fontWeight = FontWeight.normal;
+
+  /// Resolved font size in logical pixels.
   late double fontSize = 12;
+
+  /// Widget alignment from `horizontalAlignment`.
   late Alignment horizontalAlignment;
+
+  /// Maximum lines from `maxLines` / `wrap` resolution.
   late int maxLines;
+
+  /// Text alignment within the text widget.
   late TextAlign textAlign;
+
+  /// Display string after DATE/TIME macro formatting.
   late String text;
+
+  /// Resolved font family from `fontType`.
   late String? fontFamily;
+
+  /// Merged size, weight, color, and subtle flags from HostConfig.
   late ResolvedTextAppearance _textAppearance = const ResolvedTextAppearance();
   ProviderSubscription<Map<String, dynamic>?>? _textSubscription;
 
@@ -206,6 +226,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     return text.split("\n").take(maxLines).reduce((o,t) => "$o\n$t") + "...";
   }*/
 
+  /// Resolves foreground color from [_textAppearance] and HostConfig.
   Color? getColor(BuildContext context) {
     final Color? color = styleResolver.resolveContainerForegroundColor(
       style: _textAppearance.color,
@@ -214,7 +235,7 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
     return color;
   }
 
-  // TODO(username): Markdown still has some problems
+  /// Builds a [MarkdownStyleSheet] matching resolved text appearance.
   MarkdownStyleSheet loadMarkdownStyleSheet(BuildContext context) {
     final color = getColor(context);
     final TextStyle style = TextStyle(

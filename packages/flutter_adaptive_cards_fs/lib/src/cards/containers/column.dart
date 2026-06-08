@@ -6,7 +6,10 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// https://adaptivecards.io/explorer/Column.html
 ///
+/// Renders a `Column` inside a `ColumnSet`, sizing by `width` and laying out
+/// `items` vertically.
 class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a `Column` from [adaptiveMap] within a parent `ColumnSet`.
   AdaptiveColumn({
     required this.adaptiveMap,
     required this.supportMarkdown,
@@ -20,23 +23,35 @@ class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
+  /// Whether nested text elements may render markdown.
   final bool supportMarkdown;
 
   @override
   AdaptiveColumnState createState() => AdaptiveColumnState();
 }
 
+/// State for [AdaptiveColumn].
 class AdaptiveColumnState extends State<AdaptiveColumn>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Child elements from the column's `items` array.
   late List<Widget> items;
 
-  /// Can be "auto", "stretch" or "weighted"
+  /// Parsed `width` mode: `auto`, `stretch`, `weighted`, or `px`.
   late String mode;
+
+  /// Numeric width when [mode] is `weighted` or `px`.
   late int width;
 
+  /// Vertical alignment of column content from `verticalContentAlignment`.
   late MainAxisAlignment verticalAlignment;
+
+  /// Horizontal alignment of column children from `horizontalAlignment`.
   late CrossAxisAlignment horizontalAlignment;
+
+  /// Container alignment for the column's horizontal position.
   late Alignment? containerHorizontalAlignment;
+
+  /// Optional minimum height from `minHeight`.
   double? minHeight;
 
   @override

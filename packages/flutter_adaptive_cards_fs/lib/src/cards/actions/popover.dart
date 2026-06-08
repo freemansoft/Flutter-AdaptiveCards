@@ -7,8 +7,14 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
+///
+/// https://adaptivecards.io/explorer/Action.Popover.html
+///
+/// Renders `Action.Popover` as an elevated button that opens the nested `card`
+/// payload in a dialog.
 class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates an `Action.Popover` widget from [adaptiveMap].
   AdaptiveActionPopover({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -24,14 +30,17 @@ class AdaptiveActionPopover extends StatefulWidget
   AdaptiveActionPopoverState createState() => AdaptiveActionPopoverState();
 }
 
+/// State for [AdaptiveActionPopover].
 class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
     with
         AdaptiveActionMixin,
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
+  /// Nested adaptive card JSON from the action's `card` property.
   late Map<String, dynamic>? card;
-  // used to inherit the parent's host config
+
+  /// Parent [ReferenceResolver] so the popover inherits HostConfig styling.
   late ReferenceResolver popupParentResolver;
 
   @override
@@ -47,6 +56,7 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
     popupParentResolver = styleResolver;
   }
 
+  /// Opens a dialog containing the nested `card` payload.
   Future<void> onTapped(BuildContext context) async {
     if (card == null) return;
 
@@ -103,10 +113,12 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
   }
 }
 
-/// used for widget tree analysis and testing
+/// Marker wrapper around popover card content for widget tests and tree lookup.
 class AdaptivePopoverContainer extends StatelessWidget {
+  /// Creates a popover content container with [child].
   const AdaptivePopoverContainer({super.key, required this.child});
 
+  /// Popover card subtree rendered inside the dialog.
   final Widget child;
 
   @override

@@ -5,7 +5,12 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
+/// Shared elevated-button renderer for Adaptive Card actions.
+///
+/// Reads title, style, `iconUrl`, and tooltip from [adaptiveMap] and invokes
+/// [onTapped] when the action is enabled.
 class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates an action button for [adaptiveMap] that calls [onTapped] on press.
   IconButtonAction({
     required this.adaptiveMap,
     required this.onTapped,
@@ -19,12 +24,14 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
+  /// Invoked when the user taps the button and the action is enabled.
   final void Function(BuildContext context) onTapped;
 
   @override
   IconButtonActionState createState() => IconButtonActionState();
 }
 
+/// State for [IconButtonAction].
 class IconButtonActionState extends State<IconButtonAction>
     with
         AdaptiveActionMixin,
@@ -32,6 +39,7 @@ class IconButtonActionState extends State<IconButtonAction>
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
+  /// Optional `iconUrl` from the action JSON, shown beside the title.
   late String? iconUrl;
 
   @override

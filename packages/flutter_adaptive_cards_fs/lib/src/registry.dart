@@ -52,6 +52,7 @@ typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 /// Delete an element even if you have provided it yourself via the [addedElements]
 ///
 class CardTypeRegistry {
+  /// Creates a registry with optional custom, removed, and action element types.
   const CardTypeRegistry({
     this.removedElements = const [],
     this.addedElements = const {},
@@ -64,6 +65,7 @@ class CardTypeRegistry {
   /// When providing an element which is already defined, it is overwritten
   final Map<String, ElementCreator> addedElements;
 
+  /// Custom action widgets keyed by action `type` (for example `Action.Submit`).
   final Map<String, ElementCreator> addedActions;
 
   /// Remove specific elements from the list
@@ -71,8 +73,10 @@ class CardTypeRegistry {
 
   // Due to https://github.com/flutter/flutter_markdown/issues/171,
   // markdown support doesn't work at the same time as content alignment in a column set
+  /// When false, built-in text elements skip Markdown rendering.
   final bool supportMarkdown;
 
+  /// When true, the root `AdaptiveCard` body uses list scrolling.
   final bool listView;
 
   ///
@@ -102,6 +106,7 @@ class CardTypeRegistry {
     }
   }
 
+  /// Builds an action widget for the action map's `type` property.
   Widget getAction({
     required Map<String, dynamic> map,
   }) {

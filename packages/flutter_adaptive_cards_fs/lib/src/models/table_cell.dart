@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 /// * https://adaptivecards.io/explorer/TableCell.html
 @immutable
 class TableCellModel {
+  /// Creates a table cell from parsed JSON properties.
   const TableCellModel({
     required this.items,
     this.style,

@@ -7,8 +7,11 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// https://adaptivecards.io/explorer/Action.Submit.html
 ///
+/// Renders `Action.Submit` as an elevated button and collects input values for
+/// the host via [GenericSubmitAction].
 class AdaptiveActionSubmit extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates an `Action.Submit` widget from [adaptiveMap].
   AdaptiveActionSubmit({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -25,8 +28,10 @@ class AdaptiveActionSubmit extends StatefulWidget
   AdaptiveActionSubmitState createState() => AdaptiveActionSubmitState();
 }
 
+/// State for [AdaptiveActionSubmit].
 class AdaptiveActionSubmitState extends State<AdaptiveActionSubmit>
     with AdaptiveActionMixin, AdaptiveElementMixin, ProviderScopeMixin {
+  /// Resolved `Action.Submit` handler from the action type registry.
   late GenericSubmitAction action;
 
   @override

@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 /// * https://adaptivecards.io/explorer/MediaSource.html
 @immutable
 class MediaSource {
+  /// Creates a media source with playback [url] and optional [mimeType].
   const MediaSource({
     required this.url,
     this.mimeType,

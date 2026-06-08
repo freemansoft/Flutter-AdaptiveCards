@@ -12,6 +12,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/
 class AdaptiveCardElement extends StatefulWidget
     with AdaptiveElementWidgetMixin {
+  /// Creates the root `AdaptiveCard` element from [adaptiveMap].
+  ///
+  /// When [listView] is true, body children are laid out in a [ListView].
   AdaptiveCardElement({
     required this.adaptiveMap,
     required this.listView,
@@ -24,27 +27,32 @@ class AdaptiveCardElement extends StatefulWidget
   @override
   late final String id;
 
+  /// Whether body content uses a scrollable [ListView] instead of a [Column].
   final bool listView;
 
   @override
   AdaptiveCardElementState createState() => AdaptiveCardElementState();
 }
 
+/// State for [AdaptiveCardElement].
 class AdaptiveCardElementState extends State<AdaptiveCardElement>
     with AdaptiveElementMixin, ProviderScopeMixin {
+  /// Adaptive Card schema `version` string from [adaptiveMap].
   String? version;
 
+  /// Body elements resolved from `body` via the card type registry.
   late List<Widget> bodyChildren;
 
+  /// Card-level `actions` rendered below the body.
   List<Widget> activeActions = [];
 
-  // don't really need this but it's here for now
+  /// `Action.ShowCard` instances among [activeActions].
   List<AdaptiveActionShowCard> showCardActions = [];
 
-  /// contents of adaptiveMap['cards']
-  /// don't really need this but it's here for now
+  /// Nested card elements targeted by [showCardActions].
   List<AdaptiveCardElement> showCardTargetElements = [];
 
+  /// Layout axis for card-level actions from HostConfig `actions.orientation`.
   late Axis actionsOrientation;
 
   /// Support only one form per AdaptiveCardElement

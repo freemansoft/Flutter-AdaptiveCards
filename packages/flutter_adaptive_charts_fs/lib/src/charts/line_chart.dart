@@ -2,10 +2,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 
+/// Renders Adaptive Card line chart elements using fl_chart.
 ///
-/// https://adaptivecards.microsoft.com/?topic=Chart.Line
+/// Registered in the chart element dispatch table for the
+/// `Chart.Line` type. Uses [AdaptiveElementWidgetMixin] for element identity
+/// and is wrapped in [SeparatorElement] for card layout and spacing.
 ///
+/// See also: https://adaptivecards.microsoft.com/?topic=Chart.Line
 class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a line chart element from [adaptiveMap].
   AdaptiveLineChart({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -22,12 +27,22 @@ class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   AdaptiveLineChartState createState() => AdaptiveLineChartState();
 }
 
+/// State for [AdaptiveLineChart]; parses JSON data and builds the fl_chart widget.
 class AdaptiveLineChartState extends State<AdaptiveLineChart>
     with AdaptiveElementMixin, ProviderScopeMixin {
+  /// Parsed line series passed to the underlying [LineChart].
   late List<LineChartBarData> lineBarsData;
+
+  /// Lower bound of the value axis after padding.
   late double minY;
+
+  /// Upper bound of the value axis after padding.
   late double maxY;
+
+  /// Lower bound of the horizontal axis.
   late double minX;
+
+  /// Upper bound of the horizontal axis.
   late double maxX;
 
   @override

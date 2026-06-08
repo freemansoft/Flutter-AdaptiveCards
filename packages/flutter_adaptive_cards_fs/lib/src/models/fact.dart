@@ -7,6 +7,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 /// * https://adaptivecards.io/explorer/Fact.html
 @immutable
 class Fact {
+  /// Creates a fact with display [title] and [value].
   const Fact({
     required this.title,
     required this.value,

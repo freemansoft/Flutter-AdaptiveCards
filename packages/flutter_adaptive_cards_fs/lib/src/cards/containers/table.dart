@@ -13,7 +13,10 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// Reasonable test schema is https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json
 ///
+/// Renders a `Table` with column widths, grid lines, and optional header row
+/// styling from `firstRowAsHeader`.
 class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a `Table` from [adaptiveMap].
   AdaptiveTable({
     required this.adaptiveMap,
     required this.supportMarkdown,
@@ -27,35 +30,48 @@ class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   late final String id;
 
+  /// Whether nested text elements may render markdown.
   final bool supportMarkdown;
 
   @override
   AdaptiveTableState createState() => AdaptiveTableState();
 
-  // a column
+  /// Widget key for a table column at index [col].
   static ValueKey<String> columnKey(String tableKey, int col) =>
       ValueKey('${tableKey}_col_$col');
 
-  // a specific cell
+  /// Widget key for the cell at [rowIndex], [col].
   static ValueKey<String> cellKey(String tableKey, int rowIndex, int col) =>
       ValueKey('${tableKey}_${rowIndex}_$col');
 
-  // a specific row
+  /// Widget key for the row at [rowIndex].
   static ValueKey<String> rowKey(String tableKey, int rowIndex) =>
       ValueKey('${tableKey}_row_$rowIndex');
 
-  // the column this whole thing sits in
+  /// Widget key for the outer column that wraps all table rows.
   static ValueKey<String> tableColumnKey(String tableKey) =>
       ValueKey('${tableKey}_column');
 }
 
+/// State for [AdaptiveTable].
 class AdaptiveTableState extends State<AdaptiveTable>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
+  /// Column width definitions from `columns`.
   late List<Map<String, dynamic>> columns;
+
+  /// Table row payloads from `rows`.
   late List<Map<String, dynamic>> rows;
+
+  /// Whether grid lines are drawn between cells (`showGridLines`).
   late bool showGridLines;
+
+  /// Grid line color style token from `gridStyle`.
   late String gridStyle;
+
+  /// Whether the first row uses header styling (`firstRowAsHeader`).
   late bool firstRowAsHeader;
+
+  /// Default vertical cell alignment from `verticalCellContentAlignment`.
   late String? verticalCellAlignment;
 
   @override
