@@ -27,6 +27,8 @@ git remote set-head origin -a
 1. Libraries
    1. The Adaptive Card library is in [packages/flutter_adaptive_cards_fs](/packages/flutter_adaptive_cards_fs/README.md)
    1. The Adaptive Card library CHANGELOG is in [packages/flutter_adaptive_cards_fs/CHANGELOG.md](/packages/flutter_adaptive_cards_fs/CHANGELOG.md)
+1. The Adaptive Card Host library is an optional backend invoke bridge (PlainJson and Teams-shaped request/response adapters, HTTP client, and `AdaptiveCardBackendHandlers` wiring). [packages/flutter_adaptive_cards_host_fs](/packages/flutter_adaptive_cards_host_fs/README.md)
+   1. The Adaptive Card Host library CHANGELOG is in [packages/flutter_adaptive_cards_host_fs/CHANGELOG.md](/packages/flutter_adaptive_cards_host_fs/CHANGELOG.md)
 1. Adaptive Card Charting is an extension that adds charting capabilities and is implemented in its own package so that its third party dependencies are isolated from the core library. [packages/flutter_adaptive_charts_fs](/packages/flutter_adaptive_charts_fs/README.md)
    1. The Adaptive Card Charting library CHANGELOG is in [packages/flutter_adaptive_charts_fs/CHANGELOG.md](/packages/flutter_adaptive_charts_fs/CHANGELOG.md)
 1. The Adaptive Card Template library supports merging json data into an Adaptive Card template. It is implemented in its own package [packages/flutter_adaptive_template_fs](/packages/flutter_adaptive_template_fs/README.md)

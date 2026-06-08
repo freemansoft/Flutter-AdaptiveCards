@@ -48,7 +48,7 @@ packages/flutter_adaptive_cards_host_fs tests → 15 passed
 ### Follow-up (not in plan)
 
 - [x] Commit / PR from `feat/associated-inputs-phase1` (commit done; PR optional)
-- [ ] Add `flutter_adaptive_cards_host_fs` to root `README.md` package table (optional)
+- [x] Add `flutter_adaptive_cards_host_fs` to root `README.md` package table (optional)
 - [ ] Widgetbook demo using `AdaptiveCardBackendHandlers` + mock client (optional)
 
 ---
