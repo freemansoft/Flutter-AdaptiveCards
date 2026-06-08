@@ -29,9 +29,10 @@ dependencies:
   video_player: ^2.10.0
 
 dev_dependencies:
+  flutter_adaptive_cards_test_support:
+    path: ../flutter_adaptive_cards_test_support
   flutter_test:
     sdk: flutter
-  mockito: ^5.4.5
   very_good_analysis: ^10.2.0
 
 flutter:

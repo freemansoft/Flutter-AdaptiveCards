@@ -29,9 +29,6 @@ resolution: workspace
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
 
   file_picker: ^11.0.2
   flutter:
@@ -41,7 +38,6 @@ dependencies:
   flutter_adaptive_template_fs:
     path: ../packages/flutter_adaptive_template_fs
   json_editor_flutter: ^1.4.2
-  path: ^1.9.1
   watcher: ^1.2.1
 
 dev_dependencies:

@@ -29,11 +29,13 @@ Future<void> revealAcQvEventRegistrationForm(WidgetTester tester) async {
 /// Fills required registration fields except phone (first/last name are pre-filled).
 Future<void> fillAcQvEventRegistrationPrerequisites(WidgetTester tester) async {
   _acQvEventContainer(
-    tester,
-  ).read(adaptiveCardDocumentProvider.notifier).setInputValue(
-    'company_name',
-    'Acme Corp',
-  );
+        tester,
+      )
+      .read(adaptiveCardDocumentProvider.notifier)
+      .setInputValue(
+        'company_name',
+        'Acme Corp',
+      );
   await tester.pump();
 }
 

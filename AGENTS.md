@@ -33,7 +33,7 @@ The project's AI instructions are organized into two layers to keep context effi
 ## Semantic Labels and Widget Keys
 
 - **Semantic labels:** Apply semantic labels for accessibility (for example, use `altText` from card JSON for images and icons).
-- **Widget keys:** Use deterministic keys via `generateAdaptiveWidgetKey()` and `generateWidgetKey()` — see `doc/AdaptiveWidget-Key-Generation.md` and `doc/Using-Flutter-Form-Inputs.md`.
+- **Widget keys:** Use deterministic keys via `generateAdaptiveWidgetKey()` and `generateWidgetKey()` — see [`docs/AdaptiveWidget-Key-Generation.md`](docs/AdaptiveWidget-Key-Generation.md) and [`docs/form-inputs.md`](docs/form-inputs.md).
 
 ## Package Management
 
@@ -43,7 +43,7 @@ The project's AI instructions are organized into two layers to keep context effi
 ## State management (`flutter_adaptive_cards_fs`)
 
 `flutter_adaptive_cards_fs` uses **Riverpod** (v3.x) internally for **reactive** document + UI state, scoped per rendered card subtree (the library installs its own `ProviderScope` so host apps don't need to).
-Host callbacks remain on **`InheritedAdaptiveCardHandlers`**. See [`doc/reactive-riverpod.md`](doc/reactive-riverpod.md).
+Host callbacks remain on **`InheritedAdaptiveCardHandlers`**. See [`docs/reactive-riverpod.md`](docs/reactive-riverpod.md).
 
 When working in **`packages/flutter_adaptive_cards_fs`**:
 
@@ -51,7 +51,7 @@ When working in **`packages/flutter_adaptive_cards_fs`**:
 - **Do** keep registries and `ReferenceResolver` as **separate** scoped providers (`cardTypeRegistryProvider` / `actionTypeRegistryProvider` vs `styleReferenceResolverProvider`).
 - **Do** model reactive behaviors (visibility, inputs, TextBlock text, validation, action `isEnabled`, show-card UI) with Riverpod `Notifier`s + `ref.watch` / `container.listen` on resolved providers (avoid element-tree walks and widget instance registries).
 - **Do** keep host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onChange`, …) on `InheritedAdaptiveCardHandlers`.
-- **Do not** mutate the host-provided JSON map in place for runtime state; store runtime overlays in the document notifier (`setInputValue`, `setVisibility`, `setChoices`, `setText`, `setInputError`, `setActionEnabled`, …) and read merged state via `resolvedElementProvider(id)` / `resolvedActionProvider(id)` (see [`doc/reactive-riverpod.md`](doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map)).
+- **Do not** mutate the host-provided JSON map in place for runtime state; store runtime overlays in the document notifier (`setInputValue`, `setVisibility`, `setChoices`, `setText`, `setInputError`, `setActionEnabled`, …) and read merged state via `resolvedElementProvider(id)` / `resolvedActionProvider(id)` (see [`docs/reactive-riverpod.md`](docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map)).
 
 For **sample apps and `adaptive_explorer`**, use normal Flutter state patterns (`StatefulWidget`, etc.).
 

@@ -4,6 +4,7 @@ environment:
   sdk: ^3.12.0
 workspace:
   - packages/flutter_adaptive_cards_fs
+  - packages/flutter_adaptive_cards_test_support
   - packages/flutter_adaptive_charts_fs
   - packages/flutter_adaptive_template_fs
   - widgetbook

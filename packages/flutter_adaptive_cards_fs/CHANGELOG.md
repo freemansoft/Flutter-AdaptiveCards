@@ -5,20 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
 ## [0.10.0]
 
-### Added 0.10.0
-
+- Shared parse helpers: **`parseIsVisible()`** and **`parseHostConfigColor()`** in `utils.dart` (HostConfig color parsing and visibility baseline parsing).
+- Public export of **`InheritedAdaptiveCardHandlers`** from `flutter_adaptive_cards_fs.dart` (for test support and host callback wiring without `implementation_imports`).
+- Tests: **`test/utils/parse_helpers_test.dart`**; merged static **`isVisible`** cases into **`test/elements/is_visible_test.dart`**.
+- **`flutter_adaptive_cards_fs` test harness** now re-exports **`flutter_adaptive_cards_test_support`** from `test/utils/test_utils.dart`; golden tests use shared `configureTestView`, `getGoldenPath`, and `getV16SampleForGoldenTest`.
+- **`flutter_test_config.dart`** delegates to shared **`adaptiveCardsTestExecutable`** (HTTP overrides + Roboto font loading).
+- Removed unused **`mockito`** dev dependency from this package.
+- Dead legacy sources: **`adaptive_element.dart`**, **`basic_markdown.dart`** (superseded by registry / `flutter_markdown`).
+- Orphan test fixtures and placeholder test: **`choice_set_radio.json`**, **`example15.json`**, **`test/elements/text_block_text.dart`**, duplicate root **`test/is_visible_test.dart`**.
+- **`AGENTS.md`** documentation links (`doc/` → `docs/`).
 - Public exports for **`Choice`**, **`Fact`**, and **`MediaSource`** from `flutter_adaptive_cards_fs.dart`.
 - List parse helpers: `choicesFromJsonList` / `choicesToJsonList`, `factsFromJsonList`, `mediaSourcesFromJsonList`.
 - Runtime **`facts`** overlay on `FactSet` elements (`setFacts`, `clearFacts`, `applyUpdates` / `applyUpdatesFromMap`).
 - Widgetbook **FactSet → Facts overlay (knob)** demo for interactive overlay testing.
 - Shared **`parseAdaptiveDateValue`** / **`formatAdaptiveDateValue`** helpers for `Input.Date` (`date_input_utils.dart`).
-
-### Changed 0.10.0
-
 - **`ChildStyler`** implements container style and horizontal-alignment inheritance via nested `styleReferenceResolverProvider` overrides.
 - **`ReferenceResolver.resolveTextBlockStyle()`**, **`resolveImageIsPerson()`**, and **`resolveEffectiveHorizontalAlignment()`**.
 - **`AdaptiveCardBrightnessMode`** (`auto` / `light` / `dark`) on `RawAdaptiveCard` and `AdaptiveCardsCanvas`.
@@ -31,9 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`TextBlock`** applies HostConfig `TextStylesConfig` for `heading` / `columnHeader`; table header rows use `columnHeader` defaults.
 - **`Image`** `person` clipping applies only when `style` is `person` (not other style names).
 - Theme brightness changes re-resolve styles via brightness-keyed root `ProviderScope`.
-
-### Fixed 0.10.0
-
 - **`Input.Date`** `initData` / `initInput` seeding: controller no longer receives placeholder text; submit and overlay values use `yyyy-MM-dd` per spec. Hosts that relied on ISO-8601 in `onChange` callbacks should expect `yyyy-MM-dd` instead.
 - **`Input.ChoiceSet`** `loadInput`: selection reconcile clears the value overlay (`clearInputValue`) instead of writing `''`, matching legacy `loadInput` / `setChoices` behavior.
 

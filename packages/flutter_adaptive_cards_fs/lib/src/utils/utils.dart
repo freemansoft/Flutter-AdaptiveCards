@@ -100,6 +100,28 @@ Color? parseHexColor(String? colorValue) {
   }
 }
 
+/// Parses Adaptive Card `isVisible` values from JSON (bool, string, or absent).
+bool parseIsVisible(Object? value) {
+  if (value == null) return true;
+  if (value is bool) return value;
+  if (value is String) return value.toLowerCase() == 'true';
+  return true;
+}
+
+/// Parses HostConfig hex colors (`#RRGGBB` or `#AARRGGBB`); returns null when invalid.
+Color? parseHostConfigColor(dynamic value) {
+  if (value is! String) return null;
+  if (!value.startsWith('#')) return null;
+
+  var hex = value.substring(1);
+  if (hex.length == 6) {
+    hex = 'FF$hex';
+  }
+  if (hex.length != 8) return null;
+
+  return Color(int.parse(hex, radix: 16));
+}
+
 String getDayOfMonthSuffix(int n) {
   assert(n >= 1 && n <= 31, 'illegal day of month: $n');
   if (n >= 11 && n <= 13) {

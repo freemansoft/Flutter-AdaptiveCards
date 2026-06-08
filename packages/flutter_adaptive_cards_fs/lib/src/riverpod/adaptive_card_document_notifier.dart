@@ -40,7 +40,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     final baselineNode = state.nodesById[id];
     if (baselineNode == null) return;
 
-    final baselineVisible = _parseIsVisible(baselineNode['isVisible']);
+    final baselineVisible = parseIsVisible(baselineNode['isVisible']);
     final overlay = state.overlaysById[id];
     final currentVisible = overlay?.isVisible ?? baselineVisible;
     setVisibility(id, visible: !currentVisible);
@@ -681,12 +681,5 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
 
     visitNode(baseline);
     return result;
-  }
-
-  bool _parseIsVisible(Object? value) {
-    if (value == null) return true;
-    if (value is bool) return value;
-    if (value is String) return value.toLowerCase() == 'true';
-    return true;
   }
 }

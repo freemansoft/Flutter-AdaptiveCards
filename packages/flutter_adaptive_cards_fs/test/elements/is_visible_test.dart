@@ -411,4 +411,94 @@ void main() {
       expect(find.text('Element 2'), findsOneWidget);
     },
   );
+
+  group('Static JSON isVisible', () {
+    testWidgets('defaults to visible when property is omitted', (
+      WidgetTester tester,
+    ) async {
+      final widget = getTestWidgetFromString(
+        jsonString: '''
+      {
+        "type": "AdaptiveCard",
+        "version": "1.0",
+        "body": [
+          {
+            "type": "TextBlock",
+            "id": "defaultText",
+            "text": "I have no isVisible property"
+          }
+        ]
+      }
+      ''',
+      );
+      await tester.pumpWidget(widget);
+      await tester.pumpAndSettle();
+      expect(find.text('I have no isVisible property'), findsOneWidget);
+    });
+
+    testWidgets('supports string "true" and "false" values', (
+      WidgetTester tester,
+    ) async {
+      final widget = getTestWidgetFromString(
+        jsonString: '''
+      {
+        "type": "AdaptiveCard",
+        "version": "1.0",
+        "body": [
+          {
+            "type": "TextBlock",
+            "id": "stringTrue",
+            "text": "String True",
+            "isVisible": "true"
+          },
+          {
+            "type": "TextBlock",
+            "id": "stringFalse",
+            "text": "String False",
+            "isVisible": "false"
+          }
+        ]
+      }
+      ''',
+      );
+      await tester.pumpWidget(widget);
+      await tester.pumpAndSettle();
+      expect(find.text('String True'), findsOneWidget);
+      expect(find.text('String False'), findsNothing);
+    });
+
+    testWidgets('hidden container hides all child text', (
+      WidgetTester tester,
+    ) async {
+      final widget = getTestWidgetFromString(
+        jsonString: '''
+      {
+        "type": "AdaptiveCard",
+        "version": "1.0",
+        "body": [
+          {
+            "type": "Container",
+            "id": "hiddenContainer",
+            "isVisible": false,
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "Inside hidden container"
+              },
+              {
+                "type": "TextBlock",
+                "text": "Also hidden"
+              }
+            ]
+          }
+        ]
+      }
+      ''',
+      );
+      await tester.pumpWidget(widget);
+      await tester.pumpAndSettle();
+      expect(find.text('Inside hidden container'), findsNothing);
+      expect(find.text('Also hidden'), findsNothing);
+    });
+  });
 }
