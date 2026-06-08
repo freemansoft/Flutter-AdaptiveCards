@@ -2,7 +2,8 @@
 
 ## [0.10.0]
 
-- no changes yet
+- **README** no longer claims chart element support; documents cards + template only and points to widgetbook for chart samples.
+- Removed unused **`cupertino_icons`** and **`path`** dependencies from `pubspec.yaml`.
 
 ## [0.9.0]
 

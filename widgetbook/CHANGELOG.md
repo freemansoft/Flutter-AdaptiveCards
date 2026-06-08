@@ -2,7 +2,7 @@
 
 ## [0.10.0]
 
-- no changes yet
+- Removed unused **`cupertino_icons`** and **`path`** dependencies from `pubspec.yaml`.
 
 ## [0.9.0]
 
