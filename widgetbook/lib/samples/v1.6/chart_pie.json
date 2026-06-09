@@ -4,7 +4,7 @@
   "body": [
     {
       "type": "TextBlock",
-      "text": "Pie   Chart Example",
+      "text": "Pie Chart Example",
       "size": "Medium",
       "weight": "Bolder"
     },

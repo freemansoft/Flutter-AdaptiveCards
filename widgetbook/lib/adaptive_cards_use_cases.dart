@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/chart_knobs_page.dart';
 import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
 import 'package:widgetbook_workspace/fact_set_overlay_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
@@ -889,6 +890,19 @@ Widget buildTableExample2(BuildContext context) {
 }
 
 // =============================================================================
+// V1.5 Hub - Icon
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Example 1',
+  type: widget_types.Icon,
+  path: '[Components]',
+)
+Widget buildV15Icon(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.5/icon_demo.json');
+}
+
+// =============================================================================
 // V1.6 Components - Badge
 // =============================================================================
 
@@ -944,13 +958,20 @@ Widget buildV16Accordion(BuildContext context) {
 // V1.6 Components - Charts
 // =============================================================================
 
+Widget _chartKnobsUseCase(String assetPath) {
+  return ChartKnobsPage(
+    key: chartKnobsPageKeyFor(assetPath),
+    assetPath: assetPath,
+  );
+}
+
 @widgetbook.UseCase(
   name: 'Donut',
   type: widget_types.Charts,
   path: '[Components]',
 )
 Widget buildV16ChartDonut(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/v1.6/chart_donut.json');
+  return _chartKnobsUseCase('lib/samples/v1.6/chart_donut.json');
 }
 
 @widgetbook.UseCase(
@@ -959,7 +980,7 @@ Widget buildV16ChartDonut(BuildContext context) {
   path: '[Components]',
 )
 Widget buildV16Chart(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/v1.6/chart_pie.json');
+  return _chartKnobsUseCase('lib/samples/v1.6/chart_pie.json');
 }
 
 @widgetbook.UseCase(
@@ -968,7 +989,7 @@ Widget buildV16Chart(BuildContext context) {
   path: '[Components]',
 )
 Widget buildV16ChartBar(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/v1.6/chart_bar_vertical.json');
+  return _chartKnobsUseCase('lib/samples/v1.6/chart_bar_vertical.json');
 }
 
 @widgetbook.UseCase(
@@ -977,7 +998,7 @@ Widget buildV16ChartBar(BuildContext context) {
   path: '[Components]',
 )
 Widget buildV16ChartBarHorizontal(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/v1.6/chart_bar_horizontal.json');
+  return _chartKnobsUseCase('lib/samples/v1.6/chart_bar_horizontal.json');
 }
 
 @widgetbook.UseCase(
@@ -986,9 +1007,7 @@ Widget buildV16ChartBarHorizontal(BuildContext context) {
   path: '[Components]',
 )
 Widget buildV16ChartBarVerticalGrouped(BuildContext context) {
-  return const GenericPage(
-    url: 'lib/samples/v1.6/chart_bar_vertical_grouped.json',
-  );
+  return _chartKnobsUseCase('lib/samples/v1.6/chart_bar_vertical_grouped.json');
 }
 
 @widgetbook.UseCase(
@@ -997,8 +1016,8 @@ Widget buildV16ChartBarVerticalGrouped(BuildContext context) {
   path: '[Components]',
 )
 Widget buildV16ChartBarHorizontalStacked(BuildContext context) {
-  return const GenericPage(
-    url: 'lib/samples/v1.6/chart_bar_horizontal_stacked.json',
+  return _chartKnobsUseCase(
+    'lib/samples/v1.6/chart_bar_horizontal_stacked.json',
   );
 }
 
@@ -1008,7 +1027,25 @@ Widget buildV16ChartBarHorizontalStacked(BuildContext context) {
   path: '[Components]',
 )
 Widget buildV16ChartLine(BuildContext context) {
-  return const GenericPage(url: 'lib/samples/v1.6/chart_line.json');
+  return _chartKnobsUseCase('lib/samples/v1.6/chart_line.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Gauge',
+  type: widget_types.Charts,
+  path: '[Components]',
+)
+Widget buildV16ChartGauge(BuildContext context) {
+  return _chartKnobsUseCase('lib/samples/v1.6/chart_gauge.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Knobs demo',
+  type: widget_types.Charts,
+  path: '[Components]',
+)
+Widget buildChartsInteractiveKnobs(BuildContext context) {
+  return _chartKnobsUseCase('lib/samples/charts/chart_knobs_demo.json');
 }
 
 // =============================================================================

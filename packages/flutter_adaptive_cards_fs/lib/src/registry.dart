@@ -20,6 +20,7 @@ import 'package:flutter_adaptive_cards_fs/src/cards/elements/badge.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/carousel.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/code_block.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/compound_button.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/elements/icon.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/image.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/media.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/progress_bar.dart';
@@ -192,6 +193,8 @@ class CardTypeRegistry {
       // New Elements
       case 'Badge':
         return AdaptiveBadge(adaptiveMap: map);
+      case 'Icon':
+        return AdaptiveIcon(adaptiveMap: map);
       case 'Rating':
       case 'Input.Rating': // Just in case
         return AdaptiveRating(adaptiveMap: map);

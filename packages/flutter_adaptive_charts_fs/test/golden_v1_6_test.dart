@@ -11,10 +11,13 @@ Widget getSampleForGoldenTest(Key key, String sampleName) {
   return getTestWidgetFromPath(path: 'v1.6/$sampleName.json', key: key);
 }
 
+/// Golden tests use a taller viewport to fit chart chrome (title, axis names, legend).
+const Size kChartGoldenTestViewSize = Size(500, 800);
+
 void configureTestView() {
   RendererBinding.instance.renderViews.first.configuration =
       TestViewConfiguration.fromView(
-        size: const Size(500, 700),
+        size: kChartGoldenTestViewSize,
         view: PlatformDispatcher.instance.implicitView!,
       );
 }
@@ -120,6 +123,20 @@ void main() {
     await expectLater(
       find.byKey(key),
       matchesGoldenFile(getGoldenPath('v1_6_pie.png')),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+  }, tags: ['golden']);
+
+  testWidgets('Gauge Chart', (tester) async {
+    configureTestView();
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'chart_gauge');
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('v1_6_gauge.png')),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);

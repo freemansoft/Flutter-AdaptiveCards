@@ -3,6 +3,10 @@
 ## [0.10.0]
 
 - Removed unused **`cupertino_icons`** and **`path`** dependencies from `pubspec.yaml`.
+- **Icon (v1.5 hub)** use case with sample **`lib/samples/v1.5/icon_demo.json`**.
+- **`Chart.Gauge`** sample: **`lib/samples/v1.6/chart_gauge.json`**.
+- **Charts** use cases (Donut, Pie, Bar, Line, Gauge, Knobs demo): **[`ChartKnobsPage`](lib/chart_knobs_page.dart)** — live knobs for `title`, axis titles, `showBarValues`, `showLegend`, `colorSet`, gauge fields, and sample data values; uses per-sample **`chartKnobsPageKeyFor`** GlobalKeys so knob edits do not remount the card host.
+- Asset bundle: **`lib/samples/charts/`** for chart knob demo JSON.
 
 ## [0.9.0]
 

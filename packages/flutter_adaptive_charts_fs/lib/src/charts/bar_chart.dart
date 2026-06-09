@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
 
 /// Layout variants supported by [AdaptiveBarChart] for Adaptive Card bar chart types.
 ///
@@ -77,6 +78,16 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
   /// Upper bound of the value axis after padding.
   late double maxY;
 
+  /// Per-group display values for `showBarValues`.
+  late List<String> barValueLabels;
+
+  String? _chartTitle;
+  String? _xAxisTitle;
+  String? _yAxisTitle;
+  bool _showBarValues = false;
+  bool _showLegend = false;
+  List<ChartLegendEntry> _legendEntries = [];
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -85,9 +96,20 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
 
   void _parseData() {
     final layout = styleResolver.resolveBarChartLayout();
+    final colorSet = adaptiveMap['colorSet']?.toString();
+    final palette = styleResolver.resolveChartPalette(colorSet: colorSet);
+
+    _chartTitle = adaptiveMap['title']?.toString();
+    _xAxisTitle = adaptiveMap['xAxisTitle']?.toString();
+    _yAxisTitle = adaptiveMap['yAxisTitle']?.toString();
+    _showBarValues = adaptiveMap['showBarValues'] as bool? ?? false;
+    _showLegend = adaptiveMap['showLegend'] as bool? ?? false;
+    _legendEntries = [];
+
     final data = adaptiveMap['data'];
     barGroups = [];
     xLabels = [];
+    barValueLabels = [];
     maxY = layout.emptyMaxY;
     if (data is! List) return;
     maxY = 0;
@@ -102,11 +124,8 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
             adaptiveMap['stacked'] == null ||
             adaptiveMap['stacked'] == false);
 
-    debugPrint('isStacked: $isStacked, isGrouped: $isGrouped');
-
     if (isStacked || isGrouped) {
       final Map<String, List<Map<String, dynamic>>> pivotData = {};
-      final List<Color> defaultColors = styleResolver.resolveChartPalette();
 
       int seriesIndex = 0;
       for (final series in data) {
@@ -115,8 +134,19 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
             series['values'] as List<dynamic>?;
         if (points == null) continue;
 
+        final String seriesLegend =
+            series['legend']?.toString() ?? 'Series ${seriesIndex + 1}';
         final Color defaultSeriesColor =
-            defaultColors[seriesIndex % defaultColors.length];
+            palette[seriesIndex % palette.length];
+        final Color seriesColor = styleResolver.resolveChartColor(
+          series['color']?.toString(),
+          fallback: defaultSeriesColor,
+        );
+        if (_showLegend) {
+          _legendEntries.add(
+            ChartLegendEntry(label: seriesLegend, color: seriesColor),
+          );
+        }
 
         for (final point in points) {
           final String x =
@@ -127,7 +157,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
           pivotData[x]!.add({
             'y': point['value'] ?? point['y'] ?? 0,
             'color': point['color'] ?? series['color'],
-            'fallbackColor': defaultSeriesColor,
+            'fallbackColor': seriesColor,
           });
         }
         seriesIndex++;
@@ -137,6 +167,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
       pivotData.forEach((key, items) {
         xLabels.add(key);
         final List<BarChartRodData> rods = [];
+        double groupDisplayValue = 0;
 
         if (isStacked) {
           final List<BarChartRodStackItem> stackItems = [];
@@ -155,12 +186,12 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
             );
             runningSum += val;
           }
-          final double currentYSum = runningSum;
-          if (currentYSum > maxY) maxY = currentYSum;
+          groupDisplayValue = runningSum;
+          if (runningSum > maxY) maxY = runningSum;
 
           rods.add(
             BarChartRodData(
-              toY: currentYSum,
+              toY: runningSum,
               rodStackItems: stackItems,
               width: layout.barWidth,
               color: Colors.transparent,
@@ -173,6 +204,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
           for (final item in items) {
             final double val = (item['y'] as num).toDouble();
             if (val > maxY) maxY = val;
+            groupDisplayValue = val;
             final String? colorStr = item['color'] as String?;
             final Color fallback = item['fallbackColor'] as Color;
             final Color color = styleResolver.resolveChartColor(
@@ -191,6 +223,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
           }
         }
 
+        barValueLabels.add(groupDisplayValue.toStringAsFixed(0));
         barGroups.add(
           BarChartGroupData(
             x: xIndex,
@@ -204,22 +237,25 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
       final Map<String, List<Map<String, dynamic>>> groupedData = {};
       for (final item in data) {
         final String x = item['x']?.toString() ?? 'Unknown';
-        if (!groupedData.containsKey(x)) {
-          groupedData[x] = [];
-        }
-        groupedData[x]!.add(item);
+        groupedData.putIfAbsent(x, () => []).add(item);
       }
 
       int xIndex = 0;
       groupedData.forEach((key, items) {
         xLabels.add(key);
         final List<BarChartRodData> rods = [];
+        double groupMax = 0;
 
         for (final item in items) {
           final double val = (item['y'] as num? ?? 0).toDouble();
           if (val > maxY) maxY = val;
-          final String? colorStr = item['color'] as String?;
-          final Color color = styleResolver.resolveChartColor(colorStr);
+          if (val > groupMax) groupMax = val;
+          final String? colorStr = item['color']?.toString();
+          final Color fallback = palette[rods.length % palette.length];
+          final Color color = styleResolver.resolveChartColor(
+            colorStr,
+            fallback: fallback,
+          );
 
           rods.add(
             BarChartRodData(
@@ -231,6 +267,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
           );
         }
 
+        barValueLabels.add(groupMax.toStringAsFixed(0));
         barGroups.add(
           BarChartGroupData(
             x: xIndex,
@@ -246,14 +283,8 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
     maxY *= layout.maxYPaddingFactor;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final layout = styleResolver.resolveBarChartLayout();
-    final bool isHorizontal =
-        widget.type == BarChartType.horizontal ||
-        widget.type == BarChartType.horizontalStacked;
-
-    final sideTitles = SideTitles(
+  SideTitles _categorySideTitles(BarChartLayout layout) {
+    return SideTitles(
       showTitles: layout.showCategoryTitles,
       reservedSize: layout.categoryAxisReservedSize,
       getTitlesWidget: (val, meta) {
@@ -270,22 +301,78 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
         );
       },
     );
-    final axisTitles = AxisTitles(sideTitles: sideTitles);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final layout = styleResolver.resolveBarChartLayout();
+    final bool isHorizontal =
+        widget.type == BarChartType.horizontal ||
+        widget.type == BarChartType.horizontalStacked;
+
+    final categoryAxis = _categorySideTitles(layout);
+    const valueAxis = SideTitles(
+      showTitles: true,
+      reservedSize: 28,
+    );
+
+    final topValueAxis = SideTitles(
+      showTitles: _showBarValues,
+      reservedSize: _showBarValues ? 20 : 0,
+      getTitlesWidget: (val, meta) {
+        final index = val.toInt();
+        if (index < 0 || index >= barValueLabels.length) {
+          return const SizedBox.shrink();
+        }
+        return SideTitleWidget(
+          meta: meta,
+          child: Text(
+            barValueLabels[index],
+            style: TextStyle(fontSize: layout.categoryLabelFontSize),
+          ),
+        );
+      },
+    );
+
+    Widget axisName(String? name) {
+      if (name == null || name.isEmpty) return const SizedBox.shrink();
+      return Text(name, style: Theme.of(context).textTheme.labelSmall);
+    }
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: SizedBox(
-        height: layout.height,
-        child: BarChart(
-          BarChartData(
-            barGroups: barGroups,
-            maxY: maxY,
-            alignment: _toFlChartAlignment(layout.alignment),
-            titlesData: FlTitlesData(
-              show: true,
-              bottomTitles: axisTitles,
+      child: ChartChrome(
+        title: _chartTitle,
+        legendEntries: _showLegend ? _legendEntries : const [],
+        chart: SizedBox(
+          height: layout.height,
+          child: BarChart(
+            BarChartData(
+              barGroups: barGroups,
+              maxY: maxY,
+              alignment: _toFlChartAlignment(layout.alignment),
+              titlesData: FlTitlesData(
+                show: true,
+                topTitles: AxisTitles(
+                  sideTitles: topValueAxis,
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: isHorizontal ? valueAxis : categoryAxis,
+                  axisNameWidget: isHorizontal
+                      ? axisName(_yAxisTitle)
+                      : axisName(_xAxisTitle),
+                  axisNameSize: 24,
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: isHorizontal ? categoryAxis : valueAxis,
+                  axisNameWidget: isHorizontal
+                      ? axisName(_xAxisTitle)
+                      : axisName(_yAxisTitle),
+                  axisNameSize: 24,
+                ),
+              ),
+              rotationQuarterTurns: isHorizontal ? 1 : 0,
             ),
-            rotationQuarterTurns: isHorizontal ? 1 : 0,
           ),
         ),
       ),

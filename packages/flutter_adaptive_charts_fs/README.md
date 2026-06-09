@@ -32,10 +32,7 @@ Utility programs available in this repository that are not published to pub.dev 
 - `Chart.Line` : Line Charts
 - `Chart.VerticalBar.Grouped` : Vertical Grouped Bar Charts
 - `Chart.HorizontalBar.Stacked` : Horizontal Stacked Bar Charts
-
-## Not Implemented
-
-- `Chart.Gauge` : Gauge Charts - no clear way to implement in fl_chart
+- `Chart.Gauge` : Gauge Charts — rendered with `CustomPainter` (not fl_chart)
 
 ## Getting started
 
@@ -95,7 +92,20 @@ AdaptiveCardsCanvas(
 }
 ```
 
-Individual data items can still override these colors using the `"color"` property (hex or semantic names like `"good"`, `"warning"`, `"attention"`, `"accent"`).
+Individual data items can still override these colors using the `"color"` property (hex or Teams semantic tokens like `"good"`, `"categoricalBlue"`, or `"divergingRed"`).
+
+Chart JSON may also specify `"colorSet": "categorical" | "sequential" | "diverging"` to select a named palette when a series color is omitted. Per-point colors still win when present.
+
+### Chart chrome (title, legend, axis labels)
+
+Bar, line, pie, donut, and gauge elements support Teams chart chrome properties:
+
+- `title` — chart title above the plot
+- `xAxisTitle` / `yAxisTitle` — axis labels (bar and line)
+- `showBarValues` — value labels on bars
+- `showLegend` — legend for pie, donut, and gauge segments
+
+These are rendered by the shared `ChartChrome` wrapper in this package.
 
 ## Usage
 

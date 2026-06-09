@@ -172,10 +172,12 @@ await tester.enterText(find.byKey(generateWidgetKey(fieldMap)), 'hello');
 > [!WARNING]
 > **Golden image pixels are platform-specific.** This project organizes golden images into platform-specific subdirectories:
 >
-> - `test/gold_files/linux/`: Project-wide source of truth (CI generated).
-> - `test/gold_files/macos/`: Local verification images.
+> - `test/gold_files/linux/`: **CI source of truth** — tests on the build server compare against these files.
+> - `test/gold_files/macos/`: Local development baselines (committed for macOS developers).
 >
-> **Updating Goldens**: Should primarily be done via CI (for Linux results). Use `getGoldenPath(filename)` to dynamically resolve the path.
+> Use `getGoldenPath(filename)` to resolve the path for the current platform.
+
+Full workflow: [`packages/flutter_adaptive_cards_fs/test/gold_files/README.md`](../../packages/flutter_adaptive_cards_fs/test/gold_files/README.md) (same rules for `flutter_adaptive_charts_fs/test/gold_files/`).
 
 ### Standard Golden Pattern
 
@@ -202,25 +204,46 @@ testWidgets('My Card Golden', (tester) async {
 }, tags: ['golden']);
 ```
 
-### Local Golden Generation for Visual Verifications
+### Creating new golden images
 
-You can generate goldens on your local machine for visual verification purposes, but they will not be used for CI testing and they should not be comitted to the repository.
+When adding a golden test or updating expected rendering:
+
+1. **Generate locally** (from the affected package):
+
+   ```bash
+   cd packages/flutter_adaptive_cards_fs   # or flutter_adaptive_charts_fs
+   fvm flutter test test/golden_icon_test.dart --update-goldens --tags=golden
+   ```
+
+   On macOS this writes to `test/gold_files/macos/`.
+
+2. **Seed Linux baselines for CI** — copy each new or updated PNG from `macos/` to `linux/`:
+
+   ```bash
+   cp test/gold_files/macos/v1_5_icon_demo.png test/gold_files/linux/v1_5_icon_demo.png
+   ```
+
+   CI runs on Linux and will fail if the matching file is missing under `test/gold_files/linux/`. Seeding from macOS is acceptable for **new** goldens; commit both copies.
+
+3. **Commit** the test, sample JSON, and both platform PNGs.
+
+4. **If CI fails on pixel diff**, replace `linux/` files from the failed build’s artifact zip (see `test/gold_files/README.md`).
+
+### Local golden verification (macOS)
 
 ```bash
 cd packages/flutter_adaptive_cards_fs
-flutter test --update-goldens --tags golden
+fvm flutter test --tags golden
 ```
 
-> **Warning:** Golden image pixels are platform-specific. macOS-generated
-> goldens may not match Linux CI exactly. The project uses `dart_test.yaml`
-> to manage this. Check `test/analysis_options.yaml` for any tag restrictions.
+> **Note:** macOS and Linux pixels may differ slightly. Local `--tags golden` validates macOS baselines; Linux accuracy is confirmed in CI or by refreshing `linux/` from CI artifacts.
 
 ### Running Only Non-Golden Tests (Faster Iteration)
 
-The local AI agents should always run the tests with the `--exclude-tags golden` flag to speed up the test execution and because local execution of golden tests will fail due to the platform aliasing issues.
+Local AI agents should prefer `--exclude-tags=golden` for routine verification (faster; avoids platform-specific golden failures when Linux baselines were not updated):
 
 ```bash
-flutter test --exclude-tags golden
+fvm flutter test --exclude-tags=golden
 ```
 
 ---

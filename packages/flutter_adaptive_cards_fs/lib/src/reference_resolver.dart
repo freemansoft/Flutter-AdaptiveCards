@@ -915,30 +915,34 @@ class ReferenceResolver {
   DonutChartLayout resolveDonutChartLayout() =>
       ChartsLayoutConfig.resolveDonutLayout(getChartsLayoutConfig());
 
-  /// Resolves the color palette for charts
-  List<Color> resolveChartPalette() {
-    return getChartColorsConfig()?.defaultPalette ??
-        FallbackConfigs.chartColorsConfig.defaultPalette;
+  /// Resolves the color palette for charts, optionally using element `colorSet`.
+  List<Color> resolveChartPalette({String? colorSet}) {
+    final setName = parseChartColorSetName(colorSet);
+    if (setName != ChartColorSetName.defaultPalette) {
+      return chartPaletteForSet(setName);
+    }
+
+    final hostPalette = getChartColorsConfig()?.defaultPalette;
+    if (hostPalette != null && hostPalette.isNotEmpty) {
+      return hostPalette;
+    }
+
+    return FallbackConfigs.chartColorsConfig.defaultPalette.isNotEmpty
+        ? FallbackConfigs.chartColorsConfig.defaultPalette
+        : kChartCategoricalPalette;
   }
 
-  /// Resolves a single chart color from a string (hex or semantic name)
+  /// Resolves a single chart color from a string (hex or semantic / Teams token).
   Color resolveChartColor(String? colorStr, {Color? fallback}) {
+    final tokenColor = resolveChartColorToken(colorStr);
+    if (tokenColor != null) {
+      return tokenColor;
+    }
+
     if (colorStr == null) {
       return fallback ??
           getChartColorsConfig()?.defaultColor ??
           FallbackConfigs.chartColorsConfig.defaultColor;
-    }
-
-    final lower = colorStr.toLowerCase();
-    switch (lower) {
-      case 'good':
-        return Colors.green;
-      case 'warning':
-        return Colors.amber;
-      case 'attention':
-        return Colors.red;
-      case 'accent':
-        return Colors.blue;
     }
 
     return parseHexColor(colorStr) ??

@@ -1,0 +1,36 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Chart knobs demo",
+      "weight": "Bolder",
+      "size": "Medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Adjust knobs to patch chart properties in the JSON map.",
+      "isSubtle": true,
+      "wrap": true,
+      "spacing": "Small"
+    },
+    {
+      "type": "Chart.VerticalBar",
+      "id": "demoChart",
+      "title": "Quarterly Sales",
+      "xAxisTitle": "Product",
+      "yAxisTitle": "Revenue ($K)",
+      "showBarValues": false,
+      "showLegend": false,
+      "data": [
+        { "x": "Pear", "y": 59 },
+        { "x": "Banana", "y": 292 },
+        { "x": "Apple", "y": 143 },
+        { "x": "Peach", "y": 98 }
+      ]
+    }
+  ]
+}

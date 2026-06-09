@@ -1,11 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
 
 /// Renders Adaptive Card pie and donut chart elements using fl_chart.
 ///
 /// Registered in the chart element dispatch table for the
-/// `Chart.Pie`, `Chart.Donut`, and `Chart.Gauge` types. Uses
+/// `Chart.Pie` and `Chart.Donut` types. Uses
 /// [AdaptiveElementWidgetMixin] for element identity and is wrapped in
 /// [SeparatorElement] for card layout and spacing.
 ///
@@ -15,7 +16,7 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart'
 class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a pie or donut chart element from [adaptiveMap].
   ///
-  /// Set [isDonut] to `true` for donut and gauge-style charts.
+  /// Set [isDonut] to `true` for donut charts.
   AdaptivePieChart({
     required this.adaptiveMap,
     this.isDonut = false,
@@ -42,6 +43,10 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
   /// Parsed pie sections passed to the underlying [PieChart].
   late List<PieChartSectionData> sections;
 
+  String? _chartTitle;
+  bool _showLegend = false;
+  List<ChartLegendEntry> _legendEntries = [];
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -52,13 +57,14 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
     final layout = widget.isDonut
         ? styleResolver.resolveDonutChartLayout()
         : styleResolver.resolvePieChartLayout();
-    // Expected structure: data: { series: [ { data: [ { x: "Label", y: 10, color: "#FF0000" } ] } ] }
-    // Or simplified: data entries.
-    // We need to look at AC Chart schema.
-    // For now assuming a simple "data" list in properties for quick prototyping if exact schema isn't fully clear.
-    // The user linked samples. I don't have them but standard chart data usually has values, labels, colors.
+    final colorSet = adaptiveMap['colorSet']?.toString();
+    final palette = styleResolver.resolveChartPalette(colorSet: colorSet);
+    final sectionRadius = _fitSectionRadius(layout);
 
-    // Let's assume a "data" property which is a List.
+    _chartTitle = adaptiveMap['title']?.toString();
+    _showLegend = adaptiveMap['showLegend'] as bool? ?? false;
+    _legendEntries = [];
+
     final data = adaptiveMap['data'];
     sections = [];
 
@@ -66,23 +72,31 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
       for (final item in data) {
         final double value = (item['value'] as num? ?? item['y'] as num? ?? 0)
             .toDouble();
-        final String title =
-            item['title']?.toString() ?? item['x']?.toString() ?? '';
+        final String sliceTitle =
+            item['legend']?.toString() ??
+            item['title']?.toString() ??
+            item['x']?.toString() ??
+            '';
         final String? colorStr = item['color']?.toString();
-        final List<Color> defaultPalette = styleResolver.resolveChartPalette();
-        final Color fallback =
-            defaultPalette[sections.length % defaultPalette.length];
+        final Color fallback = palette[sections.length % palette.length];
         final Color color = styleResolver.resolveChartColor(
           colorStr,
           fallback: fallback,
         );
 
+        if (_showLegend && sliceTitle.isNotEmpty) {
+          _legendEntries.add(
+            ChartLegendEntry(label: sliceTitle, color: color),
+          );
+        }
+
         sections.add(
           PieChartSectionData(
             value: value,
-            title: title,
+            title: _showLegend ? '' : sliceTitle,
             color: color,
-            radius: layout.sectionRadius,
+            radius: sectionRadius,
+            titlePositionPercentageOffset: widget.isDonut ? 0.65 : 0.55,
             titleStyle: TextStyle(
               fontSize: layout.titleFontSize,
               fontWeight: layout.titleFontWeight,
@@ -94,6 +108,17 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
     }
   }
 
+  /// Keeps slice labels inside the configured chart height (fl_chart canvas).
+  double _fitSectionRadius(PieChartLayout layout) {
+    const labelPadding = 20.0;
+    final maxOuterRadius = (layout.height / 2) - labelPadding;
+    final maxSectionRadius = maxOuterRadius - layout.centerSpaceRadius;
+    if (maxSectionRadius <= 0) {
+      return layout.sectionRadius;
+    }
+    return layout.sectionRadius.clamp(0.0, maxSectionRadius);
+  }
+
   @override
   Widget build(BuildContext context) {
     final layout = widget.isDonut
@@ -102,13 +127,20 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: SizedBox(
-        height: layout.height,
-        child: PieChart(
-          PieChartData(
-            sections: sections,
-            centerSpaceRadius: layout.centerSpaceRadius,
-            sectionsSpace: layout.sectionsSpace,
+      child: ChartChrome(
+        title: _chartTitle,
+        legendEntries: _showLegend ? _legendEntries : const [],
+        chart: SizedBox(
+          height: layout.height,
+          width: double.infinity,
+          child: ClipRect(
+            child: PieChart(
+              PieChartData(
+                sections: sections,
+                centerSpaceRadius: layout.centerSpaceRadius,
+                sectionsSpace: layout.sectionsSpace,
+              ),
+            ),
           ),
         ),
       ),
