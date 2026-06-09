@@ -72,7 +72,8 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 - [ ] **JSON Samples**: Is there a new file in `test/samples/` demonstrating the feature/fix?
 - [ ] **Golden Tests**:
   - Have golden tests been added/updated for UI changes?
-  - **Note**: Golden tests must be ran on a Linux machine (usually CI) for canonical reference images. Local Mac/Windows goldens may differ slightly.
+  - **New goldens:** generate with `--update-goldens` on macOS, then **copy each new PNG from `test/gold_files/macos/` to `test/gold_files/linux/`** so CI has a baseline (see `adaptive-cards-testing` skill and `test/gold_files/README.md`).
+  - **CI pixel failures:** replace `linux/` files from CI artifact zips for canonical Linux images.
 
 ---
 

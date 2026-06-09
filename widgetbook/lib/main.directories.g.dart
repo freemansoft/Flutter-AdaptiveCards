@@ -172,6 +172,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildV16ChartDonut,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Gauge',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16ChartGauge,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Knobs demo',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildChartsInteractiveKnobs,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Line',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildV16ChartLine,
@@ -330,6 +340,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Facts overlay (knob)',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildFactSetFactsOverlay,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'Icon',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 1',
+            builder:
+                _widgetbook_workspace_adaptive_cards_use_cases.buildV15Icon,
           ),
         ],
       ),

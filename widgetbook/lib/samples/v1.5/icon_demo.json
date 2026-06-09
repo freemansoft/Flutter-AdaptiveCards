@@ -1,0 +1,127 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Icon Examples",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Filled / Accent",
+              "wrap": true
+            },
+            {
+              "type": "Icon",
+              "name": "Calendar",
+              "size": "Medium",
+              "style": "Filled",
+              "color": "Accent"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Regular / Good",
+              "wrap": true
+            },
+            {
+              "type": "Icon",
+              "name": "Checkmark",
+              "size": "Large",
+              "style": "Regular",
+              "color": "Good"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Warning",
+              "wrap": true
+            },
+            {
+              "type": "Icon",
+              "name": "Warning",
+              "size": "Large",
+              "style": "Filled",
+              "color": "Warning"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Attention",
+              "wrap": true
+            },
+            {
+              "type": "Icon",
+              "name": "ErrorCircle",
+              "size": "Large",
+              "style": "Filled",
+              "color": "Attention"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "Common icons",
+      "spacing": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            { "type": "Icon", "name": "AccessTime", "size": "Small" },
+            { "type": "Icon", "name": "Mail", "size": "Small" },
+            { "type": "Icon", "name": "Person", "size": "Small" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            { "type": "Icon", "name": "Search", "size": "Small" },
+            { "type": "Icon", "name": "Settings", "size": "Small" },
+            { "type": "Icon", "name": "Home", "size": "Small" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            { "type": "Icon", "name": "Share", "size": "Small" },
+            { "type": "Icon", "name": "Download", "size": "Small" },
+            { "type": "Icon", "name": "Upload", "size": "Small" }
+          ]
+        }
+      ]
+    }
+  ]
+}

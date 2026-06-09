@@ -2,6 +2,14 @@
 
 This document tracks the implementation status of Adaptive Cards elements, containers, inputs, and actions against the Microsoft Adaptive Cards v1.6 specification.
 
+**Optional packages:** Charts and templating are **not** in the core library — see [optional-packages-and-extensions.md](./optional-packages-and-extensions.md).
+
+**Reference sites**:
+
+- [Adaptive Cards documentation hub](https://adaptivecards.microsoft.com/) (responsive layout, Icon, Charts, and other v1.6+ features)
+- [Schema explorer](https://adaptivecards.io/explorer/)
+- [Teams charts reference](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/charts-in-adaptive-cards)
+
 **Legend**:
 
 - ✅ **Complete**: Fully implemented and tested
@@ -13,31 +21,63 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ## Card Elements
 
-| Element       | Microsoft Spec                                               | Implementation | Tests      | Documentation                                          | Notes                       |
-| ------------- | ------------------------------------------------------------ | -------------- | ---------- | ------------------------------------------------------ | --------------------------- |
-| TextBlock     | [spec](https://adaptivecards.io/explorer/TextBlock.html)     | ✅ Complete    | ✅ Yes     | -                                                      | Core element                |
-| Image         | [spec](https://adaptivecards.io/explorer/Image.html)         | ✅ Complete    | ✅ Yes     | [Encoded-Image-Support.md](./Encoded-Image-Support.md) | Supports base64             |
-| Media         | [spec](https://adaptivecards.io/explorer/Media.html)         | ⚠️ Partial     | ⚠️ Limited | -                                                      | Poster attribute has issues |
-| MediaSource   | [spec](https://adaptivecards.io/explorer/MediaSource.html)   | ✅ Complete    | ✅ Yes     | -                                                      | Typed `MediaSource` model   |
-| RichTextBlock | [spec](https://adaptivecards.io/explorer/RichTextBlock.html) | ❌ Missing     | ❌ No      | -                                                      | Required since AC spec v1.2 |
-| TextRun       | [spec](https://adaptivecards.io/explorer/TextRun.html)       | ❌ Missing     | ❌ No      | -                                                      | Required since AC spec v1.2 |
-| ActionSet     | [spec](https://adaptivecards.io/explorer/ActionSet.html)     | ✅ Complete    | ⚠️ Limited | -                                                      | -                           |
+| Element       | Microsoft Spec                                               | Implementation | Tests      | Documentation                                          | Notes                                                                 |
+| ------------- | ------------------------------------------------------------ | -------------- | ---------- | ------------------------------------------------------ | --------------------------------------------------------------------- |
+| TextBlock     | [spec](https://adaptivecards.io/explorer/TextBlock.html)     | ⚠️ Partial     | ✅ Yes     | -                                                      | Markdown subset; `maxLines` does not apply when markdown is enabled   |
+| Image         | [spec](https://adaptivecards.io/explorer/Image.html)         | ✅ Complete    | ✅ Yes     | [Encoded-Image-Support.md](./Encoded-Image-Support.md) | Supports base64; `selectAction` supported                             |
+| Media         | [spec](https://adaptivecards.io/explorer/Media.html)         | ⚠️ Partial     | ⚠️ Limited | -                                                      | Video via `video_player`; poster attribute has issues; limited on desktop platforms |
+| MediaSource   | [spec](https://adaptivecards.io/explorer/MediaSource.html)   | ✅ Complete    | ✅ Yes     | -                                                      | Typed `MediaSource` model                                             |
+| CaptionSource | [spec](https://adaptivecards.io/explorer/CaptionSource.html) | ❌ Missing     | ❌ No      | -                                                      | Used with `Media`; not registered                                     |
+| RichTextBlock | [spec](https://adaptivecards.io/explorer/RichTextBlock.html) | ❌ Missing     | ❌ No      | -                                                      | **Only standard body element type not implemented**; required since v1.2 |
+| TextRun       | [spec](https://adaptivecards.io/explorer/TextRun.html)       | ❌ Missing     | ❌ No      | -                                                      | Child of `RichTextBlock`; inline formatting and per-run `selectAction` |
+| ActionSet     | [spec](https://adaptivecards.io/explorer/ActionSet.html)     | ✅ Complete    | ⚠️ Limited | -                                                      | -                                                                     |
+| Icon          | [hub](https://adaptivecards.microsoft.com/)                  | ⚠️ Partial     | ✅ Yes     | -                                                      | ~50 common Fluent names via Material icons; `selectAction` supported  |
 
 ---
 
 ## Containers
 
-| Container | Microsoft Spec                                           | Implementation | Tests      | Documentation                                                                          | Notes                                                                |
-| --------- | -------------------------------------------------------- | -------------- | ---------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Container | [spec](https://adaptivecards.io/explorer/Container.html) | ✅ Complete    | ✅ Yes     | -                                                                                      | Core container                                                       |
-| ColumnSet | [spec](https://adaptivecards.io/explorer/ColumnSet.html) | ⚠️ Partial     | ⚠️ Limited | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Height bug noted                                                     |
-| Column    | [spec](https://adaptivecards.io/explorer/Column.html)    | ⚠️ Partial     | ⚠️ Limited | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Height bug noted                                                     |
-| FactSet   | [spec](https://adaptivecards.io/explorer/FactSet.html)   | ✅ Complete    | ✅ Yes     | [reactive-riverpod.md](./reactive-riverpod.md)                                       | Runtime `facts` overlay (`setFacts` / `clearFacts`)                |
-| Fact      | [spec](https://adaptivecards.io/explorer/Fact.html)      | ✅ Complete    | ✅ Yes     | -                                                                                      | Typed `Fact` model                                                   |
-| ImageSet  | [spec](https://adaptivecards.io/explorer/ImageSet.html)  | ✅ Complete    | ⚠️ Limited | -                                                                                      | -                                                                    |
-| Table     | [spec](https://adaptivecards.io/explorer/Table.html)     | ⚠️ Partial     | ⚠️ Basic   | -                                                                                      | Minimal implementation, missing attributes                           |
-| TableCell | [spec](https://adaptivecards.io/explorer/TableCell.html) | ⚠️ Inline      | ✅ Yes     | -                                                                                      | Implemented inline in Table; selectAction fully supported and tested |
-| TableRow  | [spec](https://adaptivecards.io/explorer/TableRow.html)  | ⚠️ Partial     | ❌ No      | -                                                                                      | Part of Table implementation                                         |
+| Container | Microsoft Spec                                           | Implementation | Tests      | Documentation                                                                          | Notes                                                                 |
+| --------- | -------------------------------------------------------- | -------------- | ---------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Container | [spec](https://adaptivecards.io/explorer/Container.html) | ⚠️ Partial     | ✅ Yes     | -                                                                                      | `minHeight` supported; `bleed` not implemented                        |
+| ColumnSet | [spec](https://adaptivecards.io/explorer/ColumnSet.html) | ✅ Complete    | ✅ Yes     | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Equal column heights fixed (`IntrinsicHeight` + stretch); see doc for history |
+| Column    | [spec](https://adaptivecards.io/explorer/Column.html)    | ✅ Complete    | ✅ Yes     | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Same height fix as ColumnSet                                          |
+| FactSet   | [spec](https://adaptivecards.io/explorer/FactSet.html)   | ✅ Complete    | ✅ Yes     | [reactive-riverpod.md](./reactive-riverpod.md)                                         | Runtime `facts` overlay (`setFacts` / `clearFacts`)                   |
+| Fact      | [spec](https://adaptivecards.io/explorer/Fact.html)      | ✅ Complete    | ✅ Yes     | -                                                                                      | Typed `Fact` model                                                    |
+| ImageSet  | [spec](https://adaptivecards.io/explorer/ImageSet.html)  | ✅ Complete    | ⚠️ Limited | -                                                                                      | -                                                                     |
+| Table     | [spec](https://adaptivecards.io/explorer/Table.html)     | ⚠️ Partial     | ⚠️ Basic   | -                                                                                      | See [Table gaps](#table-gaps) below                                   |
+| TableCell | [spec](https://adaptivecards.io/explorer/TableCell.html) | ⚠️ Inline      | ✅ Yes     | -                                                                                      | Implemented inline in Table; `selectAction` supported and tested      |
+| TableRow  | [spec](https://adaptivecards.io/explorer/TableRow.html)  | ⚠️ Partial     | ❌ No      | -                                                                                      | Part of Table implementation                                        |
+
+### Table gaps
+
+Implemented: `columns`, `rows`, `showGridLines`, `gridStyle`, `firstRowAsHeader`, cell alignment, header styling, `selectAction` on cells.
+
+Not implemented or incomplete:
+
+- Column `width` modes `auto` / `stretch` (numeric flex and `px` only)
+- Cell-level `rtl` (parsed in `TableCellModel` but not applied in rendering)
+- Block `height: stretch` on the table element
+- `bleed` on cells or the table
+
+Sample reference: [FlightUpdateTable.json](https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json)
+
+---
+
+## Root `AdaptiveCard` Properties
+
+| Property                    | Microsoft Spec                                               | Implementation | Notes                                                              |
+| --------------------------- | ------------------------------------------------------------ | -------------- | ------------------------------------------------------------------ |
+| `body` / `actions` / `version` | [spec](https://adaptivecards.io/explorer/AdaptiveCard.html) | ✅ Complete    | Core rendering via `AdaptiveCardElement`                           |
+| `backgroundImage`           | spec                                                         | ✅ Complete    | [backgroundImage.md](./backgroundImage.md)                         |
+| `metadata`                  | spec (v1.6)                                                  | ⚠️ Partial     | `metadata.webUrl` read; full metadata model not implemented        |
+| `minHeight`                 | spec (v1.2)                                                  | ❌ Missing     | Not applied at card root                                           |
+| `rtl`                       | spec (v1.5)                                                  | ❌ Missing     | Not applied at card root                                           |
+| `fallbackText`              | spec                                                         | ❌ Missing     | Not shown when card version exceeds renderer support               |
+| `selectAction`              | spec (v1.1)                                                  | ❌ Missing     | Card-level tap action not wired                                    |
+| `verticalContentAlignment`  | spec (v1.1)                                                  | ❌ Missing     | Not applied at card root                                           |
+| `refresh`                   | spec (v1.4)                                                  | ❌ Missing     | Auto-refresh via `Action.Execute`                                  |
+| `authentication`            | spec (v1.4)                                                  | ❌ Missing     | SSO / OAuth card authentication                                    |
 
 ---
 
@@ -45,7 +85,7 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 | Input           | Microsoft Spec                                                 | Implementation | Tests  | Documentation                      | Notes                                                                                                                                                                         |
 | --------------- | -------------------------------------------------------------- | -------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Input.Text      | [spec](https://adaptivecards.io/explorer/Input.Text.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based                                                                                                                                                            |
+| Input.Text      | [spec](https://adaptivecards.io/explorer/Input.Text.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based; `label` supported (v1.3+)                                                                                                                                 |
 | Input.Number    | [spec](https://adaptivecards.io/explorer/Input.Number.html)    | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Flutter Form-based                                                                                                                                                            |
 | Input.Date      | [spec](https://adaptivecards.io/explorer/Input.Date.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers; `initData` / `initInput` seeding fixed (yyyy-MM-dd)                                                                                               |
 | Input.Time      | [spec](https://adaptivecards.io/explorer/Input.Time.html)      | ✅ Complete    | ✅ Yes | [form-inputs.md](./form-inputs.md) | Material/Cupertino pickers                                                                                                                                                    |
@@ -74,6 +114,42 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 ---
 
+## Charts (`flutter_adaptive_charts_fs` package)
+
+Charts are implemented in a **separate opt-in package** ([optional-packages-and-extensions.md](./optional-packages-and-extensions.md)) so hosts that do not render charts avoid the **fl_chart** dependency. Host apps must merge `CardChartsRegistry.additionalChartElements` into `CardTypeRegistry.addedElements`. [adaptive_explorer](../adaptive_explorer/README.md) does not render chart types without this wiring; use [widgetbook](../widgetbook/) for chart samples.
+
+| Chart Type                    | Microsoft Spec                                                                                              | Implementation | Tests      | Notes                                                                                    |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------- | -------------- | ---------- | ---------------------------------------------------------------------------------------- |
+| `Chart.Line`                  | [Teams charts](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/charts-in-adaptive-cards) | ⚠️ Partial     | ⚠️ Limited | Data + axis rendering; `title` / axis titles via [ChartChrome](../packages/flutter_adaptive_charts_fs/lib/src/charts/chart_chrome.dart); datetime `x` values not handled |
+| `Chart.Pie`                   | Teams charts                                                                                                | ⚠️ Partial     | ⚠️ Limited | Slice rendering; `title` / `showLegend` via ChartChrome                                  |
+| `Chart.Donut`                 | Teams charts                                                                                                | ⚠️ Partial     | ⚠️ Limited | Same as Pie with hole radius + ChartChrome                                               |
+| `Chart.VerticalBar`           | Teams charts                                                                                                | ⚠️ Partial     | ⚠️ Limited | Bars + `title`, axis titles, `showBarValues`, `showLegend`, `colorSet`                   |
+| `Chart.HorizontalBar`         | Teams charts                                                                                                | ⚠️ Partial     | ⚠️ Limited | Same chrome as vertical bar                                                              |
+| `Chart.VerticalBar.Grouped`   | Teams charts                                                                                                | ⚠️ Partial     | ⚠️ Limited | Grouped and stacked (`stacked: true`) modes supported                                    |
+| `Chart.HorizontalBar.Stacked` | Teams charts                                                                                                | ⚠️ Partial     | ⚠️ Limited | Stacked horizontal bars                                                                  |
+| `Chart.Gauge`                 | Teams charts                                                                                                | ✅ Implemented | ✅ Yes     | `CustomPainter` semicircular gauge (`value`, `min`/`max`, `segments`, `valueFormat`, legend) |
+
+Microsoft does **not** define a separate `Chart.VerticalBar.Stacked` type; stacked vertical bars use `Chart.VerticalBar.Grouped` with `"stacked": true`.
+
+### Chart property gaps (all chart types)
+
+| Property / area        | Status | Notes                                                                                         |
+| ---------------------- | ------ | --------------------------------------------------------------------------------------------- |
+| `data`                 | ✅     | Parsed and rendered for implemented chart types                                               |
+| `color` (per point)    | ⚠️     | Hex + Teams semantic tokens (`good`, `categoricalBlue`, `divergingRed`, …) via [chart_colors_config.dart](../packages/flutter_adaptive_cards_fs/lib/src/hostconfig/chart_colors_config.dart) |
+| `colorSet`             | ✅     | Named palettes (`categorical`, `sequential`, `diverging`) on chart JSON + HostConfig `defaultPalette` fallback |
+| `title`                | ✅     | Rendered via ChartChrome on bar, line, pie, donut, and gauge                             |
+| `xAxisTitle` / `yAxisTitle` | ✅ | Bar and line charts (fl_chart axis titles)                                               |
+| `showBarValues`        | ✅     | Vertical and horizontal bar charts                                                       |
+| `showLegend`           | ✅     | Pie, donut, gauge segment legend; bar/line when enabled                                  |
+| `targetWidth`          | ❌     | Responsive layout not implemented                                                             |
+| `grid.area`            | ❌     | `Layout.AreaGrid` placement not implemented                                                   |
+| `height: stretch`      | ❌     | Block height modes not implemented on chart elements                                          |
+| HostConfig `chartColors` | ✅   | `defaultPalette` and `defaultColor`                                                           |
+| HostConfig `chartsLayout` | ✅  | Line, bar, pie, and donut layout chrome — see [charts layout plan](./superpowers/plans/2026-06-08-charts-layout-config.plan.md) |
+
+---
+
 ## HostConfig
 
 | Config Component       | Microsoft Spec                                                                          | Implementation | Tests  | Documentation                            | Notes              |
@@ -98,12 +174,14 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 | ShowCardConfig         | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
 | SpacingsConfig         | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
 | TextStylesConfig       | schema                                                                                  | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | -                  |
+| ChartColorsConfig      | schema (v1.6 / Teams)                                                                   | ✅ Complete    | ✅ Yes | [adaptive-style.md](./adaptive-style.md) | `chartColors` section for chart palettes |
+| ChartsLayoutConfig     | project extension                                                                       | ✅ Complete    | ✅ Yes | [charts layout plan](./superpowers/plans/2026-06-08-charts-layout-config.plan.md) | `chartsLayout` section for chart dimensions and chrome |
 
-**Total HostConfig Classes**: All HostConfig classes have been extracted to individual files (per `lib/src/hostconfig/`).
+**Total HostConfig Classes**: All HostConfig classes are in `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/`.
 
 ---
 
-## Templating (flutter_adaptive_template_fs package)
+## Templating (`flutter_adaptive_template_fs` package)
 
 | Feature              | Microsoft Spec                                                                                                           | Implementation | Tests  | Documentation                                                | Notes                                                                                           |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------- | ------ | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
@@ -127,66 +205,92 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 | `isVisible`           | All elements    | ✅ Complete    | [Implementing-IsVisible.md](./Implementing-IsVisible.md)                               | Visibility widget wrapper                                                                                                                                               |
 | `separator`           | Most elements   | ✅ Complete    | -                                                                                      | Visual separators                                                                                                                                                       |
 | `spacing`             | Most elements   | ✅ Complete    | -                                                                                      | Layout spacing                                                                                                                                                          |
-| `height`              | Elements        | ⚠️ Partial     | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | Known issues                                                                                                                                                            |
-| `style`               | Containers/Text | ✅ Complete    | [Style-Design.md](./Style-Design.md)                                                   | HostConfig-based                                                                                                                                                        |
-| `fallback` (elements) | All elements    | ✅ Complete    | -                                                                                      | Handled in `CardTypeRegistry`                                                                                                                                           |
+| `height`              | Block elements  | ⚠️ Partial     | [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md) | `auto` common; `stretch` not generally implemented                                                                                                                        |
+| `style`               | Containers/Text | ✅ Complete    | [adaptive-style.md](./adaptive-style.md)                                               | HostConfig-based                                                                                                                                                        |
+| `fallback` (elements) | All elements    | ✅ Complete    | -                                                                                      | Handled in `CardTypeRegistry` (`drop` or recursive substitute)                                                                                                        |
 | `fallback` (actions)  | All actions     | ❌ Missing     | -                                                                                      | `_getActionWidget` ends in `assert(false)`; no fallback check                                                                                                           |
-| `requires`            | All elements    | ❌ Missing     | -                                                                                      | Version requirement validation not implemented                                                                                                                          |
-| `selectAction`        | Some elements   | ✅ Complete    | -                                                                                      | Confirmed on Container, Column, ColumnSet, Image, and TableCell.                                                                                                        |
+| `requires`            | All elements    | ❌ Missing     | -                                                                                      | Capability gating not implemented; elements always render                                                                                                             |
+| `selectAction`        | Some elements   | ✅ Complete    | -                                                                                      | Container, Column, ColumnSet, Image, TableCell                                                                                                                          |
 | `backgroundImage`     | Card/Container  | ✅ Complete    | [backgroundImage.md](./backgroundImage.md)                                             | Parsed via mixin for Container, Column, ColumnSet, TableCell; fully tested (both string and object forms), including empty aspect-ratio sizing and `minHeight` support. |
+| `bleed`               | Containers      | ❌ Missing     | -                                                                                      | Not implemented on Container, Column, or TableCell                                                                                                                      |
+| `rtl`                 | Elements        | ⚠️ Partial     | -                                                                                      | Parsed on `TableCell` model only; not applied in rendering                                                                                                              |
+| `targetWidth`         | Elements (v1.6) | ❌ Missing     | -                                                                                      | Responsive layout — [hub docs](https://adaptivecards.microsoft.com/)                                                                                                    |
+| `grid.area`           | Elements (v1.6) | ❌ Missing     | -                                                                                      | `Layout.AreaGrid` placement not implemented                                                                                                                             |
 
 ---
 
 ## Known Gaps
 
-The following spec compliance gaps are known across the codebase:
+Cross-cutting gaps that affect many card types:
 
-- **`requires`**: Version requirement validation is not implemented.
-- **Action Fallback**: `_getActionWidget` ends in `assert(false)` with no fallback check.
-- **Version Gating**: Missing support to skip rendering elements with a higher version requirement.
-- **`RichTextBlock` & `TextRun`**: Missing elements required since AC spec v1.2.
+| Area | Gap | Impact |
+| ---- | --- | ------ |
+| **RichTextBlock / TextRun** | Only standard body element types with no implementation | High — inline formatting cards fail or show `AdaptiveUnknown` |
+| **Responsive layout** | `targetWidth`, `Layout.AreaGrid`, `grid.area` | High — modern Teams/Copilot width-adaptive cards |
+| **`requires` + version gating** | No capability checks; `fallbackText` unused | Medium–high — mixed-schema production hosts |
+| **Action `fallback`** | Unknown actions assert instead of degrading | Medium — action fallback lists in Teams chart docs |
+| **Icon** | Partial Fluent name map (~50 icons) | Low–medium — uncommon hub icon names fall back to `help_outline` |
+| **Table completeness** | `auto`/`stretch` widths, cell `rtl`, `bleed` | Medium — complex table scenarios |
+| **TextBlock text features** | Markdown subset; `maxLines` vs markdown conflict | Medium — text-heavy cards |
+| **Chart.Gauge** | ✅ Implemented (`CustomPainter`) | — |
+| **Chart chrome** | ✅ Implemented (`ChartChrome`) | — |
+| **Chart `colorSet`** | ✅ Named semantic palettes | — |
+| **AdaptiveCard root** | `refresh`, `authentication`, `rtl`, `selectAction`, `minHeight` | Medium — Bot/Teams integration |
+| **CaptionSource** | Not implemented | Low — media captions |
+| **`bleed`** | Not implemented on containers | Low–medium — full-bleed layouts |
+| **Block `height: stretch`** | Not generally implemented | Medium — fixed-height card layouts |
 
 ---
 
 ## Custom/Extended Elements
 
-These are implemented but not part of the standard Microsoft specification.
-All are registered in `CardTypeRegistry` (`lib/src/registry.dart`).
+These are implemented but not part of the standard Microsoft schema explorer element list (or are hub extensions beyond the legacy explorer).
+Registered in `CardTypeRegistry` (`lib/src/registry.dart`) unless noted.
 
 | Element           | JSON Type String   | Implementation | Tests      | Documentation | Notes                                              |
 | ----------------- | ------------------ | -------------- | ---------- | ------------- | -------------------------------------------------- |
-| Badge             | `Badge`            | ✅ Complete    | ⚠️ Limited | -             | Custom element; has HostConfig `BadgeStylesConfig` |
-| Carousel          | `Carousel`         | ✅ Complete    | ⚠️ Limited | -             | Custom element; child pages use `CarouselPage`     |
+| Badge             | `Badge`            | ✅ Complete    | ⚠️ Limited | -             | Hub extension; HostConfig `BadgeStylesConfig`        |
+| Carousel          | `Carousel`         | ✅ Complete    | ⚠️ Limited | -             | Hub extension; child pages use `CarouselPage`      |
 | CarouselPage      | `CarouselPage`     | ✅ Complete    | ⚠️ Limited | -             | Child element of `Carousel`                        |
 | Accordion         | `Accordion`        | ✅ Complete    | ⚠️ Limited | -             | Custom collapsible element                         |
 | ProgressBar       | `ProgressBar`      | ✅ Complete    | ⚠️ Limited | -             | Custom element                                     |
 | ProgressRing      | `ProgressRing`     | ✅ Complete    | ⚠️ Limited | -             | Custom element                                     |
-| Rating            | `Rating`           | ✅ Complete    | ⚠️ Limited | -             | Custom element; also registered as `Input.Rating`  |
-| CodeBlock         | `CodeBlock`        | ✅ Complete    | ⚠️ Limited | -             | Custom code display element                        |
-| CompoundButton    | `CompoundButton`   | ✅ Complete    | ⚠️ Limited | -             | Custom button with icon + text                     |
+| Rating            | `Rating`           | ✅ Complete    | ⚠️ Limited | -             | Hub extension; also registered as `Input.Rating`   |
+| CodeBlock         | `CodeBlock`        | ✅ Complete    | ⚠️ Limited | -             | Hub / Teams extension                              |
+| CompoundButton    | `CompoundButton`   | ✅ Complete    | ⚠️ Limited | -             | Hub / Teams extension                              |
 | TabSet            | `TabSet`           | ✅ Complete    | ⚠️ Limited | -             | Custom tab container                               |
-| Charts (multiple) | _(via Charts pkg)_ | ✅ Complete    | ⚠️ Limited | -             | Custom elements in `flutter_adaptive_charts_fs`    |
+| Charts (multiple) | `Chart.*`          | ⚠️ Partial     | ⚠️ Limited | [charts README](../packages/flutter_adaptive_charts_fs/README.md) | Separate package; see [Charts](#charts-flutter_adaptive_charts_fs-package) section |
 
 ---
 
 ## Priority Recommendations
 
-### High Priority
+### High priority — standard cards
 
-1. **Fix ColumnSet Height Bug**: Verify and fix inconsistent Column heights ([doc](./Column-ColumnSet-Fill-Vertical-Height.md))
+1. **`RichTextBlock` + `TextRun`**: Only fully missing standard body elements; design doc first, then implement.
+2. **Responsive layout**: `targetWidth` and `Layout.AreaGrid` / `grid.area` per [documentation hub](https://adaptivecards.microsoft.com/).
+3. **`requires` + action `fallback` + version gating**: Graceful degradation for mixed-schema hosts.
 
-### Medium Priority
+### High priority — charts
 
-1. **Complete Table Implementation**: Add column sizing, grid styles, etc.
+1. **Chart datetime axes**: Parse ISO datetime `x` values on line charts.
 
-### Low Priority
+### Medium priority
 
-1. **Media Poster Fix**: Resolve poster attribute display issue
-2. **Test Coverage**: Expand test coverage for partial implementations
-3. **Documentation**: Add implementation links to all doc files
-4. **Add RichTextBlock & TextRun**: Design docs first, then implement
-5. **Implement `fallback` for Actions**: `_getActionWidget` currently ends in `assert(false)` with no fallback processing
-6. **Implement `requires` property validation**: Skip elements that declare version requirements the renderer cannot meet
+1. **Complete `Table`**: `auto`/`stretch` column widths, cell `rtl` rendering, `bleed`.
+2. **`Icon` element**: Expand Fluent name catalog beyond ~50 built-in mappings.
+3. **Block `height: stretch`**: Apply across containers and chart elements.
+4. **AdaptiveCard root features**: `rtl`, `fallbackText`, `selectAction`, `minHeight`.
+5. **Media poster fix**: Resolve poster attribute display issue.
+6. **TextBlock**: Improve markdown subset or defer to `RichTextBlock` for inline styles.
+
+### Low priority
+
+1. **Test coverage**: Expand tests for partial implementations (charts, Media, Table).
+2. **Documentation**: Add `Custom-Extensions.md` index (see [docs/README.md](./README.md#missingrecommended-documentation)).
+3. **`CaptionSource`**: Media caption support.
+4. **`bleed`**: Container full-bleed layouts.
+5. **Adaptive Expressions**: Date/Time and advanced collection functions in templating.
 
 ---
 
@@ -205,22 +309,43 @@ ls -1 packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/*.dart | wc -l
 # Count input tests
 ls -1 packages/flutter_adaptive_cards_fs/test/inputs/*_test.dart | wc -l
 
-# Run non-golden tests
+# Run non-golden tests (main library)
 cd packages/flutter_adaptive_cards_fs
-flutter test --exclude-tags=golden
+fvm flutter test --exclude-tags=golden
+
+# Run non-golden tests (charts package)
+cd packages/flutter_adaptive_charts_fs
+fvm flutter test --exclude-tags=golden
 
 # Note: Golden tests are platform-specific and stored in subdirectories (e.g., gold_files/linux/)
 ```
 
 ---
 
-### Recently completed (style pipeline, 2026-06-06)
+## Recently completed
+
+### Style pipeline (2026-06-06)
 
 - **Container style inheritance** via `ChildStyler` — see [Style inheritance data flow](adaptive-style.md#style-inheritance-data-flow).
 - **`TextBlockStyle`** / **`TextStylesConfig`** wired through `resolveTextBlockStyle()`.
 - **`ImageStyle`** — `person` vs `default` via `resolveImageIsPerson()`.
 - **Horizontal alignment inheritance** from parent containers.
 - **`AdaptiveCardBrightnessMode`** host override; auto mode follows `Theme.of(context).brightness`.
+
+### Charts HostConfig (2026-06-08)
+
+- **`ChartsLayoutConfig`** (`chartsLayout`) — line, bar, pie, and donut layout chrome via `ReferenceResolver`.
+- Plan: [2026-06-08-charts-layout-config.plan.md](./superpowers/plans/2026-06-08-charts-layout-config.plan.md).
+
+### ColumnSet height (fixed before 2026-02-13)
+
+- **`IntrinsicHeight`** + **`CrossAxisAlignment.stretch`** — see [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md).
+
+### Public API documentation (2026-06-08)
+
+- **`public_member_api_docs`** — `///` documentation added for all public members in `flutter_adaptive_cards_fs` and `flutter_adaptive_charts_fs`.
+
+---
 
 _Last Updated: 2026-06-08_
 _Based on v1.6.0 of Microsoft Adaptive Cards specification_
