@@ -74,6 +74,18 @@ class AdaptiveCardBackendHandlers {
           onCardReplaced: onCardReplaced,
         ),
       ),
+      onRefresh: (invoke) => unawaited(
+        _handle(
+          AdaptiveCardInvokeRequest.fromExecute(
+            ExecuteActionInvoke(
+              data: invoke.data,
+              verb: invoke.verb,
+              actionId: invoke.actionId,
+            ),
+          ),
+          onCardReplaced: onCardReplaced,
+        ),
+      ),
       onChange: (invoke) => unawaited(
         _handle(
           AdaptiveCardInvokeRequest.fromInputChange(invoke),

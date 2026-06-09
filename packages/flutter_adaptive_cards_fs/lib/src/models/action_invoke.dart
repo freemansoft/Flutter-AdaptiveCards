@@ -45,6 +45,40 @@ class SubmitActionInvoke {
   final String? actionId;
 }
 
+/// Payload delivered to the host `onRefresh` callback.
+///
+/// Wraps the nested `refresh.action` map plus merged input values. When no
+/// `onRefresh` handler is installed, the library falls back to `onExecute`.
+class RefreshActionInvoke {
+  /// Creates a refresh callback payload with merged [data], [verb], and [actionId].
+  const RefreshActionInvoke({
+    required this.data,
+    this.verb,
+    this.actionId,
+  });
+
+  /// Builds from `refresh.action` JSON and collected input [data].
+  factory RefreshActionInvoke.fromActionMap(
+    Map<String, dynamic> actionMap,
+    Map<String, dynamic> data,
+  ) {
+    return RefreshActionInvoke(
+      data: data,
+      verb: actionMap['verb']?.toString(),
+      actionId: actionIdFromMap(actionMap),
+    );
+  }
+
+  /// Merged action `data` and collected input values (inputs win on key collision).
+  final Map<String, dynamic> data;
+
+  /// Verb from the nested `Action.Execute` map.
+  final String? verb;
+
+  /// Author-defined action `id` from the nested action JSON, when present.
+  final String? actionId;
+}
+
 /// Payload delivered to the host `onExecute` callback.
 ///
 /// Contains merged action `data` and input values in `data`, plus optional

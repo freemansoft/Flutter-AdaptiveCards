@@ -1,0 +1,34 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "refresh": {
+    "action": {
+      "type": "Action.Execute",
+      "verb": "refreshCard",
+      "data": {
+        "scenario": "widgetbook-refresh-demo"
+      }
+    },
+    "userIds": ["demo-user"],
+    "expires": "2099-01-01T00:00:00Z"
+  },
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Card refresh demo",
+      "weight": "Bolder",
+      "size": "Large"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Tap the refresh icon (top right) to fire onRefresh. The host should fetch updated card JSON.",
+      "wrap": true
+    },
+    {
+      "type": "Input.Text",
+      "id": "note",
+      "label": "Note",
+      "placeholder": "Included in refresh payload"
+    }
+  ]
+}

@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+- **AdaptiveCard → Refresh** use case: **[`RefreshDemoPage`](lib/refresh_demo_page.dart)** with sample **`lib/samples/v1.4/refresh_demo.json`** — manual refresh affordance logs **`onRefresh`** to a SnackBar.
+- **`pubspec.yaml` assets:** registered **`lib/samples/v1.4/`** (required for `AdaptiveCardsCanvas.asset` to load new sample directories).
+
 ## [0.10.0]
 
 - Removed unused **`cupertino_icons`** and **`path`** dependencies from `pubspec.yaml`.

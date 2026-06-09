@@ -169,6 +169,8 @@ flutter_adaptive_charts_fs   ──► flutter_adaptive_cards_fs
 - **Not published**
 - Uses [widgetbook.io](https://widgetbook.io) to catalog all card element types.
 - Use cases defined in `lib/adaptive_cards_use_cases.dart`.
+- Sample JSON lives under `lib/samples/`; **`AdaptiveCardsCanvas.asset`** loads paths from the Flutter asset bundle.
+- **New sample directories:** add a line under `flutter: assets:` in `widgetbook/pubspec.yaml` for every **new** folder under `lib/samples/` (for example `lib/samples/v1.4/`). Without this registration, asset loads fail at runtime even when the JSON file exists on disk.
 - Generated file: `lib/main.directories.g.dart` — re-generate with:
   ```bash
   cd widgetbook

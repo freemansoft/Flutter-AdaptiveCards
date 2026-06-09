@@ -95,6 +95,7 @@ flutter:
     - lib/samples/media/
     - lib/samples/table/
     - lib/samples/charts/
+    - lib/samples/v1.4/
     - lib/samples/v1.5/
     - lib/samples/v1.6/
     - lib/samples/pnp_templates/

@@ -11,7 +11,13 @@ fvm flutter run
 
 ## Adding a new category or directory of json samples
 
-Remember to add any new directory in lib/samples to the asset list in `pubspec.yaml`
+When you add JSON under a **new** folder in `lib/samples/` (for example `lib/samples/v1.4/`):
+
+1. **Register the directory** in [`pubspec.yaml`](pubspec.yaml) under `flutter: assets:` — Flutter only bundles declared asset paths; `AdaptiveCardsCanvas.asset` will fail at runtime if the folder is missing from this list.
+2. Add a `@widgetbook.UseCase` in [`lib/adaptive_cards_use_cases.dart`](lib/adaptive_cards_use_cases.dart) (or a dedicated overlay page when host callbacks are required).
+3. Regenerate Widgetbook directories and restart the app (see below).
+
+Existing sample roots already listed in `pubspec.yaml` include `lib/samples/charts/`, `lib/samples/v1.4/`, `lib/samples/v1.5/`, `lib/samples/v1.6/`, and per-element folders such as `lib/samples/text_block/`.
 
 ## Interactive host demos (not JSON-only)
 
@@ -22,6 +28,7 @@ Some use cases wire host callbacks so behavior is visible beyond static card JSO
 | **TextBlock** → Text overlay (knob) | `lib/text_block_overlay_page.dart` | Knob drives `setText` on a `TextBlock` |
 | **Input.ChoiceSet** → Value changed action (host cascade) | `lib/dependent_choice_set_demo_page.dart` | Country `valueChangedAction` resets city; shared `onChange` repopulates city choices (`value_changed_action_filtered.json`). Filtered country picker searches/displays **titles**; submit uses **values**. |
 | **Input.ChoiceSet** → Value changed action (Teams Data.Query) | same page, different JSON | Same handler; city uses `choices.data` / filtered style (`value_changed_action_dependent_query.json`). Filtered city list/search uses **titles**; values submitted on pick. |
+| **AdaptiveCard** → Refresh | `lib/refresh_demo_page.dart` | Manual refresh affordance; **`onRefresh`** SnackBar (`lib/samples/v1.4/refresh_demo.json`) |
 
 Both dependent ChoiceSet use cases share **`handleDependentChoiceSetChange`**: the country branch runs for both; the city / `Data.Query` branch runs only when the card defines `choices.data`. See [Dependent ChoiceSet (country → city)](../docs/form-inputs.md#dependent-choiceset-country--city).
 

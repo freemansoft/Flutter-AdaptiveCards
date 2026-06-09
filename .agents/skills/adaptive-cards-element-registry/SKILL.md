@@ -390,3 +390,5 @@ If the element reads runtime state via `resolvedElementProvider` (visibility, in
    cd packages/flutter_adaptive_cards_fs
    fvm flutter test
    ```
+
+5. **Optional Widgetbook demo:** add JSON under `widgetbook/lib/samples/`, register **new directories** in [`widgetbook/pubspec.yaml`](../../../widgetbook/pubspec.yaml) (`flutter: assets:`), add a `@widgetbook.UseCase`, and run `fvm dart run build_runner build` in `widgetbook/`. See [`widgetbook/README.md`](../../../widgetbook/README.md).
