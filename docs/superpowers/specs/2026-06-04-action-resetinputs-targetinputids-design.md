@@ -10,12 +10,12 @@ Implement **`targetInputIds`** on `Action.ResetInputs` so reset can target speci
 
 ## Problem
 
-| Gap | Today |
-| --- | --- |
-| `targetInputIds` | Ignored — `DefaultResetInputsAction` always calls `resetAllInputs()` |
-| `valueChangedAction` | Not implemented — noted in `Implementation-Status.md` only |
-| Tests / samples | Full-card reset only; no targeted reset or `valueChangedAction` coverage |
-| Docs | Reset docs describe `resetAllInputs()` / `resetInput(id)` but not action-level targeting |
+| Gap                  | Today                                                                                    |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| `targetInputIds`     | Ignored — `DefaultResetInputsAction` always calls `resetAllInputs()`                     |
+| `valueChangedAction` | Not implemented — noted in `Implementation-Status.md` only                               |
+| Tests / samples      | Full-card reset only; no targeted reset or `valueChangedAction` coverage                 |
+| Docs                 | Reset docs describe `resetAllInputs()` / `resetInput(id)` but not action-level targeting |
 
 Per-input factory reset already exists on `AdaptiveCardDocumentNotifier.resetInput(id)`. This work connects action JSON and input change events to that machinery.
 
@@ -28,11 +28,11 @@ Per-input factory reset already exists on `AdaptiveCardDocumentNotifier.resetInp
 
 ## `targetInputIds` semantics
 
-| `targetInputIds` on the action map | Behavior |
-| --- | --- |
-| **Omitted or null** | `resetAllInputs()` — reset every `Input.*` id (current default) |
-| **Non-empty array of strings** | Factory-reset **only** the listed input ids |
-| **Empty array `[]`** | Reset **nothing** (explicit empty target set) |
+| `targetInputIds` on the action map | Behavior                                                        |
+| ---------------------------------- | --------------------------------------------------------------- |
+| **Omitted or null**                | `resetAllInputs()` — reset every `Input.*` id (current default) |
+| **Non-empty array of strings**     | Factory-reset **only** the listed input ids                     |
+| **Empty array `[]`**               | Reset **nothing** (explicit empty target set)                   |
 
 For each id in a non-empty list:
 
@@ -105,10 +105,10 @@ If `type` is not `Action.ResetInputs`, ignore (no-op). Other action types in `va
 
 ### When the action runs
 
-| Input type | Fire when |
-| --- | --- |
-| `Input.ChoiceSet`, `Input.Date`, `Input.Time`, `Input.Toggle` | Immediately after user changes the stored value |
-| `Input.Text`, `Input.Number` | On **committed** change: focus loss or editing complete — **not** each keystroke |
+| Input type                                                    | Fire when                                                                        |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `Input.ChoiceSet`, `Input.Date`, `Input.Time`, `Input.Toggle` | Immediately after user changes the stored value                                  |
+| `Input.Text`, `Input.Number`                                  | On **committed** change: focus loss or editing complete — **not** each keystroke |
 
 ### When the action must NOT run
 
@@ -197,14 +197,14 @@ See [form-inputs.md § Dependent ChoiceSet](../../form-inputs.md#dependent-choic
 
 ## Documentation updates
 
-| Document | Updates |
-| --- | --- |
-| [`docs/form-inputs.md`](../../form-inputs.md) | `targetInputIds`, `valueChangedAction`, committed-change rules for Text/Number; filtered ChoiceSet title search / value submit |
-| [`docs/reactive-riverpod.md`](../../reactive-riverpod.md) | `resetInputs(ids)` API; extend call-paths table; link this spec |
-| [`docs/actions-architecture.md`](../../actions-architecture.md) | `Action.ResetInputs` section: `targetInputIds`, executor, Teams extension note |
-| [`docs/Implementation-Status.md`](../../Implementation-Status.md) | `Action.ResetInputs` tests ✅; `valueChangedAction` ✅ |
-| [`2026-06-03-overlay-reset-semantics-design.md`](2026-06-03-overlay-reset-semantics-design.md) | Short cross-link to targeted reset / `valueChangedAction` |
-| [`packages/flutter_adaptive_cards_fs/CHANGELOG.md`](../../../packages/flutter_adaptive_cards_fs/CHANGELOG.md) | Feature entry under `[0.8.0]` Added (updated with spec) |
+| Document                                                                                                      | Updates                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| [`docs/form-inputs.md`](../../form-inputs.md)                                                                 | `targetInputIds`, `valueChangedAction`, committed-change rules for Text/Number; filtered ChoiceSet title search / value submit |
+| [`docs/reactive-riverpod.md`](../../reactive-riverpod.md)                                                     | `resetInputs(ids)` API; extend call-paths table; link this spec                                                                |
+| [`docs/actions-architecture.md`](../../actions-architecture.md)                                               | `Action.ResetInputs` section: `targetInputIds`, executor, Teams extension note                                                 |
+| [`docs/Implementation-Status.md`](../../Implementation-Status.md)                                             | `Action.ResetInputs` tests ✅; `valueChangedAction` ✅                                                                         |
+| [`2026-06-03-overlay-reset-semantics-design.md`](2026-06-03-overlay-reset-semantics-design.md)                | Short cross-link to targeted reset / `valueChangedAction`                                                                      |
+| [`packages/flutter_adaptive_cards_fs/CHANGELOG.md`](../../../packages/flutter_adaptive_cards_fs/CHANGELOG.md) | Feature entry under `[0.8.0]` Added (updated with spec)                                                                        |
 
 ## Out of scope
 

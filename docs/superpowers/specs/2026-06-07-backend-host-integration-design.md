@@ -1,7 +1,7 @@
 # Backend Host Integration Design
 
-**Date:** 2026-06-07  
-**Status:** Implemented (Phase 1 + Phase 2 on `feat/associated-inputs-phase1`)  
+**Date:** 2026-06-07
+**Status:** Implemented (Phase 1 + Phase 2 on `feat/associated-inputs-phase1`)
 **Implementation plan:** [`docs/superpowers/plans/2026-06-07-backend-host-integration.plan.md`](../plans/2026-06-07-backend-host-integration.plan.md)
 
 ## Problem
@@ -58,34 +58,34 @@ Phase 2 depends on Phase 1 but Phase 1 ships standalone value.
 
 ### Data.Query (`choices.data`)
 
-| Rule | Behavior |
-|------|----------|
-| Parse | `"auto"` \| `"none"` on `choices.data`; default **`"auto"`** when omitted |
-| Trigger | `Input.ChoiceSet` selection calls `changeValue` with a `DataQuery` |
-| Merge | When `associatedInputs != "none"`, merge all other input ids from `collectInputValues()` into `DataQuery.parameters` (input id → value) |
-| Exclude | Firing input id is never copied into `parameters` |
-| Author params | JSON `parameters` are preserved; sibling values overwrite on key collision |
+| Rule          | Behavior                                                                                                                                |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Parse         | `"auto"` \| `"none"` on `choices.data`; default **`"auto"`** when omitted                                                               |
+| Trigger       | `Input.ChoiceSet` selection calls `changeValue` with a `DataQuery`                                                                      |
+| Merge         | When `associatedInputs != "none"`, merge all other input ids from `collectInputValues()` into `DataQuery.parameters` (input id → value) |
+| Exclude       | Firing input id is never copied into `parameters`                                                                                       |
+| Author params | JSON `parameters` are preserved; sibling values overwrite on key collision                                                              |
 
 `InputChangeInvoke.dataQuery` becomes backend-ready without host-side sibling tracking.
 
 ### Action.Submit / Action.Execute
 
-| `associatedInputs` | Behavior |
-|--------------------|----------|
+| `associatedInputs`  | Behavior                                                                                     |
+| ------------------- | -------------------------------------------------------------------------------------------- |
 | omitted or `"auto"` | Merge all card input values into action `data` (inputs win on key collision — existing rule) |
-| `"none"` | Only action JSON `data`; no `collectInputValues()` merge |
+| `"none"`            | Only action JSON `data`; no `collectInputValues()` merge                                     |
 
 **MVP limitation:** Card-wide collection for `auto`. Container-scoped `auto` (Teams nested containers) is a documented follow-up.
 
 ### Files (Phase 1)
 
-| File | Change |
-|------|--------|
-| `lib/src/models/data_query.dart` | `associatedInputs` field; `withMergedSiblingInputs` |
-| `lib/src/utils/associated_inputs.dart` | **New** — shared merge helpers |
-| `lib/src/cards/inputs/choice_set.dart` | Enrich `dataQuery` before `changeValue` |
-| `lib/src/action/default_actions.dart` | Honor `associatedInputs` on Submit/Execute |
-| Tests + Widgetbook handler + docs | Close Known Gaps |
+| File                                   | Change                                              |
+| -------------------------------------- | --------------------------------------------------- |
+| `lib/src/models/data_query.dart`       | `associatedInputs` field; `withMergedSiblingInputs` |
+| `lib/src/utils/associated_inputs.dart` | **New** — shared merge helpers                      |
+| `lib/src/cards/inputs/choice_set.dart` | Enrich `dataQuery` before `changeValue`             |
+| `lib/src/action/default_actions.dart`  | Honor `associatedInputs` on Submit/Execute          |
+| Tests + Widgetbook handler + docs      | Close Known Gaps                                    |
 
 ---
 
@@ -127,10 +127,10 @@ class AdaptiveCardInvokeRequest {
 
 ### Invoke adapters
 
-| Adapter | Role |
-|---------|------|
-| `PlainJsonInvokeAdapter` | Default flat map for custom flow-services |
-| `TeamsInvokeAdapter` | Bot Framework–shaped Execute / input invoke maps |
+| Adapter                  | Role                                             |
+| ------------------------ | ------------------------------------------------ |
+| `PlainJsonInvokeAdapter` | Default flat map for custom flow-services        |
+| `TeamsInvokeAdapter`     | Bot Framework–shaped Execute / input invoke maps |
 
 Adapters are pure `toMap` / `fromMap`; no network.
 
@@ -208,22 +208,22 @@ Hosts may pass `onError` for network/parse failures. Individual callbacks can be
 
 ### Error handling
 
-| Case | Behavior |
-|------|----------|
-| Network failure | `onError`; card unchanged |
-| Malformed response | `AdaptiveCardInvokeResponseParseException`; `onError` |
-| Unknown effect `type` | Skip in release; log in debug |
-| `ReplaceCard` without `onCardReplaced` | `StateError` in `applyTo` |
+| Case                                   | Behavior                                              |
+| -------------------------------------- | ----------------------------------------------------- |
+| Network failure                        | `onError`; card unchanged                             |
+| Malformed response                     | `AdaptiveCardInvokeResponseParseException`; `onError` |
+| Unknown effect `type`                  | Skip in release; log in debug                         |
+| `ReplaceCard` without `onCardReplaced` | `StateError` in `applyTo`                             |
 
 ---
 
 ## Testing
 
-| Layer | Coverage |
-|-------|----------|
-| Phase 1 | `associated_inputs_test`, extend `choice_set_data_query_test`, `execute_verb_test`, `dependent_choice_set_test` |
-| Phase 2 | Request factories, adapter round-trip, response parser, `applyTo` widget tests with mock client |
-| Integration | Widgetbook Option 2 + mock `HttpAdaptiveCardBackendClient` |
+| Layer       | Coverage                                                                                                        |
+| ----------- | --------------------------------------------------------------------------------------------------------------- |
+| Phase 1     | `associated_inputs_test`, extend `choice_set_data_query_test`, `execute_verb_test`, `dependent_choice_set_test` |
+| Phase 2     | Request factories, adapter round-trip, response parser, `applyTo` widget tests with mock client                 |
+| Integration | Widgetbook Option 2 + mock `HttpAdaptiveCardBackendClient`                                                      |
 
 Verification (full suite): repo `fvm flutter analyze`; `packages/flutter_adaptive_cards_fs` and `packages/flutter_adaptive_cards_host_fs` test with `--exclude-tags=golden`.
 

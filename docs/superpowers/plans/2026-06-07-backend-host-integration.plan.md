@@ -16,12 +16,12 @@
 
 ## Implementation summary
 
-| Phase | Tasks | Result |
-| --- | --- | --- |
-| Phase 1 — renderer `associatedInputs` | 1–6 | Done |
-| Phase 2 — `flutter_adaptive_cards_host_fs` | 7–14 | Done |
-| Full verification | Final | `fvm flutter analyze` clean; 373 + 15 tests pass |
-| Public API docs (host package) | — | `///` on all exported members; `public_member_api_docs` clean |
+| Phase                                      | Tasks | Result                                                        |
+| ------------------------------------------ | ----- | ------------------------------------------------------------- |
+| Phase 1 — renderer `associatedInputs`      | 1–6   | Done                                                          |
+| Phase 2 — `flutter_adaptive_cards_host_fs` | 7–14  | Done                                                          |
+| Full verification                          | Final | `fvm flutter analyze` clean; 373 + 15 tests pass              |
+| Public API docs (host package)             | —     | `///` on all exported members; `public_member_api_docs` clean |
 
 ### Verification evidence (2026-06-07)
 
@@ -33,17 +33,17 @@ packages/flutter_adaptive_cards_host_fs tests → 15 passed
 
 ### Deviations from original plan
 
-| Item | Plan | As built |
-| --- | --- | --- |
-| Host package version | 0.1.0 | **0.10.0** (`publish_to: none`) |
-| `associated_inputs.dart` export | optional | **internal** (not exported from `flutter_adaptive_cards_fs`) |
-| Core public exports | — | **`RawAdaptiveCard`**, **`RawAdaptiveCardState`**, **`DataQuery`** added to `flutter_adaptive_cards_fs.dart` |
-| Phase 1 tests | — | **`test/models/data_query_test.dart`** added |
-| Phase 2 adapters | — | **`element_update_json.dart`** (internal patch parser) |
-| Phase 2 tests | handler test only | **`test/client/http_backend_client_test.dart`** added |
-| ChoiceSet widget test | compact city | **`style: expanded`** on city field so tap target exists |
-| Widgetbook | — | Removed redundant `src/flutter_raw_adaptive_card` imports after core export |
-| Per-task git commits | planned | **skipped** (single uncommitted branch) |
+| Item                            | Plan              | As built                                                                                                     |
+| ------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------ |
+| Host package version            | 0.1.0             | **0.10.0** (`publish_to: none`)                                                                              |
+| `associated_inputs.dart` export | optional          | **internal** (not exported from `flutter_adaptive_cards_fs`)                                                 |
+| Core public exports             | —                 | **`RawAdaptiveCard`**, **`RawAdaptiveCardState`**, **`DataQuery`** added to `flutter_adaptive_cards_fs.dart` |
+| Phase 1 tests                   | —                 | **`test/models/data_query_test.dart`** added                                                                 |
+| Phase 2 adapters                | —                 | **`element_update_json.dart`** (internal patch parser)                                                       |
+| Phase 2 tests                   | handler test only | **`test/client/http_backend_client_test.dart`** added                                                        |
+| ChoiceSet widget test           | compact city      | **`style: expanded`** on city field so tap target exists                                                     |
+| Widgetbook                      | —                 | Removed redundant `src/flutter_raw_adaptive_card` imports after core export                                  |
+| Per-task git commits            | planned           | **skipped** (single uncommitted branch)                                                                      |
 
 ### Follow-up (not in plan)
 
@@ -57,54 +57,54 @@ packages/flutter_adaptive_cards_host_fs tests → 15 passed
 
 ### Phase 1 — `flutter_adaptive_cards_fs`
 
-| File | Role |
-| --- | --- |
-| `lib/src/utils/associated_inputs.dart` | **Create** — merge helpers |
-| `lib/src/models/data_query.dart` | `associatedInputs` + `withMergedSiblingInputs` |
-| `lib/src/cards/inputs/choice_set.dart` | Enrich `dataQuery` before `changeValue` |
-| `lib/src/action/default_actions.dart` | Honor Submit/Execute `associatedInputs` |
-| `lib/flutter_adaptive_cards_fs.dart` | Export **`RawAdaptiveCard`**, **`RawAdaptiveCardState`**, **`DataQuery`** (helpers stay internal) |
-| `test/utils/associated_inputs_test.dart` | **Create** — unit tests |
-| `test/models/data_query_test.dart` | **Create** — `associatedInputs` + `withMergedSiblingInputs` |
-| `test/inputs/choice_set_data_query_test.dart` | associatedInputs merge widget test |
-| `test/inputs/dependent_choice_set_test.dart` | city branch uses `parameters['country']` |
-| `test/actions/submit_action_invoke_test.dart` | `associatedInputs: none` test |
-| `test/actions/execute_verb_test.dart` | `associatedInputs: none` test |
-| `test/utils/dependent_choice_set_handler.dart` | Phase 2 city branch uses `dataQuery.parameters` |
-| `widgetbook/lib/dependent_choice_set_demo_page.dart` | Simplify Option 2 handler |
-| `docs/form-inputs.md` | Close gap paragraphs |
-| `docs/Implementation-Status.md` | Remove Known Gaps entries |
-| `docs/reactive-riverpod.md` | associatedInputs note |
-| `docs/actions-architecture.md` | Submit/Execute associatedInputs |
-| `packages/flutter_adaptive_cards_fs/CHANGELOG.md` | `[Unreleased]` associatedInputs + exports |
+| File                                                 | Role                                                                                              |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `lib/src/utils/associated_inputs.dart`               | **Create** — merge helpers                                                                        |
+| `lib/src/models/data_query.dart`                     | `associatedInputs` + `withMergedSiblingInputs`                                                    |
+| `lib/src/cards/inputs/choice_set.dart`               | Enrich `dataQuery` before `changeValue`                                                           |
+| `lib/src/action/default_actions.dart`                | Honor Submit/Execute `associatedInputs`                                                           |
+| `lib/flutter_adaptive_cards_fs.dart`                 | Export **`RawAdaptiveCard`**, **`RawAdaptiveCardState`**, **`DataQuery`** (helpers stay internal) |
+| `test/utils/associated_inputs_test.dart`             | **Create** — unit tests                                                                           |
+| `test/models/data_query_test.dart`                   | **Create** — `associatedInputs` + `withMergedSiblingInputs`                                       |
+| `test/inputs/choice_set_data_query_test.dart`        | associatedInputs merge widget test                                                                |
+| `test/inputs/dependent_choice_set_test.dart`         | city branch uses `parameters['country']`                                                          |
+| `test/actions/submit_action_invoke_test.dart`        | `associatedInputs: none` test                                                                     |
+| `test/actions/execute_verb_test.dart`                | `associatedInputs: none` test                                                                     |
+| `test/utils/dependent_choice_set_handler.dart`       | Phase 2 city branch uses `dataQuery.parameters`                                                   |
+| `widgetbook/lib/dependent_choice_set_demo_page.dart` | Simplify Option 2 handler                                                                         |
+| `docs/form-inputs.md`                                | Close gap paragraphs                                                                              |
+| `docs/Implementation-Status.md`                      | Remove Known Gaps entries                                                                         |
+| `docs/reactive-riverpod.md`                          | associatedInputs note                                                                             |
+| `docs/actions-architecture.md`                       | Submit/Execute associatedInputs                                                                   |
+| `packages/flutter_adaptive_cards_fs/CHANGELOG.md`    | `[Unreleased]` associatedInputs + exports                                                         |
 
 ### Phase 2 — `flutter_adaptive_cards_host_fs` (v0.10.0)
 
-| File | Role |
-| --- | --- |
-| `packages/flutter_adaptive_cards_host_fs/pubspec.yaml` | **Create** — workspace package, `publish_to: none` |
-| `packages/flutter_adaptive_cards_host_fs/analysis_options.yaml` | **Create** — `very_good_analysis` |
-| `packages/flutter_adaptive_cards_host_fs/lib/flutter_adaptive_cards_host_fs.dart` | Barrel export + library doc |
-| `lib/src/models/invoke_kind.dart` | `AdaptiveCardInvokeKind` enum |
-| `lib/src/models/invoke_request.dart` | `AdaptiveCardInvokeRequest` + factories |
-| `lib/src/models/invoke_effect.dart` | Sealed effect types |
-| `lib/src/models/invoke_response.dart` | `AdaptiveCardInvokeResponse` + `applyTo` |
-| `lib/src/adapters/element_update_json.dart` | **Create** — patch JSON → `AdaptiveElementUpdate` |
-| `lib/src/adapters/plain_json_invoke_adapter.dart` | Flat request/response maps |
-| `lib/src/adapters/plain_json_invoke_response_parser.dart` | PlainJson response parser |
-| `lib/src/adapters/teams_invoke_adapter.dart` | Teams-shaped maps |
-| `lib/src/client/backend_client.dart` | Abstract client |
-| `lib/src/client/http_backend_client.dart` | HTTP POST implementation |
-| `lib/src/handlers/backend_handlers.dart` | `AdaptiveCardBackendHandlers` |
-| `test/models/invoke_request_test.dart` | Request factory tests |
-| `test/adapters/plain_json_invoke_adapter_test.dart` | Adapter round-trip |
-| `test/adapters/teams_invoke_adapter_test.dart` | Teams adapter tests |
-| `test/models/invoke_response_test.dart` | Parser + `applyTo` tests |
-| `test/client/http_backend_client_test.dart` | HTTP client tests |
-| `test/handlers/backend_handlers_test.dart` | Handler widget test |
-| `pubspec.yaml` (repo root) | Add package to `workspace:` |
-| `packages/flutter_adaptive_cards_host_fs/README.md` | Usage + response contract |
-| `packages/flutter_adaptive_cards_host_fs/CHANGELOG.md` | `[0.10.0]` initial release |
+| File                                                                              | Role                                               |
+| --------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `packages/flutter_adaptive_cards_host_fs/pubspec.yaml`                            | **Create** — workspace package, `publish_to: none` |
+| `packages/flutter_adaptive_cards_host_fs/analysis_options.yaml`                   | **Create** — `very_good_analysis`                  |
+| `packages/flutter_adaptive_cards_host_fs/lib/flutter_adaptive_cards_host_fs.dart` | Barrel export + library doc                        |
+| `lib/src/models/invoke_kind.dart`                                                 | `AdaptiveCardInvokeKind` enum                      |
+| `lib/src/models/invoke_request.dart`                                              | `AdaptiveCardInvokeRequest` + factories            |
+| `lib/src/models/invoke_effect.dart`                                               | Sealed effect types                                |
+| `lib/src/models/invoke_response.dart`                                             | `AdaptiveCardInvokeResponse` + `applyTo`           |
+| `lib/src/adapters/element_update_json.dart`                                       | **Create** — patch JSON → `AdaptiveElementUpdate`  |
+| `lib/src/adapters/plain_json_invoke_adapter.dart`                                 | Flat request/response maps                         |
+| `lib/src/adapters/plain_json_invoke_response_parser.dart`                         | PlainJson response parser                          |
+| `lib/src/adapters/teams_invoke_adapter.dart`                                      | Teams-shaped maps                                  |
+| `lib/src/client/backend_client.dart`                                              | Abstract client                                    |
+| `lib/src/client/http_backend_client.dart`                                         | HTTP POST implementation                           |
+| `lib/src/handlers/backend_handlers.dart`                                          | `AdaptiveCardBackendHandlers`                      |
+| `test/models/invoke_request_test.dart`                                            | Request factory tests                              |
+| `test/adapters/plain_json_invoke_adapter_test.dart`                               | Adapter round-trip                                 |
+| `test/adapters/teams_invoke_adapter_test.dart`                                    | Teams adapter tests                                |
+| `test/models/invoke_response_test.dart`                                           | Parser + `applyTo` tests                           |
+| `test/client/http_backend_client_test.dart`                                       | HTTP client tests                                  |
+| `test/handlers/backend_handlers_test.dart`                                        | Handler widget test                                |
+| `pubspec.yaml` (repo root)                                                        | Add package to `workspace:`                        |
+| `packages/flutter_adaptive_cards_host_fs/README.md`                               | Usage + response contract                          |
+| `packages/flutter_adaptive_cards_host_fs/CHANGELOG.md`                            | `[0.10.0]` initial release                         |
 
 ---
 
@@ -1249,21 +1249,21 @@ Document PlainJson response contract with examples from spec.
 
 ## Plan self-review (completed)
 
-| Spec requirement | Task |
-| --- | --- |
-| Data.Query associatedInputs parse + merge | Tasks 1–3 |
-| Submit/Execute associatedInputs | Task 4 |
-| Dependent demo update | Task 5 |
-| Phase 1 docs | Task 6 |
-| Host package scaffold | Task 7 |
-| InvokeRequest | Task 8 |
-| PlainJson adapter | Task 9 |
-| InvokeResponse + applyTo | Task 10 |
-| Teams adapter | Task 11 |
-| HTTP client | Task 12 |
-| BackendHandlers | Task 13 |
-| Host package docs | Task 14 |
-| Full verification | Final Task |
+| Spec requirement                          | Task       |
+| ----------------------------------------- | ---------- |
+| Data.Query associatedInputs parse + merge | Tasks 1–3  |
+| Submit/Execute associatedInputs           | Task 4     |
+| Dependent demo update                     | Task 5     |
+| Phase 1 docs                              | Task 6     |
+| Host package scaffold                     | Task 7     |
+| InvokeRequest                             | Task 8     |
+| PlainJson adapter                         | Task 9     |
+| InvokeResponse + applyTo                  | Task 10    |
+| Teams adapter                             | Task 11    |
+| HTTP client                               | Task 12    |
+| BackendHandlers                           | Task 13    |
+| Host package docs                         | Task 14    |
+| Full verification                         | Final Task |
 
 **Deferred (documented in spec, no task):** container-scoped auto, typeahead keystroke onChange, OAuth.
 
