@@ -4,7 +4,7 @@
 
 **Goal:** Implement Adaptive Card `refresh`, the hub `Icon` element, chart chrome and color parity (excluding responsive layout), a real `Chart.Gauge` in `flutter_adaptive_charts_fs`, and standard text features (`RichTextBlock`/`TextRun` plus targeted `TextBlock` fixes), with Widgetbook demos for interactive chart attributes.
 
-**Implementation status (validated 2026-06-09):**
+**Implementation status (validated 2026-06-09, workstream G on `feat/workstream-g-text-features`):**
 
 | Workstream | Status      | Notes                                                                       |
 | ---------- | ----------- | --------------------------------------------------------------------------- |
@@ -14,9 +14,9 @@
 | D          | ✅ Complete | Chart colors merged in `chart_colors_config.dart`; gauge golden added       |
 | E          | ✅ Complete | `ChartOverlayPage` + codegen                                                |
 | F          | ✅ Complete | Gauge via `CustomPainter`; golden in `golden_v1_6_test.dart`                |
-| G          | ⏸ Deferred  | Not implemented this pass (per user)                                        |
+| G          | ✅ Complete | `RichTextBlock`/`TextRun`, TextBlock plain-path fixes, Widgetbook demo      |
 
-**Verification (2026-06-09):** `fvm flutter analyze` — no issues. Core tests 387 passed (~2 skipped). Charts tests 7 passed. Gauge widget tests 6 passed. Golden: `golden_icon_test.dart` + charts `Gauge Chart` pass on macOS (`v1_5_icon_demo.png`, `v1_6_gauge.png`); Linux goldens via CI.
+**Verification (2026-06-09):** `fvm flutter analyze` — no issues. Core tests **400 passed** (~2 skipped). Charts tests 7 passed. Gauge widget tests 6 passed. Golden: icon + RichTextBlock (`v1_5_icon_demo.png`, `v1_2_rich_text_block_demo.png`) + charts gauge (`v1_6_gauge.png`) pass on macOS; Linux goldens via CI.
 
 **Architecture:** Core features (`refresh`, `Icon`, text) live in `flutter_adaptive_cards_fs`. All chart types — including **gauge** — stay in **`flutter_adaptive_charts_fs`**. Bar, line, pie, and donut continue to use **fl_chart**; gauge uses **`CustomPainter`** in the same package (fl_chart has no suitable gauge API). Hosts still opt in via `CardChartsRegistry.additionalChartElements` — see [optional-packages-and-extensions.md](../../optional-packages-and-extensions.md). Widgetbook overlay pages follow `fact_set_overlay_page.dart` / `text_block_overlay_page.dart` patterns.
 
@@ -39,12 +39,12 @@
 | ID  | Workstream                                 | Package(s)                                    | Depends on               |
 | --- | ------------------------------------------ | --------------------------------------------- | ------------------------ |
 | A   | Optional-packages documentation (complete) | docs                                          | —                        |
-| B   | `refresh` on root `AdaptiveCard`           | `flutter_adaptive_cards_fs`                   | —                        |
+| B   | `refresh` on root `AdaptiveCard` (complete) | `flutter_adaptive_cards_fs`                   | —                        |
 | C   | `Icon` element (complete)                  | `flutter_adaptive_cards_fs`                   | —                        |
 | D   | Chart chrome + `colorSet` (complete)       | `flutter_adaptive_charts_fs`, core HostConfig | —                        |
 | E   | Widgetbook chart knobs page (complete)     | `widgetbook`                                  | D                        |
 | F   | `Chart.Gauge` (CustomPainter, complete)    | `flutter_adaptive_charts_fs`                  | D (ChartChrome optional) |
-| G   | Text features                              | `flutter_adaptive_cards_fs`                   | —                        |
+| G   | Text features (complete)                   | `flutter_adaptive_cards_fs`                   | —                        |
 
 Recommended execution order: **A → B, C, G (parallel) → D → E → F**.
 
@@ -59,7 +59,7 @@ Recommended execution order: **A → B, C, G (parallel) → D → E → F**.
 
 ## Workstream B — `refresh` property (v1.4+)
 
-> **Deferred** — not implemented in this pass (user scope: workstreams A, C, D, E, F only).
+> **✅ Complete** — merged via PR #20 (`feat/refresh-workstream-b`).
 
 ### Design
 
@@ -98,7 +98,7 @@ Do **not** implement bot round-trip inside the library; fire the execute payload
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart` (add `RefreshActionInvoke`)
 - Test: `packages/flutter_adaptive_cards_fs/test/models/refresh_config_test.dart`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```dart
 test('RefreshConfig.fromJson parses action, userIds, expires', () {
@@ -113,17 +113,17 @@ test('RefreshConfig.fromJson parses action, userIds, expires', () {
 });
 ```
 
-- [ ] **Step 2: Run test** — expect FAIL
+- [x] **Step 2: Run test** — expect FAIL
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/models/refresh_config_test.dart`
 
-- [ ] **Step 3: Implement `RefreshConfig`** with `fromJson`, nullable fields, ISO-8601 `expires` as `DateTime?`
+- [x] **Step 3: Implement `RefreshConfig`** with `fromJson`, nullable fields, ISO-8601 `expires` as `DateTime?`
 
-- [ ] **Step 4: Add `RefreshActionInvoke`** mirroring `ExecuteActionInvoke` fields
+- [x] **Step 4: Add `RefreshActionInvoke`** mirroring `ExecuteActionInvoke` fields
 
-- [ ] **Step 5: Run test** — expect PASS
+- [x] **Step 5: Run test** — expect PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/models/refresh_config.dart \
@@ -142,23 +142,23 @@ git commit -m "feat: add RefreshConfig model and RefreshActionInvoke"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/refresh/refresh_action_test.dart`
 
-- [ ] **Step 1: Parse `refresh` in `AdaptiveCardElementState.initState`** when `adaptiveMap['refresh']` present; store `RefreshConfig?`
+- [x] **Step 1: Parse `refresh` in `AdaptiveCardElementState.initState`** when `adaptiveMap['refresh']` present; store `RefreshConfig?`
 
-- [ ] **Step 2: Add `_RefreshAffordance` widget** — small `IconButton` (refresh icon) in card header row when `refresh.action != null`; on tap call `_triggerRefresh(manual: true)`
+- [x] **Step 2: Add `_RefreshAffordance` widget** — small `IconButton` (refresh icon) in card header row when `refresh.action != null`; on tap call `_triggerRefresh(manual: true)`
 
-- [ ] **Step 3: Implement `_triggerRefresh`** — build `RefreshActionInvoke` from refresh action map + `collectInputValues()`; invoke `InheritedAdaptiveCardHandlers.onRefresh` if non-null, else fall back to `onExecute`
+- [x] **Step 3: Implement `_triggerRefresh`** — build `RefreshActionInvoke` from refresh action map + `collectInputValues()`; invoke `InheritedAdaptiveCardHandlers.onRefresh` if non-null, else fall back to `onExecute`
 
-- [ ] **Step 4: Auto-expire** — in `didChangeDependencies`, if `expires != null && DateTime.now().isAfter(expires!)`, schedule one-shot refresh (guard with `_refreshFired` flag)
+- [x] **Step 4: Auto-expire** — in `didChangeDependencies`, if `expires != null && DateTime.now().isAfter(expires!)`, schedule one-shot refresh (guard with `_refreshFired` flag)
 
-- [ ] **Step 5: Add optional `currentUserId` on `AdaptiveCardsCanvas`** — skip auto refresh when `userIds` non-empty and id not in list
+- [x] **Step 5: Add optional `currentUserId` on `AdaptiveCardsCanvas`** — skip auto refresh when `userIds` non-empty and id not in list
 
-- [ ] **Step 6: Widget test** — pump card with refresh JSON; tap affordance; verify callback receives invoke with correct `verb`
+- [x] **Step 6: Widget test** — pump card with refresh JSON; tap affordance; verify callback receives invoke with correct `verb`
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/refresh/refresh_action_test.dart`
 
-- [ ] **Step 7: Update [actions-architecture.md](../actions-architecture.md)** with refresh callback contract
+- [x] **Step 7: Update [actions-architecture.md](../actions-architecture.md)** with refresh callback contract
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ### Task B3: Sample + Widgetbook
 
@@ -167,7 +167,7 @@ Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/refresh/ref
 - Create: `widgetbook/lib/samples/v1.4/refresh_demo.json`
 - Modify: `widgetbook/lib/adaptive_cards_use_cases.dart`
 
-- [ ] Add use case under **AdaptiveCard** category showing manual refresh button and logging `onRefresh` to a `SnackBar`
+- [x] Add use case under **AdaptiveCard** category showing manual refresh button and logging `onRefresh` to a `SnackBar`
 
 ---
 
@@ -402,7 +402,7 @@ fvm flutter test test/charts/gauge_chart_test.dart --exclude-tags=golden
 
 ## Workstream G — Text features
 
-> **Deferred** — not implemented in this pass (user scope: workstreams A, C, D, E, F only).
+> **✅ Complete** on branch `feat/workstream-g-text-features`.
 
 ### Scope
 
@@ -417,9 +417,9 @@ Two tracks (both required for this plan):
 
 - Create: `docs/superpowers/specs/2026-06-08-rich-text-and-text-features-design.md`
 
-- [ ] Document rendering approach: `RichTextBlock` → `Text.rich` with `TextSpan` children; each `TextRun` applies weight, color, italic, strikethrough, underline, `highlight`, `fontType`, `size`, `selectAction` on tap
-- [ ] Document `TextBlock` scope: keep markdown path; fix `maxLines` when markdown disabled; support `subtle`, `maxLines`, `wrap` parity (already mostly present)
-- [ ] Explicit non-goals: full HTML markdown, every Teams-only macro
+- [x] Document rendering approach: `RichTextBlock` → `Text.rich` with `TextSpan` children; each `TextRun` applies weight, color, italic, strikethrough, underline, `highlight`, `fontType`, `size`, `selectAction` on tap
+- [x] Document `TextBlock` scope: keep markdown path; fix `maxLines` when markdown disabled; support `subtle`, `maxLines`, `wrap` parity (already mostly present)
+- [x] Explicit non-goals: full HTML markdown, every Teams-only macro
 
 ### Task G2: TextRun + RichTextBlock
 
@@ -430,15 +430,15 @@ Two tracks (both required for this plan):
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/registry.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/elements/rich_text_block_test.dart`
 
-- [ ] **Step 1: `TextRunModel.fromJson`** — map spec fields
+- [x] **Step 1: `TextRunModel.fromJson`** — map spec fields
 
-- [ ] **Step 2: `AdaptiveRichTextBlock`** — parse `inlines` array; build `TextSpan` tree; wire `selectAction` per run via `TapGestureRecognizer`
+- [x] **Step 2: `AdaptiveRichTextBlock`** — parse `inlines` array; build `TextSpan` tree; wire `selectAction` per run via `TapGestureRecognizer`
 
-- [ ] **Step 3: Register in `CardTypeRegistry`**
+- [x] **Step 3: Register in `CardTypeRegistry`**
 
-- [ ] **Step 4: Widget tests** — bold run, colored run, tap on run with `Action.OpenUrl`
+- [x] **Step 4: Widget tests** — bold run, colored run, tap on run with `Action.OpenUrl`
 
-- [ ] **Step 5: Golden test** — basic mixed-style paragraph
+- [x] **Step 5: Golden test** — basic mixed-style paragraph
 
 ### Task G3: TextBlock improvements
 
@@ -447,14 +447,14 @@ Two tracks (both required for this plan):
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/elements/text_block.dart`
 - Test: extend `packages/flutter_adaptive_cards_fs/test/elements/text_block_test.dart`
 
-- [ ] When `supportMarkdown == false`, honor `maxLines` on plain `Text`
-- [ ] Add test for `weight`, `color`, `isSubtle` without markdown
-- [ ] Document remaining markdown limitations in [Implementation-Status.md](../Implementation-Status.md)
+- [x] When `supportMarkdown == false`, honor `maxLines` on plain `Text`
+- [x] Add test for `weight`, `color`, `isSubtle` without markdown
+- [x] Document remaining markdown limitations in [Implementation-Status.md](../Implementation-Status.md)
 
 ### Task G4: Widgetbook
 
-- [ ] Sample JSON: `widgetbook/lib/samples/v1.2/rich_text_block_demo.json`
-- [ ] Use case next to existing TextBlock overlay page
+- [x] Sample JSON: `widgetbook/lib/samples/v1.2/rich_text_block_demo.json`
+- [x] Use case next to existing TextBlock overlay page
 
 ---
 
@@ -475,7 +475,7 @@ cd packages/flutter_adaptive_cards_fs
 fvm flutter test --exclude-tags=golden
 ```
 
-**387 passed** (~2 skipped), 2026-06-09
+**400 passed** (~2 skipped), 2026-06-09 (includes `rich_text_block_test.dart`, `text_block_test.dart`)
 
 - [x] **Charts tests**
 
@@ -495,9 +495,11 @@ fvm flutter test test/charts/gauge_chart_test.dart
 
 **6 passed**, 2026-06-09
 
-- [x] **Update [Implementation-Status.md](../../Implementation-Status.md)** for Icon, chart properties, gauge — _refresh and RichTextBlock unchanged (workstreams B/G deferred)_
+- [x] **Update [Implementation-Status.md](../../Implementation-Status.md)** for Icon, chart properties, gauge, refresh, and RichTextBlock/TextRun
 
 - [x] **Icon golden** — `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/golden_icon_test.dart --tags=golden`
+
+- [x] **RichTextBlock golden** — `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/golden_rich_text_block_test.dart --tags=golden`
 
 - [x] **Gauge golden** — `cd packages/flutter_adaptive_charts_fs && fvm flutter test test/golden_v1_6_test.dart --name "Gauge Chart" --tags=golden`
 

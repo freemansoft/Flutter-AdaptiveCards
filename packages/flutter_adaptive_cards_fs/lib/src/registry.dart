@@ -26,6 +26,7 @@ import 'package:flutter_adaptive_cards_fs/src/cards/elements/media.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/progress_bar.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/progress_ring.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/rating.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/elements/rich_text_block.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/tab_set.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/text_block.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/unknown.dart';
@@ -147,6 +148,8 @@ class CardTypeRegistry {
           adaptiveMap: map,
           supportMarkdown: supportMarkdown,
         );
+      case 'RichTextBlock':
+        return AdaptiveRichTextBlock(adaptiveMap: map);
       case 'ActionSet':
         return ActionSet(adaptiveMap: map);
       case 'AdaptiveCard':

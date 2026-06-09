@@ -28,8 +28,8 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 | Media         | [spec](https://adaptivecards.io/explorer/Media.html)         | ⚠️ Partial     | ⚠️ Limited | -                                                      | Video via `video_player`; poster attribute has issues; limited on desktop platforms |
 | MediaSource   | [spec](https://adaptivecards.io/explorer/MediaSource.html)   | ✅ Complete    | ✅ Yes     | -                                                      | Typed `MediaSource` model                                             |
 | CaptionSource | [spec](https://adaptivecards.io/explorer/CaptionSource.html) | ❌ Missing     | ❌ No      | -                                                      | Used with `Media`; not registered                                     |
-| RichTextBlock | [spec](https://adaptivecards.io/explorer/RichTextBlock.html) | ❌ Missing     | ❌ No      | -                                                      | **Only standard body element type not implemented**; required since v1.2 |
-| TextRun       | [spec](https://adaptivecards.io/explorer/TextRun.html)       | ❌ Missing     | ❌ No      | -                                                      | Child of `RichTextBlock`; inline formatting and per-run `selectAction` |
+| RichTextBlock | [spec](https://adaptivecards.io/explorer/RichTextBlock.html) | ✅ Implemented | ✅ Yes     | `Text.rich` + `TextRun` inlines; per-run styling and `selectAction` |
+| TextRun       | [spec](https://adaptivecards.io/explorer/TextRun.html)       | ✅ Implemented | ✅ Yes     | Parsed as `RichTextBlock` inline; weight, color, italic, underline, highlight, tap |
 | ActionSet     | [spec](https://adaptivecards.io/explorer/ActionSet.html)     | ✅ Complete    | ⚠️ Limited | -                                                      | -                                                                     |
 | Icon          | [hub](https://adaptivecards.microsoft.com/)                  | ⚠️ Partial     | ✅ Yes     | -                                                      | ~50 common Fluent names via Material icons; `selectAction` supported  |
 
@@ -225,13 +225,13 @@ Cross-cutting gaps that affect many card types:
 
 | Area | Gap | Impact |
 | ---- | --- | ------ |
-| **RichTextBlock / TextRun** | Only standard body element types with no implementation | High — inline formatting cards fail or show `AdaptiveUnknown` |
+| **RichTextBlock / TextRun** | ✅ Implemented | — |
 | **Responsive layout** | `targetWidth`, `Layout.AreaGrid`, `grid.area` | High — modern Teams/Copilot width-adaptive cards |
 | **`requires` + version gating** | No capability checks; `fallbackText` unused | Medium–high — mixed-schema production hosts |
 | **Action `fallback`** | Unknown actions assert instead of degrading | Medium — action fallback lists in Teams chart docs |
 | **Icon** | Partial Fluent name map (~50 icons) | Low–medium — uncommon hub icon names fall back to `help_outline` |
 | **Table completeness** | `auto`/`stretch` widths, cell `rtl`, `bleed` | Medium — complex table scenarios |
-| **TextBlock text features** | Markdown subset; `maxLines` vs markdown conflict | Medium — text-heavy cards |
+| **TextBlock text features** | Plain path: `maxLines`, `color`, `isSubtle`, `weight`; markdown path: subset only (no `maxLines`) | Low — full HTML markdown out of scope |
 | **Chart.Gauge** | ✅ Implemented (`CustomPainter`) | — |
 | **Chart chrome** | ✅ Implemented (`ChartChrome`) | — |
 | **Chart `colorSet`** | ✅ Named semantic palettes | — |
@@ -267,7 +267,7 @@ Registered in `CardTypeRegistry` (`lib/src/registry.dart`) unless noted.
 
 ### High priority — standard cards
 
-1. **`RichTextBlock` + `TextRun`**: Only fully missing standard body elements; design doc first, then implement.
+1. **`RichTextBlock` + `TextRun`**: ✅ Implemented — see [design spec](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md).
 2. **Responsive layout**: `targetWidth` and `Layout.AreaGrid` / `grid.area` per [documentation hub](https://adaptivecards.microsoft.com/).
 3. **`requires` + action `fallback` + version gating**: Graceful degradation for mixed-schema hosts.
 
@@ -282,7 +282,7 @@ Registered in `CardTypeRegistry` (`lib/src/registry.dart`) unless noted.
 3. **Block `height: stretch`**: Apply across containers and chart elements.
 4. **AdaptiveCard root features**: `rtl`, `fallbackText`, `selectAction`, `minHeight`.
 5. **Media poster fix**: Resolve poster attribute display issue.
-6. **TextBlock**: Improve markdown subset or defer to `RichTextBlock` for inline styles.
+6. **TextBlock**: Plain-text path honors `maxLines`/`color`/`isSubtle`; markdown limitations documented above.
 
 ### Low priority
 

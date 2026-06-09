@@ -612,6 +612,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildTextBlockExample9,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'RichTextBlock demo',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildRichTextBlockDemo,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Text overlay (knob)',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildTextBlockTextOverlay,

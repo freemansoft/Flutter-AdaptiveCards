@@ -22,6 +22,7 @@ Widget getTestWidgetFromPath({
   Map? initData,
   HostConfigs? hostConfigs,
   CardTypeRegistry cardTypeRegistry = const CardTypeRegistry(),
+  bool supportMarkdown = true,
   bool listView = false,
   bool scrollable = false,
   String samplesDirectory = 'test/samples',
@@ -43,6 +44,7 @@ Widget getTestWidgetFromPath({
     initData: initData,
     hostConfigs: hostConfigs,
     cardTypeRegistry: cardTypeRegistry,
+    supportMarkdown: supportMarkdown,
     listView: listView,
     scrollable: scrollable,
   );
@@ -64,6 +66,7 @@ Widget getTestWidgetFromMap({
   HostConfigs? hostConfigs,
   CardTypeRegistry cardTypeRegistry = const CardTypeRegistry(),
   AdaptiveCardBrightnessMode brightnessMode = AdaptiveCardBrightnessMode.auto,
+  bool supportMarkdown = true,
   bool listView = false,
   bool scrollable = false,
 }) {
@@ -76,6 +79,7 @@ Widget getTestWidgetFromMap({
     initData: initData,
     onChange: onChange,
     currentUserId: currentUserId,
+    supportMarkdown: supportMarkdown,
     hostConfigs: hostConfigs ?? HostConfigs(),
     brightnessMode: brightnessMode,
     listView: listView,

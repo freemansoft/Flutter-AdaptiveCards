@@ -1,0 +1,30 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.2",
+  "body": [
+    {
+      "type": "RichTextBlock",
+      "horizontalAlignment": "Left",
+      "inlines": [
+        {
+          "type": "TextRun",
+          "text": "Rich ",
+          "weight": "Default"
+        },
+        {
+          "type": "TextRun",
+          "text": "text ",
+          "weight": "Bolder",
+          "color": "Accent"
+        },
+        {
+          "type": "TextRun",
+          "text": "demo",
+          "italic": true,
+          "underline": true,
+          "highlight": true
+        }
+      ]
+    }
+  ]
+}
