@@ -5,6 +5,7 @@ import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
 import 'package:widgetbook_workspace/fact_set_overlay_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
 import 'package:widgetbook_workspace/network_page.dart';
+import 'package:widgetbook_workspace/refresh_demo_page.dart';
 import 'package:widgetbook_workspace/text_block_overlay_page.dart';
 import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
 
@@ -169,6 +170,15 @@ Widget buildAdaptiveCardSelectAction(BuildContext context) {
   return const GenericPage(
     url: 'lib/samples/adaptive_card_element/select_action.json',
   );
+}
+
+@widgetbook.UseCase(
+  name: 'Refresh',
+  type: widget_types.AdaptiveCardElement,
+  path: '[Components]',
+)
+Widget buildAdaptiveCardRefreshDemo(BuildContext context) {
+  return const RefreshDemoPage();
 }
 
 // =============================================================================

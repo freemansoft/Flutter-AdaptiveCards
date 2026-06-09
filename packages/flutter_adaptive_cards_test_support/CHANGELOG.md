@@ -2,6 +2,10 @@
 
 All notable changes to this **unpublished** workspace test package are documented here.
 
+## [Unreleased]
+
+- **`getTestWidgetFromMap`** / **`getTestWidgetFromPath`:** optional **`onRefresh`** handler and **`currentUserId`** for root-card refresh widget tests.
+
 ## [0.10.0]
 
 ### Added

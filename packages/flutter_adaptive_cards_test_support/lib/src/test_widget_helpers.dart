@@ -17,6 +17,8 @@ Widget getTestWidgetFromPath({
   void Function(SubmitActionInvoke invoke)? onSubmit,
   void Function(ExecuteActionInvoke invoke)? onExecute,
   void Function(InputChangeInvoke invoke)? onChange,
+  void Function(RefreshActionInvoke invoke)? onRefresh,
+  String? currentUserId,
   Map? initData,
   HostConfigs? hostConfigs,
   CardTypeRegistry cardTypeRegistry = const CardTypeRegistry(),
@@ -36,6 +38,8 @@ Widget getTestWidgetFromPath({
     onSubmit: onSubmit,
     onExecute: onExecute,
     onChange: onChange,
+    onRefresh: onRefresh,
+    currentUserId: currentUserId,
     initData: initData,
     hostConfigs: hostConfigs,
     cardTypeRegistry: cardTypeRegistry,
@@ -54,6 +58,8 @@ Widget getTestWidgetFromMap({
   void Function(SubmitActionInvoke invoke)? onSubmit,
   void Function(ExecuteActionInvoke invoke)? onExecute,
   void Function(InputChangeInvoke invoke)? onChange,
+  void Function(RefreshActionInvoke invoke)? onRefresh,
+  String? currentUserId,
   Map? initData,
   HostConfigs? hostConfigs,
   CardTypeRegistry cardTypeRegistry = const CardTypeRegistry(),
@@ -69,6 +75,7 @@ Widget getTestWidgetFromMap({
     showDebugJson: false,
     initData: initData,
     onChange: onChange,
+    currentUserId: currentUserId,
     hostConfigs: hostConfigs ?? HostConfigs(),
     brightnessMode: brightnessMode,
     listView: listView,
@@ -87,7 +94,8 @@ Widget getTestWidgetFromMap({
       onOpenUrlDialog != null ||
       onSubmit != null ||
       onExecute != null ||
-      onChange != null) {
+      onChange != null ||
+      onRefresh != null) {
     // wrap in handlers
     return MaterialApp(
       home: Scaffold(
@@ -102,6 +110,7 @@ Widget getTestWidgetFromMap({
               onSubmit: onSubmit ?? (_) {},
               onExecute: onExecute ?? (_) {},
               onChange: onChange ?? (_) {},
+              onRefresh: onRefresh,
               child: adaptiveCard,
             ),
           ),

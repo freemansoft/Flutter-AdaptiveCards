@@ -278,6 +278,16 @@ expect(container.read(resolvedElementProvider('myText'))?['value'], 'seeded');
 
 Baseline + overlay model: [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
+### Widgetbook sample JSON (optional)
+
+When adding an interactive or catalog demo under `widgetbook/lib/samples/`:
+
+1. Register **new asset directories** in `widgetbook/pubspec.yaml` (`flutter: assets:`) — each folder path must be listed explicitly.
+2. Add the use case in `widgetbook/lib/adaptive_cards_use_cases.dart` (or a dedicated `*_page.dart` when host callbacks are required).
+3. Run `cd widgetbook && fvm dart run build_runner build` after use-case changes.
+
+See [`widgetbook/README.md`](../../../widgetbook/README.md).
+
 ### Coverage gaps
 
 Per-field and per-type overlay coverage (what is tested vs missing) lives in the **element-registry** skill — [Overlay test coverage](../adaptive-cards-element-registry/SKILL.md#overlay-test-coverage). Use that matrix when adding a new overlay field or deciding whether a widget test is required for a specific `Input.*` / `Action.*` type.

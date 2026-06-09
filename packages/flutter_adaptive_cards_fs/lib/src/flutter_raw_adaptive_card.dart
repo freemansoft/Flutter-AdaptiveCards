@@ -40,6 +40,7 @@ class RawAdaptiveCard extends StatefulWidget {
     this.listView = false,
     this.showDebugJson = true,
     this.brightnessMode = AdaptiveCardBrightnessMode.auto,
+    this.currentUserId,
     required this.hostConfigs,
   });
 
@@ -69,6 +70,9 @@ class RawAdaptiveCard extends StatefulWidget {
 
   /// Selects light vs dark [HostConfigs] when not [AdaptiveCardBrightnessMode.auto].
   final AdaptiveCardBrightnessMode brightnessMode;
+
+  /// Current user id for root `refresh.userIds` auto-refresh gating.
+  final String? currentUserId;
 
   @override
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
@@ -568,6 +572,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         rawAdaptiveCardStateProvider.overrideWithValue(this),
         styleReferenceResolverProvider.overrideWithValue(_resolver),
         baselineMapProvider.overrideWithValue(_baselineMap),
+        currentUserIdProvider.overrideWithValue(widget.currentUserId),
       ],
       child: _AdaptiveCardDocumentLifecycle(
         cardState: this,
