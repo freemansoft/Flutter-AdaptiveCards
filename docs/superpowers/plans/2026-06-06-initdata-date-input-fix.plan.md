@@ -18,23 +18,24 @@
 
 ## File map
 
-| File | Role |
-| ---- | ---- |
-| `packages/flutter_adaptive_cards_fs/lib/src/utils/date_input_utils.dart` | **Create** — shared parse/format for AC date strings |
-| `packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/date.dart` | Fix controller sync, `appendInput`, `onTap`, `setState` |
-| `packages/flutter_adaptive_cards_fs/test/utils/date_input_utils_test.dart` | **Create** — unit tests for parse/format |
-| `packages/flutter_adaptive_cards_fs/test/inputs/init_data_overlay_test.dart` | Add Date overlay + programmatic `initInput` cases |
-| `packages/flutter_adaptive_cards_fs/test/inputs/date_input_test.dart` | Assert exact `yyyy-MM-dd` in `appendInput` |
-| `packages/flutter_adaptive_cards_fs/test/inputs/date_edgecases_test.dart` | Empty controller, required-validation, appendInput format |
-| `packages/flutter_adaptive_cards_fs/README.md` | Remove open issue once fixed |
-| `packages/flutter_adaptive_cards_fs/CHANGELOG.md` | Bugfix entry for initData / submit format |
-| `docs/Implementation-Status.md` | Short note under Inputs (no status change — already ✅ Complete) |
+| File                                                                         | Role                                                             |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------  |
+| `packages/flutter_adaptive_cards_fs/lib/src/utils/date_input_utils.dart`     | **Create** — shared parse/format for AC date strings             |
+| `packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/date.dart`          | Fix controller sync, `appendInput`, `onTap`, `setState`          |
+| `packages/flutter_adaptive_cards_fs/test/utils/date_input_utils_test.dart`   | **Create** — unit tests for parse/format                         |
+| `packages/flutter_adaptive_cards_fs/test/inputs/init_data_overlay_test.dart` | Add Date overlay + programmatic `initInput` cases                |
+| `packages/flutter_adaptive_cards_fs/test/inputs/date_input_test.dart`        | Assert exact `yyyy-MM-dd` in `appendInput`                       |
+| `packages/flutter_adaptive_cards_fs/test/inputs/date_edgecases_test.dart`    | Empty controller, required-validation, appendInput format        |
+| `packages/flutter_adaptive_cards_fs/README.md`                               | Remove open issue once fixed                                     |
+| `packages/flutter_adaptive_cards_fs/CHANGELOG.md`                            | Bugfix entry for initData / submit format                        |
+| `docs/Implementation-Status.md`                                              | Short note under Inputs (no status change — already ✅ Complete) |
 
 ---
 
 ### Task 1: Shared date parse/format helper
 
 **Files:**
+
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/utils/date_input_utils.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/utils/date_input_utils_test.dart`
 
@@ -165,6 +166,7 @@ git commit -m "feat: add shared Adaptive Card date parse/format helpers"
 ### Task 2: Fix AdaptiveDateInput local state sync (TDD — tests first)
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/date.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/inputs/date_edgecases_test.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/inputs/init_data_overlay_test.dart`
@@ -381,13 +383,13 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test \
 
 Expected failures **before** the fix:
 
-| Test | Expected |
-| ---- | -------- |
-| 1a empty controller | **FAIL** — `controller.text` is placeholder, not `''` |
-| 1b required validation | **FAIL** — `checkRequired()` returns `true` (placeholder passes validator) |
-| 1c initData overlay — `appendInput` | **FAIL** — emits ISO-8601, not `'2023-05-08'` |
-| 1c initData overlay — `selectedDateTime` | May **FAIL** if placeholder path left `selectedDateTime` null |
-| 1d `date_input_test` / edgecases appendInput | **FAIL** — ISO-8601 vs exact `yyyy-MM-dd` |
+| Test                                         | Expected                                                                   |
+| -------------------------------------------- | -------------------------------------------------------------------------- |
+| 1a empty controller                          | **FAIL** — `controller.text` is placeholder, not `''`                      |
+| 1b required validation                       | **FAIL** — `checkRequired()` returns `true` (placeholder passes validator) |
+| 1c initData overlay — `appendInput`          | **FAIL** — emits ISO-8601, not `'2023-05-08'`                              |
+| 1c initData overlay — `selectedDateTime`     | May **FAIL** if placeholder path left `selectedDateTime` null              |
+| 1d `date_input_test` / edgecases appendInput | **FAIL** — ISO-8601 vs exact `yyyy-MM-dd`                                  |
 
 - [x] **Step 3: Update `date.dart`**
 
@@ -473,6 +475,7 @@ git commit -m "fix: sync Input.Date controller from initData without placeholder
 ### Task 3: Widgetbook FAQ regression check and docs
 
 **Files:**
+
 - `packages/flutter_adaptive_cards_fs/README.md`
 - `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 - `docs/Implementation-Status.md`

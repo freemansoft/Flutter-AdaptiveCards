@@ -6,13 +6,13 @@
 
 **Goal:** Deliver typed invoke payloads for **all** host callbacks on **`InheritedAdaptiveCardHandlers`** (and matching **`RawAdaptiveCard`** / **`AdaptiveCardsCanvas.onChange`** wiring):
 
-| Callback | Invoke type | Key fields |
-| --- | --- | --- |
-| `onSubmit` | **`SubmitActionInvoke`** | `data`, `actionId` |
-| `onExecute` | **`ExecuteActionInvoke`** | `data`, `actionId`, `verb` |
-| `onOpenUrl` | **`OpenUrlActionInvoke`** | `url`, `actionId` |
-| `onOpenUrlDialog` | **`OpenUrlDialogActionInvoke`** | `url`, `actionId` |
-| `onChange` | **`InputChangeInvoke`** | `inputId`, `value`, `dataQuery`, `cardState` |
+| Callback          | Invoke type                     | Key fields                                   |
+| ----------------- | ------------------------------- | -------------------------------------------- |
+| `onSubmit`        | **`SubmitActionInvoke`**        | `data`, `actionId`                           |
+| `onExecute`       | **`ExecuteActionInvoke`**       | `data`, `actionId`, `verb`                   |
+| `onOpenUrl`       | **`OpenUrlActionInvoke`**       | `url`, `actionId`                            |
+| `onOpenUrlDialog` | **`OpenUrlDialogActionInvoke`** | `url`, `actionId`                            |
+| `onChange`        | **`InputChangeInvoke`**         | `inputId`, `value`, `dataQuery`, `cardState` |
 
 Remove dead action handler fields from **`AdaptiveCardsCanvasState`** (Phase 1). Reconcile **`docs/`** and package README/CHANGELOG after each phase.
 
@@ -39,51 +39,51 @@ Phase 2 (Tasks 10–17) is also complete — see [Phase 2 — OpenUrl / OpenUrlD
 
 ## File map
 
-| File                                                                             | Role                                                                     |
-| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart`           | **Create** — `SubmitActionInvoke`, `ExecuteActionInvoke`, shared helpers |
-| `packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart`          | Export new models                                                        |
-| `packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart`          | Change `onSubmit` + `onExecute` callback types                           |
-| `packages/flutter_adaptive_cards_fs/lib/src/action/generic_action.dart`          | Remove `verb` param from `GenericExecuteAction.tap`                      |
-| `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart`         | Build + forward both invoke types                                        |
-| `packages/flutter_adaptive_cards_fs/lib/src/cards/actions/execute.dart`          | Stop passing `verb:` into `tap()`                                        |
-| `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart`        | Remove unused `AdaptiveCardsCanvasState.onSubmit` / `onExecute` / `onOpenUrl` |
-| `packages/flutter_adaptive_cards_fs/test/actions/submit_action_invoke_test.dart` | **Create** — Submit id/data tests                                        |
-| `packages/flutter_adaptive_cards_fs/test/actions/execute_verb_test.dart`         | **Create** — Execute verb/id/data tests                                  |
-| `packages/flutter_adaptive_cards_fs/test/select_action_tappable_test.dart`       | Update Submit + Execute selectAction tests                               |
-| `packages/flutter_adaptive_cards_fs/test/utils/test_utils.dart`                  | Update both handler typedefs                                             |
-| `packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart`                 | Mirror test_utils change                                                 |
-| `packages/flutter_adaptive_cards_fs/CHANGELOG.md`                                | Breaking change note                                                     |
-| `packages/flutter_adaptive_cards_fs/README.md`                                   | Fix handler example (not on canvas constructors)                         |
-| `docs/actions-architecture.md`                                                   | Submit + Execute payload sections                                        |
-| `docs/Architecture-Overview.md`                                                  | Consumer API + handler wiring                                            |
-| `docs/form-inputs.md`                                                            | `onSubmit` validation example                                            |
-| `docs/Implementation-Status.md`                                                  | Action.Submit + Action.Execute rows + Known Gaps                         |
-| `docs/reactive-riverpod.md`                                                      | Invoke payload note on host callbacks                                    |
+| File                                                                             | Role                                                                          |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart`           | **Create** — `SubmitActionInvoke`, `ExecuteActionInvoke`, shared helpers      |
+| `packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart`          | Export new models                                                             |
+| `packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart`          | Change `onSubmit` + `onExecute` callback types                                |
+| `packages/flutter_adaptive_cards_fs/lib/src/action/generic_action.dart`          | Remove `verb` param from `GenericExecuteAction.tap`                           |
+| `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart`         | Build + forward both invoke types                                             |
+| `packages/flutter_adaptive_cards_fs/lib/src/cards/actions/execute.dart`          | Stop passing `verb:` into `tap()`                                             |
+| `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart`          | Remove unused `AdaptiveCardsCanvasState.onSubmit` / `onExecute` / `onOpenUrl` |
+| `packages/flutter_adaptive_cards_fs/test/actions/submit_action_invoke_test.dart` | **Create** — Submit id/data tests                                             |
+| `packages/flutter_adaptive_cards_fs/test/actions/execute_verb_test.dart`         | **Create** — Execute verb/id/data tests                                       |
+| `packages/flutter_adaptive_cards_fs/test/select_action_tappable_test.dart`       | Update Submit + Execute selectAction tests                                    |
+| `packages/flutter_adaptive_cards_fs/test/utils/test_utils.dart`                  | Update both handler typedefs                                                  |
+| `packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart`                 | Mirror test_utils change                                                      |
+| `packages/flutter_adaptive_cards_fs/CHANGELOG.md`                                | Breaking change note                                                          |
+| `packages/flutter_adaptive_cards_fs/README.md`                                   | Fix handler example (not on canvas constructors)                              |
+| `docs/actions-architecture.md`                                                   | Submit + Execute payload sections                                             |
+| `docs/Architecture-Overview.md`                                                  | Consumer API + handler wiring                                                 |
+| `docs/form-inputs.md`                                                            | `onSubmit` validation example                                                 |
+| `docs/Implementation-Status.md`                                                  | Action.Submit + Action.Execute rows + Known Gaps                              |
+| `docs/reactive-riverpod.md`                                                      | Invoke payload note on host callbacks                                         |
 
 ### Phase 2 file map (OpenUrl / OpenUrlDialog / onChange)
 
-| File | Role |
-| --- | --- |
-| `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart` | Add `OpenUrlActionInvoke`, `OpenUrlDialogActionInvoke`, `InputChangeInvoke` |
-| `packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart` | Type `onOpenUrl`, `onOpenUrlDialog`, `onChange` |
-| `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart` | Build OpenUrl invoke types in default handlers |
-| `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart` | Emit `InputChangeInvoke` from input notification path; update `onChange` typedef |
-| `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart` | Align widget/state `onChange` typedef with `InputChangeInvoke` |
-| `packages/flutter_adaptive_cards_fs/test/actions/open_url_action_invoke_test.dart` | **Create** — OpenUrl url + actionId tests |
-| `packages/flutter_adaptive_cards_fs/test/actions/open_url_dialog_action_invoke_test.dart` | **Create** — OpenUrlDialog tests |
-| `packages/flutter_adaptive_cards_fs/test/models/input_change_invoke_test.dart` | **Create** — optional unit test for type; widget coverage in choice_set tests |
-| `packages/flutter_adaptive_cards_fs/test/select_action_tappable_test.dart` | Extend OpenUrl selectAction test for `actionId` |
-| `packages/flutter_adaptive_cards_fs/test/utils/test_utils.dart` | Update OpenUrl / onChange handler typedefs |
-| `packages/flutter_adaptive_cards_fs/test/utils/dependent_choice_set_handler.dart` | Migrate `handleDependentChoiceSetChange` to `InputChangeInvoke` |
-| `packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart` | Update onChange assertions |
-| `packages/flutter_adaptive_cards_fs/test/inputs/dependent_choice_set_test.dart` | Update inline onChange lambdas |
-| `widgetbook/lib/dependent_choice_set_demo_page.dart` | Migrate demo `onChange` handler |
-| `packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart` | Mirror handler typedef changes |
-| `packages/flutter_adaptive_cards_fs/CHANGELOG.md` | Phase 2 breaking-change notes |
-| `docs/actions-architecture.md` | OpenUrl + InputChange payload sections |
-| `docs/form-inputs.md` | Dependent ChoiceSet / onChange examples |
-| `docs/Architecture-Overview.md`, `docs/reactive-riverpod.md`, `docs/Implementation-Status.md` | Full invoke-type coverage |
+| File                                                                                          | Role                                                                             |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart`                        | Add `OpenUrlActionInvoke`, `OpenUrlDialogActionInvoke`, `InputChangeInvoke`      |
+| `packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart`                       | Type `onOpenUrl`, `onOpenUrlDialog`, `onChange`                                  |
+| `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart`                      | Build OpenUrl invoke types in default handlers                                   |
+| `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart`                   | Emit `InputChangeInvoke` from input notification path; update `onChange` typedef |
+| `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart`                       | Align widget/state `onChange` typedef with `InputChangeInvoke`                   |
+| `packages/flutter_adaptive_cards_fs/test/actions/open_url_action_invoke_test.dart`            | **Create** — OpenUrl url + actionId tests                                        |
+| `packages/flutter_adaptive_cards_fs/test/actions/open_url_dialog_action_invoke_test.dart`     | **Create** — OpenUrlDialog tests                                                 |
+| `packages/flutter_adaptive_cards_fs/test/models/input_change_invoke_test.dart`                | **Create** — optional unit test for type; widget coverage in choice_set tests    |
+| `packages/flutter_adaptive_cards_fs/test/select_action_tappable_test.dart`                    | Extend OpenUrl selectAction test for `actionId`                                  |
+| `packages/flutter_adaptive_cards_fs/test/utils/test_utils.dart`                               | Update OpenUrl / onChange handler typedefs                                       |
+| `packages/flutter_adaptive_cards_fs/test/utils/dependent_choice_set_handler.dart`             | Migrate `handleDependentChoiceSetChange` to `InputChangeInvoke`                  |
+| `packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart`              | Update onChange assertions                                                       |
+| `packages/flutter_adaptive_cards_fs/test/inputs/dependent_choice_set_test.dart`               | Update inline onChange lambdas                                                   |
+| `widgetbook/lib/dependent_choice_set_demo_page.dart`                                          | Migrate demo `onChange` handler                                                  |
+| `packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart`                              | Mirror handler typedef changes                                                   |
+| `packages/flutter_adaptive_cards_fs/CHANGELOG.md`                                             | Phase 2 breaking-change notes                                                    |
+| `docs/actions-architecture.md`                                                                | OpenUrl + InputChange payload sections                                           |
+| `docs/form-inputs.md`                                                                         | Dependent ChoiceSet / onChange examples                                          |
+| `docs/Architecture-Overview.md`, `docs/reactive-riverpod.md`, `docs/Implementation-Status.md` | Full invoke-type coverage                                                        |
 
 ---
 
@@ -708,6 +708,7 @@ git commit -m "test: cover Submit/Execute invoke payloads via selectAction"
 ### Task 6: Remove dead `AdaptiveCardsCanvasState` handler fields
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart`
 
 **Context:** `AdaptiveCardsCanvasState` declares **`onSubmit`**, **`onExecute`**, and **`onOpenUrl`** but never assigns or passes them to `RawAdaptiveCard.fromMap`. Submit, Execute, and OpenUrl routing goes through **`InheritedAdaptiveCardHandlers`** inside **`DefaultSubmitAction`**, **`DefaultExecuteAction`**, and **`DefaultOpenUrlAction`**. The canvas wires **`onChange`** only (from widget prop or inherited handlers). Host apps should wrap the card tree with **`InheritedAdaptiveCardHandlers`** for all action callbacks.
@@ -775,6 +776,7 @@ Expected: no errors.
 ### Task 8: CHANGELOG + package README
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 - Modify: `packages/flutter_adaptive_cards_fs/README.md`
 
@@ -836,6 +838,7 @@ git commit -m "docs: changelog and README for action invoke payload migration"
 **Out of scope for this task:** Historical snapshots in `docs/plans/` and `docs/superpowers/specs/` — do not rewrite completed design/plan archives unless a doc is explicitly linked as current API reference.
 
 **Files:**
+
 - Modify: `docs/actions-architecture.md`
 - Modify: `docs/Architecture-Overview.md`
 - Modify: `docs/form-inputs.md`
@@ -856,13 +859,13 @@ rg -n 'onSubmit|onExecute|onOpenUrl|Function\(Map|gathered input data as a Map|A
 
 Expected hits to fix (minimum set):
 
-| File | Stale content | Fix |
-| --- | --- | --- |
-| `docs/actions-architecture.md` | No Submit/Execute payload section | Add sections (Step 2) |
+| File                            | Stale content                            | Fix                                                     |
+| ------------------------------- | ---------------------------------------- | ------------------------------------------------------- |
+| `docs/actions-architecture.md`  | No Submit/Execute payload section        | Add sections (Step 2)                                   |
 | `docs/Architecture-Overview.md` | “receive gathered input data as a `Map`” | Invoke types + `InheritedAdaptiveCardHandlers` (Step 3) |
-| `docs/form-inputs.md` | `onSubmit: (data) async` bare Map | `SubmitActionInvoke` + `invoke.data` (Step 4) |
-| `docs/Implementation-Status.md` | Action.Submit / Execute notes | Rows + Known Gaps (Step 5) |
-| `docs/reactive-riverpod.md` | Host callbacks paragraph | Invoke payload note (Step 6) |
+| `docs/form-inputs.md`           | `onSubmit: (data) async` bare Map        | `SubmitActionInvoke` + `invoke.data` (Step 4)           |
+| `docs/Implementation-Status.md` | Action.Submit / Execute notes            | Rows + Known Gaps (Step 5)                              |
+| `docs/reactive-riverpod.md`     | Host callbacks paragraph                 | Invoke payload note (Step 6)                            |
 
 - [x] **Step 2: `docs/actions-architecture.md` — add after "Typical Flow"**
 
@@ -972,6 +975,7 @@ git commit -m "docs: reconcile docs/ with SubmitActionInvoke and ExecuteActionIn
 ### Task 10: OpenUrl + InputChange invoke models
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart`
 
 - [x] **Step 1: Add three invoke types to `action_invoke.dart`**
@@ -1055,6 +1059,7 @@ git commit -m "feat: add OpenUrl and InputChange invoke payload types"
 ### Task 11: Handler + RawAdaptiveCard + canvas typedefs
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart`
@@ -1130,6 +1135,7 @@ git commit -m "refactor: type onOpenUrl/onOpenUrlDialog/onChange invoke callback
 ### Task 12: DefaultOpenUrl handlers (TDD)
 
 **Files:**
+
 - Create: `packages/flutter_adaptive_cards_fs/test/actions/open_url_action_invoke_test.dart`
 - Create: `packages/flutter_adaptive_cards_fs/test/actions/open_url_dialog_action_invoke_test.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart`
@@ -1187,6 +1193,7 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test test/actions/open_url_
 ### Task 13: selectAction OpenUrl + test_utils migration
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/test/select_action_tappable_test.dart`
 - Modify: `packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart`
 
@@ -1212,6 +1219,7 @@ Container `selectAction`: `{ "type": "Action.OpenUrl", "id": "container-open", "
 ### Task 14: InputChangeInvoke — tests + call sites
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/test/inputs/choice_set_test.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/test/inputs/dependent_choice_set_test.dart`
@@ -1262,6 +1270,7 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test test/inputs/choice_set
 ### Task 16: CHANGELOG + README (Phase 2)
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 - Modify: `packages/flutter_adaptive_cards_fs/README.md`
 
@@ -1325,30 +1334,30 @@ rg -n 'onOpenUrl|onOpenUrlDialog|onChange.*String id|Function\(String url\)' doc
 
 ## Out of scope (document only)
 
-| Item                                                         | Reason                                                     |
-| ------------------------------------------------------------ | ---------------------------------------------------------- |
-| `associatedInputs` on Submit/Execute                         | Separate feature; note remains in Known Gaps               |
-| Full UAM invoke envelope (`trigger`, nested `action` object) | YAGNI until a host requests Bot Framework parity           |
-| Async invoke return / card refresh response                  | Existing non-goal from dynamic-updates design              |
+| Item                                                         | Reason                                           |
+| ------------------------------------------------------------ | ------------------------------------------------ |
+| `associatedInputs` on Submit/Execute                         | Separate feature; note remains in Known Gaps     |
+| Full UAM invoke envelope (`trigger`, nested `action` object) | YAGNI until a host requests Bot Framework parity |
+| Async invoke return / card refresh response                  | Existing non-goal from dynamic-updates design    |
 
 ---
 
 ## Self-review (spec coverage)
 
-| Requirement | Task |
-| --- | --- |
-| Submit `actionId` + merged `data` on `onSubmit` | Phase 1: Tasks 1, 3 |
-| Execute `verb` + `actionId` + merged `data` on `onExecute` | Phase 1: Tasks 1, 4 |
-| `selectAction` Submit gets `actionId` | Phase 1: Task 5 |
-| `selectAction` Execute gets `verb` | Phase 1: Task 5 |
-| Remove dead canvas action handler fields | Phase 1: Task 6 |
-| OpenUrl `url` + `actionId` on `onOpenUrl` | Phase 2: Tasks 10, 12 |
-| OpenUrlDialog `url` + `actionId` on `onOpenUrlDialog` | Phase 2: Tasks 10, 12 |
-| `selectAction` OpenUrl gets `actionId` | Phase 2: Task 13 |
-| Input `onChange` typed as `InputChangeInvoke` | Phase 2: Tasks 11, 14 |
-| Canvas / RawAdaptiveCard `onChange` aligned | Phase 2: Task 11 |
-| CHANGELOG + README (both phases) | Tasks 8, 16 |
-| `docs/` reconciled (both phases) | Tasks 9, 17 |
+| Requirement                                                | Task                  |
+| ---------------------------------------------------------- | --------------------- |
+| Submit `actionId` + merged `data` on `onSubmit`            | Phase 1: Tasks 1, 3   |
+| Execute `verb` + `actionId` + merged `data` on `onExecute` | Phase 1: Tasks 1, 4   |
+| `selectAction` Submit gets `actionId`                      | Phase 1: Task 5       |
+| `selectAction` Execute gets `verb`                         | Phase 1: Task 5       |
+| Remove dead canvas action handler fields                   | Phase 1: Task 6       |
+| OpenUrl `url` + `actionId` on `onOpenUrl`                  | Phase 2: Tasks 10, 12 |
+| OpenUrlDialog `url` + `actionId` on `onOpenUrlDialog`      | Phase 2: Tasks 10, 12 |
+| `selectAction` OpenUrl gets `actionId`                     | Phase 2: Task 13      |
+| Input `onChange` typed as `InputChangeInvoke`              | Phase 2: Tasks 11, 14 |
+| Canvas / RawAdaptiveCard `onChange` aligned                | Phase 2: Task 11      |
+| CHANGELOG + README (both phases)                           | Tasks 8, 16           |
+| `docs/` reconciled (both phases)                           | Tasks 9, 17           |
 
 No placeholders remain; all code blocks are copy-paste ready.
 

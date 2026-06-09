@@ -16,24 +16,24 @@
 
 ## File map
 
-| File | Role |
-| --- | --- |
-| `packages/flutter_adaptive_cards_fs/lib/src/models/fact.dart` | Add `factsToJsonList` |
-| `packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart` | `ElementOverlay.facts` + `copyWith(clearFacts)` |
-| `packages/flutter_adaptive_cards_fs/lib/src/models/adaptive_card_update.dart` | `AdaptiveElementUpdate.facts` / `clearFacts` |
-| `packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart` | `setFacts`, `clearFacts`, merge + patch parsing |
-| `packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart` | Resolved merge for `facts` |
-| `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart` | Host `setFacts` / `clearFacts` delegates |
-| `packages/flutter_adaptive_cards_fs/lib/src/cards/containers/fact_set.dart` | Reactive facts listener |
-| `packages/flutter_adaptive_cards_fs/test/models/fact_test.dart` | `factsToJsonList` test |
-| `packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart` | Notifier tests |
-| `packages/flutter_adaptive_cards_fs/test/containers/fact_set_overlay_test.dart` | Widget tests (new) |
-| `widgetbook/lib/fact_set_overlay_page.dart` | Knob demo page (new) |
-| `widgetbook/lib/samples/fact_set/facts_overlay_demo.json` | Demo card JSON (new) |
-| `widgetbook/lib/adaptive_cards_use_cases.dart` | Register use case |
-| `docs/reactive-riverpod.md` | Overlay docs |
-| `packages/flutter_adaptive_cards_fs/README.md` | Host API table |
-| `packages/flutter_adaptive_cards_fs/CHANGELOG.md` | Unreleased entry |
+| File                                                                                         | Role                                            |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `packages/flutter_adaptive_cards_fs/lib/src/models/fact.dart`                                | Add `factsToJsonList`                           |
+| `packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart`            | `ElementOverlay.facts` + `copyWith(clearFacts)` |
+| `packages/flutter_adaptive_cards_fs/lib/src/models/adaptive_card_update.dart`                | `AdaptiveElementUpdate.facts` / `clearFacts`    |
+| `packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart`   | `setFacts`, `clearFacts`, merge + patch parsing |
+| `packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart`                         | Resolved merge for `facts`                      |
+| `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart`                  | Host `setFacts` / `clearFacts` delegates        |
+| `packages/flutter_adaptive_cards_fs/lib/src/cards/containers/fact_set.dart`                  | Reactive facts listener                         |
+| `packages/flutter_adaptive_cards_fs/test/models/fact_test.dart`                              | `factsToJsonList` test                          |
+| `packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart` | Notifier tests                                  |
+| `packages/flutter_adaptive_cards_fs/test/containers/fact_set_overlay_test.dart`              | Widget tests (new)                              |
+| `widgetbook/lib/fact_set_overlay_page.dart`                                                  | Knob demo page (new)                            |
+| `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`                                    | Demo card JSON (new)                            |
+| `widgetbook/lib/adaptive_cards_use_cases.dart`                                               | Register use case                               |
+| `docs/reactive-riverpod.md`                                                                  | Overlay docs                                    |
+| `packages/flutter_adaptive_cards_fs/README.md`                                               | Host API table                                  |
+| `packages/flutter_adaptive_cards_fs/CHANGELOG.md`                                            | Unreleased entry                                |
 
 ---
 
@@ -110,14 +110,14 @@ In `adaptive_card_document.dart`:
 final List<Fact>? facts;
 ```
 
-3. Extend `copyWith`:
+1. Extend `copyWith`:
 
 ```dart
 List<Fact>? facts,
 bool clearFacts = false,
 ```
 
-4. In `copyWith` body:
+1. In `copyWith` body:
 
 ```dart
 facts: clearFacts ? null : (facts ?? this.facts),
@@ -939,20 +939,20 @@ Verify:
 
 ## Spec coverage (self-review)
 
-| Spec requirement | Task |
-| --- | --- |
-| `List<Fact>?` on `ElementOverlay` | Task 2 |
+| Spec requirement                             | Task   |
+| -------------------------------------------- | ------ |
+| `List<Fact>?` on `ElementOverlay`            | Task 2 |
 | `AdaptiveElementUpdate.facts` / `clearFacts` | Task 2 |
-| `factsToJsonList` | Task 1 |
-| `setFacts` / `clearFacts` notifier | Task 3 |
-| `applyUpdates` / patch map | Task 3 |
-| `resolvedElementProvider` merge | Task 4 |
-| `RawAdaptiveCardState` delegates | Task 5 |
-| Reactive `AdaptiveFactSet` | Task 6 |
-| Notifier tests | Task 3 |
-| Widget tests | Task 7 |
-| Widgetbook knob demo | Task 8 |
-| Docs + changelog | Task 9 |
+| `factsToJsonList`                            | Task 1 |
+| `setFacts` / `clearFacts` notifier           | Task 3 |
+| `applyUpdates` / patch map                   | Task 3 |
+| `resolvedElementProvider` merge              | Task 4 |
+| `RawAdaptiveCardState` delegates             | Task 5 |
+| Reactive `AdaptiveFactSet`                   | Task 6 |
+| Notifier tests                               | Task 3 |
+| Widget tests                                 | Task 7 |
+| Widgetbook knob demo                         | Task 8 |
+| Docs + changelog                             | Task 9 |
 
 ## Out of scope (unchanged)
 

@@ -1,8 +1,8 @@
 # Input.Date initData Seeding Fix
 
-**Date:** 2026-06-07  
-**Status:** Approved  
-**Package:** `flutter_adaptive_cards_fs`  
+**Date:** 2026-06-07
+**Status:** Approved
+**Package:** `flutter_adaptive_cards_fs`
 **Related:** [Dynamic property updates](2026-06-03-dynamic-property-updates-design.md), Widgetbook `Form with initData` (`ac-qv-faqs.json` `bookingdate`)
 
 ## Summary
@@ -11,13 +11,13 @@ Fix `Input.Date` so host `initData` / `initInput` values appear in the field, pa
 
 ## Problem
 
-| Issue | Location | Effect |
-| ----- | -------- | ------ |
-| Empty state writes **placeholder into `controller.text`** | `date.dart` `onDocumentValueChanged` | Field looks filled while `selectedDateTime` stays `null`; `appendInput` omits the id on submit |
-| **Placeholder in controller breaks required validation** | `date.dart` `TextFormField` validator | Validator checks `controller.text.isEmpty`; placeholder text passes required check even though `selectedDateTime` is `null` |
-| **`onDocumentValueChanged` does not call `setState`** | `date.dart` | UI may not repaint after overlay seed (Time input calls `setState`) |
-| **`appendInput` and picker commit emit ISO-8601 datetime** | `date.dart` `appendInput`, `onTap` | Spec expects `yyyy-MM-dd`; round-trip with `initData` is inconsistent |
-| **No overlay-level widget test for Date** | `init_data_overlay_test.dart` | Regression gap |
+| Issue                                                      | Location                              | Effect                                                                                                                      |
+| ---------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Empty state writes **placeholder into `controller.text`**  | `date.dart` `onDocumentValueChanged`  | Field looks filled while `selectedDateTime` stays `null`; `appendInput` omits the id on submit                              |
+| **Placeholder in controller breaks required validation**   | `date.dart` `TextFormField` validator | Validator checks `controller.text.isEmpty`; placeholder text passes required check even though `selectedDateTime` is `null` |
+| **`onDocumentValueChanged` does not call `setState`**      | `date.dart`                           | UI may not repaint after overlay seed (Time input calls `setState`)                                                         |
+| **`appendInput` and picker commit emit ISO-8601 datetime** | `date.dart` `appendInput`, `onTap`    | Spec expects `yyyy-MM-dd`; round-trip with `initData` is inconsistent                                                       |
+| **No overlay-level widget test for Date**                  | `init_data_overlay_test.dart`         | Regression gap                                                                                                              |
 
 Symptom reference: `packages/flutter_adaptive_cards_fs/README.md` — "`initData` does not appear to be working on date fields"; Widgetbook seeds `'bookingdate': '2023-05-08'`.
 
@@ -25,28 +25,28 @@ Display via `initData` often works when overlay listen fires; the durable failur
 
 ## Decisions
 
-| Topic | Choice |
-| ----- | ------ |
-| Placeholder | `hintText` only; `controller.text` is `''` or a real `yyyy-MM-dd` value |
-| Submit / overlay / `onChange` | `yyyy-MM-dd` via shared formatter |
-| Widget sync | `setState` in `onDocumentValueChanged` (mirror `time.dart`) |
-| `yyyy-MM-dd` parsing | `DateFormat.parseStrict('yyyy-MM-dd')` |
-| ISO datetime `initData` | **Behavior A:** calendar date only — extract date portion before `T` or space; ignore time and timezone |
-| Lifecycle / notifier | No changes; widget sync is sufficient |
-| Locale-aware display | Out of scope (separate README item) |
-| `Input.Time` | Out of scope unless same placeholder pattern found |
+| Topic                         | Choice                                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Placeholder                   | `hintText` only; `controller.text` is `''` or a real `yyyy-MM-dd` value                                 |
+| Submit / overlay / `onChange` | `yyyy-MM-dd` via shared formatter                                                                       |
+| Widget sync                   | `setState` in `onDocumentValueChanged` (mirror `time.dart`)                                             |
+| `yyyy-MM-dd` parsing          | `DateFormat.parseStrict('yyyy-MM-dd')`                                                                  |
+| ISO datetime `initData`       | **Behavior A:** calendar date only — extract date portion before `T` or space; ignore time and timezone |
+| Lifecycle / notifier          | No changes; widget sync is sufficient                                                                   |
+| Locale-aware display          | Out of scope (separate README item)                                                                     |
+| `Input.Time`                  | Out of scope unless same placeholder pattern found                                                      |
 
 ### ISO initData semantics (Behavior A)
 
 Hosts may send ISO datetimes where the **calendar date** is intended (e.g. `'2023-05-08T00:00:00Z'` means May 8 everywhere). Time and timezone offsets are **ignored**.
 
-| Input | Parsed date |
-| ----- | ----------- |
-| `'2023-05-08'` | `2023-05-08` |
-| `'2023-05-08T00:00:00Z'` | `2023-05-08` |
-| `'2023-05-08T23:00:00.000Z'` | `2023-05-08` (not May 9) |
-| `'2023-05-08 14:30:00'` | `2023-05-08` |
-| `'not-a-date'` | `null` → empty field, id omitted on submit |
+| Input                        | Parsed date                                |
+| ---------------------------- | ------------------------------------------ |
+| `'2023-05-08'`               | `2023-05-08`                               |
+| `'2023-05-08T00:00:00Z'`     | `2023-05-08`                               |
+| `'2023-05-08T23:00:00.000Z'` | `2023-05-08` (not May 9)                   |
+| `'2023-05-08 14:30:00'`      | `2023-05-08`                               |
+| `'not-a-date'`               | `null` → empty field, id omitted on submit |
 
 Do **not** use `DateTime.parse` + `.toLocal()` for ISO fallback — that maps instants to local calendar days and varies by device.
 
@@ -103,13 +103,13 @@ String formatAdaptiveDateValue(DateTime date);
 
 ## Testing
 
-| Test file | Coverage |
-| --------- | -------- |
-| `test/utils/date_input_utils_test.dart` | Strict parse, ISO date-portion (including `T23:00:00.000Z` → May 8), invalid/empty |
-| `test/inputs/date_edgecases_test.dart` | Empty controller + hintText; required validation; appendInput `yyyy-MM-dd` |
-| `test/inputs/init_data_overlay_test.dart` | initData overlay + controller + `appendInput`; programmatic `initInput` |
-| `test/inputs/date_input_test.dart` | Exact `yyyy-MM-dd` in `appendInput` |
-| Existing picker tests | Should continue to pass (assert controller text only today) |
+| Test file                                 | Coverage                                                                           |
+| ----------------------------------------- | ---------------------------------------------------------------------------------- |
+| `test/utils/date_input_utils_test.dart`   | Strict parse, ISO date-portion (including `T23:00:00.000Z` → May 8), invalid/empty |
+| `test/inputs/date_edgecases_test.dart`    | Empty controller + hintText; required validation; appendInput `yyyy-MM-dd`         |
+| `test/inputs/init_data_overlay_test.dart` | initData overlay + controller + `appendInput`; programmatic `initInput`            |
+| `test/inputs/date_input_test.dart`        | Exact `yyyy-MM-dd` in `appendInput`                                                |
+| Existing picker tests                     | Should continue to pass (assert controller text only today)                        |
 
 Assert `selectedDateTime` in initData overlay tests where useful. Optional follow-up: overlay assertion after picker commit.
 

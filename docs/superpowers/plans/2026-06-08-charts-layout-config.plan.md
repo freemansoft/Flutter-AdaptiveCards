@@ -16,66 +16,66 @@ These are the values to preserve as `FallbackConfigs` defaults so golden tests s
 
 ### Line (`line_chart.dart`)
 
-| Property | Current literal | Notes |
-| --- | --- | --- |
-| `height` | `250` | `SizedBox` around chart |
-| `emptyMinX` / `emptyMaxX` | `0` / `10` | No-data axis bounds |
-| `emptyMinY` / `emptyMaxY` | `0` / `10` | No-data axis bounds |
-| `degenerateRangeBump` | `1` | Added when `max == min` |
-| `zeroRangeFallback` | `10` | Y-range when computed range is 0 |
-| `yAxisPaddingFactor` | `0.1` | 10% vertical headroom |
-| `isCurved` | `true` | Line stroke style |
-| `barWidth` | `3` | Stroke width |
-| `isStrokeCapRound` | `true` | Line cap |
-| `showDots` | `false` | `FlDotData.show` |
-| `showAreaBelow` | `false` | `BarAreaData.show` |
-| `showTitles` | `true` | Axis titles master switch |
-| `showRightTitles` | `false` | Right axis labels |
-| `showTopTitles` | `false` | Top axis labels |
-| `showGrid` | `true` | Grid lines |
-| `showBorder` | `true` | Chart border |
-| `borderColor` | `#37434d` | `Color(0xff37434d)` |
-| `borderWidth` | `1` | Border stroke width |
+| Property                  | Current literal | Notes                            |
+| ------------------------- | --------------- | -------------------------------- |
+| `height`                  | `250`           | `SizedBox` around chart          |
+| `emptyMinX` / `emptyMaxX` | `0` / `10`      | No-data axis bounds              |
+| `emptyMinY` / `emptyMaxY` | `0` / `10`      | No-data axis bounds              |
+| `degenerateRangeBump`     | `1`             | Added when `max == min`          |
+| `zeroRangeFallback`       | `10`            | Y-range when computed range is 0 |
+| `yAxisPaddingFactor`      | `0.1`           | 10% vertical headroom            |
+| `isCurved`                | `true`          | Line stroke style                |
+| `barWidth`                | `3`             | Stroke width                     |
+| `isStrokeCapRound`        | `true`          | Line cap                         |
+| `showDots`                | `false`         | `FlDotData.show`                 |
+| `showAreaBelow`           | `false`         | `BarAreaData.show`               |
+| `showTitles`              | `true`          | Axis titles master switch        |
+| `showRightTitles`         | `false`         | Right axis labels                |
+| `showTopTitles`           | `false`         | Top axis labels                  |
+| `showGrid`                | `true`          | Grid lines                       |
+| `showBorder`              | `true`          | Chart border                     |
+| `borderColor`             | `#37434d`       | `Color(0xff37434d)`              |
+| `borderWidth`             | `1`             | Border stroke width              |
 
 ### Bar — vertical, horizontal, grouped, stacked (`bar_chart.dart`)
 
-| Property | Current literal | Notes |
-| --- | --- | --- |
-| `height` | `250` | `SizedBox` around chart |
-| `emptyMaxY` | `10` | Safety when no data |
-| `maxYPaddingFactor` | `1.2` | 20% value-axis headroom |
-| `barWidth` | `16` | Rod width (all variants) |
-| `barsSpace` | `4` | Space between rods in a group |
-| `barBorderRadius` | `2` | `BorderRadius.circular(2)` |
-| `stackedBarBorderRadius` | `0` | Stacked outer rod |
-| `alignment` | `spaceAround` | `BarChartAlignment.spaceAround` |
-| `categoryAxisReservedSize` | `32` | Label axis space |
-| `categoryLabelFontSize` | `10` | Category label `TextStyle` |
-| `showCategoryTitles` | `true` | Bottom/category axis labels |
+| Property                   | Current literal | Notes                           |
+| -------------------------- | --------------- | ------------------------------- |
+| `height`                   | `250`           | `SizedBox` around chart         |
+| `emptyMaxY`                | `10`            | Safety when no data             |
+| `maxYPaddingFactor`        | `1.2`           | 20% value-axis headroom         |
+| `barWidth`                 | `16`            | Rod width (all variants)        |
+| `barsSpace`                | `4`             | Space between rods in a group   |
+| `barBorderRadius`          | `2`             | `BorderRadius.circular(2)`      |
+| `stackedBarBorderRadius`   | `0`             | Stacked outer rod               |
+| `alignment`                | `spaceAround`   | `BarChartAlignment.spaceAround` |
+| `categoryAxisReservedSize` | `32`            | Label axis space                |
+| `categoryLabelFontSize`    | `10`            | Category label `TextStyle`      |
+| `showCategoryTitles`       | `true`          | Bottom/category axis labels     |
 
 ### Pie (`pie_donut_chart.dart`, `isDonut: false`)
 
-| Property | Current literal | Notes |
-| --- | --- | --- |
-| `height` | `200` | `SizedBox` around chart |
-| `centerSpaceRadius` | `0` | Full pie |
-| `sectionsSpace` | `2` | Gap between slices |
-| `sectionRadius` | `100` | Slice outer radius |
-| `titleFontSize` | `12` | On-slice label |
-| `titleFontWeight` | `bold` | On-slice label |
-| `titleColor` | `#FFFFFF` | `Colors.white` |
+| Property            | Current literal | Notes                   |
+| ------------------- | --------------- | ----------------------- |
+| `height`            | `200`           | `SizedBox` around chart |
+| `centerSpaceRadius` | `0`             | Full pie                |
+| `sectionsSpace`     | `2`             | Gap between slices      |
+| `sectionRadius`     | `100`           | Slice outer radius      |
+| `titleFontSize`     | `12`            | On-slice label          |
+| `titleFontWeight`   | `bold`          | On-slice label          |
+| `titleColor`        | `#FFFFFF`       | `Colors.white`          |
 
 ### Donut / Gauge (`pie_donut_chart.dart`, `isDonut: true`)
 
-| Property | Current literal | Notes |
-| --- | --- | --- |
-| `height` | `200` | Same container as pie |
-| `centerSpaceRadius` | `40` | Hole radius |
-| `sectionsSpace` | `2` | Gap between slices |
-| `sectionRadius` | `50` | Slice outer radius |
-| `titleFontSize` | `12` | Same as pie |
-| `titleFontWeight` | `bold` | Same as pie |
-| `titleColor` | `#FFFFFF` | Same as pie |
+| Property            | Current literal | Notes                 |
+| ------------------- | --------------- | --------------------- |
+| `height`            | `200`           | Same container as pie |
+| `centerSpaceRadius` | `40`            | Hole radius           |
+| `sectionsSpace`     | `2`             | Gap between slices    |
+| `sectionRadius`     | `50`            | Slice outer radius    |
+| `titleFontSize`     | `12`            | Same as pie           |
+| `titleFontWeight`   | `bold`          | Same as pie           |
+| `titleColor`        | `#FFFFFF`       | Same as pie           |
 
 **Out of scope (keep as logic, not config):** `rotationQuarterTurns` for horizontal bars (derived from chart type), color palette resolution (`chartColors` — already HostConfig-driven), `SeparatorElement` spacing.
 
@@ -83,20 +83,20 @@ These are the values to preserve as `FallbackConfigs` defaults so golden tests s
 
 ## File map
 
-| File | Role |
-| --- | --- |
-| `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/charts_layout_config.dart` | **Create** — `ChartsLayoutConfig` + nested section classes + static resolvers |
-| `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_config.dart` | Add `chartsLayout` field + `fromJson` parse |
-| `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/fallback_configs.dart` | Add `chartsLayoutConfig` defaults |
-| `packages/flutter_adaptive_cards_fs/lib/src/reference_resolver.dart` | `getChartsLayoutConfig()` + convenience `resolve*Layout()` delegates |
-| `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_config_schema.json` | Add `ChartsLayoutConfig` schema definitions |
-| `packages/flutter_adaptive_cards_fs/test/hostconfig/charts_layout_config.json` | **Create** — fixture for parsing test |
-| `packages/flutter_adaptive_cards_fs/test/hostconfig/charts_layout_config_test.dart` | **Create** — unit tests |
-| `packages/flutter_adaptive_cards_fs/test/host_config_test.dart` | Add `chartsLayout` round-trip via `HostConfig.fromJson` |
-| `packages/flutter_adaptive_charts_fs/lib/src/charts/line_chart.dart` | Replace literals with resolver |
-| `packages/flutter_adaptive_charts_fs/lib/src/charts/bar_chart.dart` | Replace literals with resolver |
-| `packages/flutter_adaptive_charts_fs/lib/src/charts/pie_donut_chart.dart` | Replace literals with resolver |
-| `.agents/skills/adaptive-cards-hostconfig-theme/SKILL.md` | Document `chartsLayout` section |
+| File                                                                                | Role                                                                          |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/charts_layout_config.dart`   | **Create** — `ChartsLayoutConfig` + nested section classes + static resolvers |
+| `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_config.dart`            | Add `chartsLayout` field + `fromJson` parse                                   |
+| `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/fallback_configs.dart`       | Add `chartsLayoutConfig` defaults                                             |
+| `packages/flutter_adaptive_cards_fs/lib/src/reference_resolver.dart`                | `getChartsLayoutConfig()` + convenience `resolve*Layout()` delegates          |
+| `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_config_schema.json`     | Add `ChartsLayoutConfig` schema definitions                                   |
+| `packages/flutter_adaptive_cards_fs/test/hostconfig/charts_layout_config.json`      | **Create** — fixture for parsing test                                         |
+| `packages/flutter_adaptive_cards_fs/test/hostconfig/charts_layout_config_test.dart` | **Create** — unit tests                                                       |
+| `packages/flutter_adaptive_cards_fs/test/host_config_test.dart`                     | Add `chartsLayout` round-trip via `HostConfig.fromJson`                       |
+| `packages/flutter_adaptive_charts_fs/lib/src/charts/line_chart.dart`                | Replace literals with resolver                                                |
+| `packages/flutter_adaptive_charts_fs/lib/src/charts/bar_chart.dart`                 | Replace literals with resolver                                                |
+| `packages/flutter_adaptive_charts_fs/lib/src/charts/pie_donut_chart.dart`           | Replace literals with resolver                                                |
+| `.agents/skills/adaptive-cards-hostconfig-theme/SKILL.md`                           | Document `chartsLayout` section                                               |
 
 ---
 
@@ -571,21 +571,21 @@ final layout = styleResolver.resolveLineChartLayout();
 
 Replace literals:
 
-| Before | After |
-| --- | --- |
-| `minY = 0; maxY = 10; minX = 0; maxX = 10` | `layout.emptyMinY`, etc. |
-| `maxX += 1` / `maxY += 1` | `+= layout.degenerateRangeBump` |
-| `yRange = 10` | `layout.zeroRangeFallback` |
-| `maxY += yRange * 0.1` | `* layout.yAxisPaddingFactor` |
-| `isCurved: true` | `layout.isCurved` |
-| `barWidth: 3` | `layout.barWidth` |
-| `isStrokeCapRound: true` | `layout.isStrokeCapRound` |
-| `FlDotData(show: false)` | `FlDotData(show: layout.showDots)` |
-| `BarAreaData(show: false)` | `BarAreaData(show: layout.showAreaBelow)` |
-| `height: 250` | `layout.height` |
-| `FlTitlesData(...)` const fields | Use `layout.showTitles`, `layout.showRightTitles`, `layout.showTopTitles` |
-| `FlGridData(show: true)` | `FlGridData(show: layout.showGrid)` |
-| `FlBorderData` color/width | `layout.showBorder`, `layout.borderColor`, `layout.borderWidth` |
+| Before                                     | After                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------- |
+| `minY = 0; maxY = 10; minX = 0; maxX = 10` | `layout.emptyMinY`, etc.                                                  |
+| `maxX += 1` / `maxY += 1`                  | `+= layout.degenerateRangeBump`                                           |
+| `yRange = 10`                              | `layout.zeroRangeFallback`                                                |
+| `maxY += yRange * 0.1`                     | `* layout.yAxisPaddingFactor`                                             |
+| `isCurved: true`                           | `layout.isCurved`                                                         |
+| `barWidth: 3`                              | `layout.barWidth`                                                         |
+| `isStrokeCapRound: true`                   | `layout.isStrokeCapRound`                                                 |
+| `FlDotData(show: false)`                   | `FlDotData(show: layout.showDots)`                                        |
+| `BarAreaData(show: false)`                 | `BarAreaData(show: layout.showAreaBelow)`                                 |
+| `height: 250`                              | `layout.height`                                                           |
+| `FlTitlesData(...)` const fields           | Use `layout.showTitles`, `layout.showRightTitles`, `layout.showTopTitles` |
+| `FlGridData(show: true)`                   | `FlGridData(show: layout.showGrid)`                                       |
+| `FlBorderData` color/width                 | `layout.showBorder`, `layout.borderColor`, `layout.borderWidth`           |
 
 - [ ] **Step 2: Run chart golden tests (non-update)**
 
@@ -641,19 +641,19 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.da
 final layout = styleResolver.resolveBarChartLayout();
 ```
 
-| Before | After |
-| --- | --- |
-| `maxY = 10` (safety) | `layout.emptyMaxY` |
-| `width: 16` | `layout.barWidth` |
-| `barsSpace: 4` | `layout.barsSpace` |
-| `BorderRadius.circular(2)` | `BorderRadius.circular(layout.barBorderRadius)` |
-| `BorderRadius.zero` (stacked) | `BorderRadius.circular(layout.stackedBarBorderRadius)` |
-| `maxY *= 1.2` | `maxY *= layout.maxYPaddingFactor` |
-| `height: 250` | `layout.height` |
-| `BarChartAlignment.spaceAround` | `_toFlChartAlignment(layout.alignment)` |
-| `reservedSize: 32` | `layout.categoryAxisReservedSize` |
-| `fontSize: 10` | `layout.categoryLabelFontSize` |
-| `showTitles: true` | `layout.showCategoryTitles` |
+| Before                          | After                                                  |
+| ------------------------------- | ------------------------------------------------------ |
+| `maxY = 10` (safety)            | `layout.emptyMaxY`                                     |
+| `width: 16`                     | `layout.barWidth`                                      |
+| `barsSpace: 4`                  | `layout.barsSpace`                                     |
+| `BorderRadius.circular(2)`      | `BorderRadius.circular(layout.barBorderRadius)`        |
+| `BorderRadius.zero` (stacked)   | `BorderRadius.circular(layout.stackedBarBorderRadius)` |
+| `maxY *= 1.2`                   | `maxY *= layout.maxYPaddingFactor`                     |
+| `height: 250`                   | `layout.height`                                        |
+| `BarChartAlignment.spaceAround` | `_toFlChartAlignment(layout.alignment)`                |
+| `reservedSize: 32`              | `layout.categoryAxisReservedSize`                      |
+| `fontSize: 10`                  | `layout.categoryLabelFontSize`                         |
+| `showTitles: true`              | `layout.showCategoryTitles`                            |
 
 Remove the `// TODO(username): make configurable` comment on bar width.
 
@@ -688,13 +688,13 @@ final layout = widget.isDonut
     : styleResolver.resolvePieChartLayout();
 ```
 
-| Before | After |
-| --- | --- |
-| `radius: widget.isDonut ? 50 : 100` | `layout.sectionRadius` |
+| Before                                           | After                                                                                                     |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `radius: widget.isDonut ? 50 : 100`              | `layout.sectionRadius`                                                                                    |
 | `titleStyle: const TextStyle(fontSize: 12, ...)` | `TextStyle(fontSize: layout.titleFontSize, fontWeight: layout.titleFontWeight, color: layout.titleColor)` |
-| `height: 200` | `layout.height` |
-| `centerSpaceRadius: widget.isDonut ? 40 : 0` | `layout.centerSpaceRadius` |
-| `sectionsSpace: 2` | `layout.sectionsSpace` |
+| `height: 200`                                    | `layout.height`                                                                                           |
+| `centerSpaceRadius: widget.isDonut ? 40 : 0`     | `layout.centerSpaceRadius`                                                                                |
+| `sectionsSpace: 2`                               | `layout.sectionsSpace`                                                                                    |
 
 - [ ] **Step 2: Run tests**
 
@@ -765,7 +765,6 @@ JSON example:
     "donut": { "centerSpaceRadius": 40, "sectionRadius": 50 }
   }
 }
-```
 ```
 
 - [ ] **Step 3: Commit**

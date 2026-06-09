@@ -12,10 +12,10 @@
 
 **Current state (post-implementation):**
 
-| Type           | Model file                         | Status |
-| -------------- | ---------------------------------- | ------ |
-| `Fact`         | `lib/src/models/fact.dart`         | Typed; `factsFromJsonList`; exported |
-| `MediaSource`  | `lib/src/models/media_source.dart` | Typed; `mediaSourcesFromJsonList`; exported |
+| Type           | Model file                         | Status                                                                             |
+| -------------- | ---------------------------------- | ---------------------------------------------------------------------------------- |
+| `Fact`         | `lib/src/models/fact.dart`         | Typed; `factsFromJsonList`; exported                                               |
+| `MediaSource`  | `lib/src/models/media_source.dart` | Typed; `mediaSourcesFromJsonList`; exported                                        |
 | `Input.Choice` | `lib/src/models/choice.dart`       | Typed; `ElementOverlay.choices` is `List<Choice>`; `SearchModel` removed; exported |
 
 ---
@@ -254,8 +254,8 @@ String _titleForStoredValue(String storedValue, List<Choice> choices) {
 }
 ```
 
-4. Update `_syncFilteredControllerText`, `_buildCompact`, `_buildExpandedMultiSelect`, `_buildFiltered` to take `List<Choice>`.
-5. `RawAdaptiveCard.searchList` call: pass `choices` list to `ChoiceFilter`.
+1. Update `_syncFilteredControllerText`, `_buildCompact`, `_buildExpandedMultiSelect`, `_buildFiltered` to take `List<Choice>`.
+2. `RawAdaptiveCard.searchList` call: pass `choices` list to `ChoiceFilter`.
 
 - [x] **Step 3: Refactor choice_filter.dart**
 
