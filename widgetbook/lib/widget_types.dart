@@ -131,6 +131,13 @@ class Badge extends StatelessWidget {
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
+/// Stub for 'Icon' route (v1.5 hub)
+class Icon extends StatelessWidget {
+  const Icon({super.key});
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
+
 /// Stub for 'Rating' route (v1.6)
 class Rating extends StatelessWidget {
   const Rating({super.key});

@@ -58,6 +58,12 @@ Comprehensive specification for HostConfig implementation and mapping to Flutter
 
 High-level system architecture showing package structure, widget hierarchy, and state management (Riverpod internals vs consumer API).
 
+### [optional-packages-and-extensions.md](./optional-packages-and-extensions.md)
+
+**Status**: ✅ Current | **Category**: Architecture
+
+Why charts and templating are separate packages, how to opt in via `CardTypeRegistry.addedElements`, and rules for future optional extension packages (gauge, host-specific elements).
+
 ### [reactive-riverpod.md](./reactive-riverpod.md)
 
 **Status**: ✅ Current | **Category**: Architecture
@@ -182,4 +188,4 @@ When adding or updating documentation:
 
 ---
 
-Last Updated: 2026-06-03
+Last Updated: 2026-06-08

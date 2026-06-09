@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/bar_chart.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/gauge_chart.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/line_chart.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/pie_donut_chart.dart';
 
@@ -23,12 +24,7 @@ class CardChartsRegistry {
       adaptiveMap: map,
       isDonut: false,
     ),
-    'Chart.Gauge':
-        // Implementing Gauge as Donut for now (or Pie)
-        (map) => AdaptivePieChart(
-          adaptiveMap: map,
-          isDonut: true,
-        ),
+    'Chart.Gauge': (map) => AdaptiveGaugeChart(adaptiveMap: map),
 
     'Chart.Line': (map) => AdaptiveLineChart(adaptiveMap: map),
 

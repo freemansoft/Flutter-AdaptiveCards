@@ -9,8 +9,8 @@ This document provides a high-level overview of the system architecture for the 
 The repository is organized as a monorepo containing multiple related packages:
 
 - **`flutter_adaptive_cards_fs`**: The core library that parses Adaptive Card JSON into Flutter widgets. It handles element rendering, layout, styling via HostConfig, and user interactions.
-- **`flutter_adaptive_template_fs`**: The templating engine that merges data JSON into a template JSON structure, following the Adaptive Cards Templating language specification.
-- **`flutter_adaptive_charts_fs`**: A supplemental library for rendering charting components (e.g., bar charts, pie charts) as extensions to the standard Adaptive Cards schema.
+- **`flutter_adaptive_charts_fs`**: A supplemental library for rendering charting components (e.g., bar charts, pie charts) as extensions to the standard Adaptive Cards schema. **Not part of the core package** — see [optional-packages-and-extensions.md](./optional-packages-and-extensions.md).
+- **`flutter_adaptive_template_fs`**: The templating engine that merges data JSON into template JSON (Adaptive Cards Templating language). **Not part of the core package** — see [optional-packages-and-extensions.md](./optional-packages-and-extensions.md).
 - **`adaptive_explorer`**: A design studio desktop application that allows developers to author, preview, and debug Adaptive Cards, templates, and data payloads.
 
 ## Widget Hierarchy
@@ -65,10 +65,16 @@ From the perspective of a host integrating `flutter_adaptive_cards_fs`:
 
 No third-party DI package is required at the app level.
 
+## Optional packages and third-party isolation
+
+Charts and templating live in **separate packages** so apps that do not use those features do not pull in **fl_chart** or the templating evaluator. Optional extensions register through `CardTypeRegistry.addedElements` (for example `CardChartsRegistry.additionalChartElements`).
+
+See [optional-packages-and-extensions.md](./optional-packages-and-extensions.md) for the full strategy, consumer checklist, and rules for future extension packages.
+
 ## Extension Points
 
 The architecture is designed to be extensible:
 
-- **`CardTypeRegistry`**: Allows consumers to register custom parsers and widgets for new element types (e.g., adding a custom `MyCompany.MapWidget`).
+- **`CardTypeRegistry`**: Allows consumers to register custom parsers and widgets for new element types (e.g., adding a custom `MyCompany.MapWidget`, or merging chart/gauge registries from optional packages).
 - **`ActionTypeRegistry`**: Allows consumers to override default action behaviors or add support for custom action types.
 - **`HostConfig`**: Provides a robust theming system to ensure the rendered cards match the host application's branding and design language.

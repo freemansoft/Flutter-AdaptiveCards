@@ -1,0 +1,27 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Gauge Chart Example",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Chart.Gauge",
+      "title": "Performance",
+      "subLabel": "Q1 target",
+      "min": 0,
+      "max": 100,
+      "value": 75,
+      "valueFormat": "Percentage",
+      "showLegend": true,
+      "showMinMax": true,
+      "segments": [
+        { "color": "categoricalRed", "value": 50, "legend": "Below target" },
+        { "color": "categoricalGreen", "value": 50, "legend": "On target" }
+      ]
+    }
+  ]
+}

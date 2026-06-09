@@ -2,7 +2,12 @@
 
 ## [0.10.0]
 
-- no changes yet
+- **`Chart.Gauge`:** **`AdaptiveGaugeChart`** and **`GaugePainter`** (`CustomPainter` semicircular gauge) — `value`, `min` / `max`, `segments`, `valueFormat` (`percentage` / `fraction`), `title`, `subLabel`, `showLegend`, `showMinMax`, and `colorSet`.
+- **`ChartChrome`:** shared title and legend wrapper used by bar, line, pie, donut, and gauge chart elements.
+- **Chart chrome on existing types:** bar, line, pie, and donut charts now render `title`, `xAxisTitle`, `yAxisTitle`, `showBarValues`, `showLegend`, and `colorSet` from element JSON.
+- **`CardChartsRegistry`:** registers **`Chart.Gauge`** (replaces prior donut-only placeholder).
+- Tests: gauge widget and painter tests; sample JSON **`test/samples/v1.6/chart_gauge.json`**; golden **`test/golden_v1_6_test.dart`** (`v1_6_gauge.png`).
+- README: documents **`colorSet`**, Teams semantic color tokens, and chart chrome properties.
 
 ## [0.9.0]
 

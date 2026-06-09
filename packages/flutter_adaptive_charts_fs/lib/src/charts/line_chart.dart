@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
 
 /// Renders Adaptive Card line chart elements using fl_chart.
 ///
@@ -45,6 +46,12 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
   /// Upper bound of the horizontal axis.
   late double maxX;
 
+  String? _chartTitle;
+  String? _xAxisTitle;
+  String? _yAxisTitle;
+  bool _showLegend = false;
+  List<ChartLegendEntry> _legendEntries = [];
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -53,6 +60,15 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
 
   void _parseData() {
     final layout = styleResolver.resolveLineChartLayout();
+    final colorSet = adaptiveMap['colorSet']?.toString();
+    final palette = styleResolver.resolveChartPalette(colorSet: colorSet);
+
+    _chartTitle = adaptiveMap['title']?.toString();
+    _xAxisTitle = adaptiveMap['xAxisTitle']?.toString();
+    _yAxisTitle = adaptiveMap['yAxisTitle']?.toString();
+    _showLegend = adaptiveMap['showLegend'] as bool? ?? false;
+    _legendEntries = [];
+
     final data = adaptiveMap['data'];
     lineBarsData = [];
 
@@ -70,7 +86,6 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
 
     final Map<String, List<FlSpot>> seriesSpots = {};
     final Map<String, Color> seriesColors = {};
-    final List<Color> defaultPalette = styleResolver.resolveChartPalette();
     int seriesCount = 0;
 
     for (final item in data) {
@@ -90,12 +105,16 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
 
       if (!seriesSpots.containsKey(series)) {
         seriesSpots[series] = [];
-        final Color fallback =
-            defaultPalette[seriesCount % defaultPalette.length];
+        final Color fallback = palette[seriesCount % palette.length];
         seriesColors[series] = styleResolver.resolveChartColor(
           colorStr,
           fallback: fallback,
         );
+        if (_showLegend) {
+          _legendEntries.add(
+            ChartLegendEntry(label: series, color: seriesColors[series]!),
+          );
+        }
         seriesCount++;
       }
       seriesSpots[series]!.add(FlSpot(x, y));
@@ -109,8 +128,7 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
     if (maxX == minX) maxX += layout.degenerateRangeBump;
     if (maxY == minY) maxY += layout.degenerateRangeBump;
 
-    double yRange = maxY - minY;
-    if (yRange == 0) yRange = layout.zeroRangeFallback;
+    final yRange = maxY - minY == 0 ? layout.zeroRangeFallback : maxY - minY;
     maxY += yRange * layout.yAxisPaddingFactor;
     minY -= yRange * layout.yAxisPaddingFactor;
 
@@ -131,36 +149,76 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
     });
   }
 
+  Widget _axisName(BuildContext context, String? name) {
+    if (name == null || name.isEmpty) return const SizedBox.shrink();
+    return Text(name, style: Theme.of(context).textTheme.labelSmall);
+  }
+
+  SideTitles _axisValueTitles(LineChartLayout layout) {
+    return SideTitles(
+      showTitles: layout.showTitles,
+      reservedSize: 32,
+      getTitlesWidget: (val, meta) {
+        if (!layout.showTitles) {
+          return const SizedBox.shrink();
+        }
+        final label = val % 1 == 0
+            ? val.toInt().toString()
+            : val.toStringAsFixed(1);
+        return SideTitleWidget(
+          meta: meta,
+          child: Text(label, style: const TextStyle(fontSize: 10)),
+        );
+      },
+    );
+  }
+
+  double _axisNameSize(String? name) => name != null && name.isNotEmpty ? 24 : 0;
+
   @override
   Widget build(BuildContext context) {
     final layout = styleResolver.resolveLineChartLayout();
 
     return SeparatorElement(
       adaptiveMap: adaptiveMap,
-      child: SizedBox(
-        height: layout.height,
-        child: LineChart(
-          LineChartData(
-            lineBarsData: lineBarsData,
-            minX: minX,
-            maxX: maxX,
-            minY: minY,
-            maxY: maxY,
-            titlesData: FlTitlesData(
-              show: layout.showTitles,
-              rightTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: layout.showRightTitles),
+      child: ChartChrome(
+        title: _chartTitle,
+        legendEntries: _showLegend ? _legendEntries : const [],
+        chart: SizedBox(
+          height: layout.height,
+          child: LineChart(
+            LineChartData(
+              lineBarsData: lineBarsData,
+              minX: minX,
+              maxX: maxX,
+              minY: minY,
+              maxY: maxY,
+              titlesData: FlTitlesData(
+                show: layout.showTitles,
+                bottomTitles: AxisTitles(
+                  sideTitles: _axisValueTitles(layout),
+                  axisNameWidget: _axisName(context, _xAxisTitle),
+                  axisNameSize: _axisNameSize(_xAxisTitle),
+                ),
+                leftTitles: AxisTitles(
+                  sideTitles: _axisValueTitles(layout),
+                  axisNameWidget: _axisName(context, _yAxisTitle),
+                  axisNameSize: _axisNameSize(_yAxisTitle),
+                ),
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: layout.showRightTitles),
+                ),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: layout.showTopTitles),
+                ),
               ),
-              topTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: layout.showTopTitles),
-              ),
-            ),
-            gridData: FlGridData(show: layout.showGrid),
-            borderData: FlBorderData(
-              show: layout.showBorder,
-              border: Border.all(
-                color: layout.borderColor,
-                width: layout.borderWidth,
+              gridData: FlGridData(show: layout.showGrid),
+              borderData: FlBorderData(
+                show: layout.showBorder,
+                border: Border.all(
+                  color: layout.borderColor,
+                  width: layout.borderWidth,
+                ),
               ),
             ),
           ),

@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Public exports for **`RawAdaptiveCard`**, **`RawAdaptiveCardState`**, and **`DataQuery`** (host integration and backend invoke wiring).
 - **Data.Query `associatedInputs`:** sibling input values merged into `DataQuery.parameters` on `InputChangeInvoke` when `auto` (default).
 - **Action.Submit / Action.Execute `associatedInputs`:** `"none"` skips input merge into invoke `data`.
+- **`Icon` element** (v1.5 documentation hub): **`AdaptiveIcon`** registered for type `Icon`; Fluent name catalog (~68 common names) via **`fluent_icon_map.dart`** with Material icon fallbacks; `size`, `color`, and `style` (`Filled` / `Regular`) tokens; optional **`selectAction`** via **`AdaptiveTappable`**.
+- **Chart color tokens:** **`chart_colors_config.dart`** — HostConfig palette + categorical, sequential, and diverging palettes plus Teams semantic tokens (`categoricalBlue`, `sequential5`, `divergingRed`, `good`, …).
+- **`ReferenceResolver`:** **`resolveChartPalette({colorSet})`** selects named palettes; **`resolveChartColor()`** resolves semantic chart tokens before hex parsing.
+- Tests: **`test/elements/icon_test.dart`**, **`test/hostconfig/chart_color_sets_test.dart`**, **`test/golden_icon_test.dart`**.
 
 ## [0.10.0]
 
