@@ -13,6 +13,11 @@ import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document_no
 import 'package:flutter_adaptive_cards_fs/src/riverpod/show_card_ui_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Host-supplied user id for root-card `refresh.userIds` auto-refresh gating.
+final currentUserIdProvider = Provider<String?>(
+  (ref) => null,
+);
+
 /// Card-scoped element type registry; overridden per [RawAdaptiveCard].
 final cardTypeRegistryProvider = Provider<CardTypeRegistry>(
   (ref) => const CardTypeRegistry(),

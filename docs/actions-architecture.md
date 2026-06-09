@@ -67,6 +67,22 @@ When **`DefaultOpenUrlDialogAction`** runs:
 
 When an input value changes, **`RawAdaptiveCardState.changeValue`** builds **`InputChangeInvoke`** (`inputId`, `value`, `dataQuery`, `cardState`) and calls the host **`onChange`** handler (from **`AdaptiveCardsCanvas.onChange`** or **`InheritedAdaptiveCardHandlers.onChange`**).
 
+## Root card `refresh` payload
+
+When the root card JSON defines **`refresh.action`**, the library may fire a refresh invoke in two cases:
+
+1. **Manual** — the user taps the refresh affordance (top-right icon on the root card).
+2. **Auto-expire** — once after the first frame when **`refresh.expires`** is in the past.
+
+Auto-refresh is gated by **`refresh.userIds`**: when that list is non-empty, auto-refresh runs only when **`AdaptiveCardsCanvas.currentUserId`** (exposed via **`currentUserIdProvider`**) is in the list. Manual refresh is not gated by **`userIds`**.
+
+The invoke is built like **`Action.Execute`**: merge nested action **`data`** with **`collectInputValues()`** (honoring **`associatedInputs`** on the nested action), then:
+
+1. Build **`RefreshActionInvoke`** with merged **`data`**, action **`verb`**, and optional action **`id`** (`actionId`).
+2. Call **`InheritedAdaptiveCardHandlers.onRefresh(invoke)`** when set; otherwise fall back to **`onExecute`** with the same merged payload as **`ExecuteActionInvoke`**.
+
+The library does not perform bot round-trips; the host replaces card JSON when refresh completes (for example by updating the map passed to **`RawAdaptiveCard`**).
+
 ---
 
 ## Design Rationale 🔍

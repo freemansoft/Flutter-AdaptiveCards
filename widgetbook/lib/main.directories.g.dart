@@ -117,6 +117,11 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'AdaptiveCardElement',
         useCases: [
           _widgetbook.WidgetbookUseCase(
+            name: 'Refresh',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildAdaptiveCardRefreshDemo,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Select Action',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildAdaptiveCardSelectAction,

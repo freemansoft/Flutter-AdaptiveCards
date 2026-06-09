@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/show_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/refresh_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,6 +62,10 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   /// Support only one form per AdaptiveCardElement
   final formKey = GlobalKey<FormState>();
 
+  RefreshConfig? _refreshConfig;
+  var _refreshFired = false;
+  var _expireRefreshScheduled = false;
+
   /// "metadata": {
   ///   "webUrl": "https://example.com/card-content"
   /// },
@@ -68,6 +76,12 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     super.initState();
 
     version = adaptiveMap['version']?.toString();
+    final refreshRaw = adaptiveMap['refresh'];
+    if (refreshRaw is Map) {
+      _refreshConfig = RefreshConfig.fromJson(
+        Map<String, dynamic>.from(refreshRaw),
+      );
+    }
     // developer.log(
     //   format('AdaptiveCardElement: {} version: {}', id, version ?? ''),
     //   name: runtimeType.toString(),
@@ -91,6 +105,59 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     actionsOrientation = stringAxis == 'Vertical'
         ? Axis.vertical
         : Axis.horizontal;
+    _maybeScheduleExpireRefresh();
+  }
+
+  void _maybeScheduleExpireRefresh() {
+    if (_refreshFired || _expireRefreshScheduled) return;
+    final expires = _refreshConfig?.expires;
+    if (expires == null || !DateTime.now().isAfter(expires)) return;
+    if (!_shouldAutoRefreshForUser()) return;
+    _expireRefreshScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _refreshFired) return;
+      _triggerRefresh(manual: false);
+    });
+  }
+
+  bool _shouldAutoRefreshForUser() {
+    final userIds = _refreshConfig?.userIds;
+    if (userIds == null || userIds.isEmpty) return true;
+    final currentUserId = ProviderScope.containerOf(
+      context,
+    ).read(currentUserIdProvider);
+    return currentUserId != null && userIds.contains(currentUserId);
+  }
+
+  void _triggerRefresh({required bool manual}) {
+    if (_refreshFired && !manual) return;
+    final actionMap = _refreshConfig?.action;
+    if (actionMap == null) return;
+    if (!manual && !_shouldAutoRefreshForUser()) return;
+
+    final container = ProviderScope.containerOf(context);
+    final values = container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .collectInputValues();
+    final data = mergeActionData(
+      actionData: (actionMap['data'] as Map<String, dynamic>?) != null
+          ? Map<String, dynamic>.from(actionMap['data'] as Map)
+          : <String, dynamic>{},
+      inputValues: values,
+      associatedInputs: actionMap['associatedInputs'] as String?,
+    );
+    final invoke = RefreshActionInvoke.fromActionMap(actionMap, data);
+
+    final handlers = InheritedAdaptiveCardHandlers.of(context);
+    if (handlers?.onRefresh != null) {
+      handlers!.onRefresh!(invoke);
+    } else if (handlers != null) {
+      handlers.onExecute(ExecuteActionInvoke.fromActionMap(actionMap, data));
+    }
+
+    if (!manual) {
+      _refreshFired = true;
+    }
   }
 
   /// This is for actions directly on an AdaptiveCardElement
@@ -171,6 +238,21 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
             ),
     );
 
+    if (_refreshConfig?.action != null) {
+      result = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: _RefreshAffordance(
+              onPressed: () => _triggerRefresh(manual: true),
+            ),
+          ),
+          result,
+        ],
+      );
+    }
+
     final backgroundImage = getBackgroundImageFromMap(adaptiveMap);
 
     // replace the result with a stack if there is a background image
@@ -193,6 +275,26 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       child: AdaptiveTappable(
         adaptiveMap: adaptiveMap,
         child: Form(key: formKey, child: result),
+      ),
+    );
+  }
+}
+
+/// Manual refresh control shown when root card JSON defines `refresh.action`.
+class _RefreshAffordance extends StatelessWidget {
+  const _RefreshAffordance({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Refresh card',
+      child: IconButton(
+        icon: const Icon(Icons.refresh),
+        tooltip: 'Refresh card',
+        onPressed: onPressed,
       ),
     );
   }

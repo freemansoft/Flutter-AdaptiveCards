@@ -76,7 +76,7 @@ Sample reference: [FlightUpdateTable.json](https://raw.githubusercontent.com/mic
 | `fallbackText`              | spec                                                         | ❌ Missing     | Not shown when card version exceeds renderer support               |
 | `selectAction`              | spec (v1.1)                                                  | ❌ Missing     | Card-level tap action not wired                                    |
 | `verticalContentAlignment`  | spec (v1.1)                                                  | ❌ Missing     | Not applied at card root                                           |
-| `refresh`                   | spec (v1.4)                                                  | ❌ Missing     | Auto-refresh via `Action.Execute`                                  |
+| `refresh`                   | spec (v1.4)                                                  | ✅ Implemented | Manual affordance + auto-expire; `onRefresh` / `onExecute` fallback |
 | `authentication`            | spec (v1.4)                                                  | ❌ Missing     | SSO / OAuth card authentication                                    |
 
 ---

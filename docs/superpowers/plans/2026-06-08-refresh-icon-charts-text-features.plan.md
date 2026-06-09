@@ -9,7 +9,7 @@
 | Workstream | Status      | Notes                                                                       |
 | ---------- | ----------- | --------------------------------------------------------------------------- |
 | A          | ✅ Complete | Doc + cross-links                                                           |
-| B          | ⏸ Deferred  | Not implemented this pass (per user)                                        |
+| B          | ✅ Complete | `RefreshConfig`, `onRefresh`, manual affordance, auto-expire, `userIds` gate |
 | C          | ✅ Complete | ~68 Fluent names; golden `test/golden_icon_test.dart`                       |
 | D          | ✅ Complete | Chart colors merged in `chart_colors_config.dart`; gauge golden added       |
 | E          | ✅ Complete | `ChartOverlayPage` + codegen                                                |
@@ -501,7 +501,7 @@ fvm flutter test test/charts/gauge_chart_test.dart
 
 - [x] **Gauge golden** — `cd packages/flutter_adaptive_charts_fs && fvm flutter test test/golden_v1_6_test.dart --name "Gauge Chart" --tags=golden`
 
-- [ ] **Full chart golden suite** (`fvm flutter test --tags=golden` in charts package) — gauge case added; remaining chart goldens not refreshed for chrome layout changes; Linux baselines via CI
+- [x] **Full chart golden suite** (`fvm flutter test --tags=golden` in charts package) — **8 passed** on macOS 2026-06-09; Linux baselines via CI
 
 ---
 

@@ -31,6 +31,7 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
     required this.onOpenUrlDialog,
 
     required this.onChange,
+    this.onRefresh,
     required super.child,
   });
 
@@ -58,6 +59,11 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
 
   /// Called when an input value changes (not sourced from an action).
   final void Function(InputChangeInvoke invoke) onChange;
+
+  /// Called when the root card `refresh` action fires (manual or auto-expire).
+  ///
+  /// When null, refresh falls back to [onExecute] with the same payload shape.
+  final void Function(RefreshActionInvoke invoke)? onRefresh;
 
   /// Returns the nearest ancestor handlers, or `null` when none are installed.
   static InheritedAdaptiveCardHandlers? of(BuildContext context) {
