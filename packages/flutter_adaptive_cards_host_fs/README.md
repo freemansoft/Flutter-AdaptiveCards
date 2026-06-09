@@ -2,6 +2,14 @@
 
 Backend invoke bridge for [flutter_adaptive_cards_fs](../flutter_adaptive_cards_fs) — serialize host callbacks, POST to your flow-service, parse responses, and apply patches to the rendered card.
 
+Published on [pub.dev](https://pub.dev/packages/flutter_adaptive_cards_host_fs). Import the barrel:
+
+```dart
+import 'package:flutter_adaptive_cards_host_fs/flutter_adaptive_cards_host_fs.dart';
+```
+
+**Full guide:** [docs/backend-host-integration.md](../../docs/backend-host-integration.md)
+
 ## Quick start
 
 ```dart
@@ -27,7 +35,18 @@ AdaptiveCardBackendHandlers(
 );
 ```
 
-Assign the same [cardKey] to both [AdaptiveCardBackendHandlers] and [RawAdaptiveCard.fromMap]. [InputChangeInvoke] callbacks use [InputChangeInvoke.cardState] directly; Submit and Execute use [cardKey].
+Assign the same `GlobalKey<RawAdaptiveCardState>` to both `AdaptiveCardBackendHandlers` and `RawAdaptiveCard.fromMap`. `InputChangeInvoke` uses `invoke.cardState` directly; Submit, Execute, and Refresh resolve state from `cardKey`.
+
+## Wired callbacks
+
+| Handler | Invoked when |
+| ------- | ------------ |
+| `onSubmit` | `Action.Submit` |
+| `onExecute` | `Action.Execute` |
+| `onRefresh` | Root card refresh (manual affordance or auto-expire) |
+| `onChange` | Input value changes (includes `Data.Query` with `associatedInputs`) |
+
+Pass `onOpenUrl` / `onOpenUrlDialog` on `AdaptiveCardBackendHandlers` when you need non–backend URL handling (defaults to no-op).
 
 ## PlainJson request shape
 
@@ -40,7 +59,9 @@ Assign the same [cardKey] to both [AdaptiveCardBackendHandlers] and [RawAdaptive
 }
 ```
 
-Input changes include `inputId`, `value`, and optional `dataQuery` (Teams `Data.Query` shape).
+Input changes include `inputId`, `value`, and optional `dataQuery` (Teams `Data.Query` shape with merged `parameters` when `associatedInputs` is `"auto"`).
+
+Refresh requests use `kind: execute` with the nested refresh action's `verb` and merged input `data`.
 
 ## PlainJson response contract
 
@@ -76,11 +97,28 @@ Input changes include `inputId`, `value`, and optional `dataQuery` (Teams `Data.
 }
 ```
 
-Effects apply in order: `applyPatches` → `setInputErrors` → `replaceCard`.
+### Effect apply order
+
+Effects run **in JSON array order**. Recommended server order:
+
+1. **`applyPatches`** — `RawAdaptiveCardState.applyUpdates` (choices, visibility, text, …)
+2. **`setInputErrors`** — validation overlays on input ids
+3. **`replaceCard`** — calls `onCardReplaced` with full card JSON (**required** when this effect is present)
+
+## Error handling
+
+| Case | Behavior |
+| ---- | -------- |
+| Network failure | `onError`; card unchanged |
+| Parse failure | `AdaptiveCardInvokeResponseParseException` → `onError` |
+| Unknown effect type | Skipped (debug log in debug builds) |
+| `replaceCard` without `onCardReplaced` | `StateError` from `applyTo` |
+
+Always implement `onError` in production hosts.
 
 ## Teams adapter
 
-Use [TeamsInvokeAdapter.toMap] / [TeamsInvokeAdapter.responseFromMap] for Bot Framework–shaped invoke activities:
+Use `TeamsInvokeAdapter.toMap` / `TeamsInvokeAdapter.responseFromMap` for Bot Framework–shaped invoke activities:
 
 ```dart
 AdaptiveCardBackendHandlers(
@@ -94,7 +132,7 @@ AdaptiveCardBackendHandlers(
 
 ## Custom client
 
-Implement [AdaptiveCardBackendClient] for gRPC, WebSocket, or in-memory mocks:
+Implement `AdaptiveCardBackendClient` for gRPC, WebSocket, or in-memory mocks:
 
 ```dart
 class MyBackendClient implements AdaptiveCardBackendClient {
@@ -104,3 +142,9 @@ class MyBackendClient implements AdaptiveCardBackendClient {
   }
 }
 ```
+
+## Related documentation
+
+- [Backend host integration guide](../../docs/backend-host-integration.md)
+- [Form inputs — associatedInputs](../../docs/form-inputs.md#backend-invoke-round-trips-optional-host-package)
+- [Reactive Riverpod — server-driven patches](../../docs/reactive-riverpod.md#server-driven-patches-host-package)

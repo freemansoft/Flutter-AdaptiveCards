@@ -23,11 +23,12 @@ This project is in no way associated with Microsoft. It is an open source projec
 
 Libraries avaiable on pub.dev from this repository include:
 
-| Package / Library                                         | Location                                                                              |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| The core of Adaptive Cards is supported via               | [flutter_adaptive_cards_fs](https://pub.dev/packages/flutter_adaptive_cards_fs)       |
-| Supplemental Adaptive Card based charts are supported via | [flutter_adaptive_charts_fs](https://pub.dev/packages/flutter_adaptive_charts_fs)     |
-| Templating is supported via the                           | [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs) |
+| Package / Library                                         | Location                                                                                  |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| The core of Adaptive Cards is supported via               | [flutter_adaptive_cards_fs](https://pub.dev/packages/flutter_adaptive_cards_fs)           |
+| Supplemental Adaptive Card based charts are supported via | [flutter_adaptive_charts_fs](https://pub.dev/packages/flutter_adaptive_charts_fs)         |
+| Templating is supported via the                           | [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs)     |
+| Backend invoke bridge is supported via                    | [flutter_adaptive_cards_host_fs](https://pub.dev/packages/flutter_adaptive_cards_host_fs) |
 
 Utility programs available in this repository that are not published to pub.dev include:
 
@@ -113,13 +114,13 @@ The implementation keeps **two parallel structures** for each `RawAdaptiveCard`:
 
 ### Parallel trees: widget tree and Riverpod state
 
-| | Widget tree | Riverpod / overlay state |
-| --- | --- | --- |
-| **Built from** | `CardTypeRegistry.getElement` / `getAction` walks baseline JSON once per reload | `AdaptiveCardDocumentNotifier` indexes baseline into `nodesById` |
-| **Structure** | `AdaptiveCardElement` → `Form` → body/actions children | `baseline` + sparse `overlaysById` / `actionOverlaysById` |
-| **Runtime values** | `Consumer` inputs call `watchResolvedInput()`; visibility/text/choices listen on `resolvedElementProvider(id)` | Overlay patches merged in family providers |
-| **Scope** | Outer `ProviderScope` on [`RawAdaptiveCard`](lib/src/flutter_raw_adaptive_card.dart); inner scope per [`AdaptiveCardElement`](lib/src/cards/adaptive_card_element.dart) for form + show-card UI | **One document per raw card** (ShowCard nested cards share it); `expandedShowCardIdProvider` is per inner `AdaptiveCardElement` only |
-| **Host entry** | `InheritedAdaptiveCardHandlers` (`onSubmit`, `onChange`, …) | `RawAdaptiveCardState` → `documentContainer` → notifier (`initInput`, `applyUpdates`, …) |
+|                    | Widget tree                                                                                                                                                                                     | Riverpod / overlay state                                                                                                             |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Built from**     | `CardTypeRegistry.getElement` / `getAction` walks baseline JSON once per reload                                                                                                                 | `AdaptiveCardDocumentNotifier` indexes baseline into `nodesById`                                                                     |
+| **Structure**      | `AdaptiveCardElement` → `Form` → body/actions children                                                                                                                                          | `baseline` + sparse `overlaysById` / `actionOverlaysById`                                                                            |
+| **Runtime values** | `Consumer` inputs call `watchResolvedInput()`; visibility/text/choices listen on `resolvedElementProvider(id)`                                                                                  | Overlay patches merged in family providers                                                                                           |
+| **Scope**          | Outer `ProviderScope` on [`RawAdaptiveCard`](lib/src/flutter_raw_adaptive_card.dart); inner scope per [`AdaptiveCardElement`](lib/src/cards/adaptive_card_element.dart) for form + show-card UI | **One document per raw card** (ShowCard nested cards share it); `expandedShowCardIdProvider` is per inner `AdaptiveCardElement` only |
+| **Host entry**     | `InheritedAdaptiveCardHandlers` (`onSubmit`, `onChange`, …)                                                                                                                                     | `RawAdaptiveCardState` → `documentContainer` → notifier (`initInput`, `applyUpdates`, …)                                             |
 
 ```mermaid
 flowchart TB
@@ -192,13 +193,13 @@ sequenceDiagram
   Widget->>Notifier: setInputValue on user edit
 ```
 
-| Step | What happens |
-| --- | --- |
-| Load | Host passes JSON → `RawAdaptiveCard` deep-copies **baseline** → registry builds widget tree; notifier builds `nodesById` from the same baseline |
-| Seed | `initData` / `initInput` → `RawAdaptiveCardState` → notifier writes **overlays** (not baseline) |
-| Render | Widget `build` watches **resolved** map for its `id` (label, value, `isVisible`, errors, …) |
-| Edit | User types → `setInputValue` → overlay → resolved provider → same widget rebuilds |
-| Submit | `Action.Submit` → `collectInputValues()` reads overlay ?? baseline per input id → `onSubmit` handler |
+| Step   | What happens                                                                                                                                    |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Load   | Host passes JSON → `RawAdaptiveCard` deep-copies **baseline** → registry builds widget tree; notifier builds `nodesById` from the same baseline |
+| Seed   | `initData` / `initInput` → `RawAdaptiveCardState` → notifier writes **overlays** (not baseline)                                                 |
+| Render | Widget `build` watches **resolved** map for its `id` (label, value, `isVisible`, errors, …)                                                     |
+| Edit   | User types → `setInputValue` → overlay → resolved provider → same widget rebuilds                                                               |
+| Submit | `Action.Submit` → `collectInputValues()` reads overlay ?? baseline per input id → `onSubmit` handler                                            |
 
 ```mermaid
 flowchart TB
@@ -236,19 +237,19 @@ flowchart TB
 
 ### Overlay fields (summary)
 
-| Overlay (element) | Resolved JSON key | Typical host API |
-| --- | --- | --- |
-| `inputValue` | `value` | `initInput`, user edit, `setInputValue` |
-| `choices`, query session | `choices` / `choices.data` | `loadInput`, `setChoices`, typeahead |
-| `isVisible` | `isVisible` | `setVisibility`, ToggleVisibility |
-| `errorMessage`, `isInvalid` | same | `setInputError`, Submit validation |
-| `isRequired`, `label`, `placeholder` | same | `applyUpdates` |
-| `text`, `url` | `text`, `url` | `setText`, dynamic media URLs |
-| `facts` | `facts` | `setFacts`, `clearFacts`, `applyUpdates` |
+| Overlay (element)                    | Resolved JSON key          | Typical host API                         |
+| ------------------------------------ | -------------------------- | ---------------------------------------- |
+| `inputValue`                         | `value`                    | `initInput`, user edit, `setInputValue`  |
+| `choices`, query session             | `choices` / `choices.data` | `loadInput`, `setChoices`, typeahead     |
+| `isVisible`                          | `isVisible`                | `setVisibility`, ToggleVisibility        |
+| `errorMessage`, `isInvalid`          | same                       | `setInputError`, Submit validation       |
+| `isRequired`, `label`, `placeholder` | same                       | `applyUpdates`                           |
+| `text`, `url`                        | `text`, `url`              | `setText`, dynamic media URLs            |
+| `facts`                              | `facts`                    | `setFacts`, `clearFacts`, `applyUpdates` |
 
-| Overlay (action) | Resolved key | API |
-| --- | --- | --- |
-| `isEnabled` | `isEnabled` | `setActionEnabled`, `setActionsEnabled` |
+| Overlay (action) | Resolved key | API                                     |
+| ---------------- | ------------ | --------------------------------------- |
+| `isEnabled`      | `isEnabled`  | `setActionEnabled`, `setActionsEnabled` |
 
 For the full runtime-writes matrix and merge rules, see [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
@@ -276,14 +277,14 @@ flowchart LR
 
 Hosts patch document state via `RawAdaptiveCardState` (delegates to the document notifier). Bulk patches use typed `AdaptiveElementUpdate` / `AdaptiveActionUpdate` objects:
 
-| API | Use |
-| --- | --- |
-| `applyUpdates(elements:, actions:)` | Bulk sparse patches (`AdaptiveElementUpdate` / `AdaptiveActionUpdate`) |
-| `applyUpdatesFromMap(byId)` | Server-style `{ id: { value, choices, … } }` payloads |
-| `setText(id, text)` / `clearText(id)` | Replace `TextBlock` display text |
-| `setFacts(id, facts)` / `clearFacts(id)` | Replace or clear `FactSet` facts overlay |
-| `setInputError(id, message:, isInvalid:)` / `clearInputError(id)` | Host validation on inputs |
-| `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)` | Enable/disable `Action.*` (AC 1.5) |
+| API                                                               | Use                                                                    |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `applyUpdates(elements:, actions:)`                               | Bulk sparse patches (`AdaptiveElementUpdate` / `AdaptiveActionUpdate`) |
+| `applyUpdatesFromMap(byId)`                                       | Server-style `{ id: { value, choices, … } }` payloads                  |
+| `setText(id, text)` / `clearText(id)`                             | Replace `TextBlock` display text                                       |
+| `setFacts(id, facts)` / `clearFacts(id)`                          | Replace or clear `FactSet` facts overlay                               |
+| `setInputError(id, message:, isInvalid:)` / `clearInputError(id)` | Host validation on inputs                                              |
+| `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`       | Enable/disable `Action.*` (AC 1.5)                                     |
 
 ### Reset semantics
 

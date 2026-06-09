@@ -4,6 +4,8 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 **Optional packages:** Charts and templating are **not** in the core library — see [optional-packages-and-extensions.md](./optional-packages-and-extensions.md).
 
+**June 2026 feature plan (complete):** Workstreams **A–G** in [2026-06-08-refresh-icon-charts-text-features.plan.md](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md). **Backend invoke (complete):** [backend-host-integration.md](./backend-host-integration.md).
+
 **Reference sites**:
 
 - [Adaptive Cards documentation hub](https://adaptivecards.microsoft.com/) (responsive layout, Icon, Charts, and other v1.6+ features)
@@ -23,15 +25,15 @@ This document tracks the implementation status of Adaptive Cards elements, conta
 
 | Element       | Microsoft Spec                                               | Implementation | Tests      | Documentation                                          | Notes                                                                 |
 | ------------- | ------------------------------------------------------------ | -------------- | ---------- | ------------------------------------------------------ | --------------------------------------------------------------------- |
-| TextBlock     | [spec](https://adaptivecards.io/explorer/TextBlock.html)     | ⚠️ Partial     | ✅ Yes     | -                                                      | Markdown subset; `maxLines` does not apply when markdown is enabled   |
+| TextBlock     | [spec](https://adaptivecards.io/explorer/TextBlock.html)     | ⚠️ Partial     | ✅ Yes     | [text features design](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md) | Markdown subset; plain path honors `maxLines`/`color`/`isSubtle`/`weight` when `supportMarkdown` is false; markdown path ignores `maxLines` |
 | Image         | [spec](https://adaptivecards.io/explorer/Image.html)         | ✅ Complete    | ✅ Yes     | [Encoded-Image-Support.md](./Encoded-Image-Support.md) | Supports base64; `selectAction` supported                             |
 | Media         | [spec](https://adaptivecards.io/explorer/Media.html)         | ⚠️ Partial     | ⚠️ Limited | -                                                      | Video via `video_player`; poster attribute has issues; limited on desktop platforms |
 | MediaSource   | [spec](https://adaptivecards.io/explorer/MediaSource.html)   | ✅ Complete    | ✅ Yes     | -                                                      | Typed `MediaSource` model                                             |
 | CaptionSource | [spec](https://adaptivecards.io/explorer/CaptionSource.html) | ❌ Missing     | ❌ No      | -                                                      | Used with `Media`; not registered                                     |
-| RichTextBlock | [spec](https://adaptivecards.io/explorer/RichTextBlock.html) | ✅ Implemented | ✅ Yes     | `Text.rich` + `TextRun` inlines; per-run styling and `selectAction` |
-| TextRun       | [spec](https://adaptivecards.io/explorer/TextRun.html)       | ✅ Implemented | ✅ Yes     | Parsed as `RichTextBlock` inline; weight, color, italic, underline, highlight, tap |
-| ActionSet     | [spec](https://adaptivecards.io/explorer/ActionSet.html)     | ✅ Complete    | ⚠️ Limited | -                                                      | -                                                                     |
-| Icon          | [hub](https://adaptivecards.microsoft.com/)                  | ⚠️ Partial     | ✅ Yes     | -                                                      | ~50 common Fluent names via Material icons; `selectAction` supported  |
+| RichTextBlock | [spec](https://adaptivecards.io/explorer/RichTextBlock.html) | ✅ Complete    | ✅ Yes     | [text features design](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md) | `Text.rich` + `TextRun` inlines; per-run styling and `selectAction` |
+| TextRun       | [spec](https://adaptivecards.io/explorer/TextRun.html)       | ✅ Complete    | ✅ Yes     | same                                                                                         | Inline only (via `RichTextBlock.inlines`); weight, color, italic, underline, highlight, tap |
+| ActionSet     | [spec](https://adaptivecards.io/explorer/ActionSet.html)     | ✅ Complete    | ⚠️ Limited | -                                                                                            | -                                                                     |
+| Icon          | [hub](https://adaptivecards.microsoft.com/)                  | ⚠️ Partial     | ✅ Yes     | [plan workstream C](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-c--icon-element) | ~68 Fluent names via Material icons; unknown → `help_outline`; `selectAction` supported |
 
 ---
 
@@ -76,7 +78,7 @@ Sample reference: [FlightUpdateTable.json](https://raw.githubusercontent.com/mic
 | `fallbackText`              | spec                                                         | ❌ Missing     | Not shown when card version exceeds renderer support               |
 | `selectAction`              | spec (v1.1)                                                  | ❌ Missing     | Card-level tap action not wired                                    |
 | `verticalContentAlignment`  | spec (v1.1)                                                  | ❌ Missing     | Not applied at card root                                           |
-| `refresh`                   | spec (v1.4)                                                  | ✅ Implemented | Manual affordance + auto-expire; `onRefresh` / `onExecute` fallback |
+| `refresh`                   | spec (v1.4)                                                  | ✅ Complete    | Manual affordance + auto-expire; `onRefresh` / `onExecute` fallback — [actions-architecture.md](./actions-architecture.md#root-card-refresh-payload) |
 | `authentication`            | spec (v1.4)                                                  | ❌ Missing     | SSO / OAuth card authentication                                    |
 
 ---
@@ -181,6 +183,18 @@ Microsoft does **not** define a separate `Chart.VerticalBar.Stacked` type; stack
 
 ---
 
+## Optional packages
+
+Packages outside **`flutter_adaptive_cards_fs`** that hosts opt into explicitly. See [optional-packages-and-extensions.md](./optional-packages-and-extensions.md).
+
+| Package | Purpose | Implementation | Tests | Documentation |
+| ------- | ------- | -------------- | ----- | ------------- |
+| `flutter_adaptive_template_fs` | Adaptive Cards templating (`$data`, `$when`, …) | ✅ Complete | ✅ Yes | [adaptive-template-design.md](./adaptive-template-design.md) |
+| `flutter_adaptive_charts_fs` | `Chart.*` elements (fl_chart + gauge `CustomPainter`) | ⚠️ Partial | ⚠️ Limited | [charts README](../packages/flutter_adaptive_charts_fs/README.md) |
+| `flutter_adaptive_cards_host_fs` | Backend invoke serialize → POST → parse → apply | ✅ Complete | ✅ Yes | [backend-host-integration.md](./backend-host-integration.md) |
+
+---
+
 ## Templating (`flutter_adaptive_template_fs` package)
 
 | Feature              | Microsoft Spec                                                                                                           | Implementation | Tests  | Documentation                                                | Notes                                                                                           |
@@ -229,13 +243,13 @@ Cross-cutting gaps that affect many card types:
 | **Responsive layout** | `targetWidth`, `Layout.AreaGrid`, `grid.area` | High — modern Teams/Copilot width-adaptive cards |
 | **`requires` + version gating** | No capability checks; `fallbackText` unused | Medium–high — mixed-schema production hosts |
 | **Action `fallback`** | Unknown actions assert instead of degrading | Medium — action fallback lists in Teams chart docs |
-| **Icon** | Partial Fluent name map (~50 icons) | Low–medium — uncommon hub icon names fall back to `help_outline` |
+| **Icon** | Partial Fluent name map (~68 icons) | Low–medium — uncommon hub icon names fall back to `help_outline` |
 | **Table completeness** | `auto`/`stretch` widths, cell `rtl`, `bleed` | Medium — complex table scenarios |
-| **TextBlock text features** | Plain path: `maxLines`, `color`, `isSubtle`, `weight`; markdown path: subset only (no `maxLines`) | Low — full HTML markdown out of scope |
+| **TextBlock text features** | Plain path: ✅ `maxLines`, `color`, `isSubtle`, `weight`; markdown path: subset only (no `maxLines`) | Low — full HTML markdown out of scope |
 | **Chart.Gauge** | ✅ Implemented (`CustomPainter`) | — |
 | **Chart chrome** | ✅ Implemented (`ChartChrome`) | — |
 | **Chart `colorSet`** | ✅ Named semantic palettes | — |
-| **AdaptiveCard root** | `refresh`, `authentication`, `rtl`, `selectAction`, `minHeight` | Medium — Bot/Teams integration |
+| **AdaptiveCard root** | `authentication`, `rtl`, `selectAction`, `minHeight` (`refresh` ✅) | Medium — Bot/Teams integration |
 | **CaptionSource** | Not implemented | Low — media captions |
 | **`bleed`** | Not implemented on containers | Low–medium — full-bleed layouts |
 | **Block `height: stretch`** | Not generally implemented | Medium — fixed-height card layouts |
@@ -267,9 +281,8 @@ Registered in `CardTypeRegistry` (`lib/src/registry.dart`) unless noted.
 
 ### High priority — standard cards
 
-1. **`RichTextBlock` + `TextRun`**: ✅ Implemented — see [design spec](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md).
-2. **Responsive layout**: `targetWidth` and `Layout.AreaGrid` / `grid.area` per [documentation hub](https://adaptivecards.microsoft.com/).
-3. **`requires` + action `fallback` + version gating**: Graceful degradation for mixed-schema hosts.
+1. **Responsive layout**: `targetWidth` and `Layout.AreaGrid` / `grid.area` per [documentation hub](https://adaptivecards.microsoft.com/).
+2. **`requires` + action `fallback` + version gating**: Graceful degradation for mixed-schema hosts.
 
 ### High priority — charts
 
@@ -278,11 +291,10 @@ Registered in `CardTypeRegistry` (`lib/src/registry.dart`) unless noted.
 ### Medium priority
 
 1. **Complete `Table`**: `auto`/`stretch` column widths, cell `rtl` rendering, `bleed`.
-2. **`Icon` element**: Expand Fluent name catalog beyond ~50 built-in mappings.
+2. **`Icon` element**: Expand Fluent name catalog beyond ~68 built-in mappings.
 3. **Block `height: stretch`**: Apply across containers and chart elements.
-4. **AdaptiveCard root features**: `rtl`, `fallbackText`, `selectAction`, `minHeight`.
+4. **AdaptiveCard root features**: `rtl`, `fallbackText`, `selectAction`, `minHeight` (`refresh` ✅ — see [plan workstream B](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-b--refresh-property-v14)).
 5. **Media poster fix**: Resolve poster attribute display issue.
-6. **TextBlock**: Plain-text path honors `maxLines`/`color`/`isSubtle`; markdown limitations documented above.
 
 ### Low priority
 
@@ -324,6 +336,33 @@ fvm flutter test --exclude-tags=golden
 
 ## Recently completed
 
+### Refresh, Icon, charts, gauge, and text (2026-06-08 plan)
+
+Plan: [2026-06-08-refresh-icon-charts-text-features.plan.md](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md) — all workstreams **A–G** complete.
+
+| Workstream | Delivered |
+| ---------- | --------- |
+| **A** | [optional-packages-and-extensions.md](./optional-packages-and-extensions.md) + cross-links from Architecture, README, this matrix |
+| **B** | Root `refresh` — `RefreshConfig`, manual affordance, auto-expire, `userIds` gating, `onRefresh` / `RefreshActionInvoke` (PR #20) |
+| **C** | Hub **`Icon`** element — ~68 Fluent names, size/color/style tokens, `selectAction` |
+| **D** | Chart **`colorSet`** + Teams semantic color tokens; **`ChartChrome`** (title, axis titles, bar values, legend) |
+| **E** | Widgetbook **`ChartOverlayPage`** interactive knobs |
+| **F** | **`Chart.Gauge`** via `CustomPainter` in `flutter_adaptive_charts_fs` |
+| **G** | **`RichTextBlock`** / **`TextRun`**; TextBlock plain-path `maxLines`/`color`/`isSubtle`; Widgetbook demo — [design spec](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md) |
+
+**Verification (2026-06-09):** `fvm flutter analyze` clean; **400** core tests (~2 skipped); chart and gauge suites pass; goldens: `v1_5_icon_demo.png`, `v1_2_rich_text_block_demo.png`, `v1_6_gauge.png`.
+
+### Backend host integration (2026-06-07 plan)
+
+Plan: [2026-06-07-backend-host-integration.plan.md](./superpowers/plans/2026-06-07-backend-host-integration.plan.md) — Phase 1 in core (`associatedInputs`); Phase 2 optional **`flutter_adaptive_cards_host_fs`**.
+
+| Phase | Delivered |
+| ----- | --------- |
+| **1** | `Data.Query` / Submit / Execute **`associatedInputs`** in `flutter_adaptive_cards_fs` |
+| **2** | **`AdaptiveCardBackendHandlers`**, PlainJson + Teams adapters, HTTP client, invoke response effects |
+
+See [backend-host-integration.md](./backend-host-integration.md) and [design spec](./superpowers/specs/2026-06-07-backend-host-integration-design.md).
+
 ### Style pipeline (2026-06-06)
 
 - **Container style inheritance** via `ChildStyler` — see [Style inheritance data flow](adaptive-style.md#style-inheritance-data-flow).
@@ -347,5 +386,5 @@ fvm flutter test --exclude-tags=golden
 
 ---
 
-_Last Updated: 2026-06-08_
+_Last Updated: 2026-06-09_
 _Based on v1.6.0 of Microsoft Adaptive Cards specification_

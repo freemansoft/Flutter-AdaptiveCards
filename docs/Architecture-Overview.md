@@ -11,6 +11,7 @@ The repository is organized as a monorepo containing multiple related packages:
 - **`flutter_adaptive_cards_fs`**: The core library that parses Adaptive Card JSON into Flutter widgets. It handles element rendering, layout, styling via HostConfig, and user interactions.
 - **`flutter_adaptive_charts_fs`**: A supplemental library for rendering charting components (e.g., bar charts, pie charts) as extensions to the standard Adaptive Cards schema. **Not part of the core package** — see [optional-packages-and-extensions.md](./optional-packages-and-extensions.md).
 - **`flutter_adaptive_template_fs`**: The templating engine that merges data JSON into template JSON (Adaptive Cards Templating language). **Not part of the core package** — see [optional-packages-and-extensions.md](./optional-packages-and-extensions.md).
+- **`flutter_adaptive_cards_host_fs`**: Optional backend invoke bridge (PlainJson and Teams adapters, HTTP client, `AdaptiveCardBackendHandlers`). **Not part of the core package** — see [backend-host-integration.md](./backend-host-integration.md) and [optional-packages-and-extensions.md](./optional-packages-and-extensions.md).
 - **`adaptive_explorer`**: A design studio desktop application that allows developers to author, preview, and debug Adaptive Cards, templates, and data payloads.
 
 ## Widget Hierarchy
@@ -19,11 +20,11 @@ When an Adaptive Card is rendered, the JSON is recursively parsed into a hierarc
 
 1. **`AdaptiveCardsCanvas`**: Host entry widget that loads card JSON (asset, network, or in-memory) and builds a **`RawAdaptiveCard`** when content is ready.
 2. **`RawAdaptiveCard`**: Installs the card-scoped `ProviderScope` (document notifier, registries, `ReferenceResolver`) and renders the parsed root element tree inside a `Card`.
-3. **`AdaptiveCardElement`**: Represents the `AdaptiveCard` JSON root (`body`, `actions`), applying padding, background, and action layout.
-4. **Containers and Elements**: Elements like `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveTextBlock`, and `AdaptiveImage` are rendered as individual Flutter widgets (often wrapping standard Flutter widgets like `Column`, `Row`, `Text`, and `Image`).
+3. **`AdaptiveCardElement`**: Represents the `AdaptiveCard` JSON root (`body`, `actions`), applying padding, background, and action layout. Root **`refresh`** (v1.4+) shows a manual refresh affordance and can auto-fire when **`expires`** is past; hosts handle **`onRefresh`** / **`RefreshActionInvoke`** — see [actions-architecture.md](./actions-architecture.md#root-card-refresh-payload).
+4. **Containers and Elements**: Elements like `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveTextBlock`, `AdaptiveRichTextBlock`, `AdaptiveIcon`, and `AdaptiveImage` are rendered as individual Flutter widgets (often wrapping standard Flutter widgets like `Column`, `Row`, `Text`, and `Image`).
 5. **Inputs**: Form inputs (`Input.Text`, `Input.Date`, etc.) use Flutter form controls. **Initial** values come from the adaptive map at widget construction; **runtime** values, validation, and visibility are stored in Riverpod document **overlays** (baseline JSON is never mutated). Inputs sync via `AdaptiveInputMixin` + `resolvedElementProvider(id)`. See [`reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
-6. **Display elements**: `TextBlock` and other elements with natural ids can use the same overlay model (e.g. runtime `text` replacement via `setText` / `resolvedElementProvider`).
-7. **Actions**: The action bar (e.g., `Action.Submit`, `Action.OpenUrl`) is typically rendered at the bottom of the card or within an `ActionSet`. Actions trigger callbacks routed through `GenericAction` handlers and, for default behaviors, `InheritedAdaptiveCardHandlers`. Submit/Execute payloads are typed invoke objects, not raw maps. AC 1.5 `isEnabled` is reactive via `resolvedActionProvider(id)`.
+6. **Display elements**: `TextBlock`, `RichTextBlock`, and other elements with natural ids can use the same overlay model (e.g. runtime `text` replacement via `setText` / `resolvedElementProvider`).
+7. **Actions**: The action bar (e.g., `Action.Submit`, `Action.OpenUrl`) is typically rendered at the bottom of the card or within an `ActionSet`. Actions trigger callbacks routed through `GenericAction` handlers and, for default behaviors, `InheritedAdaptiveCardHandlers`. Submit/Execute/Refresh payloads are typed invoke objects, not raw maps. AC 1.5 `isEnabled` is reactive via `resolvedActionProvider(id)`.
 
 ## State and dependency injection
 
@@ -61,7 +62,9 @@ From the perspective of a host integrating `flutter_adaptive_cards_fs`:
 
 1. Provide JSON and `HostConfig` via `AdaptiveCardsCanvas` (or `RawAdaptiveCard`).
 2. Optionally pass custom `CardTypeRegistry` / `ActionTypeRegistry`, or wrap the tree with `InheritedAdaptiveCardHandlers` for submit/execute/open-url/change callbacks.
-3. Wrap the card with **`InheritedAdaptiveCardHandlers`** for Submit, Execute, OpenUrl, and input **`onChange`** callbacks. All five callbacks receive typed invoke payloads: **`SubmitActionInvoke`**, **`ExecuteActionInvoke`**, **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, and **`InputChangeInvoke`**. **`AdaptiveCardsCanvas`** accepts **`onChange`** directly (same **`InputChangeInvoke`** type); it does **not** expose Submit/Execute/OpenUrl handlers on the widget or its state.
+3. Wrap the card with **`InheritedAdaptiveCardHandlers`** for Submit, Execute, OpenUrl, Refresh, and input **`onChange`** callbacks. All callbacks receive typed invoke payloads: **`SubmitActionInvoke`**, **`ExecuteActionInvoke`**, **`RefreshActionInvoke`**, **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, and **`InputChangeInvoke`**. **`AdaptiveCardsCanvas`** accepts **`onChange`** directly (same **`InputChangeInvoke`** type); it does **not** expose Submit/Execute/OpenUrl/Refresh handlers on the widget itself.
+
+For backend round-trips, optional **`AdaptiveCardBackendHandlers`** from **`flutter_adaptive_cards_host_fs`** wires the same callbacks to a flow-service — see [backend-host-integration.md](./backend-host-integration.md).
 
 No third-party DI package is required at the app level.
 
@@ -69,7 +72,7 @@ No third-party DI package is required at the app level.
 
 Charts and templating live in **separate packages** so apps that do not use those features do not pull in **fl_chart** or the templating evaluator. Optional extensions register through `CardTypeRegistry.addedElements` (for example `CardChartsRegistry.additionalChartElements`).
 
-See [optional-packages-and-extensions.md](./optional-packages-and-extensions.md) for the full strategy, consumer checklist, and rules for future extension packages.
+See [optional-packages-and-extensions.md](./optional-packages-and-extensions.md) for the full strategy, consumer checklist, and rules for future extension packages. Chart chrome, semantic colors, and **`Chart.Gauge`** were completed in the [June 2026 plan](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md) (workstreams D–F).
 
 ## Extension Points
 

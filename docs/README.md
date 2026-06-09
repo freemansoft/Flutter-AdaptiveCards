@@ -24,7 +24,13 @@ This directory contains design documents, implementation guides, and architectur
 
 **Status**: ✅ Current | **Category**: Status Matrix
 
-Comprehensive matrix tracking implementation status of all Adaptive Cards elements, containers, inputs, actions, HostConfig, and templating against the Microsoft v1.6 specification. Includes custom/extended elements, known gaps, and priority recommendations.
+Comprehensive matrix tracking implementation status of all Adaptive Cards elements, containers, inputs, actions, HostConfig, and templating against the Microsoft v1.6 specification. Includes custom/extended elements, known gaps, priority recommendations, and a **Recently completed** rollup for the [June 2026 feature plan](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md).
+
+### [2026-06-08-refresh-icon-charts-text-features.plan.md](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md)
+
+**Status**: ✅ Complete (workstreams A–G) | **Category**: Implementation Plan
+
+End-to-end plan for `refresh`, hub **`Icon`**, chart chrome/colors/**`Chart.Gauge`**, and **`RichTextBlock`** / **`TextRun`** + TextBlock fixes. Links to [text features design spec](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md) (workstream G).
 
 ---
 
@@ -62,7 +68,13 @@ High-level system architecture showing package structure, widget hierarchy, and 
 
 **Status**: ✅ Current | **Category**: Architecture
 
-Why charts and templating are separate packages, how to opt in via `CardTypeRegistry.addedElements`, and rules for future optional extension packages (gauge, host-specific elements).
+Why charts, templating, and **backend invoke** are separate packages, how to opt in via registries or `AdaptiveCardBackendHandlers`, and rules for future optional extension packages.
+
+### [backend-host-integration.md](./backend-host-integration.md)
+
+**Status**: ✅ Current | **Category**: Feature Spec
+
+Invoke round-trips with **`flutter_adaptive_cards_host_fs`** — request/response contract, effect ordering, Teams adapter, and consumer checklist.
 
 ### [reactive-riverpod.md](./reactive-riverpod.md)
 
@@ -106,6 +118,12 @@ Describes support for `backgroundImage` in both string (URL) and object (URL + f
 
 ## Feature Specifications
 
+### [backend-host-integration.md](./backend-host-integration.md)
+
+**Status**: ✅ Current | **Category**: Feature Spec
+
+Canonical guide for optional **`flutter_adaptive_cards_host_fs`**: invoke serialization, PlainJson/Teams adapters, response effects, `AdaptiveCardBackendHandlers`, error handling, and refresh round-trips.
+
 ### [adaptive-template-design.md](./adaptive-template-design.md)
 
 **Status**: ✅ Current | **Category**: Feature Spec
@@ -117,6 +135,12 @@ Design specification for the Dart templating engine in `flutter_adaptive_templat
 - Conditional rendering with `$when`
 - `json()` function for embedded JSON
 - Based on [Microsoft Templating Language](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)
+
+### [2026-06-08-rich-text-and-text-features-design.md](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md)
+
+**Status**: ✅ Current | **Category**: Feature Spec
+
+Design for **`RichTextBlock`** / **`TextRun`** rendering and targeted **`TextBlock`** plain-path fixes (workstream G of the [June 2026 plan](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md)).
 
 ### [Encoded-Image-Support.md](./Encoded-Image-Support.md)
 
@@ -188,4 +212,4 @@ When adding or updating documentation:
 
 ---
 
-Last Updated: 2026-06-08
+Last Updated: 2026-06-09

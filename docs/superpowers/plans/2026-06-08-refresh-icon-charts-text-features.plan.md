@@ -4,7 +4,7 @@
 
 **Goal:** Implement Adaptive Card `refresh`, the hub `Icon` element, chart chrome and color parity (excluding responsive layout), a real `Chart.Gauge` in `flutter_adaptive_charts_fs`, and standard text features (`RichTextBlock`/`TextRun` plus targeted `TextBlock` fixes), with Widgetbook demos for interactive chart attributes.
 
-**Implementation status (validated 2026-06-09, workstream G on `feat/workstream-g-text-features`):**
+**Implementation status (validated 2026-06-09):** all workstreams merged to `main` (PRs #19–#20; workstream G on `feat/workstream-g-text-features`).
 
 | Workstream | Status      | Notes                                                                       |
 | ---------- | ----------- | --------------------------------------------------------------------------- |
@@ -402,7 +402,7 @@ fvm flutter test test/charts/gauge_chart_test.dart --exclude-tags=golden
 
 ## Workstream G — Text features
 
-> **✅ Complete** on branch `feat/workstream-g-text-features`.
+> **✅ Complete** — workstream G merged on `feat/workstream-g-text-features` (pending PR to `main`).
 
 ### Scope
 

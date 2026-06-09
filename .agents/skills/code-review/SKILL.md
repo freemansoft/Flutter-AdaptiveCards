@@ -17,7 +17,7 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 - [ ] **FVM usage**: Are all commands (`flutter`, `dart`) executed via `fvm`?
 - [ ] **Analysis**: Does the code pass `fvm flutter analyze`? (Compliance with `very_good_analysis`).
 - [ ] **Changelog**: Has `CHANGELOG.md` been updated in the affected packages following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)?
-- [ ] **Release / post-publish** (if applicable): Follow `release-engineer` — all five `version:` fields match, five changelogs have matching top `## [<version>]` sections, and `flutter_adaptive_charts_fs` uses `flutter_adaptive_cards_fs: ^<version>`.
+- [ ] **Release / post-publish** (if applicable): Follow `release-engineer` — all **six** `version:` fields match, **six** changelogs have matching top `## [<version>]` sections, and `flutter_adaptive_charts_fs` and `flutter_adaptive_cards_host_fs` use `flutter_adaptive_cards_fs: ^<version>`.
 - [ ] **Formatting**: Has `dart_format` been run on all modified files?
 
 ---
@@ -66,7 +66,19 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 
 ---
 
-## 4. Testing Protocol
+## 4. `flutter_adaptive_cards_host_fs` Checklist
+
+- [ ] **Handlers**: `AdaptiveCardBackendHandlers` shares the same `GlobalKey<RawAdaptiveCardState>` as `RawAdaptiveCard` when `onSubmit` / `onExecute` / `onRefresh` need card state.
+- [ ] **Adapters**: PlainJson vs Teams invoke shapes match the backend contract; response effects applied via `AdaptiveCardInvokeResponse.applyTo`.
+- [ ] **Dependencies**: `pubspec.yaml` declares `flutter_adaptive_cards_fs: ^<monorepo-version>` (sync on release bump).
+- [ ] **Tests**: Unit tests under `packages/flutter_adaptive_cards_host_fs/test/` (no goldens); run `fvm flutter test` from that package directory.
+- [ ] **Docs**: Public API changes reflected in `docs/backend-host-integration.md` and package `README.md`.
+
+See **`adaptive-cards-backend-host`** skill for file paths and invoke round-trip patterns.
+
+---
+
+## 5. Testing Protocol
 
 - [ ] **Key-First Searching**: All `find.text()` or `find.byType()` calls in tests should be replaced with `find.byKey()` whenever a key is available.
 - [ ] **JSON Samples**: Is there a new file in `test/samples/` demonstrating the feature/fix?
