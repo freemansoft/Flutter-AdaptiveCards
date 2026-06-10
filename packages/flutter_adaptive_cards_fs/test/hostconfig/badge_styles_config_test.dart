@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -34,17 +35,17 @@ void main() {
       );
     });
 
-    test('should use default values when JSON is empty', () {
+    test('should use theme-derived defaults when JSON is empty', () {
+      final themeDefaults = ThemeColorFallbacks(ThemeData()).foregroundColors;
       final config = BadgeStylesConfig.fromJson({});
 
-      // Testing that it doesn't crash and has some default (likely black/grey from FontColorConfig)
       expect(
         config.filled.backgroundColors.defaultColor.defaultColor,
-        Colors.black,
+        themeDefaults.defaultColor.defaultColor,
       );
       expect(
         config.tint.foregroundColors.defaultColor.defaultColor,
-        Colors.black,
+        themeDefaults.defaultColor.defaultColor,
       );
     });
   });

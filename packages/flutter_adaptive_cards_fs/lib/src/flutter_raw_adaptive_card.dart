@@ -8,6 +8,7 @@ import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_cards_canvas.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_filter.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
@@ -155,6 +156,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
     _resolver = ReferenceResolver(
       hostConfigs: widget.hostConfigs,
+      colorFallbacks: ThemeColorFallbacks(Theme.of(context)),
     );
     _resolverBrightnessKey = brightness;
   }

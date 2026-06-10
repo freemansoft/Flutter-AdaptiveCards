@@ -296,6 +296,15 @@ Widget buildTextBlockTextOverlay(BuildContext context) {
   return TextBlockOverlayPage(key: textBlockOverlayPageKey);
 }
 
+@widgetbook.UseCase(
+  name: 'RichTextBlock demo',
+  type: widget_types.TextBlock,
+  path: '[Components]',
+)
+Widget buildRichTextBlockDemo(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.2/rich_text_block_demo.json');
+}
+
 // =============================================================================
 // IMAGE Component
 // =============================================================================

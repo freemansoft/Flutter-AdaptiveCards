@@ -131,6 +131,36 @@ Shared handler `handleDependentChoiceSetChange`:
 
 Tests: `test/inputs/cascade_choice_set_test.dart`, `test/inputs/value_changed_action_reset_test.dart`, `test/inputs/choice_set_data_query_test.dart`, `test/inputs/dependent_choice_set_test.dart`.
 
+## Backend invoke round-trips (optional host package)
+
+When the server returns dynamic choices, validation errors, or a full card replacement, use **`flutter_adaptive_cards_host_fs`** instead of hand-wiring every callback:
+
+```dart
+AdaptiveCardBackendHandlers(
+  client: HttpAdaptiveCardBackendClient(endpoint: uri),
+  cardKey: cardKey,
+  onError: (e) => showError(e),
+).wrap(
+  RawAdaptiveCard.fromMap(key: cardKey, map: cardJson, hostConfigs: hostConfigs),
+  onCardReplaced: (map) => setState(() => cardJson = map),
+);
+```
+
+**What the host package handles:**
+
+| Callback | Serialized as | Typical server response |
+| -------- | ------------- | ----------------------- |
+| `onSubmit` | `kind: submit` + merged `data` | `setInputErrors` or `replaceCard` |
+| `onExecute` | `kind: execute` + `verb` + `data` | `applyPatches` (e.g. new `choices`) |
+| `onRefresh` | same as execute | `replaceCard` with refreshed JSON |
+| `onChange` | `kind: inputChange` + `dataQuery` with **`associatedInputs`** siblings | `applyPatches` for dependent ChoiceSet |
+
+**`associatedInputs`** on the card JSON ensures **`InputChangeInvoke.dataQuery.parameters`** already includes sibling values (e.g. `country`) before serialization — the backend does not need a separate client-side merge.
+
+For response effect ordering, error handling, and Teams adapters, see [backend-host-integration.md](backend-host-integration.md). Overlay mapping: [reactive-riverpod.md — Server-driven patches](reactive-riverpod.md#server-driven-patches-host-package).
+
+Tests: `packages/flutter_adaptive_cards_host_fs/test/`.
+
 ## Filtered ChoiceSet style (`style: "filtered"`)
 
 Filtered inputs open a typeahead modal ([`ChoiceFilter`](../packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_filter.dart)) over resolved `choices`:

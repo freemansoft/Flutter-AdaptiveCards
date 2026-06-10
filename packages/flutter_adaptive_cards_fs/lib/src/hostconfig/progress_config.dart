@@ -119,10 +119,10 @@ class ProgressColorsConfig {
   static Color? resolveProgressColor({
     ProgressColorsConfig? config,
     required String? color,
+    required ProgressColorsConfig fallbackDefaults,
   }) {
-    // we don't return null here because we always have a fallback - is that the right approach
     final String myColor = color?.toLowerCase() ?? 'default';
-    final myConfig = config ?? FallbackConfigs.fallbackProgressColorsConfig;
+    final myConfig = config ?? fallbackDefaults;
 
     switch (myColor) {
       case 'good':

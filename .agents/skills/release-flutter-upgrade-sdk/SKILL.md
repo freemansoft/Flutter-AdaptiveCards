@@ -32,11 +32,12 @@ The GitHub Actions workflows must use the exact same Flutter version as FVM to p
 All packages in the monorepo should share the same minimum Dart/Flutter SDK requirements.
 
 - Locate all `pubspec.yaml` files across the repository. This includes:
-  - `packages/flutter_adaptive_cards_fs/pubspec.yaml`
-  - `packages/flutter_adaptive_charts_fs/pubspec.yaml`
-  - `packages/flutter_adaptive_template_fs/pubspec.yaml`
-  - `adaptive_explorer/pubspec.yaml`
-  - `widgetbook/pubspec.yaml`
+- `packages/flutter_adaptive_cards_fs/pubspec.yaml`
+- `packages/flutter_adaptive_charts_fs/pubspec.yaml`
+- `packages/flutter_adaptive_template_fs/pubspec.yaml`
+- `packages/flutter_adaptive_cards_host_fs/pubspec.yaml`
+- `adaptive_explorer/pubspec.yaml`
+- `widgetbook/pubspec.yaml`
 - Update the `environment:` constraints to match the new minimum Dart SDK (and optionally Flutter SDK) corresponding to the new Flutter version.
 
   ```yaml

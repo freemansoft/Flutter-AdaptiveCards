@@ -51,6 +51,7 @@ Authored for this monorepo (Adaptive Cards spec, HostConfig theming, element reg
 | `adaptive-cards-hostconfig-theme`           | HostConfig → Flutter theme mapping               |
 | `adaptive-cards-spec-compliance`            | Microsoft Adaptive Cards spec parity             |
 | `adaptive-cards-templating`                 | `flutter_adaptive_template_fs` templating engine |
+| `adaptive-cards-backend-host`               | `flutter_adaptive_cards_host_fs` invoke bridge   |
 | `adaptive-cards-testing`                    | Library test and golden image conventions        |
 | `code-review`                               | Pre-merge quality checklist                      |
 | `release-engineer`                          | Versioning, pub.dev, changelogs                  |

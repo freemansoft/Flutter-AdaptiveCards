@@ -4,8 +4,6 @@ All notable changes to this **unpublished** workspace test package are documente
 
 ## [Unreleased]
 
-- **`getTestWidgetFromMap`** / **`getTestWidgetFromPath`:** optional **`onRefresh`** handler and **`currentUserId`** for root-card refresh widget tests.
-
 ## [0.10.0]
 
 ### Added
@@ -16,3 +14,4 @@ All notable changes to this **unpublished** workspace test package are documente
   - **`golden_helpers.dart`** — `configureTestView`, `getGoldenPath`, `getV16SampleForGoldenTest`, `getSampleForGoldenTest`.
   - **`flutter_test_config.dart`** — `adaptiveCardsTestExecutable` and `loadAdaptiveCardsTestFonts`.
 - **README** documenting usage from `flutter_adaptive_cards_fs` and extension packages (e.g. charts via registry wrapper).
+- **`getTestWidgetFromMap`** / **`getTestWidgetFromPath`:** optional **`onRefresh`** handler, **`currentUserId`**, and **`supportMarkdown`** for root-card refresh and plain TextBlock tests.

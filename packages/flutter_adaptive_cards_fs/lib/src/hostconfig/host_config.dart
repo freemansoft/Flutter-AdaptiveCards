@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/actions_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/adaptive_card_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/separator_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_block_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_styles_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 
 /// How RawAdaptiveCard selects between HostConfigs.light and HostConfigs.dark.
 enum AdaptiveCardBrightnessMode {
@@ -81,7 +83,11 @@ class HostConfig {
   });
 
   /// Parses a HostConfig from JSON (all top-level HostConfig properties).
-  factory HostConfig.fromJson(Map<String, dynamic> json) {
+  factory HostConfig.fromJson(
+    Map<String, dynamic> json, {
+    ThemeData? theme,
+  }) {
+    final colorDefaults = ThemeColorFallbacks(theme ?? ThemeData());
     return HostConfig(
       imageBaseUrl: json['imageBaseUrl']?.toString(),
       fontFamily: json['fontFamily']?.toString(),
@@ -90,7 +96,10 @@ class HostConfig {
           ? ImageSetConfig.fromJson(json['imageSet'])
           : null,
       foregroundColors: (json['foregroundColors'] != null)
-          ? ForegroundColorsConfig.fromJson(json['foregroundColors'])
+          ? ForegroundColorsConfig.fromJson(
+              json['foregroundColors'],
+              defaults: colorDefaults.foregroundColors,
+            )
           : null,
       textStyles: (json['textStyles'] != null)
           ? TextStylesConfig.fromJson(json['textStyles'])
@@ -102,7 +111,10 @@ class HostConfig {
           ? ActionsConfig.fromJson(json['actions'])
           : null,
       containerStyles: (json['containerStyles'] != null)
-          ? ContainerStylesConfig.fromJson(json['containerStyles'])
+          ? ContainerStylesConfig.fromJson(
+              json['containerStyles'],
+              colorDefaults: colorDefaults,
+            )
           : null,
       factSet: (json['factSet'] != null)
           ? FactSetConfig.fromJson(json['factSet'])

@@ -56,7 +56,7 @@ void main() {
   ) async {
     const key = ValueKey('gauge');
     await tester.pumpWidget(
-      getTestWidgetFromString(
+      getChartTestWidgetFromString(
         key: key,
         jsonString: '''
 {

@@ -1,32 +1,16 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
 
-// Helper to load widget from our v1.6 samples
-Widget getSampleForGoldenTest(Key key, String sampleName) {
-  // getWidget expects path relative to test/samples/
-  return getTestWidgetFromPath(path: 'v1.6/$sampleName.json', key: key);
-}
-
 /// Golden tests use a taller viewport to fit chart chrome (title, axis names, legend).
 const Size kChartGoldenTestViewSize = Size(500, 800);
 
-void configureTestView() {
-  RendererBinding.instance.renderViews.first.configuration =
-      TestViewConfiguration.fromView(
-        size: kChartGoldenTestViewSize,
-        view: PlatformDispatcher.instance.implicitView!,
-      );
-}
-
 void main() {
   testWidgets('Golden Donut', (tester) async {
-    configureTestView();
+    configureTestView(size: kChartGoldenTestViewSize);
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'chart_donut');
+    final Widget sample = getChartSampleForGoldenTest(key, 'chart_donut');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -38,9 +22,12 @@ void main() {
   }, tags: ['golden']);
 
   testWidgets('Vertical Bar Chart', (tester) async {
-    configureTestView();
+    configureTestView(size: kChartGoldenTestViewSize);
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'chart_vertical_bar');
+    final Widget sample = getChartSampleForGoldenTest(
+      key,
+      'chart_vertical_bar',
+    );
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -52,9 +39,12 @@ void main() {
   }, tags: ['golden']);
 
   testWidgets('Horizontal Bar Chart', (tester) async {
-    configureTestView();
+    configureTestView(size: kChartGoldenTestViewSize);
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'chart_horizontal_bar');
+    final Widget sample = getChartSampleForGoldenTest(
+      key,
+      'chart_horizontal_bar',
+    );
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -66,9 +56,9 @@ void main() {
   }, tags: ['golden']);
 
   testWidgets('Vertical Bar Grouped Chart', (tester) async {
-    configureTestView();
+    configureTestView(size: kChartGoldenTestViewSize);
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(
+    final Widget sample = getChartSampleForGoldenTest(
       key,
       'chart_bar_vertical_grouped',
     );
@@ -83,9 +73,9 @@ void main() {
   }, tags: ['golden']);
 
   testWidgets('Horizontal Bar Stacked Chart', (tester) async {
-    configureTestView();
+    configureTestView(size: kChartGoldenTestViewSize);
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(
+    final Widget sample = getChartSampleForGoldenTest(
       key,
       'chart_bar_horizontal_stacked',
     );
@@ -100,9 +90,9 @@ void main() {
   }, tags: ['golden']);
 
   testWidgets('Line Chart', (tester) async {
-    configureTestView();
+    configureTestView(size: kChartGoldenTestViewSize);
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'chart_line');
+    final Widget sample = getChartSampleForGoldenTest(key, 'chart_line');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -114,9 +104,9 @@ void main() {
   }, tags: ['golden']);
 
   testWidgets('Pie Chart', (tester) async {
-    configureTestView();
+    configureTestView(size: kChartGoldenTestViewSize);
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'chart_pie');
+    final Widget sample = getChartSampleForGoldenTest(key, 'chart_pie');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -128,9 +118,9 @@ void main() {
   }, tags: ['golden']);
 
   testWidgets('Gauge Chart', (tester) async {
-    configureTestView();
+    configureTestView(size: kChartGoldenTestViewSize);
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'chart_gauge');
+    final Widget sample = getChartSampleForGoldenTest(key, 'chart_gauge');
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 

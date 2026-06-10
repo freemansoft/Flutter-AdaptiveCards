@@ -17,9 +17,14 @@ void main() {
           'line': {'height': 400},
         }),
       ),
+      dark: HostConfig(
+        chartsLayout: ChartsLayoutConfig.fromJson({
+          'line': {'height': 400},
+        }),
+      ),
     );
     await tester.pumpWidget(
-      getTestWidgetFromPath(
+      getChartTestWidgetFromPath(
         path: 'v1.6/chart_line.json',
         key: key,
         hostConfigs: hostConfigs,

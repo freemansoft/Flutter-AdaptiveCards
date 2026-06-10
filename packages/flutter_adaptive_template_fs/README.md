@@ -10,11 +10,12 @@ This project is in no way associated with Microsoft. It is an open source projec
 
 Libraries avaiable on pub.dev from this repository include:
 
-| Package / Library                                         | pub.dev                                                                               |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| The core of Adaptive Cards is supported via               | [flutter_adaptive_cards_fs](https://pub.dev/packages/flutter_adaptive_cards_fs)       |
-| Supplemental Adaptive Card based charts are supported via | [flutter_adaptive_charts_fs](https://pub.dev/packages/flutter_adaptive_charts_fs)     |
-| Templating is supported via the                           | [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs) |
+| Package / Library                                         | pub.dev                                                                                   |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| The core of Adaptive Cards is supported via               | [flutter_adaptive_cards_fs](https://pub.dev/packages/flutter_adaptive_cards_fs)           |
+| Supplemental Adaptive Card based charts are supported via | [flutter_adaptive_charts_fs](https://pub.dev/packages/flutter_adaptive_charts_fs)         |
+| Templating is supported via the                           | [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs)     |
+| Backend invoke bridge is supported via                    | [flutter_adaptive_cards_host_fs](https://pub.dev/packages/flutter_adaptive_cards_host_fs) |
 
 Utility programs available in this repository that are not published to pub.dev include:
 
@@ -22,6 +23,32 @@ Utility programs available in this repository that are not published to pub.dev 
 | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | The Adaptive Card Explorer Editor                        | ([adaptive_explorer](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_explorer)) |
 | A Widgetbook for demonstrating cards and their features: | ([widgetbook](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/widgetbook))               |
+
+## Package structure
+
+Standalone templating — no dependency on `flutter_adaptive_cards_fs`. Output is expanded card JSON for the renderer.
+
+```mermaid
+flowchart LR
+  subgraph template_pkg["flutter_adaptive_template_fs"]
+    ACT["AdaptiveCardTemplate\npublic API"]
+    EV["Evaluator\nscopes · data binding · when · iteration"]
+    RES["Resolver"]
+    AST["ast.dart"]
+    EP["ExpressionParser\nproperty bindings · functions"]
+    ACT --> EV
+    EP --> EV
+    EV --> RES
+    RES --> AST
+  end
+
+  TPL["Template JSON"] --> ACT
+  DATA["Data JSON"] --> ACT
+  ACT --> OUT["Expanded JSON string"]
+  OUT -->|"jsonDecode → RawAdaptiveCard"| CORE["flutter_adaptive_cards_fs\noptional next step"]
+```
+
+Design detail: [adaptive-template-design.md](../../docs/adaptive-template-design.md).
 
 ## Usage
 

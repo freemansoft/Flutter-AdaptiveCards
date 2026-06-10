@@ -281,6 +281,21 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
     }
   }
 
+  CardTypeRegistry _registryWithCanvasFlags() {
+    final base = widget.cardTypeRegistry;
+    if (base.supportMarkdown == widget.supportMarkdown &&
+        base.listView == widget.listView) {
+      return base;
+    }
+    return CardTypeRegistry(
+      removedElements: base.removedElements,
+      addedElements: base.addedElements,
+      addedActions: base.addedActions,
+      listView: widget.listView,
+      supportMarkdown: widget.supportMarkdown,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (map == null) {
@@ -290,7 +305,7 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
 
     return RawAdaptiveCard.fromMap(
       map: map!,
-      cardTypeRegistry: widget.cardTypeRegistry,
+      cardTypeRegistry: _registryWithCanvasFlags(),
       actionTypeRegistry: widget.actionTypeRegistry,
       initData: initData,
       onChange: onChange,

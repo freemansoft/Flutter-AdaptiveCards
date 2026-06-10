@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// Renders the Adaptive Cards **ProgressBar** element.
@@ -63,10 +62,7 @@ class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
   void didChangeDependencies() {
     super.didChangeDependencies();
     final colorString = adaptiveMap['color']?.toString();
-    progressColor = ProgressColorsConfig.resolveProgressColor(
-      config: styleResolver.getProgressColorConfig(),
-      color: colorString,
-    );
+    progressColor = styleResolver.resolveProgressColor(colorString);
   }
 
   @override
