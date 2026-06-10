@@ -49,6 +49,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`TextBlock`** applies HostConfig `TextStylesConfig` for `heading` / `columnHeader`; table header rows use `columnHeader` defaults.
 - **`Image`** `person` clipping applies only when `style` is `person` (not other style names).
 - Theme brightness changes re-resolve styles via brightness-keyed root `ProviderScope`.
+- **`ThemeColorFallbacks`:** HostConfig color fallbacks derived from `ThemeData.colorScheme` (`theme_color_fallbacks.dart`); replaces hardcoded light-theme colors previously in **`FallbackConfigs`**.
+- **`ReferenceResolver`:** required **`colorFallbacks`** parameter; **`resolveProgressColor()`**; foreground, container, chart, separator, and badge resolution uses theme-derived defaults when HostConfig omits values.
+- **`RawAdaptiveCard`:** wires **`ThemeColorFallbacks(Theme.of(context))`** into the resolver on each build.
+- **HostConfig JSON parsers** (`FontColorConfig`, `ForegroundColorsConfig`, `ContainerStyleConfig`, `ContainerStylesConfig`, `HostConfig.fromJson`): optional **`theme:`** / **`ThemeColorFallbacks.forParsing`** for parse-time color defaults.
+- Documentation: **[`docs/hostconfig.md`](../../docs/hostconfig.md)** (replaces **`docs/hostconfig_tests.md`**) — theme fallback pipeline, Widgetbook notes, and serialization test conventions.
+- Regenerated linux and macos golden baselines for theme-derived HostConfig color fallbacks.
 - **`Input.Date`** `initData` / `initInput` seeding: controller no longer receives placeholder text; submit and overlay values use `yyyy-MM-dd` per spec. Hosts that relied on ISO-8601 in `onChange` callbacks should expect `yyyy-MM-dd` instead.
 - **`Input.ChoiceSet`** `loadInput`: selection reconcile clears the value overlay (`clearInputValue`) instead of writing `''`, matching legacy `loadInput` / `setChoices` behavior.
 - **Root card `refresh` (v1.4+):** parse `refresh.action`, `userIds`, and `expires` via **`RefreshConfig`**; manual refresh affordance (top-right icon) when `refresh.action` is set; one-shot auto-refresh after first frame when `expires` is in the past; **`refresh.userIds`** gates auto-refresh only (via **`AdaptiveCardsCanvas.currentUserId`** / **`currentUserIdProvider`**).

@@ -8,6 +8,10 @@
 - **`CardChartsRegistry`:** registers **`Chart.Gauge`** (replaces prior donut-only placeholder).
 - Tests: gauge widget and painter tests; sample JSON **`test/samples/v1.6/chart_gauge.json`**; golden **`test/golden_v1_6_test.dart`** (`v1_6_gauge.png`).
 - README: documents **`colorSet`**, Teams semantic color tokens, and chart chrome properties.
+- Test harness re-exports **`flutter_adaptive_cards_test_support`** from **`test/utils/test_utils.dart`** with chart-specific **`getChartTestWidget*`** / **`getChartSampleForGoldenTest`** wrappers and **`chartCardTypeRegistry`**.
+- **`flutter_test_config.dart`** delegates to shared **`adaptiveCardsTestExecutable`**.
+- Removed unused **`mockito`** dev dependency.
+- Regenerated linux and macos golden baselines for theme-derived HostConfig color fallbacks.
 
 ## [0.9.0]
 
