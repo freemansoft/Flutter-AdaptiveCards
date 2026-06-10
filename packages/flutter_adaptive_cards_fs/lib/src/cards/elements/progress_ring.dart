@@ -82,10 +82,7 @@ class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
   void didChangeDependencies() {
     super.didChangeDependencies();
     final colorString = adaptiveMap['color'] as String?;
-    progressColor = ProgressColorsConfig.resolveProgressColor(
-      config: styleResolver.getProgressColorConfig(),
-      color: colorString,
-    );
+    progressColor = styleResolver.resolveProgressColor(colorString);
     final sizeString = adaptiveMap['size'] as String?;
     sizePx =
         ProgressSizesConfig.resolveProgressSize(

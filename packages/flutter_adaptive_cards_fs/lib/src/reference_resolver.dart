@@ -24,6 +24,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_block_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_style_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_styles_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/resolved_text_appearance.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
@@ -42,12 +43,14 @@ class ReferenceResolver {
     this.inheritedContainerStyle,
     this.inheritedHorizontalAlignment,
     required this.hostConfigs,
+    required this.colorFallbacks,
   });
 
   ReferenceResolver._({
     this.inheritedContainerStyle,
     this.inheritedHorizontalAlignment,
     required this.hostConfigs,
+    required this.colorFallbacks,
   });
 
   /// Foreground palette context pushed to descendants by ChildStyler.
@@ -58,6 +61,9 @@ class ReferenceResolver {
 
   /// Host styling configuration (light/dark selection via [HostConfigs.current]).
   final HostConfigs hostConfigs;
+
+  /// Theme-derived color defaults when HostConfig omits color sections.
+  final ThemeColorFallbacks colorFallbacks;
 
   /// Computes the container-style context children inherit after this container.
   static String? inheritedContainerStyleForChildren({
@@ -233,27 +239,27 @@ class ReferenceResolver {
       case 'emphasis':
         backgroundColor =
             getContainerStylesConfig()?.emphasis.backgroundColor ??
-            FallbackConfigs.containerStylesConfig.emphasis.backgroundColor;
+            colorFallbacks.containerStyles.emphasis.backgroundColor;
       case 'good':
         backgroundColor =
             getContainerStylesConfig()?.good?.backgroundColor ??
-            FallbackConfigs.containerStylesConfig.good?.backgroundColor;
+            colorFallbacks.containerStyles.good?.backgroundColor;
       case 'attention':
         backgroundColor =
             getContainerStylesConfig()?.attention?.backgroundColor ??
-            FallbackConfigs.containerStylesConfig.attention?.backgroundColor;
+            colorFallbacks.containerStyles.attention?.backgroundColor;
       case 'warning':
         backgroundColor =
             getContainerStylesConfig()?.warning?.backgroundColor ??
-            FallbackConfigs.containerStylesConfig.warning?.backgroundColor;
+            colorFallbacks.containerStyles.warning?.backgroundColor;
       case 'accent':
         backgroundColor =
             getContainerStylesConfig()?.accent?.backgroundColor ??
-            FallbackConfigs.containerStylesConfig.accent?.backgroundColor;
+            colorFallbacks.containerStyles.accent?.backgroundColor;
       case 'default':
         backgroundColor =
             getContainerStylesConfig()?.defaultStyle.backgroundColor ??
-            FallbackConfigs.containerStylesConfig.defaultStyle.backgroundColor;
+            colorFallbacks.containerStyles.defaultStyle.backgroundColor;
       default:
         backgroundColor = null;
     }
@@ -352,7 +358,7 @@ class ReferenceResolver {
         getContainerStylesConfig()?.defaultStyle;
     final FontColorConfig colorConfig =
         containerStyle?.foregroundColors.fontColorConfig(style) ??
-        FallbackConfigs.containerStylesConfig.defaultStyle.foregroundColors
+        colorFallbacks.containerStyles.defaultStyle.foregroundColors
             .fontColorConfig(style);
     return colorConfig.defaultColor;
   }
@@ -399,12 +405,12 @@ class ReferenceResolver {
       inheritedHorizontalAlignment:
           inheritedHorizontalAlignment ?? this.inheritedHorizontalAlignment,
       hostConfigs: hostConfigs,
+      colorFallbacks: colorFallbacks,
     );
   }
 
   ContainerStyleConfig _containerStyleConfigForInherited(String? inherited) {
-    final styles =
-        getContainerStylesConfig() ?? FallbackConfigs.containerStylesConfig;
+    final styles = getContainerStylesConfig() ?? colorFallbacks.containerStyles;
     switch (inherited?.toLowerCase()) {
       case 'emphasis':
         return styles.emphasis;
@@ -774,14 +780,14 @@ class ReferenceResolver {
   /// Separator line thickness from HostConfig, with library fallback.
   double resolveSeparatorThickness() {
     return getSeparatorConfig()?.lineThickness.toDouble() ??
-        FallbackConfigs.separatorConfig.lineThickness.toDouble();
+        colorFallbacks.separator.lineThickness.toDouble();
   }
 
   /// Separator line color from HostConfig, with library fallback.
   Color resolveSeparatorColor() {
     return parseHexColor(getSeparatorConfig()?.lineColor) ??
-        parseHexColor(FallbackConfigs.separatorConfig.lineColor) ??
-        Colors.grey.shade300;
+        parseHexColor(colorFallbacks.separator.lineColor) ??
+        colorFallbacks.progressBackgroundColor;
   }
 
   /// Get border color based on grid style
@@ -792,26 +798,26 @@ class ReferenceResolver {
               style: 'default',
               isSubtle: true,
             ) ??
-            Colors.grey.shade600;
+            colorFallbacks.foregroundColors.defaultColor.subtleColor;
       case 'good':
         return resolveContainerForegroundColor(style: 'good') ??
-            Colors.green.shade600;
+            colorFallbacks.foregroundColors.good.defaultColor;
       case 'attention':
         return resolveContainerForegroundColor(style: 'attention') ??
-            Colors.red.shade600;
+            colorFallbacks.foregroundColors.attention.defaultColor;
       case 'warning':
         return resolveContainerForegroundColor(style: 'warning') ??
-            Colors.orange.shade600;
+            colorFallbacks.foregroundColors.warning.defaultColor;
       case 'accent':
         return resolveContainerForegroundColor(style: 'accent') ??
-            Colors.blue.shade600;
+            colorFallbacks.foregroundColors.accent.defaultColor;
       case 'default':
       default:
         return resolveContainerForegroundColor(
               style: 'default',
               isSubtle: true,
             ) ??
-            Colors.grey.shade400;
+            colorFallbacks.foregroundColors.defaultColor.subtleColor;
     }
   }
 
@@ -834,7 +840,16 @@ class ReferenceResolver {
 
   /// Resolves the background color for a progress element
   Color resolveProgressBackgroundColor() {
-    return FallbackConfigs.progressBackgroundColor;
+    return colorFallbacks.progressBackgroundColor;
+  }
+
+  /// Resolves progress indicator fill color from a color token.
+  Color? resolveProgressColor(String? color) {
+    return ProgressColorsConfig.resolveProgressColor(
+      config: getProgressColorConfig(),
+      color: color,
+      fallbackDefaults: colorFallbacks.progressColors,
+    );
   }
 
   /// Resolves the foreground color for a Badge
@@ -843,8 +858,7 @@ class ReferenceResolver {
     String? appearance,
     bool? isSubtle,
   }) {
-    final myBadgeStyles =
-        getBadgeStylesConfig() ?? FallbackConfigs.fallbackBadgeStylesConfig;
+    final myBadgeStyles = getBadgeStylesConfig() ?? colorFallbacks.badgeStyles;
 
     final String myColorStyle = colorStyle ?? 'default';
     final BadgeStyleConfig badgeStyle = (appearance?.toLowerCase() == 'tint')
@@ -864,8 +878,7 @@ class ReferenceResolver {
     String? colorStyle,
     String? appearance,
   }) {
-    final myBadgeStyles =
-        getBadgeStylesConfig() ?? FallbackConfigs.fallbackBadgeStylesConfig;
+    final myBadgeStyles = getBadgeStylesConfig() ?? colorFallbacks.badgeStyles;
 
     final String myColorStyle = colorStyle ?? 'default';
     final BadgeStyleConfig badgeStyle = (appearance?.toLowerCase() == 'tint')
@@ -895,7 +908,7 @@ class ReferenceResolver {
             style: 'default',
             isSubtle: true,
           ) ??
-          Colors.grey[700],
+          colorFallbacks.foregroundColors.defaultColor.subtleColor,
     );
   }
 
@@ -927,8 +940,8 @@ class ReferenceResolver {
       return hostPalette;
     }
 
-    return FallbackConfigs.chartColorsConfig.defaultPalette.isNotEmpty
-        ? FallbackConfigs.chartColorsConfig.defaultPalette
+    return colorFallbacks.chartColors.defaultPalette.isNotEmpty
+        ? colorFallbacks.chartColors.defaultPalette
         : kChartCategoricalPalette;
   }
 
@@ -942,12 +955,12 @@ class ReferenceResolver {
     if (colorStr == null) {
       return fallback ??
           getChartColorsConfig()?.defaultColor ??
-          FallbackConfigs.chartColorsConfig.defaultColor;
+          colorFallbacks.chartColors.defaultColor;
     }
 
     return parseHexColor(colorStr) ??
         fallback ??
         getChartColorsConfig()?.defaultColor ??
-        FallbackConfigs.chartColorsConfig.defaultColor;
+        colorFallbacks.chartColors.defaultColor;
   }
 }

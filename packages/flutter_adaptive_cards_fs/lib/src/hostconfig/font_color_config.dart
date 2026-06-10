@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// HostConfig foreground color pair (`default` and `subtle`) for a semantic
@@ -15,15 +16,18 @@ class FontColorConfig {
     Map<String, dynamic> json, {
     FontColorConfig? defaults,
   }) {
+    final base =
+        defaults ??
+        ThemeColorFallbacks.forParsing.foregroundColors.defaultColor;
     return FontColorConfig(
       defaultColor:
           parseHostConfigColor(json['default']) ??
           defaults?.defaultColor ??
-          Colors.black,
+          base.defaultColor,
       subtleColor:
           parseHostConfigColor(json['subtle']) ??
           defaults?.subtleColor ??
-          Colors.grey,
+          base.subtleColor,
     );
   }
 

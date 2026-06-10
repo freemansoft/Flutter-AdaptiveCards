@@ -150,17 +150,13 @@ Specification for base64 encoded inline image support using `Image.memory`. Incl
 
 ---
 
-## Test Requirements
+## HostConfig
 
-### [hostconfig_tests.md](./hostconfig_tests.md)
+### [hostconfig.md](./hostconfig.md)
 
-**Status**: ✅ Current | **Category**: Test Requirements
+**Status**: ✅ Current | **Category**: Architecture & Testing
 
-Test requirements for HostConfig serialization. Each HostConfig entity should have:
-
-- Test file: `packages/flutter_adaptive_cards_fs/test/hostconfig/{name}_test.dart`
-- JSON file: `packages/flutter_adaptive_cards_fs/test/hostconfig/{name}.json`
-- Validation against schema
+HostConfig architecture: theme-derived color fallbacks (`ThemeColorFallbacks`), `ReferenceResolver` pipeline, brightness selection, Widgetbook notes, and serialization test conventions (JSON fixtures per entity under `test/hostconfig/`).
 
 ### Overlay / document notifier tests
 
