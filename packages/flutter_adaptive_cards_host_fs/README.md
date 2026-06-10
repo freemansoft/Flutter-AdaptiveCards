@@ -10,6 +10,46 @@ import 'package:flutter_adaptive_cards_host_fs/flutter_adaptive_cards_host_fs.da
 
 **Full guide:** [docs/backend-host-integration.md](../../docs/backend-host-integration.md)
 
+## Package structure
+
+Wires core invoke callbacks to your flow-service. Parsing and overlay application delegate to `flutter_adaptive_cards_fs` (`RawAdaptiveCardState.applyUpdates`, document notifier).
+
+```mermaid
+flowchart TB
+  subgraph host_pkg["flutter_adaptive_cards_host_fs"]
+    BH["AdaptiveCardBackendHandlers\nwrap() · onSubmit · onExecute · onChange · onRefresh"]
+    REQ["models/\nAdaptiveCardInvokeRequest · Response · Effect · Kind"]
+    subgraph adapters["adapters/"]
+      PJ["PlainJsonInvokeAdapter + response parser"]
+      TM["TeamsInvokeAdapter"]
+      EU["element_update_json.dart"]
+    end
+    subgraph client["client/"]
+      BC["AdaptiveCardBackendClient"]
+      HTTP["HttpAdaptiveCardBackendClient"]
+    end
+    BH --> REQ
+    REQ --> PJ
+    REQ --> TM
+    PJ --> BC
+    TM --> BC
+    BC --> HTTP
+    REQ --> EU
+  end
+
+  subgraph core["flutter_adaptive_cards_fs"]
+    IH["InheritedAdaptiveCardHandlers"]
+    RS["RawAdaptiveCardState.applyTo / applyUpdates"]
+    DOC["Document overlays · onCardReplaced"]
+  end
+
+  UI["User Submit · Execute · Refresh · input change"] --> BH
+  BH -. replaces handlers .-> IH
+  BH -->|"POST serialized body"| HTTP
+  HTTP -->|"effects in order"| RS
+  RS --> DOC
+```
+
 ## Quick start
 
 ```dart
@@ -39,12 +79,12 @@ Assign the same `GlobalKey<RawAdaptiveCardState>` to both `AdaptiveCardBackendHa
 
 ## Wired callbacks
 
-| Handler | Invoked when |
-| ------- | ------------ |
-| `onSubmit` | `Action.Submit` |
-| `onExecute` | `Action.Execute` |
-| `onRefresh` | Root card refresh (manual affordance or auto-expire) |
-| `onChange` | Input value changes (includes `Data.Query` with `associatedInputs`) |
+| Handler     | Invoked when                                                        |
+| ----------- | ------------------------------------------------------------------- |
+| `onSubmit`  | `Action.Submit`                                                     |
+| `onExecute` | `Action.Execute`                                                    |
+| `onRefresh` | Root card refresh (manual affordance or auto-expire)                |
+| `onChange`  | Input value changes (includes `Data.Query` with `associatedInputs`) |
 
 Pass `onOpenUrl` / `onOpenUrlDialog` on `AdaptiveCardBackendHandlers` when you need non–backend URL handling (defaults to no-op).
 
@@ -107,12 +147,12 @@ Effects run **in JSON array order**. Recommended server order:
 
 ## Error handling
 
-| Case | Behavior |
-| ---- | -------- |
-| Network failure | `onError`; card unchanged |
-| Parse failure | `AdaptiveCardInvokeResponseParseException` → `onError` |
-| Unknown effect type | Skipped (debug log in debug builds) |
-| `replaceCard` without `onCardReplaced` | `StateError` from `applyTo` |
+| Case                                   | Behavior                                               |
+| -------------------------------------- | ------------------------------------------------------ |
+| Network failure                        | `onError`; card unchanged                              |
+| Parse failure                          | `AdaptiveCardInvokeResponseParseException` → `onError` |
+| Unknown effect type                    | Skipped (debug log in debug builds)                    |
+| `replaceCard` without `onCardReplaced` | `StateError` from `applyTo`                            |
 
 Always implement `onError` in production hosts.
 

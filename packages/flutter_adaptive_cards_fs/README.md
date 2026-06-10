@@ -37,6 +37,68 @@ Utility programs available in this repository that are not published to pub.dev 
 | The Adaptive Card Explorer Editor                        | ([adaptive_explorer](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_explorer)) |
 | A Widgetbook for demonstrating cards and their features: | ([widgetbook](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/widgetbook))               |
 
+## Package structure
+
+Major modules under `lib/src/` and how they connect at runtime. For the monorepo-wide view and a single diagram of state + style + actions + registries, see [`docs/Architecture-Overview.md`](../../docs/Architecture-Overview.md#core-library-component-model).
+
+```mermaid
+flowchart TB
+  subgraph barrel["flutter_adaptive_cards_fs"]
+    direction TB
+
+    subgraph entry["Entry"]
+      Canvas["AdaptiveCardsCanvas"]
+      Raw["RawAdaptiveCard / RawAdaptiveCardState"]
+    end
+
+    subgraph riverpod["riverpod/"]
+      Doc["AdaptiveCardDocumentNotifier"]
+      Prov["providers.dart\nbaseline · resolved · show-card"]
+    end
+
+    subgraph cards["cards/"]
+      ACE["AdaptiveCardElement"]
+      Elem["elements/ · containers/"]
+      Inp["inputs/"]
+      Act["actions/"]
+    end
+
+    subgraph infra["Infrastructure"]
+      Reg["CardTypeRegistry"]
+      ActReg["ActionTypeRegistry"]
+      RR["ReferenceResolver"]
+      HC["hostconfig/"]
+      Handlers["InheritedAdaptiveCardHandlers"]
+      Mix["AdaptiveInputMixin · ChildStyler"]
+    end
+  end
+
+  Canvas --> Raw
+  Raw --> Prov
+  Prov --> Doc
+  Prov --> Reg
+  Prov --> ActReg
+  Prov --> RR
+  Reg --> Elem
+  Reg --> Inp
+  ActReg --> Act
+  ACE --> Elem
+  ACE --> Act
+  RR --> Mix
+  Mix --> Elem
+  Handlers -.-> Act
+  Doc -. resolved providers .-> Inp
+  Doc -. resolved providers .-> Act
+```
+
+| Area | Responsibility |
+| ---- | -------------- |
+| `flutter_raw_adaptive_card.dart` | Card-scoped `ProviderScope`, baseline cache, `initData` lifecycle |
+| `riverpod/` | Baseline + overlays, `resolvedElementProvider` / `resolvedActionProvider` |
+| `cards/` | JSON type → widget (`CardTypeRegistry` / `ActionTypeRegistry` dispatch) |
+| `reference_resolver.dart` + `hostconfig/` | HostConfig + theme → colors, fonts, spacing |
+| `InheritedAdaptiveCardHandlers` | Host callbacks (Submit, Execute, OpenUrl, Refresh, onChange) |
+
 ## Consumption Patterns
 
 Adaptive Cards are intended to be served up via some presentation service or API letting the service control the UX flow. It is possible to just use them with local JSON templates but that's not the intended use.

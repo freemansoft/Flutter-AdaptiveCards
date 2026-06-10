@@ -62,7 +62,7 @@ Comprehensive specification for HostConfig implementation and mapping to Flutter
 
 **Status**: ✅ Current | **Category**: Architecture
 
-High-level system architecture showing package structure, widget hierarchy, and state management (Riverpod internals vs consumer API).
+High-level system architecture: monorepo layout, **core component model** diagram (registries, overlays, style, handlers), widget hierarchy, state management, and [diagram canon](./Architecture-Overview.md#diagram-canon).
 
 ### [optional-packages-and-extensions.md](./optional-packages-and-extensions.md)
 
@@ -189,6 +189,10 @@ Documents bug where AdaptiveColumns in an AdaptiveColumnSet have inconsistent he
 **NOT part of the standard Adaptive Cards specification.** Documents Azure Bot Service expression functions for potential future integration. For standard templating, see [adaptive-template-design.md](./adaptive-template-design.md).
 
 ---
+
+## Diagram canon
+
+Architecture diagrams are maintained in **canonical** docs (not duplicated from every plan/spec). See [Architecture-Overview.md — Diagram canon](./Architecture-Overview.md#diagram-canon) for which plan/spec Mermaid blocks are promoted vs kept as design history. Each published package README includes a **Package structure** diagram.
 
 ## Missing/Recommended Documentation
 

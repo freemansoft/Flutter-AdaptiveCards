@@ -4,6 +4,28 @@ Shared **test-only** helpers for the [Flutter-AdaptiveCards](https://github.com/
 
 This package is **not published** to pub.dev. It exists so `flutter_adaptive_cards_fs`, `flutter_adaptive_charts_fs`, and related packages can reuse the same widget-test harness without copying utilities into each `test/` tree.
 
+## Package structure
+
+```mermaid
+flowchart TB
+  subgraph support["flutter_adaptive_cards_test_support/lib/src/"]
+    FTC["flutter_test_config.dart\nadaptiveCardsTestExecutable"]
+    HTTP["http_overrides.dart\nMyTestHttpOverrides · fixture bytes"]
+    TWH["test_widget_helpers.dart\nAdaptiveCardsCanvas from JSON"]
+    GH["golden_helpers.dart\nconfigureTestView · getGoldenPath"]
+    FTC --> HTTP
+    TWH --> GH
+  end
+
+  subgraph consumers["dev_dependencies only"]
+    CARDS["flutter_adaptive_cards_fs/test\nre-exports via test_utils.dart"]
+    CHARTS["flutter_adaptive_charts_fs/test\noverrides getTestWidget* + charts registry"]
+  end
+
+  support --> CARDS
+  support --> CHARTS
+```
+
 ## What it provides
 
 | Module                     | Purpose                                                                                             |
