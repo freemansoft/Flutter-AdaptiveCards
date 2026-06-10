@@ -14,6 +14,7 @@
 - **`Chart.Gauge`** sample: **`lib/samples/v1.6/chart_gauge.json`**.
 - **Charts** use cases (Donut, Pie, Bar, Line, Gauge, Knobs demo): **[`ChartKnobsPage`](lib/chart_knobs_page.dart)** — live knobs for `title`, axis titles, `showBarValues`, `showLegend`, `colorSet`, gauge fields, and sample data values; uses per-sample **`chartKnobsPageKeyFor`** GlobalKeys so knob edits do not remount the card host.
 - Asset bundle: **`lib/samples/charts/`** for chart knob demo JSON.
+- **`appBuilder`:** forwards Widgetbook **Material Theme** addon selection to **`MaterialApp`** `theme` / `darkTheme` / `themeMode` so card use cases respect light/dark mode (pairs with **`ThemeColorFallbacks`** in `flutter_adaptive_cards_fs`).
 
 ## [0.9.0]
 
