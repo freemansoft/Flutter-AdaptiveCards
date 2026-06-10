@@ -74,25 +74,22 @@ See [optional-packages-and-extensions.md](../../docs/optional-packages-and-exten
 
 ## Getting started
 
-Pass in the additional charting elements to Registry on start up
+Merge chart element creators into `CardTypeRegistry.addedElements` when building the card:
 
 ```dart
-  const AdaptiveCard({
-    super.key,
-    required this.adaptiveCardContentProvider,
-    this.placeholder,
-    this.cardRegistry = const CardTypeRegistry(
-      addedElements: additionalChartElements,
-    ),
-    this.actionTypeRegistry = const DefaultActionTypeRegistry(),
-    this.initData,
-    this.onChange,
-    this.listView = false,
-    this.showDebugJson = true,
-    this.supportMarkdown = true,
-    required this.hostConfigs,
-  });
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
+import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
+
+AdaptiveCardsCanvas.map(
+  content: cardJson,
+  hostConfigs: HostConfigs(),
+  cardTypeRegistry: CardTypeRegistry(
+    addedElements: CardChartsRegistry.additionalChartElements,
+  ),
+);
 ```
+
+Action callbacks (`onSubmit`, `onChange`, …) belong on **`InheritedAdaptiveCardHandlers`** above the canvas — see [optional-packages-and-extensions.md](../../docs/optional-packages-and-extensions.md).
 
 ## Color Configuration
 
@@ -101,6 +98,10 @@ The charts package supports theme-aware color resolution via `HostConfig`. You c
 ### Example: Injecting a Custom Palette
 
 ```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
+import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
+
 final myConfig = HostConfig(
   chartColors: ChartColorsConfig(
     defaultPalette: [
@@ -113,9 +114,12 @@ final myConfig = HostConfig(
   ),
 );
 
-AdaptiveCardsCanvas(
+AdaptiveCardsCanvas.map(
+  content: cardJson,
   hostConfigs: HostConfigs(light: myConfig),
-  // ...
+  cardTypeRegistry: CardTypeRegistry(
+    addedElements: CardChartsRegistry.additionalChartElements,
+  ),
 );
 ```
 

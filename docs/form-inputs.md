@@ -27,7 +27,7 @@ Example remote validation after `onSubmit` (wire on **`InheritedAdaptiveCardHand
 ```dart
 onSubmit: (SubmitActionInvoke invoke) async {
   final errors = await validate(invoke.data);
-  cardState.applyUpdates(
+  invoke.cardState.applyUpdates(
     elements: errors.entries.map(
       (e) => AdaptiveElementUpdate(
         id: e.key,

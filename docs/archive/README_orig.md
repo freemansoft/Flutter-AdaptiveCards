@@ -1,3 +1,5 @@
+> **Archived — APIs below are outdated.** Current usage: **`AdaptiveCardsCanvas`** (`.network`, `.asset`, `.map`), **`InheritedAdaptiveCardHandlers`** with typed **`SubmitActionInvoke`**, **`ExecuteActionInvoke`**, **`OpenUrlActionInvoke`**, and **`InputChangeInvoke`** callbacks, and **`HostConfigs`** for theming. See [packages/flutter_adaptive_cards_fs/README.md](../../packages/flutter_adaptive_cards_fs/README.md) and [docs/backend-host-integration.md](../backend-host-integration.md).
+
 ![AdaptiveCards for Flutter](https://github.com/neohelden/Flutter-AdaptiveCards/raw/master/doc/neohelden-flutter-adaptive-cards-lib.jpg?raw=true "Adaptive Cards for Flutter")
 
 ## Adaptive Cards for Flutter

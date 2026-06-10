@@ -132,25 +132,23 @@ The reference resolver should accept a json hostconfig as its constructor parame
 
 All widgets should access configuration values through the `ReferenceResolver` (often exposed via the `styleResolver` mixin property) rather than importing or accessing the underlying config objects directly (e.g., `SpacingsConfig`, `FontSizesConfig`).
 
-The `ReferenceResolver` acts as a facade, providing resolution methods like `resolveSpacing(spacing)` or `resolveImageSizes(sizeDescription)`. This insulates the UI components from the underlying configuration class structures.
+The `ReferenceResolver` acts as a facade, providing resolution methods like `resolveSpacing(spacing)` and getters such as `getImageSetConfig()` / `getImageSizesConfig()`. This insulates the UI components from importing underlying config classes directly.
 
-A call from `ImageSet` to get the image sizes should NOT directly access the configuration class:
+A call from `ImageSet` to get image sizes should NOT bypass the resolver with static config helpers:
 
 ```dart
-// AVOID: Accessing the config object directly
-ProviderScope.containerOf(context)
-      .read(styleReferenceResolverProvider)
-      .getImageSetConfig()
-      .imageSize(sizeDescription);
+// AVOID: Static config helpers + direct config object access
+ImageSizesConfig.resolveImageSizes(
+  ref.read(styleReferenceResolverProvider).getImageSizesConfig()!,
+  sizeDescription,
+);
 ```
 
-Instead, use the `ReferenceResolver` convenience methods (via `ProviderScopeMixin.styleResolver` in element State, or directly):
+Instead, use the resolver (via `ProviderScopeMixin.styleResolver` in element `State`, or `getImageSetConfig()` on the scoped resolver):
 
 ```dart
-// PREFER: Using the resolver method
-ProviderScope.containerOf(context)
-      .read(styleReferenceResolverProvider)
-      .resolveImageSizes(sizeDescription);
+// PREFER: Resolver facade used in production ImageSet code
+styleResolver.getImageSetConfig()?.imageSize(sizeDescription);
 ```
 
 ## Testing

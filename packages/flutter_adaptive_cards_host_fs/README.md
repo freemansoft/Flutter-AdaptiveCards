@@ -53,6 +53,8 @@ flowchart TB
 ## Quick start
 
 ```dart
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_host_fs/flutter_adaptive_cards_host_fs.dart';

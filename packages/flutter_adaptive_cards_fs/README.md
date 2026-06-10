@@ -541,13 +541,13 @@ The referenced GitHub repository has vanished. Look at the forking train to figu
 
 ## Installing
 
-Version 0.3.0 is the first release of this package under the `_fs` namespace.
+The current release is **0.10.0** under the `_fs` namespace.
 
 Add this to your package's pubspec.yaml file:
 
 ```yml
 dependencies:
-  flutter_adaptive_cards_fs: ^0.3.0
+  flutter_adaptive_cards_fs: ^0.10.0
 ```
 
 ```dart
@@ -608,25 +608,25 @@ The Widgetbook demonstrates components loaded via JSON. It does not implement an
 Test files must end in `_test` , `_test.dart` in order to be recognized by the test jig.
 
 ```sh
-flutter test
+fvm flutter test
 ```
 
 to see the result of each test
 
 ```sh
-flutter test -r expanded
+fvm flutter test -r expanded
 ```
 
 Golden tests are platform-specific and stored in subdirectories (e.g., `gold_files/linux/`). If you run tests on a platform without checked-in goldens (like macOS), they will fail unless you generate local goldens. All golden tests are tagged with `@tag golden`. You can run all tests _other than golden_ with:
 
 ```sh
-flutter test packages/flutter_adaptive_cards_fs --exclude-tags=golden
+fvm flutter test packages/flutter_adaptive_cards_fs --exclude-tags=golden
 ```
 
 or from a terminal inside the package
 
 ```sh
-flutter test --exclude-tags=golden
+fvm flutter test --exclude-tags=golden
 ```
 
 This updates or creates the golden files for the current platform in the appropriate subdirectory (e.g., `gold_files/macos/`). For the CI / CD setup, Linux-based goldens are required and should be generated using a Docker container:
