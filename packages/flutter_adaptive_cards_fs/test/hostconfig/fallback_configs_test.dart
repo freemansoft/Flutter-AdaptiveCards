@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_style_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/foreground_colors_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
