@@ -233,9 +233,25 @@ flowchart TB
 
 ## Host callbacks
 
-Host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onOpenUrlDialog`, `onChange`, …) remain on **`InheritedAdaptiveCardHandlers`**. These are host integration points, not reactive document state. Each callback receives a typed invoke payload: **`SubmitActionInvoke`**, **`ExecuteActionInvoke`**, **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, or **`InputChangeInvoke`**. **`AdaptiveCardsCanvas.onChange`** accepts **`InputChangeInvoke`** directly.
+Host callbacks (`onSubmit`, `onExecute`, `onRefresh`, `onOpenUrl`, `onOpenUrlDialog`, `onChange`, …) remain on **`InheritedAdaptiveCardHandlers`**. These are host integration points, not reactive document state. Each callback receives a typed invoke payload: **`SubmitActionInvoke`**, **`ExecuteActionInvoke`**, **`RefreshActionInvoke`**, **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, or **`InputChangeInvoke`**. **`AdaptiveCardsCanvas.onChange`** accepts **`InputChangeInvoke`** directly.
 
 When a ChoiceSet with `choices.data` fires `onChange`, **`InputChangeInvoke.dataQuery`** includes sibling input values in **`parameters`** when `associatedInputs` is **`"auto"`** (default when omitted). The firing input id is excluded; set **`"none"`** to pass JSON `parameters` only. See [Dependent ChoiceSet](form-inputs.md#dependent-choiceset-country--city).
+
+## Server-driven patches (host package)
+
+When using optional **`flutter_adaptive_cards_host_fs`**, backend responses apply overlays automatically — you usually **do not** hand-write `applyUpdates` in `onSubmit`/`onChange` unless customizing behavior.
+
+| Response effect | Core API | Overlay fields |
+| --------------- | -------- | -------------- |
+| `applyPatches` | `RawAdaptiveCardState.applyUpdates(elements: …)` | `choices`, `inputValue`, `isVisible`, `text`, `facts`, … per `AdaptiveElementUpdate` |
+| `setInputErrors` | `applyUpdates` with `errorMessage` + `isInvalid: true` | `errorMessage`, `isInvalid` on each input id |
+| `replaceCard` | Host **`onCardReplaced`** callback | Replaces baseline JSON; overlays re-seed from new map |
+
+**Apply order:** patches → input errors → full card replacement (see [backend-host-integration.md](backend-host-integration.md#effect-types-and-apply-order)).
+
+Manual **`onSubmit` validation** (without the host package) still uses the same overlay fields — see [Host-driven validation](form-inputs.md#host-driven-validation-and-bulk-updates).
+
+Tests: `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_test.dart`; core patch merge in `test/riverpod/apply_updates_test.dart`.
 
 ## Overlay test coverage
 
@@ -257,6 +273,7 @@ The overlay **model** is well guarded; adding a new overlay field still requires
 | ChoiceSet `loadInput` / `appendChoices` / reset                            | `test/inputs/choice_set_overlay_test.dart`, `test/inputs/action_reset_inputs_test.dart`            |
 | Cascaded country → dependent ChoiceSet (`applyUpdates`)                    | `test/inputs/cascade_choice_set_test.dart`                                                         |
 | Data.Query session merge + `associatedInputs`                                | `test/inputs/choice_set_data_query_test.dart`, `test/models/data_query_test.dart`, `test/utils/associated_inputs_test.dart` |
+| Backend invoke round-trip (`AdaptiveCardBackendHandlers`)                    | `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_test.dart`                                          |
 | Input validation overlays                                                  | `test/inputs/input_error_overlay_test.dart`                                                        |
 | TextBlock `text`                                                           | `test/elements/text_block_text_overlay_test.dart`                                                  |
 | FactSet `facts`                                                            | `test/containers/fact_set_overlay_test.dart`                                                       |

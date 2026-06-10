@@ -2,8 +2,9 @@
 name: flutter-adaptive-cards-testing
 description: >
   Testing patterns, utilities, and golden image workflows for the
-  flutter_adaptive_cards_fs library. Use this before writing or modifying
-  any test in packages/flutter_adaptive_cards_fs/test/.
+  flutter_adaptive_cards_fs library (and related package test dirs).
+  Use this before writing or modifying tests under
+  packages/flutter_adaptive_cards_fs/test/ or packages/flutter_adaptive_cards_host_fs/test/.
 ---
 
 # Flutter Adaptive Cards Testing Skill
@@ -34,6 +35,17 @@ cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden
 ```
 
 Re-run targeted files when you touched related behavior (inputs, overlays, actions, goldens).
+
+### `flutter_adaptive_cards_host_fs` (no goldens)
+
+Unit tests only — run from the host package directory:
+
+```bash
+cd packages/flutter_adaptive_cards_host_fs
+fvm flutter test
+```
+
+See **`adaptive-cards-backend-host`** for handler/adapter test file paths. Core **`associatedInputs`** behavior is tested in `packages/flutter_adaptive_cards_fs/test/utils/associated_inputs_test.dart`.
 
 ---
 
@@ -257,7 +269,7 @@ Input values, visibility, TextBlock text, validation, ChoiceSet choices, and act
 - **Submit / reset**: pump user interactions, then assert `onSubmit` mock received expected values, or tap Reset and assert UI reverts to baseline JSON values. See `test/inherited_reference_resolver_test.dart`, `test/elements/is_visible_test.dart`, `test/inputs/action_reset_inputs_test.dart`, and input tests under `test/inputs/`.
 - **Dynamic choices**: `test/inputs/choice_set_overlay_test.dart` — `loadInput`, `appendChoices`, selection clear, dedupe, `resetAllInputs` clearing choice overlays.
 - **Cascaded / dependent ChoiceSet**: `test/inputs/cascade_choice_set_test.dart`, `test/inputs/value_changed_action_reset_test.dart` — `valueChangedAction` reset + `applyUpdates` choices; Widgetbook: `widgetbook/lib/dependent_choice_set_demo_page.dart` (see [form-inputs.md](../../docs/form-inputs.md#dependent-choiceset-country--city)).
-- **Data.Query / typeahead**: `test/inputs/choice_set_data_query_test.dart` — `onChange` passes `DataQuery`, `loadInput` refresh with `choices.data`, `setDataQuerySession` on resolved `choices.data`; **`associatedInputs` not implemented** — sibling values not merged into `DataQuery` yet. Filtered modal: `test/inputs/choice_filter_test.dart`, `test/inputs/choice_set_test.dart` — list/search **titles**, submit/`onChange` **values** ([form-inputs.md § Filtered ChoiceSet](../../docs/form-inputs.md#filtered-choiceset-style-style-filtered)).
+- **Data.Query / typeahead**: `test/inputs/choice_set_data_query_test.dart` — `onChange` passes `DataQuery`, `loadInput` refresh with `choices.data`, `setDataQuerySession` on resolved `choices.data`; **`associatedInputs`** merges sibling values into `DataQuery` when the action requests them. Filtered modal: `test/inputs/choice_filter_test.dart`, `test/inputs/choice_set_test.dart` — list/search **titles**, submit/`onChange` **values** ([form-inputs.md § Filtered ChoiceSet](../../docs/form-inputs.md#filtered-choiceset-style-style-filtered)).
 - **Input validation overlays**: `test/inputs/input_error_overlay_test.dart` — `setInputError` / `clearInputError`, edit clears overlay, host `clearInputError`, Input.Number; notifier group in `adaptive_card_document_notifier_test.dart`.
 - **Action `isEnabled` overlays**: `test/actions/action_enabled_overlay_test.dart` — sample `test/samples/v1.5/action_is_enabled.json`, Submit baseline + `setActionEnabled`; `test/actions/show_card_enabled_overlay_test.dart` — ShowCard expand button; notifier `setActionsEnabled` in `adaptive_card_document_notifier_test.dart`.
 - **TextBlock `text` overlays**: `test/elements/text_block_text_overlay_test.dart` — `setText` / `clearText`, host `setText`; notifier group in `adaptive_card_document_notifier_test.dart` (`TextBlock text overlays`).
@@ -276,7 +288,7 @@ notifier.seedInputValues({'myText': 'seeded'});
 expect(container.read(resolvedElementProvider('myText'))?['value'], 'seeded');
 ```
 
-Baseline + overlay model: [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+Baseline + overlay model: [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
 ### Widgetbook sample JSON (optional)
 

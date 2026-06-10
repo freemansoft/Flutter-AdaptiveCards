@@ -93,7 +93,10 @@ class HostConfig {
 In `RawAdaptiveCardState._updateResolver()` (called from `initState` / `didUpdateWidget`):
 
 ```dart
-_resolver = ReferenceResolver(hostConfigs: widget.hostConfigs);
+_resolver = ReferenceResolver(
+  hostConfigs: widget.hostConfigs,
+  colorFallbacks: ThemeColorFallbacks(Theme.of(context)),
+);
 ```
 
 Registries are **not** passed to `ReferenceResolver`. They are supplied separately via Riverpod overrides in `build()`:
@@ -452,12 +455,11 @@ The official spec is at [adaptivecards.io/explorer/HostConfig.html](https://adap
 Every `ReferenceResolver` method follows this fallback chain:
 
 1. **HostConfig value** — from the `HostConfig` object if the property is set
-2. **`FallbackConfigs` static value** — hardcoded in `fallback_configs.dart`
-3. **Flutter `Theme.of(context)`** — only for action buttons (no HostConfig equivalent)
+2. **`ThemeColorFallbacks`** — color defaults derived from `ThemeData.colorScheme` (see [docs/hostconfig.md](../../../docs/hostconfig.md))
+3. **`FallbackConfigs` static value** — non-color defaults only (spacing, font sizes, …) in `fallback_configs.dart`
+4. **Flutter `Theme.of(context)`** — action buttons only (no HostConfig equivalent)
 
-The `FallbackConfigs` class is the "opinion of last resort" and represents a
-reasonable Material-adjacent appearance. It is intentionally not Material 3
-`ColorScheme`-aware for most properties, which is a known gap.
+`ReferenceResolver` requires `colorFallbacks: ThemeColorFallbacks(Theme.of(context))`, created in `RawAdaptiveCardState._updateResolver()`.
 
 ---
 

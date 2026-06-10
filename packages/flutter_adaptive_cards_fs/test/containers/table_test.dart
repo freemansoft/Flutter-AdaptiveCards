@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/containers/table.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 void main() {
+  final themeContainerStyles = ThemeColorFallbacks(ThemeData()).containerStyles;
+
   group('AdaptiveTable', () {
     testWidgets('renders basic table with default properties', (tester) async {
       final cardMap = {
@@ -411,7 +414,10 @@ void main() {
       );
       final goodContainer = tester.widget<Container>(goodContainerFinder);
       final goodDecoration = goodContainer.decoration! as BoxDecoration;
-      expect(goodDecoration.color, const Color(0xFFCCFFCC));
+      expect(
+        goodDecoration.color,
+        themeContainerStyles.good!.backgroundColor,
+      );
 
       // Verify "attention" style (red)
       final attentionContainerFinder = find.byKey(
@@ -422,7 +428,10 @@ void main() {
       );
       final attentionDecoration =
           attentionContainer.decoration! as BoxDecoration;
-      expect(attentionDecoration.color, const Color(0xFFFFCCCC));
+      expect(
+        attentionDecoration.color,
+        themeContainerStyles.attention!.backgroundColor,
+      );
     });
 
     testWidgets('applies background color from row style fallback', (
@@ -481,7 +490,10 @@ void main() {
         isNotNull,
         reason: 'Warning decoration not found',
       );
-      expect(warningDecoration?.color, const Color(0xFFFFE6CC));
+      expect(
+        warningDecoration?.color,
+        themeContainerStyles.warning!.backgroundColor,
+      );
     });
   });
 }

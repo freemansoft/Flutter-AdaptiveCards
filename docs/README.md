@@ -24,7 +24,13 @@ This directory contains design documents, implementation guides, and architectur
 
 **Status**: ✅ Current | **Category**: Status Matrix
 
-Comprehensive matrix tracking implementation status of all Adaptive Cards elements, containers, inputs, actions, HostConfig, and templating against the Microsoft v1.6 specification. Includes custom/extended elements, known gaps, and priority recommendations.
+Comprehensive matrix tracking implementation status of all Adaptive Cards elements, containers, inputs, actions, HostConfig, and templating against the Microsoft v1.6 specification. Includes custom/extended elements, known gaps, priority recommendations, and a **Recently completed** rollup for the [June 2026 feature plan](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md).
+
+### [2026-06-08-refresh-icon-charts-text-features.plan.md](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md)
+
+**Status**: ✅ Complete (workstreams A–G) | **Category**: Implementation Plan
+
+End-to-end plan for `refresh`, hub **`Icon`**, chart chrome/colors/**`Chart.Gauge`**, and **`RichTextBlock`** / **`TextRun`** + TextBlock fixes. Links to [text features design spec](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md) (workstream G).
 
 ---
 
@@ -56,13 +62,19 @@ Comprehensive specification for HostConfig implementation and mapping to Flutter
 
 **Status**: ✅ Current | **Category**: Architecture
 
-High-level system architecture showing package structure, widget hierarchy, and state management (Riverpod internals vs consumer API).
+High-level system architecture: monorepo layout, **core component model** diagram (registries, overlays, style, handlers), widget hierarchy, state management, and [diagram canon](./Architecture-Overview.md#diagram-canon).
 
 ### [optional-packages-and-extensions.md](./optional-packages-and-extensions.md)
 
 **Status**: ✅ Current | **Category**: Architecture
 
-Why charts and templating are separate packages, how to opt in via `CardTypeRegistry.addedElements`, and rules for future optional extension packages (gauge, host-specific elements).
+Why charts, templating, and **backend invoke** are separate packages, how to opt in via registries or `AdaptiveCardBackendHandlers`, and rules for future optional extension packages.
+
+### [backend-host-integration.md](./backend-host-integration.md)
+
+**Status**: ✅ Current | **Category**: Feature Spec
+
+Invoke round-trips with **`flutter_adaptive_cards_host_fs`** — request/response contract, effect ordering, Teams adapter, and consumer checklist.
 
 ### [reactive-riverpod.md](./reactive-riverpod.md)
 
@@ -106,6 +118,12 @@ Describes support for `backgroundImage` in both string (URL) and object (URL + f
 
 ## Feature Specifications
 
+### [backend-host-integration.md](./backend-host-integration.md)
+
+**Status**: ✅ Current | **Category**: Feature Spec
+
+Canonical guide for optional **`flutter_adaptive_cards_host_fs`**: invoke serialization, PlainJson/Teams adapters, response effects, `AdaptiveCardBackendHandlers`, error handling, and refresh round-trips.
+
 ### [adaptive-template-design.md](./adaptive-template-design.md)
 
 **Status**: ✅ Current | **Category**: Feature Spec
@@ -118,6 +136,12 @@ Design specification for the Dart templating engine in `flutter_adaptive_templat
 - `json()` function for embedded JSON
 - Based on [Microsoft Templating Language](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)
 
+### [2026-06-08-rich-text-and-text-features-design.md](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md)
+
+**Status**: ✅ Current | **Category**: Feature Spec
+
+Design for **`RichTextBlock`** / **`TextRun`** rendering and targeted **`TextBlock`** plain-path fixes (workstream G of the [June 2026 plan](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md)).
+
 ### [Encoded-Image-Support.md](./Encoded-Image-Support.md)
 
 **Status**: ✅ Current | **Category**: Feature Spec
@@ -126,17 +150,13 @@ Specification for base64 encoded inline image support using `Image.memory`. Incl
 
 ---
 
-## Test Requirements
+## HostConfig
 
-### [hostconfig_tests.md](./hostconfig_tests.md)
+### [hostconfig.md](./hostconfig.md)
 
-**Status**: ✅ Current | **Category**: Test Requirements
+**Status**: ✅ Current | **Category**: Architecture & Testing
 
-Test requirements for HostConfig serialization. Each HostConfig entity should have:
-
-- Test file: `packages/flutter_adaptive_cards_fs/test/hostconfig/{name}_test.dart`
-- JSON file: `packages/flutter_adaptive_cards_fs/test/hostconfig/{name}.json`
-- Validation against schema
+HostConfig architecture: theme-derived color fallbacks (`ThemeColorFallbacks`), `ReferenceResolver` pipeline, brightness selection, Widgetbook notes, and serialization test conventions (JSON fixtures per entity under `test/hostconfig/`).
 
 ### Overlay / document notifier tests
 
@@ -166,6 +186,10 @@ Documents bug where AdaptiveColumns in an AdaptiveColumnSet have inconsistent he
 
 ---
 
+## Diagram canon
+
+Architecture diagrams are maintained in **canonical** docs (not duplicated from every plan/spec). See [Architecture-Overview.md — Diagram canon](./Architecture-Overview.md#diagram-canon) for which plan/spec Mermaid blocks are promoted vs kept as design history. Each published package README includes a **Package structure** diagram.
+
 ## Missing/Recommended Documentation
 
 Based on the current state of the codebase, the following documents would be valuable additions:
@@ -188,4 +212,4 @@ When adding or updating documentation:
 
 ---
 
-Last Updated: 2026-06-08
+Last Updated: 2026-06-09

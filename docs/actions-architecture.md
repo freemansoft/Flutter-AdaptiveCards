@@ -83,6 +83,17 @@ The invoke is built like **`Action.Execute`**: merge nested action **`data`** wi
 
 The library does not perform bot round-trips; the host replaces card JSON when refresh completes (for example by updating the map passed to **`RawAdaptiveCard`**).
 
+Implemented in [workstream B](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-b--refresh-property-v14) of the June 2026 plan. Widgetbook demo: **AdaptiveCard → Refresh** (`widgetbook/lib/refresh_demo_page.dart`).
+
+## Backend invoke round-trips (optional host package)
+
+When the host POSTs invoke payloads to a flow-service and applies server-driven patches, use optional **`flutter_adaptive_cards_host_fs`** instead of hand-wiring each callback:
+
+- **`AdaptiveCardBackendHandlers`** connects `onSubmit`, `onExecute`, `onRefresh`, and `onChange` to **`AdaptiveCardBackendClient.post`**
+- Responses may **`applyPatches`** (overlays), **`setInputErrors`**, or **`replaceCard`** (full JSON via host callback)
+
+See [optional-packages-and-extensions.md](./optional-packages-and-extensions.md#why-backend-invoke-is-a-separate-package), [backend-host-integration.md](./backend-host-integration.md), and the [package README](../packages/flutter_adaptive_cards_host_fs/README.md).
+
 ---
 
 ## Design Rationale 🔍

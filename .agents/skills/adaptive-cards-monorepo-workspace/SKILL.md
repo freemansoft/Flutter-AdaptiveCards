@@ -18,7 +18,8 @@ Flutter-AdaptiveCards/           ← workspace root (pubspec.yaml declares works
 ├── packages/
 │   ├── flutter_adaptive_cards_fs/    ← MAIN LIBRARY (published to pub.dev)
 │   ├── flutter_adaptive_charts_fs/        ← charting extension package
-│   └── flutter_adaptive_template_fs/      ← AdaptiveCard template merging package
+│   ├── flutter_adaptive_template_fs/      ← AdaptiveCard template merging package
+│   └── flutter_adaptive_cards_host_fs/    ← backend invoke bridge (published to pub.dev)
 ├── adaptive_explorer/           ← desktop editor/preview app (not published)
 └── widgetbook/                  ← widgetbook demo app (not published)
 ```
@@ -34,6 +35,7 @@ workspace:
   - packages/flutter_adaptive_cards_fs
   - packages/flutter_adaptive_charts_fs
   - packages/flutter_adaptive_template_fs
+  - packages/flutter_adaptive_cards_host_fs
   - widgetbook
   - adaptive_explorer
 ```
@@ -73,6 +75,7 @@ specific package directory**, not the workspace root.
 | Task                      | Directory                            | Command                     |
 | ------------------------- | ------------------------------------ | --------------------------- |
 | Run main library tests    | `packages/flutter_adaptive_cards_fs` | `fvm flutter test`          |
+| Run host package tests    | `packages/flutter_adaptive_cards_host_fs` | `fvm flutter test`      |
 | Add a dep to main library | `packages/flutter_adaptive_cards_fs` | `fvm flutter pub add <pkg>` |
 | Run the explorer app      | `adaptive_explorer`                  | `fvm flutter run`           |
 | Run the widgetbook app    | `widgetbook`                         | `fvm flutter run`           |
@@ -130,6 +133,7 @@ adaptive_explorer  ──► flutter_adaptive_cards_fs
 widgetbook         ──► flutter_adaptive_cards_fs
                    ──► flutter_adaptive_charts_fs
 flutter_adaptive_charts_fs   ──► flutter_adaptive_cards_fs
+flutter_adaptive_cards_host_fs ──► flutter_adaptive_cards_fs, http
 ```
 
 ---
@@ -156,6 +160,13 @@ flutter_adaptive_charts_fs   ──► flutter_adaptive_cards_fs
 - **Published to pub.dev**
 - Implements [AdaptiveCards template spec](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/card-templates).
 - Merges JSON data into an Adaptive Card template before rendering.
+
+### `packages/flutter_adaptive_cards_host_fs` — Backend Invoke Bridge
+
+- **Published to pub.dev** (entry: `lib/flutter_adaptive_cards_host_fs.dart`)
+- Optional serialize → POST → parse → apply pipeline for Submit/Execute/Refresh/`onChange`.
+- Depends on **`flutter_adaptive_cards_fs`** and **`http`**.
+- Docs: [backend-host-integration.md](../../docs/backend-host-integration.md).
 
 ### `adaptive_explorer` — Desktop Editor/Preview App
 
@@ -203,7 +214,7 @@ Whenever you make changes to a package or app:
 1. **Always** document changes under the current top `## [<version>]` section in that package's `CHANGELOG.md` (and in `adaptive_explorer` / `widgetbook` changelogs when those apps change).
 2. During a development cycle, edit the existing top section; do not add a second heading for the same version.
 
-After a release is published to pub.dev, follow the **`release-engineer`** skill §6: minor version bump across all `pubspec.yaml` files, new `## [<version>]` sections in all five changelogs, and `flutter_adaptive_cards_fs: ^<version>` in `flutter_adaptive_charts_fs`.
+After a release is published to pub.dev, follow the **`release-engineer`** skill §6: minor version bump across all `pubspec.yaml` files, new `## [<version>]` sections in all **six** changelogs, and `flutter_adaptive_cards_fs: ^<version>` in `flutter_adaptive_charts_fs` and `flutter_adaptive_cards_host_fs`.
 
 ---
 

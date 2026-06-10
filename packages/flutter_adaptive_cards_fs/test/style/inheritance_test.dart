@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/text_block.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,7 +14,10 @@ void main() {
 
     setUp(() {
       hostConfigs = HostConfigs();
-      root = ReferenceResolver(hostConfigs: hostConfigs);
+      root = ReferenceResolver(
+        hostConfigs: hostConfigs,
+        colorFallbacks: ThemeColorFallbacks(ThemeData.light()),
+      );
     });
 
     test('background does not inherit parent emphasis', () {
@@ -203,7 +207,10 @@ void main() {
     await tester.pumpAndSettle();
 
     final containers = tester.widgetList<Container>(find.byType(Container));
-    final outerResolver = ReferenceResolver(hostConfigs: HostConfigs());
+    final outerResolver = ReferenceResolver(
+      hostConfigs: HostConfigs(),
+      colorFallbacks: ThemeColorFallbacks(ThemeData.light()),
+    );
     final defaultBg = outerResolver.resolveContainerBackgroundColor(
       style: 'default',
     );

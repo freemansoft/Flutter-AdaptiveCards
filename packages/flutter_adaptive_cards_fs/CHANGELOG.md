@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0]
+
 - **Root card `refresh` (v1.4+):** parse `refresh.action`, `userIds`, and `expires` via **`RefreshConfig`**; manual refresh affordance (top-right icon) when `refresh.action` is set; one-shot auto-refresh after first frame when `expires` is in the past; **`refresh.userIds`** gates auto-refresh only (via **`AdaptiveCardsCanvas.currentUserId`** / **`currentUserIdProvider`**).
 - **`RefreshActionInvoke`** and optional **`InheritedAdaptiveCardHandlers.onRefresh`**; falls back to **`onExecute`** with merged input **`data`** when `onRefresh` is unset.
 - Public export of **`RefreshConfig`** from `flutter_adaptive_cards_fs.dart`.
@@ -18,9 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Chart color tokens:** **`chart_colors_config.dart`** — HostConfig palette + categorical, sequential, and diverging palettes plus Teams semantic tokens (`categoricalBlue`, `sequential5`, `divergingRed`, `good`, …).
 - **`ReferenceResolver`:** **`resolveChartPalette({colorSet})`** selects named palettes; **`resolveChartColor()`** resolves semantic chart tokens before hex parsing.
 - Tests: **`test/elements/icon_test.dart`**, **`test/hostconfig/chart_color_sets_test.dart`**, **`test/golden_icon_test.dart`**.
-
-## [0.10.0]
-
+- **`RichTextBlock` + `TextRun` (v1.2):** **`AdaptiveRichTextBlock`** with per-run styling (`weight`, `color`, `italic`, `underline`, `highlight`, `fontType`, `size`) and **`selectAction`** via **`TapGestureRecognizer`**; **`TextRunModel.fromJson`**.
+- **`TextBlock`:** plain **`Text`** path honors **`maxLines`**, **`TextOverflow.ellipsis`**, and HostConfig **`color`** / **`isSubtle`** when **`supportMarkdown`** is false; **`AdaptiveCardsCanvas.supportMarkdown`** now flows into **`CardTypeRegistry`**.
+- Tests: **`test/elements/rich_text_block_test.dart`**, **`test/elements/text_block_test.dart`**, **`test/golden_rich_text_block_test.dart`**.
 - Shared parse helpers: **`parseIsVisible()`** and **`parseHostConfigColor()`** in `utils.dart` (HostConfig color parsing and visibility baseline parsing).
 - Public export of **`InheritedAdaptiveCardHandlers`** from `flutter_adaptive_cards_fs.dart` (for test support and host callback wiring without `implementation_imports`).
 - Tests: **`test/utils/parse_helpers_test.dart`**; merged static **`isVisible`** cases into **`test/elements/is_visible_test.dart`**.

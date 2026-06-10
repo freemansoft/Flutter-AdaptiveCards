@@ -1,8 +1,6 @@
 # Backend Host Integration Design
 
-**Date:** 2026-06-07
-**Status:** Implemented (Phase 1 + Phase 2 on `feat/associated-inputs-phase1`)
-**Implementation plan:** [`docs/superpowers/plans/2026-06-07-backend-host-integration.plan.md`](../plans/2026-06-07-backend-host-integration.plan.md)
+**Status:** Implemented (Phase 1 + Phase 2). **User documentation:** [backend-host-integration.md](../../backend-host-integration.md). **Implementation plan:** [`2026-06-07-backend-host-integration.plan.md`](../plans/2026-06-07-backend-host-integration.plan.md)
 
 ## Problem
 

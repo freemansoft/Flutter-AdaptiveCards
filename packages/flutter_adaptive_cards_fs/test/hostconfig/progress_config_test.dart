@@ -71,6 +71,7 @@ void main() {
         ProgressColorsConfig.resolveProgressColor(
           config: config,
           color: 'good',
+          fallbackDefaults: config,
         ),
         Colors.green,
       );
@@ -78,6 +79,7 @@ void main() {
         ProgressColorsConfig.resolveProgressColor(
           config: config,
           color: 'accent',
+          fallbackDefaults: config,
         ),
         Colors.blue,
       );
@@ -85,6 +87,7 @@ void main() {
         ProgressColorsConfig.resolveProgressColor(
           config: config,
           color: 'unknown',
+          fallbackDefaults: config,
         ),
         Colors.grey,
       );

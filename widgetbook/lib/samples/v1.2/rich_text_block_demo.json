@@ -1,0 +1,50 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.2",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "RichTextBlock demo",
+      "weight": "Bolder",
+      "size": "Large"
+    },
+    {
+      "type": "RichTextBlock",
+      "inlines": [
+        {
+          "type": "TextRun",
+          "text": "Plain run, "
+        },
+        {
+          "type": "TextRun",
+          "text": "bold accent",
+          "weight": "Bolder",
+          "color": "Accent"
+        },
+        {
+          "type": "TextRun",
+          "text": ", "
+        },
+        {
+          "type": "TextRun",
+          "text": "italic underline",
+          "italic": true,
+          "underline": true
+        },
+        {
+          "type": "TextRun",
+          "text": ", and "
+        },
+        {
+          "type": "TextRun",
+          "text": "highlight",
+          "highlight": true
+        },
+        {
+          "type": "TextRun",
+          "text": "."
+        }
+      ]
+    }
+  ]
+}

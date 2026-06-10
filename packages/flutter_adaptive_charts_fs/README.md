@@ -15,6 +15,7 @@ Libraries avaiable on pub.dev from this repository include:
 | The core of Adaptive Cards is supported via               | [flutter_adaptive_cards_fs](https://pub.dev/packages/flutter_adaptive_cards_fs)       |
 | Supplemental Adaptive Card based charts are supported via | [flutter_adaptive_charts_fs](https://pub.dev/packages/flutter_adaptive_charts_fs)     |
 | Templating is supported via the                           | [flutter_adaptive_template_fs](https://pub.dev/packages/flutter_adaptive_template_fs) |
+| Backend invoke bridge is supported via                    | [flutter_adaptive_cards_host_fs](https://pub.dev/packages/flutter_adaptive_cards_host_fs) |
 
 Utility programs available in this repository that are not published to pub.dev include:
 
@@ -22,6 +23,43 @@ Utility programs available in this repository that are not published to pub.dev 
 | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | The Adaptive Card Explorer Editor                        | ([adaptive_explorer](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_explorer)) |
 | A Widgetbook for demonstrating cards and their features: | ([widgetbook](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/widgetbook))               |
+
+## Package structure
+
+Optional chart elements register with the core renderer via `CardTypeRegistry.addedElements`. This package does not depend on templating or the host bridge.
+
+```mermaid
+flowchart TB
+  subgraph charts_pkg["flutter_adaptive_charts_fs"]
+    CCR["CardChartsRegistry.additionalChartElements\nMap type string → ElementCreator"]
+    subgraph widgets["src/charts/"]
+      Bar["AdaptiveBarChart\nvertical · horizontal · stacked · grouped"]
+      Line["AdaptiveLineChart"]
+      Pie["AdaptivePieChart\npie · donut"]
+      Gauge["AdaptiveGaugeChart"]
+      Chrome["chart_chrome.dart\naxis · legend · HostConfig colors"]
+      Painter["gauge_painter.dart\nCustomPainter"]
+    end
+    CCR --> Bar
+    CCR --> Line
+    CCR --> Pie
+    CCR --> Gauge
+    Gauge --> Painter
+    Bar --> Chrome
+    Line --> Chrome
+    Pie --> Chrome
+  end
+
+  subgraph core["flutter_adaptive_cards_fs"]
+    CTR["CardTypeRegistry\naddedElements merge"]
+    Render["RawAdaptiveCard element dispatch"]
+  end
+
+  CCR -->|"host passes at construction"| CTR
+  CTR --> Render
+```
+
+See [optional-packages-and-extensions.md](../../docs/optional-packages-and-extensions.md) for the consumer checklist.
 
 ## Supported Components
 

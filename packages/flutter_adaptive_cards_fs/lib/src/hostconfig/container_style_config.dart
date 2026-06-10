@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/foreground_colors_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// HostConfig container style entry (`containerStyles.<name>`) defining
@@ -16,13 +17,14 @@ class ContainerStyleConfig {
     Map<String, dynamic> json, {
     ContainerStyleConfig? defaults,
   }) {
+    final base =
+        defaults ?? ThemeColorFallbacks.forParsing.containerStyles.defaultStyle;
     return ContainerStyleConfig(
       backgroundColor:
-          parseHostConfigColor(json['backgroundColor']) ??
-          defaults?.backgroundColor ??
-          Colors.white,
+          parseHostConfigColor(json['backgroundColor']) ?? base.backgroundColor,
       foregroundColors: ForegroundColorsConfig.fromJson(
         json['foregroundColors'] ?? {},
+        defaults: base.foregroundColors,
       ),
     );
   }

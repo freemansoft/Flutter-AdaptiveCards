@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/badge_styles_config.dart';
-import 'package:flutter_adaptive_cards_fs/src/hostconfig/container_style_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/foreground_colors_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -18,31 +18,6 @@ void main() {
       expect(config.defaultSize, 30);
     });
 
-    test('fallbackProgressColorsConfig has correct default colors', () {
-      final config = FallbackConfigs.fallbackProgressColorsConfig;
-
-      expect(config.good, Colors.green);
-      expect(config.warning, Colors.yellow);
-      expect(config.attention, Colors.red);
-      expect(config.accent, Colors.blue);
-      expect(config.defaultColor, Colors.grey);
-    });
-
-    test('fallbackBadgeStylesConfig has filled and tint styles', () {
-      final config = FallbackConfigs.fallbackBadgeStylesConfig;
-
-      expect(config.filled, isA<BadgeStyleConfig>());
-      expect(config.tint, isA<BadgeStyleConfig>());
-
-      // Verify filled style has foreground and background colors
-      expect(config.filled.foregroundColors, isA<ForegroundColorsConfig>());
-      expect(config.filled.backgroundColors, isA<ForegroundColorsConfig>());
-
-      // Verify tint style has foreground and background colors
-      expect(config.tint.foregroundColors, isA<ForegroundColorsConfig>());
-      expect(config.tint.backgroundColors, isA<ForegroundColorsConfig>());
-    });
-
     test('spacingsConfig has correct default spacings', () {
       final config = FallbackConfigs.spacingsConfig;
 
@@ -52,22 +27,6 @@ void main() {
       expect(config.extraLarge, 32);
       expect(config.defaultSpacing, 4);
       expect(config.padding, 20);
-    });
-
-    test('containerStylesConfig has default and emphasis styles', () {
-      final config = FallbackConfigs.containerStylesConfig;
-
-      expect(config.defaultStyle, isA<ContainerStyleConfig>());
-      expect(config.emphasis, isA<ContainerStyleConfig>());
-
-      expect(config.defaultStyle.backgroundColor, Colors.white);
-      expect(config.emphasis.backgroundColor, Colors.grey);
-
-      expect(
-        config.defaultStyle.foregroundColors,
-        isA<ForegroundColorsConfig>(),
-      );
-      expect(config.emphasis.foregroundColors, isA<ForegroundColorsConfig>());
     });
 
     test('imageSizesConfig has correct sizes', () {
@@ -95,14 +54,63 @@ void main() {
       expect(config.large, 18);
       expect(config.extraLarge, 22);
     });
+  });
 
-    test('separatorConfig has correct default values', () {
-      final config = FallbackConfigs.separatorConfig;
+  group('ThemeColorFallbacks', () {
+    test('light theme derives container surface from colorScheme', () {
+      final theme = ThemeData.light();
+      final fallbacks = ThemeColorFallbacks(theme);
 
-      expect(config.lineThickness, 1);
-      expect(config.lineColor, isA<String>());
-      // Line color should be a hex string
-      expect(config.lineColor.length, greaterThan(0));
+      expect(
+        fallbacks.containerStyles.defaultStyle.backgroundColor,
+        theme.colorScheme.surface,
+      );
+      expect(
+        fallbacks
+            .containerStyles
+            .defaultStyle
+            .foregroundColors
+            .defaultColor
+            .defaultColor,
+        theme.colorScheme.onSurface,
+      );
+    });
+
+    test('dark theme derives container surface from colorScheme', () {
+      final theme = ThemeData.dark();
+      final fallbacks = ThemeColorFallbacks(theme);
+
+      expect(
+        fallbacks.containerStyles.defaultStyle.backgroundColor,
+        theme.colorScheme.surface,
+      );
+      expect(
+        fallbacks
+            .containerStyles
+            .defaultStyle
+            .foregroundColors
+            .defaultColor
+            .defaultColor,
+        theme.colorScheme.onSurface,
+      );
+    });
+
+    test('badgeStyles exposes filled and tint variants', () {
+      final fallbacks = ThemeColorFallbacks(ThemeData.light());
+
+      expect(fallbacks.badgeStyles.filled, isA<BadgeStyleConfig>());
+      expect(fallbacks.badgeStyles.tint, isA<BadgeStyleConfig>());
+      expect(
+        fallbacks.badgeStyles.filled.foregroundColors,
+        isA<ForegroundColorsConfig>(),
+      );
+    });
+
+    test('separator lineColor is a hex string', () {
+      final fallbacks = ThemeColorFallbacks(ThemeData.light());
+
+      expect(fallbacks.separator.lineThickness, 1);
+      expect(fallbacks.separator.lineColor, startsWith('#'));
     });
   });
 }

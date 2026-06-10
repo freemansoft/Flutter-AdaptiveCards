@@ -81,7 +81,7 @@ cd packages/flutter_adaptive_cards_fs
 fvm flutter test --exclude-tags=golden
 ```
 
-If the plan touched other packages, run their suites too (`flutter_adaptive_template_fs`, `flutter_adaptive_charts_fs`, etc.). See **`adaptive-cards-monorepo-workspace`** and **`adaptive-cards-testing`** skills for directory and tagging details.
+If the plan touched other packages, run their suites too (`flutter_adaptive_template_fs`, `flutter_adaptive_charts_fs`, `flutter_adaptive_cards_host_fs`, etc.). See **`adaptive-cards-monorepo-workspace`** and **`adaptive-cards-testing`** skills for directory and tagging details.
 
 ## Documentation Philosophy
 

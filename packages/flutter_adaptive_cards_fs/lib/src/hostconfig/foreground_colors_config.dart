@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_color_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 
 /// HostConfig `foregroundColors` section mapping semantic color names to
 /// default and subtle foreground colors.
@@ -16,56 +16,39 @@ class ForegroundColorsConfig {
   });
 
   /// Parses `foregroundColors` from HostConfig JSON.
-  factory ForegroundColorsConfig.fromJson(Map<String, dynamic> json) {
+  factory ForegroundColorsConfig.fromJson(
+    Map<String, dynamic> json, {
+    ForegroundColorsConfig? defaults,
+  }) {
+    final base = defaults ?? ThemeColorFallbacks.forParsing.foregroundColors;
     return ForegroundColorsConfig(
       defaultColor: FontColorConfig.fromJson(
         json['default'] ?? {},
-        defaults: FontColorConfig(
-          defaultColor: const Color(0xFF000000),
-          subtleColor: const Color(0xB2000000),
-        ),
+        defaults: base.defaultColor,
       ),
       accent: FontColorConfig.fromJson(
         json['accent'] ?? {},
-        defaults: FontColorConfig(
-          defaultColor: const Color(0xFF0000FF),
-          subtleColor: const Color(0xB20000FF),
-        ),
+        defaults: base.accent,
       ),
       dark: FontColorConfig.fromJson(
         json['dark'] ?? {},
-        defaults: FontColorConfig(
-          defaultColor: const Color(0xFF101010),
-          subtleColor: const Color(0xB2101010),
-        ),
+        defaults: base.dark,
       ),
       light: FontColorConfig.fromJson(
         json['light'] ?? {},
-        defaults: FontColorConfig(
-          defaultColor: const Color(0xFFFFFFFF),
-          subtleColor: const Color(0xB2FFFFFF),
-        ),
+        defaults: base.light,
       ),
       good: FontColorConfig.fromJson(
         json['good'] ?? {},
-        defaults: FontColorConfig(
-          defaultColor: const Color(0xFF008000),
-          subtleColor: const Color(0xB2008000),
-        ),
+        defaults: base.good,
       ),
       warning: FontColorConfig.fromJson(
         json['warning'] ?? {},
-        defaults: FontColorConfig(
-          defaultColor: const Color(0xFFFFD700),
-          subtleColor: const Color(0xB2FFD700),
-        ),
+        defaults: base.warning,
       ),
       attention: FontColorConfig.fromJson(
         json['attention'] ?? {},
-        defaults: FontColorConfig(
-          defaultColor: const Color(0xFF8B0000),
-          subtleColor: const Color(0xB28B0000),
-        ),
+        defaults: base.attention,
       ),
     );
   }

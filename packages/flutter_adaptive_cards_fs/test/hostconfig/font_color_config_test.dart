@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_color_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -18,10 +19,12 @@ void main() {
     expect(config.subtleColor, const Color(0xB2654321));
   });
 
-  test('FontColorConfig should use default values when JSON is empty', () {
+  test('FontColorConfig should use theme-derived defaults when JSON is empty', () {
+    final themeDefaults =
+        ThemeColorFallbacks(ThemeData()).foregroundColors.defaultColor;
     final config = FontColorConfig.fromJson({});
 
-    expect(config.defaultColor, Colors.black);
-    expect(config.subtleColor, Colors.grey);
+    expect(config.defaultColor, themeDefaults.defaultColor);
+    expect(config.subtleColor, themeDefaults.subtleColor);
   });
 }

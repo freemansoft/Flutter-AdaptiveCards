@@ -188,11 +188,12 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
       text,
       textAlign: textAlign,
       softWrap: true,
-      overflow: maxLines == 1 ? TextOverflow.ellipsis : null,
+      overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontWeight: fontWeight,
         fontSize: fontSize,
         fontFamily: fontFamily,
+        color: getColor(context),
       ),
       maxLines: maxLines,
     );

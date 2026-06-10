@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/chart_colors_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,13 +9,19 @@ void main() {
   group('ChartColorSets', () {
     test('parseChartColorSetName maps known names', () {
       expect(parseChartColorSetName('diverging'), ChartColorSetName.diverging);
-      expect(parseChartColorSetName('Categorical'), ChartColorSetName.categorical);
+      expect(
+        parseChartColorSetName('Categorical'),
+        ChartColorSetName.categorical,
+      );
       expect(parseChartColorSetName(null), ChartColorSetName.defaultPalette);
     });
 
     test('resolveChartColorToken resolves semantic and categorical tokens', () {
       expect(resolveChartColorToken('good'), const Color(0xFF107C10));
-      expect(resolveChartColorToken('categoricalBlue'), const Color(0xFF0078D4));
+      expect(
+        resolveChartColorToken('categoricalBlue'),
+        const Color(0xFF0078D4),
+      );
       expect(resolveChartColorToken('sequential5'), const Color(0xFF2E75B6));
       expect(resolveChartColorToken('unknown'), isNull);
     });
@@ -29,6 +36,7 @@ void main() {
     test('resolveChartPalette uses colorSet when provided', () {
       final resolver = ReferenceResolver(
         hostConfigs: HostConfigs(light: const HostConfig()),
+        colorFallbacks: ThemeColorFallbacks(ThemeData.light()),
       );
       final diverging = resolver.resolveChartPalette(colorSet: 'diverging');
       expect(diverging, kChartDivergingPalette);
@@ -43,6 +51,7 @@ void main() {
             ),
           ),
         ),
+        colorFallbacks: ThemeColorFallbacks(ThemeData.light()),
       );
       expect(withHost.resolveChartPalette(), hostPalette);
       expect(
@@ -54,6 +63,7 @@ void main() {
     test('resolveChartColor resolves token before hex', () {
       final resolver = ReferenceResolver(
         hostConfigs: HostConfigs(light: const HostConfig()),
+        colorFallbacks: ThemeColorFallbacks(ThemeData.light()),
       );
       expect(
         resolver.resolveChartColor('divergingRed'),
