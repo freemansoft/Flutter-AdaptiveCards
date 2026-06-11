@@ -1,8 +1,12 @@
 # flutter_adaptive_cards_host_fs
 
-Backend invoke bridge for [flutter_adaptive_cards_fs](../flutter_adaptive_cards_fs) — serialize host callbacks, POST to your flow-service, parse responses, and apply patches to the rendered card.
+Backend invoke bridge for [pub.dev](https://pub.dev/packages/flutter_adaptive_cards_host_fs) and on GitHub at [flutter_adaptive_cards_fs](../flutter_adaptive_cards_fs) — serialize host callbacks, POST to your flow-service, parse responses, and apply patches to the rendered card.
 
-Published on [pub.dev](https://pub.dev/packages/flutter_adaptive_cards_host_fs). Import the barrel:
+Published on [pub.dev](https://pub.dev/packages/flutter_adaptive_cards_host_fs) and on gitub at [flutter_adaptive_cards_host_fs](/packages/flutter_adaptive_template_fs/).
+
+## Usage
+
+Import the barrel:
 
 ```dart
 import 'package:flutter_adaptive_cards_host_fs/flutter_adaptive_cards_host_fs.dart';
