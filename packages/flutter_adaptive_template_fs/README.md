@@ -1,6 +1,6 @@
 # Flutter Adaptive Template
 
-A template engine for adaptive cards, enabling data binding and dynamic rendering of adaptive card payloads in Flutter.
+A template engine for adaptive cards, enabling data binding and dynamic rendering of adaptive card payloads in Flutter available on GitHub [flutter_adaptive_template_fs](/packages/flutter_adaptive_template_fs/) and on [pub.dev](https://pub.dev/packages/flutter_adaptive_template_fs) that is expected to be used with  [pub.dev](https://pub.dev/packages/flutter_adaptive_cards_fs) on GitHub at [flutter_adaptive_cards_fs](/packages/flutter_adaptive_cards_fs/) .
 
 ## Microsoft Adaptive Cards
 
