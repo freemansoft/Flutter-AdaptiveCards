@@ -5,7 +5,8 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_kind.dart';
 ///
 /// Serialize with `PlainJsonInvokeAdapter` or `TeamsInvokeAdapter` before POST.
 class AdaptiveCardInvokeRequest {
-  /// Creates an invoke request with the given [kind] and optional fields.
+  /// Low-level invoke envelope; prefer `fromSubmit`, `fromExecute`, and other
+  /// factories built from card callback payloads.
   const AdaptiveCardInvokeRequest({
     required this.kind,
     this.actionId,
@@ -17,7 +18,7 @@ class AdaptiveCardInvokeRequest {
     this.url,
   });
 
-  /// Builds a request from [SubmitActionInvoke].
+  /// Maps Submit callback data for backend POST via `AdaptiveCardBackendHandlers`.
   factory AdaptiveCardInvokeRequest.fromSubmit(SubmitActionInvoke invoke) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.submit,
@@ -26,7 +27,7 @@ class AdaptiveCardInvokeRequest {
     );
   }
 
-  /// Builds a request from [ExecuteActionInvoke].
+  /// Maps Execute/Refresh callback data for backend POST.
   factory AdaptiveCardInvokeRequest.fromExecute(ExecuteActionInvoke invoke) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.execute,
@@ -36,7 +37,8 @@ class AdaptiveCardInvokeRequest {
     );
   }
 
-  /// Builds a request from [InputChangeInvoke].
+  /// Maps dynamic ChoiceSet input-change callbacks (includes [DataQuery] when
+  /// present on the input).
   ///
   /// [data] is populated from [DataQuery.parameters] when present.
   factory AdaptiveCardInvokeRequest.fromInputChange(InputChangeInvoke invoke) {
@@ -49,7 +51,7 @@ class AdaptiveCardInvokeRequest {
     );
   }
 
-  /// Builds a request from [OpenUrlActionInvoke].
+  /// Open-url payload when forwarding [OpenUrlActionInvoke] to a backend.
   factory AdaptiveCardInvokeRequest.fromOpenUrl(OpenUrlActionInvoke invoke) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.openUrl,
@@ -58,7 +60,7 @@ class AdaptiveCardInvokeRequest {
     );
   }
 
-  /// Builds a request from [OpenUrlDialogActionInvoke].
+  /// Teams [OpenUrlDialogActionInvoke] payload when forwarding to a backend.
   factory AdaptiveCardInvokeRequest.fromOpenUrlDialog(
     OpenUrlDialogActionInvoke invoke,
   ) {

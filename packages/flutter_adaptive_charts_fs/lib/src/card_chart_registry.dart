@@ -4,7 +4,8 @@ import 'package:flutter_adaptive_charts_fs/src/charts/gauge_chart.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/line_chart.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/pie_donut_chart.dart';
 
-/// Builds an Adaptive Card element widget from its JSON [map].
+/// Signature for chart element builders registered with the card renderer;
+/// receives the element JSON map and returns the widget to render.
 typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 
 /// Registry of chart element type strings to widget builders for the card renderer.
@@ -13,8 +14,8 @@ typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 /// (via `addElements`) so `Chart.*` types render with [AdaptivePieChart],
 /// [AdaptiveLineChart], and [AdaptiveBarChart].
 class CardChartsRegistry {
-  /// Maps Adaptive Card chart type strings (for example `Chart.Line`) to
-  /// [ElementCreator] builders registered with the card renderer.
+  /// Default `Chart.*` type → builder map; pass to `CardTypeRegistry.addElements`
+  /// (or equivalent) when wiring charts into a host app.
   static Map<String, ElementCreator> additionalChartElements = {
     'Chart.Donut': (map) => AdaptivePieChart(
       adaptiveMap: map,

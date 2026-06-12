@@ -20,17 +20,11 @@ import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The working root of an adaptive card tree when operating against the map
+/// Low-level card renderer when you already have parsed JSON.
 ///
-/// The this root of the loaded tree is a child of [AdaptiveCardsCanvas]
-/// There is usually only one of these per page. (One per AdaptiveCard tree)
-/// except when there is an Action.ShowCard which results in another sub-tree
-///
+/// Prefer [AdaptiveCardsCanvas] for loading and host wiring.
 class RawAdaptiveCard extends StatefulWidget {
-  /// This widget takes a [map] (which usually is just a json decoded string)
-  /// and displays in natively.
-  ///
-  /// Additionally a host config needs to be provided for styling.
+  /// Renders [map] with [hostConfigs] and optional registries; ids are injected at runtime.
   const RawAdaptiveCard.fromMap({
     super.key,
     required this.map,
@@ -79,8 +73,7 @@ class RawAdaptiveCard extends StatefulWidget {
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
 }
 
-/// The working root of adaptive card state tree when operating against the map
-///
+/// Host-facing card state: runtime overlays, validation, and imperative updates without mutating baseline JSON.
 class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   ///.  Wrapper around the host config
   late ReferenceResolver _resolver;
@@ -92,7 +85,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   /// so runtime overlays are not cleared when the host rebuilds this card.
   late Map<String, dynamic> _baselineMap;
 
-  /// Set by [_AdaptiveCardDocumentLifecycle] for host APIs outside the scope.
+  /// Riverpod container for this card scope; available after first frame for
+  /// advanced host integrations outside widget [build].
   ProviderContainer? documentContainer;
 
   Brightness? _resolverBrightnessKey;
@@ -161,8 +155,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     _resolverBrightnessKey = brightness;
   }
 
-  /// Every widget can access method of this class, meaning setting the state
-  /// is possible from every element
+  /// Forces a card subtree rebuild when host logic changes state outside overlay
+  /// notifiers.
   void rebuild() {
     setState(() {});
   }
@@ -404,7 +398,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     return pickedDate;
   }
 
-  /// min and max dates may be null, in this case no constraint is made in that direction
+  /// Material date picker for non-Apple platforms; null [min]/[max] means no bound in that direction.
   Future<DateTime?> datePickerMaterial(
     BuildContext context,
     DateTime? value,
@@ -510,9 +504,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     return pickedTimeOfDay;
   }
 
-  ///
-  ///
-  /// Material doesn't actually support min and max time
+  /// Material time picker; [minTime]/[maxTime] are ignored on this platform.
   Future<TimeOfDay?> timePickerMaterial(
     BuildContext context,
     TimeOfDay? defaultTime,

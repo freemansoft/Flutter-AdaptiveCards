@@ -25,6 +25,9 @@ class HttpAdaptiveCardBackendClient implements AdaptiveCardBackendClient {
   final http.Client _client;
   final Map<String, String> _headers;
 
+  /// Transport hook for `AdaptiveCardBackendHandlers`; implement to POST invoke
+  /// JSON and supply the decoded response map (throws
+  /// [AdaptiveCardBackendException] on failure).
   @override
   Future<Map<String, dynamic>> post(Map<String, dynamic> body) async {
     final response = await _client.post(

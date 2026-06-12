@@ -1,6 +1,8 @@
 /// Posts serialized invoke requests to a backend service.
 abstract class AdaptiveCardBackendClient {
-  /// POST [body] as JSON and return the decoded response map.
+  /// Transport hook for `AdaptiveCardBackendHandlers`; implement to POST invoke
+  /// JSON and supply the decoded response map (throws
+  /// [AdaptiveCardBackendException] on failure).
   Future<Map<String, dynamic>> post(Map<String, dynamic> body);
 }
 

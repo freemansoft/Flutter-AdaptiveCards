@@ -2,13 +2,14 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
 /// One server-driven effect applied to a rendered card.
 sealed class AdaptiveCardInvokeEffect {
-  /// Creates an invoke effect.
+  /// Base type for parsed backend effects; use concrete subclasses.
   const AdaptiveCardInvokeEffect();
 }
 
 /// Replaces the entire card JSON (host must reload the canvas/map).
 class ReplaceCardEffect extends AdaptiveCardInvokeEffect {
-  /// Creates an effect that supplies a full Adaptive Card map.
+  /// Full card replacement from a parsed response; host reloads via
+  /// `AdaptiveCardInvokeResponse.applyTo` `onCardReplaced`.
   const ReplaceCardEffect(this.card);
 
   /// Complete Adaptive Card JSON to render next.
@@ -17,7 +18,8 @@ class ReplaceCardEffect extends AdaptiveCardInvokeEffect {
 
 /// Applies sparse element overlay patches via `applyUpdates` on card state.
 class ApplyPatchesEffect extends AdaptiveCardInvokeEffect {
-  /// Creates an effect with one or more [AdaptiveElementUpdate] patches.
+  /// Overlay patches from a parsed response; applied by
+  /// `AdaptiveCardInvokeResponse.applyTo` without replacing baseline JSON.
   const ApplyPatchesEffect(this.elements);
 
   /// Element overlay patches (choices, values, visibility, and so on).
@@ -26,7 +28,8 @@ class ApplyPatchesEffect extends AdaptiveCardInvokeEffect {
 
 /// Sets validation errors on inputs by id.
 class SetInputErrorsEffect extends AdaptiveCardInvokeEffect {
-  /// Creates an effect mapping input ids to error messages.
+  /// Server validation feedback keyed by input `id`; applied by
+  /// `AdaptiveCardInvokeResponse.applyTo`.
   const SetInputErrorsEffect(this.errors);
 
   /// Input id → validation message.
@@ -35,6 +38,6 @@ class SetInputErrorsEffect extends AdaptiveCardInvokeEffect {
 
 /// Explicit no-op (parsed for forward compatibility).
 class NoOpEffect extends AdaptiveCardInvokeEffect {
-  /// Creates a no-op effect.
+  /// Acknowledged response with no UI changes; safe to ignore.
   const NoOpEffect();
 }

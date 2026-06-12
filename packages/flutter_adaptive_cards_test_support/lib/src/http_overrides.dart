@@ -5,6 +5,8 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 
+/// Test `HttpOverrides` that stubs image HTTP with transparent PNG / minimal SVG
+/// — install via `adaptiveCardsTestExecutable` or `HttpOverrides.global`.
 class MyTestHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -148,6 +150,7 @@ class _TestImageHttpHeaders extends Fake implements HttpHeaders {
   String? value(String name) => _headers[name]?.first;
 }
 
+/// 1×1 transparent PNG bytes for stubbed network images in widget/golden tests.
 class TransparentImage {
   static final List<int> bytes = [
     0x89,
@@ -220,6 +223,8 @@ class TransparentImage {
   ];
 }
 
+/// Small opaque blue PNG fixture ([bytes] / base64) for tests needing
+/// non-transparent images.
 class Blue8x8Image {
   // 1. Base64 encoded string of a simple 1x1 blue pixel (non-transparent)
   static String blue8x8ImageBase64 =

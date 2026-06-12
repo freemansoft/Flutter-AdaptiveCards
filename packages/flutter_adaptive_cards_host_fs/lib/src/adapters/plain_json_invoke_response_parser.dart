@@ -9,7 +9,8 @@ class PlainJsonInvokeResponseParser {
 
   static const _responseType = 'adaptiveCard.invokeResponse';
 
-  /// Parses [map] into [AdaptiveCardInvokeResponse].
+  /// Converts decoded POST JSON to ordered [AdaptiveCardInvokeEffect]s for
+  /// [AdaptiveCardInvokeResponse.applyTo].
   static AdaptiveCardInvokeResponse parse(Map<String, dynamic> map) {
     final type = map['type'] as String?;
     if (type != null && type != _responseType) {

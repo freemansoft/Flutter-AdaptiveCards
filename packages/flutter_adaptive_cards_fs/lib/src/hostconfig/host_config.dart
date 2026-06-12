@@ -53,9 +53,15 @@ class HostConfigs {
   final HostConfig dark;
 }
 
-/// Top level configuration for Adaptive Cards
+/// Parsed Adaptive Cards HostConfig JSON that maps spec tokens to Flutter styling.
+///
+/// Scalar fields ([imageBaseUrl], [fontFamily], [supportsInteractivity]) apply
+/// globally. Each nested section property mirrors a HostConfig JSON object and
+/// supplies defaults for an element family (inputs, actions, charts, and so
+/// on). Load via [HostConfig.fromJson] from host JSON, or compose sections in
+/// code when building a config programmatically.
 class HostConfig {
-  /// Creates a HostConfig from explicit section values.
+  /// Builds a HostConfig programmatically when you are not loading from JSON.
   const HostConfig({
     this.imageBaseUrl,
     this.fontFamily,
@@ -82,7 +88,7 @@ class HostConfig {
     this.chartsLayout,
   });
 
-  /// Parses a HostConfig from JSON (all top-level HostConfig properties).
+  /// Load HostConfig from card host JSON; optional [theme] supplies Material color fallbacks.
   factory HostConfig.fromJson(
     Map<String, dynamic> json, {
     ThemeData? theme,
@@ -161,73 +167,72 @@ class HostConfig {
     );
   }
 
-  /// Base URL prepended to relative image URLs (`imageBaseUrl`).
+  /// Resolves relative image URLs in card JSON.
   final String? imageBaseUrl;
 
-  /// Default font family for card text (`fontFamily`).
+  /// Default font family for card text elements.
   final String? fontFamily;
 
-  /// Whether interactive elements (inputs, actions) are enabled
-  /// (`supportsInteractivity`).
+  /// When false, inputs and actions are disabled for read-only card display.
   final bool? supportsInteractivity;
 
-  /// Default pixel sizes for ImageSet element images (`imageSet`).
+  /// ImageSet thumbnail sizing and layout defaults.
   final ImageSetConfig? imageSet;
 
-  /// Semantic foreground color mappings (`foregroundColors`).
+  /// Semantic foreground colors for text and icons.
   final ForegroundColorsConfig? foregroundColors;
 
-  /// Named text style defaults (`textStyles`).
+  /// Named text style presets for card typography.
   final TextStylesConfig? textStyles;
 
-  /// Card-level rendering rules (`adaptiveCard`).
+  /// Root AdaptiveCard container styling.
   final AdaptiveCardConfig? adaptiveCard;
 
-  /// Action set layout and button chrome (`actions`).
+  /// ActionSet layout and button chrome.
   final ActionsConfig? actions;
 
-  /// Named container background/foreground styles (`containerStyles`).
+  /// Named container background and foreground styles.
   final ContainerStylesConfig? containerStyles;
 
-  /// FactSet typography and spacing (`factSet`).
+  /// FactSet label and value typography and spacing.
   final FactSetConfig? factSet;
 
-  /// Font size token mappings (`fontSizes`).
+  /// Font size tokens referenced by card JSON.
   final FontSizesConfig? fontSizes;
 
-  /// Font weight token mappings (`fontWeights`).
+  /// Font weight tokens referenced by card JSON.
   final FontWeightsConfig? fontWeights;
 
-  /// Image element size token mappings (`imageSizes`).
+  /// Image element size tokens.
   final ImageSizesConfig? imageSizes;
 
-  /// Input label and error message styling (`inputs`).
+  /// Input label, placeholder, and error styling.
   final InputsConfig? inputs;
 
-  /// Media element defaults (`media`).
+  /// Media element chrome and playback defaults.
   final MediaConfig? media;
 
-  /// Separator line appearance (`separator`).
+  /// Separator line weight and color.
   final SeparatorConfig? separator;
 
-  /// Spacing token mappings (`spacing`).
+  /// Spacing tokens (`small`, `medium`, and so on).
   final SpacingsConfig? spacing;
 
-  /// TextBlock heading defaults (`textBlock`).
+  /// TextBlock heading and wrap defaults.
   final TextBlockConfig? textBlock;
 
-  /// Badge style color variants (`badgeStyles`).
+  /// Badge color variants.
   final BadgeStylesConfig? badgeStyles;
 
-  /// Progress indicator size tokens (`progressSizes`).
+  /// Progress ring and bar size tokens.
   final ProgressSizesConfig? progressSizes;
 
-  /// Progress indicator semantic colors (`progressColors`).
+  /// Progress indicator semantic colors.
   final ProgressColorsConfig? progressColors;
 
-  /// Chart default palette (`chartColors`).
+  /// Default chart series palette.
   final ChartColorsConfig? chartColors;
 
-  /// Chart layout dimensions and chrome (`chartsLayout`).
+  /// Chart dimensions and chrome; see [ChartsLayoutConfig].
   final ChartsLayoutConfig? chartsLayout;
 }
