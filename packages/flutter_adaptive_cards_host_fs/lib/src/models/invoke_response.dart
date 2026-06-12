@@ -5,10 +5,12 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_effect.dart';
 ///
 /// Effects apply in order: patches, then errors, then full card replacement.
 class AdaptiveCardInvokeResponse {
-  /// Creates a response containing [effects] to run on the card.
+  /// Parsed invoke result from a response adapter; hosts usually do not
+  /// construct this directly.
   const AdaptiveCardInvokeResponse(this.effects);
 
-  /// Ordered list of effects from the backend.
+  /// Effects to run in order via [applyTo]: patches, input errors, then full
+  /// card replacement.
   final List<AdaptiveCardInvokeEffect> effects;
 
   /// Applies [effects] to [cardState] in order.
@@ -49,10 +51,10 @@ class AdaptiveCardInvokeResponse {
 
 /// Thrown when invoke response JSON cannot be parsed.
 class AdaptiveCardInvokeResponseParseException implements Exception {
-  /// Creates a parse exception with a human-readable [message].
+  /// Malformed or unsupported invoke response JSON from the backend.
   AdaptiveCardInvokeResponseParseException(this.message);
 
-  /// Describes what failed during parsing.
+  /// Safe to log or surface in `AdaptiveCardBackendHandlers.onError`.
   final String message;
 
   @override

@@ -1,22 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 
-/// Applications could add this above the Adaptive cards tree
+/// Host callback bundle for action and input events.
 ///
-/// There are tests that auto inject handlers into the widget tree
-/// could be useful for validating callbacks.
-///
-/// Insert one of these in the widget tree to inject
-/// onSubmit(), onChange(), onExecute(), and onOpenUrl()
-/// handlers outside of the GenericActions framework.
-///
-/// See DefaultActions as to how this could be used.
-///
-/// The onChange here is a little different. It isn't sourced from an Action
-/// but rather from the Input widgets themselves.
-/// It is injected into the `RawAdaptiveCard` onChange handler
-///
-/// The handlers here will be attached to widgets in the tree
+/// Wrap your card subtree so [of] resolves handlers for Submit, Execute,
+/// OpenUrl, OpenUrlDialog, Refresh, and input [onChange].
 class InheritedAdaptiveCardHandlers extends InheritedWidget {
   /// Creates handlers that descendants resolve via [of].
   ///
@@ -65,7 +53,9 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
   /// When null, refresh falls back to [onExecute] with the same payload shape.
   final void Function(RefreshActionInvoke invoke)? onRefresh;
 
-  /// Returns the nearest ancestor handlers, or `null` when none are installed.
+  /// Lookup for host callbacks installed above the card.
+  ///
+  /// Returns `null` when the subtree is not wrapped.
   static InheritedAdaptiveCardHandlers? of(BuildContext context) {
     final InheritedAdaptiveCardHandlers? handlers = context
         .dependOnInheritedWidgetOfExactType<InheritedAdaptiveCardHandlers>();

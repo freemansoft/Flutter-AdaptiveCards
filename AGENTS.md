@@ -86,8 +86,11 @@ If the plan touched other packages, run their suites too (`flutter_adaptive_temp
 ## Documentation Philosophy
 
 - **Public APIs:** ALWAYS document public classes and methods with `///`.
-- **Why, not What:** Explain the rationale if it's not obvious.
+- **Why and how to use:** Public API comments should explain why an API exists and how callers use it. They should not reiterate the steps the code is taking.
+- **Why, not What:** When behavior is non-obvious, explain rationale and caller contract — not the implementation algorithm.
 - **Localization:** Use the `intl` package. All UI strings must be localized in `.arb` files.
+
+For examples and a review checklist, see the **`dart-public-api-docs`** skill.
 
 ## Analysis Options
 
@@ -104,6 +107,7 @@ linter:
 
 ---
 > [!NOTE]
+> **Public API `///` comments** — purpose, usage, and anti-patterns are in the `dart-public-api-docs` skill.
 > **Theming** and **Serialization (code-gen)** guidelines are in the `flutter-standard-practices` skill.
 > **Layout** guidance is in the `flutter-build-responsive-layout` and `flutter-fix-layout-issues` skills.
 > **Routing** guidance is in the `flutter-setup-declarative-routing` skill.

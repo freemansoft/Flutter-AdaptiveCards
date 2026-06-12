@@ -5,10 +5,15 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_request.dart';
 import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
 
 /// Serializes [AdaptiveCardInvokeRequest] to flat JSON for custom flow-services.
+///
+/// Default wire format for `AdaptiveCardBackendHandlers`: assign
+/// `PlainJsonInvokeAdapter.toMap` as `requestAdapter` and
+/// `PlainJsonInvokeAdapter.responseFromMap` as `responseParser` when POSTing
+/// to a plain JSON backend (not Teams/Bot Framework).
 class PlainJsonInvokeAdapter {
   const PlainJsonInvokeAdapter._();
 
-  /// Serializes [request] to a POST body map.
+  /// PlainJson POST body from a card invoke; used as `requestAdapter` default.
   static Map<String, dynamic> toMap(AdaptiveCardInvokeRequest request) {
     return {
       'kind': request.kind.name,
@@ -22,7 +27,8 @@ class PlainJsonInvokeAdapter {
     };
   }
 
-  /// Deserializes a POST body map into [AdaptiveCardInvokeRequest].
+  /// Reconstructs an invoke envelope from a PlainJson POST body (server-side
+  /// handlers or integration tests).
   static AdaptiveCardInvokeRequest requestFromMap(Map<String, dynamic> map) {
     final kindName = map['kind'] as String;
     final kind = AdaptiveCardInvokeKind.values.byName(kindName);
@@ -43,7 +49,8 @@ class PlainJsonInvokeAdapter {
     );
   }
 
-  /// Parses a response JSON map using the PlainJson contract.
+  /// Parses flow-service JSON into [AdaptiveCardInvokeResponse]; use as
+  /// `responseParser` with PlainJson backends.
   static AdaptiveCardInvokeResponse responseFromMap(Map<String, dynamic> map) {
     return PlainJsonInvokeResponseParser.parse(map);
   }

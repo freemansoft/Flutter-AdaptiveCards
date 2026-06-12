@@ -6,29 +6,29 @@ import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-/// Fades [child] in over [duration], then hides it when complete.
+/// One-shot fade-out wrapper that removes [child] when the animation completes.
 class FadeAnimation extends StatefulWidget {
-  /// Creates a one-shot fade-in animation around [child].
+  /// Creates a one-shot fade-out animation around [child].
   const FadeAnimation({
     super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 500),
   });
 
-  /// Widget shown while the fade animation runs.
+  /// Content shown during the one-shot fade-out effect.
   final Widget child;
 
-  /// Length of the fade-in animation.
+  /// Fade duration before the widget is removed.
   final Duration duration;
 
   @override
   FadeAnimationState createState() => FadeAnimationState();
 }
 
-/// State for [FadeAnimation]; drives the opacity [AnimationController].
+/// State object for [FadeAnimation]; not intended for direct host use.
 class FadeAnimationState extends State<FadeAnimation>
     with SingleTickerProviderStateMixin {
-  /// Drives opacity from 1.0 down to 0.0 over [FadeAnimation.duration].
+  /// Opacity animation used by [FadeAnimation]; not for host use.
   late AnimationController animationController;
 
   @override
@@ -78,7 +78,7 @@ class FadeAnimationState extends State<FadeAnimation>
 String firstCharacterToLowerCase(String s) =>
     s.isNotEmpty ? s[0].toLowerCase() + s.substring(1) : '';
 
-/// Simple pair of two values.
+/// Lightweight two-value holder for internal/extension helpers.
 class Tuple<A, B> {
   /// Creates a tuple holding [a] and [b].
   Tuple(this.a, this.b);
@@ -90,13 +90,15 @@ class Tuple<A, B> {
   final B b;
 }
 
-/// Clips child content to a full rectangular bounds (used for person images).
+/// Rectangular clipper used for person-style image masks in card elements.
 class FullCircleClipper extends CustomClipper<Rect> {
+  /// Returns full-bounds clip rect for the child.
   @override
   Rect getClip(Size size) {
     return Rect.fromLTWH(0, 0, size.width, size.height);
   }
 
+  /// Always false; clip geometry does not depend on delegate state.
   @override
   bool shouldReclip(CustomClipper<Rect> oldClipper) => false;
 }
@@ -156,7 +158,7 @@ String getDayOfMonthSuffix(int n) {
   }
 }
 
-/// Parses a given text string to property handle DATE() and TIME()
+/// Expands Adaptive Cards `{{DATE(...)}}` and `{{TIME(...)}}` templates in display text.
 String parseTextString(String text, {String? locale}) {
   return text.replaceAllMapped(RegExp('{{.*}}'), (match) {
     final String? res = match.group(0);
@@ -336,14 +338,14 @@ Widget loadErrorMessage({
   );
 }
 
-/// ids are generated if they aren't specified in the 'id' property
+/// True when `id` was author-supplied rather than auto-generated at card load.
 bool idIsNatural(Map aMap) {
   final String? id = aMap['id']?.toString();
   final String? type = aMap['type']?.toString();
   return UUIDGenerator().isNaturalId(id, type);
 }
 
-/// Can override this if need to special process the id
+/// Resolves element id from JSON; generates one if missing (normally pre-injected).
 String loadId(Map aMap) {
   if (aMap.containsKey('id')) {
     return aMap['id'].toString();
@@ -356,21 +358,18 @@ String loadId(Map aMap) {
   }
 }
 
-/// generate the widget key for the adaptive widget that wraps any field widget
-/// based on the 'id' property in the passed in map plus the suffix '_adaptive'
+/// Deterministic [ValueKey] for the adaptive wrapper widget (`{id}_adaptive`).
 ValueKey<String> generateAdaptiveWidgetKey(Map aMap) {
   return ValueKey('${loadId(aMap)}_adaptive');
 }
 
-/// generate the widget key for the actual input element
-/// based on the 'id' property in the passed in map
+/// Deterministic [ValueKey] for an input/control from element JSON.
 ValueKey<String> generateWidgetKey(Map aMap, {String? suffix}) {
   final String id = loadId(aMap);
   return generateWidgetKeyFromId(id, suffix: suffix);
 }
 
-/// generate the widget key for the actual input element
-/// where the id property has already been resolved
+/// Deterministic [ValueKey] from a resolved element id.
 ValueKey<String> generateWidgetKeyFromId(String id, {String? suffix}) {
   if (suffix != null) {
     return ValueKey('${id}_$suffix');
@@ -378,23 +377,18 @@ ValueKey<String> generateWidgetKeyFromId(String id, {String? suffix}) {
   return ValueKey(id);
 }
 
-/// Everyone uses the same scheme for UUID Generation
+/// Shared id generation for elements missing author-supplied `id` values.
 class UUIDGenerator {
-  /// We use a factory which returns the singleton
+  /// Access the shared [UUIDGenerator] instance used across the library.
   factory UUIDGenerator() {
     return _instance;
   }
 
-  /// The named constructor is the "real" constructor
   UUIDGenerator._internal();
 
   static final UUIDGenerator _instance = UUIDGenerator._internal();
 
-  /// generates the next UUID based on provided type and/or map
-  ///
-  /// If both are provided, the UUID will be of the form 'type_hashCode'
-  /// If only type is provided, the UUID will be of the form 'type_UniqueKey'
-  /// If neither is provided, the UUID will be a random string
+  /// Produces a runtime-only element id when card JSON omits `id`.
   String generateUniqueId({required String? type}) {
     final newId = (type == null)
         ? UniqueKey().toString()
@@ -417,8 +411,8 @@ class UUIDGenerator {
   }
 }
 
-/// Recursively traverses the map and injects an 'id' property into any map
-/// that has a 'type' property but lacks an 'id'.
+/// Ensures every typed JSON node has an `id` before rendering; call on a copy,
+/// not host-owned maps.
 void injectIds(
   dynamic data,
 ) {

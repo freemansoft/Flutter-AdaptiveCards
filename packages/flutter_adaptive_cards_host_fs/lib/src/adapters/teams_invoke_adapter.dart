@@ -5,13 +5,17 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_request.dart';
 import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
 
 /// Maps invoke requests/responses to Bot Framework–shaped JSON.
+///
+/// Use with `AdaptiveCardBackendHandlers` when POSTing to a Teams bot endpoint:
+/// set `TeamsInvokeAdapter.toMap` as `requestAdapter` and
+/// `TeamsInvokeAdapter.responseFromMap` as `responseParser`.
 class TeamsInvokeAdapter {
   const TeamsInvokeAdapter._();
 
   static const _adaptiveCardContentType =
       'application/vnd.microsoft.card.adaptive';
 
-  /// Serializes [request] to a Teams invoke activity value map.
+  /// Bot Framework invoke activity value for POST to a Teams bot endpoint.
   static Map<String, dynamic> toMap(AdaptiveCardInvokeRequest request) {
     switch (request.kind) {
       case AdaptiveCardInvokeKind.execute:
@@ -63,7 +67,8 @@ class TeamsInvokeAdapter {
     }
   }
 
-  /// Parses Teams-shaped invoke responses into [AdaptiveCardInvokeResponse].
+  /// Parses Teams invoke responses (attachments, task/continue payloads), then
+  /// falls back to PlainJson when no card attachment is present.
   static AdaptiveCardInvokeResponse responseFromMap(Map<String, dynamic> map) {
     final attachmentCard = _cardFromAttachments(map);
     if (attachmentCard != null) {

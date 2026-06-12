@@ -37,7 +37,7 @@ import 'package:flutter_adaptive_cards_fs/src/cards/inputs/text.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/time.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/toggle.dart';
 
-/// A function that creates a widget from a map of properties.
+/// Custom element builder registered under an Adaptive Cards `type` string.
 typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 
 /// Entry point for registering adaptive cards
@@ -63,14 +63,13 @@ class CardTypeRegistry {
     this.supportMarkdown = true,
   });
 
-  /// Provide custom elements to use.
-  /// When providing an element which is already defined, it is overwritten
+  /// Custom element builders keyed by `type`; same key overrides built-ins.
   final Map<String, ElementCreator> addedElements;
 
   /// Custom action widgets keyed by action `type` (for example `Action.Submit`).
   final Map<String, ElementCreator> addedActions;
 
-  /// Remove specific elements from the list
+  /// Element/action `type` strings rendered as [AdaptiveUnknown] instead of built-ins.
   final List<String> removedElements;
 
   // Due to https://github.com/flutter/flutter_markdown/issues/171,
@@ -81,9 +80,7 @@ class CardTypeRegistry {
   /// When true, the root `AdaptiveCard` body uses list scrolling.
   final bool listView;
 
-  ///
-  /// Gets an element from the type registry based on the 'type' property of the map
-  ///
+  /// Builds the widget for an element JSON map, honoring [addedElements], [removedElements], and fallback.
   Widget getElement({
     required Map<String, dynamic> map,
     String parentMode = 'stretch',
@@ -108,7 +105,7 @@ class CardTypeRegistry {
     }
   }
 
-  /// Builds an action widget for the action map's `type` property.
+  /// Builds the widget for an action JSON map, honoring custom and removed action types.
   Widget getAction({
     required Map<String, dynamic> map,
   }) {

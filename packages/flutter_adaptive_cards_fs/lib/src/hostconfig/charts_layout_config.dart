@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// Resolved layout values for `Chart.Line` rendering.
+///
+/// Populated from HostConfig `chartsLayout.line` via [LineChartLayoutSection.toLayout]
+/// or [ChartsLayoutConfig.resolveLineLayout]. Chart renderers consume these
+/// directly; field names match fl_chart layout options.
 class LineChartLayout {
-  /// Creates resolved line chart layout values.
+  /// Resolved line chart layout for chart renderers.
   const LineChartLayout({
     required this.height,
     required this.emptyMinX,
@@ -27,70 +31,73 @@ class LineChartLayout {
     required this.borderWidth,
   });
 
-  /// Chart container height in logical pixels.
+  /// Chart area height in logical pixels.
   final double height;
 
-  /// Default minimum X when no data is present.
+  /// Placeholder minimum X when the series has no data.
   final double emptyMinX;
 
-  /// Default maximum X when no data is present.
+  /// Placeholder maximum X when the series has no data.
   final double emptyMaxX;
 
-  /// Default minimum Y when no data is present.
+  /// Placeholder minimum Y when the series has no data.
   final double emptyMinY;
 
-  /// Default maximum Y when no data is present.
+  /// Placeholder maximum Y when the series has no data.
   final double emptyMaxY;
 
-  /// Amount added to axis bounds when computed range is zero.
+  /// Padding added when the computed Y range is zero (flat series).
   final double degenerateRangeBump;
 
-  /// Fallback Y range when computed range is zero.
+  /// Fallback Y span when the computed range is zero.
   final double zeroRangeFallback;
 
-  /// Multiplier applied to Y range for vertical axis padding.
+  /// Multiplier applied to Y range for headroom above/below data.
   final double yAxisPaddingFactor;
 
-  /// Whether line series are rendered as curves.
+  /// Whether line segments render as curves instead of straight segments.
   final bool isCurved;
 
-  /// Line stroke width.
+  /// Line stroke width (fl_chart `barWidth` on line charts).
   final double barWidth;
 
-  /// Whether line caps are rounded.
+  /// Whether line caps render with rounded ends.
   final bool isStrokeCapRound;
 
-  /// Whether data point dots are shown.
+  /// Whether data points render as visible dots.
   final bool showDots;
 
-  /// Whether area below the line is filled.
+  /// Whether the area below the line is filled.
   final bool showAreaBelow;
 
-  /// Master switch for axis titles.
+  /// Master switch for axis title visibility.
   final bool showTitles;
 
-  /// Whether right axis titles are shown.
+  /// Whether right-side axis titles are shown.
   final bool showRightTitles;
 
   /// Whether top axis titles are shown.
   final bool showTopTitles;
 
-  /// Whether grid lines are shown.
+  /// Whether grid lines are drawn behind the series.
   final bool showGrid;
 
-  /// Whether the chart border is shown.
+  /// Whether a border is drawn around the plot area.
   final bool showBorder;
 
-  /// Chart border color.
+  /// Plot border color when [showBorder] is true.
   final Color borderColor;
 
-  /// Chart border stroke width.
+  /// Plot border stroke width when [showBorder] is true.
   final double borderWidth;
 }
 
 /// Resolved layout values for bar chart types.
+///
+/// From HostConfig `chartsLayout.bar` via [BarChartLayoutSection.toLayout] or
+/// [ChartsLayoutConfig.resolveBarLayout].
 class BarChartLayout {
-  /// Creates resolved bar chart layout values.
+  /// Resolved bar chart layout for vertical, horizontal, grouped, and stacked charts.
   const BarChartLayout({
     required this.height,
     required this.emptyMaxY,
@@ -105,31 +112,31 @@ class BarChartLayout {
     required this.showCategoryTitles,
   });
 
-  /// Chart container height in logical pixels.
+  /// Chart area height in logical pixels.
   final double height;
 
-  /// Default maximum Y when no data is present.
+  /// Placeholder maximum Y when the series has no data.
   final double emptyMaxY;
 
-  /// Multiplier applied to max Y for value-axis headroom.
+  /// Multiplier on max Y for value-axis headroom.
   final double maxYPaddingFactor;
 
-  /// Bar rod width.
+  /// Width of each bar rod.
   final double barWidth;
 
-  /// Space between rods in a group.
+  /// Gap between rods within a bar group.
   final double barsSpace;
 
-  /// Border radius for simple and grouped bars.
+  /// Corner radius for simple and grouped bars.
   final double barBorderRadius;
 
-  /// Border radius for stacked bar outer rod.
+  /// Corner radius for the outer rod of stacked bars.
   final double stackedBarBorderRadius;
 
-  /// Bar group alignment token.
+  /// How bar groups align within the plot width.
   final BarChartAlignmentToken alignment;
 
-  /// Reserved space for category axis labels.
+  /// Vertical space reserved for category axis labels.
   final double categoryAxisReservedSize;
 
   /// Font size for category axis labels.
@@ -158,8 +165,11 @@ enum BarChartAlignmentToken {
 }
 
 /// Resolved layout values for `Chart.Pie`.
+///
+/// From HostConfig `chartsLayout.pie` via [PieChartLayoutSection.toLayout] or
+/// [ChartsLayoutConfig.resolvePieLayout].
 class PieChartLayout {
-  /// Creates resolved pie chart layout values.
+  /// Resolved pie or donut chart layout for chart renderers.
   const PieChartLayout({
     required this.height,
     required this.centerSpaceRadius,
@@ -170,34 +180,37 @@ class PieChartLayout {
     required this.titleColor,
   });
 
-  /// Chart container height in logical pixels.
+  /// Chart area height in logical pixels.
   final double height;
 
-  /// Inner hole radius (0 for full pie).
+  /// Inner hole radius; `0` renders a full pie (no donut hole).
   final double centerSpaceRadius;
 
-  /// Gap between pie sections.
+  /// Gap between adjacent pie sections.
   final double sectionsSpace;
 
-  /// Outer radius of pie sections.
+  /// Outer radius of each pie section.
   final double sectionRadius;
 
-  /// On-slice label font size.
+  /// Font size for on-slice labels.
   final double titleFontSize;
 
-  /// On-slice label font weight.
+  /// Font weight for on-slice labels.
   final FontWeight titleFontWeight;
 
-  /// On-slice label color.
+  /// Text color for on-slice labels.
   final Color titleColor;
 }
 
-/// Resolved layout values for `Chart.Donut` and `Chart.Gauge`.
+/// Resolved layout values for `Chart.Donut` and `Chart.Gauge` (same shape as pie).
 typedef DonutChartLayout = PieChartLayout;
 
 /// HostConfig `chartsLayout.line` section.
+///
+/// Override fields in host JSON or build in code, then call [toLayout] at render
+/// time (or use [ChartsLayoutConfig.resolveLineLayout]).
 class LineChartLayoutSection {
-  /// Creates line chart layout settings.
+  /// HostConfig overrides for line chart layout.
   const LineChartLayoutSection({
     required this.height,
     required this.emptyMinX,
@@ -260,67 +273,67 @@ class LineChartLayoutSection {
     );
   }
 
-  /// Chart container height in logical pixels.
+  /// Chart area height in logical pixels.
   final double height;
 
-  /// Default minimum X when no data is present.
+  /// Placeholder minimum X when the series has no data.
   final double emptyMinX;
 
-  /// Default maximum X when no data is present.
+  /// Placeholder maximum X when the series has no data.
   final double emptyMaxX;
 
-  /// Default minimum Y when no data is present.
+  /// Placeholder minimum Y when the series has no data.
   final double emptyMinY;
 
-  /// Default maximum Y when no data is present.
+  /// Placeholder maximum Y when the series has no data.
   final double emptyMaxY;
 
-  /// Amount added to axis bounds when computed range is zero.
+  /// Padding added when the computed Y range is zero (flat series).
   final double degenerateRangeBump;
 
-  /// Fallback Y range when computed range is zero.
+  /// Fallback Y span when the computed range is zero.
   final double zeroRangeFallback;
 
-  /// Multiplier applied to Y range for vertical axis padding.
+  /// Multiplier applied to Y range for headroom above/below data.
   final double yAxisPaddingFactor;
 
-  /// Whether line series are rendered as curves.
+  /// Whether line segments render as curves instead of straight segments.
   final bool isCurved;
 
-  /// Line stroke width.
+  /// Line stroke width (fl_chart `barWidth` on line charts).
   final double barWidth;
 
-  /// Whether line caps are rounded.
+  /// Whether line caps render with rounded ends.
   final bool isStrokeCapRound;
 
-  /// Whether data point dots are shown.
+  /// Whether data points render as visible dots.
   final bool showDots;
 
-  /// Whether area below the line is filled.
+  /// Whether the area below the line is filled.
   final bool showAreaBelow;
 
-  /// Master switch for axis titles.
+  /// Master switch for axis title visibility.
   final bool showTitles;
 
-  /// Whether right axis titles are shown.
+  /// Whether right-side axis titles are shown.
   final bool showRightTitles;
 
   /// Whether top axis titles are shown.
   final bool showTopTitles;
 
-  /// Whether grid lines are shown.
+  /// Whether grid lines are drawn behind the series.
   final bool showGrid;
 
-  /// Whether the chart border is shown.
+  /// Whether a border is drawn around the plot area.
   final bool showBorder;
 
-  /// Chart border color.
+  /// Plot border color when [showBorder] is true.
   final Color borderColor;
 
-  /// Chart border stroke width.
+  /// Plot border stroke width when [showBorder] is true.
   final double borderWidth;
 
-  /// Converts this section to resolved layout values.
+  /// Resolved values for chart widgets at render time.
   LineChartLayout toLayout() => LineChartLayout(
     height: height,
     emptyMinX: emptyMinX,
@@ -347,7 +360,7 @@ class LineChartLayoutSection {
 
 /// HostConfig `chartsLayout.bar` section.
 class BarChartLayoutSection {
-  /// Creates bar chart layout settings.
+  /// HostConfig overrides for bar chart layout.
   const BarChartLayoutSection({
     required this.height,
     required this.emptyMaxY,
@@ -396,31 +409,31 @@ class BarChartLayoutSection {
     );
   }
 
-  /// Chart container height in logical pixels.
+  /// Chart area height in logical pixels.
   final double height;
 
-  /// Default maximum Y when no data is present.
+  /// Placeholder maximum Y when the series has no data.
   final double emptyMaxY;
 
-  /// Multiplier applied to max Y for value-axis headroom.
+  /// Multiplier on max Y for value-axis headroom.
   final double maxYPaddingFactor;
 
-  /// Bar rod width.
+  /// Width of each bar rod.
   final double barWidth;
 
-  /// Space between rods in a group.
+  /// Gap between rods within a bar group.
   final double barsSpace;
 
-  /// Border radius for simple and grouped bars.
+  /// Corner radius for simple and grouped bars.
   final double barBorderRadius;
 
-  /// Border radius for stacked bar outer rod.
+  /// Corner radius for the outer rod of stacked bars.
   final double stackedBarBorderRadius;
 
-  /// Bar group alignment token.
+  /// How bar groups align within the plot width.
   final BarChartAlignmentToken alignment;
 
-  /// Reserved space for category axis labels.
+  /// Vertical space reserved for category axis labels.
   final double categoryAxisReservedSize;
 
   /// Font size for category axis labels.
@@ -429,7 +442,7 @@ class BarChartLayoutSection {
   /// Whether category axis titles are shown.
   final bool showCategoryTitles;
 
-  /// Converts this section to resolved layout values.
+  /// Resolved values for chart widgets at render time.
   BarChartLayout toLayout() => BarChartLayout(
     height: height,
     emptyMaxY: emptyMaxY,
@@ -447,7 +460,7 @@ class BarChartLayoutSection {
 
 /// HostConfig `chartsLayout.pie` / `chartsLayout.donut` section.
 class PieChartLayoutSection {
-  /// Creates pie or donut chart layout settings.
+  /// HostConfig overrides for pie, donut, and gauge chart layout.
   const PieChartLayoutSection({
     required this.height,
     required this.centerSpaceRadius,
@@ -484,28 +497,28 @@ class PieChartLayoutSection {
     );
   }
 
-  /// Chart container height in logical pixels.
+  /// Chart area height in logical pixels.
   final double height;
 
-  /// Inner hole radius (0 for full pie).
+  /// Inner hole radius; `0` renders a full pie (no donut hole).
   final double centerSpaceRadius;
 
-  /// Gap between pie sections.
+  /// Gap between adjacent pie sections.
   final double sectionsSpace;
 
-  /// Outer radius of pie sections.
+  /// Outer radius of each pie section.
   final double sectionRadius;
 
-  /// On-slice label font size.
+  /// Font size for on-slice labels.
   final double titleFontSize;
 
-  /// On-slice label font weight.
+  /// Font weight for on-slice labels.
   final FontWeight titleFontWeight;
 
-  /// On-slice label color.
+  /// Text color for on-slice labels.
   final Color titleColor;
 
-  /// Converts this section to resolved layout values.
+  /// Resolved values for chart widgets at render time.
   PieChartLayout toLayout() => PieChartLayout(
     height: height,
     centerSpaceRadius: centerSpaceRadius,
@@ -518,8 +531,12 @@ class PieChartLayoutSection {
 }
 
 /// HostConfig `chartsLayout` section for chart element dimensions and chrome.
+///
+/// Attach via `HostConfig.chartsLayout`. Each subsection maps to a chart family;
+/// use [resolveLineLayout], [resolveBarLayout], [resolvePieLayout], and
+/// [resolveDonutLayout] when rendering (falls back to [defaults]).
 class ChartsLayoutConfig {
-  /// Creates chart layout settings for all chart families.
+  /// HostConfig overrides for all chart families; omit fields to keep [defaults].
   const ChartsLayoutConfig({
     required this.line,
     required this.bar,
@@ -546,16 +563,16 @@ class ChartsLayoutConfig {
     );
   }
 
-  /// Line chart layout section.
+  /// Line chart HostConfig subsection.
   final LineChartLayoutSection line;
 
-  /// Bar chart layout section.
+  /// Bar chart HostConfig subsection.
   final BarChartLayoutSection bar;
 
-  /// Pie chart layout section.
+  /// Pie chart HostConfig subsection.
   final PieChartLayoutSection pie;
 
-  /// Donut chart layout section.
+  /// Donut and gauge chart HostConfig subsection.
   final PieChartLayoutSection donut;
 
   /// Built-in defaults matching pre-config chart rendering behavior.

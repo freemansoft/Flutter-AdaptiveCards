@@ -6,13 +6,13 @@ import 'package:flutter/foundation.dart';
 /// * https://adaptivecards.io/explorer/Input.Choice.html
 @immutable
 class Choice {
-  /// Creates a choice with display [title] and submit [value].
+  /// One ChoiceSet option; [title] is shown, [value] is submitted.
   const Choice({
     required this.title,
     required this.value,
   });
 
-  /// Creates a Choice from JSON map
+  /// Parses an Adaptive Cards `Input.Choice` object from card JSON.
   factory Choice.fromJson(Map<String, dynamic> json) {
     return Choice(
       title: json['title'] as String? ?? '',
@@ -20,13 +20,13 @@ class Choice {
     );
   }
 
-  /// Display text for the choice
+  /// Label shown in the ChoiceSet UI.
   final String title;
 
-  /// The raw value for the choice (what gets submitted)
+  /// Submitted value when this choice is selected (not the display title).
   final String value;
 
-  /// Converts Choice to JSON map
+  /// Serializes for overlay updates and resolved element JSON.
   Map<String, dynamic> toJson() {
     return {
       'title': title,
@@ -47,7 +47,8 @@ class Choice {
   int get hashCode => Object.hash(title, value);
 }
 
-/// Parses a JSON `choices` array into [Choice] instances.
+/// Parses a card JSON `choices` array into [Choice] list; returns empty when
+/// invalid.
 List<Choice> choicesFromJsonList(Object? raw) {
   if (raw is! List) return const [];
   return raw
@@ -56,6 +57,6 @@ List<Choice> choicesFromJsonList(Object? raw) {
       .toList();
 }
 
-/// Serializes [choices] for resolved element JSON maps.
+/// Serializes choices for runtime overlay / resolved JSON boundaries.
 List<Map<String, dynamic>> choicesToJsonList(List<Choice> choices) =>
     choices.map((c) => c.toJson()).toList();

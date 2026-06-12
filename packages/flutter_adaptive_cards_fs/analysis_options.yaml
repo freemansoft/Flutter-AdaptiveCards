@@ -18,7 +18,7 @@ analyzer:
     lines_longer_than_80_chars: ignore
     # I like local variable types for clarity
     omit_local_variable_types: ignore
-    # public_member_api_docs: ignore
+    public_member_api_docs: error
 
     # this whole project is dynamic map and dynamic based
     strict_raw_type: ignore
