@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.11.0]
+
+- no changes yet
+
 ## [Unreleased]
 
 - **TextBlock → RichTextBlock demo** use case with sample **`lib/samples/v1.2/rich_text_block_demo.json`**.

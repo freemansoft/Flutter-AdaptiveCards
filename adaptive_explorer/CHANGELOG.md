@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.11.0]
+
+- no changes yet
+
 ## [0.10.0]
 
 - **README** no longer claims chart element support; documents cards + template only and points to widgetbook for chart samples.

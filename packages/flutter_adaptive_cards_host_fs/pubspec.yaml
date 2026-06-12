@@ -1,6 +1,6 @@
 name: flutter_adaptive_cards_host_fs
 description: Backend invoke bridge for Flutter Adaptive Cards — request serialization, response parsing, and handler wiring.
-version: 0.10.0
+version: 0.11.0
 homepage: https://github.com/freemansoft/Flutter-AdaptiveCards
 repository: https://github.com/freemansoft/Flutter-AdaptiveCards
 
@@ -11,7 +11,7 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
-  flutter_adaptive_cards_fs: ^0.10.0
+  flutter_adaptive_cards_fs: ^0.11.0
   http: ^1.6.0
 
 dev_dependencies:
