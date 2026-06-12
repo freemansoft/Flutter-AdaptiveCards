@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0]
+
+- no changes yet
+
 ## [0.10.0]
 
 - **Root card `refresh` (v1.4+):** parse `refresh.action`, `userIds`, and `expires` via **`RefreshConfig`**; manual refresh affordance (top-right icon) when `refresh.action` is set; one-shot auto-refresh after first frame when `expires` is in the past; **`refresh.userIds`** gates auto-refresh only (via **`AdaptiveCardsCanvas.currentUserId`** / **`currentUserIdProvider`**).

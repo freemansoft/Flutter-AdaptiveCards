@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.11.0]
+
+- no changes yet
+
 ## [0.10.0]
 
 - **`Chart.Gauge`:** **`AdaptiveGaugeChart`** and **`GaugePainter`** (`CustomPainter` semicircular gauge) — `value`, `min` / `max`, `segments`, `valueFormat` (`percentage` / `fraction`), `title`, `subLabel`, `showLegend`, `showMinMax`, and `colorSet`.
