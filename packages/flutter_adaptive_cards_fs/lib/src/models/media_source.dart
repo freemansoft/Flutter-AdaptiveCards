@@ -6,13 +6,13 @@ import 'package:flutter/foundation.dart';
 /// * https://adaptivecards.io/explorer/MediaSource.html
 @immutable
 class MediaSource {
-  /// Creates a media source with playback [url] and optional [mimeType].
+  /// One playback source for a Media element.
   const MediaSource({
     required this.url,
     this.mimeType,
   });
 
-  /// Creates a MediaSource from JSON map
+  /// Parses a Media `sources[]` entry from card JSON.
   factory MediaSource.fromJson(Map<String, dynamic> json) {
     return MediaSource(
       url: json['url'] as String? ?? '',
@@ -20,13 +20,13 @@ class MediaSource {
     );
   }
 
-  /// URL to media source
+  /// Playback URL for the Media element.
   final String url;
 
-  /// MIME type of the media source (e.g., 'video/mp4')
+  /// Optional MIME hint (for example `video/mp4`) for the player.
   final String? mimeType;
 
-  /// Converts MediaSource to JSON map
+  /// Serializes for host-driven Media source updates.
   Map<String, dynamic> toJson() {
     return {
       'url': url,
@@ -49,7 +49,7 @@ class MediaSource {
   int get hashCode => Object.hash(url, mimeType);
 }
 
-/// Parses a JSON `sources` array into [MediaSource] instances.
+/// Parses Media `sources` array from card JSON.
 List<MediaSource> mediaSourcesFromJsonList(Object? raw) {
   if (raw is! List) return const [];
   return raw

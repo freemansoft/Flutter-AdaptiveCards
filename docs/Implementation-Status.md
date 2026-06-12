@@ -380,9 +380,11 @@ See [backend-host-integration.md](./backend-host-integration.md) and [design spe
 
 - **`IntrinsicHeight`** + **`CrossAxisAlignment.stretch`** — see [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md).
 
-### Public API documentation (2026-06-08)
+### Public API documentation (2026-06-08, updated 2026-06-11)
 
-- **`public_member_api_docs`** — `///` documentation added for all public members in `flutter_adaptive_cards_fs` and `flutter_adaptive_charts_fs`.
+- **`public_member_api_docs`** — `///` on exported APIs follows the **`dart-public-api-docs`** standard (why/how for callers, not implementation narration). Remediation plan: [`docs/superpowers/plans/2026-06-11-public-api-docs-remediation.plan.md`](./superpowers/plans/2026-06-11-public-api-docs-remediation.plan.md).
+- **`flutter_adaptive_cards_fs`** — `public_member_api_docs: error` in `analysis_options.yaml`; `fvm dart analyze lib` is clean for missing public docs (2026-06-11).
+- **`flutter_adaptive_charts_fs`** — docs present; lint not yet promoted to error (separate task).
 
 ---
 

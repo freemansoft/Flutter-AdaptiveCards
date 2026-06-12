@@ -11,21 +11,20 @@ import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:http/http.dart' as http;
 
-/// Core definition for AdaptiveCardContent providers.
-/// The class that loads the json map for the card.
+/// Async source of root card JSON for [AdaptiveCardsCanvas].
 ///
-/// We use specialized versions for each way we get content
+/// Implement or use a built-in provider (memory, JSON string, asset, network).
 abstract class AdaptiveCardContentProvider {
-  /// Loads the root Adaptive Card JSON map for [AdaptiveCardsCanvas].
+  /// Called by the canvas on first build; return the parsed root `AdaptiveCard` map.
   Future<Map<String, dynamic>> loadAdaptiveCardContent();
 }
 
-/// Content provider for getting card specifications from memory
+/// Synchronous in-memory card source when JSON is already parsed.
 class MemoryAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   /// Supplies an already-parsed card map without I/O.
   MemoryAdaptiveCardContentProvider({required this.content}) : super();
 
-  /// Root Adaptive Card JSON held in memory.
+  /// Parsed root card map supplied to [loadAdaptiveCardContent].
   Map<String, dynamic> content;
 
   @override
@@ -34,12 +33,12 @@ class MemoryAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   }
 }
 
-/// Content provider for getting card specifications from a JSON string
+/// Card source that decodes a JSON string at load time.
 class JsonAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   /// Decodes [jsonString] when [loadAdaptiveCardContent] runs.
   JsonAdaptiveCardContentProvider({required this.jsonString}) : super();
 
-  /// Raw JSON text for the root Adaptive Card.
+  /// Root card JSON text decoded on load.
   String jsonString;
 
   @override
@@ -48,12 +47,12 @@ class JsonAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   }
 }
 
-/// Content provider for getting card specifications from the Asset tree
+/// Card source that reads JSON from the Flutter asset bundle.
 class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   /// Loads card JSON from a Flutter asset via [path].
   AssetAdaptiveCardContentProvider({required this.path}) : super();
 
-  /// Asset bundle path to the card JSON file.
+  /// Bundle path passed to `rootBundle.loadString`.
   String path;
 
   @override
@@ -63,13 +62,13 @@ class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   }
 }
 
-/// Content provider for getting card specifications from a network resource
+/// Card source that fetches JSON over HTTP(S).
 class NetworkAdaptiveCardContentProvider
     implements AdaptiveCardContentProvider {
   /// Fetches card JSON from a remote [url] when content is requested.
   NetworkAdaptiveCardContentProvider({required this.url}) : super();
 
-  /// HTTP(S) location of the root Adaptive Card JSON.
+  /// Remote URL fetched when the canvas loads.
   String url;
 
   @override
@@ -80,10 +79,7 @@ class NetworkAdaptiveCardContentProvider
   }
 }
 
-/// The canvas for AdaptiveCard widget trees
-/// but is not the actual card of type `AdaptiveCard`
-/// Wraps a [RawAdaptiveCard] that is the actual adaptive card element
-/// Pass in the Action handlers specific to the host program
+/// Host entry widget: loads card JSON, applies [HostConfigs], and renders [RawAdaptiveCard].
 class AdaptiveCardsCanvas extends StatefulWidget {
   /// Creates a canvas that loads content from [adaptiveCardContentProvider].
   const AdaptiveCardsCanvas({
@@ -102,7 +98,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
     required this.hostConfigs,
   });
 
-  /// Loads card JSON from a network [url].
+  /// Convenience constructor for remote card JSON.
   AdaptiveCardsCanvas.network({
     super.key,
     this.placeholder,
@@ -121,7 +117,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
          url: url,
        );
 
-  /// Loads card JSON from a bundled [assetPath].
+  /// Convenience constructor for asset-backed card JSON.
   AdaptiveCardsCanvas.asset({
     super.key,
     this.placeholder,
@@ -159,7 +155,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
          content: content,
        );
 
-  /// Decodes [jsonString] into the root card map.
+  /// Convenience constructor for inline JSON text.
   AdaptiveCardsCanvas.json({
     super.key,
     this.placeholder,
@@ -178,22 +174,23 @@ class AdaptiveCardsCanvas extends StatefulWidget {
          jsonString: jsonString,
        );
 
-  /// Content provider usually specific to a named constructor
+  /// Async loader chosen by the named constructor; override for custom sources.
   final AdaptiveCardContentProvider adaptiveCardContentProvider;
 
-  /// Shown while asynchronous loading is happening
+  /// Widget shown until [AdaptiveCardContentProvider.loadAdaptiveCardContent]
+  /// completes; defaults to a progress indicator.
   final Widget? placeholder;
 
-  /// Used to convert card type strings into Card instances
+  /// Element type registry; extend to add or override card elements.
   final CardTypeRegistry cardTypeRegistry;
 
-  /// Used to convert card type strings into Card instances
+  /// Action handler registry; extend to customize action behavior.
   final ActionTypeRegistry actionTypeRegistry;
 
   /// data that may be copied into `Input` cards to replace their templated state
   final Map? initData;
 
-  /// Environment specific function that knows how to handle input value changes.
+  /// Host callback for input edits; falls back to [InheritedAdaptiveCardHandlers.onChange].
   final void Function(InputChangeInvoke invoke)? onChange;
 
   /// When true (debug only), shows a button that displays the source JSON.
@@ -211,22 +208,22 @@ class AdaptiveCardsCanvas extends StatefulWidget {
   /// Current user id for root `refresh.userIds` auto-refresh gating.
   final String? currentUserId;
 
-  /// HostConfig for this card stack - describes string to color, etc. mappings
+  /// Light/dark HostConfig pair that drives theming for this card.
   final HostConfigs hostConfigs;
 
   @override
   AdaptiveCardsCanvasState createState() => AdaptiveCardsCanvasState();
 }
 
-/// State for **The** AdaptiveCard card
+/// Holds loaded card JSON and resolved [onChange] while [AdaptiveCardsCanvas] builds [RawAdaptiveCard].
 class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
-  /// The loaded json map for this `AdaptiveCard` and its descendants
+  /// Loaded root card JSON after the content provider completes.
   Map<String, dynamic>? map;
 
   /// data that may be copied into `Input` cards to replace their templated state
   Map? initData;
 
-  /// Environment specific function that knows how to handle input value changes.
+  /// Effective input-change handler after widget vs inherited resolution.
   void Function(InputChangeInvoke invoke)? onChange;
 
   @override

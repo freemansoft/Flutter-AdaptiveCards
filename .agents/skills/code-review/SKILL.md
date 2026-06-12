@@ -8,7 +8,7 @@ description: >
 
 # Code Review Protocol
 
-Use this skill as a "Final Gate" for any PR or significant change. Cross-reference with specialized skills (`adaptive-cards-spec-compliance`, `adaptive-cards-element-registry`, `flutter-adaptive-cards-testing`) as needed.
+Use this skill as a "Final Gate" for any PR or significant change. Cross-reference with specialized skills (`adaptive-cards-spec-compliance`, `adaptive-cards-element-registry`, `dart-public-api-docs`, `flutter-adaptive-cards-testing`) as needed.
 
 ---
 
@@ -19,6 +19,7 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 - [ ] **Changelog**: Has `CHANGELOG.md` been updated in the affected packages following [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)?
 - [ ] **Release / post-publish** (if applicable): Follow `release-engineer` — all **six** `version:` fields match, **six** changelogs have matching top `## [<version>]` sections, and `flutter_adaptive_charts_fs` and `flutter_adaptive_cards_host_fs` use `flutter_adaptive_cards_fs: ^<version>`.
 - [ ] **Formatting**: Has `dart_format` been run on all modified files?
+- [ ] **Public `///` docs**: Do exported API changes in library packages explain why and how to use the API (not implementation steps)? See **`dart-public-api-docs`**.
 
 ---
 
@@ -55,6 +56,7 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 
 - [ ] **Public API**: Is the new class/widget exported in `lib/flutter_adaptive_cards_fs.dart`?
 - [ ] **Extension API**: Is it exported in `lib/flutter_adaptive_cards_extend.dart` if intended for customization by consumers?
+- [ ] **Public `///` docs**: Do new or changed exported members explain **why** the API exists and **how** callers use it — not implementation steps? See **`dart-public-api-docs`**.
 
 ---
 
@@ -72,7 +74,7 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 - [ ] **Adapters**: PlainJson vs Teams invoke shapes match the backend contract; response effects applied via `AdaptiveCardInvokeResponse.applyTo`.
 - [ ] **Dependencies**: `pubspec.yaml` declares `flutter_adaptive_cards_fs: ^<monorepo-version>` (sync on release bump).
 - [ ] **Tests**: Unit tests under `packages/flutter_adaptive_cards_host_fs/test/` (no goldens); run `fvm flutter test` from that package directory.
-- [ ] **Docs**: Public API changes reflected in `docs/backend-host-integration.md` and package `README.md`.
+- [ ] **Docs**: Public API changes reflected in `docs/backend-host-integration.md` and package `README.md`; exported `///` comments follow **`dart-public-api-docs`**.
 
 See **`adaptive-cards-backend-host`** skill for file paths and invoke round-trip patterns.
 

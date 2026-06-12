@@ -17,10 +17,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
   // this is an abstract method that everyone needs to implmenet
 
-  /// implementers will need to provide the adaptive map
+  /// Baseline element JSON for this widget; required by element implementations.
   Map<String, dynamic> get adaptiveMap;
 
-  /// implementers will need to provide the id
+  /// Stable element id used for overlays, keys, and provider lookups.
   String get id;
 }
 
@@ -51,7 +51,7 @@ mixin ProviderScopeMixin<T extends StatefulWidget> on State<T> {
 
 /// Shared element identity and background-image helpers for adaptive widgets.
 mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
-  /// Stable element id from the widget.
+  /// Same as [AdaptiveElementWidgetMixin.id].
   String get id => widget.id;
 
   /// Lowercased `style` token from [adaptiveMap], if present.
@@ -113,9 +113,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     }
   }
 
-  /// Reliable image loader that handles when image not found
-  /// Cards that support background images include
-  /// AdaptiveCard, Column, Container, TableCell, Authentication
+  /// Background [Widget] for container-style elements; supports network and data URLs.
   Widget getBackgroundImage(
     String url, {
     ImageRepeat repeat = ImageRepeat.noRepeat,
@@ -124,12 +122,13 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     return AdaptiveImageUtils.getImage(url, fit: fit, semanticsLabel: null);
   }
 
-  /// Reliable image provider loader that handles base64 and network images
+  /// [ImageProvider] for [DecorationImage] backgrounds on container-style elements.
   ImageProvider getBackgroundImageProvider(String url) {
     return AdaptiveImageUtils.getImageProvider(url);
   }
 
-  /// internal helper to resolve the background image properties from either a string or a map
+  /// Normalizes `backgroundImage` string or object to url/fit/repeat for
+  /// container elements.
   ({String url, BoxFit fit, ImageRepeat repeat})? resolveBackgroundImage(
     dynamic backgroundImage,
   ) {
@@ -157,7 +156,7 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     return null;
   }
 
-  /// JSON schema aware version of getBackgroundImage
+  /// Builds a background image widget from an element map's `backgroundImage`.
   Widget? getBackgroundImageFromMap(Map element) {
     final props = resolveBackgroundImage(element['backgroundImage']);
     if (props == null) return null;
@@ -165,15 +164,13 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     return getBackgroundImage(props.url, repeat: props.repeat, fit: props.fit);
   }
 
-  /// JSON schema aware BoxDecoration wrapper of getDecorationImageFromMap
+  /// [BoxDecoration] with optional background color and image from element JSON.
   BoxDecoration getDecorationFromMap(Map element, {Color? backgroundColor}) {
     final decorationImage = getDecorationImageFromMap(element);
     return BoxDecoration(image: decorationImage, color: backgroundColor);
   }
 
-  /// JSON schema aware DecorationImage wrapper of DecorationImage
-  /// Cards that support background images include
-  /// AdaptiveCard, Column, Container, TableCell, Authentication
+  /// [DecorationImage] from element JSON `backgroundImage`.
   DecorationImage? getDecorationImageFromMap(Map element) {
     final props = resolveBackgroundImage(element['backgroundImage']);
     if (props == null) return null;
@@ -202,7 +199,7 @@ bool backgroundImageSpecified(Map element) {
   return false;
 }
 
-/// Reads static `title` and `tooltip` from action JSON on the widget.
+/// Static action label/tooltip from baseline JSON for simple action widgets.
 mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   /// Action label from baseline JSON.
@@ -212,7 +209,8 @@ mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   String? get tooltip => adaptiveMap['tooltip'] as String?;
 }
 
-/// Subscribes to [resolvedActionProvider] for `isEnabled`, `title`, and `tooltip`.
+/// Reactive action label, tooltip, and enabled state from merged baseline +
+/// overlays.
 mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   bool _actionEnabled = true;
@@ -271,7 +269,8 @@ mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   }
 }
 
-/// Document-backed input state, validation, and value-changed actions.
+/// Shared input overlay, validation, and value-changed-action behavior for
+/// input widgets.
 mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   AdaptiveElementWidgetMixin get _inputElement =>
       widget as AdaptiveElementWidgetMixin;
@@ -373,17 +372,16 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// Subclasses can override to sync controllers from document changes.
   void onDocumentValueChanged(Object? valueFromDocument) {}
 
-  /// Input cards implement this to copy their state **to** the map
+  /// Collect this input's submit value into a host payload map.
   void appendInput(Map map);
 
-  /// Input cards implement this as a way of loading state from a Map, `inputData`
+  /// Seed local UI from host `initData` for this input type.
   void initInput(Map map);
 
-  /// Input card types implement this as a way of changing their state, currently only choice_set
+  /// Host hook to replace ChoiceSet options at runtime.
   void loadInput(Map map) {}
 
-  /// this is a prototype that is overridden by the input fields
-  /// to check if they are required and there is a value
+  /// Returns whether required validation passes for this input before submit.
   bool checkRequired();
 
   /// Factory-resets this input via the document notifier, then syncs local UI
@@ -438,7 +436,7 @@ mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     super.dispose();
   }
 
-  /// Update visibility and trigger rebuild
+  /// Sets runtime visibility overlay for this element id (host or Action.ToggleVisibility).
   void setIsVisible({required bool visible}) {
     final container = ProviderScope.containerOf(context);
     container

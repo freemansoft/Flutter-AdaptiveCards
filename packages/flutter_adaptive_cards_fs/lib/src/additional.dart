@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Additional widget classes used to frame out the rendering of cards
 // Not part of the Adaptive-card standard
 
-/// Class that adds a separator to the element
+/// Applies Adaptive Cards spacing and optional separator above child content in custom elements.
 class SeparatorElement extends StatelessWidget {
   /// Applies Adaptive Card `spacing` and optional `separator` above [child].
   const SeparatorElement({
@@ -69,9 +69,7 @@ class SeparatorElement extends StatelessWidget {
   }
 }
 
-/// Implements selectAction for any element
-/// Not really an Adaptive card element so we generate one-off keys for it
-/// Used in Image, Container, Column, columnSet, adaptiveCard, etc.
+/// Wraps any element subtree to honor JSON `selectAction` taps in custom renderers.
 class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Wraps [child] with an [InkWell] when [adaptiveMap] defines `selectAction`.
   factory AdaptiveTappable({
@@ -102,7 +100,7 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   @override
   final Map<String, dynamic> adaptiveMap;
 
-  /// overrides the abstract id in adaptiveElementMixin
+  /// Auto-generated id for tap wrapper widgets without author `id`.
   @override
   final String id;
 
@@ -142,7 +140,7 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
   }
 }
 
-/// Used in some containers to change the style from there on down
+/// Pushes container `style` and `horizontalAlignment` inheritance to descendants via scoped resolver.
 class ChildStyler extends StatelessWidget {
   /// Pushes container style and alignment context to [child] via a scoped resolver.
   const ChildStyler({

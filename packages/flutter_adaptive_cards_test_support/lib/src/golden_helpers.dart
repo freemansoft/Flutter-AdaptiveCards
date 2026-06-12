@@ -16,7 +16,8 @@ void configureTestView({Size size = const Size(500, 700)}) {
       );
 }
 
-/// Returns the platform-specific golden file path under [goldFilesDirectory].
+/// Platform-scoped golden path under [goldFilesDirectory] (OS subdirectory) for
+/// stable cross-platform baselines.
 String getGoldenPath(
   String filename, {
   String goldFilesDirectory = 'gold_files',

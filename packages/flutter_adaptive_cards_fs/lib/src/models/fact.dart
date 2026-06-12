@@ -7,13 +7,14 @@ import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 /// * https://adaptivecards.io/explorer/Fact.html
 @immutable
 class Fact {
-  /// Creates a fact with display [title] and [value].
+  /// One FactSet row; [title] is the label column, [value] the value column.
   const Fact({
     required this.title,
     required this.value,
   });
 
-  /// Creates a Fact from JSON map
+  /// Parses a FactSet fact from card JSON; expands DATE/TIME templates in
+  /// strings.
   factory Fact.fromJson(Map<String, dynamic> json) {
     return Fact(
       title: DateTimeUtils.formatText(json['title'] as String? ?? ''),
@@ -21,13 +22,13 @@ class Fact {
     );
   }
 
-  /// The title of the fact
+  /// FactSet label column.
   final String title;
 
-  /// The value of the fact
+  /// FactSet value column (displayed and submitted text).
   final String value;
 
-  /// Converts Fact to JSON map
+  /// Serializes for `RawAdaptiveCardState.setFacts` overlays and resolved JSON.
   Map<String, dynamic> toJson() {
     return {
       'title': title,
@@ -48,7 +49,7 @@ class Fact {
   int get hashCode => Object.hash(title, value);
 }
 
-/// Parses a JSON `facts` array into [Fact] instances.
+/// Parses a card JSON `facts` array; returns empty when invalid.
 List<Fact> factsFromJsonList(Object? raw) {
   if (raw is! List) return const [];
   return raw
@@ -57,6 +58,6 @@ List<Fact> factsFromJsonList(Object? raw) {
       .toList();
 }
 
-/// Serializes [facts] for resolved element JSON merge boundaries.
+/// Serializes facts for overlay merge boundaries.
 List<Map<String, dynamic>> factsToJsonList(List<Fact> facts) =>
     facts.map((f) => f.toJson()).toList();
