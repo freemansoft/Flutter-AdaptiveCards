@@ -313,7 +313,7 @@ flowchart TB
 | ---------------- | ------------ | --------------------------------------- |
 | `isEnabled`      | `isEnabled`  | `setActionEnabled`, `setActionsEnabled` |
 
-For the full runtime-writes matrix and merge rules, see [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+For the full runtime-writes matrix and merge rules, see [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). For an **input-only** architecture diagram, see [`docs/form-inputs.md` — Input overlay architecture](../../docs/form-inputs.md#input-overlay-architecture).
 
 ### Seeding values (`initData` / `initInput`)
 

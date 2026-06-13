@@ -1,10 +1,11 @@
 # Documentation Index
 
-This directory contains design documents, implementation guides, and architectural documentation for the Flutter Adaptive Cards library.
+This directory contains design documents, implementation guides, and architectural documentation for the Flutter Adaptive Cards **library packages**. See **[documentation-scope.md](./documentation-scope.md)** for what `docs/` covers vs sample apps (**widgetbook**, **adaptive_explorer**).
 
 ## Quick Links
 
-- **Hand Crafted Specs and Docs**: [docs](/docs)
+- **Documentation scope** (packages vs widgetbook samples): [documentation-scope.md](./documentation-scope.md)
+- **Widgetbook overlay demos** (sample program): [widgetbook-overlay-demos.md](./widgetbook-overlay-demos.md)
 - **Cursor and Antigravity created plans** copied from ~/.cursor/plans : [plans](/docs/plans/)
 - **Superpowers created specs** [specs](/docs/superpowers/specs/)
 - **AI / LLM agents**: [AI-Agent-Support.md](/docs/AI-Agent-Support.md)
@@ -35,6 +36,12 @@ End-to-end plan for `refresh`, hub **`Icon`**, chart chrome/colors/**`Chart.Gaug
 ---
 
 ## AI & Agent Configuration
+
+### [documentation-scope.md](./documentation-scope.md)
+
+**Status**: ✅ Current | **Category**: Reference
+
+Defines what `docs/` describes (published packages under `packages/`) vs sample apps (`widgetbook`, `adaptive_explorer`). Rules for tagging **Example (widgetbook sample)** in canonical docs and **`widgetbook` in filenames** for widgetbook-only guides.
 
 ### [AI-Agent-Support.md](./AI-Agent-Support.md)
 
@@ -96,7 +103,7 @@ Widget key generation pattern using `generateWidgetKey()` for all AdaptiveElemen
 
 **Status**: ✅ Current | **Category**: Implementation Guide
 
-Guide for Flutter Form-based input implementation. Documents runtime **baseline + overlay** value flow, key naming conventions:
+Guide for Flutter Form-based input implementation. Documents runtime **baseline + overlay** value flow ([input overlay architecture diagram](./form-inputs.md#input-overlay-architecture)), key naming conventions:
 
 - Card widget: `{id}_adaptive`
 - Input field: `{id}`

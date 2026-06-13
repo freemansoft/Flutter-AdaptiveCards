@@ -16,8 +16,8 @@ flowchart TB
   end
 
   subgraph apps["Repo sample apps not published"]
-    wb["widgetbook\ncard component gallery"]
-    explorer["adaptive_explorer\ntemplate + card editor"]
+    wb["widgetbook\nsample: card gallery"]
+    explorer["adaptive_explorer\nsample: template editor"]
   end
 
   charts -->|"pub depends on"| core
@@ -38,7 +38,7 @@ flowchart TB
 | **widgetbook** | yes | yes | — | — |
 | **adaptive_explorer** | yes | — | yes | — |
 
-`widgetbook` registers chart elements via `CardChartsRegistry.additionalChartElements` on `CardTypeRegistry` (see `generic_page.dart`, `chart_knobs_page.dart`, and related use cases). It does not pull in templating or the backend host package. `flutter_adaptive_cards_host_fs` is for production host apps; no in-repo sample app depends on it yet.
+`widgetbook` is a **sample demonstration app** (not published). It registers chart elements via `CardChartsRegistry.additionalChartElements` on `CardTypeRegistry` (see `generic_page.dart`, `chart_knobs_page.dart`, and related use cases). It does not pull in templating or the backend host package. Example-only guides: [`widgetbook-overlay-demos.md`](widgetbook-overlay-demos.md). `flutter_adaptive_cards_host_fs` is for production host apps; no in-repo sample app depends on it yet.
 
 ## Core library component model
 
@@ -130,7 +130,7 @@ See [`reactive-riverpod.md`](reactive-riverpod.md) for the scope map, provider a
 
 ### Document overlays (elements and actions)
 
-Runtime changes (input values, visibility, TextBlock text, validation, ChoiceSet choices, action enabled state) do not mutate the host JSON. The document notifier keeps a deep-copied **baseline** (cached on `RawAdaptiveCardState` so host rebuilds do not reset overlays) plus sparse **overlays** (`overlaysById`, `actionOverlaysById`); widgets read merged maps via `resolvedElementProvider(id)` and `resolvedActionProvider(id)`. Submit and reset use the notifier (`collectInputValues`, `resetAllInputs`). Details: [How overlays change values](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). Test inventory: [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage).
+Runtime changes (input values, visibility, TextBlock text, validation, ChoiceSet choices, action enabled state) do not mutate the host JSON. The document notifier keeps a deep-copied **baseline** (cached on `RawAdaptiveCardState` so host rebuilds do not reset overlays) plus sparse **overlays** (`overlaysById`, `actionOverlaysById`); widgets read merged maps via `resolvedElementProvider(id)` and `resolvedActionProvider(id)`. Submit and reset use the notifier (`collectInputValues`, `resetAllInputs`). Details: [How overlays change values](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). Input-only diagram: [form-inputs.md — Input overlay architecture](form-inputs.md#input-overlay-architecture). Test inventory: [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage).
 
 ### Where state actually lives
 
@@ -192,11 +192,14 @@ Canonical diagrams live in **current** docs (`Architecture-Overview.md`, `reacti
 | Parallel widget tree + Riverpod `flowchart TB` | **Yes** (done) | [package README](../packages/flutter_adaptive_cards_fs/README.md#parallel-trees-widget-tree-and-riverpod-state) | Widget/id alignment detail |
 | Backend invoke pipeline `flowchart LR` | **Yes** (done) | [backend-host-integration.md](./backend-host-integration.md#architecture) | `flutter_adaptive_cards_host_fs` |
 | Dependent ChoiceSet `sequenceDiagram` | **Yes** (done) | [form-inputs.md](./form-inputs.md#dependent-choiceset-country--city) | ResetInputs + host `onChange` |
+| Input overlay architecture `flowchart TB` | **Yes** (done) | [form-inputs.md](./form-inputs.md#input-overlay-architecture) | Baseline + input overlays → resolved → edit/submit/reset |
+| Widgetbook overlay demos (sample app) | **Yes** (done) | [widgetbook-overlay-demos.md](./widgetbook-overlay-demos.md) | Example-only; filename contains `widgetbook` |
+| Documentation scope (packages vs samples) | **Yes** (done) | [documentation-scope.md](./documentation-scope.md) | Published packages vs widgetbook/adaptive_explorer |
 | Reset semantics `flowchart TB` | **Yes** (done) | [package README](../packages/flutter_adaptive_cards_fs/README.md#reset-semantics) + [reactive-riverpod.md](./reactive-riverpod.md#reset-semantics) | Factory reset paths |
 | Monorepo + core component (this doc) | **Yes** (new) | This document | Single map of packages and runtime concerns |
 | Registries vs resolver decouple `flowchart LR` | **No** | Stay in [plan](./plans/2026-06-01-decouple_registries_from_resolver_bedb3732.plan.md) | Migration “before/after”; behavior is described in tables here and in `reactive-riverpod.md` |
 | Riverpod utilization assessment | **No** | Stay in plan | Assessment artifact, not runtime docs |
-| Per-feature overlay plans (TextBlock, ChoiceSet loop, validation, dynamic properties) | **No** | Stay in plans/specs | Covered by reactive-riverpod + form-inputs prose/tables |
+| Per-feature overlay plans (TextBlock, ChoiceSet loop, validation, dynamic properties) | **No** | Stay in plans/specs | Input path: [form-inputs.md](./form-inputs.md#input-overlay-architecture); other fields in reactive-riverpod tables |
 | FactSet facts overlay `flowchart LR` | **No** | [reactive-riverpod.md](./reactive-riverpod.md) table only | Small overlay field; no separate diagram needed |
 | initData date fix `flowchart LR` | **No** | [package README](../packages/flutter_adaptive_cards_fs/README.md#seeding-values-initdata--initinput) prose | Edge-case behavior, not architecture |
 | Backend host design spec diagram | **Duplicate** | Use [backend-host-integration.md](./backend-host-integration.md) | Spec mirrors canonical guide |

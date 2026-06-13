@@ -89,11 +89,12 @@ See **`adaptive-cards-backend-host`** skill for file paths and invoke round-trip
   - **New goldens:** generate with `--update-goldens` on macOS, then **copy each new PNG from `test/gold_files/macos/` to `test/gold_files/linux/`** so CI has a baseline (see `adaptive-cards-testing` skill and `test/gold_files/README.md`).
   - **CI pixel failures:** replace `linux/` files from CI artifact zips for canonical Linux images.
 
-### `widgetbook` changes
+### `widgetbook` changes (sample app)
 
 - [ ] **Asset registration**: New folders under `widgetbook/lib/samples/` are listed in `widgetbook/pubspec.yaml` under `flutter: assets:` (required for `AdaptiveCardsCanvas.asset`).
 - [ ] **Use case / codegen**: `@widgetbook.UseCase` added or updated in `adaptive_cards_use_cases.dart`; `fvm dart run build_runner build` run when use cases change.
 - [ ] **Changelog**: `widgetbook/CHANGELOG.md` updated when the demo app changes.
+- [ ] **Docs**: Overlay knob pages → registry row in [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md); package behavior docs tag widgetbook as **Example (widgetbook sample)** per [`documentation-scope.md`](../../docs/documentation-scope.md).
 
 ---
 

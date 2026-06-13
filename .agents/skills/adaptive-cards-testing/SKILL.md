@@ -268,7 +268,7 @@ Input values, visibility, TextBlock text, validation, ChoiceSet choices, and act
 - **initData overlays**: `test/inputs/init_data_overlay_test.dart` — assert both UI and `resolvedElementProvider(id)` after `initData` or programmatic `initInput`.
 - **Submit / reset**: pump user interactions, then assert `onSubmit` mock received expected values, or tap Reset and assert UI reverts to baseline JSON values. See `test/inherited_reference_resolver_test.dart`, `test/elements/is_visible_test.dart`, `test/inputs/action_reset_inputs_test.dart`, and input tests under `test/inputs/`.
 - **Dynamic choices**: `test/inputs/choice_set_overlay_test.dart` — `loadInput`, `appendChoices`, selection clear, dedupe, `resetAllInputs` clearing choice overlays.
-- **Cascaded / dependent ChoiceSet**: `test/inputs/cascade_choice_set_test.dart`, `test/inputs/value_changed_action_reset_test.dart` — `valueChangedAction` reset + `applyUpdates` choices; Widgetbook: `widgetbook/lib/dependent_choice_set_demo_page.dart` (see [form-inputs.md](../../docs/form-inputs.md#dependent-choiceset-country--city)).
+- **Cascaded / dependent ChoiceSet**: `test/inputs/cascade_choice_set_test.dart`, `test/inputs/value_changed_action_reset_test.dart` — `valueChangedAction` reset + `applyUpdates` choices; **example (widgetbook sample):** `widgetbook/lib/dependent_choice_set_demo_page.dart` (see [form-inputs.md](../../docs/form-inputs.md#dependent-choiceset-country--city)).
 - **Data.Query / typeahead**: `test/inputs/choice_set_data_query_test.dart` — `onChange` passes `DataQuery`, `loadInput` refresh with `choices.data`, `setDataQuerySession` on resolved `choices.data`; **`associatedInputs`** merges sibling values into `DataQuery` when the action requests them. Filtered modal: `test/inputs/choice_filter_test.dart`, `test/inputs/choice_set_test.dart` — list/search **titles**, submit/`onChange` **values** ([form-inputs.md § Filtered ChoiceSet](../../docs/form-inputs.md#filtered-choiceset-style-style-filtered)).
 - **Input validation overlays**: `test/inputs/input_error_overlay_test.dart` — `setInputError` / `clearInputError`, edit clears overlay, host `clearInputError`, Input.Number; notifier group in `adaptive_card_document_notifier_test.dart`.
 - **Action `isEnabled` overlays**: `test/actions/action_enabled_overlay_test.dart` — sample `test/samples/v1.5/action_is_enabled.json`, Submit baseline + `setActionEnabled`; `test/actions/show_card_enabled_overlay_test.dart` — ShowCard expand button; notifier `setActionsEnabled` in `adaptive_card_document_notifier_test.dart`.
@@ -290,9 +290,9 @@ expect(container.read(resolvedElementProvider('myText'))?['value'], 'seeded');
 
 Baseline + overlay model: [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
-### Widgetbook sample JSON (optional)
+### Widgetbook sample JSON (optional — not package tests)
 
-When adding an interactive or catalog demo under `widgetbook/lib/samples/`:
+When adding an interactive demo under **`widgetbook/`** (sample program, not published package):
 
 1. Register **new asset directories** in `widgetbook/pubspec.yaml` (`flutter: assets:`) — each folder path must be listed explicitly.
 2. Add the use case in `widgetbook/lib/adaptive_cards_use_cases.dart` (or a dedicated `*_page.dart` when host callbacks are required).

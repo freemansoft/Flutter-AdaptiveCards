@@ -70,6 +70,8 @@ Instead, overlays isolate runtime changes while keeping baseline patches (host/t
 
 Each overlay holds optional patches for that element id:
 
+For an **input-only** architecture diagram (baseline, overlay fields, resolved view, submit, reset), see [`form-inputs.md` — Input overlay architecture](form-inputs.md#input-overlay-architecture).
+
 - `isVisible` — overrides baseline `"isVisible"`
 - `inputValue` — overrides baseline `"value"` on input elements
 - `choices` — overrides baseline `"choices"` on `Input.ChoiceSet`
@@ -287,7 +289,7 @@ The overlay **model** is well guarded; adding a new overlay field still requires
 2. **Widget** — `getTestWidgetFromMap` / `getTestWidgetFromPath`, key-first finders (`generateWidgetKey`, `generateAdaptiveWidgetKey`); see [adaptive-cards-testing skill](../.agents/skills/adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
 3. **Host API** — delegate tests on `RawAdaptiveCardState` (`setText`, `setFacts`, `setInputError`, `clearInputError`, `setActionEnabled`, …).
 
-Manual verification: Widgetbook **FactSet → Facts overlay (knob)** (`widgetbook/lib/fact_set_overlay_page.dart`).
+**Example (widgetbook sample):** manual verification — **FactSet → Facts overlay (knob)** (`widgetbook/lib/fact_set_overlay_page.dart`). Package tests: `test/containers/fact_set_overlay_test.dart`.
 
 ### Remaining gaps (optional)
 

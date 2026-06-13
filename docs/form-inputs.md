@@ -14,6 +14,76 @@ Runtime state is stored in Riverpod document **overlays** keyed by input id:
 
 `AdaptiveInputMixin` listens to `resolvedElementProvider(id)` so controllers stay in sync when overlays change. New inputs must call `setDocumentInputValue(...)` on change and handle `onDocumentValueChanged` when syncing controllers from document updates.
 
+For the full overlay model (all element types), see [`reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). The diagram below is **input-only**.
+
+## Input overlay architecture
+
+`Input.*` widgets never mutate host JSON at runtime. Each input `id` has a baseline node in `nodesById` plus an optional sparse `ElementOverlay` in `overlaysById`. The widget reads a **resolved** map from `resolvedElementProvider(id)` (baseline merged with overlay patches). User typing and host APIs write overlays through `AdaptiveCardDocumentNotifier`; Submit reads merged values via `collectInputValues()`.
+
+```mermaid
+flowchart TB
+  hostJson["Host card JSON"] --> deepCopy["Baseline deep copy nodesById unchanged"]
+
+  subgraph writes ["Overlay writes never mutate baseline"]
+    seed["initData initInput seedInputValues"]
+    edit["User edit setDocumentInputValue setInputValue"]
+    hostPatch["applyUpdates applyUpdatesFromMap"]
+    hostVal["setInputError clearInputError"]
+    hostChoices["loadInput setChoices setDataQuerySession"]
+    reset["resetInput resetAllInputs resetInputs Action.ResetInputs"]
+  end
+
+  seed --> notifier["AdaptiveCardDocumentNotifier"]
+  edit --> notifier
+  hostPatch --> notifier
+  hostVal --> notifier
+  hostChoices --> notifier
+  reset --> notifier
+
+  notifier --> elemOverlay["overlaysById ElementOverlay per Input id"]
+
+  subgraph overlayFields ["Overlay fields on Input id"]
+    direction TB
+    valField["inputValue resolves to value"]
+    choiceField["choices queryCount querySkip querySearchText"]
+    valnField["errorMessage isInvalid"]
+    metaField["isRequired label placeholder"]
+    visField["isVisible preserved on input reset"]
+  end
+
+  elemOverlay --> overlayFields
+
+  deepCopy --> resolved["resolvedElementProvider id"]
+  elemOverlay --> resolved
+
+  resolved --> inputWidget["Input widget AdaptiveInputMixin"]
+  inputWidget --> watchBuild["watchResolvedInput in build"]
+  inputWidget --> listenCtrl["ref.listen onDocumentValueChanged"]
+
+  edit --> clearVal["User edit clears validation overlays"]
+  clearVal --> notifier
+
+  resolved --> submit["collectInputValues overlay value or baseline"]
+  submit --> onSubmit["Action.Submit onSubmit invoke.data"]
+
+  reset --> strip["Factory reset strip value choices validation meta overlays"]
+  strip --> elemOverlay
+
+  hostPatch --> onChange["onChange InputChangeInvoke optional"]
+  edit --> onChange
+```
+
+| Phase | Path | Result |
+| ----- | ---- | ------ |
+| **Load** | Host JSON → baseline copy; registry builds `Input.*` widgets | Initial display from baseline `value`, `choices`, `label`, … |
+| **Seed** | `initData` / `initInput` → `seedInputValues` / `applyUpdates` | Overlay patches only (post-frame after mount) |
+| **Edit** | User input → `setDocumentInputValue` → `setInputValue` | `inputValue` overlay; validation overlays cleared |
+| **Host patch** | `applyUpdates`, `setInputError`, `loadInput`, … | Choices, validation, dynamic label/required, etc. |
+| **Submit** | `collectInputValues()` | `overlay.inputValue ?? baseline['value']` per input id |
+| **Reset** | `resetInput` / `resetAllInputs` / `Action.ResetInputs` | Value, choices, validation, `isRequired`, `label`, `placeholder` → baseline; `isVisible` and typeahead session preserved |
+
+Deeper dives: [initData vs applyUpdates](#initdata--initinput-vs-applyupdates), [Reset behavior](#reset-behavior-resetallinputs--resetinput--resetinputs), [Dependent ChoiceSet](#dependent-choiceset-country--city) (sequence diagram), [reactive-riverpod.md — Reset semantics](reactive-riverpod.md#reset-semantics).
+
 ## Host-driven validation and bulk updates
 
 After submit or server-side checks, hosts can set validation overlays without mutating card JSON:
@@ -52,7 +122,7 @@ onSubmit: (SubmitActionInvoke invoke) async {
 
 `seedInputValues` is implemented as value-only `applyUpdates` (single revision bump).
 
-See [`reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+See [`reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). For an **input-only** end-to-end diagram, see [`form-inputs.md` — Input overlay architecture](form-inputs.md#input-overlay-architecture).
 
 ## Reset behavior (`resetAllInputs` / `resetInput` / `resetInputs`)
 
@@ -79,7 +149,7 @@ Teams/Bot Framework [dependent inputs](https://learn.microsoft.com/en-us/microso
 
 `valueChangedAction` reset runs inside the library before your `onChange` handler; use `onChange` to restore dependent choices after reset.
 
-End-to-end flow (both Widgetbook demos):
+End-to-end flow (library behavior; **example** host handler in widgetbook samples):
 
 ```mermaid
 sequenceDiagram
@@ -95,7 +165,7 @@ sequenceDiagram
   Host->>City: applyUpdates choices for country
   User->>City: open picker / select city
   City->>Host: onChange(city, value, dataQuery)
-  Note over Host: Option 2 only: dataQuery.dataset == cities
+  Note over Host: Example widgetbook sample Option 2 dataQuery.dataset == cities
 ```
 
 ```dart
@@ -115,7 +185,7 @@ onChange: (InputChangeInvoke invoke) {
 },
 ```
 
-**Widgetbook demos** (both use the same handler — [`widgetbook/lib/dependent_choice_set_demo_page.dart`](../widgetbook/lib/dependent_choice_set_demo_page.dart)):
+**Example (widgetbook sample):** demos (shared handler — [`widgetbook/lib/dependent_choice_set_demo_page.dart`](../widgetbook/lib/dependent_choice_set_demo_page.dart)):
 
 | Use case                                    | Sample JSON                                                                                | What differs                                                                        |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |

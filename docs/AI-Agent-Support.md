@@ -53,11 +53,17 @@ Authored for this monorepo (Adaptive Cards spec, HostConfig theming, element reg
 | `adaptive-cards-templating`                 | `flutter_adaptive_template_fs` templating engine |
 | `adaptive-cards-backend-host`               | `flutter_adaptive_cards_host_fs` invoke bridge   |
 | `adaptive-cards-testing`                    | Library test and golden image conventions        |
+| `widgetbook-overlay-demos`                  | **Sample app:** widgetbook overlay knob demos    |
 | `code-review`                               | Pre-merge quality checklist                      |
 | `release-engineer`                          | Versioning, pub.dev, changelogs                  |
 | `release-flutter-upgrade-sdk`               | Flutter SDK upgrade procedure                    |
 
 Project-specific skills are **not** listed in `skills-lock.json`; edit them directly under `.agents/skills/`.
+
+### Documentation scope
+
+- **`docs/`** documents the four published packages under `packages/`. See [`documentation-scope.md`](documentation-scope.md).
+- **`widgetbook/`** is a sample demonstration app — tag references in canonical docs as **Example (widgetbook sample)**; widgetbook-only guides must include **`widgetbook` in the filename** (e.g. [`widgetbook-overlay-demos.md`](widgetbook-overlay-demos.md)).
 
 ---
 

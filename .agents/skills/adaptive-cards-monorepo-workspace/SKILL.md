@@ -175,10 +175,11 @@ flutter_adaptive_cards_host_fs ──► flutter_adaptive_cards_fs, http
 - Uses `file_watcher_service.dart` to watch the JSON file on disk and live-reload
   the preview pane automatically.
 
-### `widgetbook` — Component Demo App
+### `widgetbook` — Sample demonstration app
 
-- **Not published**
-- Uses [widgetbook.io](https://widgetbook.io) to catalog all card element types.
+- **Not published** — **example / sample program** only; not described as package architecture in `docs/` (see [`documentation-scope.md`](../../docs/documentation-scope.md)).
+- Uses [widgetbook.io](https://widgetbook.io) to catalog card element types and host-callback demos.
+- Overlay knob demos: [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md).
 - Use cases defined in `lib/adaptive_cards_use_cases.dart`.
 - Sample JSON lives under `lib/samples/`; **`AdaptiveCardsCanvas.asset`** loads paths from the Flutter asset bundle.
 - **New sample directories:** add a line under `flutter: assets:` in `widgetbook/pubspec.yaml` for every **new** folder under `lib/samples/` (for example `lib/samples/v1.4/`). Without this registration, asset loads fail at runtime even when the JSON file exists on disk.
