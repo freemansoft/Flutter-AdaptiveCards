@@ -13,7 +13,10 @@ The project's AI instructions are organized into two layers to keep context effi
 1. **Root `AGENTS.md`**: Always-on project guardrails (FVM, monorepo hygiene, analysis).
 2. **`.agents/skills/`**: Modular, task-specific playbooks (spec compliance, UI best practices, code review).
 
-## Interaction Guidelines
+## Documentation scope
+
+- **`docs/`** describes the four published packages under `packages/` (`flutter_adaptive_cards_fs`, `flutter_adaptive_charts_fs`, `flutter_adaptive_template_fs`, `flutter_adaptive_cards_host_fs`). See [`docs/documentation-scope.md`](docs/documentation-scope.md).
+- **`widgetbook/`** is a **sample / demonstration** app — not package architecture. Tag widgetbook references in canonical docs as **Example (widgetbook sample)**; widgetbook-only guides use **`widgetbook` in the filename** (e.g. [`docs/widgetbook-overlay-demos.md`](docs/widgetbook-overlay-demos.md)).
 
 - **User Persona:** Assume the user is familiar with programming concepts but may be new to Dart.
 - **Explanations:** Provide explanations for Dart-specific features like null safety, futures, and streams.

@@ -1,13 +1,14 @@
 ---
 name: widgetbook-overlay-demos
 description: >
-  Patterns, registry, and review checklist for Widgetbook host-overlay demo pages
-  (widgetbook/lib/*_overlay_page.dart). Use when adding, reviewing, or documenting
-  knob-driven setText/setFacts/clearFacts demos, or comparing overlay page lifecycle
-  strategies (per-build queue vs change-only sync).
+  Example/sample program only: patterns and registry for widgetbook host-overlay demo
+  pages (widgetbook/lib/*_overlay_page.dart). Use when adding or reviewing widgetbook
+  knob demos — not for package overlay architecture (see reactive-riverpod, form-inputs).
 ---
 
-# Widgetbook overlay demo pages
+# Widgetbook overlay demo pages (sample program)
+
+> **`widgetbook/`** is a demonstration app. Library overlay contracts live in [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md) and package tests. See [`docs/documentation-scope.md`](../../docs/documentation-scope.md).
 
 Canonical reference: [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md)
 

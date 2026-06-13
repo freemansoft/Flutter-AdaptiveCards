@@ -94,7 +94,7 @@ AdaptiveCardsCanvas.map(
 1. **Depend on core, not the other way around** — `flutter_adaptive_cards_fs` must not depend on extension packages.
 2. **Export a registry map** — e.g. `CardChartsRegistry.additionalChartElements`, not silent auto-registration inside core.
 3. **Document opt-in** — README and [Implementation-Status.md](./Implementation-Status.md) must state that the feature is optional and list the extra `pubspec` dependency.
-4. **Widgetbook / explorer** — demo apps may depend on all packages; production hosts choose subsets. [widgetbook](../widgetbook/) merges chart registries for chart samples; [adaptive_explorer](../adaptive_explorer/README.md) does **not** render `Chart.*` types unless the host wires `CardChartsRegistry.additionalChartElements`.
+4. **Widgetbook / explorer** — **sample apps** may depend on all packages; production hosts choose subsets. [widgetbook](../widgetbook/) (demonstration gallery) merges chart registries for chart samples; [adaptive_explorer](../adaptive_explorer/README.md) does **not** render `Chart.*` types unless the host wires `CardChartsRegistry.additionalChartElements`. See [`documentation-scope.md`](documentation-scope.md).
 5. **Split again only when necessary** — if a future extension needs a fundamentally different dependency tree than its siblings, consider a separate package rather than bloating an existing optional package. **`Chart.Gauge` stays in `flutter_adaptive_charts_fs`** (CustomPainter alongside fl_chart charts).
 
 ### Built-in vs optional elements

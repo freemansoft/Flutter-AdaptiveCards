@@ -1,4 +1,6 @@
-# Widgetbook host-overlay demo pages
+# Widgetbook host-overlay demo pages (sample program)
+
+> **Example (widgetbook sample):** [`widgetbook/`](../widgetbook/) is a demonstration app, not a published package. This doc covers demo plumbing only. Library overlay APIs are in [`reactive-riverpod.md`](reactive-riverpod.md) and package tests. See [`documentation-scope.md`](documentation-scope.md).
 
 Interactive Widgetbook use cases that call **`RawAdaptiveCardState`** document overlay APIs (`setText`, `setFacts`, `clearFacts`, …) from knob-driven demo pages. Static JSON-only use cases do not need this pattern.
 
@@ -51,7 +53,7 @@ Add a row when introducing a new `*_overlay_page.dart`. Page-specific spec/plan 
 | Page | GlobalKey | Host API | Target id | Apply lifecycle | Knob(s) | Asset | Widgetbook use case | Spec / plan |
 | ---- | --------- | -------- | --------- | --------------- | ------- | ----- | ------------------- | ----------- |
 | [`text_block_overlay_page.dart`](../widgetbook/lib/text_block_overlay_page.dart) | `textBlockOverlayPageKey` | `setText` | `bodyText` | per-build | `knobs.string` — `'Body TextBlock text'` | `lib/samples/text_block/text_overlay_demo.json` | **TextBlock** → Text overlay (knob) | — |
-| [`fact_set_overlay_page.dart`](../widgetbook/lib/fact_set_overlay_page.dart) | `factSetOverlayPageKey` | `setFacts` / `clearFacts` | `demoFactSet` | change-only (`_syncPresetKnob`) | `knobs.object.dropdown<FactSetOverlayPreset>` — `'Baseline restores to preset'`; presets: Baseline → `clearFacts`, Colors/Cities/Foods → `setFacts` | `lib/samples/fact_set/facts_overlay_demo.json` | **FactSet** → Facts overlay (knob) | [spec](superpowers/specs/2026-06-06-factset-facts-overlay-design.md#widgetbook-demo-factset-overlay-knob), [plan Task 8](superpowers/plans/2026-06-06-factset-facts-overlay.plan.md) |
+| [`fact_set_overlay_page.dart`](../widgetbook/lib/fact_set_overlay_page.dart) | `factSetOverlayPageKey` | `setFacts` / `clearFacts` | `demoFactSet` | change-only (`_syncPresetKnob`) | `knobs.object.dropdown<FactSetOverlayPreset>` — `'Baseline restores to preset'`; presets: Baseline → `clearFacts`, Colors/Cities/Foods → `setFacts` | `lib/samples/fact_set/facts_overlay_demo.json` | **FactSet** → Facts overlay (knob) | [spec](superpowers/specs/2026-06-06-factset-facts-overlay-design.md#example-widgetbook-sample-factset-overlay-knob), [plan Task 8](superpowers/plans/2026-06-06-factset-facts-overlay.plan.md) |
 
 ### FactSet preset reference
 
@@ -69,7 +71,7 @@ Add a row when introducing a new `*_overlay_page.dart`. Page-specific spec/plan 
 3. Register asset path in `widgetbook/pubspec.yaml` if under a new folder.
 4. Add `@widgetbook.UseCase` in `adaptive_cards_use_cases.dart` with the page `GlobalKey`.
 5. **Add a registry row** to this document.
-6. If the feature has a design spec, add a **Widgetbook demo** section there and link from the registry.
+6. If the feature has a design spec, add an **Example (widgetbook sample)** section there and link from the registry.
 7. Run `cd widgetbook && fvm dart run build_runner build --delete-conflicting-outputs`.
 8. Add package/widget tests for the host API in `flutter_adaptive_cards_fs` (see `adaptive-cards-testing` skill)—the Widgetbook page is manual verification only.
 

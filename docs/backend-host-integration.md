@@ -194,7 +194,7 @@ Always provide **`onError`** in production hosts (SnackBar, retry UI, logging).
 
 **`AdaptiveCardBackendHandlers`** wires **`onRefresh`** the same as Execute: builds **`AdaptiveCardInvokeRequest`** from **`RefreshActionInvoke`**, POSTs, applies effects. Host replaces card JSON when the response includes **`replaceCard`** or patches fields in place.
 
-Widgetbook demo: **AdaptiveCard → Refresh** (`widgetbook/lib/refresh_demo_page.dart`).
+**Example (widgetbook sample):** **AdaptiveCard → Refresh** (`widgetbook/lib/refresh_demo_page.dart`).
 
 ---
 

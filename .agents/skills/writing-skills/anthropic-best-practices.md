@@ -1133,6 +1133,35 @@ Before sharing a Skill, verify:
 * [ ] Tested with real usage scenarios
 * [ ] Team feedback incorporated (if applicable)
 
+## Flutter-AdaptiveCards project conventions (this monorepo)
+
+When authoring or updating **skills** or **`docs/`** for this repository, follow these rules in addition to the generic guidance above.
+
+### What `docs/` describes
+
+Canonical documentation describes the **published library packages** only:
+
+- `packages/flutter_adaptive_cards_fs`
+- `packages/flutter_adaptive_charts_fs`
+- `packages/flutter_adaptive_template_fs`
+- `packages/flutter_adaptive_cards_host_fs`
+
+Full rules: [`docs/documentation-scope.md`](../../../docs/documentation-scope.md).
+
+### Widgetbook is a sample program
+
+- **`widgetbook/`** is a **demonstration / sample app** — it illustrates usage; it does not define package contracts.
+- In package-focused docs, label widgetbook material **Example (widgetbook sample):** (sections, diagrams, manual verification).
+- **Widgetbook-only guides** must include **`widgetbook` in the filename** (e.g. `docs/widgetbook-overlay-demos.md`).
+- Do not merge widgetbook knob lifecycle into package overlay architecture diagrams — link to a `*widgetbook*` doc instead.
+
+### Skill and doc authoring checklist (this repo)
+
+* [ ] Package behavior sourced from `packages/*/lib` and tests, not from widgetbook pages alone
+* [ ] Widgetbook references tagged as examples in canonical docs
+* [ ] New widgetbook-specific guide uses `widgetbook` in the path or filename
+* [ ] Cross-links to [`documentation-scope.md`](../../../docs/documentation-scope.md) when scope is ambiguous
+
 ## Next steps
 
 <CardGroup cols={2}>

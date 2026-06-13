@@ -11,7 +11,7 @@ Hosts can replace a `FactSet`'s effective `facts` array at runtime via sparse **
 
 Individual `Fact` objects have no Adaptive Cards id; only the parent `FactSet` is addressable. Store **`List<Fact>?`** on `ElementOverlay` — not a separate per-fact overlay map or `FactOverlay` storage type.
 
-**Implementation:** Shipped in `flutter_adaptive_cards_fs` (notifier, `AdaptiveFactSet` listener, `RawAdaptiveCardState.setFacts` / `clearFacts`, tests, docs). Widgetbook demo at **FactSet → Facts overlay (knob)**; knob uses a `baseline` enum preset and `_syncPresetKnob` (see [Widgetbook demo](#widgetbook-demo-factset-overlay-knob)).
+**Implementation:** Shipped in `flutter_adaptive_cards_fs` (notifier, `AdaptiveFactSet` listener, `RawAdaptiveCardState.setFacts` / `clearFacts`, tests, docs). **Example (widgetbook sample):** **FactSet → Facts overlay (knob)**; knob uses a `baseline` enum preset and `_syncPresetKnob` (see [Example section](#example-widgetbook-sample-factset-overlay-knob)).
 
 ## Problem (pre-implementation)
 
@@ -166,9 +166,9 @@ Implemented — mirrors `setText` / `setChoices` delegation to the document noti
 | `docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md` | Done — `facts` added to dynamic property updates                       |
 | `packages/flutter_adaptive_cards_fs/README.md`                         | Done — host API table includes `setFacts` / `clearFacts`               |
 | `docs/Implementation-Status.md`                                        | Done — FactSet runtime `facts` overlay noted                           |
-| `widgetbook/lib/fact_set_overlay_page.dart`                            | Done — knob-driven `setFacts` / `clearFacts` demo (see Widgetbook)     |
-| `widgetbook/lib/adaptive_cards_use_cases.dart`                         | Done — **Facts overlay (knob)** use case registered                    |
-| `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`              | Done — baseline card with `id: demoFactSet` and four generic facts     |
+| `widgetbook/lib/fact_set_overlay_page.dart`                            | Done — **example** knob-driven `setFacts` / `clearFacts` demo (see [Example](#example-widgetbook-sample-factset-overlay-knob)) |
+| `widgetbook/lib/adaptive_cards_use_cases.dart`                         | Done — **example** **Facts overlay (knob)** use case registered                    |
+| `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`              | Done — **example** baseline card with `id: demoFactSet` and four generic facts     |
 
 ## Testing
 
@@ -188,9 +188,11 @@ Implemented in:
 | Widget     | Baseline facts shown when no overlay                              |
 | Regression | Visibility overlay on same FactSet still works                    |
 
-## Widgetbook demo (FactSet overlay knob)
+## Example (widgetbook sample): FactSet overlay knob
 
-Interactive proof that runtime `facts` overlays work, mirroring the existing **TextBlock → Text overlay (knob)** use case (`text_block_overlay_page.dart`).
+> **Not package architecture** — documents the [`widgetbook/`](../../../widgetbook/) demonstration use case. Library contract is `setFacts` / `clearFacts` above. Demo patterns: [`docs/widgetbook-overlay-demos.md`](../../widgetbook-overlay-demos.md).
+
+Interactive proof that runtime `facts` overlays work, mirroring the existing **TextBlock → Text overlay (knob)** sample (`text_block_overlay_page.dart`).
 
 ### Use case
 
@@ -297,7 +299,9 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
 Uses the public package export (no `implementation_imports` or `src/` imports). `RawAdaptiveCardState.setFacts` / `clearFacts` are available through `flutter_adaptive_cards_fs.dart`.
 
-### Manual verification (Widgetbook)
+### Manual verification (widgetbook sample)
+
+**Example (widgetbook sample):** interactive checks only — package tests remain authoritative.
 
 1. Open **FactSet → Facts overlay (knob)**.
 2. Confirm baseline shows 4 generic facts from JSON.
