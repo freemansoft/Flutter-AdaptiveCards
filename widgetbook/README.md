@@ -21,14 +21,17 @@ Existing sample roots already listed in `pubspec.yaml` include `lib/samples/char
 
 ## Interactive host demos (not JSON-only)
 
-Some use cases wire host callbacks so behavior is visible beyond static card JSON:
+Some use cases wire host callbacks so behavior is visible beyond static card JSON.
 
-| Widgetbook path | Page | Behavior |
-| --- | --- | --- |
-| **TextBlock** → Text overlay (knob) | `lib/text_block_overlay_page.dart` | Knob drives `setText` on a `TextBlock` |
-| **Input.ChoiceSet** → Value changed action (host cascade) | `lib/dependent_choice_set_demo_page.dart` | Country `valueChangedAction` resets city; shared `onChange` repopulates city choices (`value_changed_action_filtered.json`). Filtered country picker searches/displays **titles**; submit uses **values**. |
-| **Input.ChoiceSet** → Value changed action (Teams Data.Query) | same page, different JSON | Same handler; city uses `choices.data` / filtered style (`value_changed_action_dependent_query.json`). Filtered city list/search uses **titles**; values submitted on pick. |
-| **AdaptiveCard** → Refresh | `lib/refresh_demo_page.dart` | Manual refresh affordance; **`onRefresh`** SnackBar (`lib/samples/v1.4/refresh_demo.json`) |
+**Host-overlay knob demos** (`setText`, `setFacts`, `clearFacts`, …) follow a shared pattern (page `GlobalKey`, post-frame apply queue, registry). See [`docs/widgetbook-overlay-demos.md`](../docs/widgetbook-overlay-demos.md).
+
+| Widgetbook path                                               | Page                                      | Behavior                                                                                                                                                                                                   |
+| ------------------------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **TextBlock** → Text overlay (knob)                           | `lib/text_block_overlay_page.dart`        | Knob drives `setText` on a `TextBlock`                                                                                                                                                                     |
+| **FactSet** → Facts overlay (knob)                            | `lib/fact_set_overlay_page.dart`          | Dropdown presets drive `setFacts` / `clearFacts` on `demoFactSet`                                                                                                                                          |
+| **Input.ChoiceSet** → Value changed action (host cascade)     | `lib/dependent_choice_set_demo_page.dart` | Country `valueChangedAction` resets city; shared `onChange` repopulates city choices (`value_changed_action_filtered.json`). Filtered country picker searches/displays **titles**; submit uses **values**. |
+| **Input.ChoiceSet** → Value changed action (Teams Data.Query) | same page, different JSON                 | Same handler; city uses `choices.data` / filtered style (`value_changed_action_dependent_query.json`). Filtered city list/search uses **titles**; values submitted on pick.                                |
+| **AdaptiveCard** → Refresh                                    | `lib/refresh_demo_page.dart`              | Manual refresh affordance; **`onRefresh`** SnackBar (`lib/samples/v1.4/refresh_demo.json`)                                                                                                                 |
 
 Both dependent ChoiceSet use cases share **`handleDependentChoiceSetChange`**: the country branch runs for both; the city / `Data.Query` branch runs only when the card defines `choices.data`. See [Dependent ChoiceSet (country → city)](../docs/form-inputs.md#dependent-choiceset-country--city).
 
