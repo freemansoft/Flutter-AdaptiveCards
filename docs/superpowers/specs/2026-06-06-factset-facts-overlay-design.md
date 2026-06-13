@@ -290,10 +290,12 @@ Follows `TextBlockOverlayPage` patterns with knob-specific lifecycle guards:
 8. `showDebugJson: true` (matches text overlay demo).
 
 ```dart
-// Host-only demo: calls package-internal RawAdaptiveCardState.setFacts.
-// ignore_for_file: implementation_imports
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+// Host-only demo: calls [RawAdaptiveCardState.setFacts] on the rendered card.
+
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 ```
+
+Uses the public package export (no `implementation_imports` or `src/` imports). `RawAdaptiveCardState.setFacts` / `clearFacts` are available through `flutter_adaptive_cards_fs.dart`.
 
 ### Manual verification (Widgetbook)
 

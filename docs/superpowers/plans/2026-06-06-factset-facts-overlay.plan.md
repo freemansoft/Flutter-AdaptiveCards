@@ -6,7 +6,7 @@
 
 **Goal:** Enable runtime replacement of a `FactSet`'s `facts` array via Riverpod document overlays (full list replacement at FactSet id), reactive `AdaptiveFactSet` rendering, host APIs, tests, docs, and a Widgetbook knob demo.
 
-**Architecture:** Store `List<Fact>?` on `ElementOverlay` (mirrors `choices`). Merge to resolved JSON in `resolvedElementProvider` via `factsToJsonList`. `AdaptiveFactSet` subscribes to `resolvedElementProvider(id)` like `AdaptiveTextBlock` does for `text`. Widgetbook demo calls `setFacts` / `clearFacts` from a nullable dropdown knob.
+**Architecture:** Store `List<Fact>?` on `ElementOverlay` (mirrors `choices`). Merge to resolved JSON in `resolvedElementProvider` via `factsToJsonList`. `AdaptiveFactSet` subscribes to `resolvedElementProvider(id)` like `AdaptiveTextBlock` does for `text`. Widgetbook demo calls `setFacts` / `clearFacts` from a non-nullable `object.dropdown` knob with a `baseline` enum preset and `_syncPresetKnob` (change-only apply lifecycle).
 
 **Tech Stack:** Dart 3.12+, Flutter (FVM), `flutter_adaptive_cards_fs`, Riverpod 3.x, `package:flutter_test`, Widgetbook 3.22+, `very_good_analysis`.
 
@@ -653,10 +653,10 @@ Create `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`:
 
 - [x] **Step 2: Create overlay page**
 
-Create `widgetbook/lib/fact_set_overlay_page.dart` following `text_block_overlay_page.dart`:
+Create `widgetbook/lib/fact_set_overlay_page.dart` following `text_block_overlay_page.dart` overlay-queue patterns, with `_syncPresetKnob` so preset overlays apply only on knob **change** (not every Widgetbook rebuild). Uses `object.dropdown` with an explicit `baseline` enum value instead of `objectOrNull`:
 
 ```dart
-// ignore_for_file: implementation_imports
+// Host-only demo: calls [RawAdaptiveCardState.setFacts] on the rendered card.
 
 import 'dart:async';
 import 'dart:convert';
@@ -664,12 +664,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
-import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 import 'package:widgetbook/widgetbook.dart';
 
-enum FactSetOverlayPreset { colors, cities, foods }
+enum FactSetOverlayPreset { baseline, colors, cities, foods }
 
 const _factSetId = 'demoFactSet';
 
@@ -694,8 +692,9 @@ const _foodsFacts = [
   Fact(title: 'Pasta', value: 'Italy'),
 ];
 
-List<Fact> factsForPreset(FactSetOverlayPreset preset) {
+List<Fact>? factsForPreset(FactSetOverlayPreset preset) {
   return switch (preset) {
+    FactSetOverlayPreset.baseline => null,
     FactSetOverlayPreset.colors => _colorsFacts,
     FactSetOverlayPreset.cities => _citiesFacts,
     FactSetOverlayPreset.foods => _foodsFacts,
@@ -723,6 +722,8 @@ class _FactSetOverlayPageState extends State<FactSetOverlayPage> {
   Map<String, dynamic>? _cardMap;
   FactSetOverlayPreset? _lastAppliedPreset;
   FactSetOverlayPreset? _pendingPreset;
+  FactSetOverlayPreset? _lastSeenPresetKnob;
+  bool _knobsInitialized = false;
   int _applyAttempts = 0;
   bool _applyScheduled = false;
 
@@ -739,7 +740,7 @@ class _FactSetOverlayPageState extends State<FactSetOverlayPage> {
     setState(() => _cardMap = map);
   }
 
-  void _queueFactsOverlay(FactSetOverlayPreset? preset) {
+  void _queueFactsOverlay(FactSetOverlayPreset preset) {
     _pendingPreset = preset;
     if (_lastAppliedPreset == preset) return;
     _scheduleApplyOverlay();
@@ -756,7 +757,7 @@ class _FactSetOverlayPageState extends State<FactSetOverlayPage> {
 
   void _flushPendingOverlay() {
     final preset = _pendingPreset;
-    if (!mounted || _cardMap == null) return;
+    if (!mounted || _cardMap == null || preset == null) return;
 
     final cardState = _cardKey.currentState;
     if (cardState == null || cardState.documentContainer == null) {
@@ -770,28 +771,40 @@ class _FactSetOverlayPageState extends State<FactSetOverlayPage> {
     _applyAttempts = 0;
     if (_lastAppliedPreset == preset) return;
 
-    if (preset == null) {
+    if (preset == FactSetOverlayPreset.baseline) {
       cardState.clearFacts(_factSetId);
     } else {
-      cardState.setFacts(_factSetId, factsForPreset(preset));
+      cardState.setFacts(_factSetId, factsForPreset(preset)!);
     }
     _lastAppliedPreset = preset;
   }
 
+  void _syncPresetKnob(FactSetOverlayPreset preset) {
+    if (!_knobsInitialized) {
+      _knobsInitialized = true;
+      _lastSeenPresetKnob = preset;
+      return;
+    }
+
+    if (preset == _lastSeenPresetKnob) return;
+    _lastSeenPresetKnob = preset;
+    _queueFactsOverlay(preset);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final preset = context.knobs.objectOrNull.dropdown<FactSetOverlayPreset>(
-      label: 'Facts overlay preset',
+    final preset = context.knobs.object.dropdown<FactSetOverlayPreset>(
+      label: 'Baseline restores to preset',
       options: FactSetOverlayPreset.values,
-      initialOption: null,
+      initialOption: FactSetOverlayPreset.baseline,
       labelBuilder: (value) => switch (value) {
+        FactSetOverlayPreset.baseline => 'Baseline',
         FactSetOverlayPreset.colors => 'Colors',
         FactSetOverlayPreset.cities => 'Cities',
         FactSetOverlayPreset.foods => 'Foods',
-        null => 'No overlay (baseline)',
       },
     );
-    _queueFactsOverlay(preset);
+    _syncPresetKnob(preset);
 
     final cardMap = _cardMap;
     if (cardMap == null) {
@@ -813,6 +826,15 @@ class _FactSetOverlayPageState extends State<FactSetOverlayPage> {
   }
 }
 ```
+
+**Knob behavior:**
+
+| Knob value | Host action | Effective facts |
+| ---------- | ----------- | --------------- |
+| `baseline` | `clearFacts('demoFactSet')` | Baseline JSON (4 generic facts) |
+| `colors` | `setFacts('demoFactSet', _colorsFacts)` | 4 color facts |
+| `cities` | `setFacts('demoFactSet', _citiesFacts)` | 4 city facts |
+| `foods` | `setFacts('demoFactSet', _foodsFacts)` | 4 food facts |
 
 - [x] **Step 3: Register use case**
 
@@ -933,7 +955,7 @@ Verify:
 
 1. **FactSet → Facts overlay (knob)** shows 4 baseline facts
 2. **Colors** / **Cities** / **Foods** each show 4 replacement facts
-3. **No overlay (baseline)** restores JSON facts
+3. **Baseline** restores JSON facts (clears overlay)
 
 ---
 

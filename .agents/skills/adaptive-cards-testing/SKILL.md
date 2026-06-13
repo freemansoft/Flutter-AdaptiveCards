@@ -298,6 +298,8 @@ When adding an interactive or catalog demo under `widgetbook/lib/samples/`:
 2. Add the use case in `widgetbook/lib/adaptive_cards_use_cases.dart` (or a dedicated `*_page.dart` when host callbacks are required).
 3. Run `cd widgetbook && fvm dart run build_runner build` after use-case changes.
 
+For **host-overlay knob demos** (`*_overlay_page.dart`, `setText` / `setFacts`, page `GlobalKey` pattern), follow **`widgetbook-overlay-demos`** and [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md).
+
 See [`widgetbook/README.md`](../../../widgetbook/README.md).
 
 ### Coverage gaps
