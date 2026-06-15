@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Overlay gaps remediation (Waves 1–3)
+
+- **`RichTextBlock`:** runtime **`inlines`** overlay; host **`setInlines`** / **`clearInlines`** on **`RawAdaptiveCardState`**; widget listener via `resolvedElementProvider`.
+- **Optional-package overlay hooks:** **`ElementOverlayExtension`**, **`CardOverlayExtensionRegistry`**, and **`CardTypeRegistry.overlayExtensions`** — generic `extensionPayloads` merge in core (chart types live in `flutter_adaptive_charts_fs`).
+- **`OverlayCapabilityRegistry`:** **`ElementOverlayField`** / **`ActionOverlayField`** enums and **`CardTypeRegistry.overlayCapabilities`** for per JSON `type` overlay discovery; debug validation in **`applyUpdates`** (assert in debug builds).
+- Public exports: **`ElementOverlayExtension`**, **`OverlayCapabilityRegistry`**, overlay field enums, and **`flutter_adaptive_cards_extend_fs.dart`** from **`flutter_adaptive_cards_fs.dart`**.
+- Docs: [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md) — host index of patch keys by element type.
 - **`Input.Rating`:** new **`AdaptiveRatingInput`** with full overlay contract (`value`, `label`, `isRequired`, validation); registry split from read-only **`Rating`** (`AdaptiveRating`); shared **`RatingStars`** widget.
 - **`Input.Toggle`:** reactive `label`, `isRequired`, and validation UI via `watchResolvedInput()`.
 - **`Badge`:** reactive `text` overlay (`setText` / `applyUpdates`) via `resolvedElementProvider`.
