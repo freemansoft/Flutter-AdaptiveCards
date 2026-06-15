@@ -6,11 +6,17 @@
 
 ## [Unreleased]
 
-- **Charts → Chart overlay (knob)** use case: **[`ChartOverlayPage`](lib/chart_overlay_page.dart)** with sample **`lib/samples/charts/chart_overlay_demo.json`** — `setChartData` / `patchChartProperties` via **`RawAdaptiveCardState`** (requires **`CardChartsRegistry.overlayExtensions`**).
-- **TextBlock → RichTextBlock demo** use case with sample **`lib/samples/v1.2/rich_text_block_demo.json`**.
-- **`pubspec.yaml` assets:** registered **`lib/samples/v1.2/`**.
+### Overlay demo use cases (Waves 1–3)
+
+- **Charts → Chart overlay (knob):** **[`ChartOverlayPage`](lib/chart_overlay_page.dart)** with **`lib/samples/charts/chart_overlay_demo.json`** — `setChartData` / `patchChartProperties` via **`RawAdaptiveCardState`** (requires **`CardChartsRegistry.overlayExtensions`**).
+- **Rating → Rating input overlay (knob):** **[`RatingInputOverlayPage`](lib/rating_input_overlay_page.dart)** with **`lib/samples/inputs/rating_input_overlay_demo.json`** — `applyUpdates` / `setInputError` on **`Input.Rating`** id `demoRating`.
+- **Rating → Rating display overlay (knob):** **[`RatingOverlayPage`](lib/rating_overlay_page.dart)** with **`lib/samples/elements/rating_overlay_demo.json`** — slider drives `applyUpdates` on display **`Rating`** id `stars`.
+
+### Other use cases
+
+- **TextBlock → RichTextBlock demo** with sample **`lib/samples/v1.2/rich_text_block_demo.json`**.
 - **AdaptiveCard → Refresh** use case: **[`RefreshDemoPage`](lib/refresh_demo_page.dart)** with sample **`lib/samples/v1.4/refresh_demo.json`** — manual refresh affordance logs **`onRefresh`** to a SnackBar.
-- **`pubspec.yaml` assets:** registered **`lib/samples/v1.4/`** (required for `AdaptiveCardsCanvas.asset` to load new sample directories).
+- **`pubspec.yaml` assets:** registered **`lib/samples/v1.2/`**, **`lib/samples/v1.4/`**, **`lib/samples/elements/`**, and **`lib/samples/charts/`** (as needed per demo JSON).
 
 ## [0.10.0]
 
