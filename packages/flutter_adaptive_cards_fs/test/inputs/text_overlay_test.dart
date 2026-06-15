@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
@@ -8,11 +9,235 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../utils/test_utils.dart';
 
+RawAdaptiveCardState _cardState(WidgetTester tester) {
+  return tester.state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard));
+}
+
 ProviderContainer _documentContainer(WidgetTester tester, Finder inputFinder) {
   return ProviderScope.containerOf(tester.element(inputFinder));
 }
 
 void main() {
+  testWidgets('initData seeds text overlay visible in resolvedElementProvider', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.Text',
+          'id': 'initText',
+          'label': 'Init',
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(
+        map: map,
+        title: 'initData text overlay',
+        initData: const {'initText': 'initial value'},
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final textMap = map['body'][0] as Map<String, dynamic>;
+    final inputFinder = find.byKey(generateWidgetKey(textMap));
+    final container = _documentContainer(tester, inputFinder);
+
+    expect(
+      container.read(resolvedElementProvider('initText'))?['value'],
+      'initial value',
+    );
+
+    final field = tester.widget<TextFormField>(inputFinder);
+    expect(field.controller!.text, 'initial value');
+  });
+
+  testWidgets('programmatic initInput updates resolved overlay after mount', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.Text',
+          'id': 'lateText',
+          'label': 'Late',
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(map: map, title: 'programmatic initInput'),
+    );
+    await tester.pumpAndSettle();
+
+    _cardState(tester).initInput({'lateText': 'late bound'});
+    await tester.pumpAndSettle();
+
+    final textMap = map['body'][0] as Map<String, dynamic>;
+    final inputFinder = find.byKey(generateWidgetKey(textMap));
+    final container = _documentContainer(tester, inputFinder);
+
+    expect(
+      container.read(resolvedElementProvider('lateText'))?['value'],
+      'late bound',
+    );
+
+    final field = tester.widget<TextFormField>(inputFinder);
+    expect(field.controller!.text, 'late bound');
+  });
+
+  testWidgets('applyUpdates updates input label and placeholder in UI', (
+    WidgetTester tester,
+  ) async {
+    final map = <String, dynamic>{
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.Text',
+          'id': 'name',
+          'label': 'Name',
+          'placeholder': 'Enter name',
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(map: map, title: 'label placeholder overlay'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Name'), findsOneWidget);
+
+    _cardState(tester).applyUpdates(
+      elements: const [
+        AdaptiveElementUpdate(
+          id: 'name',
+          label: 'Full name',
+          placeholder: 'Type here',
+        ),
+      ],
+    );
+    await tester.pump();
+
+    expect(find.text('Full name'), findsOneWidget);
+
+    final textMap = map['body'][0] as Map<String, dynamic>;
+    final container = ProviderScope.containerOf(
+      tester.element(find.byKey(generateWidgetKey(textMap))),
+    );
+    expect(
+      container.read(resolvedElementProvider('name'))?['label'],
+      'Full name',
+    );
+    expect(
+      container.read(resolvedElementProvider('name'))?['placeholder'],
+      'Type here',
+    );
+  });
+
+  testWidgets('resetAllInputs restores baseline label and placeholder', (
+    WidgetTester tester,
+  ) async {
+    final map = <String, dynamic>{
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.Text',
+          'id': 'name',
+          'label': 'Name',
+          'placeholder': 'Enter name',
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(map: map, title: 'reset label placeholder'),
+    );
+    await tester.pumpAndSettle();
+
+    _cardState(tester).applyUpdates(
+      elements: const [
+        AdaptiveElementUpdate(
+          id: 'name',
+          label: 'Full name',
+          placeholder: 'Type here',
+        ),
+      ],
+    );
+    await tester.pump();
+    expect(find.text('Full name'), findsOneWidget);
+
+    _cardState(tester).documentContainer!
+        .read(adaptiveCardDocumentProvider.notifier)
+        .resetAllInputs();
+    await tester.pump();
+
+    expect(find.text('Name'), findsOneWidget);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byKey(generateWidgetKey(map['body'][0]))),
+    );
+    expect(
+      container.read(resolvedElementProvider('name'))?['label'],
+      'Name',
+    );
+    expect(
+      container.read(resolvedElementProvider('name'))?['placeholder'],
+      'Enter name',
+    );
+  });
+
+  testWidgets('setIsRequired overlay updates resolved element and label', (
+    WidgetTester tester,
+  ) async {
+    final map = <String, dynamic>{
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.Text',
+          'id': 'optionalField',
+          'label': 'Name',
+          'isRequired': false,
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(map: map, title: 'isRequired overlay'),
+    );
+    await tester.pumpAndSettle();
+
+    final textMap = map['body'][0] as Map<String, dynamic>;
+    final inputFinder = find.byKey(generateWidgetKey(textMap));
+    final container = _documentContainer(tester, inputFinder);
+    expect(
+      container.read(resolvedElementProvider('optionalField'))?['isRequired'],
+      isFalse,
+    );
+
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setIsRequired('optionalField', required: true);
+    await tester.pump();
+
+    expect(
+      container.read(resolvedElementProvider('optionalField'))?['isRequired'],
+      isTrue,
+    );
+
+    _cardState(tester).applyUpdatesFromMap({
+      'optionalField': {'isRequired': false},
+    });
+    await tester.pump();
+
+    expect(
+      container.read(resolvedElementProvider('optionalField'))?['isRequired'],
+      isFalse,
+    );
+  });
+
   testWidgets('setInputError shows error message and validation state', (
     WidgetTester tester,
   ) async {
@@ -169,9 +394,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    tester
-        .state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
-        .setInputError('errText', message: 'From host');
+    _cardState(tester).setInputError('errText', message: 'From host');
     await tester.pump();
 
     expect(find.text('From host'), findsOneWidget);
@@ -200,55 +423,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    tester.state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
+    _cardState(tester)
       ..setInputError('errText', message: 'From host')
       ..clearInputError('errText');
     await tester.pump();
 
     expect(find.text('From host'), findsNothing);
-  });
-
-  testWidgets('setInputError shows overlay error on Input.Number', (
-    WidgetTester tester,
-  ) async {
-    final Map<String, dynamic> map = {
-      'type': 'AdaptiveCard',
-      'version': '1.5',
-      'body': [
-        {
-          'type': 'Input.Number',
-          'id': 'errNumber',
-          'label': 'Age',
-        },
-      ],
-    };
-
-    await tester.pumpWidget(
-      getTestWidgetFromMap(
-        map: map,
-        title: 'number input error overlay',
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    final numMap = map['body'][0] as Map<String, dynamic>;
-    final inputFinder = find.byKey(generateWidgetKey(numMap));
-    final container = _documentContainer(tester, inputFinder);
-
-    container
-        .read(adaptiveCardDocumentProvider.notifier)
-        .setInputError(
-          'errNumber',
-          errorMessage: 'Invalid age',
-          isInvalid: true,
-        );
-    await tester.pump();
-
-    expect(find.text('Invalid age'), findsOneWidget);
-    expect(
-      container.read(resolvedElementProvider('errNumber'))?['isInvalid'],
-      isTrue,
-    );
   });
 
   testWidgets('applyUpdates sets validation on multiple inputs', (
@@ -267,18 +447,16 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    tester
-        .state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
-        .applyUpdates(
-          elements: const [
-            AdaptiveElementUpdate(
-              id: 'email',
-              errorMessage: 'Invalid email',
-              isInvalid: true,
-            ),
-            AdaptiveElementUpdate(id: 'phone', clearError: true),
-          ],
-        );
+    _cardState(tester).applyUpdates(
+      elements: const [
+        AdaptiveElementUpdate(
+          id: 'email',
+          errorMessage: 'Invalid email',
+          isInvalid: true,
+        ),
+        AdaptiveElementUpdate(id: 'phone', clearError: true),
+      ],
+    );
     await tester.pump();
 
     expect(find.text('Invalid email'), findsOneWidget);

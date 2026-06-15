@@ -537,6 +537,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                 _widgetbook_workspace_adaptive_cards_use_cases.buildV16Rating,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Rating display overlay (knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildRatingDisplayOverlay,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Rating input overlay (knob)',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildRatingInputOverlay,

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
@@ -12,6 +13,42 @@ ProviderContainer _documentContainer(WidgetTester tester, Finder inputFinder) {
 }
 
 void main() {
+  testWidgets('initData seeds toggle overlay with bool value', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.Toggle',
+          'id': 'initToggle',
+          'title': 'Init Toggle',
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(
+        map: map,
+        title: 'initData toggle overlay',
+        initData: const {'initToggle': true},
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final toggleMap = map['body'][0] as Map<String, dynamic>;
+    final inputFinder = find.byKey(generateWidgetKey(toggleMap));
+    final container = _documentContainer(tester, inputFinder);
+
+    expect(
+      container.read(resolvedElementProvider('initToggle'))?['value'],
+      isTrue,
+    );
+
+    final sw = tester.widget<Switch>(inputFinder);
+    expect(sw.value, isTrue);
+  });
+
   testWidgets('applyUpdates patches label isRequired and errorMessage', (
     WidgetTester tester,
   ) async {

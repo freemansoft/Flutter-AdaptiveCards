@@ -151,7 +151,7 @@ class MySubmitAction implements GenericSubmitAction {
 
 Runtime enable/disable does not mutate action JSON. Hosts call `RawAdaptiveCardState.setActionEnabled` or `setActionsEnabled`; merged state is read via `resolvedActionProvider(id)`. Submit and other actions that use `IconButtonAction` + `AdaptiveActionStateMixin` react to overlay changes; `Action.ShowCard` watches the same provider for its expand button.
 
-Tests: [`test/actions/action_enabled_overlay_test.dart`](../packages/flutter_adaptive_cards_fs/test/actions/action_enabled_overlay_test.dart), [`test/actions/show_card_enabled_overlay_test.dart`](../packages/flutter_adaptive_cards_fs/test/actions/show_card_enabled_overlay_test.dart). See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage).
+Tests: [`test/actions/submit_overlay_test.dart`](../packages/flutter_adaptive_cards_fs/test/actions/submit_overlay_test.dart), [`test/actions/show_card_overlay_test.dart`](../packages/flutter_adaptive_cards_fs/test/actions/show_card_overlay_test.dart). See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage).
 
 ---
 

@@ -209,21 +209,26 @@ Overlay fields are defined in [`adaptive_card_document.dart`](../../packages/flu
 
 ### Element overlays
 
-| Field                        | Notifier tests | Widget / integration                                                                                                                                                     | Gap                                                           |
-| ---------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
-| `isVisible`                  | Yes            | [`is_visible_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart)                                                                    | —                                                             |
-| `inputValue`                 | Yes            | [`init_data_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/init_data_overlay_test.dart) (Text, Toggle, ChoiceSet)                              | Number, Date, Time, Rating — no overlay-specific widget tests |
-| `choices` / append           | Yes            | [`choice_set_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_overlay_test.dart)                                                      | —                                                             |
-| `queryCount` / `querySkip`   | Yes            | [`choice_set_data_query_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart)                                                | `querySearchText` — notifier only                             |
-| `errorMessage` / `isInvalid` | Yes            | [`input_error_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/input_error_overlay_test.dart) — Input.Text, Input.Number; host `clearInputError` | Date, Time, Rating                                            |
-| `text`                       | Yes            | [`text_block_text_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/text_block_text_overlay_test.dart) — **TextBlock only**                     | Only element type using `text` overlay                        |
+| Field                        | Notifier tests | Widget / integration |
+| ---------------------------- | -------------- | -------------------- |
+| `isVisible`                  | Yes            | [`visibility_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/visibility_overlay_test.dart) |
+| `inputValue`                 | Yes            | Per input: [`text_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/text_overlay_test.dart), [`number_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/number_overlay_test.dart), [`date_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/date_overlay_test.dart), [`time_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/time_overlay_test.dart), [`toggle_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/toggle_overlay_test.dart), [`choice_set_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_overlay_test.dart), [`rating_input_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/rating_input_overlay_test.dart) |
+| `choices` / append           | Yes            | [`choice_set_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_overlay_test.dart) |
+| `queryCount` / `querySkip`   | Yes            | [`choice_set_data_query_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart) |
+| `errorMessage` / `isInvalid` | Yes            | [`text_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/text_overlay_test.dart), [`number_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/number_overlay_test.dart), [`rating_input_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/rating_input_overlay_test.dart) |
+| `text`                       | Yes            | [`text_block_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/text_block_overlay_test.dart), [`badge_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/badge_overlay_test.dart) |
+| `url`                        | Yes            | [`image_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/image_overlay_test.dart), [`media_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/media_overlay_test.dart) |
+| `value` (display Rating)     | Yes            | [`rating_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/rating_overlay_test.dart) |
+| `facts`                      | Yes            | [`fact_set_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/containers/fact_set_overlay_test.dart) |
 
 ### Action overlays
 
-| API                        | Notifier | Widget                                                                                                                                                                                                                                                                             | Gap                                       |
-| -------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| `setActionEnabled`         | Yes      | Submit: [`action_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/action_enabled_overlay_test.dart); ShowCard: [`show_card_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/show_card_enabled_overlay_test.dart) | OpenUrl, Execute, other action types      |
-| `setActionsEnabled` (bulk) | Yes      | —                                                                                                                                                                                                                                                                                  | Widget test not required (notifier merge) |
+| API                        | Notifier | Widget |
+| -------------------------- | -------- | ------ |
+| `setActionEnabled`         | Yes      | [`submit_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/submit_overlay_test.dart), [`show_card_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/show_card_overlay_test.dart), [`popover_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/popover_overlay_test.dart), [`execute_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/execute_overlay_test.dart), [`open_url_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/open_url_overlay_test.dart) |
+| `title` / `tooltip`        | Yes      | [`submit_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/submit_overlay_test.dart), [`popover_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/popover_overlay_test.dart) |
+| `ToggleVisibility`         | Yes      | [`toggle_visibility_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/toggle_visibility_overlay_test.dart) |
+| `setActionsEnabled` (bulk) | Yes      | — (notifier merge) |
 
 Reactive wiring:
 
@@ -243,8 +248,8 @@ Reactive wiring:
 
 Optional follow-up if tightening regressions:
 
-1. Validation overlay widget tests for **Input.Date**, **Input.Time**, **Input.Rating**
-2. `setActionEnabled` on action types beyond Submit / ShowCard (OpenUrl, Execute, …)
+1. Validation overlay widget tests for **Input.Date**, **Input.Time**
+2. `Action.ResetInputs`, `Action.OpenUrlDialog`, `Action.InsertImage` overlay chrome
 3. Rebuild survival with **input value** overlay (visibility and TextBlock covered)
 
 ### How to add tests for a new overlay field

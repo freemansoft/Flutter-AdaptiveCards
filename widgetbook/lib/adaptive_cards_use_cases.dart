@@ -5,8 +5,9 @@ import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
 import 'package:widgetbook_workspace/fact_set_overlay_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
 import 'package:widgetbook_workspace/network_page.dart';
-import 'package:widgetbook_workspace/refresh_demo_page.dart';
 import 'package:widgetbook_workspace/rating_input_overlay_page.dart';
+import 'package:widgetbook_workspace/rating_overlay_page.dart';
+import 'package:widgetbook_workspace/refresh_demo_page.dart';
 import 'package:widgetbook_workspace/text_block_overlay_page.dart';
 import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
 
@@ -955,6 +956,15 @@ Widget buildV16Rating(BuildContext context) {
 )
 Widget buildRatingInputOverlay(BuildContext context) {
   return RatingInputOverlayPage(key: ratingInputOverlayPageKey);
+}
+
+@widgetbook.UseCase(
+  name: 'Rating display overlay (knob)',
+  type: widget_types.Rating,
+  path: '[Components]',
+)
+Widget buildRatingDisplayOverlay(BuildContext context) {
+  return RatingOverlayPage(key: ratingOverlayPageKey);
 }
 
 // =============================================================================

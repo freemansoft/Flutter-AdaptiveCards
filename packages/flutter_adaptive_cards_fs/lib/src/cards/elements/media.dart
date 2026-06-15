@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/media_source.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 /// Implements
@@ -35,13 +37,15 @@ class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
 class AdaptiveMediaState extends State<AdaptiveMedia>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Underlying [VideoPlayerController] for the first `sources` entry.
-  late VideoPlayerController videoPlayerController;
+  VideoPlayerController? videoPlayerController;
 
   /// Chewie UI wrapper; null until the video is initialized.
   ChewieController? controller;
 
   /// URL of the primary [MediaSource] from `sources`.
   late String sourceUrl;
+
+  ProviderSubscription<Map<String, dynamic>?>? _sourceUrlSubscription;
 
   /// Poster image URL from `poster` or HostConfig default.
   late String? postUrl;
@@ -90,16 +94,30 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
     postUrl = adaptiveMap['poster']?.toString() ?? mediaConfig?.defaultPoster;
     if (postUrl != null && postUrl!.isEmpty) postUrl = null;
+
+    _sourceUrlSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _sourceUrlSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        final sources = mediaSourcesFromJsonList(next?['sources']);
+        final nextUrl = sources.isNotEmpty ? sources[0].url : '';
+        if (nextUrl == sourceUrl) return;
+        unawaited(_reinitializePlayer(nextUrl));
+      },
+      fireImmediately: true,
+    );
   }
 
   /// Initializes [videoPlayerController] and [controller] from [sourceUrl].
   Future<void> initializePlayer() async {
-    videoPlayerController = VideoPlayerController.networkUrl(
+    final player = VideoPlayerController.networkUrl(
       Uri.parse(sourceUrl),
     );
+    videoPlayerController = player;
 
     try {
-      await videoPlayerController.initialize();
+      await player.initialize();
     } on Object catch (e) {
       assert(() {
         developer.log(
@@ -108,23 +126,49 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
         );
         return true;
       }());
+      if (videoPlayerController == player) {
+        videoPlayerController = null;
+      }
+      await player.dispose();
+      return;
+    }
 
-      rethrow;
+    if (!mounted || videoPlayerController != player) {
+      await player.dispose();
+      return;
     }
 
     controller = ChewieController(
       aspectRatio: 3 / 2,
       autoPlay: false,
       looping: true,
-      videoPlayerController: videoPlayerController,
+      videoPlayerController: player,
     );
 
     setState(() {});
   }
 
+  Future<void> _reinitializePlayer(String newUrl) async {
+    sourceUrl = newUrl;
+    controller?.dispose();
+    controller = null;
+    final previousPlayer = videoPlayerController;
+    videoPlayerController = null;
+    if (previousPlayer != null) {
+      await previousPlayer.dispose();
+    }
+    if (!mounted) return;
+    await initializePlayer();
+  }
+
   @override
   void dispose() {
-    unawaited(videoPlayerController.dispose());
+    _sourceUrlSubscription?.close();
+    _sourceUrlSubscription = null;
+    final player = videoPlayerController;
+    if (player != null) {
+      unawaited(player.dispose());
+    }
     controller?.dispose();
     super.dispose();
   }

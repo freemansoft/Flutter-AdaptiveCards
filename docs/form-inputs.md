@@ -252,8 +252,8 @@ Dedicated overlay tests (beyond per-input layout tests under `test/inputs/`):
 
 | Concern                                                           | File                                                                                                     |
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `initData` / `initInput` / `applyUpdates`                         | `test/inputs/init_data_overlay_test.dart`, `test/riverpod/apply_updates_test.dart`                       |
-| Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/input_error_overlay_test.dart` (Input.Text, Input.Number)                                   |
+| `initData` / `initInput` / `applyUpdates`                         | `test/inputs/text_overlay_test.dart`, `test/adaptive_card_overlay_test.dart`, `test/riverpod/apply_updates_test.dart` |
+| Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/text_overlay_test.dart`, `test/inputs/number_overlay_test.dart` |
 | ChoiceSet dynamic choices                                         | `test/inputs/choice_set_overlay_test.dart`                                                               |
 | Cascaded country → dependent ChoiceSet                            | `test/inputs/cascade_choice_set_test.dart`                                                               |
 | Notifier contract                                                 | `test/riverpod/adaptive_card_document_notifier_test.dart`                                                |

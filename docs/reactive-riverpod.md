@@ -258,7 +258,7 @@ Other element overlays (e.g. **TextBlock** `text` via `setText`) use the same pr
 
 ### Tests
 
-Coverage lives in [`test/elements/is_visible_test.dart`](../packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart):
+Coverage lives in [`test/elements/visibility_overlay_test.dart`](../packages/flutter_adaptive_cards_fs/test/elements/visibility_overlay_test.dart):
 
 - JSON `isVisible` on elements
 - `RawAdaptiveCardState.setIsVisible` and notifier `toggleVisibility`
@@ -302,33 +302,47 @@ The overlay **model** is well guarded; adding a new overlay field still requires
 
 ### Primary test files
 
-| Concern                                                                    | Test file                                                                                                                   |
-| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Notifier contract (inputs, visibility, choices, validation, text, actions) | `test/riverpod/adaptive_card_document_notifier_test.dart`                                                                   |
-| `initData` / `initInput`                                                   | `test/inputs/init_data_overlay_test.dart`                                                                                   |
-| ChoiceSet `loadInput` / `appendChoices` / reset                            | `test/inputs/choice_set_overlay_test.dart`, `test/inputs/action_reset_inputs_test.dart`                                     |
-| Cascaded country → dependent ChoiceSet (`applyUpdates`)                    | `test/inputs/cascade_choice_set_test.dart`                                                                                  |
-| Data.Query session merge + `associatedInputs`                              | `test/inputs/choice_set_data_query_test.dart`, `test/models/data_query_test.dart`, `test/utils/associated_inputs_test.dart` |
-| Backend invoke round-trip (`AdaptiveCardBackendHandlers`)                  | `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_test.dart`                                          |
-| Input validation overlays                                                  | `test/inputs/input_error_overlay_test.dart`                                                                                 |
-| TextBlock `text`                                                           | `test/elements/text_block_text_overlay_test.dart`                                                                           |
-| FactSet `facts`                                                            | `test/containers/fact_set_overlay_test.dart`                                                                                |
-| Visibility / ToggleVisibility                                              | `test/elements/is_visible_test.dart`                                                                                        |
-| Action `isEnabled` (Submit)                                                | `test/actions/action_enabled_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json`                          |
-| Action `isEnabled` (ShowCard)                                              | `test/actions/show_card_enabled_overlay_test.dart`                                                                          |
+Each overlay-capable **input**, **element**, **action**, and the **AdaptiveCard** host surface has a dedicated `*_overlay_test.dart` widget test. Notifier merge contracts remain in `test/riverpod/adaptive_card_document_notifier_test.dart`.
+
+| Concern                                                                          | Test file                                                                                  |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Notifier contract (inputs, visibility, choices, validation, text, actions)       | `test/riverpod/adaptive_card_document_notifier_test.dart`                                  |
+| AdaptiveCard host (`initInput` + `applyUpdates` compose, unknown `initData` ids) | `test/adaptive_card_overlay_test.dart`                                                     |
+| `Input.Text` (value, label, placeholder, required, validation)                   | `test/inputs/text_overlay_test.dart`                                                       |
+| `Input.Number`                                                                   | `test/inputs/number_overlay_test.dart`                                                     |
+| `Input.Date`                                                                     | `test/inputs/date_overlay_test.dart`                                                       |
+| `Input.Time`                                                                     | `test/inputs/time_overlay_test.dart`                                                       |
+| `Input.Toggle`                                                                   | `test/inputs/toggle_overlay_test.dart`                                                     |
+| `Input.ChoiceSet` (`loadInput`, `appendChoices`, `initData`, reset)              | `test/inputs/choice_set_overlay_test.dart`                                                 |
+| `Input.Rating`                                                                   | `test/inputs/rating_input_overlay_test.dart`                                               |
+| `TextBlock` `text`                                                               | `test/elements/text_block_overlay_test.dart`                                               |
+| `Badge` `text`                                                                   | `test/elements/badge_overlay_test.dart`                                                    |
+| `Image` `url`                                                                    | `test/elements/image_overlay_test.dart`                                                    |
+| `Media` `url`                                                                    | `test/elements/media_overlay_test.dart`                                                    |
+| `Rating` (display) `value`                                                       | `test/elements/rating_overlay_test.dart`                                                   |
+| `FactSet` `facts`                                                                | `test/containers/fact_set_overlay_test.dart`                                               |
+| Visibility (`isVisible`, notifier APIs, rebuild survival)                        | `test/elements/visibility_overlay_test.dart`                                               |
+| `Action.Submit` (`isEnabled`, title, tooltip, required validation)               | `test/actions/submit_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json` |
+| `Action.ShowCard` `isEnabled`                                                    | `test/actions/show_card_overlay_test.dart`                                                 |
+| `Action.Popover`                                                                 | `test/actions/popover_overlay_test.dart`                                                   |
+| `Action.Execute` / `Action.OpenUrl` `isEnabled`                                  | `test/actions/execute_overlay_test.dart`, `test/actions/open_url_overlay_test.dart`        |
+| `Action.ToggleVisibility`                                                        | `test/actions/toggle_visibility_overlay_test.dart`                                         |
+| Cascaded country → dependent ChoiceSet (`applyUpdates`)                          | `test/inputs/cascade_choice_set_test.dart`                                                 |
+| Data.Query session merge + `associatedInputs`                                    | `test/inputs/choice_set_data_query_test.dart`, …                                           |
+| Backend invoke round-trip                                                        | `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_test.dart`         |
 
 ### How to add tests
 
 1. **Notifier** — `ProviderContainer` with `baselineMapProvider.overrideWithValue(...)`, assert `resolvedElementProvider` / `resolvedActionProvider` and `overlaysById`.
-2. **Widget** — `getTestWidgetFromMap` / `getTestWidgetFromPath`, key-first finders (`generateWidgetKey`, `generateAdaptiveWidgetKey`); see [adaptive-cards-testing skill](../.agents/skills/adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
+2. **Widget** — add or extend the type's `*_overlay_test.dart`; use `getTestWidgetFromMap` / `getTestWidgetFromPath`, key-first finders (`generateWidgetKey`, `generateAdaptiveWidgetKey`); see [adaptive-cards-testing skill](../.agents/skills/adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
 3. **Host API** — delegate tests on `RawAdaptiveCardState` (`setText`, `setFacts`, `setInputError`, `clearInputError`, `setActionEnabled`, …).
 
 **Example (widgetbook sample):** manual verification — **FactSet → Facts overlay (knob)** (`widgetbook/lib/fact_set_overlay_page.dart`). Package tests: `test/containers/fact_set_overlay_test.dart`.
 
 ### Remaining gaps (optional)
 
-- Validation overlay widget tests for `Input.Date`, `Input.Time`, `Input.Rating` (Text and Number covered in `input_error_overlay_test.dart`).
-- `setActionEnabled` on action types beyond Submit and ShowCard.
+- Validation overlay widget tests for `Input.Date`, `Input.Time` (Rating covered in `rating_input_overlay_test.dart`).
+- `Action.ResetInputs`, `Action.OpenUrlDialog`, `Action.InsertImage` overlay chrome.
 - Input-value overlay surviving `RawAdaptiveCard.rebuild()` (visibility and TextBlock covered).
 
 Regression command:
@@ -336,13 +350,7 @@ Regression command:
 ```bash
 cd packages/flutter_adaptive_cards_fs
 fvm flutter test test/riverpod/adaptive_card_document_notifier_test.dart
-fvm flutter test test/inputs/init_data_overlay_test.dart
-fvm flutter test test/inputs/choice_set_overlay_test.dart
-fvm flutter test test/inputs/input_error_overlay_test.dart
-fvm flutter test test/elements/text_block_text_overlay_test.dart
-fvm flutter test test/elements/is_visible_test.dart
-fvm flutter test test/actions/action_enabled_overlay_test.dart
-fvm flutter test test/actions/show_card_enabled_overlay_test.dart
+fvm flutter test $(find test -name '*_overlay_test.dart')
 ```
 
 ## Overlay backlog

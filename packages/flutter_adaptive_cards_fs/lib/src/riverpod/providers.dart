@@ -99,7 +99,25 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
       merged['isRequired'] = overlay!.isRequired;
     }
     if (overlay?.url != null) {
-      merged['url'] = overlay!.url;
+      final type = merged['type'] as String?;
+      if (type == 'Media') {
+        final rawSources = merged['sources'];
+        final List<Map<String, dynamic>> sources;
+        if (rawSources is List && rawSources.isNotEmpty) {
+          sources = rawSources
+              .map((entry) => Map<String, dynamic>.from(entry as Map))
+              .toList();
+          sources[0] = Map<String, dynamic>.from(sources[0])
+            ..['url'] = overlay!.url;
+        } else {
+          sources = [
+            {'url': overlay!.url},
+          ];
+        }
+        merged['sources'] = sources;
+      } else {
+        merged['url'] = overlay!.url;
+      }
     }
     if (overlay?.label != null) {
       merged['label'] = overlay!.label;

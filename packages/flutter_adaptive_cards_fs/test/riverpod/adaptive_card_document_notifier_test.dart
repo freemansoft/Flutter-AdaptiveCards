@@ -909,6 +909,31 @@ void main() {
         imageBaseline.dispose();
       });
 
+      test('setUrl on Media merges into sources[0].url', () {
+        final mediaContainer = _createContainer({
+          'type': 'AdaptiveCard',
+          'body': [
+            {
+              'type': 'Media',
+              'id': 'media1',
+              'sources': [
+                {'url': 'https://old.example/v.mp4'},
+              ],
+            },
+          ],
+        });
+        addTearDown(mediaContainer.dispose);
+
+        mediaContainer
+            .read(adaptiveCardDocumentProvider.notifier)
+            .setUrl('media1', 'https://new.example/v.mp4');
+
+        final resolved = mediaContainer.read(resolvedElementProvider('media1'));
+        final sources = resolved?['sources'] as List<dynamic>?;
+        expect(sources, isNotNull);
+        expect(sources!.first['url'], 'https://new.example/v.mp4');
+      });
+
       test('applyUpdates merges label, placeholder, title, and tooltip', () {
         final actionCard = _createContainer({
           'type': 'AdaptiveCard',
