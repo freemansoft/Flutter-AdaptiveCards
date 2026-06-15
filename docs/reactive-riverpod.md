@@ -123,22 +123,22 @@ flowchart LR
 
 Changes go **only** into overlays via the document notifier:
 
-| Action                            | Notifier API                                                                                         | Overlay field                                                                                                                   |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| User edits an input               | `setInputValue(id, value)`                                                                           | `inputValue`                                                                                                                    |
-| Host initData / late binding      | `seedInputValues(map)` → `applyUpdates` (value only)                                                 | `inputValue` per id                                                                                                             |
-| Bulk host / handler patches       | `applyUpdates` / `applyUpdatesFromMap`                                                               | multiple fields per id                                                                                                          |
-| Dynamic ChoiceSet options         | `setChoices(id, choices)` / `appendChoices(id, choices)`                                             | `choices`                                                                                                                       |
-| Typeahead pagination (optional)   | `setDataQuerySession(id, count:, skip:, searchText:)`                                                | `queryCount`, `querySkip`, `querySearchText`                                                                                    |
-| ToggleVisibility / set visibility | `setVisibility(id, visible: …)` / `toggleVisibility(id)`                                             | `isVisible`                                                                                                                     |
-| Host validation after submit      | `setInputError(id, errorMessage:, isInvalid:)` / `clearInputError(id)`                               | `errorMessage`, `isInvalid`                                                                                                     |
-| ResetInputs / per-id reset        | `resetAllInputs()` / `resetInput(id)` — see [Reset semantics](#reset-semantics)                      | factory reset on **`Input.*`**: clears value, choices, validation, **`isRequired`**, **`label`**, **`placeholder`** overlays    |
-| Submit / Execute                  | `collectInputValues()` + validation via `validateInputs()`                                           | reads overlay ?? baseline `"value"`; marks failing inputs with `setInputError(isInvalid: true)` (required + `Input.Text` regex) |
-| Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                            | delegates to `setChoices`                                                                                                       |
-| Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                          | `ActionOverlay.isEnabled`                                                                                                       |
-| Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                | `text`                                                                                                                          |
+| Action                            | Notifier API                                                                                                                                  | Overlay field                                                                                                                   |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| User edits an input               | `setInputValue(id, value)`                                                                                                                    | `inputValue`                                                                                                                    |
+| Host initData / late binding      | `seedInputValues(map)` → `applyUpdates` (value only)                                                                                          | `inputValue` per id                                                                                                             |
+| Bulk host / handler patches       | `applyUpdates` / `applyUpdatesFromMap`                                                                                                        | multiple fields per id                                                                                                          |
+| Dynamic ChoiceSet options         | `setChoices(id, choices)` / `appendChoices(id, choices)`                                                                                      | `choices`                                                                                                                       |
+| Typeahead pagination (optional)   | `setDataQuerySession(id, count:, skip:, searchText:)`                                                                                         | `queryCount`, `querySkip`, `querySearchText`                                                                                    |
+| ToggleVisibility / set visibility | `setVisibility(id, visible: …)` / `toggleVisibility(id)`                                                                                      | `isVisible`                                                                                                                     |
+| Host validation after submit      | `setInputError(id, errorMessage:, isInvalid:)` / `clearInputError(id)`                                                                        | `errorMessage`, `isInvalid`                                                                                                     |
+| ResetInputs / per-id reset        | `resetAllInputs()` / `resetInput(id)` — see [Reset semantics](#reset-semantics)                                                               | factory reset on **`Input.*`**: clears value, choices, validation, **`isRequired`**, **`label`**, **`placeholder`** overlays    |
+| Submit / Execute                  | `collectInputValues()` + validation via `validateInputs()`                                                                                    | reads overlay ?? baseline `"value"`; marks failing inputs with `setInputError(isInvalid: true)` (required + `Input.Text` regex) |
+| Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                                                                     | delegates to `setChoices`                                                                                                       |
+| Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                                                                   | `ActionOverlay.isEnabled`                                                                                                       |
+| Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                                                         | `text`                                                                                                                          |
 | Replace FactSet facts             | `setFacts(id, facts)` / `clearFacts(id)` / `applyUpdates` (`facts` / `clearFacts` on `AdaptiveElementUpdate` or patch `{ clearFacts: true }`) | `facts`                                                                                                                         |
-| Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `setFacts` / `clearFacts` / `applyUpdates` | delegates to document notifier                                                                                                  |
+| Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `setFacts` / `clearFacts` / `applyUpdates`              | delegates to document notifier                                                                                                  |
 
 The host’s map instance is never mutated in place.
 
@@ -229,9 +229,43 @@ flowchart TB
 
 ## Actions and inputs
 
-- **ToggleVisibility**: writes to document notifier (`toggleVisibility(id)`); affected widgets rebuild via `ref.watch`.
+- **ToggleVisibility**: see [Visibility (`isVisible`)](#visibility-isvisible) below.
 - **ShowCard**: uses a card-local provider (`expandedShowCardIdProvider`) rather than widget identity.
 - **Submit/Execute/ResetInputs**: collect/reset values from the document notifier rather than walking the Flutter element tree.
+
+## Visibility (`isVisible`)
+
+Visibility is driven by the document overlay model, not by mutating JSON or walking the widget tree:
+
+- Baseline `"isVisible"` comes from the adaptive map at load time.
+- Runtime changes (e.g. `Action.ToggleVisibility`) call `AdaptiveCardDocumentNotifier.setVisibility` / `toggleVisibility`, which write `ElementOverlay.isVisible`.
+- `AdaptiveVisibilityMixin` listens to `resolvedElementProvider(id)` and rebuilds when the **merged** `isVisible` changes.
+
+Other element overlays (e.g. **TextBlock** `text` via `setText`) use the same provider; see [How overlays change values](#how-overlays-change-values-initialized-from-the-adaptive-map).
+
+### Widget implementation
+
+- Elements with `AdaptiveVisibilityMixin` wrap content in a `Visibility` widget using the merged `isVisible` from `resolvedElementProvider(id)`.
+- Baseline JSON may omit `isVisible` (defaults to visible) or set `"isVisible": false`.
+- Host code can call `RawAdaptiveCardState.setIsVisible` or use `Action.ToggleVisibility`; both update the document notifier (`setVisibility` / `toggleVisibility`).
+
+### Baseline `isVisible` values
+
+| `adaptiveMap['isVisible']` | Effective visible |
+| -------------------------- | ----------------- |
+| `true` / omitted / null    | Visible           |
+| `false`                    | Hidden            |
+
+### Tests
+
+Coverage lives in [`test/elements/is_visible_test.dart`](../packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart):
+
+- JSON `isVisible` on elements
+- `RawAdaptiveCardState.setIsVisible` and notifier `toggleVisibility`
+- `Action.ToggleVisibility`
+- Visibility overlay survives `RawAdaptiveCard.rebuild()`
+
+See [Overlay test coverage](#overlay-test-coverage).
 
 ## Host callbacks
 
@@ -243,11 +277,11 @@ When a ChoiceSet with `choices.data` fires `onChange`, **`InputChangeInvoke.data
 
 When using optional **`flutter_adaptive_cards_host_fs`**, backend responses apply overlays automatically — you usually **do not** hand-write `applyUpdates` in `onSubmit`/`onChange` unless customizing behavior.
 
-| Response effect | Core API | Overlay fields |
-| --------------- | -------- | -------------- |
-| `applyPatches` | `RawAdaptiveCardState.applyUpdates(elements: …)` | `choices`, `inputValue`, `isVisible`, `text`, `facts`, … per `AdaptiveElementUpdate` |
-| `setInputErrors` | `applyUpdates` with `errorMessage` + `isInvalid: true` | `errorMessage`, `isInvalid` on each input id |
-| `replaceCard` | Host **`onCardReplaced`** callback | Replaces baseline JSON; overlays re-seed from new map |
+| Response effect  | Core API                                               | Overlay fields                                                                       |
+| ---------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `applyPatches`   | `RawAdaptiveCardState.applyUpdates(elements: …)`       | `choices`, `inputValue`, `isVisible`, `text`, `facts`, … per `AdaptiveElementUpdate` |
+| `setInputErrors` | `applyUpdates` with `errorMessage` + `isInvalid: true` | `errorMessage`, `isInvalid` on each input id                                         |
+| `replaceCard`    | Host **`onCardReplaced`** callback                     | Replaces baseline JSON; overlays re-seed from new map                                |
 
 **Apply order:** patches → input errors → full card replacement (see [backend-host-integration.md](backend-host-integration.md#effect-types-and-apply-order)).
 
@@ -268,20 +302,20 @@ The overlay **model** is well guarded; adding a new overlay field still requires
 
 ### Primary test files
 
-| Concern                                                                    | Test file                                                                                          |
-| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Notifier contract (inputs, visibility, choices, validation, text, actions) | `test/riverpod/adaptive_card_document_notifier_test.dart`                                          |
-| `initData` / `initInput`                                                   | `test/inputs/init_data_overlay_test.dart`                                                          |
-| ChoiceSet `loadInput` / `appendChoices` / reset                            | `test/inputs/choice_set_overlay_test.dart`, `test/inputs/action_reset_inputs_test.dart`            |
-| Cascaded country → dependent ChoiceSet (`applyUpdates`)                    | `test/inputs/cascade_choice_set_test.dart`                                                         |
-| Data.Query session merge + `associatedInputs`                                | `test/inputs/choice_set_data_query_test.dart`, `test/models/data_query_test.dart`, `test/utils/associated_inputs_test.dart` |
-| Backend invoke round-trip (`AdaptiveCardBackendHandlers`)                    | `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_test.dart`                                          |
-| Input validation overlays                                                  | `test/inputs/input_error_overlay_test.dart`                                                        |
-| TextBlock `text`                                                           | `test/elements/text_block_text_overlay_test.dart`                                                  |
-| FactSet `facts`                                                            | `test/containers/fact_set_overlay_test.dart`                                                       |
-| Visibility / ToggleVisibility                                              | `test/elements/is_visible_test.dart`                                                               |
-| Action `isEnabled` (Submit)                                                | `test/actions/action_enabled_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json` |
-| Action `isEnabled` (ShowCard)                                              | `test/actions/show_card_enabled_overlay_test.dart`                                                 |
+| Concern                                                                    | Test file                                                                                                                   |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Notifier contract (inputs, visibility, choices, validation, text, actions) | `test/riverpod/adaptive_card_document_notifier_test.dart`                                                                   |
+| `initData` / `initInput`                                                   | `test/inputs/init_data_overlay_test.dart`                                                                                   |
+| ChoiceSet `loadInput` / `appendChoices` / reset                            | `test/inputs/choice_set_overlay_test.dart`, `test/inputs/action_reset_inputs_test.dart`                                     |
+| Cascaded country → dependent ChoiceSet (`applyUpdates`)                    | `test/inputs/cascade_choice_set_test.dart`                                                                                  |
+| Data.Query session merge + `associatedInputs`                              | `test/inputs/choice_set_data_query_test.dart`, `test/models/data_query_test.dart`, `test/utils/associated_inputs_test.dart` |
+| Backend invoke round-trip (`AdaptiveCardBackendHandlers`)                  | `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_test.dart`                                          |
+| Input validation overlays                                                  | `test/inputs/input_error_overlay_test.dart`                                                                                 |
+| TextBlock `text`                                                           | `test/elements/text_block_text_overlay_test.dart`                                                                           |
+| FactSet `facts`                                                            | `test/containers/fact_set_overlay_test.dart`                                                                                |
+| Visibility / ToggleVisibility                                              | `test/elements/is_visible_test.dart`                                                                                        |
+| Action `isEnabled` (Submit)                                                | `test/actions/action_enabled_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json`                          |
+| Action `isEnabled` (ShowCard)                                              | `test/actions/show_card_enabled_overlay_test.dart`                                                                          |
 
 ### How to add tests
 

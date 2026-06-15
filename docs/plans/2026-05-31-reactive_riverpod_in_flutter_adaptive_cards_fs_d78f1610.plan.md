@@ -43,7 +43,7 @@ Update [`packages/flutter_adaptive_cards_fs`](packages/flutter_adaptive_cards_fs
 - **Inputs** become a document-backed reactive state source (submit/reset read from the document, not `visitChildElements`).
 - Library-owned scopes preserve current host ergonomics (hosts shouldn’t need to add an app-level `ProviderScope`).
 
-This plan uses your template at [`/Users/joefreeman/.cursor/plans/reactive_riverpod_in_library_2c717ed6.plan.md`](/Users/joefreeman/.cursor/plans/reactive_riverpod_in_library_2c717ed6.plan.md) as the architectural baseline, but tailors it to *this repo’s current* imperative state flows.
+This plan uses the archived template at [`2026-05-31-reactive_riverpod_in_library_2c717ed6.plan.md`](../archive/plans/2026-05-31-reactive_riverpod_in_library_2c717ed6.plan.md) as the architectural baseline, but tailors it to *this repo’s current* imperative state flows.
 
 ## Current state (what we’re replacing)
 

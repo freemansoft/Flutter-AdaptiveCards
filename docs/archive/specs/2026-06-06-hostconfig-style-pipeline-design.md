@@ -1,9 +1,7 @@
 # HostConfig style pipeline completion
 
-**Date:** 2026-06-06
-**Status:** Implemented (2026-06-06)
-**Scope:** Full parity — container style inheritance, TextBlockStyle, ImageStyle, horizontal alignment inheritance, dark-mode hardening
-**Related:** [`docs/adaptive-style.md`](../../adaptive-style.md), [`docs/Architecture-Overview.md`](../../Architecture-Overview.md), [`docs/Implementation-Status.md`](../../Implementation-Status.md), [`.agents/skills/adaptive-cards-hostconfig-theme/SKILL.md`](../../../.agents/skills/adaptive-cards-hostconfig-theme/SKILL.md)
+**Date:** 2026-06-06  
+**Status:** **Archived / implemented.** Canonical docs: [`adaptive-style.md`](../../adaptive-style.md) (style inheritance), [`hostconfig.md`](../../hostconfig.md) (theme fallbacks, tests).
 
 ## Summary
 

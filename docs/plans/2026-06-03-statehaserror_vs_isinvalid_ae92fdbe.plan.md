@@ -31,7 +31,7 @@ isProject: false
 
 # All validation via notifier (remove `stateHasError`)
 
-> **Status:** **Implemented.** Executed as Phase 2 of [`2026-06-03-input_resolved-only_refactor_a09f674a.plan.md`](2026-06-03-input_resolved-only_refactor_a09f674a.plan.md). `stateHasError` no longer exists in the codebase.
+> **Status:** **Implemented.** Executed as Phase 2 of [`2026-06-03-input_resolved-only_refactor_a09f674a.plan.md`](2026-06-03-input_resolved-only_refactor_a09f674a.plan.md). `stateHasError` no longer exists in the codebase. Superseded opinion (keep both flags): [`2026-06-03-statehaserror_vs_isinvalid_d84e66e6.plan.md`](../archive/plans/2026-06-03-statehaserror_vs_isinvalid_d84e66e6.plan.md).
 
 **Decision:** Adopt unified overlay validation. **`stateHasError` is removed.** All validation display uses resolved **`isInvalid`** (and **`errorMessage`**) from `resolvedElementProvider(id)`.
 

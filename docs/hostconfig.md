@@ -2,11 +2,11 @@
 
 **Status**: ✅ Current | **Category**: Architecture & Testing
 
-HostConfig is the Adaptive Cards platform contract for colors, typography, spacing, and layout defaults. This document covers **runtime color fallbacks** (theme-derived), the **resolution pipeline**, and **serialization test requirements**.
+HostConfig is the Adaptive Cards platform contract for colors, typography, spacing, and layout defaults. This document covers **JSON model parsing**, **runtime color fallbacks** (theme-derived), the **resolution pipeline**, and **serialization test requirements**.
 
 Related docs:
 
-- [adaptive-style.md](./adaptive-style.md) — full style pipeline and inheritance
+- [adaptive-style.md](./adaptive-style.md) — style inheritance pipeline (`ChildStyler`, resolver lifecycle diagrams)
 - [Architecture-Overview.md](./Architecture-Overview.md) — where HostConfig fits in the monorepo
 - `.agents/skills/adaptive-cards-hostconfig-theme/SKILL.md` — agent playbook for styling work
 
@@ -35,10 +35,10 @@ HostConfigs (light + dark)
 
 Two independent theme inputs matter:
 
-| Input | Source | Purpose |
-| --- | --- | --- |
-| `HostConfigs.light` / `.dark` | Host-provided JSON or empty `HostConfig()` | Explicit platform palette (Teams, Bot Framework, custom) |
-| `ThemeColorFallbacks` | `Theme.of(context)` at card build time | Color defaults when HostConfig omits a section or property |
+| Input                         | Source                                     | Purpose                                                    |
+| ----------------------------- | ------------------------------------------ | ---------------------------------------------------------- |
+| `HostConfigs.light` / `.dark` | Host-provided JSON or empty `HostConfig()` | Explicit platform palette (Teams, Bot Framework, custom)   |
+| `ThemeColorFallbacks`         | `Theme.of(context)` at card build time     | Color defaults when HostConfig omits a section or property |
 
 Non-color defaults (spacing, font sizes, image sizes, progress sizes, chart layout dimensions) remain in `FallbackConfigs` as static values — they are not derived from `ColorScheme`.
 
@@ -66,21 +66,21 @@ Action buttons continue to use `colorScheme.primary` / `secondary` / `error` via
 
 File: `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/theme_color_fallbacks.dart`
 
-| HostConfig area | Theme source |
-| --- | --- |
-| `containerStyles.default` background | `colorScheme.surface` |
-| `containerStyles.emphasis` background | `colorScheme.surfaceContainerHighest` |
-| `containerStyles.good` background | `colorScheme.tertiaryContainer` |
-| `containerStyles.attention` background | `colorScheme.errorContainer` |
-| `containerStyles.accent` background | `colorScheme.primaryContainer` |
-| `containerStyles.warning` background | `Color.alphaBlend(warning × 25%, surface)` where `warning = lerp(tertiary, error, 0.45)` |
-| Foreground semantic colors (`default`, `accent`, `good`, `warning`, `attention`, …) | `onSurface`, `primary`, `tertiary`, lerped warning, `error`, etc. |
-| Subtle foreground (`isSubtle: true`) | base color at **70% opacity** (`_subtleAlpha = 0.7`, AC-style) |
-| `progressColors` | `tertiary`, lerped warning, `error`, `primary`, `outline` |
-| Progress track background | `surfaceContainerHighest` |
-| `chartColors.defaultPalette` | `[primary, secondary, tertiary, error, …containers, outline]` |
-| `separator.lineColor` | `outline` (hex-encoded) |
-| `badgeStyles` filled/tint | container + on-surface variant roles |
+| HostConfig area                                                                     | Theme source                                                                             |
+| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `containerStyles.default` background                                                | `colorScheme.surface`                                                                    |
+| `containerStyles.emphasis` background                                               | `colorScheme.surfaceContainerHighest`                                                    |
+| `containerStyles.good` background                                                   | `colorScheme.tertiaryContainer`                                                          |
+| `containerStyles.attention` background                                              | `colorScheme.errorContainer`                                                             |
+| `containerStyles.accent` background                                                 | `colorScheme.primaryContainer`                                                           |
+| `containerStyles.warning` background                                                | `Color.alphaBlend(warning × 25%, surface)` where `warning = lerp(tertiary, error, 0.45)` |
+| Foreground semantic colors (`default`, `accent`, `good`, `warning`, `attention`, …) | `onSurface`, `primary`, `tertiary`, lerped warning, `error`, etc.                        |
+| Subtle foreground (`isSubtle: true`)                                                | base color at **70% opacity** (`_subtleAlpha = 0.7`, AC-style)                           |
+| `progressColors`                                                                    | `tertiary`, lerped warning, `error`, `primary`, `outline`                                |
+| Progress track background                                                           | `surfaceContainerHighest`                                                                |
+| `chartColors.defaultPalette`                                                        | `[primary, secondary, tertiary, error, …containers, outline]`                            |
+| `separator.lineColor`                                                               | `outline` (hex-encoded)                                                                  |
+| `badgeStyles` filled/tint                                                           | container + on-surface variant roles                                                     |
 
 Named Teams chart palettes (`kChartCategoricalPalette`, token resolution via `resolveChartColorToken`) are **unchanged** — they are explicit palette families, not HostConfig fallbacks.
 
@@ -103,13 +103,13 @@ Progress elements call `styleResolver.resolveProgressColor(color)` instead of th
 
 When HostConfig JSON is deserialized and color properties are missing, parsers use theme-derived defaults:
 
-| Factory | Default source |
-| --- | --- |
-| `FontColorConfig.fromJson` | `ThemeColorFallbacks.forParsing.foregroundColors.defaultColor` |
-| `ForegroundColorsConfig.fromJson` | per-token defaults from `ThemeColorFallbacks.forParsing.foregroundColors` |
-| `ContainerStyleConfig.fromJson` | style-specific defaults from `ThemeColorFallbacks.forParsing.containerStyles` |
-| `ContainerStylesConfig.fromJson` | optional `colorDefaults:` parameter |
-| `HostConfig.fromJson` | optional `theme:` parameter → `ThemeColorFallbacks(theme ?? ThemeData())` |
+| Factory                           | Default source                                                                |
+| --------------------------------- | ----------------------------------------------------------------------------- |
+| `FontColorConfig.fromJson`        | `ThemeColorFallbacks.forParsing.foregroundColors.defaultColor`                |
+| `ForegroundColorsConfig.fromJson` | per-token defaults from `ThemeColorFallbacks.forParsing.foregroundColors`     |
+| `ContainerStyleConfig.fromJson`   | style-specific defaults from `ThemeColorFallbacks.forParsing.containerStyles` |
+| `ContainerStylesConfig.fromJson`  | optional `colorDefaults:` parameter                                           |
+| `HostConfig.fromJson`             | optional `theme:` parameter → `ThemeColorFallbacks(theme ?? ThemeData())`     |
 
 `ThemeColorFallbacks.forParsing` is a lazy singleton using `ThemeData()` for parse-time-only contexts (unit tests, offline JSON load without a widget tree).
 
@@ -145,14 +145,14 @@ The Widgetbook `appBuilder` must forward the Theme addon selection to `MaterialA
 
 ## Key files
 
-| File | Role |
-| --- | --- |
-| `lib/src/hostconfig/host_config.dart` | `HostConfig`, `HostConfigs`, `AdaptiveCardBrightnessMode` |
-| `lib/src/hostconfig/theme_color_fallbacks.dart` | Theme-derived color defaults |
-| `lib/src/hostconfig/fallback_configs.dart` | Static non-color defaults |
-| `lib/src/reference_resolver.dart` | Resolution facade; requires `colorFallbacks` |
-| `lib/src/flutter_raw_adaptive_card.dart` | Creates resolver + `ProviderScope` overrides |
-| `lib/src/hostconfig/host_config_schema.json` | JSON schema reference |
+| File                                            | Role                                                      |
+| ----------------------------------------------- | --------------------------------------------------------- |
+| `lib/src/hostconfig/host_config.dart`           | `HostConfig`, `HostConfigs`, `AdaptiveCardBrightnessMode` |
+| `lib/src/hostconfig/theme_color_fallbacks.dart` | Theme-derived color defaults                              |
+| `lib/src/hostconfig/fallback_configs.dart`      | Static non-color defaults                                 |
+| `lib/src/reference_resolver.dart`               | Resolution facade; requires `colorFallbacks`              |
+| `lib/src/flutter_raw_adaptive_card.dart`        | Creates resolver + `ProviderScope` overrides              |
+| `lib/src/hostconfig/host_config_schema.json`    | JSON schema reference                                     |
 
 ---
 
@@ -169,11 +169,11 @@ Verify JSON deserialization for every HostConfig entity and that objects conform
 
 One test file per entity, mirroring the Dart file name:
 
-| Entity | Test file | JSON fixture |
-| --- | --- | --- |
-| `font_color_config.dart` | `font_color_config_test.dart` | `font_color_config.json` |
+| Entity                         | Test file                           | JSON fixture                   |
+| ------------------------------ | ----------------------------------- | ------------------------------ |
+| `font_color_config.dart`       | `font_color_config_test.dart`       | `font_color_config.json`       |
 | `container_styles_config.dart` | `container_styles_config_test.dart` | `container_styles_config.json` |
-| … | `{entity}_test.dart` | `{entity}.json` |
+| …                              | `{entity}_test.dart`                | `{entity}.json`                |
 
 Each entity test should:
 

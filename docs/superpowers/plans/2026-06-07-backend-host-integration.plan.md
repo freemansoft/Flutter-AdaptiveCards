@@ -10,7 +10,7 @@
 
 **Tech Stack:** Dart 3.12+, Flutter (FVM), Riverpod 3.x, `flutter_adaptive_cards_fs`, `flutter_adaptive_cards_host_fs`, `http`, `package:flutter_test`, `very_good_analysis`.
 
-**Spec:** [`docs/superpowers/specs/2026-06-07-backend-host-integration-design.md`](../specs/2026-06-07-backend-host-integration-design.md)
+**Spec (archived):** [`docs/archive/specs/2026-06-07-backend-host-integration-design.md`](../../archive/specs/2026-06-07-backend-host-integration-design.md)
 
 ---
 

@@ -6,8 +6,8 @@ This directory contains design documents, implementation guides, and architectur
 
 - **Documentation scope** (packages vs widgetbook samples): [documentation-scope.md](./documentation-scope.md)
 - **Widgetbook overlay demos** (sample program): [widgetbook-overlay-demos.md](./widgetbook-overlay-demos.md)
-- **Cursor and Antigravity created plans** copied from ~/.cursor/plans : [plans](/docs/plans/)
-- **Superpowers created specs** [specs](/docs/superpowers/specs/)
+- **Cursor and Antigravity created plans** copied from ~/.cursor/plans : [plans](/docs/plans/) (superseded duplicates in [archive/plans](/docs/archive/plans/))
+- **Superpowers created specs** [specs](/docs/superpowers/specs/) (implemented duplicates in [archive/specs](/docs/archive/specs/))
 - **AI / LLM agents**: [AI-Agent-Support.md](/docs/AI-Agent-Support.md)
 - **Main Project**: [Repository README](/README.md)
 - **Library README**: [flutter_adaptive_cards_fs README](/packages/flutter_adaptive_cards_fs/README.md)
@@ -63,7 +63,7 @@ Describes the action system architecture using Generic interfaces, Default imple
 
 **Status**: ✅ Current | **Category**: Architecture
 
-Comprehensive specification for HostConfig implementation and mapping to Flutter themes. Documents all configuration classes based on Microsoft's host-config.json schema.
+Style pipeline: `ReferenceResolver` facade, container style inheritance via `ChildStyler`, TextBlock/Image style resolution, and canonical diagrams. Model parsing and theme fallbacks: [hostconfig.md](./hostconfig.md).
 
 ### [Architecture-Overview.md](./Architecture-Overview.md)
 
@@ -87,7 +87,7 @@ Invoke round-trips with **`flutter_adaptive_cards_host_fs`** — request/respons
 
 **Status**: ✅ Current | **Category**: Architecture
 
-Riverpod scopes, document notifier, cached baseline on rebuild, **baseline + overlay** model, [overlay test coverage](./reactive-riverpod.md#overlay-test-coverage), and reactive inputs, visibility, TextBlock text, validation, action `isEnabled`, show-card UI, and submit/reset without mutating host JSON.
+Riverpod scopes, document notifier, cached baseline on rebuild, **baseline + overlay** model, [overlay test coverage](./reactive-riverpod.md#overlay-test-coverage), visibility (`isVisible`), and reactive inputs, TextBlock text, validation, action `isEnabled`, show-card UI, and submit/reset without mutating host JSON.
 
 ---
 
@@ -108,12 +108,6 @@ Guide for Flutter Form-based input implementation. Documents runtime **baseline 
 - Card widget: `{id}_adaptive`
 - Input field: `{id}`
 - Test requirements for validation, JSON loading, value changes
-
-### [Implementing-IsVisible.md](./Implementing-IsVisible.md)
-
-**Status**: ✅ Current | **Category**: Implementation Guide
-
-Implementation of `isVisible` for show/hide. Runtime toggles use document overlays and `resolvedElementProvider`; see also [`reactive-riverpod.md`](reactive-riverpod.md).
 
 ### [backgroundImage.md](./backgroundImage.md)
 
@@ -163,7 +157,7 @@ Specification for base64 encoded inline image support using `Image.memory`. Incl
 
 **Status**: ✅ Current | **Category**: Architecture & Testing
 
-HostConfig architecture: theme-derived color fallbacks (`ThemeColorFallbacks`), `ReferenceResolver` pipeline, brightness selection, Widgetbook notes, and serialization test conventions (JSON fixtures per entity under `test/hostconfig/`).
+HostConfig architecture: JSON model parsing, theme-derived color fallbacks (`ThemeColorFallbacks`), `ReferenceResolver` pipeline, brightness selection, Widgetbook notes, and serialization test conventions. Style inheritance diagrams: [adaptive-style.md](./adaptive-style.md).
 
 ### Overlay / document notifier tests
 
@@ -219,4 +213,4 @@ When adding or updating documentation:
 
 ---
 
-Last Updated: 2026-06-09
+Last Updated: 2026-06-14

@@ -10,12 +10,12 @@ This document explains why the monorepo splits Adaptive Cards capabilities acros
 
 This is the same strategy used today for:
 
-| Package | Purpose | Third-party deps avoided in core |
-| ------- | ------- | -------------------------------- |
-| [`flutter_adaptive_cards_fs`](../packages/flutter_adaptive_cards_fs/) | Core renderer (elements, inputs, actions, HostConfig) | — (baseline) |
-| [`flutter_adaptive_template_fs`](../packages/flutter_adaptive_template_fs/) | Adaptive Cards templating (`$data`, `$when`, `json()`, etc.) | Templating evaluator not required for static cards |
-| [`flutter_adaptive_charts_fs`](../packages/flutter_adaptive_charts_fs/) | `Chart.*` elements (bar, line, pie, donut, gauge) — bar/line/pie via [fl_chart](https://pub.dev/packages/fl_chart); gauge via `CustomPainter` in the same package | **fl_chart** not pulled into apps that never render charts |
-| [`flutter_adaptive_cards_host_fs`](../packages/flutter_adaptive_cards_host_fs/) | Backend invoke bridge — serialize Submit/Execute/Refresh/`onChange`, POST, parse patches or full card replacement, wire `InheritedAdaptiveCardHandlers` | **`http`** and invoke glue not required for static or hand-wired hosts |
+| Package                                                                         | Purpose                                                                                                                                                           | Third-party deps avoided in core                                       |
+| ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [`flutter_adaptive_cards_fs`](../packages/flutter_adaptive_cards_fs/)           | Core renderer (elements, inputs, actions, HostConfig)                                                                                                             | — (baseline)                                                           |
+| [`flutter_adaptive_template_fs`](../packages/flutter_adaptive_template_fs/)     | Adaptive Cards templating (`$data`, `$when`, `json()`, etc.)                                                                                                      | Templating evaluator not required for static cards                     |
+| [`flutter_adaptive_charts_fs`](../packages/flutter_adaptive_charts_fs/)         | `Chart.*` elements (bar, line, pie, donut, gauge) — bar/line/pie via [fl_chart](https://pub.dev/packages/fl_chart); gauge via `CustomPainter` in the same package | **fl_chart** not pulled into apps that never render charts             |
+| [`flutter_adaptive_cards_host_fs`](../packages/flutter_adaptive_cards_host_fs/) | Backend invoke bridge — serialize Submit/Execute/Refresh/`onChange`, POST, parse patches or full card replacement, wire `InheritedAdaptiveCardHandlers`           | **`http`** and invoke glue not required for static or hand-wired hosts |
 
 Future optional packages should follow the same pattern (see the completed [June 2026 implementation plan](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md) for refresh, Icon, chart chrome/gauge, and RichTextBlock work).
 
@@ -31,16 +31,16 @@ Keeping charts in `flutter_adaptive_charts_fs` lets chart-free apps depend only 
 
 Registered chart type strings (merge via `CardChartsRegistry.additionalChartElements`):
 
-| Type string | Renderer |
-| ----------- | -------- |
-| `Chart.Line` | fl_chart line chart |
-| `Chart.VerticalBar` | fl_chart vertical bar |
-| `Chart.HorizontalBar` | fl_chart horizontal bar |
-| `Chart.VerticalBar.Grouped` | fl_chart grouped/stacked vertical bars |
-| `Chart.HorizontalBar.Stacked` | fl_chart stacked horizontal bars |
-| `Chart.Pie` | fl_chart pie |
-| `Chart.Donut` | fl_chart donut |
-| `Chart.Gauge` | `CustomPainter` semicircular gauge (same package; not fl_chart) |
+| Type string                   | Renderer                                                        |
+| ----------------------------- | --------------------------------------------------------------- |
+| `Chart.Line`                  | fl_chart line chart                                             |
+| `Chart.VerticalBar`           | fl_chart vertical bar                                           |
+| `Chart.HorizontalBar`         | fl_chart horizontal bar                                         |
+| `Chart.VerticalBar.Grouped`   | fl_chart grouped/stacked vertical bars                          |
+| `Chart.HorizontalBar.Stacked` | fl_chart stacked horizontal bars                                |
+| `Chart.Pie`                   | fl_chart pie                                                    |
+| `Chart.Donut`                 | fl_chart donut                                                  |
+| `Chart.Gauge`                 | `CustomPainter` semicircular gauge (same package; not fl_chart) |
 
 ## Why templating is a separate package
 
@@ -58,12 +58,12 @@ There is **no required dependency** from core → template or template → core 
 
 The host package depends on **`flutter_adaptive_cards_fs`** (not the reverse) and provides:
 
-| Component | Role |
-| --------- | ---- |
-| **`AdaptiveCardInvokeRequest`** / **`AdaptiveCardInvokeResponse`** | Typed invoke + effect models |
-| **`PlainJsonInvokeAdapter`** / **`TeamsInvokeAdapter`** | Request/response JSON shapes |
-| **`AdaptiveCardBackendClient`** / **`HttpAdaptiveCardBackendClient`** | Transport abstraction |
-| **`AdaptiveCardBackendHandlers`** | Wraps a card subtree; connects `onSubmit`, `onExecute`, `onRefresh`, and `onChange` to the backend |
+| Component                                                             | Role                                                                                               |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **`AdaptiveCardInvokeRequest`** / **`AdaptiveCardInvokeResponse`**    | Typed invoke + effect models                                                                       |
+| **`PlainJsonInvokeAdapter`** / **`TeamsInvokeAdapter`**               | Request/response JSON shapes                                                                       |
+| **`AdaptiveCardBackendClient`** / **`HttpAdaptiveCardBackendClient`** | Transport abstraction                                                                              |
+| **`AdaptiveCardBackendHandlers`**                                     | Wraps a card subtree; connects `onSubmit`, `onExecute`, `onRefresh`, and `onChange` to the backend |
 
 Response effects map to core document APIs: **`applyPatches`** (element overlays), **`setInputErrors`**, and **`replaceCard`** (full JSON swap via host callback). See [backend-host-integration.md](./backend-host-integration.md).
 
@@ -99,13 +99,13 @@ AdaptiveCardsCanvas.map(
 
 ### Built-in vs optional elements
 
-| Category | Location | Registration |
-| -------- | -------- | ------------ |
-| Standard schema elements (`TextBlock`, `Input.Text`, …) | Core `CardTypeRegistry` switch | Automatic |
-| Hub / Teams extensions shipped with this repo (`Badge`, `Carousel`, `Icon`, …) | Core registry (no extra pubspec) | Automatic |
-| Heavy or niche extensions (`Chart.*` including gauge) | Optional charts package | Host merges `CardChartsRegistry.additionalChartElements` |
-| Backend invoke round-trips | Optional host package | Host wraps card with `AdaptiveCardBackendHandlers` |
-| Host-specific widgets | Host app | Host merges `addedElements` |
+| Category                                                                       | Location                         | Registration                                             |
+| ------------------------------------------------------------------------------ | -------------------------------- | -------------------------------------------------------- |
+| Standard schema elements (`TextBlock`, `Input.Text`, …)                        | Core `CardTypeRegistry` switch   | Automatic                                                |
+| Hub / Teams extensions shipped with this repo (`Badge`, `Carousel`, `Icon`, …) | Core registry (no extra pubspec) | Automatic                                                |
+| Heavy or niche extensions (`Chart.*` including gauge)                          | Optional charts package          | Host merges `CardChartsRegistry.additionalChartElements` |
+| Backend invoke round-trips                                                     | Optional host package            | Host wraps card with `AdaptiveCardBackendHandlers`       |
+| Host-specific widgets                                                          | Host app                         | Host merges `addedElements`                              |
 
 ## Consumer checklist
 
@@ -159,7 +159,7 @@ Do not import chart, template, or host packages. Cards containing unknown `Chart
 - [2026-06-08-refresh-icon-charts-text-features.plan.md](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md) — completed refresh, Icon, chart, and text workstreams
 - [adaptive-template-design.md](./adaptive-template-design.md) — templating package design
 - [backend-host-integration.md](./backend-host-integration.md) — invoke round-trips, response contract, error handling
-- [2026-06-07-backend-host-integration-design.md](./superpowers/specs/2026-06-07-backend-host-integration-design.md) — design history (superseded for day-to-day use by guide above)
+- [2026-06-07-backend-host-integration-design.md](./archive/specs/2026-06-07-backend-host-integration-design.md) — archived design history (use [backend-host-integration.md](./backend-host-integration.md) for integration)
 - [flutter_adaptive_cards_host_fs README](../packages/flutter_adaptive_cards_host_fs/README.md) — `AdaptiveCardBackendHandlers` quick start
 - [flutter_adaptive_cards_fs README](../packages/flutter_adaptive_cards_fs/README.md) — core library usage
 - [flutter_adaptive_charts_fs README](../packages/flutter_adaptive_charts_fs/README.md) — chart types and HostConfig color/layout

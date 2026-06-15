@@ -1,6 +1,6 @@
 # Backend Host Integration Design
 
-**Status:** Implemented (Phase 1 + Phase 2). **User documentation:** [backend-host-integration.md](../../backend-host-integration.md). **Implementation plan:** [`2026-06-07-backend-host-integration.plan.md`](../plans/2026-06-07-backend-host-integration.plan.md)
+**Status:** **Archived / implemented.** Canonical guide: [`backend-host-integration.md`](../../backend-host-integration.md). Implementation plan: [`2026-06-07-backend-host-integration.plan.md`](../../superpowers/plans/2026-06-07-backend-host-integration.plan.md).
 
 ## Problem
 

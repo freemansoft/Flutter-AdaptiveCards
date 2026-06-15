@@ -31,6 +31,8 @@ isProject: false
 
 # Implementing isVisible Feature for Adaptive Card Elements
 
+> **Status:** **Archived / duplicate.** Canonical plan: [`2026-01-27-implement_isvisible_feature_875ea9e9.plan.md`](../../plans/2026-01-27-implement_isvisible_feature_875ea9e9.plan.md). Living docs: [`reactive-riverpod.md`](../../reactive-riverpod.md#visibility-isvisible).
+
 ## Overview
 
 This plan implements the `isVisible` property for all adaptive card elements, enabling dynamic visibility control. The implementation follows the pattern where each element's `SeparatorElement` is wrapped with a `Visibility` widget controlled by state.

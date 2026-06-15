@@ -37,7 +37,7 @@ isProject: false
 
 # Reactive Riverpod in flutter_adaptive_cards_fs
 
-> **Status:** **Superseded / implemented.** Canonical completed plan: [`2026-05-31-reactive_riverpod_in_flutter_adaptive_cards_fs_d78f1610.plan.md`](2026-05-31-reactive_riverpod_in_flutter_adaptive_cards_fs_d78f1610.plan.md). Retained for historical detail only.
+> **Status:** **Archived / superseded.** Canonical completed plan: [`2026-05-31-reactive_riverpod_in_flutter_adaptive_cards_fs_d78f1610.plan.md`](../../plans/2026-05-31-reactive_riverpod_in_flutter_adaptive_cards_fs_d78f1610.plan.md). Living docs: [`reactive-riverpod.md`](../../reactive-riverpod.md).
 
 ## Scope (confirmed)
 

@@ -190,4 +190,4 @@ fvm flutter test test/inputs/action_reset_inputs_test.dart
 
 ## Related plan
 
-Broader SKILL documentation draft: [`overlay_test_coverage_skill_f45d8c5a.plan.md`](overlay_test_coverage_skill_f45d8c5a.plan.md) — merge into this file’s doc tasks; do not duplicate execution.
+Broader SKILL documentation draft (archived): [`2026-06-02-overlay_test_coverage_skill_f45d8c5a.plan.md`](../archive/plans/2026-06-02-overlay_test_coverage_skill_f45d8c5a.plan.md) — merge into this file’s doc tasks; do not duplicate execution.

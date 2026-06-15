@@ -33,7 +33,7 @@ todos:
     content: form-inputs (dependent + filtered sections, sequence diagram), Implementation-Status, README, CHANGELOG, plans, testing skill
     status: completed
   - id: phase2-spec
-    content: Design spec for Data.Query associatedInputs (docs/superpowers/specs/2026-06-07-backend-host-integration-design.md)
+    content: Design spec for Data.Query associatedInputs (docs/archive/specs/2026-06-07-backend-host-integration-design.md)
     status: completed
   - id: phase2-library
     content: Parse associatedInputs; merge sibling inputs via collectInputValues into DataQuery.parameters on onChange
@@ -316,7 +316,7 @@ No separate Phase 1 spec file. Phase 2 spec todo: `docs/superpowers/specs/…-da
 
 ## Phase 2: Library `associatedInputs` ✅
 
-**Status:** **Implemented** (0.10.0). Spec and plan: [`docs/superpowers/specs/2026-06-07-backend-host-integration-design.md`](../superpowers/specs/2026-06-07-backend-host-integration-design.md), [`docs/superpowers/plans/2026-06-07-backend-host-integration.plan.md`](../superpowers/plans/2026-06-07-backend-host-integration.plan.md).
+**Status:** **Implemented** (0.10.0). Spec and plan: [`docs/archive/specs/2026-06-07-backend-host-integration-design.md`](../archive/specs/2026-06-07-backend-host-integration-design.md), [`docs/superpowers/plans/2026-06-07-backend-host-integration.plan.md`](../superpowers/plans/2026-06-07-backend-host-integration.plan.md).
 
 **Was the problem (pre-0.10.0):** [`DataQuery`](packages/flutter_adaptive_cards_fs/lib/src/models/data_query.dart) did not parse or apply `associatedInputs`. When a filtered ChoiceSet with `associatedInputs: "auto"` fired `onChange`, the host did not receive other card input values — unlike Teams, which includes them in the invoke payload:
 

@@ -7,7 +7,9 @@ isProject: false
 
 # Should `stateHasError` be removed in favor of overlay `isInvalid`?
 
-**Short answer: No** — not as part of the resolved-only input refactor. Keep both, combined via `showValidationErrorFor(input)`.
+> **Status:** **Archived opinion doc (not adopted).** The team implemented unified overlay validation instead — see [`2026-06-03-statehaserror_vs_isinvalid_ae92fdbe.plan.md`](../../plans/2026-06-03-statehaserror_vs_isinvalid_ae92fdbe.plan.md) and [`input_resolved-only_refactor`](../../plans/2026-06-03-input_resolved-only_refactor_a09f674a.plan.md).
+
+**Short answer (historical):** No — not as part of the resolved-only input refactor. Keep both, combined via `showValidationErrorFor(input)`.
 
 ## Two validation channels (by design)
 

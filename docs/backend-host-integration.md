@@ -11,17 +11,17 @@ This document describes how to connect **`flutter_adaptive_cards_fs`** to a back
 - [form-inputs.md](./form-inputs.md) — `associatedInputs` and dependent ChoiceSets
 - [reactive-riverpod.md](./reactive-riverpod.md#server-driven-patches-host-package) — how response effects map to overlays
 - [Package README](../packages/flutter_adaptive_cards_host_fs/README.md) — API quick reference
-- Design history: [superpowers spec](./superpowers/specs/2026-06-07-backend-host-integration-design.md) · [implementation plan](./superpowers/plans/2026-06-07-backend-host-integration.plan.md)
+- Design history: [archived spec](./archive/specs/2026-06-07-backend-host-integration-design.md) · [implementation plan](./superpowers/plans/2026-06-07-backend-host-integration.plan.md)
 
 ---
 
 ## When to use which layer
 
-| Need | Package |
-| ---- | ------- |
-| Render cards; wire callbacks manually | **`flutter_adaptive_cards_fs`** only |
-| Teams-correct invoke **payloads** (`associatedInputs` on Submit/Execute/Data.Query) | Core (Phase 1 — always available) |
-| Serialize → POST → parse → apply patches automatically | **`flutter_adaptive_cards_host_fs`** (Phase 2 — opt in) |
+| Need                                                                                | Package                                                 |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Render cards; wire callbacks manually                                               | **`flutter_adaptive_cards_fs`** only                    |
+| Teams-correct invoke **payloads** (`associatedInputs` on Submit/Execute/Data.Query) | Core (Phase 1 — always available)                       |
+| Serialize → POST → parse → apply patches automatically                              | **`flutter_adaptive_cards_host_fs`** (Phase 2 — opt in) |
 
 Phase 2 depends on Phase 1 but Phase 1 is useful without the host package.
 
@@ -88,19 +88,19 @@ Before adding the host package, core already builds backend-ready invoke objects
 
 ### `Data.Query` (`choices.data`)
 
-| `associatedInputs` | Behavior |
-| ------------------ | -------- |
+| `associatedInputs`  | Behavior                                                                       |
+| ------------------- | ------------------------------------------------------------------------------ |
 | omitted or `"auto"` | Merge sibling input values into `dataQuery.parameters` (firing input excluded) |
-| `"none"` | JSON `parameters` only |
+| `"none"`            | JSON `parameters` only                                                         |
 
 See [Dependent ChoiceSet](form-inputs.md#dependent-choiceset-country--city).
 
 ### `Action.Submit` / `Action.Execute` / root `refresh`
 
-| `associatedInputs` | Behavior |
-| ------------------ | -------- |
+| `associatedInputs`  | Behavior                                  |
+| ------------------- | ----------------------------------------- |
 | omitted or `"auto"` | Merge all input values into action `data` |
-| `"none"` | Action JSON `data` only |
+| `"none"`            | Action JSON `data` only                   |
 
 Root **`refresh.action`** uses the same Execute-shaped payload; see [refresh callback](actions-architecture.md#root-card-refresh-payload).
 
@@ -110,10 +110,10 @@ Root **`refresh.action`** uses the same Execute-shaped payload; see [refresh cal
 
 ## Request adapters
 
-| Adapter | Use case |
-| ------- | -------- |
+| Adapter                                | Use case                                                       |
+| -------------------------------------- | -------------------------------------------------------------- |
 | **`PlainJsonInvokeAdapter`** (default) | Custom flow-services; flat JSON with `kind`, `verb`, `data`, … |
-| **`TeamsInvokeAdapter`** | Bot Framework–shaped invoke activities |
+| **`TeamsInvokeAdapter`**               | Bot Framework–shaped invoke activities                         |
 
 ```dart
 AdaptiveCardBackendHandlers(
@@ -179,12 +179,12 @@ Each patch element uses **`AdaptiveElementUpdate`** fields (`choices`, `clearVal
 
 ## Error handling
 
-| Case | Behavior |
-| ---- | -------- |
-| Network failure | **`onError`** invoked; card unchanged |
-| Malformed JSON / parse failure | **`AdaptiveCardInvokeResponseParseException`** → **`onError`** |
-| Unknown effect `type` | Skipped in release; debug log |
-| **`replaceCard`** without **`onCardReplaced`** | **`StateError`** from **`applyTo`** |
+| Case                                           | Behavior                                                       |
+| ---------------------------------------------- | -------------------------------------------------------------- |
+| Network failure                                | **`onError`** invoked; card unchanged                          |
+| Malformed JSON / parse failure                 | **`AdaptiveCardInvokeResponseParseException`** → **`onError`** |
+| Unknown effect `type`                          | Skipped in release; debug log                                  |
+| **`replaceCard`** without **`onCardReplaced`** | **`StateError`** from **`applyTo`**                            |
 
 Always provide **`onError`** in production hosts (SnackBar, retry UI, logging).
 

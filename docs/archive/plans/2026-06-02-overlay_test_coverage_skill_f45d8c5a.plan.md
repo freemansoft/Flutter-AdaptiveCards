@@ -16,7 +16,7 @@ isProject: false
 
 # Overlay test coverage analysis (element-registry skill)
 
-> **Status:** **Superseded / implemented.** Canonical plan with full todo history: [`2026-06-01-overlay_test_coverage_bd9b10a4.plan.md`](2026-06-01-overlay_test_coverage_bd9b10a4.plan.md). Living matrix: `.agents/skills/adaptive-cards-element-registry/SKILL.md` § Overlay test coverage.
+> **Status:** **Archived / superseded.** Canonical plan: [`2026-06-01-overlay_test_coverage_bd9b10a4.plan.md`](../../plans/2026-06-01-overlay_test_coverage_bd9b10a4.plan.md). Living matrix: [`reactive-riverpod.md`](../../reactive-riverpod.md#overlay-test-coverage) and `.agents/skills/adaptive-cards-element-registry/SKILL.md`.
 
 ## Verdict
 

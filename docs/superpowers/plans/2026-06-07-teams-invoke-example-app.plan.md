@@ -8,7 +8,7 @@
 
 **Tech Stack:** Dart 3.12+, `shelf` + `shelf_router`, `flutter_adaptive_cards_fs`, `flutter_adaptive_cards_host_fs`, Widgetbook, FVM.
 
-**Parent context:** [`docs/superpowers/specs/2026-06-07-backend-host-integration-design.md`](../specs/2026-06-07-backend-host-integration-design.md) (Phase 2 host package — implemented). This plan closes the optional follow-up: *Widgetbook demo using `AdaptiveCardBackendHandlers` + mock client* with **Teams JSON fidelity (option B)**.
+**Parent context:** [`docs/archive/specs/2026-06-07-backend-host-integration-design.md`](../../archive/specs/2026-06-07-backend-host-integration-design.md) (Phase 2 host package — implemented). This plan closes the optional follow-up: *Widgetbook demo using `AdaptiveCardBackendHandlers` + mock client* with **Teams JSON fidelity (option B)**.
 
 **User choice:** Teams JSON fidelity via local HTTP server; **Widgetbook first** (standalone `host_invoke_demo/` app deferred).
 
