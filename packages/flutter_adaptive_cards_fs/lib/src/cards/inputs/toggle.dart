@@ -65,28 +65,43 @@ class AdaptiveToggleState extends ConsumerState<AdaptiveToggle>
   @override
   Widget build(BuildContext context) {
     listenForResolvedValueChanges();
+    final input = watchResolvedInput();
 
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: Row(
-          children: <Widget>[
-            Switch(
-              key: generateWidgetKey(adaptiveMap),
-              value: boolValue,
-              onChanged: (newValue) {
-                setState(() {
-                  boolValue = newValue;
-                });
-                final docValue = boolValue ? valueOn : valueOff;
-                setDocumentInputValue(docValue);
-                rawRootCardWidgetState.changeValue(id, docValue);
-                notifyUserInputValueChanged(docValue, committed: true);
-              },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: <Widget>[
+                Switch(
+                  key: generateWidgetKey(adaptiveMap),
+                  value: boolValue,
+                  onChanged: (newValue) {
+                    setState(() {
+                      boolValue = newValue;
+                    });
+                    final docValue = boolValue ? valueOn : valueOff;
+                    setDocumentInputValue(docValue);
+                    rawRootCardWidgetState.changeValue(id, docValue);
+                    notifyUserInputValueChanged(docValue, committed: true);
+                  },
+                ),
+                Expanded(
+                  child: loadLabel(
+                    context: context,
+                    label: input.label ?? title,
+                    isRequired: input.isRequired,
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              child: Text(title),
+            loadErrorMessage(
+              context: context,
+              errorMessage: input.errorMessage,
+              showError: input.isInvalid,
             ),
           ],
         ),
@@ -122,6 +137,12 @@ class AdaptiveToggleState extends ConsumerState<AdaptiveToggle>
 
   @override
   bool checkRequired() {
+    final input = readResolvedInput();
+    if (input.isRequired && !boolValue) {
+      setLocalValidationError();
+      return false;
+    }
+    clearLocalValidationError();
     return true;
   }
 }

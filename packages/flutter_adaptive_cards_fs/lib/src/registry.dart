@@ -33,6 +33,7 @@ import 'package:flutter_adaptive_cards_fs/src/cards/elements/unknown.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/date.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/number.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/inputs/rating.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/text.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/time.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/toggle.dart';
@@ -195,8 +196,9 @@ class CardTypeRegistry {
         return AdaptiveBadge(adaptiveMap: map);
       case 'Icon':
         return AdaptiveIcon(adaptiveMap: map);
+      case 'Input.Rating':
+        return AdaptiveRatingInput(adaptiveMap: map);
       case 'Rating':
-      case 'Input.Rating': // Just in case
         return AdaptiveRating(adaptiveMap: map);
       case 'CodeBlock':
         return AdaptiveCodeBlock(adaptiveMap: map);

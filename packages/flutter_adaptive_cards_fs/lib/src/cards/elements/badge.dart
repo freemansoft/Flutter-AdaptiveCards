@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders the Adaptive Cards **Badge** element (text and optional icon).
 ///
@@ -46,6 +48,8 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
   /// Icon placement relative to text: `left` or `right`.
   late String iconAlignment;
 
+  ProviderSubscription<Map<String, dynamic>?>? _textSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +61,31 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     tooltip = adaptiveMap['tooltip'] as String?;
     iconAlignment =
         adaptiveMap['iconAlignment']?.toString().toLowerCase() ?? 'left';
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _textSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _textSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        if (next == null) return;
+        final nextText = next['text'] as String?;
+        if (nextText == text) return;
+        setState(() => text = nextText);
+      },
+      fireImmediately: true,
+    );
+  }
+
+  @override
+  void dispose() {
+    _textSubscription?.close();
+    _textSubscription = null;
+    super.dispose();
   }
 
   @override

@@ -1,0 +1,24 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Rate your experience",
+      "weight": "Bolder"
+    },
+    {
+      "type": "Input.Rating",
+      "id": "rating",
+      "label": "Overall satisfaction",
+      "max": 5,
+      "value": 0
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Submit"
+    }
+  ]
+}

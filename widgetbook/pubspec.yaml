@@ -92,6 +92,7 @@ flutter:
     - lib/samples/inputs/input_time/
     - lib/samples/inputs/input_toggle/
     - lib/samples/inputs/input_choice_set/
+    - lib/samples/inputs/rating_input_overlay_demo.json
     - lib/samples/media/
     - lib/samples/table/
     - lib/samples/charts/

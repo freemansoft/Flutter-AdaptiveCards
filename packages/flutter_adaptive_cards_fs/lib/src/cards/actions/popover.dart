@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
-import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/actions/icon_button.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -32,11 +32,7 @@ class AdaptiveActionPopover extends StatefulWidget
 
 /// State for [AdaptiveActionPopover].
 class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
-    with
-        AdaptiveActionMixin,
-        AdaptiveElementMixin,
-        AdaptiveVisibilityMixin,
-        ProviderScopeMixin {
+    with AdaptiveElementMixin, ProviderScopeMixin {
   /// Nested adaptive card JSON from the action's `card` property.
   late Map<String, dynamic>? card;
 
@@ -85,30 +81,11 @@ class AdaptiveActionPopoverState extends State<AdaptiveActionPopover>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = styleResolver;
-
-    return Visibility(
-      visible: isVisible,
-      child: SeparatorElement(
-        adaptiveMap: adaptiveMap,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: resolver.resolveButtonBackgroundColor(
-              context: context,
-              style: style,
-            ),
-            foregroundColor: resolver.resolveButtonForegroundColor(
-              context: context,
-              style: style,
-            ),
-            // minimumSize: const Size.fromHeight(50),
-          ),
-          onPressed: () {
-            unawaited(onTapped(context));
-          },
-          child: Text(title),
-        ),
-      ),
+    return IconButtonAction(
+      adaptiveMap: adaptiveMap,
+      onTapped: (BuildContext context) {
+        unawaited(onTapped(context));
+      },
     );
   }
 }

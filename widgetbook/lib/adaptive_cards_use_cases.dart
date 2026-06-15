@@ -6,6 +6,7 @@ import 'package:widgetbook_workspace/fact_set_overlay_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
 import 'package:widgetbook_workspace/network_page.dart';
 import 'package:widgetbook_workspace/refresh_demo_page.dart';
+import 'package:widgetbook_workspace/rating_input_overlay_page.dart';
 import 'package:widgetbook_workspace/text_block_overlay_page.dart';
 import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
 
@@ -945,6 +946,15 @@ Widget buildV16Badge(BuildContext context) {
 )
 Widget buildV16Rating(BuildContext context) {
   return const GenericPage(url: 'lib/samples/v1.6/rating.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Rating input overlay (knob)',
+  type: widget_types.Rating,
+  path: '[Components]',
+)
+Widget buildRatingInputOverlay(BuildContext context) {
+  return RatingInputOverlayPage(key: ratingInputOverlayPageKey);
 }
 
 // =============================================================================

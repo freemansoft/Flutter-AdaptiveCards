@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`Input.Rating`:** new **`AdaptiveRatingInput`** with full overlay contract (`value`, `label`, `isRequired`, validation); registry split from read-only **`Rating`** (`AdaptiveRating`); shared **`RatingStars`** widget.
+- **`Input.Toggle`:** reactive `label`, `isRequired`, and validation UI via `watchResolvedInput()`.
+- **`Badge`:** reactive `text` overlay (`setText` / `applyUpdates`) via `resolvedElementProvider`.
+- **`Action.Popover`:** `isEnabled`, `title`, and `tooltip` overlays via shared **`IconButtonAction`** chrome.
+
 ## [0.11.0]
 
 - no changes yet

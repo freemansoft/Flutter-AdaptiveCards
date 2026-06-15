@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_adaptive_cards_fs/src/widgets/rating_stars.dart';
 
 /// Renders the Adaptive Cards **Rating** element as a row of stars.
 ///
@@ -50,50 +51,18 @@ class AdaptiveRatingState extends State<AdaptiveRating>
 
   @override
   Widget build(BuildContext context) {
-    final resolver = styleResolver;
-    Color starColor;
-    if (color == 'marigold') {
-      starColor =
-          resolver.resolveContainerForegroundColor(style: 'warning') ??
-          Colors.orange;
-    } else if (color == 'light') {
-      starColor =
-          resolver.resolveContainerForegroundColor(
-            style: 'default',
-            isSubtle: true,
-          ) ??
-          Colors.white70;
-    } else {
-      starColor =
-          resolver.resolveContainerForegroundColor(
-            style: 'default',
-            isSubtle: false,
-          ) ??
-          Colors.grey;
-    }
-
-    final double iconSize = size == 'large' ? 24 : 16;
+    final starColor = resolveRatingStarColor(styleResolver, color);
+    final iconSize = resolveRatingIconSize(size);
 
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(max.toInt(), (index) {
-            IconData iconData;
-            if (index < value) {
-              iconData = Icons.star;
-            } else {
-              iconData = Icons.star_border;
-            }
-
-            return Icon(
-              iconData,
-              color: starColor,
-              size: iconSize,
-            );
-          }),
+        child: RatingStars(
+          value: value,
+          max: max,
+          starColor: starColor,
+          iconSize: iconSize,
         ),
       ),
     );
