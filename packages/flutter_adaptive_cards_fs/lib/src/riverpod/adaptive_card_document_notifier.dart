@@ -1,7 +1,9 @@
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/text_run.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/element_overlay_extension.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -109,6 +111,62 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     );
   }
 
+  /// Replaces effective `"inlines"` for `RichTextBlock` [id].
+  void setInlines(String id, List<Map<String, dynamic>> inlines) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(
+        inlines: inlines.map(Map<String, dynamic>.from).toList(),
+      ),
+    );
+  }
+
+  /// Clears inlines overlay for [id]; effective inlines revert to baseline JSON.
+  void clearInlines(String id) {
+    _updateOverlay(
+      id,
+      (current) =>
+          (current ?? const ElementOverlay()).copyWith(clearInlines: true),
+    );
+  }
+
+  /// Patches optional-package overlay payload for [id] and [extensionId].
+  void patchExtensionOverlay(
+    String id,
+    String extensionId,
+    Map<String, dynamic> patch, {
+    bool clearPayload = false,
+  }) {
+    final extension = ref
+        .read(cardTypeRegistryProvider)
+        .overlayExtensions
+        .byId(extensionId);
+    if (extension == null) return;
+
+    _updateOverlay(id, (current) {
+      final allPayloads = Map<String, Map<String, dynamic>>.from(
+        current?.extensionPayloads ?? const {},
+      );
+      if (clearPayload) {
+        allPayloads.remove(extensionId);
+      } else {
+        final merged = extension.mergePayload(
+          current: allPayloads[extensionId] ?? const {},
+          patch: patch,
+        );
+        if (merged.isEmpty) {
+          allPayloads.remove(extensionId);
+        } else {
+          allPayloads[extensionId] = merged;
+        }
+      }
+      return (current ?? const ElementOverlay()).copyWith(
+        extensionPayloads: allPayloads.isEmpty ? null : allPayloads,
+        clearExtensionPayloads: allPayloads.isEmpty,
+      );
+    });
+  }
+
   /// Clears validation overlays for input [id].
   void clearInputError(String id) {
     _updateOverlay(
@@ -170,6 +228,30 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     Iterable<AdaptiveElementUpdate> elements = const [],
     Iterable<AdaptiveActionUpdate> actions = const [],
   }) {
+    final capabilities =
+        ref.read(cardTypeRegistryProvider).overlayCapabilities;
+    assert(() {
+      for (final update in elements) {
+        final node = state.nodesById[update.id];
+        if (node == null) continue;
+        final type = node['type'] as String?;
+        if (type == null || type.startsWith('Action.')) continue;
+        final issues = capabilities.validateElementUpdate(type, update);
+        if (issues.isNotEmpty) {
+          throw AssertionError(issues.join('; '));
+        }
+      }
+      for (final update in actions) {
+        final type = state.nodesById[update.id]?['type'] as String?;
+        if (type == null) continue;
+        final issues = capabilities.validateActionUpdate(type, update);
+        if (issues.isNotEmpty) {
+          throw AssertionError(issues.join('; '));
+        }
+      }
+      return true;
+    }());
+
     final elementOverlays = Map<String, ElementOverlay>.from(
       state.overlaysById,
     );
@@ -252,6 +334,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     return AdaptiveCardDocumentNotifier.updatesFromPatchMapWithNodes(
       byId,
       nodesById: state.nodesById,
+      overlayExtensions: ref.read(cardTypeRegistryProvider).overlayExtensions,
     );
   }
 
@@ -263,6 +346,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   updatesFromPatchMapWithNodes(
     Map<String, Object?> byId, {
     required Map<String, Map<String, dynamic>> nodesById,
+    CardOverlayExtensionRegistry overlayExtensions =
+        const CardOverlayExtensionRegistry(),
   }) {
     final elements = <AdaptiveElementUpdate>[];
     final actions = <AdaptiveActionUpdate>[];
@@ -291,6 +376,18 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
           ),
         );
         continue;
+      }
+
+      final extensionPatches = <String, Map<String, dynamic>>{};
+      final clearExtensions = <String>{};
+      for (final extension in overlayExtensions.extensions) {
+        final extracted = extension.patchFromHostMap(patch);
+        if (extracted == null) continue;
+        if (extracted['clearPayload'] == true) {
+          clearExtensions.add(extension.id);
+          continue;
+        }
+        extensionPatches[extension.id] = extracted;
       }
 
       elements.add(
@@ -323,6 +420,10 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
           clearPlaceholder: patch['clearPlaceholder'] == true,
           facts: _factsFromPatch(patch['facts']),
           clearFacts: patch['clearFacts'] == true,
+          inlines: _inlinesFromPatch(patch['inlines']),
+          clearInlines: patch['clearInlines'] == true,
+          extensionPatches: extensionPatches.isEmpty ? null : extensionPatches,
+          clearExtensions: clearExtensions,
         ),
       );
     }
@@ -371,6 +472,19 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     if (update.clearFacts) {
       overlay = overlay.copyWith(clearFacts: true);
     }
+    if (update.clearInlines) {
+      overlay = overlay.copyWith(clearInlines: true);
+    }
+    if (update.clearExtensions.isNotEmpty) {
+      final payloads = Map<String, Map<String, dynamic>>.from(
+        overlay.extensionPayloads ?? const {},
+      );
+      update.clearExtensions.forEach(payloads.remove);
+      overlay = overlay.copyWith(
+        extensionPayloads: payloads.isEmpty ? null : payloads,
+        clearExtensionPayloads: payloads.isEmpty,
+      );
+    }
 
     if (update.isVisible != null) {
       overlay = overlay.copyWith(isVisible: update.isVisible);
@@ -408,6 +522,19 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
 
     if (update.facts != null) {
       overlay = overlay.copyWith(facts: update.facts);
+    }
+
+    if (update.inlines != null) {
+      overlay = overlay.copyWith(
+        inlines: update.inlines!.map(Map<String, dynamic>.from).toList(),
+      );
+    }
+
+    if (update.extensionPatches != null) {
+      overlay = _mergeExtensionPatches(
+        overlay,
+        update.extensionPatches!,
+      );
     }
 
     if (update.choices != null) {
@@ -461,6 +588,38 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   static List<Fact>? _factsFromPatch(Object? raw) {
     if (raw is! List) return null;
     return factsFromJsonList(raw);
+  }
+
+  static List<Map<String, dynamic>>? _inlinesFromPatch(Object? raw) {
+    if (raw is! List) return null;
+    return inlinesFromJsonList(raw);
+  }
+
+  ElementOverlay _mergeExtensionPatches(
+    ElementOverlay overlay,
+    Map<String, Map<String, dynamic>> patches,
+  ) {
+    final registry = ref.read(cardTypeRegistryProvider).overlayExtensions;
+    final payloads = Map<String, Map<String, dynamic>>.from(
+      overlay.extensionPayloads ?? const {},
+    );
+    for (final entry in patches.entries) {
+      final extension = registry.byId(entry.key);
+      if (extension == null) continue;
+      final merged = extension.mergePayload(
+        current: payloads[entry.key] ?? const {},
+        patch: entry.value,
+      );
+      if (merged.isEmpty) {
+        payloads.remove(entry.key);
+      } else {
+        payloads[entry.key] = merged;
+      }
+    }
+    return overlay.copyWith(
+      extensionPayloads: payloads.isEmpty ? null : payloads,
+      clearExtensionPayloads: payloads.isEmpty,
+    );
   }
 
   /// Replaces effective `choices` for `Input.ChoiceSet` [id].

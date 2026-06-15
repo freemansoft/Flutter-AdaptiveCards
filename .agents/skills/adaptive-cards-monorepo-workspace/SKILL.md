@@ -152,8 +152,13 @@ flutter_adaptive_cards_host_fs ──► flutter_adaptive_cards_fs, http
 ### `packages/flutter_adaptive_charts_fs` — Charts Extension
 
 - **Published to pub.dev**
-- Adds charting element types (isolates heavy chart dependencies).
-- Registered via the extension API into a `CardTypeRegistry`.
+- **Optional extension** of the core library — not part of `flutter_adaptive_cards_fs`.
+- Adds `Chart.*` element widgets and chart overlay behavior; isolates heavy chart dependencies (`fl_chart`, etc.).
+- Hosts opt in via `CardTypeRegistry`:
+  - `addedElements: CardChartsRegistry.additionalChartElements` — register chart element widgets
+  - `overlayExtensions: CardChartsRegistry.overlayExtensions` — register chart overlay merge/patch hooks
+- **Do not** add chart classes, chart data structures, or chart-specific overlay fields to the core package. Use `ElementOverlayExtension` + `patchExtensionOverlay` in this package instead.
+- Docs: [`docs/optional-packages-and-extensions.md`](../../docs/optional-packages-and-extensions.md)
 
 ### `packages/flutter_adaptive_template_fs` — Template Package
 

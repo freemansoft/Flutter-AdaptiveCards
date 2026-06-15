@@ -671,6 +671,59 @@ void main() {
       });
     });
 
+    group('inlines overlay', () {
+      late ProviderContainer inlinesContainer;
+
+      setUp(() {
+        inlinesContainer = _createContainer({
+          'type': 'AdaptiveCard',
+          'version': '1.5',
+          'body': [
+            {
+              'type': 'RichTextBlock',
+              'id': 'rtb1',
+              'inlines': [
+                {'type': 'TextRun', 'text': 'Baseline'},
+              ],
+            },
+          ],
+        });
+      });
+
+      tearDown(() {
+        inlinesContainer.dispose();
+      });
+
+      test('setInlines merges into resolvedElementProvider', () {
+        inlinesContainer.read(adaptiveCardDocumentProvider.notifier).setInlines(
+          'rtb1',
+          [
+            {'type': 'TextRun', 'text': 'Overlay'},
+          ],
+        );
+
+        final resolved = inlinesContainer.read(resolvedElementProvider('rtb1'));
+        final inlines = resolved?['inlines'] as List<dynamic>?;
+        expect(inlines, hasLength(1));
+        expect(inlines!.first['text'], 'Overlay');
+      });
+
+      test('clearInlines restores baseline inlines', () {
+        final notifier =
+            inlinesContainer.read(adaptiveCardDocumentProvider.notifier)
+              ..setInlines('rtb1', [
+                {'type': 'TextRun', 'text': 'Overlay'},
+              ])
+              ..clearInlines('rtb1');
+
+        expect(notifier.state.overlaysById['rtb1']?.inlines, isNull);
+
+        final resolved = inlinesContainer.read(resolvedElementProvider('rtb1'));
+        final inlines = resolved?['inlines'] as List<dynamic>?;
+        expect(inlines!.first['text'], 'Baseline');
+      });
+    });
+
     group('TextBlock text overlays', () {
       late ProviderContainer textContainer;
 

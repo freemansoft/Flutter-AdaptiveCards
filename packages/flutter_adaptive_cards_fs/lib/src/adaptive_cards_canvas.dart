@@ -288,6 +288,7 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
       removedElements: base.removedElements,
       addedElements: base.addedElements,
       addedActions: base.addedActions,
+      overlayExtensions: base.overlayExtensions,
       listView: widget.listView,
       supportMarkdown: widget.supportMarkdown,
     );

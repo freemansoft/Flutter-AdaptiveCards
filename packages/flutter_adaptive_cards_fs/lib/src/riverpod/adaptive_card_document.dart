@@ -74,6 +74,8 @@ class ElementOverlay {
     this.label,
     this.placeholder,
     this.facts,
+    this.inlines,
+    this.extensionPayloads,
   });
 
   /// Overrides baseline `"isVisible"` when non-null.
@@ -118,6 +120,12 @@ class ElementOverlay {
   /// Overrides baseline `"facts"` on `FactSet` when non-null.
   final List<Fact>? facts;
 
+  /// Replaces baseline `"inlines"` on `RichTextBlock` when non-null.
+  final List<Map<String, dynamic>>? inlines;
+
+  /// Optional-package overlay payloads keyed by extension id.
+  final Map<String, Map<String, dynamic>>? extensionPayloads;
+
   /// Returns a copy with the given fields replaced.
   ElementOverlay copyWith({
     bool? isVisible,
@@ -134,6 +142,8 @@ class ElementOverlay {
     String? label,
     String? placeholder,
     List<Fact>? facts,
+    List<Map<String, dynamic>>? inlines,
+    Map<String, Map<String, dynamic>>? extensionPayloads,
     bool clearInputValue = false,
     bool clearChoices = false,
     bool clearQueryCount = false,
@@ -147,6 +157,8 @@ class ElementOverlay {
     bool clearLabel = false,
     bool clearPlaceholder = false,
     bool clearFacts = false,
+    bool clearInlines = false,
+    bool clearExtensionPayloads = false,
   }) {
     return ElementOverlay(
       isVisible: isVisible ?? this.isVisible,
@@ -167,6 +179,10 @@ class ElementOverlay {
       label: clearLabel ? null : (label ?? this.label),
       placeholder: clearPlaceholder ? null : (placeholder ?? this.placeholder),
       facts: clearFacts ? null : (facts ?? this.facts),
+      inlines: clearInlines ? null : (inlines ?? this.inlines),
+      extensionPayloads: clearExtensionPayloads
+          ? null
+          : (extensionPayloads ?? this.extensionPayloads),
     );
   }
 }

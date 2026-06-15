@@ -69,3 +69,15 @@ class TextRunModel {
   /// Weight token (`Lighter`, `Default`, `Bolder`, …).
   final String? weight;
 }
+
+/// Parses a card JSON `inlines` array; returns empty when invalid.
+List<Map<String, dynamic>> inlinesFromJsonList(Object? raw) {
+  if (raw is! List) return const [];
+  return raw.whereType<Map>().map(Map<String, dynamic>.from).toList();
+}
+
+/// Serializes inlines for overlay merge boundaries.
+List<Map<String, dynamic>> inlinesToJsonList(
+  List<Map<String, dynamic>> inlines,
+) =>
+    inlines.map(Map<String, dynamic>.from).toList();

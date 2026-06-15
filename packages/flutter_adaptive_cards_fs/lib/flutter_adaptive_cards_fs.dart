@@ -22,3 +22,5 @@ export 'package:flutter_adaptive_cards_fs/src/models/text_run.dart';
 /// `CardTypeRegistry` and `ActionTypeRegistry` for customizing element and action
 /// rendering; pass instances into `AdaptiveCardsCanvas` or `RawAdaptiveCard`.
 export 'package:flutter_adaptive_cards_fs/src/registry.dart';
+export 'package:flutter_adaptive_cards_fs/src/riverpod/element_overlay_extension.dart';
+export 'package:flutter_adaptive_cards_fs/src/riverpod/overlay_capability_registry.dart';

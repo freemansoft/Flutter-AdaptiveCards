@@ -10,6 +10,7 @@ export 'package:flutter_adaptive_cards_test_support/flutter_adaptive_cards_test_
 /// [CardTypeRegistry] with chart element types registered for chart package tests.
 final CardTypeRegistry chartCardTypeRegistry = CardTypeRegistry(
   addedElements: CardChartsRegistry.additionalChartElements,
+  overlayExtensions: CardChartsRegistry.overlayExtensions,
 );
 
 /// Loads a chart sample JSON fixture and wraps it in the shared test harness.

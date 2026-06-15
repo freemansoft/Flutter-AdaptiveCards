@@ -34,6 +34,7 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 - [ ] **TextBlock text**: If runtime text can change, does `AdaptiveTextBlock` read display copy from `resolvedElementProvider(id)` (not only stale `adaptiveMap['text']`)?
 - [ ] **Actions**: Do action buttons respect `isEnabled` via `AdaptiveActionStateMixin` / `resolvedActionProvider` when host-driven enable/disable matters?
 - [ ] **Overlays**: Are host/runtime patches written through the document notifier (`setInputValue`, `setText`, `setInputError`, …) rather than mutating the host JSON map?
+- [ ] **Extension boundary**: Does `flutter_adaptive_cards_fs` avoid chart-specific (or other optional-package) types, imports, and overlay fields? Optional behavior belongs in extension packages via `addedElements` / `overlayExtensions`, not in core.
 
 ### Theming & Styling
 

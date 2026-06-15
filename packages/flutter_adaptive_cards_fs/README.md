@@ -297,23 +297,9 @@ flowchart TB
   resolvedAct --> actionUi["Submit ShowCard Action buttons"]
 ```
 
-### Overlay fields (summary)
+### Overlay fields
 
-| Overlay (element)                    | Resolved JSON key          | Typical host API                         |
-| ------------------------------------ | -------------------------- | ---------------------------------------- |
-| `inputValue`                         | `value`                    | `initInput`, user edit, `setInputValue`  |
-| `choices`, query session             | `choices` / `choices.data` | `loadInput`, `setChoices`, typeahead     |
-| `isVisible`                          | `isVisible`                | `setVisibility`, ToggleVisibility        |
-| `errorMessage`, `isInvalid`          | same                       | `setInputError`, Submit validation       |
-| `isRequired`, `label`, `placeholder` | same                       | `applyUpdates`                           |
-| `text`, `url`                        | `text`, `url`              | `setText`, dynamic media URLs            |
-| `facts`                              | `facts`                    | `setFacts`, `clearFacts`, `applyUpdates` |
-
-| Overlay (action) | Resolved key | API                                     |
-| ---------------- | ------------ | --------------------------------------- |
-| `isEnabled`      | `isEnabled`  | `setActionEnabled`, `setActionsEnabled` |
-
-For the full runtime-writes matrix and merge rules, see [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). For an **input-only** architecture diagram, see [`docs/form-inputs.md` — Input overlay architecture](../../docs/form-inputs.md#input-overlay-architecture).
+Per JSON `type` patch keys, typed helpers, and contract tests: [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md). Architecture and reset: [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md). Input flow: [`docs/form-inputs.md`](../../docs/form-inputs.md#input-overlay-architecture).
 
 ### Seeding values (`initData` / `initInput`)
 
@@ -375,7 +361,8 @@ Details: [`docs/reactive-riverpod.md` — Reset semantics](../../docs/reactive-r
 
 ### Further reading
 
-- [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md) — canonical overlay model, provider scopes, test matrix, backlog
+- [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md) — overlay model, provider scopes, reset
+- [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md) — patch keys by JSON `type`
 - [`docs/form-inputs.md`](../../docs/form-inputs.md) — form inputs, validation, and reset from a host perspective
 
 ## Event Handlers

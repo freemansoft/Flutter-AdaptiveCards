@@ -37,6 +37,8 @@ import 'package:flutter_adaptive_cards_fs/src/cards/inputs/rating.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/text.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/time.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/toggle.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/element_overlay_extension.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/overlay_capability_registry.dart';
 
 /// Custom element builder registered under an Adaptive Cards `type` string.
 typedef ElementCreator = Widget Function(Map<String, dynamic> map);
@@ -60,6 +62,7 @@ class CardTypeRegistry {
     this.removedElements = const [],
     this.addedElements = const {},
     this.addedActions = const {},
+    this.overlayExtensions = const CardOverlayExtensionRegistry(),
     this.listView = false,
     this.supportMarkdown = true,
   });
@@ -69,6 +72,14 @@ class CardTypeRegistry {
 
   /// Custom action widgets keyed by action `type` (for example `Action.Submit`).
   final Map<String, ElementCreator> addedActions;
+
+  /// Optional-package overlay merge hooks (e.g. chart data patches).
+  final CardOverlayExtensionRegistry overlayExtensions;
+
+  /// Supported runtime overlay fields for elements/actions in this card scope.
+  OverlayCapabilityRegistry get overlayCapabilities => OverlayCapabilityRegistry(
+        overlayExtensions: overlayExtensions,
+      );
 
   /// Element/action `type` strings rendered as [AdaptiveUnknown] instead of built-ins.
   final List<String> removedElements;

@@ -270,6 +270,39 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     container.read(adaptiveCardDocumentProvider.notifier).clearFacts(id);
   }
 
+  /// Replaces effective `"inlines"` for `RichTextBlock` [id].
+  void setInlines(String id, List<Map<String, dynamic>> inlines) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).setInlines(id, inlines);
+  }
+
+  /// Clears inlines overlay for [id].
+  void clearInlines(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).clearInlines(id);
+  }
+
+  /// Patches optional-package overlay payload for [id] and [extensionId].
+  void patchExtensionOverlay(
+    String id,
+    String extensionId,
+    Map<String, dynamic> patch, {
+    bool clearPayload = false,
+  }) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .patchExtensionOverlay(
+          id,
+          extensionId,
+          patch,
+          clearPayload: clearPayload,
+        );
+  }
+
   /// Sets whether action [id] is enabled (AC 1.5).
   void setActionEnabled(String id, {required bool enabled}) {
     final container = documentContainer;

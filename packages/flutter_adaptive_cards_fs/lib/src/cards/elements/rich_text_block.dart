@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/text_run.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/RichTextBlock.html
@@ -35,6 +37,7 @@ class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
   late Alignment _horizontalAlignment;
   final List<TapGestureRecognizer> _recognizers = [];
   List<InlineSpan> _inlineSpans = const [];
+  ProviderSubscription<Map<String, dynamic>?>? _inlinesSubscription;
 
   @override
   void didChangeDependencies() {
@@ -46,11 +49,25 @@ class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
     _textAlign = resolver.resolveTextAlign(
       adaptiveMap['horizontalAlignment'] as String?,
     );
-    _rebuildInlineSpans();
+
+    _inlinesSubscription?.close();
+    final container = ProviderScope.containerOf(context);
+    _inlinesSubscription = container.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        _syncInlineSpansFromResolved();
+        if (mounted) {
+          setState(() {});
+        }
+      },
+      fireImmediately: true,
+    );
   }
 
   @override
   void dispose() {
+    _inlinesSubscription?.close();
+    _inlinesSubscription = null;
     for (final recognizer in _recognizers) {
       recognizer.dispose();
     }
@@ -108,10 +125,13 @@ class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
     return recognizer;
   }
 
-  List<InlineSpan> _createInlineSpans(BuildContext context) {
+  List<InlineSpan> _createInlineSpans(
+    BuildContext context,
+    Map<String, dynamic> sourceMap,
+  ) {
     _disposeRecognizers();
     final resolver = styleResolver;
-    final inlinesRaw = adaptiveMap['inlines'];
+    final inlinesRaw = sourceMap['inlines'];
     if (inlinesRaw is! List) return const [];
 
     final spans = <InlineSpan>[];
@@ -169,9 +189,11 @@ class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
     return spans;
   }
 
-  void _rebuildInlineSpans() {
-    _disposeRecognizers();
-    _inlineSpans = _createInlineSpans(context);
+  void _syncInlineSpansFromResolved() {
+    if (!mounted) return;
+    final container = ProviderScope.containerOf(context);
+    final resolved = container.read(resolvedElementProvider(id)) ?? adaptiveMap;
+    _inlineSpans = _createInlineSpans(context, resolved);
   }
 
   @override

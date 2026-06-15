@@ -87,7 +87,15 @@ Invoke round-trips with **`flutter_adaptive_cards_host_fs`** — request/respons
 
 **Status**: ✅ Current | **Category**: Architecture
 
-Riverpod scopes, document notifier, cached baseline on rebuild, **baseline + overlay** model, [overlay test coverage](./reactive-riverpod.md#overlay-test-coverage), visibility (`isVisible`), and reactive inputs, TextBlock text, validation, action `isEnabled`, show-card UI, and submit/reset without mutating host JSON.
+Riverpod scopes, document notifier, cached baseline on rebuild, **baseline + overlay** model, visibility, submit/reset without mutating host JSON. Per-type patch keys: [overlay-properties-by-type.md](./overlay-properties-by-type.md).
+
+---
+
+### [overlay-properties-by-type.md](./overlay-properties-by-type.md)
+
+**Status**: ✅ Current | **Category**: Reference
+
+Host index of runtime patch keys (`applyUpdates`, `applyUpdatesFromMap`) by JSON `type` — which overlays affect UI, typed helpers, and contract tests.
 
 ---
 

@@ -15,7 +15,7 @@ Canonical design and implementation documentation in `docs/` describes the **pub
 | [`flutter_adaptive_template_fs`](../packages/flutter_adaptive_template_fs/) | Adaptive Cards templating |
 | [`flutter_adaptive_cards_host_fs`](../packages/flutter_adaptive_cards_host_fs/) | Optional backend invoke bridge |
 
-Package READMEs, [`Architecture-Overview.md`](Architecture-Overview.md), [`reactive-riverpod.md`](reactive-riverpod.md), [`form-inputs.md`](form-inputs.md), and related guides document **library contracts** (APIs, overlay merge, theming, actions).
+Package READMEs, [`Architecture-Overview.md`](Architecture-Overview.md), [`reactive-riverpod.md`](reactive-riverpod.md), [`overlay-properties-by-type.md`](overlay-properties-by-type.md), [`form-inputs.md`](form-inputs.md), and related guides document **library contracts** (APIs, overlay merge, theming, actions).
 
 ## Sample apps (not package architecture)
 

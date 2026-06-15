@@ -14,7 +14,7 @@ Runtime state is stored in Riverpod document **overlays** keyed by input id:
 
 `AdaptiveInputMixin` listens to `resolvedElementProvider(id)` so controllers stay in sync when overlays change. New inputs must call `setDocumentInputValue(...)` on change and handle `onDocumentValueChanged` when syncing controllers from document updates.
 
-For the full overlay model (all element types), see [`reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). The diagram below is **input-only**.
+For the full overlay model (all element types), see [`overlay-properties-by-type.md`](overlay-properties-by-type.md) and [`reactive-riverpod.md`](reactive-riverpod.md). The diagram below is **input-only**.
 
 ## Input overlay architecture
 

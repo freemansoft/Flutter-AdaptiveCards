@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/gauge_painter.dart';
 
 /// Renders Adaptive Card `Chart.Gauge` elements using [CustomPainter].
@@ -30,7 +31,11 @@ class AdaptiveGaugeChart extends StatefulWidget
 
 /// State for [AdaptiveGaugeChart]; parses JSON and builds the gauge widget.
 class AdaptiveGaugeChartState extends State<AdaptiveGaugeChart>
-    with AdaptiveElementMixin, ProviderScopeMixin {
+    with
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin,
+        ChartOverlayMixin {
   late double _value;
   late double _min;
   late double _max;
@@ -42,21 +47,21 @@ class AdaptiveGaugeChartState extends State<AdaptiveGaugeChart>
   late GaugeValueFormat _valueFormat;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void onResolvedChartChanged() {
     _parseData();
   }
 
   void _parseData() {
-    _value = (adaptiveMap['value'] as num?)?.toDouble() ?? 0;
-    _min = (adaptiveMap['min'] as num?)?.toDouble() ?? 0;
-    _max = (adaptiveMap['max'] as num?)?.toDouble() ?? 100;
-    _title = adaptiveMap['title']?.toString();
-    _subLabel = adaptiveMap['subLabel']?.toString();
-    _showLegend = adaptiveMap['showLegend'] as bool? ?? true;
-    _showMinMax = adaptiveMap['showMinMax'] as bool? ?? true;
-    _valueFormat = _parseValueFormat(adaptiveMap['valueFormat']?.toString());
-    _segments = _parseSegments(adaptiveMap['segments']);
+    final map = resolvedChartMap;
+    _value = (map['value'] as num?)?.toDouble() ?? 0;
+    _min = (map['min'] as num?)?.toDouble() ?? 0;
+    _max = (map['max'] as num?)?.toDouble() ?? 100;
+    _title = map['title']?.toString();
+    _subLabel = map['subLabel']?.toString();
+    _showLegend = map['showLegend'] as bool? ?? true;
+    _showMinMax = map['showMinMax'] as bool? ?? true;
+    _valueFormat = _parseValueFormat(map['valueFormat']?.toString());
+    _segments = _parseSegments(map['segments'], map);
   }
 
   GaugeValueFormat _parseValueFormat(String? raw) {
@@ -69,12 +74,15 @@ class AdaptiveGaugeChartState extends State<AdaptiveGaugeChart>
     }
   }
 
-  List<GaugeSegment> _parseSegments(Object? raw) {
+  List<GaugeSegment> _parseSegments(
+    Object? raw,
+    Map<String, dynamic> map,
+  ) {
     if (raw is! List) {
       return const [];
     }
 
-    final colorSet = adaptiveMap['colorSet']?.toString();
+    final colorSet = map['colorSet']?.toString();
     final palette = styleResolver.resolveChartPalette(colorSet: colorSet);
     final segments = <GaugeSegment>[];
 
@@ -137,13 +145,16 @@ class AdaptiveGaugeChartState extends State<AdaptiveGaugeChart>
       ),
     );
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      child: _GaugeChrome(
-        title: _title,
-        showLegend: _showLegend,
-        segments: _segments,
-        chart: chart,
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        child: _GaugeChrome(
+          title: _title,
+          showLegend: _showLegend,
+          segments: _segments,
+          chart: chart,
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/chart_knobs_page.dart';
+import 'package:widgetbook_workspace/chart_overlay_page.dart';
 import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
 import 'package:widgetbook_workspace/fact_set_overlay_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
@@ -1076,6 +1077,15 @@ Widget buildV16ChartLine(BuildContext context) {
 )
 Widget buildV16ChartGauge(BuildContext context) {
   return _chartKnobsUseCase('lib/samples/v1.6/chart_gauge.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Chart overlay (knob)',
+  type: widget_types.Charts,
+  path: '[Components]',
+)
+Widget buildChartOverlayDemo(BuildContext context) {
+  return ChartOverlayPage(key: chartOverlayPageKey);
 }
 
 @widgetbook.UseCase(

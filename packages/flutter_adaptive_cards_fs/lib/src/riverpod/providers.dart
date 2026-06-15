@@ -6,6 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/text_run.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document.dart';
@@ -70,6 +71,7 @@ final Provider<Map<String, dynamic>?> Function(String id)
 resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
   (ref, id) {
     final doc = ref.watch(adaptiveCardDocumentProvider);
+    final registry = ref.watch(cardTypeRegistryProvider);
     final baselineNode = doc.nodesById[id];
     if (baselineNode == null) return null;
     final overlay = doc.overlaysById[id];
@@ -85,6 +87,9 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
     }
     if (overlay?.facts != null) {
       merged['facts'] = factsToJsonList(overlay!.facts!);
+    }
+    if (overlay?.inlines != null) {
+      merged['inlines'] = inlinesToJsonList(overlay!.inlines!);
     }
     if (overlay?.errorMessage != null) {
       merged['errorMessage'] = overlay!.errorMessage;
@@ -139,6 +144,16 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
         choicesData['skip'] = overlay.querySkip;
       }
       merged['choices.data'] = choicesData;
+    }
+    final elementType = merged['type']?.toString() ?? '';
+    final extensionPayloads = overlay?.extensionPayloads;
+    if (extensionPayloads != null) {
+      for (final extension in registry.overlayExtensions.extensions) {
+        if (!extension.appliesTo(elementType)) continue;
+        final payload = extensionPayloads[extension.id];
+        if (payload == null || payload.isEmpty) continue;
+        extension.mergeResolved(merged, payload);
+      }
     }
     return merged;
   },

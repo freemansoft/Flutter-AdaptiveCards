@@ -58,6 +58,24 @@ When working in **`packages/flutter_adaptive_cards_fs`**:
 
 For **sample apps and `adaptive_explorer`**, use normal Flutter state patterns (`StatefulWidget`, etc.).
 
+## Optional extension packages (charts, host, templating)
+
+`flutter_adaptive_cards_fs` is the **lean core**. Optional capabilities live in sibling packages and are **injected at runtime** — the core must not depend on them.
+
+| Extension | Package | How hosts opt in |
+| --------- | ------- | ---------------- |
+| `Chart.*` elements + chart overlays | `flutter_adaptive_charts_fs` | `CardTypeRegistry(addedElements: CardChartsRegistry.additionalChartElements, overlayExtensions: CardChartsRegistry.overlayExtensions)` |
+| Templating | `flutter_adaptive_template_fs` | Expand JSON before render |
+| Backend invoke | `flutter_adaptive_cards_host_fs` | Wrap card with `AdaptiveCardBackendHandlers` |
+
+**When editing `flutter_adaptive_cards_fs`:**
+
+- **Do not** add chart-specific types, widgets, overlay fields, or merge logic (`chartData`, `Chart.*` branches, fl_chart imports, etc.).
+- **Do** use generic extension hooks (`ElementOverlayExtension`, `CardTypeRegistry.addedElements`, `CardTypeRegistry.overlayExtensions`, `patchExtensionOverlay`) so optional packages register behavior the same way chart widgets are registered.
+- **Do** put chart widgets, chart overlay extensions, and chart-only tests in `flutter_adaptive_charts_fs`.
+
+See [`docs/optional-packages-and-extensions.md`](docs/optional-packages-and-extensions.md) and **`adaptive-cards-monorepo-workspace`** / **`adaptive-cards-element-registry`** skills.
+
 ## Code Quality
 
 - **Naming:** `PascalCase` (classes), `camelCase` (members), `snake_case` (files).

@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
 
 /// Renders Adaptive Card pie and donut chart elements using fl_chart.
 ///
@@ -39,7 +40,11 @@ class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 
 /// State for [AdaptivePieChart]; parses JSON data and builds the fl_chart widget.
 class AdaptivePieChartState extends State<AdaptivePieChart>
-    with AdaptiveElementMixin, ProviderScopeMixin {
+    with
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin,
+        ChartOverlayMixin {
   /// Parsed pie sections passed to the underlying [PieChart].
   late List<PieChartSectionData> sections;
 
@@ -48,24 +53,24 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
   List<ChartLegendEntry> _legendEntries = [];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void onResolvedChartChanged() {
     _parseData();
   }
 
   void _parseData() {
+    final map = resolvedChartMap;
     final layout = widget.isDonut
         ? styleResolver.resolveDonutChartLayout()
         : styleResolver.resolvePieChartLayout();
-    final colorSet = adaptiveMap['colorSet']?.toString();
+    final colorSet = map['colorSet']?.toString();
     final palette = styleResolver.resolveChartPalette(colorSet: colorSet);
     final sectionRadius = _fitSectionRadius(layout);
 
-    _chartTitle = adaptiveMap['title']?.toString();
-    _showLegend = adaptiveMap['showLegend'] as bool? ?? false;
+    _chartTitle = map['title']?.toString();
+    _showLegend = map['showLegend'] as bool? ?? false;
     _legendEntries = [];
 
-    final data = adaptiveMap['data'];
+    final data = map['data'];
     sections = [];
 
     if (data is List) {
@@ -125,20 +130,23 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
         ? styleResolver.resolveDonutChartLayout()
         : styleResolver.resolvePieChartLayout();
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      child: ChartChrome(
-        title: _chartTitle,
-        legendEntries: _showLegend ? _legendEntries : const [],
-        chart: SizedBox(
-          height: layout.height,
-          width: double.infinity,
-          child: ClipRect(
-            child: PieChart(
-              PieChartData(
-                sections: sections,
-                centerSpaceRadius: layout.centerSpaceRadius,
-                sectionsSpace: layout.sectionsSpace,
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        child: ChartChrome(
+          title: _chartTitle,
+          legendEntries: _showLegend ? _legendEntries : const [],
+          chart: SizedBox(
+            height: layout.height,
+            width: double.infinity,
+            child: ClipRect(
+              child: PieChart(
+                PieChartData(
+                  sections: sections,
+                  centerSpaceRadius: layout.centerSpaceRadius,
+                  sectionsSpace: layout.sectionsSpace,
+                ),
               ),
             ),
           ),
