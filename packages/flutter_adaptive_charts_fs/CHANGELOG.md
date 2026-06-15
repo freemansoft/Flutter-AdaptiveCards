@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Removed duplicate `assets/fonts/` tree; golden tests load Roboto from `flutter_adaptive_cards_test_support`.
+
 - **Chart runtime overlays:** **`ChartElementOverlayExtension`** registered via **`CardChartsRegistry.overlayExtensions`**; extension methods on **`RawAdaptiveCardState`** (`setChartData`, `patchChartProperties`, `clearChartData`, …).
 - **`ChartOverlayMixin`** + **`AdaptiveVisibilityMixin`** on bar, line, pie/donut, and gauge chart widgets — reactive `data` and chrome patches via `resolvedElementProvider`.
 - **`ElementOverlayExtension.overlayPatchKeys`** whitelists chart host patch keys (`data`, `chartProperties`, …).

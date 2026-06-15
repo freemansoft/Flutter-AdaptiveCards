@@ -18,8 +18,8 @@ todos:
     content: "Done: AGENTS.md doc paths (6.1) + monorepo skill dependency graph (6.2)"
     status: completed
   - id: phase4-assets
-    content: "PR4: Canonicalize v1.6 JSON fixtures; consolidate Roboto fonts into test_support assets + rootBundle loading; delete cards/charts font trees"
-    status: pending
+    content: "PR4: Canonicalize v1.6 JSON fixtures (§4.1 pending); Roboto fonts consolidated in test_support (§4.2 done)"
+    status: in_progress
   - id: phase5-apps
     content: "PR5: Widgetbook chart registry + overlay helpers (5.1–5.2 pending); adaptive_explorer README charts claim fixed (5.3 done)"
     status: in_progress
@@ -39,7 +39,7 @@ isProject: false
 | **2** Lib consolidation | **Done** | `parseIsVisible`, `parseHostConfigColor`, merged `isVisible` tests |
 | **3** Test infrastructure (Option A) | **Done** | [`flutter_adaptive_cards_test_support`](packages/flutter_adaptive_cards_test_support/) created; cards + template migrated; charts goldens passing (registry wiring fix) |
 | **6.1–6.2** Docs/skills | **Done** | [`AGENTS.md`](AGENTS.md) paths fixed; monorepo skill dependency graph corrected |
-| **4** Fixtures/fonts | Pending | v1.6 JSON still triplicated; Roboto trees still duplicated |
+| **4** Fixtures/fonts | **Partial** | §4.2 Roboto fonts consolidated in test_support (~10 MB saved); §4.1 v1.6 JSON still triplicated |
 | **5** Widgetbook/explorer | **Partial** | §5.3 explorer README fixed; §5.1–5.2 widgetbook helpers pending |
 | **6.3–6.4** | **Out of scope** | README boilerplate + generic skills dedup (explicit decision) |
 | **7** CI | Pending | Optional matrix + analyze step |
@@ -75,8 +75,8 @@ The monorepo’s **package boundaries are sound** (`flutter_adaptive_cards_fs`, 
 - ~~**Dead legacy source files** and **unused pubspec deps**~~ (Phase 1 done)
 - ~~**Copy-pasted test harness** across cards + charts~~ (Phase 3 done via test support package)
 - ~~**Triplicated HostConfig color parsing**~~ (Phase 2 done)
-- **Triplicated v1.6 JSON fixtures** (cards tests, charts tests, widgetbook) — Phase 4
-- **Duplicated font assets** (~10 MB Roboto trees in cards + charts; consolidate into test_support — §4.2)
+- **Triplicated v1.6 JSON fixtures** (cards tests, charts tests, widgetbook) — Phase 4 §4.1
+- ~~**Duplicated font assets** (~10 MB Roboto trees in cards + charts)~~ (§4.2 done — single copy in test_support)
 - **Boilerplate in widgetbook** (chart registry wiring, overlay-retry pages) — Phase 5
 - ~~**Documentation / skill path drift** (`doc/` vs `docs/`, stale skill references)~~ (§6.1–6.2 done)
 
@@ -92,13 +92,12 @@ flowchart TB
     parseColor[parseHostConfigColor unified]
   end
   subgraph remaining [Still duplicated]
-    fonts[Roboto assets x2 cwd File load]
     fixtures[v1.6 JSON x3]
   end
-  subgraph phase4target [Phase 4 target]
-    fontsOnce[test_support assets plus rootBundle]
+  subgraph phase4done [Phase 4 §4.2 done]
+    fontsOnce[test_support Roboto assets]
   end
-  fonts --> phase4target
+  testSupport --> fontsOnce
   testSupport --> cards
   testSupport --> charts
   charts --> cards
@@ -176,9 +175,9 @@ Unpublished workspace package ([`README.md`](packages/flutter_adaptive_cards_tes
 
 ---
 
-## Phase 4 — Fixture & asset deduplication (~1 PR) — Pending
+## Phase 4 — Fixture & asset deduplication (~1 PR) — Partial (§4.2 done)
 
-### 4.1 v1.6 sample JSON (triplicated)
+### 4.1 v1.6 sample JSON (triplicated) — Pending
 
 Canonical copies still exist in:
 
@@ -188,28 +187,57 @@ Canonical copies still exist in:
 
 **Recommended approach:** Create `fixtures/adaptive_card_samples/v1.6/` at repo root (or under cards as canonical). Add `tool/sync_samples.dart` or CI drift check.
 
-### 4.2 Duplicated Roboto font assets
+### 4.2 Duplicated Roboto font assets ✅ Complete
 
-#### Current state
+#### Implemented (2026-06)
+
+| Location | Status |
+|----------|--------|
+| [`packages/flutter_adaptive_cards_test_support/assets/fonts/Roboto/`](packages/flutter_adaptive_cards_test_support/assets/fonts/Roboto/) | **Canonical** — 10 `.ttf` faces + `LICENSE.txt` (~1.4 MB) |
+| [`packages/flutter_adaptive_cards_fs/assets/fonts/`](packages/flutter_adaptive_cards_fs/assets/fonts/) | **Deleted** |
+| [`packages/flutter_adaptive_charts_fs/assets/fonts/`](packages/flutter_adaptive_charts_fs/assets/fonts/) | **Deleted** (was byte-identical copy) |
+
+**Migration approach:** `git mv` of the 10 loaded faces from cards → test_support (preserves git history on those paths); `git rm` of charts duplicate tree and unused variants (`material_fonts/`, italic/black faces).
+
+**`loadAdaptiveCardsTestFonts()`:** Removed cwd-relative `fontsRoot` parameter. Fonts resolve via [`package_config`](https://pub.dev/packages/package_config) to the test_support package root, then load with `FontLoader` + `File`. This works while test_support remains a **dev_dependency** (dev-dependency assets are not merged into the Flutter test asset bundle, so `rootBundle.load('packages/flutter_adaptive_cards_test_support/...')` alone fails).
+
+**Also added:** `flutter: assets:` entries in test_support `pubspec.yaml`; [`tool/check_no_duplicate_fonts.sh`](tool/check_no_duplicate_fonts.sh) CI guard.
+
+**Verification (2026-06):**
+
+```text
+cd packages/flutter_adaptive_cards_fs && fvm flutter test --tags=golden   # 19 passed
+cd packages/flutter_adaptive_charts_fs && fvm flutter test --tags=golden  # 8 passed
+tool/check_no_duplicate_fonts.sh                                          # OK
+```
+
+No golden PNG regeneration required (same font bytes).
+
+#### Original plan notes (archived)
+
+<details>
+<summary>Pre-migration state and design options</summary>
+
+#### Former state
 
 | Location | Size | Used by |
 |----------|------|---------|
 | [`packages/flutter_adaptive_cards_fs/assets/fonts/`](packages/flutter_adaptive_cards_fs/assets/fonts/) | ~5.2 MB | Golden/widget tests (via `File('assets/fonts/Roboto/...')`) |
 | [`packages/flutter_adaptive_charts_fs/assets/fonts/`](packages/flutter_adaptive_charts_fs/assets/fonts/) | ~5.2 MB | **Byte-identical copy** for charts golden tests |
 
-Phase 3 centralized **loading** in [`loadAdaptiveCardsTestFonts()`](packages/flutter_adaptive_cards_test_support/lib/src/flutter_test_config.dart), but each package still keeps its own on-disk tree because loading uses a **cwd-relative** path:
+Phase 3 centralized **loading** in [`loadAdaptiveCardsTestFonts()`](packages/flutter_adaptive_cards_test_support/lib/src/flutter_test_config.dart), but each package still kept its own on-disk tree because loading used a **cwd-relative** path:
 
 ```dart
 File('assets/fonts/Roboto/Roboto-Regular.ttf')  // resolves per package when `flutter test` runs
 ```
 
-Neither library `pubspec.yaml` declares these as Flutter `assets:` — they exist only for test `File` I/O. HostConfig maps font names to `'Roboto'` (see [`code_block.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/elements/code_block.dart)); golden tests must register that family via `FontLoader` or text metrics drift across platforms.
+Neither library `pubspec.yaml` declared these as Flutter `assets:` — they existed only for test `File` I/O. HostConfig maps font names to `'Roboto'` (see [`code_block.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/elements/code_block.dart)); golden tests must register that family via `FontLoader` or text metrics drift across platforms.
 
-**Subset actually loaded:** test support loads **10** files (Regular/Bold/Light/Medium/Thin + RobotoMono variants). Each package tree contains **22** `.ttf` files plus unused `material_fonts/` / `material_symbols_outlined/` subtrees (commented out in the old config).
+**Subset actually loaded:** test support loads **10** files (Regular/Bold/Light/Medium/Thin + RobotoMono variants). Each package tree contained **22** `.ttf` files plus unused `material_fonts/` / `material_symbols_outlined/` subtrees (commented out in the old config).
 
 #### Recommended approach: single copy in `flutter_adaptive_cards_test_support`
 
-Store fonts once in the test-support package and load via **`rootBundle`**, not `File`. Dependency-package assets are available in widget tests when declared in the **owning** package’s `pubspec.yaml`.
+Store fonts once in the test-support package. Original plan preferred **`rootBundle`**; implementation uses **package_config + File** because test_support is a dev_dependency.
 
 ```text
 packages/flutter_adaptive_cards_test_support/
@@ -221,34 +249,9 @@ packages/flutter_adaptive_cards_test_support/
   lib/src/flutter_test_config.dart
 ```
 
-**`loadAdaptiveCardsTestFonts()` changes:**
+</details>
 
-1. Remove the `fontsRoot` cwd parameter (or keep as optional override for experiments only).
-2. Load each face with:
-   ```dart
-   rootBundle.load('packages/flutter_adaptive_cards_test_support/assets/fonts/Roboto/$fileName')
-   ```
-3. Requires `TestWidgetsFlutterBinding.ensureInitialized()` before load (already true in `flutter test`).
-
-**Delete after migration:**
-
-- `packages/flutter_adaptive_charts_fs/assets/fonts/` (entire tree)
-- `packages/flutter_adaptive_cards_fs/assets/fonts/` (entire tree)
-
-**Update docs:**
-
-- [`packages/flutter_adaptive_cards_fs/README.md`](packages/flutter_adaptive_cards_fs/README.md) golden-test section — fonts live in test support, not cards package
-- [`packages/flutter_adaptive_cards_test_support/README.md`](packages/flutter_adaptive_cards_test_support/README.md) — document asset paths and `packages/…` bundle keys
-
-**Verification:**
-
-```bash
-cd packages/flutter_adaptive_cards_fs && fvm flutter test --tags=golden
-cd packages/flutter_adaptive_charts_fs && fvm flutter test --tags=golden
-# Expect no FileNotFoundError; golden PNGs may need regen if font paths changed (unlikely if same bytes)
-```
-
-#### Alternative approaches (not recommended unless constraints block Option A)
+#### Alternative approaches (not used)
 
 | Option | How | Pros | Cons |
 |--------|-----|------|------|
@@ -257,17 +260,17 @@ cd packages/flutter_adaptive_charts_fs && fvm flutter test --tags=golden
 | **D. Git symlinks** | `charts/assets/fonts` → `../flutter_adaptive_cards_fs/assets/fonts` | No duplicate bytes locally | Poor Windows/checkout support; easy to break |
 | **E. Trim only** | Delete charts copy; charts tests always run from cards path | Quick | Doesn’t fix duplication at source; charts CI must run from specific cwd |
 
-#### Migration checklist (Phase 4 PR)
+#### Migration checklist (Phase 4 PR) — §4.2 done
 
-1. Copy the **10 loaded** `.ttf` files into `flutter_adaptive_cards_test_support/assets/fonts/Roboto/`.
-2. Add `flutter: assets:` entries to [`packages/flutter_adaptive_cards_test_support/pubspec.yaml`](packages/flutter_adaptive_cards_test_support/pubspec.yaml).
-3. Refactor [`loadAdaptiveCardsTestFonts()`](packages/flutter_adaptive_cards_test_support/lib/src/flutter_test_config.dart) to use `rootBundle.load('packages/flutter_adaptive_cards_test_support/...')`.
-4. Remove `fontsRoot` from [`adaptiveCardsTestExecutable()`](packages/flutter_adaptive_cards_test_support/lib/src/flutter_test_config.dart) unless kept as debug override.
-5. Delete duplicate font trees from cards and charts packages.
-6. Run golden suites for cards + charts; commit regenerated goldens only if pixel diffs appear.
-7. Add a CI guard (optional): `tool/check_no_duplicate_fonts.sh` fails if `assets/fonts/Roboto/*.ttf` exists outside test_support.
+1. ~~Copy the **10 loaded** `.ttf` files into `flutter_adaptive_cards_test_support/assets/fonts/Roboto/`.~~ **Done** (`git mv` from cards)
+2. ~~Add `flutter: assets:` entries to test_support `pubspec.yaml`.~~ **Done**
+3. ~~Refactor `loadAdaptiveCardsTestFonts()` to resolve test_support package path (package_config + File; rootBundle blocked by dev_dependency).~~ **Done**
+4. ~~Remove `fontsRoot` from `adaptiveCardsTestExecutable()`.~~ **Done**
+5. ~~Delete duplicate font trees from cards and charts packages.~~ **Done**
+6. ~~Run golden suites for cards + charts.~~ **Done** — no PNG regen needed
+7. ~~Add CI guard: `tool/check_no_duplicate_fonts.sh`.~~ **Done**
 
-**Savings:** ~10 MB repo size (two ~5.2 MB trees → one ~2 MB subset of 10 files).
+**Savings:** ~10 MB repo checkout size (two ~5.2 MB trees → one ~1.4 MB subset of 10 files).
 
 ---
 

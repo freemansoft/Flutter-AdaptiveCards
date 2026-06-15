@@ -13,9 +13,21 @@ dependencies:
     path: ../flutter_adaptive_cards_fs
   flutter_test:
     sdk: flutter
+  package_config: ^2.2.0
 
 dev_dependencies:
   very_good_analysis: ^10.2.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/fonts/Roboto/Roboto-Regular.ttf
+    - assets/fonts/Roboto/Roboto-Bold.ttf
+    - assets/fonts/Roboto/Roboto-Light.ttf
+    - assets/fonts/Roboto/Roboto-Medium.ttf
+    - assets/fonts/Roboto/Roboto-Thin.ttf
+    - assets/fonts/Roboto/RobotoMono-Regular.ttf
+    - assets/fonts/Roboto/RobotoMono-Bold.ttf
+    - assets/fonts/Roboto/RobotoMono-Light.ttf
+    - assets/fonts/Roboto/RobotoMono-Medium.ttf
+    - assets/fonts/Roboto/RobotoMono-Thin.ttf

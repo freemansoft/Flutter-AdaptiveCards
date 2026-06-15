@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Removed duplicate `assets/fonts/` tree; golden tests load Roboto from `flutter_adaptive_cards_test_support`.
+
 ### Overlay gaps remediation (Waves 1–3)
 
 - **`RichTextBlock`:** runtime **`inlines`** overlay; host **`setInlines`** / **`clearInlines`** on **`RawAdaptiveCardState`**; widget listener via `resolvedElementProvider`.

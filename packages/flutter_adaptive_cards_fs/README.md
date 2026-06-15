@@ -383,7 +383,7 @@ There are two example apps and a bunch of tests that demonstrate card usage.
 
 There are functional Unit tests and _golden_ unit tests located in the `test` folder. They all use use the standard flutter testing mechanism. Golden tests may load a font so as not to use the `ahem` block font.
 
-- The tests load the Roboto fonts so that the golden tests don't just show the block font. Spacing can be off between platforms so the golden tests are organized into platform-specific subdirectories (e.g., `gold_files/linux/`, `gold_files/macos/`).
+- Golden tests load Roboto fonts from [`flutter_adaptive_cards_test_support`](../flutter_adaptive_cards_test_support/) (via `adaptiveCardsTestExecutable`) so they don't render with the block font. Spacing can differ between platforms, so golden images are organized into platform-specific subdirectories (e.g., `gold_files/linux/`, `gold_files/macos/`).
 - Golden images are platform-specific. The **Linux (CI)** images are the project's source of truth. Golden tests dynamically select the appropriate subdirectory based on the host OS. See: <https://github.com/flutter/flutter/issues/2943>.
 
 ## Compatibility

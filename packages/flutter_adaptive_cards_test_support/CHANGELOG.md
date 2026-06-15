@@ -4,6 +4,10 @@ All notable changes to this **unpublished** workspace test package are documente
 
 ## [Unreleased]
 
+### Changed
+
+- Roboto golden-test fonts moved to `assets/fonts/Roboto/` and loaded from the test_support package directory (removed cwd-relative `File` loading and `fontsRoot` parameter).
+
 ## [0.10.0]
 
 ### Added
