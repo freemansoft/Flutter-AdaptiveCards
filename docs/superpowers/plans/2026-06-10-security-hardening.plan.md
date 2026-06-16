@@ -178,6 +178,24 @@ void main() {
       final result = devPolicy.validate('http://127.0.0.1:8080');
       expect(result, isA<AdaptiveUriAllowed>());
     });
+
+    test('permits mailto and tel schemes when added to allowedSchemes', () {
+      const customPolicy = AdaptiveUriPolicy(
+        allowedSchemes: {'https', 'http', 'mailto', 'tel'},
+      );
+      final mailtoResult = customPolicy.validate('mailto:someone@example.com');
+      expect(mailtoResult, isA<AdaptiveUriAllowed>());
+
+      final telResult = customPolicy.validate('tel:123-456-7890');
+      expect(telResult, isA<AdaptiveUriAllowed>());
+    });
+
+    test('denies mailto when not in allowedSchemes', () {
+      const policy = AdaptiveUriPolicy.standard;
+      final result = policy.validate('mailto:someone@example.com');
+      expect(result, isA<AdaptiveUriDenied>());
+      expect((result as AdaptiveUriDenied).reason, contains('scheme'));
+    });
   });
 }
 ```
@@ -257,20 +275,23 @@ class AdaptiveUriPolicy {
     }
 
     final host = uri.host.toLowerCase();
-    if (host.isEmpty) {
+    final isHttpOrHttps = scheme == 'http' || scheme == 'https';
+    if (isHttpOrHttps && host.isEmpty) {
       return const AdaptiveUriDenied('URL host is missing');
     }
 
-    if (allowedHosts != null && !allowedHosts!.contains(host)) {
-      return AdaptiveUriDenied('Host "$host" is not in the allowlist');
-    }
+    if (host.isNotEmpty) {
+      if (allowedHosts != null && !allowedHosts!.contains(host)) {
+        return AdaptiveUriDenied('Host "$host" is not in the allowlist');
+      }
 
-    if (!allowLoopback && _isLoopback(host)) {
-      return const AdaptiveUriDenied('Loopback hosts are not allowed');
-    }
+      if (!allowLoopback && _isLoopback(host)) {
+        return const AdaptiveUriDenied('Loopback hosts are not allowed');
+      }
 
-    if (!allowPrivateHosts && _isPrivateHost(host)) {
-      return const AdaptiveUriDenied('Private network hosts are not allowed');
+      if (!allowPrivateHosts && _isPrivateHost(host)) {
+        return const AdaptiveUriDenied('Private network hosts are not allowed');
+      }
     }
 
     return AdaptiveUriAllowed(uri);
@@ -501,6 +522,49 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('not allowed'), findsOneWidget);
+  });
+
+  testWidgets('DefaultOpenUrl allows mailto: when scheme is allowed', (
+    tester,
+  ) async {
+    const card = {
+      'type': 'AdaptiveCard',
+      'version': '1.0',
+      'body': <Map<String, dynamic>>[],
+      'actions': [
+        {
+          'type': 'Action.OpenUrl',
+          'title': 'Mail',
+          'url': 'mailto:someone@example.com',
+        },
+      ],
+    };
+
+    var called = false;
+    await tester.pumpWidget(
+      InheritedAdaptiveCardSecurityPolicy(
+        uriPolicy: const AdaptiveUriPolicy(
+          allowedSchemes: {'https', 'http', 'mailto'},
+        ),
+        fetchPolicy: AdaptiveFetchPolicy.standard,
+        child: getTestWidgetFromMap(
+          map: card,
+          title: 'open url policy test',
+          onOpenUrl: (invoke) {
+            called = true;
+            expect(invoke.url, 'mailto:someone@example.com');
+          },
+          onSubmit: (_) {},
+          onExecute: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Mail'));
+    await tester.pumpAndSettle();
+
+    expect(called, isTrue);
   });
 }
 ```
@@ -905,7 +969,7 @@ git commit -m "fix(template): cap json() builtin input size"
 - Modify: `packages/flutter_adaptive_cards_host_fs/README.md`
 - Modify: both packages' `CHANGELOG.md`
 
-- [ ] **Step 1: Add "Security" section to cards README** — document `AdaptiveUriPolicy.standard` vs `.development`, `InheritedAdaptiveCardSecurityPolicy`, recommendation to implement `onOpenUrl` for production.
+- [ ] **Step 1: Add "Security" section to cards README** — document `AdaptiveUriPolicy.standard` vs `.development`, `InheritedAdaptiveCardSecurityPolicy`, custom scheme configurations for custom protocols (e.g. `mailto:`, `tel:`), and recommendation to implement `onOpenUrl` for production.
 
 - [ ] **Step 2: Add host README section** — `maxResponseBytes`, `cardValidator`, never log `AdaptiveCardBackendException.body` in production.
 
