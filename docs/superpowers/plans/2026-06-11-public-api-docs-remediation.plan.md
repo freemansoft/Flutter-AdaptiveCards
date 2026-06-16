@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]` / `- [ ]`) syntax for tracking.
 
-**Status:** **Tasks 0–5** — implemented (uncommitted on `main`). **Final verification** — `cards_fs` analyze clean for `public_member_api_docs`; 400 tests pass (2026-06-11).
+**Status:** **Tasks 0–5** — implemented and merged on `main`. **Final verification** — `cards_fs` analyze clean for `public_member_api_docs`; 400 tests pass (2026-06-11).
 
 **Goal:** Bring exported public `///` documentation across library packages in line with the **`dart-public-api-docs`** standard: explain why an API exists and how callers use it; do not narrate implementation steps or restate signatures.
 
@@ -32,7 +32,7 @@
 | Phase 5 — Lint enforcement  | Enable `public_member_api_docs` + fill ~99 gaps in `cards_fs` | Done (2026-06-11)                        |
 | Final verification          | analyze + full test suite                                     | cards_fs analyze clean; 400 tests pass   |
 
-### Changed files (uncommitted)
+### Changed files (merged)
 
 **AI instructions (Task 0):**
 
@@ -239,7 +239,7 @@ fvm flutter test --exclude-tags=golden → 400 passed, 2 skipped
 - [x] **Step 3:** `packages/flutter_adaptive_cards_fs` — `fvm flutter test --exclude-tags=golden` (400 passed, 2026-06-11)
 - [x] **Step 4:** `packages/flutter_adaptive_cards_host_fs` — `fvm flutter test` (15 passed, 2026-06-11)
 - [x] **Step 5:** Re-run Step 3 after Phase 5 doc-only changes (400 passed, 2026-06-11)
-- [ ] **Step 6:** Optional: commit + PR (Tasks 0–5)
+- [x] **Step 6:** Commit + PR (Tasks 0–5)
 
 **Gate:** Do not claim plan complete until Phase 5 passes and Steps 2 + 5 pass (per `AGENTS.md` plan completion gate).
 
@@ -257,7 +257,7 @@ fvm flutter test --exclude-tags=golden → 400 passed, 2 skipped
 | Item                        | Plan                          | As built                                                             |
 | --------------------------- | ----------------------------  | -------------------------------------------------------------------- |
 | Execution                   | Sequential tasks              | Phases 1–3 run in **parallel subagents** (2026-06-11)                |
-| Git                         | Per-task commits              | **Uncommitted** on `main`                                            |
+| Git                         | Per-task commits              | Merged on `main` (2026-06-11)                                        |
 | Library dartdoc links       | `[TypeName]` in library docs  | Backticks in barrel files to satisfy `comment_references`            |
 | Phase 3 scope               | `utils.dart` only             | Also included charts + test helpers (overlap with Phase 1 file list) |
 | `charts_layout_config.dart` | Phase 3 mention               | Deferred to **Phase 4** (extend export; large field surface)         |

@@ -67,7 +67,7 @@ fvm flutter test test/golden_v1_6_test.dart  (flutter_adaptive_charts_fs)
 
 **Optional Phase 3 polish (non-blocking):** Hide `getV16SampleForGoldenTest` from charts re-export to prevent regression. Template tools (`generate_example_outputs.dart` / `fix_outputs.dart`) still duplicate expand logic.
 
-**Remaining work:** §4.1 v1.6 JSON canonicalization; Phase 7 CI (optional). Phases 1–3, §4.2, §5, and §6.1–6.2 are merged or ready to PR (widgetbook §5.1–5.2 may be uncommitted in working tree).
+**Remaining work:** §4.1 JSON fixture canonicalization (all versions, not just v1.6); Phase 7 CI (optional). Phases 1–3, §4.2, §5, and §6.1–6.2 are merged or ready to PR (widgetbook §5.1–5.2 may be uncommitted in working tree).
 
 ---
 
@@ -78,7 +78,7 @@ The monorepo’s **package boundaries are sound** (`flutter_adaptive_cards_fs`, 
 - ~~**Dead legacy source files** and **unused pubspec deps**~~ (Phase 1 done)
 - ~~**Copy-pasted test harness** across cards + charts~~ (Phase 3 done via test support package)
 - ~~**Triplicated HostConfig color parsing**~~ (Phase 2 done)
-- **Triplicated v1.6 JSON fixtures** (cards tests, charts tests, widgetbook) — Phase 4 §4.1
+- **Triplicated sample JSON fixtures** (cards tests, charts tests, widgetbook) across versions — Phase 4 §4.1
 - ~~**Duplicated font assets** (~10 MB Roboto trees in cards + charts)~~ (§4.2 done — single copy in test_support)
 - ~~**Boilerplate in widgetbook** (chart registry wiring, overlay-retry pages)~~ (Phase 5 done)
 - ~~**Documentation / skill path drift** (`doc/` vs `docs/`, stale skill references)~~ (§6.1–6.2 done; overlay-demos doc updated for §5.2)
@@ -98,7 +98,7 @@ flowchart TB
     fontsOnce[test_support Roboto assets]
   end
   subgraph remaining [Still duplicated]
-    fixtures[v1.6 JSON x3]
+    fixtures[v1.x JSON x3]
   end
   testSupport --> fontsOnce
   testSupport --> cards
@@ -182,15 +182,41 @@ Unpublished workspace package ([`README.md`](packages/flutter_adaptive_cards_tes
 
 ## Phase 4 — Fixture & asset deduplication (~1 PR) — Partial (§4.2 done)
 
-### 4.1 v1.6 sample JSON (triplicated) — Pending
+### 4.1 Sample JSON fixtures across versions (triplicated) — Pending
 
-Canonical copies still exist in:
+Canonical copies still exist in (for each `v*` sample directory):
 
-- `packages/flutter_adaptive_cards_fs/test/samples/v1.6/`
-- `packages/flutter_adaptive_charts_fs/test/samples/v1.6/`
-- `widgetbook/lib/samples/v1.6/`
+- `packages/flutter_adaptive_cards_fs/test/samples/v*/`
+- `packages/flutter_adaptive_charts_fs/test/samples/v*/`
+- `widgetbook/lib/samples/v*/`
 
-**Recommended approach:** Create `fixtures/adaptive_card_samples/v1.6/` at repo root (or under cards as canonical). Add `tool/sync_samples.dart` or CI drift check.
+#### 4.1.0 Widgetbook renames for “same filename, different JSON” (Pending)
+
+Some widgetbook JSON files share the same filename (e.g. `rating.json`, `progress_bar.json`, and certain chart samples) with canonical cards/charts fixtures, but the widgetbook variants are intentionally different. Centralizing fixtures blindly can create ambiguity and accidental reference drift.
+
+**Rename rule (deterministic):**
+
+- If the widgetbook file is byte-identical to the canonical copy: keep the shared filename.
+- If the widgetbook file has the same basename but different JSON bytes: rename the widgetbook file to include a suffix:
+  - Prefer `_enriched` when the widgetbook version adds extra fields/UX affordances.
+  - Prefer `_2` (or `_3`, etc.) when the widgetbook version is the second distinct variant of the same conceptual sample.
+  - Any suffix is acceptable as long as it is consistent, discoverable, and updated everywhere widgetbook references it.
+
+**Implementation tasks:**
+
+1. Add/extend a small drift-detection tool (e.g. `tool/check_widgetbook_json_collisions.dart`) that:
+   - Finds basenames that exist in both `widgetbook/lib/samples/v*/` and the canonical candidates (`packages/flutter_adaptive_cards_fs/test/samples/v*/` and `packages/flutter_adaptive_charts_fs/test/samples/v*/`).
+   - Compares byte hashes and emits “identical” vs “different” collisions.
+2. For “different” collisions, rename files in `widgetbook/lib/samples/v1.6/` using the rule above.
+3. Update widgetbook references to renamed assets:
+   - `widgetbook/lib/adaptive_cards_use_cases.dart` (the `url: 'lib/samples/v1.6/...'` strings)
+   - any overlay/demo pages with hard-coded sample paths (e.g. `_assetPath` constants in `widgetbook/lib/*_page.dart`)
+   - any other direct asset references (including chart knob/demo pages)
+4. Update `widgetbook/pubspec.yaml` assets entries if needed (renamed `lib/samples/v*/**/*.json` should still be covered).
+
+#### 4.1.1 Canonicalize sample JSON fixtures (Pending)
+
+**Recommended approach:** Create `fixtures/adaptive_card_samples/v*/` at repo root (or under cards as canonical). Add `tool/sync_samples.dart` or CI drift check so canonical JSON is copied/kept in sync across consumers.
 
 ### 4.2 Duplicated Roboto font assets ✅ Complete
 
@@ -353,7 +379,7 @@ Updated `doc/` → `docs/` links (`AdaptiveWidget-Key-Generation.md`, `form-inpu
 | **PR2** | Phase 2 | **Merged** |
 | **PR3** | Phase 3 + §6.1–6.2 + test-support README | **Merged** |
 | **PR4a** | Phase 4 §4.2 fonts (#27, #28) | **Merged** |
-| **PR4b** | Phase 4 §4.1 v1.6 JSON canonicalization | **Next** |
+| **PR4b** | Phase 4 §4.1.0 + §4.1.1 v1.6 JSON canonicalization (incl. widgetbook renames) | **Next** |
 | **PR5** | Phase 5 widgetbook registry + overlay scaffold + CHANGELOG | Ready to commit (if not yet PR’d) |
 | **PR6** | Phase 7 CI matrix | Not started |
 
