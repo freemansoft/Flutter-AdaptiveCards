@@ -28,7 +28,7 @@ Patch keys in `applyUpdatesFromMap` match `AdaptiveElementUpdate` / server `appl
 | `facts`                              | `facts`                    | `FactSet` (full replace)                      |
 | `inlines`                            | `inlines`                  | `RichTextBlock`                               |
 | `data` / `chartProperties`           | `data` + chrome keys       | `Chart.*` with charts extension registered    |
-| `isEnabled`, `title`, `tooltip`      | same                       | `Action.*` (`ActionOverlay`)                  |
+| `isEnabled`, `title`, `tooltip`, `iconUrl` | same                   | `Action.*` (`ActionOverlay`)                  |
 
 Clear flags: `clearValue`, `clearError`, `clearChoices`, `clearText`, `clearFacts`, `clearInlines`, `clearLabel`, `clearPlaceholder`, `clearIsRequired`, `clearUrl`, `clearExtensions` (extension ids).
 
@@ -48,7 +48,7 @@ Shared input keys (**all `Input.*`** except where noted): `isVisible`, `value`, 
 | **`Image`**, **`Media`**                                                                                         | `url`                                                                                                                                                                     | `applyUpdates`                                                                                     | `test/elements/image_overlay_test.dart`, `media_overlay_test.dart`          |
 | **`Rating`** (display)                                                                                           | `value`                                                                                                                                                                   | `applyUpdates`                                                                                     | `test/elements/rating_overlay_test.dart`                                    |
 | **`Chart.*`**                                                                                                    | `data`; `chartProperties`: `title`, `xAxisTitle`, `yAxisTitle`, `showBarValues`, `showLegend`, `colorSet`, `value`, `min`, `max`, `subLabel`, `valueFormat`, `showMinMax` | `setChartData`, `patchChartProperties` ([charts package](../packages/flutter_adaptive_charts_fs/)) | `flutter_adaptive_charts_fs/test/charts/chart_overlay_test.dart`            |
-| **`Action.*`**                                                                                                   | `isEnabled`, `title`, `tooltip`                                                                                                                                           | `setActionEnabled`, `setActionsEnabled`                                                            | `test/actions/*_overlay_test.dart`                                          |
+| **`Action.*`**                                                                                                   | `isEnabled`, `title`, `tooltip`, `iconUrl`                                                                                                                                | `setActionEnabled`, `setActionsEnabled`                                                            | `test/actions/*_overlay_test.dart`                                          |
 | **Any element with `id`**                                                                                        | `isVisible`                                                                                                                                                               | `setIsVisible`, `Action.ToggleVisibility`                                                          | `test/elements/visibility_overlay_test.dart`                                |
 
 **Charts:** requires `CardTypeRegistry(overlayExtensions: CardChartsRegistry.overlayExtensions)` — see [`optional-packages-and-extensions.md`](optional-packages-and-extensions.md).
@@ -66,5 +66,4 @@ Shared input keys (**all `Input.*`** except where noted): `isVisible`, `value`, 
 
 | Target            | Property                  | Notes                                  |
 | ----------------- | ------------------------- | -------------------------------------- |
-| `Action.*`        | `iconUrl`                 | Baseline only today                    |
 | `Input.ChoiceSet` | `choices.data.parameters` | Distinct from typeahead session fields |

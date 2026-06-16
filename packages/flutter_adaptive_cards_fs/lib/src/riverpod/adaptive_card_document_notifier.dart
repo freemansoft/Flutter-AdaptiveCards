@@ -228,8 +228,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     Iterable<AdaptiveElementUpdate> elements = const [],
     Iterable<AdaptiveActionUpdate> actions = const [],
   }) {
-    final capabilities =
-        ref.read(cardTypeRegistryProvider).overlayCapabilities;
+    final capabilities = ref.read(cardTypeRegistryProvider).overlayCapabilities;
     assert(() {
       for (final update in elements) {
         final node = state.nodesById[update.id];
@@ -371,8 +370,10 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
             isEnabled: patch['isEnabled'] as bool?,
             title: patch['title'] as String?,
             tooltip: patch['tooltip'] as String?,
+            iconUrl: patch['iconUrl'] as String?,
             clearTitle: patch['clearTitle'] == true,
             clearTooltip: patch['clearTooltip'] == true,
+            clearIconUrl: patch['clearIconUrl'] == true,
           ),
         );
         continue;
@@ -567,6 +568,9 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     if (update.clearTooltip) {
       overlay = overlay.copyWith(clearTooltip: true);
     }
+    if (update.clearIconUrl) {
+      overlay = overlay.copyWith(clearIconUrl: true);
+    }
     if (update.isEnabled != null) {
       overlay = overlay.copyWith(isEnabled: update.isEnabled);
     }
@@ -575,6 +579,9 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     }
     if (update.tooltip != null) {
       overlay = overlay.copyWith(tooltip: update.tooltip);
+    }
+    if (update.iconUrl != null) {
+      overlay = overlay.copyWith(iconUrl: update.iconUrl);
     }
 
     return overlay;

@@ -68,7 +68,10 @@ enum ActionOverlayField {
   title('title'),
 
   /// Overrides baseline `"tooltip"`.
-  tooltip('tooltip');
+  tooltip('tooltip'),
+
+  /// Overrides baseline `"iconUrl"`.
+  iconUrl('iconUrl');
 
   /// Creates a field identifier with host [patchKey] name.
   const ActionOverlayField(this.patchKey);
@@ -116,6 +119,7 @@ class OverlayCapabilityRegistry {
     ActionOverlayField.isEnabled,
     ActionOverlayField.title,
     ActionOverlayField.tooltip,
+    ActionOverlayField.iconUrl,
   };
 
   /// Supported element overlay fields for JSON [elementType].
@@ -378,6 +382,9 @@ Set<ActionOverlayField> fieldsSetInActionUpdate(AdaptiveActionUpdate update) {
   }
   if (update.tooltip != null || update.clearTooltip) {
     fields.add(ActionOverlayField.tooltip);
+  }
+  if (update.iconUrl != null || update.clearIconUrl) {
+    fields.add(ActionOverlayField.iconUrl);
   }
   return fields;
 }

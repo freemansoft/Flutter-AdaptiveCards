@@ -209,13 +209,14 @@ mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   String? get tooltip => adaptiveMap['tooltip'] as String?;
 }
 
-/// Reactive action label, tooltip, and enabled state from merged baseline +
-/// overlays.
+/// Reactive action label, tooltip, iconUrl, and enabled state from merged
+/// baseline + overlays.
 mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
     implements AdaptiveElementMixin<T> {
   bool _actionEnabled = true;
   String _actionTitle = '';
   String? _actionTooltip;
+  String? _actionIconUrl;
   ProviderSubscription<Map<String, dynamic>?>? _actionStateSubscription;
 
   /// Whether the action accepts presses per merged baseline + overlay.
@@ -227,11 +228,15 @@ mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   /// Merged tooltip from baseline JSON and runtime overlays.
   String? get tooltip => _actionTooltip;
 
+  /// Merged `iconUrl` from baseline JSON and runtime overlays.
+  String? get iconUrl => _actionIconUrl;
+
   @override
   void initState() {
     super.initState();
     _actionTitle = adaptiveMap['title'] as String? ?? '';
     _actionTooltip = adaptiveMap['tooltip'] as String?;
+    _actionIconUrl = adaptiveMap['iconUrl'] as String?;
     _actionEnabled = adaptiveMap['isEnabled'] != false;
   }
 
@@ -246,15 +251,18 @@ mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
         final enabled = next?['isEnabled'] != false;
         final nextTitle = next?['title'] as String? ?? '';
         final nextTooltip = next?['tooltip'] as String?;
+        final nextIconUrl = next?['iconUrl'] as String?;
         if (enabled == _actionEnabled &&
             nextTitle == _actionTitle &&
-            nextTooltip == _actionTooltip) {
+            nextTooltip == _actionTooltip &&
+            nextIconUrl == _actionIconUrl) {
           return;
         }
         setState(() {
           _actionEnabled = enabled;
           _actionTitle = nextTitle;
           _actionTooltip = nextTooltip;
+          _actionIconUrl = nextIconUrl;
         });
       },
       fireImmediately: true,

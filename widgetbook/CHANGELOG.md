@@ -6,6 +6,11 @@
 
 ## [Unreleased]
 
+### Sample app plumbing
+
+- **Shared card registry:** [`widgetbook_card_registry.dart`](lib/widgetbook_card_registry.dart) — `widgetbookCardTypeRegistry` (chart elements) and `widgetbookChartOverlayCardTypeRegistry` (+ overlay extensions for the chart overlay demo). Replaces repeated inline `CardTypeRegistry(addedElements: CardChartsRegistry…)` in generic, network, chart knobs, dependent choice set, and overlay pages.
+- **Overlay demo scaffold:** [`overlay_demo_scaffold.dart`](lib/overlay_demo_scaffold.dart) — `OverlayDemoPageState` mixin for asset load, post-frame apply scheduling, document-ready retry (30 attempts), and the common `RawAdaptiveCard` shell. All five `*_overlay_page.dart` demos now use it; per-page knob sync and overlay apply logic stay in each page.
+
 ### Overlay demo use cases (Waves 1–3)
 
 - **Charts → Chart overlay (knob):** **[`ChartOverlayPage`](lib/chart_overlay_page.dart)** with **`lib/samples/charts/chart_overlay_demo.json`** — `setChartData` / `patchChartProperties` via **`RawAdaptiveCardState`** (requires **`CardChartsRegistry.overlayExtensions`**).

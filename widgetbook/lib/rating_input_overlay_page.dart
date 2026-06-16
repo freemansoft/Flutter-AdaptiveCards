@@ -1,13 +1,12 @@
 // Host-only demo: calls [RawAdaptiveCardState.applyUpdates] / [setInputError].
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 import 'package:widgetbook/widgetbook.dart';
+import 'package:widgetbook_workspace/overlay_demo_scaffold.dart';
+import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
 const _ratingId = 'demoRating';
 
@@ -20,16 +19,10 @@ class RatingInputOverlayPage extends StatefulWidget {
   State<RatingInputOverlayPage> createState() => _RatingInputOverlayPageState();
 }
 
-class _RatingInputOverlayPageState extends State<RatingInputOverlayPage> {
+class _RatingInputOverlayPageState extends State<RatingInputOverlayPage>
+    with OverlayDemoPageState<RatingInputOverlayPage> {
   static const _assetPath = 'lib/samples/inputs/rating_input_overlay_demo.json';
-  static const _maxApplyAttempts = 30;
 
-  final GlobalKey<RawAdaptiveCardState> _cardKey = GlobalKey();
-  late final CardTypeRegistry _cardTypeRegistry = CardTypeRegistry(
-    addedElements: CardChartsRegistry.additionalChartElements,
-  );
-
-  Map<String, dynamic>? _cardMap;
   double? _lastAppliedValue;
   String? _lastAppliedLabel;
   bool? _lastAppliedIsRequired;
@@ -43,20 +36,11 @@ class _RatingInputOverlayPageState extends State<RatingInputOverlayPage> {
   String? _lastSeenLabelKnob;
   bool? _lastSeenIsRequiredKnob;
   bool? _lastSeenShowErrorKnob;
-  int _applyAttempts = 0;
-  bool _applyScheduled = false;
 
   @override
   void initState() {
     super.initState();
-    unawaited(_loadCard());
-  }
-
-  Future<void> _loadCard() async {
-    final json = await rootBundle.loadString(_assetPath);
-    final map = jsonDecode(json) as Map<String, dynamic>;
-    if (!mounted) return;
-    setState(() => _cardMap = map);
+    unawaited(loadOverlayCardAsset(_assetPath));
   }
 
   void _queueOverlay({
@@ -75,16 +59,7 @@ class _RatingInputOverlayPageState extends State<RatingInputOverlayPage> {
         _lastAppliedShowError == showError) {
       return;
     }
-    _scheduleApplyOverlay();
-  }
-
-  void _scheduleApplyOverlay() {
-    if (_applyScheduled) return;
-    _applyScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _applyScheduled = false;
-      _flushPendingOverlay();
-    });
+    scheduleOverlayApply(_flushPendingOverlay);
   }
 
   void _flushPendingOverlay() {
@@ -92,57 +67,50 @@ class _RatingInputOverlayPageState extends State<RatingInputOverlayPage> {
     final label = _pendingLabel;
     final isRequired = _pendingIsRequired;
     final showError = _pendingShowError;
-    if (!mounted ||
-        _cardMap == null ||
-        value == null ||
+    if (value == null ||
         label == null ||
         isRequired == null ||
         showError == null) {
       return;
     }
 
-    final cardState = _cardKey.currentState;
-    if (cardState == null || cardState.documentContainer == null) {
-      if (_applyAttempts < _maxApplyAttempts) {
-        _applyAttempts++;
-        _scheduleApplyOverlay();
-      }
-      return;
-    }
+    runWhenCardReady(
+      (cardState) {
+        if (_lastAppliedValue == value &&
+            _lastAppliedLabel == label &&
+            _lastAppliedIsRequired == isRequired &&
+            _lastAppliedShowError == showError) {
+          return;
+        }
 
-    _applyAttempts = 0;
-    if (_lastAppliedValue == value &&
-        _lastAppliedLabel == label &&
-        _lastAppliedIsRequired == isRequired &&
-        _lastAppliedShowError == showError) {
-      return;
-    }
+        cardState.applyUpdates(
+          elements: [
+            AdaptiveElementUpdate(
+              id: _ratingId,
+              value: value,
+              label: label,
+              isRequired: isRequired,
+            ),
+          ],
+        );
 
-    cardState.applyUpdates(
-      elements: [
-        AdaptiveElementUpdate(
-          id: _ratingId,
-          value: value,
-          label: label,
-          isRequired: isRequired,
-        ),
-      ],
+        if (showError) {
+          cardState.setInputError(
+            _ratingId,
+            message: 'Please select a rating',
+            isInvalid: true,
+          );
+        } else {
+          cardState.clearInputError(_ratingId);
+        }
+
+        _lastAppliedValue = value;
+        _lastAppliedLabel = label;
+        _lastAppliedIsRequired = isRequired;
+        _lastAppliedShowError = showError;
+      },
+      reschedule: () => scheduleOverlayApply(_flushPendingOverlay),
     );
-
-    if (showError) {
-      cardState.setInputError(
-        _ratingId,
-        message: 'Please select a rating',
-        isInvalid: true,
-      );
-    } else {
-      cardState.clearInputError(_ratingId);
-    }
-
-    _lastAppliedValue = value;
-    _lastAppliedLabel = label;
-    _lastAppliedIsRequired = isRequired;
-    _lastAppliedShowError = showError;
   }
 
   void _syncKnobs({
@@ -209,22 +177,6 @@ class _RatingInputOverlayPageState extends State<RatingInputOverlayPage> {
       showError: showError,
     );
 
-    final cardMap = _cardMap;
-    if (cardMap == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return SelectionArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(8),
-        child: RawAdaptiveCard.fromMap(
-          key: _cardKey,
-          map: cardMap,
-          cardTypeRegistry: _cardTypeRegistry,
-          hostConfigs: HostConfigs(),
-          showDebugJson: true,
-        ),
-      ),
-    );
+    return buildOverlayCard(registry: widgetbookCardTypeRegistry);
   }
 }

@@ -12,17 +12,14 @@
 
 **Parallel dispatch:** [`2026-06-13-overlay-gaps-parallel-dispatch.md`](./2026-06-13-overlay-gaps-parallel-dispatch.md) — copy-paste `Task` prompts per wave.
 
-## Status (2026-06-15)
+## Status (2026-06-16)
 
 | Phase  | Status     | Notes                                                                                                      |
 | ------ | ---------- | ---------------------------------------------------------------------------------------------------------- |
-| 1–5, 7 | ✅ Shipped | PRs #24 (Wave 1), #25 (Wave 2)                                                                             |
-| 6      | ✅ Shipped | `RichTextBlock` inlines overlay (`setInlines` / `clearInlines`)                                            |
-| 8      | ✅ Shipped | Chart overlays via `ElementOverlayExtension` in `flutter_adaptive_charts_fs` (not core `chartData` fields) |
-| 10     | ✅ Shipped | Shared `OverlayCapabilityRegistry` + debug validation in `applyUpdates`                                    |
-| 9      | ⏸ Backlog  | Action `iconUrl` overlay — optional follow-up                                                              |
+| 1–8, 10 | ✅ Shipped | PRs #24 (Wave 1), #25 (Wave 2); Wave 3 on `feature/wave-3-overlay-gaps-remediation`                       |
+| 9      | ✅ Shipped | `ActionOverlay.iconUrl`; `AdaptiveActionStateMixin` listener; `action_icon_url_overlay_test.dart`           |
 
-**Verification (Wave 3):** `flutter_adaptive_cards_fs` 423 passed; `flutter_adaptive_charts_fs` 13 passed (`--exclude-tags=golden`).
+**Verification (Wave 3):** `flutter_adaptive_cards_fs` 434 passed; `flutter_adaptive_charts_fs` 13 passed (`--exclude-tags=golden`).
 
 ---
 
@@ -432,17 +429,23 @@ Core provides `ElementOverlay.extensionPayloads`, `CardOverlayExtensionRegistry`
 
 ---
 
-# Phase 9 — Action `iconUrl` overlay (optional backlog)
+# Phase 9 — Action `iconUrl` overlay ✅
 
 **Gap:** `IconButtonAction` reads `iconUrl` from baseline in `initState` only.
 
+**Delivered:** `ActionOverlay.iconUrl` + merge in `resolvedActionProvider`; `AdaptiveActionStateMixin` listener; `action_icon_url_overlay_test.dart`.
+
 **Files:**
 
-- Extend `ActionOverlay` with `iconUrl`; merge in `resolvedActionProvider`
-- `AdaptiveActionStateMixin` or `IconButtonAction` listener
-- Test in `action_icon_url_overlay_test.dart`
-
-Defer until Phases 1–8 ship unless a host requires it immediately.
+- `packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart` (ActionOverlay)
+- `packages/flutter_adaptive_cards_fs/lib/src/models/adaptive_card_update.dart` (AdaptiveActionUpdate)
+- `packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart`
+- `packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart`
+- `packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart`
+- `packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart`
+- `packages/flutter_adaptive_cards_fs/lib/src/cards/actions/icon_button.dart`
+- `packages/flutter_adaptive_cards_fs/test/actions/action_icon_url_overlay_test.dart`
+- `docs/overlay-properties-by-type.md`
 
 ---
 

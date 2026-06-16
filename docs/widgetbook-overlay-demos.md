@@ -18,6 +18,15 @@ return TextBlockOverlayPage(key: textBlockOverlayPageKey);
 
 Read knobs inside the page’s `build()` so overlay APIs run in the stable subtree.
 
+## Shared widgetbook modules
+
+| Module | Purpose |
+| ------ | ------- |
+| [`widgetbook_card_registry.dart`](../widgetbook/lib/widgetbook_card_registry.dart) | `widgetbookCardTypeRegistry` (default) and `widgetbookChartOverlayCardTypeRegistry` (chart overlay demo) |
+| [`overlay_demo_scaffold.dart`](../widgetbook/lib/overlay_demo_scaffold.dart) | `OverlayDemoPageState` mixin — asset load, post-frame apply queue, retry, card shell |
+
+Non-overlay widgetbook pages that need chart elements should also use `widgetbookCardTypeRegistry` from the registry module.
+
 ## Shared implementation checklist
 
 Every `widgetbook/lib/*_overlay_page.dart` should satisfy:
@@ -25,15 +34,15 @@ Every `widgetbook/lib/*_overlay_page.dart` should satisfy:
 | Check | Requirement |
 | ----- | ----------- |
 | Page `GlobalKey` | Exported `final …PageKey = GlobalKey<State<…Page>>()`; use case passes `key:` |
-| Knobs before early return | Read all knobs at top of `build()` before `CircularProgressIndicator` or other returns |
-| Asset load | `rootBundle.loadString` in `initState`; hold `Map<String, dynamic>? _cardMap` |
-| Card key | `GlobalKey<RawAdaptiveCardState> _cardKey` on `RawAdaptiveCard.fromMap` |
-| Apply queue | `_queue…` → `_scheduleApplyOverlay` (post-frame) → `_flushPendingOverlay` |
-| Retry | If `cardState` or `documentContainer` is null, retry up to `_maxApplyAttempts` (30) |
+| Scaffold mixin | `with OverlayDemoPageState<…>` — see [`overlay_demo_scaffold.dart`](../widgetbook/lib/overlay_demo_scaffold.dart) |
+| Registry | `widgetbookCardTypeRegistry` or `widgetbookChartOverlayCardTypeRegistry` from [`widgetbook_card_registry.dart`](../widgetbook/lib/widgetbook_card_registry.dart) |
+| Knobs before early return | Read all knobs at top of `build()` before `buildOverlayCard` loading return |
+| Asset load | `loadOverlayCardAsset(path, {injectIds})` in `initState` (text_block sets `injectIds: true`) |
+| Apply queue | Page `_queue…` → `scheduleOverlayApply(_flushPendingOverlay)` → `runWhenCardReady` |
 | Dedup | `_lastApplied…` — skip notifier call when value unchanged |
-| Debug | `showDebugJson: true` on overlay demos (matches existing pages) |
+| Debug | `showDebugJson: true` via `buildOverlayCard` (chart overlay: `wrapScrollView: false` only) |
 | Use case | `@widgetbook.UseCase` in `adaptive_cards_use_cases.dart`; regenerate `main.directories.g.dart` |
-| Imports | Prefer public `package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart`; use `src/` only when required (e.g. `injectIds`) |
+| Imports | Prefer public `package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart`; `injectIds` lives in the scaffold |
 
 ### Apply lifecycle strategies
 

@@ -180,6 +180,9 @@ resolvedActionProvider = Provider.family<Map<String, dynamic>?, String>(
     if (overlay?.tooltip != null) {
       merged['tooltip'] = overlay!.tooltip;
     }
+    if (overlay?.iconUrl != null) {
+      merged['iconUrl'] = overlay!.iconUrl;
+    }
     return merged;
   },
 ).call;

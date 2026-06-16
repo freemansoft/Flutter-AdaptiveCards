@@ -198,6 +198,7 @@ class ActionOverlay {
     this.isEnabled,
     this.title,
     this.tooltip,
+    this.iconUrl,
   });
 
   /// Overrides baseline `"isEnabled"` when non-null (AC 1.5, default true).
@@ -209,18 +210,24 @@ class ActionOverlay {
   /// Overrides baseline `"tooltip"` when non-null.
   final String? tooltip;
 
+  /// Overrides baseline `"iconUrl"` when non-null.
+  final String? iconUrl;
+
   /// Returns a copy with the given fields replaced.
   ActionOverlay copyWith({
     bool? isEnabled,
     String? title,
     String? tooltip,
+    String? iconUrl,
     bool clearTitle = false,
     bool clearTooltip = false,
+    bool clearIconUrl = false,
   }) {
     return ActionOverlay(
       isEnabled: isEnabled ?? this.isEnabled,
       title: clearTitle ? null : (title ?? this.title),
       tooltip: clearTooltip ? null : (tooltip ?? this.tooltip),
+      iconUrl: clearIconUrl ? null : (iconUrl ?? this.iconUrl),
     );
   }
 }

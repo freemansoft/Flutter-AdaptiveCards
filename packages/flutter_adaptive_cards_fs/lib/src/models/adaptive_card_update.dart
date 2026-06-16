@@ -131,8 +131,10 @@ class AdaptiveActionUpdate {
     this.isEnabled,
     this.title,
     this.tooltip,
+    this.iconUrl,
     this.clearTitle = false,
     this.clearTooltip = false,
+    this.clearIconUrl = false,
   });
 
   /// Target action id from card JSON.
@@ -147,9 +149,15 @@ class AdaptiveActionUpdate {
   /// Overrides baseline `"tooltip"`.
   final String? tooltip;
 
+  /// Overrides baseline `"iconUrl"`.
+  final String? iconUrl;
+
   /// Clears the `title` overlay.
   final bool clearTitle;
 
   /// Clears the `tooltip` overlay.
   final bool clearTooltip;
+
+  /// Clears the `iconUrl` overlay.
+  final bool clearIconUrl;
 }

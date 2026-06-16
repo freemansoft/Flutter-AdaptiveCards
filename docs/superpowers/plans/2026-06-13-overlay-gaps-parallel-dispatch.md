@@ -6,7 +6,7 @@ Copy-paste each block into a **`Task`** tool call (`subagent_type: generalPurpos
 **Spec:** [`2026-06-13-overlay-gaps-remediation-design.md`](../specs/2026-06-13-overlay-gaps-remediation-design.md)
 **Repo:** `/Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards`
 
-**Status (2026-06-15):** Waves 1–3 complete. Phases 1–8 and **10** shipped; Phase 9 (`iconUrl`) remains backlog.
+**Status (2026-06-16):** Waves 1–4 complete. All phases (1–10) shipped.
 
 **Rules for every agent:**
 

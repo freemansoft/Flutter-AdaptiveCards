@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`Action.Popover`:** `isEnabled`, `title`, and `tooltip` overlays via shared **`IconButtonAction`** chrome.
 - **`Media`:** reactive URL overlay — `setUrl` merges into `sources[0].url`; player re-inits on URL change.
 - **`Rating` (display):** reactive `value`, `max`, `color`, and `size` via `resolvedElementProvider` listener.
+- **`Action.*` `iconUrl`:** runtime overlay via **`ActionOverlay.iconUrl`**; merged in **`resolvedActionProvider`**; **`AdaptiveActionStateMixin`** updates **`IconButtonAction`** reactively; host **`applyUpdates`** / **`applyUpdatesFromMap`** with **`clearIconUrl`**.
 
 ## [0.11.0]
 

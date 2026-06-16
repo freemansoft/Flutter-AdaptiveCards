@@ -987,65 +987,74 @@ void main() {
         expect(sources!.first['url'], 'https://new.example/v.mp4');
       });
 
-      test('applyUpdates merges label, placeholder, title, and tooltip', () {
-        final actionCard = _createContainer({
-          'type': 'AdaptiveCard',
-          'body': [
-            {
-              'type': 'Input.Text',
-              'id': 'name',
-              'label': 'Name',
-              'placeholder': 'Enter name',
-            },
-          ],
-          'actions': [
-            {
-              'type': 'Action.Submit',
-              'id': 'submit',
-              'title': 'Send',
-              'tooltip': 'Submit form',
-            },
-          ],
-        });
+      test(
+        'applyUpdates merges label, placeholder, title, tooltip, and iconUrl',
+        () {
+          final actionCard = _createContainer({
+            'type': 'AdaptiveCard',
+            'body': [
+              {
+                'type': 'Input.Text',
+                'id': 'name',
+                'label': 'Name',
+                'placeholder': 'Enter name',
+              },
+            ],
+            'actions': [
+              {
+                'type': 'Action.Submit',
+                'id': 'submit',
+                'title': 'Send',
+                'tooltip': 'Submit form',
+                'iconUrl': 'https://example.com/send.png',
+              },
+            ],
+          });
 
-        actionCard
-            .read(adaptiveCardDocumentProvider.notifier)
-            .applyUpdates(
-              elements: const [
-                AdaptiveElementUpdate(
-                  id: 'name',
-                  label: 'Full name',
-                  placeholder: 'Type here',
-                ),
-              ],
-              actions: const [
-                AdaptiveActionUpdate(
-                  id: 'submit',
-                  title: 'Submit now',
-                  tooltip: 'Send the form',
-                ),
-              ],
-            );
+          actionCard
+              .read(adaptiveCardDocumentProvider.notifier)
+              .applyUpdates(
+                elements: const [
+                  AdaptiveElementUpdate(
+                    id: 'name',
+                    label: 'Full name',
+                    placeholder: 'Type here',
+                  ),
+                ],
+                actions: const [
+                  AdaptiveActionUpdate(
+                    id: 'submit',
+                    title: 'Submit now',
+                    tooltip: 'Send the form',
+                    iconUrl: 'https://example.com/submit.png',
+                  ),
+                ],
+              );
 
-        expect(
-          actionCard.read(resolvedElementProvider('name'))?['label'],
-          'Full name',
-        );
-        expect(
-          actionCard.read(resolvedElementProvider('name'))?['placeholder'],
-          'Type here',
-        );
-        expect(
-          actionCard.read(resolvedActionProvider('submit'))?['title'],
-          'Submit now',
-        );
-        expect(
-          actionCard.read(resolvedActionProvider('submit'))?['tooltip'],
-          'Send the form',
-        );
+          expect(
+            actionCard.read(resolvedElementProvider('name'))?['label'],
+            'Full name',
+          );
+          expect(
+            actionCard.read(resolvedElementProvider('name'))?['placeholder'],
+            'Type here',
+          );
+          expect(
+            actionCard.read(resolvedActionProvider('submit'))?['title'],
+            'Submit now',
+          );
+          expect(
+            actionCard.read(resolvedActionProvider('submit'))?['tooltip'],
+            'Send the form',
+          );
+          expect(
+            actionCard.read(resolvedActionProvider('submit'))?['iconUrl'],
+            'https://example.com/submit.png',
+          );
 
-        actionCard.dispose();
-      });
+          actionCard.dispose();
+        },
+      );
 
       test('updatesFromPatchMap routes action title patches by node type', () {
         final nodes = {

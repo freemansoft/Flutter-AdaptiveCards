@@ -1,8 +1,10 @@
 # ChartsLayoutConfig Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add a `chartsLayout` HostConfig section (`ChartsLayoutConfig`) to `flutter_adaptive_cards_fs` and replace every hardcoded chart layout/styling literal in `flutter_adaptive_charts_fs` with values resolved from that config (with `FallbackConfigs` defaults matching today's behavior).
+
+**Status:** ✅ **Complete** — merged in [#18](https://github.com/freemansoft/Flutter-AdaptiveCards/pull/18) (`8cb6425`). Checkboxes updated 2026-06-16 after full verification. **No open work items.**
 
 **Architecture:** Follow the existing `progressSizes` / `chartColors` precedent: typed config class under `lib/src/hostconfig/`, wire into `HostConfig.fromJson`, add `FallbackConfigs` defaults, expose via `ReferenceResolver`, consume from chart widgets through `styleResolver`. `ChartsLayoutConfig` holds four nested sections (`line`, `bar`, `pie`, `donut`) and exposes one static resolver per chart family: `resolveLineLayout`, `resolveBarLayout`, `resolvePieLayout`, `resolveDonutLayout`. Grouped/stacked bar variants and `Chart.Gauge` reuse `resolveBarLayout` / `resolveDonutLayout` respectively.
 
@@ -186,13 +188,13 @@ Create `packages/flutter_adaptive_cards_fs/test/hostconfig/charts_layout_config.
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/hostconfig/charts_layout_config_test.dart`
 
 Expected: FAIL — `charts_layout_config.dart` not found
 
-- [ ] **Step 3: Implement config classes**
+- [x] **Step 3: Implement config classes**
 
 Create `charts_layout_config.dart` with four immutable section value types and the aggregator:
 
@@ -393,13 +395,13 @@ BarChartAlignmentToken _parseBarAlignment(String? value, BarChartAlignmentToken 
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/hostconfig/charts_layout_config_test.dart`
 
 Expected: FAIL until Task 2 adds `FallbackConfigs.chartsLayoutConfig` — proceed to Task 2, then re-run.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/hostconfig/charts_layout_config.dart \
@@ -419,7 +421,7 @@ git commit -m "feat: add ChartsLayoutConfig hostconfig section"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/reference_resolver.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/host_config_test.dart`
 
-- [ ] **Step 1: Add fallback defaults**
+- [x] **Step 1: Add fallback defaults**
 
 In `fallback_configs.dart`, import `charts_layout_config.dart` and add:
 
@@ -483,7 +485,7 @@ static const chartsLayoutConfig = ChartsLayoutConfig(
 
 > **Note:** Export the `_LineChartLayoutSection` etc. classes from `charts_layout_config.dart` (remove leading underscore or add `export`/`@visibleForTesting`) so `FallbackConfigs` can construct them. Prefer renaming to public `LineChartLayoutSection` / `BarChartLayoutSection` / `PieChartLayoutSection` since they are part of the config model.
 
-- [ ] **Step 2: Wire `HostConfig`**
+- [x] **Step 2: Wire `HostConfig`**
 
 In `host_config.dart`:
 
@@ -498,7 +500,7 @@ chartsLayout: (json['chartsLayout'] != null)
     : null,
 ```
 
-- [ ] **Step 3: Expose via ReferenceResolver**
+- [x] **Step 3: Expose via ReferenceResolver**
 
 In `reference_resolver.dart`:
 
@@ -518,7 +520,7 @@ DonutChartLayout resolveDonutChartLayout() =>
     ChartsLayoutConfig.resolveDonutLayout(getChartsLayoutConfig());
 ```
 
-- [ ] **Step 4: Add HostConfig round-trip test**
+- [x] **Step 4: Add HostConfig round-trip test**
 
 In `host_config_test.dart`, add:
 
@@ -537,13 +539,13 @@ test('chartsLayout parses from top-level HostConfig JSON', () {
 });
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/hostconfig/charts_layout_config_test.dart test/host_config_test.dart`
 
 Expected: PASS
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/hostconfig/fallback_configs.dart \
@@ -561,7 +563,7 @@ git commit -m "feat: wire chartsLayout into HostConfig and ReferenceResolver"
 
 - Modify: `packages/flutter_adaptive_charts_fs/lib/src/charts/line_chart.dart`
 
-- [ ] **Step 1: Replace hardcoded values**
+- [x] **Step 1: Replace hardcoded values**
 
 At the start of `_parseData()` and `build()`, read layout once:
 
@@ -587,13 +589,13 @@ Replace literals:
 | `FlGridData(show: true)`                   | `FlGridData(show: layout.showGrid)`                                       |
 | `FlBorderData` color/width                 | `layout.showBorder`, `layout.borderColor`, `layout.borderWidth`           |
 
-- [ ] **Step 2: Run chart golden tests (non-update)**
+- [x] **Step 2: Run chart golden tests (non-update)**
 
 Run: `cd packages/flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden`
 
 Expected: PASS (no golden pixel comparison yet)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_charts_fs/lib/src/charts/line_chart.dart
@@ -608,7 +610,7 @@ git commit -m "refactor: line chart reads layout from ChartsLayoutConfig"
 
 - Modify: `packages/flutter_adaptive_charts_fs/lib/src/charts/bar_chart.dart`
 
-- [ ] **Step 1: Add alignment mapper**
+- [x] **Step 1: Add alignment mapper**
 
 In `bar_chart.dart` (charts package), add a local helper:
 
@@ -635,7 +637,7 @@ Import `charts_layout_config.dart` via deep import:
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.dart';
 ```
 
-- [ ] **Step 2: Replace hardcoded values**
+- [x] **Step 2: Replace hardcoded values**
 
 ```dart
 final layout = styleResolver.resolveBarChartLayout();
@@ -657,13 +659,13 @@ final layout = styleResolver.resolveBarChartLayout();
 
 Remove the `// TODO(username): make configurable` comment on bar width.
 
-- [ ] **Step 3: Run tests**
+- [x] **Step 3: Run tests**
 
 Run: `cd packages/flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden`
 
 Expected: PASS
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/flutter_adaptive_charts_fs/lib/src/charts/bar_chart.dart
@@ -678,7 +680,7 @@ git commit -m "refactor: bar chart reads layout from ChartsLayoutConfig"
 
 - Modify: `packages/flutter_adaptive_charts_fs/lib/src/charts/pie_donut_chart.dart`
 
-- [ ] **Step 1: Replace hardcoded values**
+- [x] **Step 1: Replace hardcoded values**
 
 In `_parseData()` and `build()`:
 
@@ -696,13 +698,13 @@ final layout = widget.isDonut
 | `centerSpaceRadius: widget.isDonut ? 40 : 0`     | `layout.centerSpaceRadius`                                                                                |
 | `sectionsSpace: 2`                               | `layout.sectionsSpace`                                                                                    |
 
-- [ ] **Step 2: Run tests**
+- [x] **Step 2: Run tests**
 
 Run: `cd packages/flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden`
 
 Expected: PASS
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_charts_fs/lib/src/charts/pie_donut_chart.dart
@@ -718,7 +720,7 @@ git commit -m "refactor: pie/donut chart reads layout from ChartsLayoutConfig"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_config_schema.json`
 - Modify: `.agents/skills/adaptive-cards-hostconfig-theme/SKILL.md`
 
-- [ ] **Step 1: Add schema definitions**
+- [x] **Step 1: Add schema definitions**
 
 Add to `host_config_schema.json` (after `chartColors` if present, else after `progressColors`):
 
@@ -742,17 +744,18 @@ Add top-level HostConfig property:
 "chartsLayout": { "$ref": "#/definitions/ChartsLayoutConfig" }
 ```
 
-- [ ] **Step 2: Update hostconfig skill**
+- [x] **Step 2: Update hostconfig skill**
 
 In `adaptive-cards-hostconfig-theme/SKILL.md`, under the Charts section, add:
 
-```markdown
+````markdown
 ### Chart layout (`chartsLayout`)
 
 ```dart
 final layout = resolver.resolveLineChartLayout();
 // Also: resolveBarChartLayout(), resolvePieChartLayout(), resolveDonutChartLayout()
 ```
+````
 
 JSON example:
 
@@ -767,7 +770,7 @@ JSON example:
 }
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_config_schema.json \
@@ -783,7 +786,7 @@ git commit -m "docs: add chartsLayout to HostConfig schema and skill"
 
 - Create: `packages/flutter_adaptive_charts_fs/test/charts_layout_config_test.dart`
 
-- [ ] **Step 1: Add widget test proving HostConfig overrides work**
+- [x] **Step 1: Add widget test proving HostConfig overrides work**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -826,13 +829,13 @@ void main() {
 
 Adjust finder if `SizedBox` wraps `LineChart` (parent, not descendant) — use `find.ancestor` if needed.
 
-- [ ] **Step 2: Run golden tests with default config**
+- [x] **Step 2: Run golden tests with default config**
 
 Run: `cd packages/flutter_adaptive_charts_fs && fvm flutter test --tags=golden`
 
 Expected: PASS with **no** golden file updates (defaults match previous literals). If any golden fails, fix default values in `FallbackConfigs` — do **not** update goldens unless intentional visual change.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_charts_fs/test/charts_layout_config_test.dart
@@ -843,29 +846,46 @@ git commit -m "test: verify chartsLayout HostConfig overrides chart rendering"
 
 ## Final Task: Full verification
 
-- [ ] **Step 1: Repo analyze**
+- [x] **Step 1: Repo analyze**
 
 Run: `fvm flutter analyze`
 
 Expected: No issues found
 
-- [ ] **Step 2: Main library tests**
+- [x] **Step 2: Main library tests**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`
 
 Expected: All tests passed
 
-- [ ] **Step 3: Charts package tests**
+- [x] **Step 3: Charts package tests**
 
 Run: `cd packages/flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden`
 
 Expected: All tests passed
 
-- [ ] **Step 4: Charts golden suite (optional CI parity)**
+- [x] **Step 4: Charts golden suite (optional CI parity)**
 
 Run: `cd packages/flutter_adaptive_charts_fs && fvm flutter test --tags=golden`
 
 Expected: All tests passed, no `--update-goldens` needed
+
+---
+
+## Completion notes
+
+Delivered as a single squashed commit in PR #18 rather than the per-task commits listed above. Verification run when updating this plan (2026-06-16):
+
+| Step         | Command                                                                            | Result           |
+| ------------ | ---------------------------------------------------------------------------------- | ---------------- |
+| Analyze      | `fvm flutter analyze`                                                              | No issues found  |
+| Cards tests  | `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`  | All passed (432) |
+| Charts tests | `cd packages/flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden` | All passed (13)  |
+| Golden suite | `cd packages/flutter_adaptive_charts_fs && fvm flutter test --tags=golden`         | All passed (8)   |
+
+### Open work items
+
+**None.** All tasks (1–7) and final verification are complete.
 
 ---
 

@@ -6,8 +6,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 import 'package:widgetbook/widgetbook.dart';
+
+import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
 /// Default knob values extracted from the first chart in a sample card.
 class ChartKnobDefaults {
@@ -82,9 +83,6 @@ class ChartKnobsPage extends StatefulWidget {
 
 class _ChartKnobsPageState extends State<ChartKnobsPage> {
   final GlobalKey<RawAdaptiveCardState> _cardKey = GlobalKey();
-  late final CardTypeRegistry _cardTypeRegistry = CardTypeRegistry(
-    addedElements: CardChartsRegistry.additionalChartElements,
-  );
 
   Map<String, dynamic>? _baseCardMap;
   ChartKnobDefaults? _defaults;
@@ -343,7 +341,9 @@ class _ChartKnobsPageState extends State<ChartKnobsPage> {
     );
     final yAxisTitle = context.knobs.string(
       label: 'yAxisTitle',
-      initialValue: defaults.yAxisTitle.isNotEmpty ? defaults.yAxisTitle : 'Value',
+      initialValue: defaults.yAxisTitle.isNotEmpty
+          ? defaults.yAxisTitle
+          : 'Value',
     );
     final subLabel = context.knobs.string(
       label: 'subLabel',
@@ -442,7 +442,7 @@ class _ChartKnobsPageState extends State<ChartKnobsPage> {
         child: RawAdaptiveCard.fromMap(
           key: _cardKey,
           map: cardMap,
-          cardTypeRegistry: _cardTypeRegistry,
+          cardTypeRegistry: widgetbookCardTypeRegistry,
           hostConfigs: HostConfigs(),
           showDebugJson: true,
         ),

@@ -64,6 +64,7 @@ void main() {
           ActionOverlayField.isEnabled,
           ActionOverlayField.title,
           ActionOverlayField.tooltip,
+          ActionOverlayField.iconUrl,
         ]),
       );
     });

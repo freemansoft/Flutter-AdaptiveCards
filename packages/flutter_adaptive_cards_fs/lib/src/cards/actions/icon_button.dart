@@ -39,15 +39,6 @@ class IconButtonActionState extends State<IconButtonAction>
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
-  /// Optional `iconUrl` from the action JSON, shown beside the title.
-  late String? iconUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    iconUrl = adaptiveMap['iconUrl'] as String?;
-  }
-
   @override
   Widget build(BuildContext context) {
     final resolver = styleResolver;

@@ -18,11 +18,11 @@ todos:
     content: "Done: AGENTS.md doc paths (6.1) + monorepo skill dependency graph (6.2)"
     status: completed
   - id: phase4-assets
-    content: "PR4: Canonicalize v1.6 JSON fixtures (§4.1 pending); Roboto fonts consolidated in test_support (§4.2 done)"
+    content: "PR4: Canonicalize v1.6 JSON fixtures (§4.1 pending); Roboto fonts consolidated in test_support (§4.2 done, merged #27/#28)"
     status: in_progress
   - id: phase5-apps
-    content: "PR5: Widgetbook chart registry + overlay helpers (5.1–5.2 pending); adaptive_explorer README charts claim fixed (5.3 done)"
-    status: in_progress
+    content: "PR5: Widgetbook chart registry (§5.1 done) + overlay scaffold (§5.2 done); explorer README (§5.3 done); widgetbook CHANGELOG + overlay-demos doc updated"
+    status: completed
   - id: phase6-ci
     content: "PR6 (optional): CI matrix for packages, add flutter analyze, align artifact actions, consider widgetbook tests"
     status: pending
@@ -39,14 +39,17 @@ isProject: false
 | **2** Lib consolidation | **Done** | `parseIsVisible`, `parseHostConfigColor`, merged `isVisible` tests |
 | **3** Test infrastructure (Option A) | **Done** | [`flutter_adaptive_cards_test_support`](packages/flutter_adaptive_cards_test_support/) created; cards + template migrated; charts goldens passing (registry wiring fix) |
 | **6.1–6.2** Docs/skills | **Done** | [`AGENTS.md`](AGENTS.md) paths fixed; monorepo skill dependency graph corrected |
-| **4** Fixtures/fonts | **Partial** | §4.2 Roboto fonts consolidated in test_support (~10 MB saved); §4.1 v1.6 JSON still triplicated |
-| **5** Widgetbook/explorer | **Partial** | §5.3 explorer README fixed; §5.1–5.2 widgetbook helpers pending |
+| **4** Fixtures/fonts | **Partial** | §4.2 Roboto fonts consolidated in test_support (~10 MB saved, merged #27/#28); §4.1 v1.6 JSON still triplicated |
+| **5** Widgetbook/explorer | **Done** | §5.1 [`widgetbook_card_registry.dart`](../../widgetbook/lib/widgetbook_card_registry.dart); §5.2 [`overlay_demo_scaffold.dart`](../../widgetbook/lib/overlay_demo_scaffold.dart); §5.3 explorer README; docs/skill updated |
 | **6.3–6.4** | **Out of scope** | README boilerplate + generic skills dedup (explicit decision) |
 | **7** CI | Pending | Optional matrix + analyze step |
 
 **Verification (latest):**
 
 ```text
+fvm flutter analyze  (widgetbook)
+→ No issues found
+
 fvm flutter analyze packages/flutter_adaptive_cards_test_support packages/flutter_adaptive_cards_fs packages/flutter_adaptive_charts_fs
 → No issues found
 
@@ -60,11 +63,11 @@ fvm flutter test test/golden_v1_6_test.dart  (flutter_adaptive_charts_fs)
 → 7 golden tests passed (no RenderFlex overflow)
 ```
 
-**Charts golden follow-up — resolved:** Failures were caused by calling shared `getV16SampleForGoldenTest`, which uses the default `CardTypeRegistry` (no `Chart.*` types). Unregistered chart elements rendered as debug `ErrorWidget`s (~99k px overflow in the card `Column`). Fix: route chart goldens through charts-local `getTestWidgetFromPath` / `getSampleForGoldenTest`, which injects `CardChartsRegistry`. See [`fix_charts_golden_overflow_6a03dce2.plan.md`](/Users/joefreeman/.cursor/plans/fix_charts_golden_overflow_6a03dce2.plan.md) for root-cause analysis.
+**Charts golden follow-up — resolved:** Failures were caused by calling shared `getV16SampleForGoldenTest`, which uses the default `CardTypeRegistry` (no `Chart.*` types). Unregistered chart elements rendered as debug `ErrorWidget`s (~99k px overflow in the card `Column`). Fix: route chart goldens through charts-local `getChartTestWidgetFromPath` / `getChartSampleForGoldenTest`, which injects `CardChartsRegistry`.
 
-**Optional Phase 3 polish (non-blocking):** Migrate charts `test_utils.dart` to a thin test_support wrapper **only if** golden tests use a charts-specific helper (e.g. `getChartV16SampleForGoldenTest`) and `getV16SampleForGoldenTest` is hidden from the charts re-export.
+**Optional Phase 3 polish (non-blocking):** Hide `getV16SampleForGoldenTest` from charts re-export to prevent regression. Template tools (`generate_example_outputs.dart` / `fix_outputs.dart`) still duplicate expand logic.
 
-**Uncommitted work:** Phases 1–3 and §6.1–6.2 changes are in the working tree (not yet committed/PR’d). Charts package remains on committed test harness (local `getSampleForGoldenTest` + mockito); cards/template use test_support. Suggested split: PR1+2, PR3+6.1–6.2, then PR4–PR6.
+**Remaining work:** §4.1 v1.6 JSON canonicalization; Phase 7 CI (optional). Phases 1–3, §4.2, §5, and §6.1–6.2 are merged or ready to PR (widgetbook §5.1–5.2 may be uncommitted in working tree).
 
 ---
 
@@ -77,8 +80,8 @@ The monorepo’s **package boundaries are sound** (`flutter_adaptive_cards_fs`, 
 - ~~**Triplicated HostConfig color parsing**~~ (Phase 2 done)
 - **Triplicated v1.6 JSON fixtures** (cards tests, charts tests, widgetbook) — Phase 4 §4.1
 - ~~**Duplicated font assets** (~10 MB Roboto trees in cards + charts)~~ (§4.2 done — single copy in test_support)
-- **Boilerplate in widgetbook** (chart registry wiring, overlay-retry pages) — Phase 5
-- ~~**Documentation / skill path drift** (`doc/` vs `docs/`, stale skill references)~~ (§6.1–6.2 done)
+- ~~**Boilerplate in widgetbook** (chart registry wiring, overlay-retry pages)~~ (Phase 5 done)
+- ~~**Documentation / skill path drift** (`doc/` vs `docs/`, stale skill references)~~ (§6.1–6.2 done; overlay-demos doc updated for §5.2)
 
 ```mermaid
 flowchart TB
@@ -90,12 +93,12 @@ flowchart TB
   subgraph done [Addressed]
     testSupport[flutter_adaptive_cards_test_support]
     parseColor[parseHostConfigColor unified]
+    widgetbookRegistry[widgetbook_card_registry]
+    overlayScaffold[overlay_demo_scaffold]
+    fontsOnce[test_support Roboto assets]
   end
   subgraph remaining [Still duplicated]
     fixtures[v1.6 JSON x3]
-  end
-  subgraph phase4done [Phase 4 §4.2 done]
-    fontsOnce[test_support Roboto assets]
   end
   testSupport --> fontsOnce
   testSupport --> cards
@@ -104,6 +107,8 @@ flowchart TB
   fixtures --> cards
   fixtures --> charts
   fixtures --> widgetbook[widgetbook]
+  widgetbookRegistry --> widgetbook
+  overlayScaffold --> widgetbook
 ```
 
 ---
@@ -149,7 +154,7 @@ Unpublished workspace package ([`README.md`](packages/flutter_adaptive_cards_tes
 **Consumers:**
 
 - [`flutter_adaptive_cards_fs/test/utils/test_utils.dart`](packages/flutter_adaptive_cards_fs/test/utils/test_utils.dart) — re-exports test support; goldens use `getV16SampleForGoldenTest` (default registry includes built-in v1.6 elements)
-- [`flutter_adaptive_charts_fs/test/utils/test_utils.dart`](packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart) — **still local** (mockito HTTP mocks + `CardChartsRegistry` in `getTestWidgetFromMap`); goldens use local `getSampleForGoldenTest` → `getTestWidgetFromPath` (**not** shared `getV16SampleForGoldenTest`)
+- [`flutter_adaptive_charts_fs/test/utils/test_utils.dart`](packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart) — thin wrapper: `chartCardTypeRegistry`, `getChartTestWidgetFromPath`, `getChartSampleForGoldenTest` (re-exports test_support; **not** shared `getV16SampleForGoldenTest` for goldens)
 - Cards [`flutter_test_config.dart`](packages/flutter_adaptive_cards_fs/test/flutter_test_config.dart) delegates to `adaptiveCardsTestExecutable`
 - Charts golden tests: all 7 passing after registry wiring fix
 
@@ -157,7 +162,7 @@ Unpublished workspace package ([`README.md`](packages/flutter_adaptive_cards_tes
 
 - Exported [`InheritedAdaptiveCardHandlers`](packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart) from [`flutter_adaptive_cards_fs.dart`](packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart) (avoids `implementation_imports` in test support)
 - Added to root workspace [`pubspec.yaml`](pubspec.yaml)
-- **Charts:** golden registry wiring documented; `mockito` removal deferred until charts migrates to test_support wrapper safely
+- **Charts:** `mockito` removed; golden registry wiring via `chartCardTypeRegistry`
 
 ### Template package test dedup ✅
 
@@ -170,7 +175,7 @@ Unpublished workspace package ([`README.md`](packages/flutter_adaptive_cards_tes
 
 ### Remaining (Phase 3 polish, lower priority)
 
-- **Charts test_support migration:** optional thin wrapper + `getChartV16SampleForGoldenTest`; hide `getV16SampleForGoldenTest` from charts re-export to prevent regression
+- **Charts re-export:** hide `getV16SampleForGoldenTest` from charts `test_utils.dart` re-export to prevent regression
 - **Template tools:** `tool/generate_example_outputs.dart` / `tool/fix_outputs.dart` still duplicate expand logic
 
 ---
@@ -274,15 +279,28 @@ packages/flutter_adaptive_cards_test_support/
 
 ---
 
-## Phase 5 — Widgetbook & explorer cleanup (~1 PR) — Pending
+## Phase 5 — Widgetbook & explorer cleanup ✅ Complete
 
-### 5.1 Extract widgetbook helpers
+### 5.1 Extract widgetbook chart registry ✅
 
-Repeated `CardTypeRegistry(addedElements: CardChartsRegistry.additionalChartElements)` in 5 widgetbook pages.
+[`widgetbook/lib/widgetbook_card_registry.dart`](../../widgetbook/lib/widgetbook_card_registry.dart):
 
-### 5.2 Overlay demo scaffold
+- `widgetbookCardTypeRegistry` — chart elements (default for generic, network, chart knobs, dependent choice set, and non-chart-overlay pages)
+- `widgetbookChartOverlayCardTypeRegistry` — chart elements + `CardChartsRegistry.overlayExtensions` (chart overlay demo)
 
-Shared retry/apply overlay logic in `text_block_overlay_page.dart` and `fact_set_overlay_page.dart`.
+Replaced inline `CardTypeRegistry(addedElements: CardChartsRegistry…)` in 9 widgetbook consumers. `CardChartsRegistry` references now live only in the registry module.
+
+### 5.2 Overlay demo scaffold ✅
+
+[`widgetbook/lib/overlay_demo_scaffold.dart`](../../widgetbook/lib/overlay_demo_scaffold.dart) — `OverlayDemoPageState<T>` mixin:
+
+| API | Purpose |
+|-----|---------|
+| `loadOverlayCardAsset` | Bundle load; optional `injectIds` (text_block) |
+| `scheduleOverlayApply` / `runWhenCardReady` | Post-frame queue + 30-attempt retry until `documentContainer` ready |
+| `buildOverlayCard` | Loading spinner + `RawAdaptiveCard` shell |
+
+All five `*_overlay_page.dart` demos refactored; per-page knob sync and overlay apply logic remain in each page. [`docs/widgetbook-overlay-demos.md`](../widgetbook-overlay-demos.md) and widgetbook-overlay-demos skill updated.
 
 ### 5.3 Fix adaptive_explorer documentation drift ✅
 
@@ -331,12 +349,13 @@ Updated `doc/` → `docs/` links (`AdaptiveWidget-Key-Generation.md`, `form-inpu
 
 | PR | Contents | Status |
 |----|----------|--------|
-| **PR1** | Phase 1 | Ready to commit |
-| **PR2** | Phase 2 | Ready to commit |
-| **PR3** | Phase 3 + §6.1–6.2 + test-support README + lint fixes | Ready to commit (charts goldens verified passing) |
-| **PR4** | Phase 4 (fixtures + fonts) | Not started |
-| **PR5** | Phase 5 (widgetbook + explorer) | Not started |
-| **PR6** | Phase 7 (CI matrix) | Not started |
+| **PR1** | Phase 1 | **Merged** |
+| **PR2** | Phase 2 | **Merged** |
+| **PR3** | Phase 3 + §6.1–6.2 + test-support README | **Merged** |
+| **PR4a** | Phase 4 §4.2 fonts (#27, #28) | **Merged** |
+| **PR4b** | Phase 4 §4.1 v1.6 JSON canonicalization | **Next** |
+| **PR5** | Phase 5 widgetbook registry + overlay scaffold + CHANGELOG | Ready to commit (if not yet PR’d) |
+| **PR6** | Phase 7 CI matrix | Not started |
 
 **Verification commands** (per AGENTS.md):
 
@@ -354,8 +373,9 @@ cd packages/flutter_adaptive_charts_fs && fvm flutter test test/golden_v1_6_test
 | Metric | Target | Current |
 |--------|--------|---------|
 | Duplicated test code consolidated | ~500+ lines | **Done** (test support package) |
-| Font duplication removed | ~10 MB → single ~2 MB subset in test_support | Pending — see §4.2 migration checklist |
-| JSON fixtures canonicalized | 27+ files | Pending (Phase 4) |
+| Font duplication removed | ~10 MB → single ~1.4 MB subset in test_support | **Done** (§4.2, #27/#28) |
+| Widgetbook registry/scaffold deduped | Single registry + overlay mixin | **Done** (§5.1–5.2) |
+| JSON fixtures canonicalized | 27+ files | Pending (Phase 4 §4.1) |
 | Dead source files | 0 | **Done** |
 | AGENTS.md links resolve | Yes | **Done** |
-| Test regressions | None | Cards 360 ✓; template 94 ✓; charts golden 7/7 ✓ |
+| Test regressions | None | Cards 360 ✓; template 94 ✓; charts golden 7/7 ✓; widgetbook analyze ✓ |
