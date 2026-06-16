@@ -6,7 +6,8 @@
 /// These tests guard:
 ///
 /// - Standard input, display, and action field sets
-/// - [OverlayCapabilityRegistry.validateElementUpdate] / [validateActionUpdate]
+/// - [OverlayCapabilityRegistry.validateElementUpdate] /
+///   [OverlayCapabilityRegistry.validateActionUpdate]
 /// - Optional [ElementOverlayExtension] registration (`extensionPayload`, [ElementOverlayExtension.overlayPatchKeys])
 ///
 /// Widget-level overlay behavior remains in `*_overlay_test.dart` files; merge

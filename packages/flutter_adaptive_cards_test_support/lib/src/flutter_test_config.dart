@@ -9,22 +9,33 @@ import 'package:package_config/package_config.dart';
 /// Loads Roboto fonts used by HostConfig-driven golden tests.
 ///
 /// Fonts live under `assets/fonts/Roboto/` in this package. They are loaded
-/// from the package directory so consuming packages can keep test_support as a
-/// [dev_dependency] (dev-dependency assets are not merged into the test bundle).
+/// from the package directory so consuming packages can keep test_support in
+/// `pubspec.yaml` `dev_dependencies` (dev-dependency assets are not merged into
+/// the test bundle).
 Future<void> loadAdaptiveCardsTestFonts() async {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const fontNames = [
     'Roboto-Regular.ttf',
+    'Roboto-Italic.ttf',
     'Roboto-Bold.ttf',
+    'Roboto-BoldItalic.ttf',
     'Roboto-Light.ttf',
+    'Roboto-LightItalic.ttf',
     'Roboto-Medium.ttf',
+    'Roboto-MediumItalic.ttf',
     'Roboto-Thin.ttf',
+    'Roboto-ThinItalic.ttf',
     'RobotoMono-Regular.ttf',
+    'RobotoMono-Italic.ttf',
     'RobotoMono-Bold.ttf',
+    'RobotoMono-BoldItalic.ttf',
     'RobotoMono-Light.ttf',
+    'RobotoMono-LightItalic.ttf',
     'RobotoMono-Medium.ttf',
+    'RobotoMono-MediumItalic.ttf',
     'RobotoMono-Thin.ttf',
+    'RobotoMono-ThinItalic.ttf',
   ];
 
   final fontsDir = await _resolveRobotoFontsDirectory();
@@ -54,6 +65,8 @@ Future<Directory> _resolveRobotoFontsDirectory() async {
   final fontsDir = Directory.fromUri(
     package.root.resolve('assets/fonts/Roboto/'),
   );
+  // sync method fails
+  // ignore: avoid_slow_async_io
   if (!await fontsDir.exists()) {
     throw StateError('Roboto fonts not found at ${fontsDir.path}');
   }

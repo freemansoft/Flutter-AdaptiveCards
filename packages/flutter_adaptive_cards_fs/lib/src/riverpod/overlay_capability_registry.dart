@@ -231,14 +231,12 @@ class OverlayCapabilityRegistry {
       if (update.extensionPatches != null &&
           update.extensionPatches!.isNotEmpty) {
         return [
-          'extensionPayload is not supported for element type $elementType '
-              '(no overlay extension registered)',
+          'extensionPayload is not supported for element type $elementType (no overlay extension registered)',
         ];
       }
       if (update.clearExtensions.isNotEmpty) {
         return [
-          'clearExtensions is not supported for element type $elementType '
-              '(no overlay extension registered)',
+          'clearExtensions is not supported for element type $elementType (no overlay extension registered)',
         ];
       }
       return const [];
@@ -311,7 +309,9 @@ class OverlayCapabilityRegistry {
 }
 
 /// Returns overlay fields explicitly set on [update].
-Set<ElementOverlayField> fieldsSetInElementUpdate(AdaptiveElementUpdate update) {
+Set<ElementOverlayField> fieldsSetInElementUpdate(
+  AdaptiveElementUpdate update,
+) {
   final fields = <ElementOverlayField>{};
   if (update.isVisible != null) {
     fields.add(ElementOverlayField.isVisible);

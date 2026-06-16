@@ -6,6 +6,7 @@ All notable changes to this **unpublished** workspace test package are documente
 
 ### Changed
 
+- Restored Roboto and RobotoMono italic faces (10 `.ttf` files) to `assets/fonts/Roboto/` for golden tests that use italic styles.
 - Roboto golden-test fonts moved to `assets/fonts/Roboto/` and loaded from the test_support package directory (removed cwd-relative `File` loading and `fontsRoot` parameter).
 
 ## [0.10.0]

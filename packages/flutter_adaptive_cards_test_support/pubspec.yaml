@@ -22,12 +22,22 @@ flutter:
   uses-material-design: true
   assets:
     - assets/fonts/Roboto/Roboto-Regular.ttf
+    - assets/fonts/Roboto/Roboto-Italic.ttf
     - assets/fonts/Roboto/Roboto-Bold.ttf
+    - assets/fonts/Roboto/Roboto-BoldItalic.ttf
     - assets/fonts/Roboto/Roboto-Light.ttf
+    - assets/fonts/Roboto/Roboto-LightItalic.ttf
     - assets/fonts/Roboto/Roboto-Medium.ttf
+    - assets/fonts/Roboto/Roboto-MediumItalic.ttf
     - assets/fonts/Roboto/Roboto-Thin.ttf
+    - assets/fonts/Roboto/Roboto-ThinItalic.ttf
     - assets/fonts/Roboto/RobotoMono-Regular.ttf
+    - assets/fonts/Roboto/RobotoMono-Italic.ttf
     - assets/fonts/Roboto/RobotoMono-Bold.ttf
+    - assets/fonts/Roboto/RobotoMono-BoldItalic.ttf
     - assets/fonts/Roboto/RobotoMono-Light.ttf
+    - assets/fonts/Roboto/RobotoMono-LightItalic.ttf
     - assets/fonts/Roboto/RobotoMono-Medium.ttf
+    - assets/fonts/Roboto/RobotoMono-MediumItalic.ttf
     - assets/fonts/Roboto/RobotoMono-Thin.ttf
+    - assets/fonts/Roboto/RobotoMono-ThinItalic.ttf
