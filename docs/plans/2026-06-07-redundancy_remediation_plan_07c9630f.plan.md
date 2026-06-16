@@ -18,7 +18,7 @@ todos:
     content: "Done: AGENTS.md doc paths (6.1) + monorepo skill dependency graph (6.2)"
     status: completed
   - id: phase4-assets
-    content: "PR4: Canonicalize v1.6 JSON fixtures (§4.1 pending); Roboto fonts consolidated in test_support (§4.2 done, merged #27/#28)"
+    content: "PR4: Canonicalize JSON fixtures across versions (§4.1 pending); Roboto fonts consolidated in test_support (§4.2 done, merged #27/#28)"
     status: in_progress
   - id: phase5-apps
     content: "PR5: Widgetbook chart registry (§5.1 done) + overlay scaffold (§5.2 done); explorer README (§5.3 done); widgetbook CHANGELOG + overlay-demos doc updated"
@@ -39,7 +39,7 @@ isProject: false
 | **2** Lib consolidation | **Done** | `parseIsVisible`, `parseHostConfigColor`, merged `isVisible` tests |
 | **3** Test infrastructure (Option A) | **Done** | [`flutter_adaptive_cards_test_support`](packages/flutter_adaptive_cards_test_support/) created; cards + template migrated; charts goldens passing (registry wiring fix) |
 | **6.1–6.2** Docs/skills | **Done** | [`AGENTS.md`](AGENTS.md) paths fixed; monorepo skill dependency graph corrected |
-| **4** Fixtures/fonts | **Partial** | §4.2 Roboto fonts consolidated in test_support (~10 MB saved, merged #27/#28); §4.1 v1.6 JSON still triplicated |
+| **4** Fixtures/fonts | **Partial** | §4.2 Roboto fonts consolidated in test_support (~10 MB saved, merged #27/#28); §4.1 JSON still triplicated across versions |
 | **5** Widgetbook/explorer | **Done** | §5.1 [`widgetbook_card_registry.dart`](../../widgetbook/lib/widgetbook_card_registry.dart); §5.2 [`overlay_demo_scaffold.dart`](../../widgetbook/lib/overlay_demo_scaffold.dart); §5.3 explorer README; docs/skill updated |
 | **6.3–6.4** | **Out of scope** | README boilerplate + generic skills dedup (explicit decision) |
 | **7** CI | Pending | Optional matrix + analyze step |
@@ -207,9 +207,9 @@ Some widgetbook JSON files share the same filename (e.g. `rating.json`, `progres
 1. Add/extend a small drift-detection tool (e.g. `tool/check_widgetbook_json_collisions.dart`) that:
    - Finds basenames that exist in both `widgetbook/lib/samples/v*/` and the canonical candidates (`packages/flutter_adaptive_cards_fs/test/samples/v*/` and `packages/flutter_adaptive_charts_fs/test/samples/v*/`).
    - Compares byte hashes and emits “identical” vs “different” collisions.
-2. For “different” collisions, rename files in `widgetbook/lib/samples/v1.6/` using the rule above.
+2. For “different” collisions, rename files in `widgetbook/lib/samples/v*/` using the rule above.
 3. Update widgetbook references to renamed assets:
-   - `widgetbook/lib/adaptive_cards_use_cases.dart` (the `url: 'lib/samples/v1.6/...'` strings)
+   - `widgetbook/lib/adaptive_cards_use_cases.dart` (the `url: 'lib/samples/v*/...'` strings)
    - any overlay/demo pages with hard-coded sample paths (e.g. `_assetPath` constants in `widgetbook/lib/*_page.dart`)
    - any other direct asset references (including chart knob/demo pages)
 4. Update `widgetbook/pubspec.yaml` assets entries if needed (renamed `lib/samples/v*/**/*.json` should still be covered).
@@ -379,7 +379,7 @@ Updated `doc/` → `docs/` links (`AdaptiveWidget-Key-Generation.md`, `form-inpu
 | **PR2** | Phase 2 | **Merged** |
 | **PR3** | Phase 3 + §6.1–6.2 + test-support README | **Merged** |
 | **PR4a** | Phase 4 §4.2 fonts (#27, #28) | **Merged** |
-| **PR4b** | Phase 4 §4.1.0 + §4.1.1 v1.6 JSON canonicalization (incl. widgetbook renames) | **Next** |
+| **PR4b** | Phase 4 §4.1.0 + §4.1.1 JSON canonicalization (incl. widgetbook renames) | **Next** |
 | **PR5** | Phase 5 widgetbook registry + overlay scaffold + CHANGELOG | Ready to commit (if not yet PR’d) |
 | **PR6** | Phase 7 CI matrix | Not started |
 
@@ -401,7 +401,7 @@ cd packages/flutter_adaptive_charts_fs && fvm flutter test test/golden_v1_6_test
 | Duplicated test code consolidated | ~500+ lines | **Done** (test support package) |
 | Font duplication removed | ~10 MB → single ~1.4 MB subset in test_support | **Done** (§4.2, #27/#28) |
 | Widgetbook registry/scaffold deduped | Single registry + overlay mixin | **Done** (§5.1–5.2) |
-| JSON fixtures canonicalized | 27+ files | Pending (Phase 4 §4.1) |
+| JSON fixtures canonicalized | 27+ files across v* versions | Pending (Phase 4 §4.1) |
 | Dead source files | 0 | **Done** |
 | AGENTS.md links resolve | Yes | **Done** |
 | Test regressions | None | Cards 360 ✓; template 94 ✓; charts golden 7/7 ✓; widgetbook analyze ✓ |
