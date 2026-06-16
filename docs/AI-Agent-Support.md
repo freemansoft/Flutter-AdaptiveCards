@@ -67,6 +67,14 @@ Project-specific skills are **not** listed in `skills-lock.json`; edit them dire
 
 ---
 
+### Token usage tweaking
+
+I (Joe) currently have `Cursor Settings --> Agents --> Start Agent Review on Commit` disabled because of token costs.
+
+- On a recent bill. Agent review took 59.8% of my API tokens accounting for 143M of 188M API tokens used. auto (overflow) consumed 42M API tokens. Auto + Composer consumed 422M tokens during the same time period. 'auto' aggregated consumed 457M tokens in that month.
+
+---
+
 ## Installation
 
 All vendored skills are installed with the [`skills` CLI](https://www.npmjs.com/package/skills) (`npx skills`). The `--agent universal` flag installs into `.agents/skills/`, which Cursor, Antigravity, and other agents recognize.
