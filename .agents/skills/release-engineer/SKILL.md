@@ -82,7 +82,23 @@ During development, AGENTS.md instructs contributors to append bullets to `## [U
 
 2. After promotion there must be **no** `## [Unreleased]` heading remaining in any changelog — the post-release bump (§6.4) will create the next one.
 
+3. **Version subheadings** — within the promoted `## [<release-version>]` section, every `### <heading>` must include the version number: `### Added 0.11.0`, `### Changed 0.11.0`, `### Fixed 0.11.0`, `### My Feature 0.11.0 (sub-label)`, etc. The version goes immediately after the main heading name, before any parenthetical qualifier.
+
+4. **Merge duplicate subheadings** — a released version must never contain two `### <heading> <version>` entries with the same name. If duplicates exist (e.g., two `### Changed 0.11.0`), consolidate all their bullets into a single section. Order: Added → Changed → Fixed → custom headings.
+
 > **Note:** If `## [Unreleased]` is absent (already promoted manually), skip this step and verify §3 checklist item 2 is satisfied.
+
+## 3.2 Confirmation Gate — Changelog Review
+
+**STOP. Do not proceed until the user confirms.**
+
+Before creating any commit, tag, or push:
+
+1. Run `git diff` to show every changelog change made in §3.1.
+2. Present a summary of what was promoted (which packages had `[Unreleased]` content vs. placeholder-only) and what the resulting `## [<release-version>]` sections contain.
+3. Ask the user to review and confirm before continuing to §4.
+
+> This gate exists because changelog content is what appears on pub.dev and is hard to change after publish. The user must approve it before the commit is made.
 
 ## 4. Tagging the Repository
 
@@ -154,13 +170,19 @@ At the **top** of each of the **six** `CHANGELOG.md` files (below the title/head
 
 Replace `<next-version>` with the new version (e.g. `## [0.8.0]`). Move or refine the placeholder bullet when features land during the cycle.
 
-### 6.5 Verify and commit
+### 6.5 Verify, confirm, and commit
 
 ```bash
 flutter pub get    # from repo root
 flutter analyze
 flutter test       # or per-package as needed
 ```
+
+**STOP. Do not commit until the user confirms.**
+
+1. Run `git diff` to show all version bumps, dependency changes, and new `## [Unreleased]` sections.
+2. Present a summary of what will be committed.
+3. Wait for the user to explicitly approve before running `git commit` and `git push`.
 
 Commit with a message such as: `Bump monorepo to <next-version> for next development cycle`.
 

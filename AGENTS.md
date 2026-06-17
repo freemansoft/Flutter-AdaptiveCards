@@ -83,6 +83,18 @@ See [`docs/optional-packages-and-extensions.md`](docs/optional-packages-and-exte
 - **Functions:** Short (<20 lines) and single-purpose.
 - **Logging:** Use `dart:developer` `log` instead of `print`.
 
+## Git commit and push gate
+
+**Never commit or push without explicit user confirmation.**
+
+Before running any `git commit` or `git push` (including tag pushes):
+
+1. Show the full `git diff` (or `git diff --stat` for large change sets) of everything that will be committed.
+2. Summarize what the commit contains and why.
+3. Wait for the user to explicitly say to proceed before running the commit or push command.
+
+This rule applies even when the overall task description appears to authorize the full workflow (e.g. "tag and push a release"). A broad task description authorizes the *work*; each commit and push still requires a moment-of-action confirmation so the user can review before changes land in the shared repo.
+
 ## Plan completion gate
 
 When executing an implementation plan (`docs/superpowers/plans/`) or claiming work is complete:

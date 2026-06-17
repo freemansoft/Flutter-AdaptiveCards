@@ -11,26 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.11.0]
 
-### Added
+### Added 0.11.0
 
 - **`Action.Popover` registry pattern:** `GenericPopoverAction` abstract class and `DefaultPopoverAction` implementation added. `Action.Popover` is now registered in `DefaultActionTypeRegistry` and follows the same injectable handler pattern as Submit, Execute, OpenUrl, ToggleVisibility, and ResetInputs. Host apps can override the default dialog behavior by supplying a custom `ActionTypeRegistry`.
 - **`AdaptivePopoverContainer`** extracted to its own file (`popover_container.dart`) to avoid a circular dependency between `default_actions.dart` and `popover.dart`; re-exported from `popover.dart` for backward compatibility.
 
-### Changed
+### Changed 0.11.0
 
 - **`AdaptiveActionPopoverState`** refactored to resolve its action handler from the registry in `didChangeDependencies()` (matching `AdaptiveActionSubmitState` / `AdaptiveActionExecuteState`). The inline `onTapped()` method and `popupParentResolver` field have been removed; dialog-show logic now lives in `DefaultPopoverAction`. `AdaptiveActionMixin` added to state mixins.
-
-### Fixed
-
-- **`ProviderScope` brightness key bug:** removed `key: ValueKey<Brightness?>` from the inner `ProviderScope` in `RawAdaptiveCard`. The key caused Flutter to destroy and recreate the entire `ProviderScope` subtree on every brightness toggle, wiping `AdaptiveCardDocumentNotifier` state (all input values, overlays, and visibility). Theme propagation continues to work via `didChangeDependencies` — no key is needed. Regression tests added in `test/elements/theme_change_overlay_test.dart`.
-
-### Changed
-
 - **`AdaptiveVisibilityMixin` / `AdaptiveActionStateMixin`:** converted from `on State<T>` to `on ConsumerState<T>`; visibility and action state now read via `ref.watch` / `ref.read` instead of `ProviderScope.containerOf(context)` + manual `ProviderSubscription`. Removes all manual `didChangeDependencies` subscription setup and `dispose` cleanup in these mixins.
 - **All display and structural element widgets** (`AdaptiveColumn`, `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveImageSet`, `AdaptiveTable`, `AdaptiveAccordion`, `ActionSet`, `AdaptiveCarousel`, `AdaptiveCodeBlock`, `AdaptiveCompoundButton`, `AdaptiveIcon`, `AdaptiveProgressBar`, `AdaptiveProgressRing`, `AdaptiveTabSet`, `AdaptiveTextBlock`, `AdaptiveRichTextBlock`, `AdaptiveBadge`, `AdaptiveImage`, `AdaptiveMedia`, `AdaptiveRating`, `AdaptiveFactSet`, `IconButtonAction`) converted from `StatefulWidget`/`State` to `ConsumerStatefulWidget`/`ConsumerState`. Internal refactor; no public API changes.
 - Removed duplicate `assets/fonts/` tree; golden tests load Roboto from `flutter_adaptive_cards_test_support`.
 
-### Overlay gaps remediation (Waves 1–3)
+### Fixed 0.11.0
+
+- **`ProviderScope` brightness key bug:** removed `key: ValueKey<Brightness?>` from the inner `ProviderScope` in `RawAdaptiveCard`. The key caused Flutter to destroy and recreate the entire `ProviderScope` subtree on every brightness toggle, wiping `AdaptiveCardDocumentNotifier` state (all input values, overlays, and visibility). Theme propagation continues to work via `didChangeDependencies` — no key is needed. Regression tests added in `test/elements/theme_change_overlay_test.dart`.
+
+### Overlay gaps remediation 0.11.0 (Waves 1–3)
 
 - **`RichTextBlock`:** runtime **`inlines`** overlay; host **`setInlines`** / **`clearInlines`** on **`RawAdaptiveCardState`**; widget listener via `resolvedElementProvider`.
 - **Optional-package overlay hooks:** **`ElementOverlayExtension`**, **`CardOverlayExtensionRegistry`**, and **`CardTypeRegistry.overlayExtensions`** — generic `extensionPayloads` merge in core (chart types live in `flutter_adaptive_charts_fs`).
