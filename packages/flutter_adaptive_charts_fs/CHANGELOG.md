@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- no changes yet
+
 ## [0.11.0]
 
 - **`ChartOverlayMixin` / chart widgets:** `ChartOverlayMixin` converted from `on State<T>` to `on ConsumerState<T>`; `AdaptiveBarChart`, `AdaptiveLineChart`, `AdaptivePieChart`, `AdaptiveGaugeChart` converted from `StatefulWidget`/`State` to `ConsumerStatefulWidget`/`ConsumerState`. Internal refactor; no public API changes.
