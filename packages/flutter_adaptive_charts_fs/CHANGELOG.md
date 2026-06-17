@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.11.0]
 
 - **`ChartOverlayMixin` / chart widgets:** `ChartOverlayMixin` converted from `on State<T>` to `on ConsumerState<T>`; `AdaptiveBarChart`, `AdaptiveLineChart`, `AdaptivePieChart`, `AdaptiveGaugeChart` converted from `StatefulWidget`/`State` to `ConsumerStatefulWidget`/`ConsumerState`. Internal refactor; no public API changes.
 - Removed duplicate `assets/fonts/` tree; golden tests load Roboto from `flutter_adaptive_cards_test_support`.
@@ -9,10 +9,6 @@
 - **`ChartOverlayMixin`** + **`AdaptiveVisibilityMixin`** on bar, line, pie/donut, and gauge chart widgets — reactive `data` and chrome patches via `resolvedElementProvider`.
 - **`ElementOverlayExtension.overlayPatchKeys`** whitelists chart host patch keys (`data`, `chartProperties`, …).
 - Tests: **`test/charts/chart_overlay_test.dart`**, **`test/charts/chart_overlay_notifier_test.dart`**.
-
-## [0.11.0]
-
-- no changes yet
 
 ## [0.10.0]
 

@@ -68,6 +68,22 @@ Before tagging and publishing:
 4. `flutter pub get` (from repo root) succeeds.
 5. `flutter analyze` and `flutter test` pass (include `packages/flutter_adaptive_cards_host_fs` when host code changed).
 
+## 3.1 Promote `[Unreleased]` to the Release Version
+
+During development, AGENTS.md instructs contributors to append bullets to `## [Unreleased]` in each `CHANGELOG.md`. Before tagging you must collapse that section into the versioned heading. For each of the **six** changelog files:
+
+1. **Check whether `## [<release-version>]` already exists** in the file.
+
+   - **It does not exist** — rename `## [Unreleased]` to `## [<release-version>]`. Done.
+
+   - **It exists and its only content is `- no changes yet`** — delete the `## [<release-version>]` placeholder entirely, then rename `## [Unreleased]` to `## [<release-version>]`.
+
+   - **It exists and has real content** — move all bullets from `## [Unreleased]` into `## [<release-version>]` (append below the existing bullets), then remove the now-empty `## [Unreleased]` heading.
+
+2. After promotion there must be **no** `## [Unreleased]` heading remaining in any changelog — the post-release bump (§6.4) will create the next one.
+
+> **Note:** If `## [Unreleased]` is absent (already promoted manually), skip this step and verify §3 checklist item 2 is satisfied.
+
 ## 4. Tagging the Repository
 
 Tag the version you are **releasing**, not the post-bump development version:

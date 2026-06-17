@@ -2,10 +2,6 @@
 
 ## [0.11.0]
 
-- no changes yet
-
-## [Unreleased]
-
 ### Sample app plumbing
 
 - **Shared card registry:** [`widgetbook_card_registry.dart`](lib/widgetbook_card_registry.dart) — `widgetbookCardTypeRegistry` (chart elements) and `widgetbookChartOverlayCardTypeRegistry` (+ overlay extensions for the chart overlay demo). Replaces repeated inline `CardTypeRegistry(addedElements: CardChartsRegistry…)` in generic, network, chart knobs, dependent choice set, and overlay pages.
