@@ -74,12 +74,15 @@ void main() {
         ),
       ).read(adaptiveCardDocumentProvider.notifier);
 
-      notifier.setVisibility('col1', visible: false);
-      await tester.pump();
+      Future<void> setVis({required bool visible}) async {
+        notifier.setVisibility('col1', visible: visible);
+        await tester.pump();
+      }
+
+      await setVis(visible: false);
       expect(find.text('Column content'), findsNothing);
 
-      notifier.setVisibility('col1', visible: true);
-      await tester.pump();
+      await setVis(visible: true);
       expect(find.text('Column content'), findsOneWidget);
     });
   });
@@ -153,12 +156,15 @@ void main() {
         ),
       ).read(adaptiveCardDocumentProvider.notifier);
 
-      notifier.setVisibility('cs1', visible: false);
-      await tester.pump();
+      Future<void> setVis({required bool visible}) async {
+        notifier.setVisibility('cs1', visible: visible);
+        await tester.pump();
+      }
+
+      await setVis(visible: false);
       expect(find.text('ColumnSet content'), findsNothing);
 
-      notifier.setVisibility('cs1', visible: true);
-      await tester.pump();
+      await setVis(visible: true);
       expect(find.text('ColumnSet content'), findsOneWidget);
     });
   });

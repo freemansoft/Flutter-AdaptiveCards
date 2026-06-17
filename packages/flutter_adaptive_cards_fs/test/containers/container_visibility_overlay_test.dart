@@ -62,12 +62,15 @@ void main() {
       ),
     ).read(adaptiveCardDocumentProvider.notifier);
 
-    notifier.setVisibility('c1', visible: false);
-    await tester.pump();
+    Future<void> setVis({required bool visible}) async {
+      notifier.setVisibility('c1', visible: visible);
+      await tester.pump();
+    }
+
+    await setVis(visible: false);
     expect(find.text('Container content'), findsNothing);
 
-    notifier.setVisibility('c1', visible: true);
-    await tester.pump();
+    await setVis(visible: true);
     expect(find.text('Container content'), findsOneWidget);
   });
 }

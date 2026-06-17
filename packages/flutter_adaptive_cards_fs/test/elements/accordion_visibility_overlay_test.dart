@@ -12,7 +12,7 @@ Map<String, dynamic> _accordionCard({bool? isVisible}) => {
     {
       'type': 'Accordion',
       'id': 'acc1',
-      if (isVisible != null) 'isVisible': isVisible,
+      'isVisible': ?isVisible,
       'items': [
         {
           'title': 'Section Title',

@@ -12,7 +12,7 @@ Map<String, dynamic> _tableCard({bool? isVisible}) => {
     {
       'type': 'Table',
       'id': 'tbl1',
-      if (isVisible != null) 'isVisible': isVisible,
+      'isVisible': ?isVisible,
       'columns': [
         {'width': 1},
         {'width': 1},

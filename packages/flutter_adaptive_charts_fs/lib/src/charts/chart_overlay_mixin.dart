@@ -13,7 +13,7 @@ mixin ChartOverlayMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   /// Baseline JSON merged with chart overlays for this element [id].
   ///
-  /// Uses [ref.read] (non-watching) so it is safe to call from
+  /// Uses `ref.read` (non-watching) so it is safe to call from
   /// [didChangeDependencies] and [build] callbacks.
   Map<String, dynamic> get resolvedChartMap =>
       ref.read(resolvedElementProvider(id)) ?? adaptiveMap;
@@ -24,9 +24,9 @@ mixin ChartOverlayMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// Performs the initial chart parse once, after the widget is fully mounted.
   ///
   /// Must run in [didChangeDependencies] rather than [initState] because
-  /// [onResolvedChartChanged] implementations (e.g. [_parseSegments]) access
-  /// [styleResolver] via [ProviderScope.containerOf], which calls
-  /// [dependOnInheritedWidgetOfExactType] — forbidden inside [initState].
+  /// [onResolvedChartChanged] implementations (e.g. `_parseSegments`) access
+  /// `styleResolver` via [ProviderScope.containerOf], which calls
+  /// `dependOnInheritedWidgetOfExactType` — forbidden inside [initState].
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

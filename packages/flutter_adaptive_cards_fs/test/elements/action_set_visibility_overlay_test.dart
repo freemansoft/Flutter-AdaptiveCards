@@ -20,7 +20,7 @@ Map<String, dynamic> _actionSetCard({bool? isVisible}) => {
     {
       'type': 'ActionSet',
       'id': 'as1',
-      if (isVisible != null) 'isVisible': isVisible,
+      'isVisible': ?isVisible,
       'actions': [
         {
           'type': 'Action.OpenUrl',
