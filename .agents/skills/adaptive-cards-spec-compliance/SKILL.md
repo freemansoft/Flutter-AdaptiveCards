@@ -110,7 +110,7 @@ registered in `CardTypeRegistry` and uses `BadgeStylesConfig` from HostConfig.
 | `Action.Submit`           | [explorer](https://adaptivecards.io/explorer/Action.Submit.html)           | `SubmitAction`           | Implemented                 |
 | `Action.ShowCard`         | [explorer](https://adaptivecards.io/explorer/Action.ShowCard.html)         | `ShowCardAction`         | Implemented                 |
 | `Action.ToggleVisibility` | [explorer](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) | `ToggleVisibilityAction` | Implemented                 |
-| `Action.Execute` (v1.4)   | [explorer](https://adaptivecards.io/explorer/Action.Execute.html)          | —                        | Check implementation status |
+| `Action.Execute` (v1.4)   | [explorer](https://adaptivecards.io/explorer/Action.Execute.html)          | —                        | Implemented (`verb`, `data`, `associatedInputs`) |
 
 ---
 
@@ -247,7 +247,7 @@ Location: `packages/flutter_adaptive_template_fs/lib/src/`
 - `$data` pointing to an array triggers the repeater: the element produces
   a `List<Map>` instead of a single `Map`, which `_expandList` flattens
 - `$when` is evaluated as a boolean; `null` or `false` → element is excluded (`null` returned)
-- **Gap:** While a robust subset of **Adaptive Expressions** is implemented, the full Azure Bot Service library (100+ functions) is not exhaustive. Missing: Date/Time functions, advanced collection manipulation (`select`, `where`).
+- **Gap:** While a robust subset of **Adaptive Expressions** is implemented, the full Azure Bot Service library (100+ functions) is not exhaustive. `formatDateTime` is implemented; missing are the other date functions (`utcNow`, `addDays`, `formatEpoch`, `getFutureTime`) and advanced collection manipulation (`select`, `where`, `join`, `first`, `last`).
   Spec URL: <https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions>
 
 ### Template SDK Parity (JS reference)
@@ -280,12 +280,10 @@ takes the root data map directly and automatically scopes it as `$root`.
 | Area                           | Gap                                                                                                             | Spec Reference                                                                                                                       |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `requires` property            | Not validated — elements are not gated on SDK capability declarations                                           | All elements                                                                                                                         |
-| Dark mode                      | `HostConfigs.current` always returns light config                                                               | HostConfig                                                                                                                           |
-| Adaptive Expressions           | Robust subset implemented (operators, string, math, logic); Date/Time and advanced collection functions missing | [Expressions spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) |
+| Adaptive Expressions           | Robust subset implemented (operators, string, math, logic, `formatDateTime`); other date functions (`utcNow`, `addDays`, `formatEpoch`) and collection functions (`select`, `where`, `join`) missing | [Expressions spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) |
 | Text features                  | Markdown subset / rich text features may be incomplete                                                          | [Text features](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/text-features)                                      |
-| `Action.Execute`               | Verify implementation status against v1.4 spec                                                                  | [explorer](https://adaptivecards.io/explorer/Action.Execute.html)                                                                    |
-| `Table`/`TableRow`/`TableCell` | Verify v1.5 table support                                                                                       | [explorer](https://adaptivecards.io/explorer/Table.html)                                                                             |
-| `fallback` (actions)           | Verify and implement fallback handling for unknown Action types                                                 | All actions                                                                                                                          |
+| `Table`/`TableRow`/`TableCell` | Partial — `auto`/`stretch` column widths and cell-level `rtl` rendering missing                                 | [explorer](https://adaptivecards.io/explorer/Table.html)                                                                             |
+| `fallback` (actions)           | Not implemented — unknown actions `assert(false)` then return `AdaptiveUnknown`/`null`; no fallback chain        | All actions                                                                                                                          |
 | Version gating                 | Cards declaring `"version": "1.x"` are not version-checked                                                      | `AdaptiveCard` root                                                                                                                  |
 
 ---
