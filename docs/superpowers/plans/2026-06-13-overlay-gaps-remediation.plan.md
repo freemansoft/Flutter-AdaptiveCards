@@ -14,12 +14,14 @@
 
 ## Status (2026-06-16)
 
-| Phase  | Status     | Notes                                                                                                      |
-| ------ | ---------- | ---------------------------------------------------------------------------------------------------------- |
-| 1–8, 10 | ✅ Shipped | PRs #24 (Wave 1), #25 (Wave 2); Wave 3 on `feature/wave-3-overlay-gaps-remediation`                       |
-| 9      | ✅ Shipped | `ActionOverlay.iconUrl`; `AdaptiveActionStateMixin` listener; `action_icon_url_overlay_test.dart`           |
+| Phase   | Status     | Notes                                                                                             |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| 1–8, 10 | ✅ Shipped | PRs #24 (Wave 1), #25 (Wave 2); Wave 3 on `feature/wave-3-overlay-gaps-remediation`               |
+| 9       | ✅ Shipped | `ActionOverlay.iconUrl`; `AdaptiveActionStateMixin` listener; `action_icon_url_overlay_test.dart` |
 
 **Verification (Wave 3):** `flutter_adaptive_cards_fs` 434 passed; `flutter_adaptive_charts_fs` 13 passed (`--exclude-tags=golden`).
+
+**Checkbox reconciliation (audit 2026-06-17):** All step-level TDD checkboxes below were ticked to match the shipped status above (PRs #24/#25/#26/#29). No open work remains in this plan.
 
 ---
 
@@ -68,7 +70,7 @@ Phases **1–8** and **10** are required for “gaps closed” + discoverability
 
 ### Task 1.1: Widget test for label / isRequired / error overlays
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```dart
 // test/inputs/toggle_overlay_test.dart
@@ -108,11 +110,11 @@ testWidgets('applyUpdates patches label isRequired and errorMessage', (tester) a
 });
 ```
 
-- [ ] **Step 2: Run test — expect FAIL**
+- [x] **Step 2: Run test — expect FAIL**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/inputs/toggle_overlay_test.dart`
 
-- [ ] **Step 3: Update `toggle.dart` `build()`**
+- [x] **Step 3: Update `toggle.dart` `build()`**
 
 At top of `build()`:
 
@@ -135,9 +137,9 @@ Add error message row using `loadErrorMessage(..., showError: input.isInvalid)` 
 
 Implement `checkRequired()` to call `setLocalValidationError()` when `readResolvedInput().isRequired` and value is `valueOff`.
 
-- [ ] **Step 4: Run test — expect PASS**
+- [x] **Step 4: Run test — expect PASS**
 
-- [ ] **Step 5: Update `docs/reactive-riverpod.md` overlay test table — mark Toggle covered**
+- [x] **Step 5: Update `docs/reactive-riverpod.md` overlay test table — mark Toggle covered**
 
 ---
 
@@ -167,13 +169,13 @@ Extract shared star rendering into `packages/flutter_adaptive_cards_fs/lib/src/w
 
 ### Task 2.1: Shared star helper
 
-- [ ] **Step 1: Extract `RatingStars` widget** from current `AdaptiveRating` build logic (color, size, filled/empty icons, optional half-star display for read-only fractional values)
+- [x] **Step 1: Extract `RatingStars` widget** from current `AdaptiveRating` build logic (color, size, filled/empty icons, optional half-star display for read-only fractional values)
 
-- [ ] **Step 2: Refactor `AdaptiveRating`** to use `RatingStars` — behavior unchanged; existing golden `Golden Rating` must still pass
+- [x] **Step 2: Refactor `AdaptiveRating`** to use `RatingStars` — behavior unchanged; existing golden `Golden Rating` must still pass
 
 ### Task 2.2: `AdaptiveRatingInput` widget
 
-- [ ] **Step 1: Write failing widget test — submit collects rating value**
+- [x] **Step 1: Write failing widget test — submit collects rating value**
 
 ```dart
 testWidgets('Input.Rating submits double value', (tester) async {
@@ -182,7 +184,7 @@ testWidgets('Input.Rating submits double value', (tester) async {
 });
 ```
 
-- [ ] **Step 2: Implement `AdaptiveRatingInput`**
+- [x] **Step 2: Implement `AdaptiveRatingInput`**
 
 `ConsumerStatefulWidget` with mixins: `AdaptiveInputMixin`, `AdaptiveElementMixin`, `AdaptiveVisibilityMixin`, `ProviderScopeMixin`.
 
@@ -200,7 +202,7 @@ Behavior:
 - `resetInput`: delegate to mixin + `setState`
 - `loadLabel` + `loadErrorMessage` like other inputs
 
-- [ ] **Step 3: Split registry**
+- [x] **Step 3: Split registry**
 
 ```dart
 case 'Input.Rating':
@@ -211,7 +213,7 @@ case 'Rating':
 
 Remove combined `case 'Rating': case 'Input.Rating':` branch.
 
-- [ ] **Step 4: Input-only overlay tests**
+- [x] **Step 4: Input-only overlay tests**
 
 ```dart
 testWidgets('applyUpdates value and label update Input.Rating', (tester) async { ... });
@@ -219,9 +221,9 @@ testWidgets('setInputError shows on Input.Rating', (tester) async { ... });
 testWidgets('resetInput restores baseline value', (tester) async { ... });
 ```
 
-- [ ] **Step 5: Notifier test** — `collectInputValues()` includes `Input.Rating` id with double value
+- [x] **Step 5: Notifier test** — `collectInputValues()` includes `Input.Rating` id with double value
 
-- [ ] **Step 6: Widgetbook `rating_input_overlay_page.dart`**
+- [x] **Step 6: Widgetbook `rating_input_overlay_page.dart`**
 
 Follow `fact_set_overlay_page.dart` change-only lifecycle:
 
@@ -229,7 +231,7 @@ Follow `fact_set_overlay_page.dart` change-only lifecycle:
 - Knobs: value (0–5), label, `isRequired`, show error → `applyUpdates` / `setInputError`
 - Register in `adaptive_cards_use_cases.dart` + `docs/widgetbook-overlay-demos.md`
 
-- [ ] **Step 7: Docs** — `Implementation-Status.md`: `Input.Rating` row; note `Rating` display unchanged widget type
+- [x] **Step 7: Docs** — `Implementation-Status.md`: `Input.Rating` row; note `Rating` display unchanged widget type
 
 ---
 
@@ -245,7 +247,7 @@ Follow `fact_set_overlay_page.dart` change-only lifecycle:
 
 ### Task 3.1: Merge overlay URL into `sources`
 
-- [ ] **Step 1: Notifier test extension**
+- [x] **Step 1: Notifier test extension**
 
 In `adaptive_card_document_notifier_test.dart`:
 
@@ -257,22 +259,22 @@ test('setUrl on Media merges into sources[0].url', () {
 });
 ```
 
-- [ ] **Step 2: Update `resolvedElementProvider` merge**
+- [x] **Step 2: Update `resolvedElementProvider` merge**
 
 After baseline merge, when `overlay?.url != null` and element type is `Media`:
 
 - Clone `sources` list; set first entry `url` to overlay value (create single source if empty)
 
-- [ ] **Step 3: `AdaptiveMedia` listener**
+- [x] **Step 3: `AdaptiveMedia` listener**
 
 Mirror `AdaptiveImage`:
 
 - `container.listen(resolvedElementProvider(id), ...)`
 - On `sources` URL change: dispose old controllers, call `initializePlayer()` with new URL
 
-- [ ] **Step 4: Widget test** — `setUrl` triggers rebuild with new source URL string in state
+- [x] **Step 4: Widget test** — `setUrl` triggers rebuild with new source URL string in state
 
-- [ ] **Step 5: Document** in `reactive-riverpod.md` — Media listens like Image
+- [x] **Step 5: Document** in `reactive-riverpod.md` — Media listens like Image
 
 ---
 
@@ -288,11 +290,11 @@ Mirror `AdaptiveImage`:
 
 ### Task 4.1: Listener on resolved `text`
 
-- [ ] **Step 1: Failing widget test** — `setText('badge1', 'Updated')` updates visible label
+- [x] **Step 1: Failing widget test** — `setText('badge1', 'Updated')` updates visible label
 
-- [ ] **Step 2: Copy `AdaptiveTextBlock` listener pattern** — `container.listen(resolvedElementProvider(id), ...)` updates `text` state field
+- [x] **Step 2: Copy `AdaptiveTextBlock` listener pattern** — `container.listen(resolvedElementProvider(id), ...)` updates `text` state field
 
-- [ ] **Step 3: Pass** + update overlay backlog in `reactive-riverpod.md` (Badge row → implemented)
+- [x] **Step 3: Pass** + update overlay backlog in `reactive-riverpod.md` (Badge row → implemented)
 
 ---
 
@@ -308,11 +310,11 @@ Mirror `AdaptiveImage`:
 
 ### Task 5.1: Resolved value listener on `AdaptiveRating`
 
-- [ ] **Step 1: Test** — display `Rating` id `stars`, `applyUpdates(elements: [AdaptiveElementUpdate(id: 'stars', value: 4.5)])`, expect updated star fill count
+- [x] **Step 1: Test** — display `Rating` id `stars`, `applyUpdates(elements: [AdaptiveElementUpdate(id: 'stars', value: 4.5)])`, expect updated star fill count
 
-- [ ] **Step 2: Add listener** in `didChangeDependencies` — `container.listen(resolvedElementProvider(id), …)` updates `value`, `max`, `color`, `size`; `setState` when changed
+- [x] **Step 2: Add listener** in `didChangeDependencies` — `container.listen(resolvedElementProvider(id), …)` updates `value`, `max`, `color`, `size`; `setState` when changed
 
-- [ ] **Step 3: Docs** — `reactive-riverpod.md`: display `Rating` accepts `value` patches via bulk API
+- [x] **Step 3: Docs** — `reactive-riverpod.md`: display `Rating` accepts `value` patches via bulk API
 
 ---
 
@@ -351,11 +353,11 @@ Mirror `AdaptiveImage`:
 
 ### Task 7.1: Use shared action chrome
 
-- [ ] **Step 1: Test** — copy pattern from `action_title_tooltip_overlay_test.dart` for `Action.Popover` id
+- [x] **Step 1: Test** — copy pattern from `action_title_tooltip_overlay_test.dart` for `Action.Popover` id
 
-- [ ] **Step 2: Refactor** — replace inline `ElevatedButton` with `IconButtonAction(adaptiveMap:, onTapped: onTapped)` OR add `AdaptiveActionStateMixin` to popover state and gate `onPressed` with `actionEnabled`
+- [x] **Step 2: Refactor** — replace inline `ElevatedButton` with `IconButtonAction(adaptiveMap:, onTapped: onTapped)` OR add `AdaptiveActionStateMixin` to popover state and gate `onPressed` with `actionEnabled`
 
-- [ ] **Step 3: `setActionEnabled` test** — disabled popover does not open dialog on tap
+- [x] **Step 3: `setActionEnabled` test** — disabled popover does not open dialog on tap
 
 ---
 

@@ -374,7 +374,7 @@ Run: `cd widgetbook && fvm dart run build_runner build --delete-conflicting-outp
 
 - [x] **Step 4: Update registry** — `'Chart.Gauge': (map) => AdaptiveGaugeChart(adaptiveMap: map)` (remove donut stub)
 
-- [ ] **Step 5: Optional HostConfig** — add `chartsLayout.gauge` section if gauge dimensions need defaults (mirror pie/donut pattern); otherwise use sensible literals initially — _uses `resolveDonutChartLayout()` height for now_
+- [x] **Step 5: Optional HostConfig** — superseded by the completed `2026-06-08-charts-layout-config.plan.md` (`ChartsLayoutConfig`): gauge layout is config-driven via `resolveDonutLayout` reuse rather than a dedicated `chartsLayout.gauge` section. No further work. _(audit 2026-06-17)_
 
 Run:
 
