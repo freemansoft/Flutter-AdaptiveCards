@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`ProviderScope` brightness key bug:** removed `key: ValueKey<Brightness?>` from the inner `ProviderScope` in `RawAdaptiveCard`. The key caused Flutter to destroy and recreate the entire `ProviderScope` subtree on every brightness toggle, wiping `AdaptiveCardDocumentNotifier` state (all input values, overlays, and visibility). Theme propagation continues to work via `didChangeDependencies` — no key is needed. Regression tests added in `test/elements/theme_change_overlay_test.dart`.
+
 ### Changed
 
 - Removed duplicate `assets/fonts/` tree; golden tests load Roboto from `flutter_adaptive_cards_test_support`.

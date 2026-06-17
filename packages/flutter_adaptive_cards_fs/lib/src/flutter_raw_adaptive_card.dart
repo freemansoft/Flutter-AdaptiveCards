@@ -89,8 +89,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   /// advanced host integrations outside widget [build].
   ProviderContainer? documentContainer;
 
-  Brightness? _resolverBrightnessKey;
-
   /// creates a deep copy with ids injected
   static Map<String, dynamic> _deepCopyBaseline(Map<String, dynamic> map) {
     final copy = json.decode(json.encode(map)) as Map<String, dynamic>;
@@ -152,7 +150,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       hostConfigs: widget.hostConfigs,
       colorFallbacks: ThemeColorFallbacks(Theme.of(context)),
     );
-    _resolverBrightnessKey = brightness;
   }
 
   /// Forces a card subtree rebuild when host logic changes state outside overlay
@@ -592,7 +589,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     );
 
     return ProviderScope(
-      key: ValueKey<Brightness?>(_resolverBrightnessKey),
       overrides: [
         cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
         actionTypeRegistryProvider.overrideWithValue(widget.actionTypeRegistry),
