@@ -6,6 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/open_url_dialog_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/reset_inputs_executor.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/actions/popover_container.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
@@ -238,6 +239,42 @@ class DefaultResetInputsAction extends GenericActionResetInputs {
     required Map<String, dynamic> adaptiveMap,
   }) {
     executeResetInputsAction(context, adaptiveMap);
+  }
+}
+
+/// Default handler for `Action.Popover` — shows the nested `card` payload
+/// in a modal dialog, inheriting HostConfig from the parent card.
+class DefaultPopoverAction extends GenericPopoverAction {
+  /// Creates a default popover action handler.
+  const DefaultPopoverAction();
+
+  @override
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+    required Map<String, dynamic> adaptiveMap,
+  }) {
+    final card = adaptiveMap['card'] as Map<String, dynamic>?;
+    if (card == null) return;
+
+    unawaited(
+      showDialog<void>(
+        context: context,
+        builder: (context) => Dialog(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
+            child: SingleChildScrollView(
+              child: AdaptivePopoverContainer(
+                child: RawAdaptiveCard.fromMap(
+                  map: card,
+                  hostConfigs: rawAdaptiveCardState.widget.hostConfigs,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

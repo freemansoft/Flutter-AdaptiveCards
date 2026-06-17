@@ -14,6 +14,9 @@ const Map<String, dynamic> _openUrlAction = {
   'url': 'https://example.com',
 };
 
+RawAdaptiveCardState _cardState(WidgetTester tester) =>
+    tester.state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard));
+
 Finder _actionButtonFinder() {
   return find.descendant(
     of: find.byKey(generateAdaptiveWidgetKey(_openUrlAction)),
@@ -45,9 +48,7 @@ void main() {
     await tester.pump();
     expect(openCount, 1);
 
-    tester
-        .state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
-        .setActionEnabled('openUrlAction', enabled: false);
+    _cardState(tester).setActionEnabled('openUrlAction', enabled: false);
     await tester.pump();
 
     expect(

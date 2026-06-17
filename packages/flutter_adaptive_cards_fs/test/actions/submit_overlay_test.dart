@@ -95,9 +95,8 @@ void main() {
     await tester.pump();
     expect(submitCount, 0);
 
-    final cardState = tester.state<RawAdaptiveCardState>(
-      find.byType(RawAdaptiveCard),
-    )..setActionEnabled('submitDisabled', enabled: true);
+    final cardState = _cardState(tester)
+      ..setActionEnabled('submitDisabled', enabled: true);
     await tester.pump();
 
     expect(

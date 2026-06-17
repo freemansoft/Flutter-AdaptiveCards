@@ -31,6 +31,9 @@ Map<String, dynamic> _showCardCardMap() => {
   'actions': [_showCardActionMap()],
 };
 
+RawAdaptiveCardState _cardState(WidgetTester tester) =>
+    tester.state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard));
+
 ElevatedButton _showCardButton(WidgetTester tester) {
   final actionMap = _showCardActionMap();
   final actionFinder = find.byKey(generateAdaptiveWidgetKey(actionMap));
@@ -79,9 +82,7 @@ void main() {
     await tester.pump();
     expect(find.text('Expanded content'), findsNothing);
 
-    tester
-        .state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
-        .setActionEnabled('showCardAction', enabled: true);
+    _cardState(tester).setActionEnabled('showCardAction', enabled: true);
     await tester.pump();
 
     expect(_showCardButton(tester).onPressed, isNotNull);

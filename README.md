@@ -147,7 +147,9 @@ Always-on project guardrails (FVM, monorepo hygiene, Very Good Analysis, Riverpo
 
 Modular skills loaded when a task matches. Vendored upstream skills are tracked in [`skills-lock.json`](skills-lock.json).
 
-> **Claude Code:** Opening this workspace in VS Code or Cursor automatically links `.agents/skills/` into `.claude/skills/` via a `folderOpen` task in [`.vscode/tasks.json`](.vscode/tasks.json). You will be prompted to _Allow_ the task once; after that it runs silently on every workspace open. To run it manually: `sh scripts/setup-claude.sh` (Mac/Linux) or `pwsh scripts/setup-claude.ps1` (Windows). Only built in skills show up when typing `/` in the Claude Code prompt. Superpowers and other customized skills do not show up in the `/` list.
+> **Claude Code:** Opening this workspace in VS Code or Cursor automatically links `.agents/skills/` into `.claude/skills/` via a `folderOpen` task in [`.vscode/tasks.json`](.vscode/tasks.json). You will be prompted to _Allow_ the task once; after that it runs silently on every workspace open. To run it manually: `sh scripts/setup-claude.sh` (Mac/Linux) or `pwsh scripts/setup-claude.ps1` (Windows).
+>
+> Only built in skills show up when typing `/` in the Claude Code prompt. Superpowers and other customized skills do not show up in the `/` list in the VSCode plugin but do in a terminal command line. Claude itself says that the list shouldn't work but it did this morning in my terminal window
 
 | Source           | Repository                                              | Count |
 | ---------------- | ------------------------------------------------------- | ----- |

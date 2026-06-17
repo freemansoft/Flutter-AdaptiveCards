@@ -5,36 +5,56 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 
-/// Test `HttpOverrides` that stubs image HTTP with transparent PNG / minimal SVG
-/// — install via `adaptiveCardsTestExecutable` or `HttpOverrides.global`.
+/// Test `HttpOverrides` that stubs HTTP responses for widget and golden tests.
+///
+/// By default, stubs image requests with a transparent PNG or minimal SVG
+/// based on the URL file extension. Supply [urlResponder] to override the
+/// response for specific URLs (e.g., returning JSON card payloads for
+/// `Action.OpenUrlDialog` tests).
 class MyTestHttpOverrides extends HttpOverrides {
+  /// Creates overrides with an optional per-URL response factory.
+  ///
+  /// [urlResponder] receives the request [Uri] and returns the raw bytes and
+  /// content-type to use. Return `null` to fall back to the default image stub.
+  MyTestHttpOverrides({this.urlResponder});
+
+  /// Optional factory for custom per-URL responses. Return `null` to fall back
+  /// to the default PNG/SVG stub.
+  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
+
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    return _TestImageHttpClient();
+    return _TestImageHttpClient(urlResponder: urlResponder);
   }
 }
 
 class _TestImageHttpClient extends Fake implements HttpClient {
+  _TestImageHttpClient({this.urlResponder});
+
+  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
+
   @override
   bool autoUncompress = true;
 
   @override
   Future<HttpClientRequest> getUrl(Uri url) async =>
-      _TestImageHttpClientRequest(url);
+      _TestImageHttpClientRequest(url, urlResponder: urlResponder);
 
   @override
   Future<HttpClientRequest> openUrl(String method, Uri url) async =>
-      _TestImageHttpClientRequest(url);
+      _TestImageHttpClientRequest(url, urlResponder: urlResponder);
 
   @override
   void close({bool force = false}) {}
 }
 
 class _TestImageHttpClientRequest extends Fake implements HttpClientRequest {
-  _TestImageHttpClientRequest(this.uri);
+  _TestImageHttpClientRequest(this.uri, {this.urlResponder});
 
   @override
   final Uri uri;
+
+  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
 
   @override
   HttpHeaders get headers => _TestImageHttpHeaders();
@@ -62,33 +82,34 @@ class _TestImageHttpClientRequest extends Fake implements HttpClientRequest {
 
   @override
   Future<HttpClientResponse> close() async =>
-      _TestImageHttpClientResponse(uri: uri);
+      _TestImageHttpClientResponse(uri: uri, urlResponder: urlResponder);
 }
 
 class _TestImageHttpClientResponse extends Fake implements HttpClientResponse {
-  _TestImageHttpClientResponse({required this.uri});
+  _TestImageHttpClientResponse({required this.uri, this.urlResponder});
 
   final Uri uri;
+  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
 
-  List<int> get _bytes {
+  ({List<int> bytes, String contentType}) get _response {
+    final custom = urlResponder?.call(uri);
+    if (custom != null) return custom;
     final path = uri.path.toLowerCase();
     if (path.endsWith('.svg')) {
-      return utf8.encode(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1">'
-        ' <rect width="1" height="1"/>'
-        ' </svg>',
+      return (
+        bytes: utf8.encode(
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1">'
+          ' <rect width="1" height="1"/>'
+          ' </svg>',
+        ),
+        contentType: 'image/svg+xml',
       );
     }
-    return TransparentImage.bytes;
+    return (bytes: TransparentImage.bytes, contentType: 'image/png');
   }
 
-  String get _contentType {
-    final path = uri.path.toLowerCase();
-    if (path.endsWith('.svg')) {
-      return 'image/svg+xml';
-    }
-    return 'image/png';
-  }
+  List<int> get _bytes => _response.bytes;
+  String get _contentType => _response.contentType;
 
   @override
   int get statusCode => 200;

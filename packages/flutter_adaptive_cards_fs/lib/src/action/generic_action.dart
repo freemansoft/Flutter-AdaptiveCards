@@ -95,3 +95,16 @@ abstract class GenericActionToggleVisibility extends GenericAction {
     required Map<String, dynamic> adaptiveMap,
   });
 }
+
+/// Handler contract for `Action.Popover` taps.
+abstract class GenericPopoverAction extends GenericAction {
+  /// Creates a popover action handler implementation.
+  const GenericPopoverAction();
+
+  @override
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+    required Map<String, dynamic> adaptiveMap,
+  });
+}

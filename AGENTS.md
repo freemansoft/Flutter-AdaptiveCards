@@ -42,6 +42,7 @@ The project's AI instructions are organized into two layers to keep context effi
 
 - **FVM:** Always prefix commands with `fvm` (e.g. `fvm flutter pub get`).
 - **Dev Dependencies:** Use `fvm flutter pub add dev:<package>`.
+- **Changelog:** Whenever any file under a `packages/<name>/` directory changes, add a bullet to the `## [Unreleased]` section of that package's `CHANGELOG.md` before marking work complete. See `adaptive-cards-monorepo-workspace` skill for format details.
 
 ## State management (`flutter_adaptive_cards_fs`)
 

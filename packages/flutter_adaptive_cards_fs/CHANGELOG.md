@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`Action.Popover` registry pattern:** `GenericPopoverAction` abstract class and `DefaultPopoverAction` implementation added. `Action.Popover` is now registered in `DefaultActionTypeRegistry` and follows the same injectable handler pattern as Submit, Execute, OpenUrl, ToggleVisibility, and ResetInputs. Host apps can override the default dialog behavior by supplying a custom `ActionTypeRegistry`.
+- **`AdaptivePopoverContainer`** extracted to its own file (`popover_container.dart`) to avoid a circular dependency between `default_actions.dart` and `popover.dart`; re-exported from `popover.dart` for backward compatibility.
+
+### Changed
+
+- **`AdaptiveActionPopoverState`** refactored to resolve its action handler from the registry in `didChangeDependencies()` (matching `AdaptiveActionSubmitState` / `AdaptiveActionExecuteState`). The inline `onTapped()` method and `popupParentResolver` field have been removed; dialog-show logic now lives in `DefaultPopoverAction`. `AdaptiveActionMixin` added to state mixins.
+
 ### Fixed
 
 - **`ProviderScope` brightness key bug:** removed `key: ValueKey<Brightness?>` from the inner `ProviderScope` in `RawAdaptiveCard`. The key caused Flutter to destroy and recreate the entire `ProviderScope` subtree on every brightness toggle, wiping `AdaptiveCardDocumentNotifier` state (all input values, overlays, and visibility). Theme propagation continues to work via `didChangeDependencies` — no key is needed. Regression tests added in `test/elements/theme_change_overlay_test.dart`.

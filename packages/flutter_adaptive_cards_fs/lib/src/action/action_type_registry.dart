@@ -49,6 +49,8 @@ class DefaultActionTypeRegistry extends ActionTypeRegistry {
         return const DefaultResetInputsAction();
       case 'Action.ToggleVisibility':
         return const DefaultToggleVisibilityAction();
+      case 'Action.Popover':
+        return const DefaultPopoverAction();
       case 'Action.InsertImage':
         assert(false, 'Action.InsertImage is not supported');
         return null;

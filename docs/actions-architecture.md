@@ -8,7 +8,7 @@ This document describes how the Adaptive Cards action system is organized and ho
 
 ## Key Concepts 💡
 
-- **Generic action interfaces** (e.g., `GenericSubmitAction`, `GenericExecuteAction`, `GenericActionOpenUrl`) live in `lib/src/action/generic_action.dart` and define the public contract (the `tap()` signature).
+- **Generic action interfaces** (e.g., `GenericSubmitAction`, `GenericExecuteAction`, `GenericActionOpenUrl`, `GenericPopoverAction`) live in `lib/src/action/generic_action.dart` and define the public contract (the `tap()` signature).
 - **Default implementations** (e.g., `DefaultSubmitAction`, `DefaultExecuteAction`) live in `lib/src/action/default_actions.dart` and provide the package-provided behavior.
 - **ActionTypeRegistry** (`lib/src/action/action_type_registry.dart`) maps the parsed `Map<String, dynamic>` (the action map) to an appropriate `GenericAction` instance.
 - **Runtime invocation**: Action widgets invoke `action.tap(...)` at tap time, passing the current `adaptiveMap` so Default implementations remain stateless and reusable.
@@ -132,18 +132,32 @@ class MySubmitAction implements GenericSubmitAction {
 
 `Action.OpenUrlDialog` is a specific action type that displays content from a URL within a dialog.
 
-### Core Logic
+### Core Logic Action.OpenUrlDialog
 
-1.  **Fetch Content**: When triggered, the action performs an HTTP GET request to the specified `url`.
-2.  **Content Negotiation**:
+1. **Fetch Content**: When triggered, the action performs an HTTP GET request to the specified `url`.
+    **Content Negotiation**:
     - It checks the `Content-Type` header of the response.
     - It attempts to parse the response body as JSON.
-3.  **Display Strategy**:
+    **Display Strategy**:
     - **JSON Content**: If the response is valid Adaptive Card JSON (typically `application/json`), the card is rendered directly within the dialog.
     - **Web Content (Fallback)**: If the response is NOT JSON (e.g., standard HTML web page) or parsing fails:
       - The action **automatically launches the system default browser** to the target URL using `url_launcher`.
       - The dialog closes automatically to provide a seamless transition.
     - **Error Handling**: Network errors or other failures may display an error message in the dialog or trigger the fallback mechanism depending on the failure type.
+
+## Action.Popover Behavior 🗳️
+
+`Action.Popover` is a project-specific action that renders an inline Adaptive Card inside a modal dialog (no spec source; not part of the Microsoft schema).
+
+### Core Logic Action.Popover
+
+1. The action map must contain a `"card"` key whose value is a nested Adaptive Card JSON object.
+2. When tapped, `DefaultPopoverAction.tap()` calls `showDialog`, wrapping the nested card in `AdaptivePopoverContainer` → `RawAdaptiveCard`. The nested card inherits the host's `HostConfig`.
+3. If `"card"` is absent or null, the action is a no-op.
+
+`AdaptivePopoverContainer` is defined in `lib/src/cards/actions/popover_container.dart` (a thin `StatelessWidget` marker). It is re-exported from `popover.dart` for backward compatibility. The split avoids a circular import: `default_actions.dart` → `popover_container.dart` (no further deps); `popover.dart` → `default_actions.dart` via `generic_action.dart` → `action_type_registry.dart` → `default_actions.dart`.
+
+`Action.Popover` fully follows the `GenericPopoverAction` / `DefaultPopoverAction` registry pattern — hosts can replace `DefaultPopoverAction` by providing a custom `ActionTypeRegistry`.
 
 ---
 
@@ -187,6 +201,7 @@ Spec: [`docs/superpowers/specs/2026-06-04-action-resetinputs-targetinputids-desi
 - `lib/src/action/reset_inputs_executor.dart` — `Action.ResetInputs` / `targetInputIds` dispatch
 - `lib/src/action/action_type_registry.dart` — default registry mapping action types to implementations
 - `lib/src/cards/actions/*` — action widgets and call sites
+- `lib/src/cards/actions/popover_container.dart` — `AdaptivePopoverContainer` marker widget (extracted to avoid circular import between `default_actions.dart` and `popover.dart`)
 
 ---
 

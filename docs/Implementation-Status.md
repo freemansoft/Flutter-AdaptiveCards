@@ -112,7 +112,7 @@ Sample reference: [FlightUpdateTable.json](https://raw.githubusercontent.com/mic
 | Action.OpenUrlDialog    | [Teams ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions)         | ✅ Complete    | ❌ No  | [actions-architecture.md](./actions-architecture.md) | **Teams extension** (schema v1.5+) — launches modal/task module dialog                                                                           |
 | Action.ResetInputs      | [Bot Framework ext](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-actions) | ✅ Complete    | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | **`targetInputIds`**, **`valueChangedAction`**; Teams/Bot Framework extension                                                                    |
 | Action.InsertImage      | Host-specific ext                                                                                                         | ✅ Complete    | ❌ No  | -                                                    | **Host extension** (Word/PowerPoint, v1.5+) — inserts image into host canvas                                                                     |
-| Action.Popover          | -                                                                                                                         | ✅ Complete    | ❌ No  | -                                                    | **Project-specific** — no known spec source; popover overlay                                                                                     |
+| Action.Popover          | -                                                                                                                         | ✅ Complete    | ❌ No  | [actions-architecture.md](./actions-architecture.md) | **Project-specific** — no known spec source; Generic + Default pattern; renders nested card in modal dialog                                       |
 
 ---
 
@@ -336,6 +336,17 @@ fvm flutter test --exclude-tags=golden
 
 ## Recently completed
 
+### Action behavior unification (2026-06-17)
+
+Plan: [2026-06-17-action-behavior-unification.plan.md](./plans/2026-06-17-action-behavior-unification.plan.md) — design spec: [2026-06-17-action-behavior-unification-design.md](./superpowers/specs/2026-06-17-action-behavior-unification-design.md).
+
+- **`Action.Popover`** refactored from inline tap handler to `GenericPopoverAction` / `DefaultPopoverAction` registry pattern — consistent with Submit, Execute, OpenUrl, ToggleVisibility, and ResetInputs.
+- **`AdaptivePopoverContainer`** extracted to `popover_container.dart` to resolve circular import; re-exported from `popover.dart` for backward compatibility.
+- **`MyTestHttpOverrides`** extended with optional `urlResponder` factory in `flutter_adaptive_cards_test_support`; `open_url_dialog_test.dart` migrated off bespoke `MockHttpOverrides`.
+- Test `RawAdaptiveCardState` access normalized to `_cardState(WidgetTester)` helper across overlay test files.
+
+**Verification (2026-06-17):** `fvm flutter analyze` clean; **466** core tests passed, 2 skipped, 0 failed.
+
 ### Refresh, Icon, charts, gauge, and text (2026-06-08 plan)
 
 Plan: [2026-06-08-refresh-icon-charts-text-features.plan.md](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md) — all workstreams **A–G** complete.
@@ -388,5 +399,5 @@ See [backend-host-integration.md](./backend-host-integration.md) and [archived d
 
 ---
 
-_Last Updated: 2026-06-09_
+_Last Updated: 2026-06-17_
 _Based on v1.6.0 of Microsoft Adaptive Cards specification_

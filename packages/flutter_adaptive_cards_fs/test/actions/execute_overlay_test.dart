@@ -14,6 +14,9 @@ const Map<String, dynamic> _executeAction = {
   'verb': 'doThing',
 };
 
+RawAdaptiveCardState _cardState(WidgetTester tester) =>
+    tester.state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard));
+
 Finder _actionButtonFinder() {
   return find.descendant(
     of: find.byKey(generateAdaptiveWidgetKey(_executeAction)),
@@ -45,9 +48,7 @@ void main() {
     await tester.pump();
     expect(executeCount, 1);
 
-    tester
-        .state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard))
-        .setActionEnabled('executeAction', enabled: false);
+    _cardState(tester).setActionEnabled('executeAction', enabled: false);
     await tester.pump();
 
     expect(
