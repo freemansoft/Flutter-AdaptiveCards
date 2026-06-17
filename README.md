@@ -147,12 +147,14 @@ Always-on project guardrails (FVM, monorepo hygiene, Very Good Analysis, Riverpo
 
 Modular skills loaded when a task matches. Vendored upstream skills are tracked in [`skills-lock.json`](skills-lock.json).
 
-| Source | Repository | Count |
-| ------ | ---------- | ----- |
-| Dart team | [dart-lang/skills](https://github.com/dart-lang/skills) | 9 |
-| Flutter team | [flutter/skills](https://github.com/flutter/skills) | 10 |
-| Superpowers | [obra/superpowers](https://github.com/obra/superpowers) | 14 |
-| Project-specific | (authored in-repo) | 11 |
+> **Claude Code:** Opening this workspace in VS Code or Cursor automatically links `.agents/skills/` into `.claude/skills/` via a `folderOpen` task in [`.vscode/tasks.json`](.vscode/tasks.json). You will be prompted to _Allow_ the task once; after that it runs silently on every workspace open. To run it manually: `sh scripts/setup-claude.sh` (Mac/Linux) or `pwsh scripts/setup-claude.ps1` (Windows). Only built in skills show up when typing `/` in the Claude Code prompt. Superpowers and other customized skills do not show up in the `/` list.
+
+| Source           | Repository                                              | Count |
+| ---------------- | ------------------------------------------------------- | ----- |
+| Dart team        | [dart-lang/skills](https://github.com/dart-lang/skills) | 9     |
+| Flutter team     | [flutter/skills](https://github.com/flutter/skills)     | 10    |
+| Superpowers      | [obra/superpowers](https://github.com/obra/superpowers) | 14    |
+| Project-specific | (authored in-repo)                                      | 11    |
 
 **Project-specific skills:** `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-testing`, `code-review`, `release-engineer`, `release-flutter-upgrade-sdk`.
 

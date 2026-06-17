@@ -73,14 +73,14 @@ flowchart TB
   edit --> onChange
 ```
 
-| Phase | Path | Result |
-| ----- | ---- | ------ |
-| **Load** | Host JSON → baseline copy; registry builds `Input.*` widgets | Initial display from baseline `value`, `choices`, `label`, … |
-| **Seed** | `initData` / `initInput` → `seedInputValues` / `applyUpdates` | Overlay patches only (post-frame after mount) |
-| **Edit** | User input → `setDocumentInputValue` → `setInputValue` | `inputValue` overlay; validation overlays cleared |
-| **Host patch** | `applyUpdates`, `setInputError`, `loadInput`, … | Choices, validation, dynamic label/required, etc. |
-| **Submit** | `collectInputValues()` | `overlay.inputValue ?? baseline['value']` per input id |
-| **Reset** | `resetInput` / `resetAllInputs` / `Action.ResetInputs` | Value, choices, validation, `isRequired`, `label`, `placeholder` → baseline; `isVisible` and typeahead session preserved |
+| Phase          | Path                                                          | Result                                                                                                                   |
+| -------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Load**       | Host JSON → baseline copy; registry builds `Input.*` widgets  | Initial display from baseline `value`, `choices`, `label`, …                                                             |
+| **Seed**       | `initData` / `initInput` → `seedInputValues` / `applyUpdates` | Overlay patches only (post-frame after mount)                                                                            |
+| **Edit**       | User input → `setDocumentInputValue` → `setInputValue`        | `inputValue` overlay; validation overlays cleared                                                                        |
+| **Host patch** | `applyUpdates`, `setInputError`, `loadInput`, …               | Choices, validation, dynamic label/required, etc.                                                                        |
+| **Submit**     | `collectInputValues()`                                        | `overlay.inputValue ?? baseline['value']` per input id                                                                   |
+| **Reset**      | `resetInput` / `resetAllInputs` / `Action.ResetInputs`        | Value, choices, validation, `isRequired`, `label`, `placeholder` → baseline; `isVisible` and typeahead session preserved |
 
 Deeper dives: [initData vs applyUpdates](#initdata--initinput-vs-applyupdates), [Reset behavior](#reset-behavior-resetallinputs--resetinput--resetinputs), [Dependent ChoiceSet](#dependent-choiceset-country--city) (sequence diagram), [reactive-riverpod.md — Reset semantics](reactive-riverpod.md#reset-semantics).
 
@@ -218,12 +218,12 @@ AdaptiveCardBackendHandlers(
 
 **What the host package handles:**
 
-| Callback | Serialized as | Typical server response |
-| -------- | ------------- | ----------------------- |
-| `onSubmit` | `kind: submit` + merged `data` | `setInputErrors` or `replaceCard` |
-| `onExecute` | `kind: execute` + `verb` + `data` | `applyPatches` (e.g. new `choices`) |
-| `onRefresh` | same as execute | `replaceCard` with refreshed JSON |
-| `onChange` | `kind: inputChange` + `dataQuery` with **`associatedInputs`** siblings | `applyPatches` for dependent ChoiceSet |
+| Callback    | Serialized as                                                          | Typical server response                |
+| ----------- | ---------------------------------------------------------------------- | -------------------------------------- |
+| `onSubmit`  | `kind: submit` + merged `data`                                         | `setInputErrors` or `replaceCard`      |
+| `onExecute` | `kind: execute` + `verb` + `data`                                      | `applyPatches` (e.g. new `choices`)    |
+| `onRefresh` | same as execute                                                        | `replaceCard` with refreshed JSON      |
+| `onChange`  | `kind: inputChange` + `dataQuery` with **`associatedInputs`** siblings | `applyPatches` for dependent ChoiceSet |
 
 **`associatedInputs`** on the card JSON ensures **`InputChangeInvoke.dataQuery.parameters`** already includes sibling values (e.g. `country`) before serialization — the backend does not need a separate client-side merge.
 
@@ -250,14 +250,14 @@ Tests: `test/inputs/choice_filter_test.dart`, `test/inputs/choice_set_test.dart`
 
 Dedicated overlay tests (beyond per-input layout tests under `test/inputs/`):
 
-| Concern                                                           | File                                                                                                     |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Concern                                                           | File                                                                                                                  |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `initData` / `initInput` / `applyUpdates`                         | `test/inputs/text_overlay_test.dart`, `test/adaptive_card_overlay_test.dart`, `test/riverpod/apply_updates_test.dart` |
-| Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/text_overlay_test.dart`, `test/inputs/number_overlay_test.dart` |
-| ChoiceSet dynamic choices                                         | `test/inputs/choice_set_overlay_test.dart`                                                               |
-| Cascaded country → dependent ChoiceSet                            | `test/inputs/cascade_choice_set_test.dart`                                                               |
-| Notifier contract                                                 | `test/riverpod/adaptive_card_document_notifier_test.dart`                                                |
-| Targeted reset / `valueChangedAction`                             | `test/inputs/action_reset_inputs_targeted_test.dart`, `test/inputs/value_changed_action_reset_test.dart` |
+| Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/text_overlay_test.dart`, `test/inputs/number_overlay_test.dart`                                          |
+| ChoiceSet dynamic choices                                         | `test/inputs/choice_set_overlay_test.dart`                                                                            |
+| Cascaded country → dependent ChoiceSet                            | `test/inputs/cascade_choice_set_test.dart`                                                                            |
+| Notifier contract                                                 | `test/riverpod/adaptive_card_document_notifier_test.dart`                                                             |
+| Targeted reset / `valueChangedAction`                             | `test/inputs/action_reset_inputs_targeted_test.dart`, `test/inputs/value_changed_action_reset_test.dart`              |
 
 See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage) for the full list and gaps.
 
