@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Assuming there is a container (TabSet?) that holds TabPages.
 // If "TabPage" is the valid element mentioned by user, then likely there is a parent "TabSet".
@@ -12,7 +13,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// Renders the Adaptive Cards **TabSet** container with [TabBar] pages.
 ///
 /// See https://adaptivecards.io/explorer/TabSet.html
-class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveTabSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a tab set from [adaptiveMap] JSON.
   AdaptiveTabSet({
     required this.adaptiveMap,
@@ -31,7 +32,7 @@ class AdaptiveTabSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveTabSet]; drives tab selection and page content.
-class AdaptiveTabSetState extends State<AdaptiveTabSet>
+class AdaptiveTabSetState extends ConsumerState<AdaptiveTabSet>
     with
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,

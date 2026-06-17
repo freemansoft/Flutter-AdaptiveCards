@@ -3,11 +3,12 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders the Adaptive Cards **CompoundButton** element.
 ///
 /// See https://adaptivecards.io/explorer/CompoundButton.html
-class AdaptiveCompoundButton extends StatefulWidget
+class AdaptiveCompoundButton extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a compound button from [adaptiveMap] JSON.
   AdaptiveCompoundButton({
@@ -27,7 +28,7 @@ class AdaptiveCompoundButton extends StatefulWidget
 }
 
 /// State for [AdaptiveCompoundButton]; lays out icon, title, and description.
-class AdaptiveCompoundButtonState extends State<AdaptiveCompoundButton>
+class AdaptiveCompoundButtonState extends ConsumerState<AdaptiveCompoundButton>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Primary label from `title`.
   late String title;

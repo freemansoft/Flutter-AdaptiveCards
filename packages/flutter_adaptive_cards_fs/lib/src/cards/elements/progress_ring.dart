@@ -3,11 +3,12 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders the Adaptive Cards **ProgressRing** element.
 ///
 /// See https://adaptivecards.io/explorer/ProgressRing.html
-class AdaptiveProgressRing extends StatefulWidget
+class AdaptiveProgressRing extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a progress ring from [adaptiveMap] JSON.
   AdaptiveProgressRing({
@@ -27,7 +28,7 @@ class AdaptiveProgressRing extends StatefulWidget
 }
 
 /// State for [AdaptiveProgressRing]; lays out ring and optional label.
-class AdaptiveProgressRingState extends State<AdaptiveProgressRing>
+class AdaptiveProgressRingState extends ConsumerState<AdaptiveProgressRing>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Completion fraction 0.0–1.0 from `value`, or null when indeterminate.
   double? percent;

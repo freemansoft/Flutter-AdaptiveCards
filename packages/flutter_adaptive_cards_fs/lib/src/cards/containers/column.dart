@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Column.html
 ///
 /// Renders a `Column` inside a `ColumnSet`, sizing by `width` and laying out
 /// `items` vertically.
-class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveColumn extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `Column` from [adaptiveMap] within a parent `ColumnSet`.
   AdaptiveColumn({
     required this.adaptiveMap,
@@ -31,7 +32,7 @@ class AdaptiveColumn extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveColumn].
-class AdaptiveColumnState extends State<AdaptiveColumn>
+class AdaptiveColumnState extends ConsumerState<AdaptiveColumn>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Child elements from the column's `items` array.
   late List<Widget> items;

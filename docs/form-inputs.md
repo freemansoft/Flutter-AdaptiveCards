@@ -265,6 +265,32 @@ See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage) for the 
 
 - AdaptiveCard inputs are located in `flutter_adaptive_cards_fs/lib/src/cards/inputs`. Each class there should have its own associated unit test class in `flutter_adaptive_cards_fs/test/inputs`.
 
+## Input.Text — phone style and character filtering
+
+`Input.Text` with `style: "tel"` sets `keyboardType: TextInputType.phone` on the underlying `TextFormField`. This only controls which virtual keyboard appears on iOS/Android; it does **not** filter characters. On desktop or in widget tests (`tester.enterText` bypasses the keyboard entirely), any character can be typed regardless of keyboard type.
+
+There has never been a `FilteringTextInputFormatter` for phone inputs in this codebase. The only formatter applied to all `Input.Text` fields is `LengthLimitingTextInputFormatter(maxLength)`.
+
+**Validation is submit-time only.** The `regex` field in the card JSON is checked inside `TextFormField.validator`, which runs when `Form.validate()` is called at submit. It is not checked keystroke-by-keystroke. The sequence for a phone field with `regex: "^\(\d{3}\) \d{3}-\d{4}$"`:
+
+1. User types `AAA` → accepted into the field, no error shown
+2. User submits → `Form.validate()` → regex fails → error message rendered
+3. User resumes typing → validation overlays cleared (see [Edit phase above](#input-overlay-architecture))
+
+This matches the Adaptive Cards spec, which specifies `regex` as a validation rule, not an input filter.
+
+**If you want to block non-phone characters at entry time**, add a conditional `FilteringTextInputFormatter` in `text.dart` alongside the existing length formatter:
+
+```dart
+inputFormatters: [
+  LengthLimitingTextInputFormatter(maxLength),
+  if (inputStyle == TextInputType.phone)
+    FilteringTextInputFormatter.allow(RegExp(r'[\d\+\-\(\)\. ]')),
+],
+```
+
+This silently drops any character not matching the allowlist as it is typed. Be aware that `style: "tel"` is optional in the card JSON — a field can carry a phone `regex` without `style: "tel"`, in which case `inputStyle` would be `null` and this guard would not fire. The guard would need to also inspect the `regex` pattern, or be applied unconditionally for fields with any `regex`.
+
 ## Component field implementations
 
 All of the data entry components in lib/src/cards/inputs should be form componets instead of plain flutter inputs.

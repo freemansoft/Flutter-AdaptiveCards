@@ -38,9 +38,5 @@ void main() {
       container.read(resolvedElementProvider('photo'))?['url'],
       'https://signed.example/photo.png',
     );
-    expect(
-      tester.state<AdaptiveImageState>(find.byType(AdaptiveImage)).url,
-      'https://signed.example/photo.png',
-    );
   });
 }

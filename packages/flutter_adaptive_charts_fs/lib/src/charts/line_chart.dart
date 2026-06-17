@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders Adaptive Card line chart elements using fl_chart.
 ///
@@ -11,7 +12,7 @@ import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
 /// and is wrapped in [SeparatorElement] for card layout and spacing.
 ///
 /// See also: https://adaptivecards.microsoft.com/?topic=Chart.Line
-class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveLineChart extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a line chart element from [adaptiveMap].
   AdaptiveLineChart({
     required this.adaptiveMap,
@@ -30,7 +31,7 @@ class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveLineChart]; parses JSON data and builds the fl_chart widget.
-class AdaptiveLineChartState extends State<AdaptiveLineChart>
+class AdaptiveLineChartState extends ConsumerState<AdaptiveLineChart>
     with
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
@@ -182,6 +183,7 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
 
   @override
   Widget build(BuildContext context) {
+    listenForChartOverlayChanges();
     final layout = styleResolver.resolveLineChartLayout();
 
     return Visibility(

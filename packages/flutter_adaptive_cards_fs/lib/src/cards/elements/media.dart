@@ -16,7 +16,7 @@ import 'package:video_player/video_player.dart';
 /// Implements
 /// * https://adaptivecards.io/explorer/Media.html
 /// * https://adaptivecards.io/explorer/MediaSource.html
-class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveMedia extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a media player from [adaptiveMap] JSON.
   AdaptiveMedia({
     required this.adaptiveMap,
@@ -34,7 +34,7 @@ class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveMedia]; initializes video playback and poster image.
-class AdaptiveMediaState extends State<AdaptiveMedia>
+class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Underlying [VideoPlayerController] for the first `sources` entry.
   VideoPlayerController? videoPlayerController;
@@ -44,8 +44,6 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
   /// URL of the primary [MediaSource] from `sources`.
   late String sourceUrl;
-
-  ProviderSubscription<Map<String, dynamic>?>? _sourceUrlSubscription;
 
   /// Poster image URL from `poster` or HostConfig default.
   late String? postUrl;
@@ -94,19 +92,6 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
     postUrl = adaptiveMap['poster']?.toString() ?? mediaConfig?.defaultPoster;
     if (postUrl != null && postUrl!.isEmpty) postUrl = null;
-
-    _sourceUrlSubscription?.close();
-    final container = ProviderScope.containerOf(context);
-    _sourceUrlSubscription = container.listen<Map<String, dynamic>?>(
-      resolvedElementProvider(id),
-      (previous, next) {
-        final sources = mediaSourcesFromJsonList(next?['sources']);
-        final nextUrl = sources.isNotEmpty ? sources[0].url : '';
-        if (nextUrl == sourceUrl) return;
-        unawaited(_reinitializePlayer(nextUrl));
-      },
-      fireImmediately: true,
-    );
   }
 
   /// Initializes [videoPlayerController] and [controller] from [sourceUrl].
@@ -163,8 +148,6 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
   @override
   void dispose() {
-    _sourceUrlSubscription?.close();
-    _sourceUrlSubscription = null;
     final player = videoPlayerController;
     if (player != null) {
       unawaited(player.dispose());
@@ -175,6 +158,16 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        final sources = mediaSourcesFromJsonList(next?['sources']);
+        final nextUrl = sources.isNotEmpty ? sources[0].url : '';
+        if (nextUrl == sourceUrl) return;
+        unawaited(_reinitializePlayer(nextUrl));
+      },
+    );
+
     Widget getVideoPlayer() {
       return Chewie(controller: controller!);
     }

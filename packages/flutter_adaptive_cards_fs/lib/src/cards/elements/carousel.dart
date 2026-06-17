@@ -5,11 +5,12 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders the Adaptive Cards **Carousel** element with page dots.
 ///
 /// See https://adaptivecards.io/explorer/Carousel.html
-class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveCarousel extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a carousel from [adaptiveMap] JSON.
   AdaptiveCarousel({
     required this.adaptiveMap,
@@ -28,7 +29,7 @@ class AdaptiveCarousel extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveCarousel]; drives [PageView] and dot controls.
-class AdaptiveCarouselState extends State<AdaptiveCarousel>
+class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Carousel page maps from `pages`.
   late List<Map<String, dynamic>> pages;

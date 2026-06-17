@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ActionSet.html
 ///
 /// This class is described as a _Container_ in the docs but is located in elements for some reason
 ///
-class ActionSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+class ActionSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an action set from [adaptiveMap] JSON.
   ActionSet({
     required this.adaptiveMap,
@@ -28,7 +29,7 @@ class ActionSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [ActionSet]; resolves and lays out child actions.
-class ActionSetState extends State<ActionSet>
+class ActionSetState extends ConsumerState<ActionSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Action widgets built from the `actions` array (capped by HostConfig).
   List<Widget> activeActions = [];

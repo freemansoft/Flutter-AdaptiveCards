@@ -5,13 +5,14 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/image.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ImageSet.html
 ///
 /// Renders an `ImageSet` as a wrapped row of [AdaptiveImage] children sized by
 /// `imageSize`.
-class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveImageSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `ImageSet` from [adaptiveMap].
   AdaptiveImageSet({
     required this.adaptiveMap,
@@ -34,7 +35,7 @@ class AdaptiveImageSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveImageSet].
-class AdaptiveImageSetState extends State<AdaptiveImageSet>
+class AdaptiveImageSetState extends ConsumerState<AdaptiveImageSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Child images from the `images` array.
   late List<AdaptiveImage> images;

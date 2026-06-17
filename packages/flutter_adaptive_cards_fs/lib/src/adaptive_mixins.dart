@@ -211,70 +211,33 @@ mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
 
 /// Reactive action label, tooltip, iconUrl, and enabled state from merged
 /// baseline + overlays.
-mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
-    implements AdaptiveElementMixin<T> {
-  bool _actionEnabled = true;
-  String _actionTitle = '';
-  String? _actionTooltip;
-  String? _actionIconUrl;
-  ProviderSubscription<Map<String, dynamic>?>? _actionStateSubscription;
+mixin AdaptiveActionStateMixin<T extends ConsumerStatefulWidget>
+    on ConsumerState<T> {
+  /// Stable element id; provided by [AdaptiveElementMixin] when mixed in.
+  String get id;
+
+  /// Baseline element JSON; provided by [AdaptiveElementMixin] when mixed in.
+  Map<String, dynamic> get adaptiveMap;
 
   /// Whether the action accepts presses per merged baseline + overlay.
-  bool get actionEnabled => _actionEnabled;
+  bool get actionEnabled =>
+      ref.watch(resolvedActionProvider(id))?['isEnabled'] != false;
 
   /// Merged action label from baseline JSON and runtime overlays.
-  String get title => _actionTitle;
+  String get title =>
+      (ref.watch(resolvedActionProvider(id))?['title'] as String?) ??
+      (adaptiveMap['title'] as String?) ??
+      '';
 
   /// Merged tooltip from baseline JSON and runtime overlays.
-  String? get tooltip => _actionTooltip;
+  String? get tooltip =>
+      (ref.watch(resolvedActionProvider(id))?['tooltip'] as String?) ??
+      (adaptiveMap['tooltip'] as String?);
 
   /// Merged `iconUrl` from baseline JSON and runtime overlays.
-  String? get iconUrl => _actionIconUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _actionTitle = adaptiveMap['title'] as String? ?? '';
-    _actionTooltip = adaptiveMap['tooltip'] as String?;
-    _actionIconUrl = adaptiveMap['iconUrl'] as String?;
-    _actionEnabled = adaptiveMap['isEnabled'] != false;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _actionStateSubscription?.close();
-    final container = ProviderScope.containerOf(context);
-    _actionStateSubscription = container.listen<Map<String, dynamic>?>(
-      resolvedActionProvider(id),
-      (previous, next) {
-        final enabled = next?['isEnabled'] != false;
-        final nextTitle = next?['title'] as String? ?? '';
-        final nextTooltip = next?['tooltip'] as String?;
-        final nextIconUrl = next?['iconUrl'] as String?;
-        if (enabled == _actionEnabled &&
-            nextTitle == _actionTitle &&
-            nextTooltip == _actionTooltip &&
-            nextIconUrl == _actionIconUrl) {
-          return;
-        }
-        setState(() {
-          _actionEnabled = enabled;
-          _actionTitle = nextTitle;
-          _actionTooltip = nextTooltip;
-          _actionIconUrl = nextIconUrl;
-        });
-      },
-      fireImmediately: true,
-    );
-  }
-
-  @override
-  void dispose() {
-    _actionStateSubscription?.close();
-    _actionStateSubscription = null;
-    super.dispose();
-  }
+  String? get iconUrl =>
+      (ref.watch(resolvedActionProvider(id))?['iconUrl'] as String?) ??
+      (adaptiveMap['iconUrl'] as String?);
 }
 
 /// Shared input overlay, validation, and value-changed-action behavior for
@@ -407,47 +370,19 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 mixin AdaptiveTextualInputMixin<T extends ConsumerStatefulWidget>
     on ConsumerState<T> {}
 
-/// Subscribes to merged `isVisible` and exposes [setIsVisible] for hosts.
-mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
-    implements AdaptiveElementMixin<T> {
+/// Reactive `isVisible` from merged baseline + overlays.
+mixin AdaptiveVisibilityMixin<T extends ConsumerStatefulWidget>
+    on ConsumerState<T> {
+  /// Stable element id; provided by [AdaptiveElementMixin] when mixed in.
+  String get id;
+
   /// Effective visibility after baseline JSON and runtime overlays.
-  late bool isVisible;
-  ProviderSubscription<Map<String, dynamic>?>? _visibilitySubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    isVisible = true;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _visibilitySubscription?.close();
-
-    final container = ProviderScope.containerOf(context);
-    _visibilitySubscription = container.listen<Map<String, dynamic>?>(
-      resolvedElementProvider(id),
-      (previous, next) {
-        final visible = parseIsVisible(next?['isVisible']);
-        if (visible == isVisible) return;
-        setState(() => isVisible = visible);
-      },
-      fireImmediately: true,
-    );
-  }
-
-  @override
-  void dispose() {
-    _visibilitySubscription?.close();
-    _visibilitySubscription = null;
-    super.dispose();
-  }
+  bool get isVisible =>
+      parseIsVisible(ref.watch(resolvedElementProvider(id))?['isVisible']);
 
   /// Sets runtime visibility overlay for this element id (host or Action.ToggleVisibility).
   void setIsVisible({required bool visible}) {
-    final container = ProviderScope.containerOf(context);
-    container
+    ref
         .read(adaptiveCardDocumentProvider.notifier)
         .setVisibility(id, visible: visible);
   }

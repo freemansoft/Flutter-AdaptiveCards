@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Shared elevated-button renderer for Adaptive Card actions.
 ///
 /// Reads title, style, `iconUrl`, and tooltip from [adaptiveMap] and invokes
 /// [onTapped] when the action is enabled.
-class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
+class IconButtonAction extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an action button for [adaptiveMap] that calls [onTapped] on press.
   IconButtonAction({
     required this.adaptiveMap,
@@ -32,7 +32,7 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [IconButtonAction].
-class IconButtonActionState extends State<IconButtonAction>
+class IconButtonActionState extends ConsumerState<IconButtonAction>
     with
         AdaptiveActionMixin,
         AdaptiveActionStateMixin,
@@ -54,13 +54,14 @@ class IconButtonActionState extends State<IconButtonAction>
     );
 
     final onPressed = actionEnabled ? () => widget.onTapped(context) : null;
+    final resolvedIconUrl = iconUrl;
 
-    final theButton = (iconUrl != null)
+    final theButton = (resolvedIconUrl != null)
         ? ElevatedButton.icon(
             onPressed: onPressed,
             style: buttonStyle,
             icon: AdaptiveImageUtils.getImage(
-              iconUrl!,
+              resolvedIconUrl,
               height: 36,
               semanticsLabel: title,
             ),

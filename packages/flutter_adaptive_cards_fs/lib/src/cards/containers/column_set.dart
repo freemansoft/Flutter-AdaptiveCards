@@ -3,12 +3,13 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/containers/column.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ColumnSet.html
 ///
 /// Renders a `ColumnSet` as a horizontal row of [AdaptiveColumn] children.
-class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveColumnSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `ColumnSet` from [adaptiveMap].
   AdaptiveColumnSet({
     required this.adaptiveMap,
@@ -31,7 +32,7 @@ class AdaptiveColumnSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveColumnSet].
-class AdaptiveColumnSetState extends State<AdaptiveColumnSet>
+class AdaptiveColumnSetState extends ConsumerState<AdaptiveColumnSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Resolved `columns` (and optional separators) for the row.
   List<Widget>? columns;

@@ -6,6 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/table_cell.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Table.html
@@ -15,7 +16,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// Renders a `Table` with column widths, grid lines, and optional header row
 /// styling from `firstRowAsHeader`.
-class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveTable extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `Table` from [adaptiveMap].
   AdaptiveTable({
     required this.adaptiveMap,
@@ -54,7 +55,7 @@ class AdaptiveTable extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveTable].
-class AdaptiveTableState extends State<AdaptiveTable>
+class AdaptiveTableState extends ConsumerState<AdaptiveTable>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Column width definitions from `columns`.
   late List<Map<String, dynamic>> columns;

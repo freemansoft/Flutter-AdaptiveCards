@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders the Adaptive Cards **Accordion** element as expandable sections.
 ///
 /// See https://adaptivecards.io/explorer/Accordion.html
-class AdaptiveAccordion extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveAccordion extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an accordion from [adaptiveMap] JSON.
   AdaptiveAccordion({
     required this.adaptiveMap,
@@ -25,7 +26,7 @@ class AdaptiveAccordion extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveAccordion]; parses page maps and builds [ExpansionTile]s.
-class AdaptiveAccordionState extends State<AdaptiveAccordion>
+class AdaptiveAccordionState extends ConsumerState<AdaptiveAccordion>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Accordion page maps from `items` or `pages`.
   late List<Map<String, dynamic>> items;

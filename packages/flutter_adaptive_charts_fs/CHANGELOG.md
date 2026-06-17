@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- **`ChartOverlayMixin` / chart widgets:** `ChartOverlayMixin` converted from `on State<T>` to `on ConsumerState<T>`; `AdaptiveBarChart`, `AdaptiveLineChart`, `AdaptivePieChart`, `AdaptiveGaugeChart` converted from `StatefulWidget`/`State` to `ConsumerStatefulWidget`/`ConsumerState`. Internal refactor; no public API changes.
 - Removed duplicate `assets/fonts/` tree; golden tests load Roboto from `flutter_adaptive_cards_test_support`.
 
 - **Chart runtime overlays:** **`ChartElementOverlayExtension`** registered via **`CardChartsRegistry.overlayExtensions`**; extension methods on **`RawAdaptiveCardState`** (`setChartData`, `patchChartProperties`, `clearChartData`, …).

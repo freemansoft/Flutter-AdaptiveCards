@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/gauge_painter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders Adaptive Card `Chart.Gauge` elements using [CustomPainter].
 ///
@@ -11,7 +12,7 @@ import 'package:flutter_adaptive_charts_fs/src/charts/gauge_painter.dart';
 ///
 /// See also:
 /// * https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/charts-in-adaptive-cards
-class AdaptiveGaugeChart extends StatefulWidget
+class AdaptiveGaugeChart extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a gauge chart element from [adaptiveMap].
   AdaptiveGaugeChart({required this.adaptiveMap})
@@ -30,7 +31,7 @@ class AdaptiveGaugeChart extends StatefulWidget
 }
 
 /// State for [AdaptiveGaugeChart]; parses JSON and builds the gauge widget.
-class AdaptiveGaugeChartState extends State<AdaptiveGaugeChart>
+class AdaptiveGaugeChartState extends ConsumerState<AdaptiveGaugeChart>
     with
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
@@ -114,6 +115,7 @@ class AdaptiveGaugeChartState extends State<AdaptiveGaugeChart>
 
   @override
   Widget build(BuildContext context) {
+    listenForChartOverlayChanges();
     final layout = styleResolver.resolveDonutChartLayout();
     final theme = Theme.of(context);
     final labelStyle =

@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// https://adaptivecards.io/explorer/RichTextBlock.html
 ///
-class AdaptiveRichTextBlock extends StatefulWidget
+class AdaptiveRichTextBlock extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a rich text block from [adaptiveMap] JSON.
   AdaptiveRichTextBlock({
@@ -31,13 +31,11 @@ class AdaptiveRichTextBlock extends StatefulWidget
 }
 
 /// State for [AdaptiveRichTextBlock]; builds [TextSpan] children from inlines.
-class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
+class AdaptiveRichTextBlockState extends ConsumerState<AdaptiveRichTextBlock>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late TextAlign _textAlign;
   late Alignment _horizontalAlignment;
   final List<TapGestureRecognizer> _recognizers = [];
-  List<InlineSpan> _inlineSpans = const [];
-  ProviderSubscription<Map<String, dynamic>?>? _inlinesSubscription;
 
   @override
   void didChangeDependencies() {
@@ -49,25 +47,10 @@ class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
     _textAlign = resolver.resolveTextAlign(
       adaptiveMap['horizontalAlignment'] as String?,
     );
-
-    _inlinesSubscription?.close();
-    final container = ProviderScope.containerOf(context);
-    _inlinesSubscription = container.listen<Map<String, dynamic>?>(
-      resolvedElementProvider(id),
-      (previous, next) {
-        _syncInlineSpansFromResolved();
-        if (mounted) {
-          setState(() {});
-        }
-      },
-      fireImmediately: true,
-    );
   }
 
   @override
   void dispose() {
-    _inlinesSubscription?.close();
-    _inlinesSubscription = null;
     for (final recognizer in _recognizers) {
       recognizer.dispose();
     }
@@ -189,16 +172,10 @@ class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
     return spans;
   }
 
-  void _syncInlineSpansFromResolved() {
-    if (!mounted) return;
-    final container = ProviderScope.containerOf(context);
-    final resolved = container.read(resolvedElementProvider(id)) ?? adaptiveMap;
-    _inlineSpans = _createInlineSpans(context, resolved);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final spans = _inlineSpans;
+    final resolved = ref.watch(resolvedElementProvider(id)) ?? adaptiveMap;
+    final spans = _createInlineSpans(context, resolved);
     final isHeading = style?.toLowerCase() == 'heading';
 
     return Visibility(

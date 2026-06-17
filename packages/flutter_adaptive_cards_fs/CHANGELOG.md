@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`AdaptiveVisibilityMixin` / `AdaptiveActionStateMixin`:** converted from `on State<T>` to `on ConsumerState<T>`; visibility and action state now read via `ref.watch` / `ref.read` instead of `ProviderScope.containerOf(context)` + manual `ProviderSubscription`. Removes all manual `didChangeDependencies` subscription setup and `dispose` cleanup in these mixins.
+- **All display and structural element widgets** (`AdaptiveColumn`, `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveImageSet`, `AdaptiveTable`, `AdaptiveAccordion`, `ActionSet`, `AdaptiveCarousel`, `AdaptiveCodeBlock`, `AdaptiveCompoundButton`, `AdaptiveIcon`, `AdaptiveProgressBar`, `AdaptiveProgressRing`, `AdaptiveTabSet`, `AdaptiveTextBlock`, `AdaptiveRichTextBlock`, `AdaptiveBadge`, `AdaptiveImage`, `AdaptiveMedia`, `AdaptiveRating`, `AdaptiveFactSet`, `IconButtonAction`) converted from `StatefulWidget`/`State` to `ConsumerStatefulWidget`/`ConsumerState`. Internal refactor; no public API changes.
 - Removed duplicate `assets/fonts/` tree; golden tests load Roboto from `flutter_adaptive_cards_test_support`.
 
 ### Overlay gaps remediation (Waves 1–3)

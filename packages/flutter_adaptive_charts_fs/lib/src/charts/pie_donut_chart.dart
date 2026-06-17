@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders Adaptive Card pie and donut chart elements using fl_chart.
 ///
@@ -14,7 +15,7 @@ import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
 /// See also:
 /// * https://adaptivecards.microsoft.com/?topic=Chart.Pie
 /// * https://adaptivecards.microsoft.com/?topic=Chart.Donut
-class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptivePieChart extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a pie or donut chart element from [adaptiveMap].
   ///
   /// Set [isDonut] to `true` for donut charts.
@@ -39,7 +40,7 @@ class AdaptivePieChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptivePieChart]; parses JSON data and builds the fl_chart widget.
-class AdaptivePieChartState extends State<AdaptivePieChart>
+class AdaptivePieChartState extends ConsumerState<AdaptivePieChart>
     with
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
@@ -126,6 +127,7 @@ class AdaptivePieChartState extends State<AdaptivePieChart>
 
   @override
   Widget build(BuildContext context) {
+    listenForChartOverlayChanges();
     final layout = widget.isDonut
         ? styleResolver.resolveDonutChartLayout()
         : styleResolver.resolvePieChartLayout();

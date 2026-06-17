@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Container.html
 ///
 /// Renders a `Container` that vertically stacks `items` with optional
 /// background, spacing, and `minHeight`.
-class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveContainer extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `Container` element from [adaptiveMap].
   AdaptiveContainer({
     required this.adaptiveMap,
@@ -27,7 +28,7 @@ class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveContainer].
-class AdaptiveContainerState extends State<AdaptiveContainer>
+class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Vertical alignment of child items from `verticalContentAlignment`.
   late MainAxisAlignment verticalContentAlignment;

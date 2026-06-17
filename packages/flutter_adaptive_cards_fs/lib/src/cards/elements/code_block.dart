@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// https://adaptivecards.microsoft.com/?topic=CodeBlock
 ///
@@ -9,7 +10,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 // TODO(username): Add language specific highlighting and line folding.
 // language specific highlighting is complex without 3p support
 //
-class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveCodeBlock extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a code block from [adaptiveMap] JSON.
   AdaptiveCodeBlock({
     required this.adaptiveMap,
@@ -28,7 +29,7 @@ class AdaptiveCodeBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveCodeBlock]; renders code with optional line numbers.
-class AdaptiveCodeBlockState extends State<AdaptiveCodeBlock>
+class AdaptiveCodeBlockState extends ConsumerState<AdaptiveCodeBlock>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Source code from `code`.
   late String codeSnippet;
