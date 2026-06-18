@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- no changes yet
+### Fixed
+
+- **`CodeBlock` reads spec `codeSnippet` property:** `AdaptiveCodeBlockState.initState` now reads `adaptiveMap['codeSnippet']` first (spec-correct property) and falls back to `adaptiveMap['code']` for backward compatibility. Previously any spec-compliant CodeBlock rendered empty.
+
+### Changed
+
+- **`Input.Number`, `Input.Date`, and `Input.Time` now validate `min`/`max` bounds on Submit/Execute:** out-of-range values block the action and mark the input invalid instead of submitting silently.
+
+### Added
+
+- **Pure range-validation helpers:** `input_range_validation.dart` with `numberInputValueIsValid`, `dateInputValueIsValid`, and `timeInputValueIsValid` — Flutter-free pure functions for `Input.Number`, `Input.Date`, and `Input.Time` bound validation, mirroring `input_text_validation.dart`.
 
 ## [0.11.0]
 

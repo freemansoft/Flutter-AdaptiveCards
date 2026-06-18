@@ -31,7 +31,7 @@ class AdaptiveCodeBlock extends ConsumerStatefulWidget with AdaptiveElementWidge
 /// State for [AdaptiveCodeBlock]; renders code with optional line numbers.
 class AdaptiveCodeBlockState extends ConsumerState<AdaptiveCodeBlock>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
-  /// Source code from `code`.
+  /// Source code from `codeSnippet` (spec property; legacy `code` accepted).
   late String codeSnippet;
 
   /// Optional language hint from `language` (not yet used for highlighting).
@@ -43,7 +43,10 @@ class AdaptiveCodeBlockState extends ConsumerState<AdaptiveCodeBlock>
   @override
   void initState() {
     super.initState();
-    codeSnippet = adaptiveMap['code']?.toString() ?? '';
+    codeSnippet =
+        adaptiveMap['codeSnippet']?.toString() ??
+        adaptiveMap['code']?.toString() ??
+        '';
     language = adaptiveMap['language']?.toString();
     startLineNumber = adaptiveMap['startLineNumber'] as int? ?? 1;
   }

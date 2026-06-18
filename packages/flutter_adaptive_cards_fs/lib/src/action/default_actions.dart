@@ -7,6 +7,7 @@ import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/open_url_dialog_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/reset_inputs_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/popover_container.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_range_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
@@ -41,6 +42,51 @@ bool validateInputs(ProviderContainer container) {
         value: value?.toString(),
         isRequired: isRequired,
         regexPattern: regexPattern,
+      )) {
+        valid = false;
+        notifier.setInputError(entry.key, isInvalid: true);
+      }
+      continue;
+    }
+
+    if (type == 'Input.Number') {
+      // node['min'/'max'] are num in dart:convert-decoded JSON, but guard
+      // against string-encoded bounds from template expansion or loose typing.
+      final numMin =
+          node['min'] is num ? node['min'] as num : num.tryParse(node['min']?.toString() ?? '');
+      final numMax =
+          node['max'] is num ? node['max'] as num : num.tryParse(node['max']?.toString() ?? '');
+      if (!numberInputValueIsValid(
+        value: value?.toString(),
+        isRequired: isRequired,
+        min: numMin,
+        max: numMax,
+      )) {
+        valid = false;
+        notifier.setInputError(entry.key, isInvalid: true);
+      }
+      continue;
+    }
+
+    if (type == 'Input.Date') {
+      if (!dateInputValueIsValid(
+        value: value?.toString(),
+        isRequired: isRequired,
+        min: node['min'] as String?,
+        max: node['max'] as String?,
+      )) {
+        valid = false;
+        notifier.setInputError(entry.key, isInvalid: true);
+      }
+      continue;
+    }
+
+    if (type == 'Input.Time') {
+      if (!timeInputValueIsValid(
+        value: value?.toString(),
+        isRequired: isRequired,
+        min: node['min'] as String?,
+        max: node['max'] as String?,
       )) {
         valid = false;
         notifier.setInputError(entry.key, isInvalid: true);
