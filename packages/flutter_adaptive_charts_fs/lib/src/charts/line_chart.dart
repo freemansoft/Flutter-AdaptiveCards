@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/chart_x_value.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders Adaptive Card line chart elements using fl_chart.
@@ -95,8 +96,7 @@ class AdaptiveLineChartState extends ConsumerState<AdaptiveLineChart>
     int seriesCount = 0;
 
     for (final item in data) {
-      final dynamic rawX = item['x'] ?? 0;
-      final double x = (rawX is num) ? rawX.toDouble() : 0.0;
+      final double x = parseChartXValue(item['x']);
 
       final dynamic rawY = item['y'] ?? item['value'] ?? 0;
       final double y = (rawY is num) ? rawY.toDouble() : 0.0;

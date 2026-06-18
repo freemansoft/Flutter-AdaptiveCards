@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- no changes yet
+### Added
+
+- **Collection functions** `join`, `first`, `last`, `sum`, `average` and **date functions** `formatEpoch`, `getPastTime`, `getFutureTime` added to the expression evaluator. (`select`/`where` remain unimplemented — they require lazy lambda evaluation.)
 
 ## [0.11.0]
 

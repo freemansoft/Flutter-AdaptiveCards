@@ -85,6 +85,11 @@ class AdaptiveImageState extends ConsumerState<AdaptiveImage>
       ),
     );
 
+    final bgColor = parseHexColor(adaptiveMap['backgroundColor']?.toString());
+    if (bgColor != null) {
+      image = ColoredBox(color: bgColor, child: image);
+    }
+
     if (isPerson) {
       image = ClipOval(clipper: FullCircleClipper(), child: image);
     }

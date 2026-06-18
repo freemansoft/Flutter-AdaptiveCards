@@ -39,12 +39,16 @@ class AdaptiveCompoundButtonState extends ConsumerState<AdaptiveCompoundButton>
   /// Optional leading image URL from `iconUrl`.
   late String? iconUrl;
 
+  /// Optional short badge label from `badge`.
+  late String? badge;
+
   @override
   void initState() {
     super.initState();
     title = adaptiveMap['title']?.toString() ?? '';
     description = adaptiveMap['description']?.toString();
     iconUrl = adaptiveMap['iconUrl']?.toString();
+    badge = adaptiveMap['badge']?.toString();
   }
 
   @override
@@ -91,6 +95,24 @@ class AdaptiveCompoundButtonState extends ConsumerState<AdaptiveCompoundButton>
                   ],
                 ),
               ),
+              if (badge != null) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    badge!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

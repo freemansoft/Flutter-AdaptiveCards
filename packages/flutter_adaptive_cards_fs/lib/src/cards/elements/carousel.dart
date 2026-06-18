@@ -40,6 +40,17 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
   /// Controller for horizontal page swipes and dot navigation.
   late PageController pageController;
 
+  /// Auto-advance interval in milliseconds from `timer`; null disables it.
+  int? autoAdvanceMs;
+
+  /// Scroll axis from `orientation` (`vertical` -> [Axis.vertical]).
+  Axis scrollAxis = Axis.horizontal;
+
+  /// Whether to wrap past the last page from `loop`.
+  bool loop = false;
+
+  Timer? _autoAdvanceTimer;
+
   int _currentIndex = 0;
 
   @override
@@ -56,10 +67,35 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
     _currentIndex = initialPage;
 
     pageController = PageController(initialPage: initialPage);
+    autoAdvanceMs = adaptiveMap['timer'] as int?;
+    scrollAxis =
+        adaptiveMap['orientation']?.toString().toLowerCase() == 'vertical'
+        ? Axis.vertical
+        : Axis.horizontal;
+    loop = adaptiveMap['loop'] == true;
+    _startAutoAdvance();
+  }
+
+  void _startAutoAdvance() {
+    final ms = autoAdvanceMs;
+    if (ms == null || ms <= 0 || pages.length < 2) return;
+    _autoAdvanceTimer = Timer.periodic(Duration(milliseconds: ms), (_) {
+      if (!mounted) return;
+      var next = _currentIndex + 1;
+      if (next >= pages.length) {
+        if (!loop) {
+          _autoAdvanceTimer?.cancel();
+          return;
+        }
+        next = 0;
+      }
+      _goToPage(next);
+    });
   }
 
   @override
   void dispose() {
+    _autoAdvanceTimer?.cancel();
     pageController.dispose();
     super.dispose();
   }
@@ -100,6 +136,7 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
                   400, // Still fixed height for now as pages might be flexible
               child: PageView.builder(
                 controller: pageController,
+                scrollDirection: scrollAxis,
                 onPageChanged: _onPageChanged,
                 itemCount: pages.length,
                 itemBuilder: (context, index) {

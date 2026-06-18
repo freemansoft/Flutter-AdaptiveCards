@@ -38,6 +38,12 @@ class AdaptiveBadgeState extends ConsumerState<AdaptiveBadge>
     final appearance =
         adaptiveMap['appearance']?.toString().toLowerCase() ?? 'filled';
     final size = adaptiveMap['size']?.toString().toLowerCase() ?? 'medium';
+    final shape = adaptiveMap['shape']?.toString().toLowerCase() ?? 'circular';
+    final BorderRadius borderRadius = switch (shape) {
+      'square' => BorderRadius.circular(2),
+      'rounded' => BorderRadius.circular(6),
+      _ => BorderRadius.circular(12),
+    };
     final tooltip = adaptiveMap['tooltip'] as String?;
     final iconAlignment =
         adaptiveMap['iconAlignment']?.toString().toLowerCase() ?? 'left';
@@ -97,7 +103,7 @@ class AdaptiveBadgeState extends ConsumerState<AdaptiveBadge>
     Widget badge = Container(
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12), // Pill shape
+        borderRadius: borderRadius,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(

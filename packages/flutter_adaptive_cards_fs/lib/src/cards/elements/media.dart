@@ -9,6 +9,7 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/media_source.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/media_caption_source.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
@@ -51,6 +52,10 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
   /// Accessibility label for the poster image.
   late String altText;
 
+  /// Caption tracks parsed from `captionSources`.
+  /// Rendering onto the video surface is host-dependent and not yet wired.
+  late List<CaptionSource> captionSources;
+
   /// Placeholder fade animation shown before the player is ready.
   FadeAnimation imageFadeAnim = const FadeAnimation(
     child: Icon(Icons.play_arrow, size: 100),
@@ -65,6 +70,9 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
       adaptiveMap['sources'],
     );
     sourceUrl = sources.isNotEmpty ? sources[0].url : '';
+
+    // TODO(captions): render captionSources as VTT tracks on the video surface.
+    captionSources = captionSourcesFromJsonList(adaptiveMap['captionSources']);
 
     // https://pub.dev/packages/video_player
     if (Platform.isWindows || Platform.isLinux) {

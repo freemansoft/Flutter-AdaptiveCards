@@ -29,10 +29,22 @@ class ActionSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [ActionSet]; resolves and lays out child actions.
+///
+/// Primary actions (those without `mode: secondary` and within the HostConfig
+/// maxActions limit) are shown inline. Secondary-mode actions and any actions
+/// that exceed the limit are routed to an overflow panel revealed by a "•••"
+/// toggle, so no action is silently discarded.
 class ActionSetState extends ConsumerState<ActionSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
-  /// Action widgets built from the `actions` array (capped by HostConfig).
+  /// Primary action widgets rendered inline in the main row.
   List<Widget> activeActions = [];
+
+  /// Overflow action widgets (secondary mode or beyond maxActions), revealed
+  /// via the "•••" toggle. These are the same self-contained action widgets
+  /// as [activeActions]; they are simply deferred until the user requests them.
+  List<Widget> overflowActions = [];
+
+  bool _overflowExpanded = false;
 
   @override
   void didChangeDependencies() {
@@ -41,18 +53,28 @@ class ActionSetState extends ConsumerState<ActionSet>
     final actionsConfig = resolver.getActionsConfig();
 
     activeActions.clear();
+    overflowActions.clear();
     final List actionMaps = adaptiveMap['actions'] as List<dynamic>? ?? [];
-
-    // Limit actions by maxActions
     final int maxActions = actionsConfig?.maxActions ?? 10;
-    final List limitedActionMaps = actionMaps.take(maxActions).toList();
+
+    final List<Map<String, dynamic>> primaryMaps = [];
+    final List<Map<String, dynamic>> overflowMaps = [];
+    for (final raw in actionMaps) {
+      final map = Map<String, dynamic>.from(raw as Map);
+      final isSecondary =
+          map['mode']?.toString().toLowerCase() == 'secondary';
+      if (isSecondary || primaryMaps.length >= maxActions) {
+        overflowMaps.add(map);
+      } else {
+        primaryMaps.add(map);
+      }
+    }
 
     activeActions.addAll(
-      List<Map<String, dynamic>>.from(limitedActionMaps).map(
-        (adaptiveMap) => cardTypeRegistry.getAction(
-          map: adaptiveMap,
-        ),
-      ),
+      primaryMaps.map((map) => cardTypeRegistry.getAction(map: map)),
+    );
+    overflowActions.addAll(
+      overflowMaps.map((map) => cardTypeRegistry.getAction(map: map)),
     );
   }
 
@@ -65,17 +87,40 @@ class ActionSetState extends ConsumerState<ActionSet>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: Wrap(
-          spacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
-          runSpacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
-          direction:
-              actionsConfig?.actionsOrientation.toLowerCase() == 'vertical'
-              ? Axis.vertical
-              : Axis.horizontal,
-          alignment: _getWrapAlignment(
-            actionsConfig?.actionAlignment ?? 'left',
-          ),
-          children: activeActions,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Wrap(
+              spacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
+              runSpacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
+              direction:
+                  actionsConfig?.actionsOrientation.toLowerCase() == 'vertical'
+                  ? Axis.vertical
+                  : Axis.horizontal,
+              alignment: _getWrapAlignment(
+                actionsConfig?.actionAlignment ?? 'left',
+              ),
+              children: [
+                ...activeActions,
+                if (overflowActions.isNotEmpty)
+                  IconButton(
+                    key: const Key('action_set_overflow'),
+                    icon: const Icon(Icons.more_horiz),
+                    tooltip: 'More actions',
+                    onPressed: () => setState(
+                      () => _overflowExpanded = !_overflowExpanded,
+                    ),
+                  ),
+              ],
+            ),
+            if (_overflowExpanded && overflowActions.isNotEmpty)
+              Wrap(
+                spacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
+                runSpacing: actionsConfig?.buttonSpacing.toDouble() ?? 10,
+                children: overflowActions,
+              ),
+          ],
         ),
       ),
     );

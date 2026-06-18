@@ -172,6 +172,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildV16ChartBarVerticalGrouped,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Chart overlay (knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildChartOverlayDemo,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Donut',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildV16ChartDonut,
@@ -300,6 +305,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Select Action',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildColumnSetExample2,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'CompoundButton',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 1',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16CompoundButton,
           ),
         ],
       ),

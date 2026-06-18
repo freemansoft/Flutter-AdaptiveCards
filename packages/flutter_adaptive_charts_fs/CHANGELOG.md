@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- no changes yet
+### Fixed
+
+- **`Chart.Line` datetime X axis:** ISO date/datetime `x` values now convert to epoch milliseconds instead of collapsing to 0, so time-series points plot in correct order and spacing.
 
 ## [0.11.0]
 

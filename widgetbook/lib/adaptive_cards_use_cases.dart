@@ -995,6 +995,19 @@ Widget buildV16Accordion(BuildContext context) {
 }
 
 // =============================================================================
+// V1.6 Components - CompoundButton
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Example 1',
+  type: widget_types.CompoundButton,
+  path: '[Components]',
+)
+Widget buildV16CompoundButton(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.6/compound_button.json');
+}
+
+// =============================================================================
 // V1.6 Components - Charts
 // =============================================================================
 

@@ -14,10 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **`Input.Number`, `Input.Date`, and `Input.Time` now validate `min`/`max` bounds on Submit/Execute:** out-of-range values block the action and mark the input invalid instead of submitting silently.
+- **Action `mode: secondary` + overflow:** secondary-mode actions, and any actions beyond HostConfig `maxActions`, now collapse into a reveal-on-demand "•••" overflow toggle instead of being silently dropped (applies to both `ActionSet` and card-level actions).
+- **Action `iconPlacement`:** action buttons now honor `actions.iconPlacement`; the default `aboveTitle` stacks the icon over the label (previously always icon-left).
 
 ### Added
 
 - **Pure range-validation helpers:** `input_range_validation.dart` with `numberInputValueIsValid`, `dateInputValueIsValid`, and `timeInputValueIsValid` — Flutter-free pure functions for `Input.Number`, `Input.Date`, and `Input.Time` bound validation, mirroring `input_text_validation.dart`.
+- **`Image.backgroundColor`:** painted behind the image (visible through transparent PNGs).
+- **`Badge.shape`:** `square` / `rounded` / `circular` mapped to corner radius.
+- **`CompoundButton.badge`:** trailing badge label rendered when present.
+- **`Carousel` `timer` / `orientation` / `loop`:** auto-advance (periodic timer), vertical scroll direction, and wrap-around paging.
+- **`Media.captionSources`:** parsed into a typed `CaptionSource` model (VTT rendering on the video surface remains a follow-up).
 
 ## [0.11.0]
 

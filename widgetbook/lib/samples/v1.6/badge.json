@@ -34,6 +34,31 @@
       "type": "Badge",
       "text": "Attention Badge",
       "style": "attention"
+    },
+    {
+      "type": "TextBlock",
+      "text": "Shapes",
+      "size": "Medium",
+      "weight": "Bolder",
+      "spacing": "Medium"
+    },
+    {
+      "type": "Badge",
+      "text": "Circular Badge",
+      "style": "accent",
+      "shape": "circular"
+    },
+    {
+      "type": "Badge",
+      "text": "Rounded Badge",
+      "style": "accent",
+      "shape": "rounded"
+    },
+    {
+      "type": "Badge",
+      "text": "Square Badge",
+      "style": "accent",
+      "shape": "square"
     }
   ]
 }

@@ -47,8 +47,15 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   /// Body elements resolved from `body` via the card type registry.
   late List<Widget> bodyChildren;
 
-  /// Card-level `actions` rendered below the body.
+  /// Card-level primary action widgets rendered inline below the body.
   List<Widget> activeActions = [];
+
+  /// Card-level overflow action widgets (secondary mode or beyond maxActions),
+  /// revealed via the "•••" toggle. No action is silently discarded.
+  List<Widget> overflowActions = [];
+
+  /// Whether the overflow action panel is currently expanded.
+  bool _overflowExpanded = false;
 
   /// `Action.ShowCard` instances among [activeActions].
   List<AdaptiveActionShowCard> showCardActions = [];
@@ -160,20 +167,46 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     }
   }
 
-  /// This is for actions directly on an AdaptiveCardElement
-  /// Not to be confused with actions in the body of an AdaptiveCardElement or on ActionSets
+  /// Resolves card-level actions into [activeActions] (primary) and
+  /// [overflowActions] (secondary-mode or beyond the HostConfig maxActions).
+  ///
+  /// This is for actions directly on an AdaptiveCardElement.
+  /// Not to be confused with actions in the body of an AdaptiveCardElement or
+  /// on ActionSets.
   void loadNonBodyChildren() {
     if (adaptiveMap.containsKey('actions')) {
-      activeActions =
-          List<Map<String, dynamic>>.from(adaptiveMap['actions'] ?? [])
-              .map(
-                (adaptiveMap) => cardTypeRegistry.getAction(
-                  map: adaptiveMap,
-                ),
-              )
-              .toList();
+      final actionsConfig = styleResolver.getActionsConfig();
+      final int maxActions = actionsConfig?.maxActions ?? 10;
+
+      final List<Map<String, dynamic>> allMaps =
+          List<Map<String, dynamic>>.from(adaptiveMap['actions'] ?? []);
+
+      final List<Map<String, dynamic>> primaryMaps = [];
+      final List<Map<String, dynamic>> overflowMaps = [];
+      for (final map in allMaps) {
+        final isSecondary =
+            map['mode']?.toString().toLowerCase() == 'secondary';
+        if (isSecondary || primaryMaps.length >= maxActions) {
+          overflowMaps.add(map);
+        } else {
+          primaryMaps.add(map);
+        }
+      }
+
+      activeActions = primaryMaps
+          .map((map) => cardTypeRegistry.getAction(map: map))
+          .toList();
+      overflowActions = overflowMaps
+          .map((map) => cardTypeRegistry.getAction(map: map))
+          .toList();
+
+      // Track ShowCard targets from both primary and overflow actions so a
+      // secondary-mode ShowCard still expands its card once revealed.
       showCardActions = List<AdaptiveActionShowCard>.from(
-        activeActions.whereType<AdaptiveActionShowCard>().toList(),
+        [
+          ...activeActions.whereType<AdaptiveActionShowCard>(),
+          ...overflowActions.whereType<AdaptiveActionShowCard>(),
+        ],
       );
       showCardTargetElements = List<AdaptiveCardElement>.from(
         showCardActions
@@ -201,14 +234,34 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
         .map((element) => element)
         .toList();
 
-    Widget actionWidget;
-
-    actionWidget = Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      alignment: WrapAlignment.start,
-      direction: actionsOrientation,
-      children: activeActions,
+    final Widget actionWidget = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.start,
+          direction: actionsOrientation,
+          children: [
+            ...activeActions,
+            if (overflowActions.isNotEmpty)
+              IconButton(
+                key: const Key('action_set_overflow'),
+                icon: const Icon(Icons.more_horiz),
+                tooltip: 'More actions',
+                onPressed: () =>
+                    setState(() => _overflowExpanded = !_overflowExpanded),
+              ),
+          ],
+        ),
+        if (_overflowExpanded && overflowActions.isNotEmpty)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: overflowActions,
+          ),
+      ],
     );
 
     widgetChildren

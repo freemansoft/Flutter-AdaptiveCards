@@ -159,6 +159,13 @@ class Accordion extends StatelessWidget {
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
+/// Stub for 'CompoundButton' route (v1.6 hub)
+class CompoundButton extends StatelessWidget {
+  const CompoundButton({super.key});
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
+
 /// Stub for 'Charts' Char.Donut, Char.Bar, Char.Line route (v1.6)
 class Charts extends StatelessWidget {
   const Charts({super.key});

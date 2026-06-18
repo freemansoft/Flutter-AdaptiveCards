@@ -56,22 +56,45 @@ class IconButtonActionState extends ConsumerState<IconButtonAction>
     final onPressed = actionEnabled ? () => widget.onTapped(context) : null;
     final resolvedIconUrl = iconUrl;
 
-    final theButton = (resolvedIconUrl != null)
-        ? ElevatedButton.icon(
-            onPressed: onPressed,
-            style: buttonStyle,
-            icon: AdaptiveImageUtils.getImage(
+    final iconPlacement =
+        resolver.getActionsConfig()?.iconPlacement ?? 'aboveTitle';
+
+    Widget theButton;
+    if (resolvedIconUrl == null) {
+      theButton = ElevatedButton(
+        onPressed: onPressed,
+        style: buttonStyle,
+        child: Text(title),
+      );
+    } else if (iconPlacement == 'aboveTitle') {
+      theButton = ElevatedButton(
+        onPressed: onPressed,
+        style: buttonStyle,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AdaptiveImageUtils.getImage(
               resolvedIconUrl,
-              height: 36,
+              height: 24,
               semanticsLabel: title,
             ),
-            label: Text(title),
-          )
-        : ElevatedButton(
-            onPressed: onPressed,
-            style: buttonStyle,
-            child: Text(title),
-          );
+            const SizedBox(height: 4),
+            Text(title),
+          ],
+        ),
+      );
+    } else {
+      theButton = ElevatedButton.icon(
+        onPressed: onPressed,
+        style: buttonStyle,
+        icon: AdaptiveImageUtils.getImage(
+          resolvedIconUrl,
+          height: 36,
+          semanticsLabel: title,
+        ),
+        label: Text(title),
+      );
+    }
 
     final wrappedButton = (tooltip != null)
         ? Tooltip(
