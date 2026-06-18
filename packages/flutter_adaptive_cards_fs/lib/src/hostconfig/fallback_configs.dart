@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_weights_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_widths_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
@@ -33,6 +34,13 @@ class FallbackConfigs {
     extraLarge: 32,
     defaultSpacing: 4,
     padding: 20,
+  );
+
+  /// Default responsive width breakpoints (Adaptive Cards spec defaults).
+  static final HostWidthsConfig hostWidthsConfig = HostWidthsConfig(
+    veryNarrowMax: 165,
+    narrowMax: 350,
+    standardMax: 768,
   );
 
   /// Default `imageSizes` pixel dimensions for Image elements.

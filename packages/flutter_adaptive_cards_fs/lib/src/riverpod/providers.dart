@@ -48,7 +48,6 @@ final styleReferenceResolverProvider = Provider<ReferenceResolver>(
     'styleReferenceResolverProvider override missing',
   ),
 );
-
 /// Deep-copied card JSON baseline for the current raw-card scope.
 final baselineMapProvider = Provider<Map<String, dynamic>>(
   (ref) => throw UnimplementedError('baselineMapProvider override missing'),

@@ -843,6 +843,16 @@ final directories = <_widgetbook.WidgetbookNode>[
           ),
         ],
       ),
+      _widgetbook.WidgetbookComponent(
+        name: 'Responsive',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Layout.Flow (width knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildResponsiveFlow,
+          ),
+        ],
+      ),
     ],
   ),
 ];

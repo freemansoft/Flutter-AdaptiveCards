@@ -9,6 +9,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_weights_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/foreground_colors_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_widths_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/inputs_config.dart';
@@ -86,6 +87,7 @@ class HostConfig {
     this.progressColors,
     this.chartColors,
     this.chartsLayout,
+    this.hostWidthBreakpoints,
   });
 
   /// Load HostConfig from card host JSON; optional [theme] supplies Material color fallbacks.
@@ -164,6 +166,11 @@ class HostConfig {
       chartsLayout: (json['chartsLayout'] != null)
           ? ChartsLayoutConfig.fromJson(json['chartsLayout'])
           : null,
+      hostWidthBreakpoints: (json['hostWidthBreakpoints'] != null)
+          ? HostWidthsConfig.fromJson(
+              json['hostWidthBreakpoints'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
 
@@ -235,4 +242,7 @@ class HostConfig {
 
   /// Chart dimensions and chrome; see [ChartsLayoutConfig].
   final ChartsLayoutConfig? chartsLayout;
+
+  /// Responsive width breakpoints separating veryNarrow/narrow/standard/wide.
+  final HostWidthsConfig? hostWidthBreakpoints;
 }

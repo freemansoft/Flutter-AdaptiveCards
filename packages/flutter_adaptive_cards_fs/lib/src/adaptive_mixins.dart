@@ -6,6 +6,8 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/resolved_input_state.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/card_width_scope.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -376,9 +378,19 @@ mixin AdaptiveVisibilityMixin<T extends ConsumerStatefulWidget>
   /// Stable element id; provided by [AdaptiveElementMixin] when mixed in.
   String get id;
 
-  /// Effective visibility after baseline JSON and runtime overlays.
-  bool get isVisible =>
-      parseIsVisible(ref.watch(resolvedElementProvider(id))?['isVisible']);
+  /// Effective visibility: baseline JSON + runtime overlays, ANDed with the
+  /// element's `targetWidth` match against the current card width bucket.
+  ///
+  /// `isVisible` and `targetWidth` are independent gates — a runtime
+  /// `setIsVisible(visible: true)` overlay cannot override a `targetWidth` miss.
+  bool get isVisible {
+    final resolved = ref.watch(resolvedElementProvider(id));
+    final baselineVisible = parseIsVisible(resolved?['isVisible']);
+    final bucket = CardWidthScope.of(context);
+    final matchesWidth =
+        targetWidthMatches(resolved?['targetWidth'] as String?, bucket);
+    return baselineVisible && matchesWidth;
+  }
 
   /// Sets runtime visibility overlay for this element id (host or Action.ToggleVisibility).
   void setIsVisible({required bool visible}) {

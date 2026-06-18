@@ -1,0 +1,13 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    { "type": "TextBlock", "text": "always", "id": "always" },
+    {
+      "type": "TextBlock",
+      "text": "wide-only",
+      "id": "wideOnly",
+      "targetWidth": "atLeast:standard"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import 'package:widgetbook_workspace/network_page.dart';
 import 'package:widgetbook_workspace/rating_input_overlay_page.dart';
 import 'package:widgetbook_workspace/rating_overlay_page.dart';
 import 'package:widgetbook_workspace/refresh_demo_page.dart';
+import 'package:widgetbook_workspace/responsive_flow_page.dart';
 import 'package:widgetbook_workspace/text_block_overlay_page.dart';
 import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
 
@@ -1430,4 +1431,17 @@ Widget buildFormWithInitData(BuildContext context) {
       'gender': 'female',
     },
   );
+}
+
+// =============================================================================
+// RESPONSIVE Component (targetWidth / Layout.Flow)
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Layout.Flow (width knob)',
+  type: widget_types.Responsive,
+  path: '[Other]',
+)
+Widget buildResponsiveFlow(BuildContext context) {
+  return const ResponsiveFlowPage();
 }

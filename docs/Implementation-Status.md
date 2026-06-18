@@ -231,8 +231,9 @@ Packages outside **`flutter_adaptive_cards_fs`** that hosts opt into explicitly.
 | `backgroundImage`     | Card/Container  | ⚠️ Partial     | [backgroundImage.md](./backgroundImage.md)                                             | Parsed via mixin for Container, Column, ColumnSet, TableCell; string and object forms (`fillMode`→fit/repeat) tested, including empty aspect-ratio sizing and `minHeight`. **`horizontalAlignment`/`verticalAlignment` on the object form are ignored.** |
 | `bleed`               | Containers      | ❌ Missing     | -                                                                                      | Not implemented on Container, Column, or TableCell                                                                                                                                                                                                       |
 | `rtl`                 | Elements        | ⚠️ Partial     | -                                                                                      | Parsed on `TableCell` model only; not applied in rendering                                                                                                                                                                                               |
-| `targetWidth`         | Elements (v1.6) | ❌ Missing     | -                                                                                      | Responsive layout — [hub docs](https://adaptivecards.microsoft.com/)                                                                                                                                                                                     |
-| `grid.area`           | Elements (v1.6) | ❌ Missing     | -                                                                                      | `Layout.AreaGrid` placement not implemented                                                                                                                                                                                                              |
+| `targetWidth`         | Elements (v1.6) | ✅ Complete    | [responsive design](./superpowers/specs/2026-06-18-responsive-layout-targetwidth-flow-design.md) | Width-bucket visibility on all elements (`veryNarrow`/`narrow`/`standard`/`wide` + `atLeast:`/`atMost:`); buckets from HostConfig `hostWidthBreakpoints`, published via `CardWidthScope`                                                                  |
+| `layouts` (`Layout.Flow`) | Container/root (v1.6) | ⚠️ Partial | [responsive design](./superpowers/specs/2026-06-18-responsive-layout-targetwidth-flow-design.md) | `Layout.Flow` wrapping on `Container` + card root body (spacing, item alignment, `min`/`maxItemWidth`); `Layout.Stack` default. `itemFit` and `ColumnSet`/`Column`/`TableCell` not yet supported                                                         |
+| `grid.area`           | Elements (v1.6) | ❌ Missing     | -                                                                                      | `Layout.AreaGrid` placement not implemented (deferred)                                                                                                                                                                                                   |
 
 ---
 
@@ -243,7 +244,7 @@ Cross-cutting gaps that affect many card types:
 | Area                            | Gap                                                                                                  | Impact                                                           |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | **RichTextBlock / TextRun**     | ✅ Implemented                                                                                       | —                                                                |
-| **Responsive layout**           | `targetWidth`, `Layout.AreaGrid`, `grid.area`                                                        | High — modern Teams/Copilot width-adaptive cards                 |
+| **Responsive layout**           | `targetWidth` ✅; `Layout.Flow` ✅ (Container + root body); `Layout.AreaGrid` / `grid.area` deferred  | Medium — `AreaGrid` + Flow on `ColumnSet`/`Column`/`TableCell` remain |
 | **`requires` + version gating** | No capability checks; `fallbackText` unused                                                          | Medium–high — mixed-schema production hosts                      |
 | **Action `fallback`**           | Unknown actions assert instead of degrading                                                          | Medium — action fallback lists in Teams chart docs               |
 | **Icon**                        | Partial Fluent name map (~68 icons)                                                                  | Low–medium — uncommon hub icon names fall back to `help_outline` |
@@ -288,7 +289,7 @@ Registered in `CardTypeRegistry` (`lib/src/registry.dart`) unless noted.
 
 ### High priority — standard cards
 
-1. **Responsive layout**: `targetWidth` and `Layout.AreaGrid` / `grid.area` per [documentation hub](https://adaptivecards.microsoft.com/).
+1. **Responsive layout**: `targetWidth` ✅ and `Layout.Flow` ✅ (Container + root body) shipped ([design](./superpowers/specs/2026-06-18-responsive-layout-targetwidth-flow-design.md)); remaining: `Layout.AreaGrid` / `grid.area`, Flow `itemFit`, and Flow on `ColumnSet`/`Column`/`TableCell`.
 2. **`requires` + action `fallback` + version gating**: Graceful degradation for mixed-schema hosts.
 
 ### Medium priority

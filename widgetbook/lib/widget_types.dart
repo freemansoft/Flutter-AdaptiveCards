@@ -228,3 +228,10 @@ class Forms extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
+
+/// Stub for responsive-layout (`targetWidth` / `Layout.Flow`) demos
+class Responsive extends StatelessWidget {
+  const Responsive({super.key});
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}

@@ -5,6 +5,11 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/show_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/refresh_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_flow_layout.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/card_width_scope.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/layout_selection.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -230,7 +235,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     // );
     loadNonBodyChildren();
 
-    final List<Widget> widgetChildren = bodyChildren
+    final List<Widget> bodyItems = bodyChildren
         .map((element) => element)
         .toList();
 
@@ -264,30 +269,42 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       ],
     );
 
-    widgetChildren
-      ..add(actionWidget)
-      ..add(
-        Consumer(
-          builder: (context, ref, _) {
-            final expandedId = ref.watch(expandedShowCardIdProvider);
-            if (expandedId == null) return const SizedBox.shrink();
-            final target = showCardTargetElements.where(
-              (c) => c.id == expandedId,
-            );
-            if (target.isEmpty) return const SizedBox.shrink();
-            return target.first;
-          },
-        ),
-      );
+    // The action strip and expanded show-card host render below the body.
+    final List<Widget> trailingWidgets = [
+      actionWidget,
+      Consumer(
+        builder: (context, ref, _) {
+          final expandedId = ref.watch(expandedShowCardIdProvider);
+          if (expandedId == null) return const SizedBox.shrink();
+          final target = showCardTargetElements.where(
+            (c) => c.id == expandedId,
+          );
+          if (target.isEmpty) return const SizedBox.shrink();
+          return target.first;
+        },
+      ),
+    ];
+
+    // Body items honor an optional root `layouts` array (Layout.Flow) chosen for
+    // the current card width; reads CardWidthScope below, so it reflows on
+    // resize. The listView path stays a flat list (Flow not applied there).
+    final Widget bodyLayout = _AdaptiveCardBody(
+      bodyItems: bodyItems,
+      layouts: adaptiveMap['layouts'] as List<dynamic>?,
+      styleResolver: styleResolver,
+    );
 
     // default to result without a background image
     Widget result = Container(
       margin: const EdgeInsets.all(8),
       child: widget.listView
-          ? ListView(shrinkWrap: true, children: widgetChildren)
+          ? ListView(
+              shrinkWrap: true,
+              children: [...bodyItems, ...trailingWidgets],
+            )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: widgetChildren,
+              children: [bodyLayout, ...trailingWidgets],
             ),
     );
 
@@ -321,14 +338,59 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       );
     }
 
+    // The ProviderScope stays outermost and stable (not rebuilt by layout).
+    // The width-derived bucket is published via a CardWidthScope inside the
+    // LayoutBuilder, since it needs the card's measured width.
     return ProviderScope(
       overrides: [
         adaptiveCardElementStateProvider.overrideWithValue(this),
       ],
-      child: AdaptiveTappable(
-        adaptiveMap: adaptiveMap,
-        child: Form(key: formKey, child: result),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final WidthBucket bucket =
+              styleResolver.resolveWidthBucket(constraints.maxWidth);
+          return CardWidthScope(
+            bucket: bucket,
+            child: AdaptiveTappable(
+              adaptiveMap: adaptiveMap,
+              child: Form(key: formKey, child: result),
+            ),
+          );
+        },
       ),
+    );
+  }
+}
+
+/// Lays out the card's body items, applying a root `Layout.Flow` when one in
+/// the card's `layouts` array matches the current width bucket.
+///
+/// Reads [CardWidthScope] from the build context, so it reflows when the card
+/// crosses a width boundary. Falls back to a vertical stack otherwise.
+class _AdaptiveCardBody extends StatelessWidget {
+  const _AdaptiveCardBody({
+    required this.bodyItems,
+    required this.layouts,
+    required this.styleResolver,
+  });
+
+  final List<Widget> bodyItems;
+  final List<dynamic>? layouts;
+  final ReferenceResolver styleResolver;
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = selectLayout(layouts, CardWidthScope.of(context));
+    if (selected != null && selected['type'] == 'Layout.Flow') {
+      return AdaptiveFlowLayout(
+        layoutMap: selected,
+        styleResolver: styleResolver,
+        children: bodyItems,
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: bodyItems,
     );
   }
 }

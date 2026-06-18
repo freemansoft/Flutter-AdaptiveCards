@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_flow_layout.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/card_width_scope.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/layout_selection.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -89,16 +92,29 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
       containerChild =
           getBackgroundImageFromMap(adaptiveMap) ?? const SizedBox();
     } else {
+      final selected = selectLayout(
+        adaptiveMap['layouts'] as List<dynamic>?,
+        CardWidthScope.of(context),
+      );
+      final bool useFlow =
+          selected != null && selected['type'] == 'Layout.Flow';
+      final Widget itemsLayout = useFlow
+          ? AdaptiveFlowLayout(
+              layoutMap: selected,
+              styleResolver: styleResolver,
+              children: children,
+            )
+          : Column(
+              mainAxisAlignment: verticalContentAlignment,
+              children: children.toList(),
+            );
       containerChild = Padding(
         // padding: const EdgeInsets.symmetric(vertical: 8.0),
         padding: EdgeInsets.symmetric(
           vertical: spacing,
           horizontal: spacing,
         ),
-        child: Column(
-          mainAxisAlignment: verticalContentAlignment,
-          children: children.toList(),
-        ),
+        child: itemsLayout,
       );
     }
 

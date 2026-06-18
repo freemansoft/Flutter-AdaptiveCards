@@ -14,6 +14,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_color_config.dart'
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_weights_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_widths_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/inputs_config.dart';
@@ -26,6 +27,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_style_config.dart'
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_styles_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/resolved_text_appearance.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// HostConfig and container-style resolution facade.
@@ -771,6 +773,14 @@ class ReferenceResolver {
         return 12;
     }
   }
+
+  /// Responsive width breakpoints from HostConfig (null → spec defaults).
+  HostWidthsConfig? getHostWidthsConfig() =>
+      hostConfigs.current.hostWidthBreakpoints;
+
+  /// Resolves the [WidthBucket] for a card render [width] in logical pixels.
+  WidthBucket resolveWidthBucket(double width) =>
+      HostWidthsConfig.resolveBucket(getHostWidthsConfig(), width);
 
   /// Resolves a named spacing token to logical pixels.
   double resolveSpacing(String? spacing) {
