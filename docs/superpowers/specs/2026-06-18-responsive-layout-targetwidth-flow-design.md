@@ -174,3 +174,173 @@ card render width (root LayoutBuilder.constraints.maxWidth)
   wins).
 - Whether the root-body `LayoutBuilder` lives in `adaptive_card_element.dart` or
   `flutter_raw_adaptive_card.dart` (whichever owns the outermost body constraints).
+
+---
+
+## Post-implementation review — known weaknesses (added 2026-06-18)
+
+The first slice shipped (commit `533fd1a`, PR #36). A review of the landed code
+surfaced the following gaps. They are tracked as follow-up tasks in the
+implementation plan (`docs/superpowers/plans/2026-06-18-responsive-layout-targetwidth-flow.md`,
+section "Follow-up tasks: post-implementation review").
+
+### W1 — `IntrinsicWidth` per flow item is a correctness *and* performance risk
+
+`AdaptiveFlowLayout` wraps every item in `IntrinsicWidth`
+(`lib/src/responsive/adaptive_flow_layout.dart`). Two problems:
+
+- **It can throw at runtime.** Not every widget supports intrinsic dimensions. A
+  flow whose items contain an unbounded-size `Image`, a nested flex / `Expanded`,
+  or certain custom render objects throws *"does not support returning intrinsic
+  dimensions"*. Current tests only exercise `TextBlock` children, so this is
+  unverified and will surface on real cards.
+- **It is O(n) extra speculative layout passes**, re-run on every resize across a
+  boundary.
+
+`Wrap` already sizes children to content. The `IntrinsicWidth` wrapper should be
+removed in the common case, and applied (guarded) only when `minItemWidth` /
+`maxItemWidth` are actually present.
+
+### W2 — Width-bucket reactivity ✅ RESOLVED (returned to Riverpod provider)
+
+> **Status: implemented.** The interim `CardWidthScope` `InheritedWidget` was
+> removed and the bucket is once again the scoped Riverpod `cardWidthBucketProvider`,
+> using the two-scope / hoisted-`child` pattern below (option (b)). `isVisible`,
+> `Container`, and the root body now all read the bucket via
+> `ref.watch(cardWidthBucketProvider)`, so a single reactive mechanism drives both
+> overlays and width. All `test/responsive/` widget tests and the Flow goldens pass
+> unchanged (the swap is behavior-preserving). This design doc, the plan's
+> architecture table, and `docs/Implementation-Status.md` are accurate again.
+
+**Original problem.** An interim implementation published the bucket via an
+`InheritedWidget` (`CardWidthScope`) and removed the provider, so `isVisible` mixed
+two reactivity mechanisms (`ref.watch` for overlays + `CardWidthScope.of(context)`
+for width) and the docs described a provider that did not exist.
+
+**Why the provider was chosen (option (b) over blessing the InheritedWidget):**
+`CLAUDE.md` guidance prefers Riverpod for reactive card state, and a provider
+(unlike an `InheritedWidget`) can be read by *other providers / Notifiers* —
+relevant if width-derived logic ever moves into a `Notifier` (e.g. width-dependent
+validation or action `isEnabled`). The remediation below kept Riverpod **with a
+single stable top-level `ProviderScope`** and without rebuilding it on every layout
+pass.
+
+#### How to stay on Riverpod with a stable, outer `ProviderScope`
+
+The tension: the width only exists **inside** `LayoutBuilder`, but Riverpod has no
+way to change a provider's value via `overrideWithValue` **without rebuilding a
+`ProviderScope`** — and a provider's value also cannot be mutated *during* a build
+phase (so writing the measured width into a `Notifier` from the `LayoutBuilder`
+builder is disallowed; it would require a deferred `addPostFrameCallback` write that
+costs an extra frame of lag on every boundary crossing).
+
+The idiomatic resolution is **two scopes**: keep the heavy, stateful providers in
+one stable outer `ProviderScope`, and publish the layout-derived bucket through a
+**thin nested `ProviderScope` whose `child` is a hoisted, stable reference.**
+
+```dart
+// cardWidthBucketProvider stays a plain Provider with a fail-open default.
+final cardWidthBucketProvider =
+    Provider<WidthBucket>((ref) => WidthBucket.wide);
+
+@override
+Widget build(BuildContext context) {
+  // ... build `result` as today ...
+
+  // Hoist the entire card subtree into ONE stable widget instance, captured by
+  // the closure below. This is the key: it is built once per `build()`, not once
+  // per layout pass.
+  final Widget cardBody = AdaptiveTappable(
+    adaptiveMap: adaptiveMap,
+    child: Form(key: formKey, child: result),
+  );
+
+  return ProviderScope(
+    // OUTER, stable: document state, registries, element-state override.
+    // Never rebuilt by layout — only by setState on this element.
+    overrides: [
+      adaptiveCardElementStateProvider.overrideWithValue(this),
+    ],
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final bucket = ref
+            .read(styleReferenceResolverProvider)
+            .resolveWidthBucket(constraints.maxWidth);
+        return ProviderScope(
+          // INNER, cheap: only the width override. Recreated on each layout pass,
+          // but that is a trivial widget allocation.
+          overrides: [
+            cardWidthBucketProvider.overrideWithValue(bucket),
+          ],
+          child: cardBody, // STABLE reference → subtree is NOT rebuilt.
+        );
+      },
+    ),
+  );
+}
+```
+
+**Why this avoids rebuilding on every layout pass:**
+
+1. **The subtree is preserved by element reuse.** Each layout pass creates a new
+   inner `ProviderScope` *widget*, but it is passed the *same* `cardBody` instance.
+   Flutter compares `ProviderScope.child` by identity, sees it unchanged, and does
+   **not** rebuild `cardBody` or anything below it. Only a new (cheap) `ProviderScope`
+   widget object is allocated; its `State` / `ProviderContainer` persist across passes
+   because the `Element` is reused (same type + position).
+2. **Riverpod only notifies on a real change.** `overrideWithValue` is backed by a
+   value provider that notifies listeners **only when the value differs**. A layout
+   pass that does not cross a breakpoint re-supplies the same `bucket` → no
+   notification → zero dependent rebuilds. A pass that crosses a breakpoint notifies
+   exactly the widgets that `ref.watch(cardWidthBucketProvider)` — the same reactive
+   set the `InheritedWidget` rebuilds today.
+3. **No deferred write, no frame lag.** Because the value travels through
+   `overrideWithValue` (not a `Notifier` mutation), it is applied synchronously
+   within the same frame — unlike the `addPostFrameCallback` approach a single
+   mutable provider would force.
+
+**Net cost per layout pass:** one `ProviderScope` widget allocation + one override
+diff (a no-op unless the bucket changed). The expensive card subtree is never
+rebuilt by layout. This matches the `InheritedWidget`'s performance while keeping the
+bucket a first-class Riverpod value.
+
+> Trade-off note (for the record): if the bucket never needs to be read outside
+> the widget tree, an `InheritedWidget` would have been a legitimately simpler
+> equal-performance choice. The provider was chosen anyway to keep one reactive
+> mechanism and to leave the door open for non-widget (provider/`Notifier`)
+> consumers of the bucket.
+
+### W3 — `selectLayout` precedence among relational matches is arbitrary
+
+`selectLayout` (`lib/src/responsive/layout_selection.dart`) takes the **first**
+relational match in array order (`relationalMatch ??= layout`). For
+`[{atLeast:narrow}, {atLeast:standard}]` at bucket `wide`, both match and it returns
+`atLeast:narrow` — not the *most specific*, contradicting this design's "prefer the
+most specific" rule and risking parity drift from other SDKs. Needs a real
+specificity tiebreak (e.g. smallest bucket-distance to the current bucket), not
+array order.
+
+### W4 — Width measurement edge cases
+
+The bucket derives from the root `LayoutBuilder`'s `constraints.maxWidth`:
+
+- **Unbounded width → always `wide`.** In a horizontal scroll, an unconstrained
+  `Row`, or any unbounded-width parent, `maxWidth == infinity` →
+  `resolveBucket` returns `wide` silently. Needs an explicit guard/log.
+- **Measured on the margin-inclusive outer width.** The `LayoutBuilder` sits outside
+  the card's `Container(margin: EdgeInsets.all(8))` + container padding, so the bucket
+  reflects ~16px more than the content actually receives; boundary cards can pick the
+  wrong bucket.
+- **Nested `Action.ShowCard` cards measure independently.** Each `AdaptiveCardElement`
+  installs its own measurement, so a show-card's `targetWidth` is evaluated against
+  the show-card width, not the host card. Spec says `targetWidth` is relative to "the
+  whole card"; the nested-card semantics should be decided and documented.
+
+### W5 — Scope / coverage gaps to keep visible
+
+- **`itemFit` not honored, but `minItemWidth` / `maxItemWidth` *were* added** — this
+  design listed all three as deferred, so the shipped scope quietly expanded. Align
+  the `AdaptiveFlowLayout` doc and `Implementation-Status.md` with what actually ships.
+- **No `layouts` on `ColumnSet` / `Column` / `TableCell`**, no `Layout.AreaGrid`
+  (separate spec).
+- **`listView` body path skips `Layout.Flow` entirely** — documented, but a real hole.

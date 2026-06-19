@@ -7,7 +7,6 @@ import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/refresh_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_flow_layout.dart';
-import 'package:flutter_adaptive_cards_fs/src/responsive/card_width_scope.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/layout_selection.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
@@ -286,8 +285,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     ];
 
     // Body items honor an optional root `layouts` array (Layout.Flow) chosen for
-    // the current card width; reads CardWidthScope below, so it reflows on
-    // resize. The listView path stays a flat list (Flow not applied there).
+    // the current card width; reads cardWidthBucketProvider below, so it reflows
+    // on resize. The listView path stays a flat list (Flow not applied there).
     final Widget bodyLayout = _AdaptiveCardBody(
       bodyItems: bodyItems,
       layouts: adaptiveMap['layouts'] as List<dynamic>?,
@@ -338,9 +337,23 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       );
     }
 
-    // The ProviderScope stays outermost and stable (not rebuilt by layout).
-    // The width-derived bucket is published via a CardWidthScope inside the
-    // LayoutBuilder, since it needs the card's measured width.
+    // Hoist the card subtree into ONE stable widget instance, captured by the
+    // closure below. Because it is built once per `build()` (not per layout
+    // pass) and passed by identity to the inner ProviderScope, Flutter reuses
+    // its element and does not rebuild the subtree when only the width changes.
+    final Widget cardBody = AdaptiveTappable(
+      adaptiveMap: adaptiveMap,
+      child: Form(key: formKey, child: result),
+    );
+
+    // Two scopes (see the responsive design doc, weakness W2):
+    // - OUTER ProviderScope is stable (document state, registries, element
+    //   state); it is never rebuilt by layout.
+    // - INNER ProviderScope inside the LayoutBuilder publishes the width-derived
+    //   bucket via overrideWithValue. It is re-created each layout pass (a
+    //   trivial allocation) but its element/container persist, its `child` is the
+    //   stable [cardBody], and overrideWithValue only notifies watchers when the
+    //   bucket actually changes — so no per-pass subtree rebuild and no frame lag.
     return ProviderScope(
       overrides: [
         adaptiveCardElementStateProvider.overrideWithValue(this),
@@ -349,12 +362,11 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
         builder: (context, constraints) {
           final WidthBucket bucket =
               styleResolver.resolveWidthBucket(constraints.maxWidth);
-          return CardWidthScope(
-            bucket: bucket,
-            child: AdaptiveTappable(
-              adaptiveMap: adaptiveMap,
-              child: Form(key: formKey, child: result),
-            ),
+          return ProviderScope(
+            overrides: [
+              cardWidthBucketProvider.overrideWithValue(bucket),
+            ],
+            child: cardBody,
           );
         },
       ),
@@ -365,9 +377,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 /// Lays out the card's body items, applying a root `Layout.Flow` when one in
 /// the card's `layouts` array matches the current width bucket.
 ///
-/// Reads [CardWidthScope] from the build context, so it reflows when the card
-/// crosses a width boundary. Falls back to a vertical stack otherwise.
-class _AdaptiveCardBody extends StatelessWidget {
+/// Watches [cardWidthBucketProvider], so it reflows when the card crosses a
+/// width boundary. Falls back to a vertical stack otherwise.
+class _AdaptiveCardBody extends ConsumerWidget {
   const _AdaptiveCardBody({
     required this.bodyItems,
     required this.layouts,
@@ -379,8 +391,8 @@ class _AdaptiveCardBody extends StatelessWidget {
   final ReferenceResolver styleResolver;
 
   @override
-  Widget build(BuildContext context) {
-    final selected = selectLayout(layouts, CardWidthScope.of(context));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selected = selectLayout(layouts, ref.watch(cardWidthBucketProvider));
     if (selected != null && selected['type'] == 'Layout.Flow') {
       return AdaptiveFlowLayout(
         layoutMap: selected,

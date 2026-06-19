@@ -21,6 +21,15 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 - [ ] **Formatting**: Has `dart_format` been run on all modified files?
 - [ ] **Public `///` docs**: Do exported API changes in library packages explain why and how to use the API (not implementation steps)? See **`dart-public-api-docs`**.
 
+### Documentation impact (canonical `docs/`)
+
+Architecture docs drift silently. If this change touches any of the triggers below, `git grep` the affected symbols in `docs/` and confirm the canonical docs were updated **in this change** (see the "Architecture documentation sync gate" in `AGENTS.md`).
+
+- [ ] **Providers / scopes**: Did it add/remove/rename a Riverpod provider or `ProviderScope` (including nested scopes), or move a provider between scopes? → Update [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md) (provider scopes + diagram) and [`docs/Architecture-Overview.md`](../../docs/Architecture-Overview.md) (scope diagram).
+- [ ] **Mixin contracts**: Did it change what a mixin watches or how effective state is computed (e.g. `AdaptiveVisibilityMixin.isVisible`, `AdaptiveInputMixin`)? → Update the relevant section of [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md).
+- [ ] **HostConfig / element contracts**: Did it add/remove/rename a HostConfig section, element/action type, or overlay field? → Update [`docs/hostconfig.md`](../../docs/hostconfig.md), [`docs/Implementation-Status.md`](../../docs/Implementation-Status.md), and [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md) as applicable.
+- [ ] **No stale references**: `git grep -n '<removed-or-renamed-symbol>' docs/` returns nothing pointing at deleted/renamed code (a stale doc reference is a blocker, not a nit).
+
 ---
 
 ## 2. `flutter_adaptive_cards_fs` Checklist
@@ -108,6 +117,7 @@ When performing a review, summarize findings using this format:
 
 - **Package**: [e.g. flutter_adaptive_cards_fs]
 - **Hygiene**: [PASS/FAIL] (Analysis, Changelog, Formatting)
+- **Docs impact**: [PASS/FAIL/N-A] (canonical `docs/` synced; no stale references)
 - **Compliance**: [PASS/FAIL] (Registry, Spec, Theming)
 - **Testing**: [PASS/FAIL] (Keys, Samples, Goldens)
 

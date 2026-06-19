@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_flow_layout.dart';
-import 'package:flutter_adaptive_cards_fs/src/responsive/card_width_scope.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/layout_selection.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -94,7 +94,7 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
     } else {
       final selected = selectLayout(
         adaptiveMap['layouts'] as List<dynamic>?,
-        CardWidthScope.of(context),
+        ref.watch(cardWidthBucketProvider),
       );
       final bool useFlow =
           selected != null && selected['type'] == 'Layout.Flow';

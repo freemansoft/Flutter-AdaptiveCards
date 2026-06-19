@@ -1,5 +1,11 @@
 # Responsive Layout (`targetWidth` + `Layout.Flow`) Implementation Plan
 
+> **Status:** ✅ **Core plan complete** — Tasks 1–12 + Final verification shipped in
+> commit `533fd1a` (PR #36). Remaining open work is in the
+> **"Follow-up tasks: post-implementation review"** section (FW1–FW5); of those,
+> **FW2 is done** (returned to the Riverpod `cardWidthBucketProvider`, 2026-06-19).
+> FW1, FW3, FW4, FW5 are outstanding.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make Adaptive Cards adapt to render width — `targetWidth` show/hide on every element, and `Layout.Flow` wrapping on `Container` + the card root body — without changing any existing card's rendering.
@@ -46,7 +52,7 @@
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/responsive/width_bucket.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/responsive/width_bucket_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```dart
 // test/responsive/width_bucket_test.dart
@@ -99,12 +105,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/width_bucket_test.dart`
 Expected: FAIL — `width_bucket.dart` does not exist / `targetWidthMatches` undefined.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```dart
 // lib/src/responsive/width_bucket.dart
@@ -191,12 +197,12 @@ bool _failOpen(String raw) {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/width_bucket_test.dart`
 Expected: PASS (all groups green).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/responsive/width_bucket.dart \
@@ -215,7 +221,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/fallback_configs.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/responsive/host_widths_config_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```dart
 // test/responsive/host_widths_config_test.dart
@@ -257,12 +263,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/host_widths_config_test.dart`
 Expected: FAIL — `host_widths_config.dart` does not exist.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `lib/src/hostconfig/host_widths_config.dart`:
 
@@ -332,12 +338,12 @@ and add this static inside the `FallbackConfigs` class (next to `spacingsConfig`
   );
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/host_widths_config_test.dart`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_widths_config.dart \
@@ -357,7 +363,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/reference_resolver.dart`
 - Test: append to `packages/flutter_adaptive_cards_fs/test/responsive/host_widths_config_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append this group to `test/responsive/host_widths_config_test.dart` (add imports for `host_config.dart` and `reference_resolver.dart`):
 
@@ -388,12 +394,12 @@ Append this group to `test/responsive/host_widths_config_test.dart` (add imports
   });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/host_widths_config_test.dart`
 Expected: FAIL — `hostWidthBreakpoints` param and `resolveWidthBucket` undefined.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 In `lib/src/hostconfig/host_config.dart`:
 
@@ -437,12 +443,12 @@ import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
       HostWidthsConfig.resolveBucket(getHostWidthsConfig(), width);
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/host_widths_config_test.dart`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_config.dart \
@@ -462,7 +468,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 > No standalone test — this is a one-line provider declaration exercised by Tasks 6, 9, 10. It uses a safe default (`WidthBucket.wide`) rather than throwing, so any subtree built without the root override degrades to "everything visible / wide layout" (fail-open), consistent with the spec.
 
-- [ ] **Step 1: Add the provider**
+- [x] **Step 1: Add the provider**
 
 In `lib/src/riverpod/providers.dart`, add the import near the top:
 ```dart
@@ -480,12 +486,12 @@ final cardWidthBucketProvider = Provider<WidthBucket>(
 );
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter analyze lib/src/riverpod/providers.dart`
 Expected: No issues found.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart
@@ -502,7 +508,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/responsive/layout_selection.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/responsive/layout_selection_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```dart
 // test/responsive/layout_selection_test.dart
@@ -557,12 +563,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/layout_selection_test.dart`
 Expected: FAIL — `layout_selection.dart` does not exist.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```dart
 // lib/src/responsive/layout_selection.dart
@@ -603,12 +609,12 @@ Map<String, dynamic>? selectLayout(List<dynamic>? layouts, WidthBucket bucket) {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/layout_selection_test.dart`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/responsive/layout_selection.dart \
@@ -631,7 +637,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 > `isVisible` gives `targetWidth` gating to all such elements with no per-element
 > edits, and makes effective visibility `baselineVisible && matchesTargetWidth`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```dart
 // test/responsive/responsive_widget_test.dart
@@ -699,12 +705,12 @@ void main() {
 > flip the bucket as expected, verify the card actually receives the surface
 > width at its root `LayoutBuilder` (Task 7) and report as DONE_WITH_CONCERNS.
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/responsive_widget_test.dart`
 Expected: FAIL — `wide-only` is found at width 150 (targetWidth not yet applied).
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 In `lib/src/adaptive_mixins.dart`, add the import near the other `package:flutter_adaptive_cards_fs/src/...` imports:
 ```dart
@@ -729,12 +735,12 @@ Replace the `isVisible` getter (currently lines ~380-381) with:
 
 > `cardWidthBucketProvider` is already imported transitively via providers; if analyze reports it undefined, add `import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';` (the file already references other providers from there, so it is likely present).
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/responsive_widget_test.dart`
 Expected: PASS (both tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart \
@@ -754,7 +760,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 > Task 6's tests pass against the fail-open default (`wide`) only at width 1000; at width 150 the element is hidden **only if** the real bucket is published. This task wires the actual measurement so the narrow test reflects a real `narrow`/`veryNarrow` bucket rather than the default. Verify by re-running Task 6's tests after this change.
 
-- [ ] **Step 1: Wrap the card body in a LayoutBuilder + bucket override**
+- [x] **Step 1: Wrap the card body in a LayoutBuilder + bucket override**
 
 In `lib/src/cards/adaptive_card_element.dart`, add the import near the other `package:flutter_adaptive_cards_fs/src/...` imports:
 ```dart
@@ -787,17 +793,17 @@ Replace the final `return ProviderScope(...)` block (lines ~324-332) with:
 > as undefined, the import is already present — only `width_bucket.dart` (for the
 > `WidthBucket` type) is new.
 
-- [ ] **Step 2: Run Task 6 tests to verify they still pass with real measurement**
+- [x] **Step 2: Run Task 6 tests to verify they still pass with real measurement**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/responsive_widget_test.dart`
 Expected: PASS (narrow test now passes because the real bucket is `veryNarrow`, not the `wide` default).
 
-- [ ] **Step 3: Sanity-check no regression in card rendering**
+- [x] **Step 3: Sanity-check no regression in card rendering**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`
 Expected: PASS (no existing card test regressions from the LayoutBuilder wrap).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/cards/adaptive_card_element.dart
@@ -814,7 +820,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/responsive/adaptive_flow_layout.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/responsive/adaptive_flow_layout_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```dart
 // test/responsive/adaptive_flow_layout_test.dart
@@ -856,12 +862,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/adaptive_flow_layout_test.dart`
 Expected: FAIL — `adaptive_flow_layout.dart` does not exist.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```dart
 // lib/src/responsive/adaptive_flow_layout.dart
@@ -930,12 +936,12 @@ class AdaptiveFlowLayout extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/adaptive_flow_layout_test.dart`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/responsive/adaptive_flow_layout.dart \
@@ -953,7 +959,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/containers/container.dart:82-103`
 - Test: append to `packages/flutter_adaptive_cards_fs/test/responsive/responsive_widget_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `test/responsive/responsive_widget_test.dart` (reusing `_pumpCardAtWidth`):
 
@@ -1003,12 +1009,12 @@ import 'package:flutter/material.dart';
 ```
 (already present from Task 6 — keep one copy).
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/responsive_widget_test.dart`
 Expected: FAIL — wide case finds no Flow `Wrap` around the container items.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 In `lib/src/cards/containers/container.dart`, add imports near the other `package:flutter_adaptive_cards_fs/src/...` imports:
 ```dart
@@ -1048,12 +1054,12 @@ In `build`, replace the `else` branch that builds `containerChild` (currently th
 > `ConsumerState`. Using `ref.watch(cardWidthBucketProvider)` in `build` makes
 > the container re-pick its layout when the card is resized across a boundary.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/responsive_widget_test.dart`
 Expected: PASS (all tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/cards/containers/container.dart \
@@ -1076,7 +1082,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 > outer column. `Layout.Flow` is applied only on the non-`listView` path; when
 > `listView` is true the body keeps the `ListView` (documented limitation).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `test/responsive/responsive_widget_test.dart`:
 
@@ -1101,12 +1107,12 @@ Append to `test/responsive/responsive_widget_test.dart`:
   });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/responsive_widget_test.dart -n "root body uses Flow"`
 Expected: FAIL — body items are not wrapped in a Flow `Wrap`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 In `lib/src/cards/adaptive_card_element.dart`, add imports near the other `package:flutter_adaptive_cards_fs/src/...` imports (if not already present from Task 7):
 ```dart
@@ -1178,17 +1184,17 @@ Then build `result` so the body layout precedes the trailing widgets:
 > body elements. Confirm `styleResolver` is available on the state (via
 > `AdaptiveElementMixin`); if not, use `ref.read(styleReferenceResolverProvider)`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test test/responsive/responsive_widget_test.dart`
 Expected: PASS (all tests).
 
-- [ ] **Step 5: Run the full non-golden suite (no regressions)**
+- [x] **Step 5: Run the full non-golden suite (no regressions)**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`
 Expected: PASS — body restructure must not break existing card/action/show-card tests.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/cards/adaptive_card_element.dart \
@@ -1210,7 +1216,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 > test (grep `test/` for `@Tags(['golden'])` or `matchesGoldenFile`) and mirror
 > its setup, tag, and file-path layout exactly.
 
-- [ ] **Step 1: Write the golden test**
+- [x] **Step 1: Write the golden test**
 
 ```dart
 // test/golden/responsive_flow_golden_test.dart
@@ -1280,17 +1286,17 @@ void main() {
 > `gold_files/macos/`), and the golden filename convention; mirror it exactly.
 > Adjust the `matchesGoldenFile` path to match.
 
-- [ ] **Step 2: Generate the golden baselines**
+- [x] **Step 2: Generate the golden baselines**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --update-goldens --tags=golden test/golden/responsive_flow_golden_test.dart`
 Expected: PASS; two new `.png` baselines created.
 
-- [ ] **Step 3: Verify goldens pass without regeneration**
+- [x] **Step 3: Verify goldens pass without regeneration**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --tags=golden test/golden/responsive_flow_golden_test.dart`
 Expected: PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/test/golden/responsive_flow_golden_test.dart \
@@ -1309,7 +1315,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 - Modify: `docs/Implementation-Status.md`
 - Modify: `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 
-- [ ] **Step 1: Update Implementation-Status.md**
+- [x] **Step 1: Update Implementation-Status.md**
 
 In `docs/Implementation-Status.md`:
 - In the **Common Properties** table, change the `targetWidth` row from `❌ Missing` to `⚠️ Partial` with note: `targetWidth visibility (named buckets + atLeast:/atMost:) implemented on all elements; Layout.AreaGrid / grid.area still deferred.`
@@ -1317,14 +1323,14 @@ In `docs/Implementation-Status.md`:
 - In **Priority Recommendations → High priority**, update item 1 to note `targetWidth` + `Layout.Flow` done; `AreaGrid` remaining.
 - Update the `_Last Updated_` line to `2026-06-18`.
 
-- [ ] **Step 2: Update the CHANGELOG**
+- [x] **Step 2: Update the CHANGELOG**
 
 In `packages/flutter_adaptive_cards_fs/CHANGELOG.md`, under `## [Unreleased]`, add:
 ```markdown
 - Added responsive layout: `targetWidth` element visibility (named width buckets plus `atLeast:`/`atMost:`) and `Layout.Flow` wrapping on `Container` and the card root body, driven by HostConfig `hostWidthBreakpoints` (spec defaults when absent). `Layout.AreaGrid` and advanced Flow sizing remain deferred.
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add docs/Implementation-Status.md packages/flutter_adaptive_cards_fs/CHANGELOG.md
@@ -1337,24 +1343,130 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 ## Final Task: Full verification
 
-- [ ] **Step 1: Analyze the whole repo**
+- [x] **Step 1: Analyze the whole repo**
 
 Run (from repo root): `fvm flutter analyze`
 Expected: No issues found (clean, including `public_member_api_docs`).
 
-- [ ] **Step 2: Run the full non-golden suite**
+- [x] **Step 2: Run the full non-golden suite**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --exclude-tags=golden`
 Expected: PASS — all existing tests plus the new `test/responsive/` tests; 0 failures.
 
-- [ ] **Step 3: Run golden tests**
+- [x] **Step 3: Run golden tests**
 
 Run: `cd packages/flutter_adaptive_cards_fs && fvm flutter test --tags=golden`
 Expected: PASS.
 
-- [ ] **Step 4: Invoke `verification-before-completion`**
+- [x] **Step 4: Invoke `verification-before-completion`**
 
 Paste the analyze + test command output (exit codes, pass/fail counts) before claiming completion. Do not report "plan complete" until the full suite passes.
+
+---
+
+## Follow-up tasks: post-implementation review
+
+> Added 2026-06-18 after the first slice landed (commit `533fd1a`, PR #36). A review
+> of the shipped code surfaced five weaknesses. Design rationale and the full
+> Riverpod remediation for FW2 live in the spec:
+> `docs/superpowers/specs/2026-06-18-responsive-layout-targetwidth-flow-design.md`,
+> section "Post-implementation review — known weaknesses". Tackle in priority order
+> FW1 → FW2 → FW3 → FW4 → FW5.
+
+### FW1 — Remove the `IntrinsicWidth` hazard in `AdaptiveFlowLayout` (highest priority)
+
+**File:** `lib/src/responsive/adaptive_flow_layout.dart`; tests
+`test/responsive/adaptive_flow_layout_test.dart`.
+
+`_sizedItem` wraps every child in `IntrinsicWidth`. This (a) throws on children that
+do not support intrinsic dimensions (unbounded `Image`, nested flex/`Expanded`,
+some custom render objects) and (b) adds O(n) speculative layout passes re-run on
+every resize.
+
+- [ ] **Step 1 (failing test):** Add a widget test that puts an `Image`-bearing or
+  `Expanded`-bearing element into a `Layout.Flow` container and pumps it. Confirm it
+  currently throws / misbehaves.
+- [ ] **Step 2 (fix):** Drop `IntrinsicWidth` for the no-constraint case (let `Wrap`
+  size children to content). Apply width constraints only when `minItemWidth` /
+  `maxItemWidth` are present, via `ConstrainedBox` alone — without `IntrinsicWidth`.
+  Re-evaluate whether intrinsic sizing is ever actually needed; if a specific child
+  type needs it, guard it rather than wrapping all children.
+- [ ] **Step 3:** Re-run `test/responsive/` + the Flow golden; regenerate goldens only
+  if the intended visual is unchanged-or-better.
+
+### FW2 — Reconcile width-bucket reactivity: Riverpod provider vs. `CardWidthScope` ✅ DONE
+
+> **Resolved via option (b): returned to the Riverpod provider.** Implemented
+> 2026-06-19. `CardWidthScope` deleted; `cardWidthBucketProvider` restored;
+> `isVisible`, `Container`, and the root body read it via `ref.watch`. Analyze
+> clean, all `test/responsive/` tests pass (27/27), full non-golden suite passes
+> (531, 2 skipped), Flow goldens pass without regeneration (behavior-preserving).
+
+**Files touched:** `lib/src/riverpod/providers.dart` (added `cardWidthBucketProvider`),
+`lib/src/cards/adaptive_card_element.dart` (two-scope pattern + `_AdaptiveCardBody`
+→ `ConsumerWidget`), `lib/src/adaptive_mixins.dart` (`isVisible` reads provider),
+`lib/src/cards/containers/container.dart` (reads provider), deleted
+`lib/src/responsive/card_width_scope.dart`; docs `…/specs/…-design.md` (W2 marked
+resolved), `CHANGELOG.md`.
+
+- [x] **Chosen: (b) Return to Riverpod** using the **two-scope, hoisted-`child`**
+  pattern (single stable outer `ProviderScope`; thin nested `ProviderScope` inside the
+  `LayoutBuilder` whose `child` is a hoisted stable reference). The outer scope is not
+  rebuilt on layout passes — the inner scope re-supplies the same `bucket` via
+  `overrideWithValue` (a no-op unless it changed) while the captured `cardBody` is
+  preserved by element reuse, so the subtree is **not** rebuilt and there is no
+  post-frame write / frame lag. `card_width_scope.dart` deleted;
+  `cardWidthBucketProvider` restored; `isVisible` / `container.dart` /
+  `_AdaptiveCardBody` switched back to `ref.watch(cardWidthBucketProvider)`.
+- [x] **Verified:** `test/responsive/` + `--exclude-tags=golden` green; Flow goldens
+  unchanged. Resize across a boundary still reflows (responsive widget tests).
+- [x] **Docs reconciled:** `docs/Implementation-Status.md` updated to cite
+  `cardWidthBucketProvider` instead of `CardWidthScope`.
+- [ ] **Follow-up (optional):** add an explicit regression test asserting document /
+  input overlay state survives a resize across a width boundary (proves the outer
+  `ProviderScope` is not rebuilt per layout pass).
+
+### FW3 — Fix `selectLayout` relational precedence
+
+**File:** `lib/src/responsive/layout_selection.dart`; tests
+`test/responsive/layout_selection_test.dart`.
+
+`relationalMatch ??= layout` keeps the **first** relational match in array order, not
+the most specific.
+
+- [ ] **Step 1 (failing test):** `[{atLeast:narrow}, {atLeast:standard}]` at
+  `WidthBucket.wide` should select `atLeast:standard` (most specific), not
+  `atLeast:narrow`.
+- [ ] **Step 2 (fix):** Among matching relationals, pick the one whose target bucket
+  is closest to the current bucket (smallest `|bucket.index - target.index|`), with a
+  documented tiebreak (e.g. later array entry wins) cross-checked against the AC spec
+  / another SDK.
+
+### FW4 — Harden width measurement
+
+**Files:** `lib/src/hostconfig/host_widths_config.dart` (or the resolver),
+`lib/src/cards/adaptive_card_element.dart`.
+
+- [ ] **Unbounded width:** when `constraints.maxWidth` is not finite, choose a defined
+  behavior (document it — likely keep `wide` as fail-open) and **log via
+  `dart:developer`** so it is debuggable instead of silent.
+- [ ] **Margin/padding:** decide whether the bucket should be measured on the content
+  width (inside the card `margin` + container padding) rather than the outer width;
+  document the decision either way.
+- [ ] **Nested `Action.ShowCard`:** decide and document whether a nested card's
+  `targetWidth` is relative to the nested card or the host card; add a test pinning
+  the chosen behavior.
+
+### FW5 — Close documentation/scope drift
+
+**Files:** `lib/src/responsive/adaptive_flow_layout.dart` (doc comment),
+`docs/Implementation-Status.md`, this plan's "Deferred" note.
+
+- [ ] Record that `minItemWidth` / `maxItemWidth` **ship** while `itemFit` does **not**
+  (the original spec listed all three as deferred).
+- [ ] Keep the remaining gaps explicit: no `layouts` on `ColumnSet` / `Column` /
+  `TableCell`, no `Layout.AreaGrid`, and `Layout.Flow` not applied on the `listView`
+  body path.
 
 ---
 

@@ -23,6 +23,10 @@ See [Style inheritance data flow](adaptive-style.md#style-inheritance-data-flow)
 - **Per-card-element scope** (one per `AdaptiveCardElement`)
   - show-card UI state for that card instance
   - optional nested document fork when rendering nested card subtrees
+- **Width-bucket scope** (a thin nested scope inside each `AdaptiveCardElement`'s root `LayoutBuilder`)
+  - `cardWidthBucketProvider` override with the current responsive [`WidthBucket`](../../packages/flutter_adaptive_cards_fs/lib/src/responsive/width_bucket.dart) derived from the card's measured width (`ReferenceResolver.resolveWidthBucket`)
+  - kept **separate** from the element scope so layout passes only re-supply the bucket override; the element scope and the hoisted card subtree are not rebuilt, and `overrideWithValue` notifies watchers only when the bucket actually changes. See the responsive design doc, weakness W2: [`responsive-layout-targetwidth-flow-design.md`](superpowers/specs/2026-06-18-responsive-layout-targetwidth-flow-design.md).
+  - read via `ref.watch(cardWidthBucketProvider)` by `AdaptiveVisibilityMixin` (`targetWidth` gating) and by `Container` / the card root body (`Layout.Flow` selection); defaults to `WidthBucket.wide` (fail-open) when no scope is present.
 
 ```mermaid
 flowchart TB
@@ -35,8 +39,12 @@ flowchart TB
   subgraph elementScope [AdaptiveCardElement ProviderScope]
     show[expandedShowCardIdProvider]
   end
+  subgraph widthScope [LayoutBuilder nested ProviderScope]
+    bucket[cardWidthBucketProvider override]
+  end
   doc --> elem[Element widgets ref.watch by id]
   show --> showUi[ShowCard action + body slot]
+  bucket --> respon[targetWidth visibility + Layout.Flow selection]
 ```
 
 ## Document model: baseline + overlays
@@ -224,6 +232,7 @@ Visibility is driven by the document overlay model, not by mutating JSON or walk
 - Baseline `"isVisible"` comes from the adaptive map at load time.
 - Runtime changes (e.g. `Action.ToggleVisibility`) call `AdaptiveCardDocumentNotifier.setVisibility` / `toggleVisibility`, which write `ElementOverlay.isVisible`.
 - `AdaptiveVisibilityMixin` listens to `resolvedElementProvider(id)` and rebuilds when the **merged** `isVisible` changes.
+- Effective visibility is `isVisible` **AND** the element's `targetWidth` match: the mixin also `ref.watch`es `cardWidthBucketProvider` and ANDs in `targetWidthMatches(resolved['targetWidth'], bucket)`. These are independent gates — a runtime `setVisibility(true)` overlay cannot override a `targetWidth` miss, and vice-versa.
 
 Other element overlays (e.g. **TextBlock** `text` via `setText`) use the same provider; see [How overlays change values](#how-overlays-change-values-initialized-from-the-adaptive-map).
 

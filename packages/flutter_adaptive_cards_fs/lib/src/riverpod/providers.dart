@@ -9,6 +9,7 @@ import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/text_run.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document_notifier.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/show_card_ui_notifier.dart';
@@ -47,6 +48,19 @@ final styleReferenceResolverProvider = Provider<ReferenceResolver>(
   (ref) => throw UnimplementedError(
     'styleReferenceResolverProvider override missing',
   ),
+);
+
+/// Current card render-width [WidthBucket] for the surrounding card subtree.
+///
+/// Published by a thin nested `ProviderScope` inside the root `LayoutBuilder` in
+/// [AdaptiveCardElement] (overridden via `overrideWithValue`), which only
+/// notifies watchers when the measured bucket actually changes. Elements read it
+/// (`ref.watch`) to gate `targetWidth` visibility and select `layouts`
+/// (`Layout.Flow`). Defaults to [WidthBucket.wide] when no override is present so
+/// an isolated subtree degrades to showing everything / the widest layout
+/// (fail-open), matching responsive-layout semantics.
+final cardWidthBucketProvider = Provider<WidthBucket>(
+  (ref) => WidthBucket.wide,
 );
 /// Deep-copied card JSON baseline for the current raw-card scope.
 final baselineMapProvider = Provider<Map<String, dynamic>>(

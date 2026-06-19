@@ -6,7 +6,6 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/resolved_input_state.dart';
-import 'package:flutter_adaptive_cards_fs/src/responsive/card_width_scope.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
@@ -386,7 +385,7 @@ mixin AdaptiveVisibilityMixin<T extends ConsumerStatefulWidget>
   bool get isVisible {
     final resolved = ref.watch(resolvedElementProvider(id));
     final baselineVisible = parseIsVisible(resolved?['isVisible']);
-    final bucket = CardWidthScope.of(context);
+    final bucket = ref.watch(cardWidthBucketProvider);
     final matchesWidth =
         targetWidthMatches(resolved?['targetWidth'] as String?, bucket);
     return baselineVisible && matchesWidth;

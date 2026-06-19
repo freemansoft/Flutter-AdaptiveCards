@@ -117,6 +117,20 @@ fvm flutter test --exclude-tags=golden
 
 If the plan touched other packages, run their suites too (`flutter_adaptive_template_fs`, `flutter_adaptive_charts_fs`, `flutter_adaptive_cards_host_fs`, etc.). See **`adaptive-cards-monorepo-workspace`** and **`adaptive-cards-testing`** skills for directory and tagging details.
 
+## Architecture documentation sync gate
+
+Canonical architecture docs under `docs/` describe how the library is wired and drift silently when code changes. **Before marking work complete**, when a change does any of the following, grep `docs/` for the affected symbols and update the canonical docs in the same change:
+
+- **Adds / removes / renames a Riverpod provider or `ProviderScope`** (including nested scopes), or changes which scope hosts a provider.
+- **Changes a mixin's reactive contract** (e.g. what `AdaptiveVisibilityMixin.isVisible` / `AdaptiveInputMixin` watch or how effective state is computed).
+- **Adds / removes / renames a HostConfig section**, element/action type, or overlay field, or changes an element's public contract.
+
+Procedure:
+
+1. `git grep -n '<old-or-new-symbol>' docs/` (also grep the human name, e.g. `CardWidthScope`, `cardWidthBucketProvider`, `targetWidth`).
+2. Update the matching canonical docs — most commonly [`docs/reactive-riverpod.md`](docs/reactive-riverpod.md) (provider scopes, overlay merge, visibility), [`docs/Architecture-Overview.md`](docs/Architecture-Overview.md) (scope diagram), [`docs/Implementation-Status.md`](docs/Implementation-Status.md) (feature status), and [`docs/hostconfig.md`](docs/hostconfig.md) (HostConfig sections). Keep mermaid diagrams in sync.
+3. A stale doc reference (e.g. a deleted class still named in `docs/`) is a blocker, not a nice-to-have. The **`code-review`** skill's "Documentation impact" check enforces this at the review gate.
+
 ## Documentation Philosophy
 
 - **Public APIs:** ALWAYS document public classes and methods with `///`.
