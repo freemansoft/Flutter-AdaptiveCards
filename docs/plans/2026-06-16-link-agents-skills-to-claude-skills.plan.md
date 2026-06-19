@@ -8,7 +8,7 @@ at `.claude/skills/`. Without a link between these two locations, Claude Code ca
 discover the 49 skills already defined in `.agents/skills/`.
 
 The solution creates platform-appropriate links (symlink on Mac/Linux, junction on
-Windows) via scripts, and uses a VS Code/Cursor `tasks.json` with `runOn: folderOpen`
+Windows) via scripts, and uses a VS Code `tasks.json` with `runOn: folderOpen`
 to run the appropriate script automatically whenever a developer opens the workspace.
 `.claude/skills` is gitignored so the generated link is never committed.
 

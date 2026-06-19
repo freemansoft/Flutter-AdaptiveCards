@@ -7,6 +7,7 @@ This directory contains design documents, implementation guides, and architectur
 - **Documentation scope** (packages vs widgetbook samples): [documentation-scope.md](./documentation-scope.md)
 - **Widgetbook overlay demos** (sample program): [widgetbook-overlay-demos.md](./widgetbook-overlay-demos.md)
 - **Cursor and Antigravity created plans** copied from ~/.cursor/plans : [plans](/docs/plans/) (superseded duplicates in [archive/plans](/docs/archive/plans/))
+- **Copilot created plans** _no documentation exists at this time_
 - **Superpowers created specs** [specs](/docs/superpowers/specs/) (implemented duplicates in [archive/specs](/docs/archive/specs/))
 - **AI / LLM agents**: [AI-Agent-Support.md](/docs/AI-Agent-Support.md)
 - **Main Project**: [Repository README](/README.md)

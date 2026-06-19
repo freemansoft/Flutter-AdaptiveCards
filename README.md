@@ -137,7 +137,7 @@ Many!
 
 ## LLM Agent Support
 
-This repo is configured for Cursor, Antigravity, Claude Code, and other coding agents. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
+This repo is configured for Claude Code, Antigravity, CoPilot and ~~Cursor~~, and other coding agents. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
 
 ### Always-on rules — [AGENTS.md](AGENTS.md)
 
@@ -170,7 +170,7 @@ npx skills add flutter/skills --skill '*' --agent universal --yes
 npx skills add obra/superpowers --skill '*' --agent universal --yes
 ```
 
-Update vendored skills: `npx skills update`. For Cursor user-level Superpowers and the optional `/add-plugin superpowers` hook, see [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md).
+Update vendored skills: `npx skills update`. For user-level Superpowers and the optional `/add-plugin superpowers` hook, see [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md).
 
 ## More about adaptive cards and available SDKs
 
