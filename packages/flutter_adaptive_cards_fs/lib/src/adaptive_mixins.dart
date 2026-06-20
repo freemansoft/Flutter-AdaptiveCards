@@ -318,13 +318,21 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }
 
   /// Call at the top of [build] to sync controllers when resolved value changes.
+  ///
+  /// Registers a `ref.listen` subscription (auto-removed on the next rebuild)
+  /// that schedules a post-frame callback whenever the resolved `'value'` key
+  /// changes.  The callback reads the **latest** resolved value at execution
+  /// time rather than capturing it at listener-fire time.  This prevents a
+  /// stale-echo: if two keystrokes arrive in the same frame, the intermediate
+  /// captured value would be outdated by the time the callback runs.  Reading
+  /// the latest ensures the echo is a no-op when the controller already reflects
+  /// the current document state, preserving the IME cursor position.
   void listenForResolvedValueChanges() {
     ref.listen(resolvedElementProvider(_inputId), (previous, next) {
       if (previous?['value'] == next?['value']) return;
-      final value = next?['value'];
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        onDocumentValueChanged(value);
+        onDocumentValueChanged(readResolvedInput().valueRaw);
       });
     });
   }

@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`Input.Text` no longer caps input at 20 characters when `maxLength` is omitted:** the length limit is applied only when `maxLength` is present and greater than 0 (Adaptive Cards spec: absent `maxLength` means no limit).
+- **`Input.Text` / `Input.Number` fast-typing no longer drops characters or resets cursor:** `AdaptiveInputMixin.listenForResolvedValueChanges` previously captured the resolved value at listener-fire time and echoed it back via a post-frame callback. When two keystrokes arrived in the same frame, the stale captured value overwrote the controller and reset the IME cursor (selection to offset -1), desynchronising the IME and dropping characters. The post-frame callback now reads the latest resolved value at execution time (`readResolvedInput().valueRaw`), making the echo a no-op when the controller already reflects the current document state.
 - **`Media` poster placeholder no longer throws `LateInitializationError`:** `AdaptiveMediaState.altText` is now initialized from the card's `altText` (defaulting to empty) in `initState`, so the poster placeholder shown while the video loads (or when its source is policy-blocked) renders instead of crashing. `altText` is not overlayable, so it is read from the baseline map like `Image`.
 - **`CodeBlock` reads spec `codeSnippet` property:** `AdaptiveCodeBlockState.initState` now reads `adaptiveMap['codeSnippet']` first (spec-correct property) and falls back to `adaptiveMap['code']` for backward compatibility. Previously any spec-compliant CodeBlock rendered empty.
 

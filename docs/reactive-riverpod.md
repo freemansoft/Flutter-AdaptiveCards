@@ -199,7 +199,7 @@ Effective value rules:
 
 ### Keeping UI in sync
 
-**Inputs** (`ConsumerStatefulWidget` + `AdaptiveInputMixin`): `watchResolvedInput()` at the start of `build()` for label, placeholder, `isRequired`, validation (`isInvalid` / `errorMessage`), and resolved value; `listenForResolvedValueChanges()` / `ref.listen` syncs controllers via `onDocumentValueChanged`. Form validators and `checkRequired` write validation via **`setLocalValidationError()`** / **`clearLocalValidationError()`** (notifier overlays). Error UI uses **`loadErrorMessage(..., showError: input.isInvalid)`** only.
+**Inputs** (`ConsumerStatefulWidget` + `AdaptiveInputMixin`): `watchResolvedInput()` at the start of `build()` for label, placeholder, `isRequired`, validation (`isInvalid` / `errorMessage`), and resolved value; `listenForResolvedValueChanges()` / `ref.listen` syncs controllers via `onDocumentValueChanged`. The post-frame callback reads the **latest** resolved value at execution time (via `readResolvedInput().valueRaw`) rather than the value captured when `ref.listen` fired — this makes the echo a no-op when the controller already reflects the current document state, preserving IME cursor position during fast typing. Form validators and `checkRequired` write validation via **`setLocalValidationError()`** / **`clearLocalValidationError()`** (notifier overlays). Error UI uses **`loadErrorMessage(..., showError: input.isInvalid)`** only.
 
 `AdaptiveVisibilityMixin`, **`AdaptiveChoiceSet`** (dynamic `choices`), **`AdaptiveFactSet`** (dynamic `facts`), and **`AdaptiveTextBlock`** use `container.listen` on `resolvedElementProvider(id)` in `didChangeDependencies`. `AdaptiveActionStateMixin` and `Action.ShowCard` use `resolvedActionProvider(id)` for action overlays.
 

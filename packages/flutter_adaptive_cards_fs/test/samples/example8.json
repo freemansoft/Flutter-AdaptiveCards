@@ -14,21 +14,20 @@
       "type": "Input.Text",
       "placeholder": "Name",
       "style": "text",
-      "maxLength": 1,
       "id": "SimpleVal"
     },
     {
       "type": "Input.Text",
       "placeholder": "Homepage",
       "style": "url",
-      "maxLength": 1,
+      "maxLength": 5,
       "id": "UrlVal"
     },
     {
       "type": "Input.Text",
       "placeholder": "Email",
       "style": "email",
-      "maxLength": 1,
+      "maxLength": 0,
       "id": "EmailVal"
     },
     {
@@ -43,7 +42,7 @@
       "placeholder": "Comments",
       "style": "text",
       "isMultiline": true,
-      "maxLength": 1,
+      "maxLength": -1,
       "id": "MultiLineVal"
     },
     {

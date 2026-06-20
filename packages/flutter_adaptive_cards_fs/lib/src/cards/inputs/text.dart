@@ -49,8 +49,12 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
   /// Flipped via `setState` when the reveal (eye-icon) toggle is tapped.
   bool _obscure = true;
 
-  /// Maximum character count from `maxLength`.
-  late int maxLength;
+  /// Maximum character count from `maxLength`, or `null` when absent.
+  ///
+  /// Per the Adaptive Cards spec, `maxLength` is optional. A `null` value (or
+  /// a value ≤ 0) means no limit is applied. The formatter is only installed
+  /// when this is a positive integer.
+  int? maxLength;
 
   /// Keyboard type derived from `style` (`tel`, `url`, `email`, etc.).
   TextInputType? inputStyle;
@@ -85,7 +89,7 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
   void didChangeDependencies() {
     super.didChangeDependencies();
     isMultiline = adaptiveMap['isMultiline'] as bool? ?? false;
-    maxLength = adaptiveMap['maxLength'] as int? ?? 20;
+    maxLength = adaptiveMap['maxLength'] as int?;
     inputStyle = resolveTextInputType(style);
 
     if (!_initialValueSynced) {
@@ -122,8 +126,11 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
     // (matches the resolver fallback pattern, e.g. getFontSizesConfig).
     final inputsConfig =
         styleResolver.getInputsConfig() ?? FallbackConfigs.inputsConfig;
-    final revealEnabled = input.revealPasswordEnabledOverride ??
+    final revealEnabled =
+        input.revealPasswordEnabledOverride ??
         inputsConfig.text.revealPasswordEnabled;
+    // Capture into a local so Dart flow analysis can promote the nullable field.
+    final effectiveMaxLength = maxLength;
 
     return Visibility(
       visible: isVisible,
@@ -145,7 +152,10 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
                 style: const TextStyle(),
                 controller: controller,
                 // maxLength: maxLength,
-                inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
+                inputFormatters: [
+                  if (effectiveMaxLength != null && effectiveMaxLength > 0)
+                    LengthLimitingTextInputFormatter(effectiveMaxLength),
+                ],
                 keyboardType: inputStyle,
                 obscureText: isPassword && _obscure,
                 enableSuggestions: !isPassword,
@@ -193,8 +203,7 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
                           // so these accessibility labels are plain strings,
                           // consistent with the rest of the package.
                           tooltip: _obscure ? 'Show password' : 'Hide password',
-                          onPressed: () =>
-                              setState(() => _obscure = !_obscure),
+                          onPressed: () => setState(() => _obscure = !_obscure),
                         )
                       : null,
                   suffixIconConstraints: const BoxConstraints(
