@@ -5,6 +5,7 @@ import 'package:widgetbook_workspace/chart_overlay_page.dart';
 import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
 import 'package:widgetbook_workspace/fact_set_overlay_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
+import 'package:widgetbook_workspace/input_text_password_overlay_page.dart';
 import 'package:widgetbook_workspace/network_page.dart';
 import 'package:widgetbook_workspace/rating_input_overlay_page.dart';
 import 'package:widgetbook_workspace/rating_overlay_page.dart';
@@ -769,6 +770,15 @@ Widget buildInputTextExample1(BuildContext context) {
 )
 Widget buildInputTextExample2(BuildContext context) {
   return const GenericPage(url: 'lib/samples/inputs/input_text/example2.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Password reveal overlay (knob)',
+  type: widget_types.InputText,
+  path: '[Components]',
+)
+Widget buildInputTextPasswordOverlay(BuildContext context) {
+  return InputTextPasswordOverlayPage(key: inputTextPasswordOverlayPageKey);
 }
 
 // =============================================================================

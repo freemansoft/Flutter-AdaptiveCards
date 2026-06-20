@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -42,6 +43,11 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
   bool _controllerListenerInstalled = false;
   bool _isUpdatingFromDocument = false;
   bool _initialValueSynced = false;
+
+  /// Whether password characters are currently hidden (`style: password`).
+  ///
+  /// Flipped via `setState` when the reveal (eye-icon) toggle is tapped.
+  bool _obscure = true;
 
   /// Maximum character count from `maxLength`.
   late int maxLength;
@@ -111,6 +117,13 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
   Widget build(BuildContext context) {
     listenForResolvedValueChanges();
     final input = watchResolvedInput();
+    final isPassword = input.style == 'password';
+    // Fall back to the fallback InputsConfig when the host provides none
+    // (matches the resolver fallback pattern, e.g. getFontSizesConfig).
+    final inputsConfig =
+        styleResolver.getInputsConfig() ?? FallbackConfigs.inputsConfig;
+    final revealEnabled = input.revealPasswordEnabledOverride ??
+        inputsConfig.text.revealPasswordEnabled;
 
     return Visibility(
       visible: isVisible,
@@ -134,7 +147,10 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
                 // maxLength: maxLength,
                 inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
                 keyboardType: inputStyle,
-                maxLines: isMultiline ? null : 1,
+                obscureText: isPassword && _obscure,
+                enableSuggestions: !isPassword,
+                autocorrect: !isPassword,
+                maxLines: (isMultiline && !isPassword) ? null : 1,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
@@ -162,6 +178,29 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
                   hintText: input.placeholder,
                   // required or box will exist even though field is hidden or half height
                   hintStyle: const TextStyle(),
+                  suffixIcon: (isPassword && revealEnabled)
+                      ? IconButton(
+                          padding: EdgeInsets.zero,
+                          iconSize: 20,
+                          constraints: const BoxConstraints(
+                            maxHeight: 36,
+                            maxWidth: 36,
+                          ),
+                          icon: Icon(
+                            _obscure ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          // Library has no l10n/arb setup (intl is date-only),
+                          // so these accessibility labels are plain strings,
+                          // consistent with the rest of the package.
+                          tooltip: _obscure ? 'Show password' : 'Hide password',
+                          onPressed: () =>
+                              setState(() => _obscure = !_obscure),
+                        )
+                      : null,
+                  suffixIconConstraints: const BoxConstraints(
+                    maxHeight: 36,
+                    maxWidth: 36,
+                  ),
                   errorStyle: const TextStyle(height: 0),
                 ),
                 validator: (value) {
@@ -230,6 +269,8 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
         return TextInputType.url;
       case 'email':
         return TextInputType.emailAddress;
+      case 'password':
+        return TextInputType.visiblePassword;
       default:
         return null;
     }

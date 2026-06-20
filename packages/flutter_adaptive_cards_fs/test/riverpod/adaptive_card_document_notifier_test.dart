@@ -6,6 +6,20 @@ import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+Map<String, dynamic> _passwordBaseline() {
+  return {
+    'type': 'AdaptiveCard',
+    'version': '1.5',
+    'body': [
+      {
+        'type': 'Input.Text',
+        'id': 'pwd',
+        'style': 'password',
+      },
+    ],
+  };
+}
+
 Map<String, dynamic> _baselineFixture() {
   return {
     'type': 'AdaptiveCard',
@@ -1088,6 +1102,51 @@ void main() {
         expect(parsedInput.actions, isEmpty);
         expect(parsedInput.elements.single.label, 'Name');
       });
+    });
+  });
+
+  group('revealPasswordEnabled overlay', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = _createContainer(_passwordBaseline());
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('setRevealPasswordEnabled merges into resolvedElementProvider', () {
+      container
+          .read(adaptiveCardDocumentProvider.notifier)
+          .setRevealPasswordEnabled('pwd', enabled: false);
+
+      final resolved = container.read(resolvedElementProvider('pwd'));
+      expect(resolved?['revealPasswordEnabled'], isFalse);
+    });
+
+    test('clearRevealPasswordEnabled removes the override', () {
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+        ..setRevealPasswordEnabled('pwd', enabled: false)
+        ..clearRevealPasswordEnabled('pwd');
+
+      expect(
+        notifier.state.overlaysById['pwd']?.revealPasswordEnabled,
+        isNull,
+      );
+      final resolved = container.read(resolvedElementProvider('pwd'));
+      expect(resolved?.containsKey('revealPasswordEnabled'), isFalse);
+    });
+
+    test('resetInput preserves revealPasswordEnabled override', () {
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+        ..setRevealPasswordEnabled('pwd', enabled: false)
+        ..resetInput('pwd');
+
+      expect(
+        notifier.state.overlaysById['pwd']?.revealPasswordEnabled,
+        isFalse,
+      );
     });
   });
 }

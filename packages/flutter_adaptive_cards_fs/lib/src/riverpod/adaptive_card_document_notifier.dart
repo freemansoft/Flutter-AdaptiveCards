@@ -308,6 +308,26 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     );
   }
 
+  /// Overrides the host `inputs.text.revealPasswordEnabled` default for input [id].
+  void setRevealPasswordEnabled(String id, {required bool enabled}) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(
+        revealPasswordEnabled: enabled,
+      ),
+    );
+  }
+
+  /// Clears the `revealPasswordEnabled` override for [id].
+  void clearRevealPasswordEnabled(String id) {
+    _updateOverlay(
+      id,
+      (current) => (current ?? const ElementOverlay()).copyWith(
+        clearRevealPasswordEnabled: true,
+      ),
+    );
+  }
+
   /// Replaces effective `"url"` for element [id] (e.g. `Image`).
   void setUrl(String id, String url) {
     _updateOverlay(
@@ -679,7 +699,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   /// Factory-resets one input id: clears value, choices, validation,
   /// [ElementOverlay.isRequired], [ElementOverlay.label], and
   /// [ElementOverlay.placeholder] overlays so resolved fields match baseline
-  /// JSON. Preserves input [ElementOverlay.isVisible] and typeahead session
+  /// JSON. Preserves input [ElementOverlay.isVisible],
+  /// [ElementOverlay.revealPasswordEnabled], and typeahead session
   /// fields on that id.
   ///
   /// See [resetAllInputs] for batch reset and
@@ -718,7 +739,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   /// Factory-resets every `Input.*` id using the same rules as [resetInput].
   ///
   /// Clears overlay value, choices, validation, `isRequired`, `label`, and
-  /// `placeholder` on inputs. Preserves input visibility and typeahead session
+  /// `placeholder` on inputs. Preserves input visibility,
+  /// [ElementOverlay.revealPasswordEnabled], and typeahead session
   /// overlays. Does not modify TextBlock text, Image url, or action overlays.
   void resetAllInputs() {
     final overlays = Map<String, ElementOverlay>.from(state.overlaysById);
@@ -775,7 +797,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     if (current.isVisible == null &&
         current.queryCount == null &&
         current.querySkip == null &&
-        current.querySearchText == null) {
+        current.querySearchText == null &&
+        current.revealPasswordEnabled == null) {
       return null;
     }
     return ElementOverlay(
@@ -783,6 +806,7 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
       queryCount: current.queryCount,
       querySkip: current.querySkip,
       querySearchText: current.querySearchText,
+      revealPasswordEnabled: current.revealPasswordEnabled,
     );
   }
 

@@ -486,6 +486,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildInputTextExample2,
           ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Password reveal overlay (knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildInputTextPasswordOverlay,
+          ),
         ],
       ),
       _widgetbook.WidgetbookComponent(

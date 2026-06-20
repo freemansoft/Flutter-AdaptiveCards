@@ -268,6 +268,24 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     container.read(adaptiveCardDocumentProvider.notifier).clearText(id);
   }
 
+  /// Overrides the host `inputs.text.revealPasswordEnabled` default for input [id].
+  void setRevealPasswordEnabled(String id, {required bool enabled}) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setRevealPasswordEnabled(id, enabled: enabled);
+  }
+
+  /// Clears the password reveal toggle override for [id].
+  void clearRevealPasswordEnabled(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .clearRevealPasswordEnabled(id);
+  }
+
   /// Replaces effective `"facts"` for `FactSet` [id].
   void setFacts(String id, List<Fact> facts) {
     final container = documentContainer;

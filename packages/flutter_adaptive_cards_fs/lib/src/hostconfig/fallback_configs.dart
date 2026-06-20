@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/error_message_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_weights_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_widths_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_sizes_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/inputs_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/label_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/progress_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/spacings_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_input_config.dart';
 
 /// Built-in HostConfig defaults used when JSON omits a section or property.
 ///
@@ -64,5 +68,15 @@ class FallbackConfigs {
     medium: 14,
     large: 18,
     extraLarge: 22,
+  );
+
+  /// Default `inputs` section values.
+  ///
+  /// **Non-standard:** the `text.revealPasswordEnabled` flag is a custom
+  /// extension, not part of the official Adaptive Cards HostConfig schema.
+  static final InputsConfig inputsConfig = InputsConfig(
+    label: LabelConfig.fromJson(const <String, dynamic>{}),
+    errorMessage: ErrorMessageConfig.fromJson(const <String, dynamic>{}),
+    text: TextInputConfig(revealPasswordEnabled: true),
   );
 }

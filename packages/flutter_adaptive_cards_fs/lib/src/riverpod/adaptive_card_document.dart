@@ -76,6 +76,7 @@ class ElementOverlay {
     this.facts,
     this.inlines,
     this.extensionPayloads,
+    this.revealPasswordEnabled,
   });
 
   /// Overrides baseline `"isVisible"` when non-null.
@@ -126,6 +127,10 @@ class ElementOverlay {
   /// Optional-package overlay payloads keyed by extension id.
   final Map<String, Map<String, dynamic>>? extensionPayloads;
 
+  /// Overrides the host `inputs.text.revealPasswordEnabled` default for one
+  /// `Input.Text` password field when non-null.
+  final bool? revealPasswordEnabled;
+
   /// Returns a copy with the given fields replaced.
   ElementOverlay copyWith({
     bool? isVisible,
@@ -144,6 +149,7 @@ class ElementOverlay {
     List<Fact>? facts,
     List<Map<String, dynamic>>? inlines,
     Map<String, Map<String, dynamic>>? extensionPayloads,
+    bool? revealPasswordEnabled,
     bool clearInputValue = false,
     bool clearChoices = false,
     bool clearQueryCount = false,
@@ -159,6 +165,7 @@ class ElementOverlay {
     bool clearFacts = false,
     bool clearInlines = false,
     bool clearExtensionPayloads = false,
+    bool clearRevealPasswordEnabled = false,
   }) {
     return ElementOverlay(
       isVisible: isVisible ?? this.isVisible,
@@ -183,6 +190,9 @@ class ElementOverlay {
       extensionPayloads: clearExtensionPayloads
           ? null
           : (extensionPayloads ?? this.extensionPayloads),
+      revealPasswordEnabled: clearRevealPasswordEnabled
+          ? null
+          : (revealPasswordEnabled ?? this.revealPasswordEnabled),
     );
   }
 }

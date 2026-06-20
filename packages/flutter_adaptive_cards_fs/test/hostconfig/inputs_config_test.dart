@@ -33,5 +33,17 @@ void main() {
       expect(config.label.requiredInputs.color, 'default');
       expect(config.errorMessage.size, 'default');
     });
+
+    test('text.revealPasswordEnabled defaults to true when absent', () {
+      final config = InputsConfig.fromJson({});
+      expect(config.text.revealPasswordEnabled, isTrue);
+    });
+
+    test('text.revealPasswordEnabled parses explicit false', () {
+      final config = InputsConfig.fromJson({
+        'text': {'revealPasswordEnabled': false},
+      });
+      expect(config.text.revealPasswordEnabled, isFalse);
+    });
   });
 }

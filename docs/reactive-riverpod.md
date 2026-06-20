@@ -128,6 +128,7 @@ Changes go **only** into overlays via the document notifier:
 | Submit / Execute                  | `collectInputValues()` + validation via `validateInputs()`                                                                                    | reads overlay ?? baseline `"value"`; marks failing inputs with `setInputError(isInvalid: true)` (required + `Input.Text` regex) |
 | Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                                                                     | delegates to `setChoices`                                                                                                       |
 | Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                                                                   | `ActionOverlay.isEnabled`                                                                                                       |
+| Password reveal toggle            | `setRevealPasswordEnabled(id, enabled)` / `clearRevealPasswordEnabled(id)`; `RawAdaptiveCardState` exposes the same names as facade             | `ElementOverlay.revealPasswordEnabled`; read via `ResolvedInputState.revealPasswordEnabledOverride`                              |
 | Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                                                         | `text`                                                                                                                          |
 | Replace FactSet facts             | `setFacts(id, facts)` / `clearFacts(id)` / `applyUpdates` (`facts` / `clearFacts` on `AdaptiveElementUpdate` or patch `{ clearFacts: true }`) | `facts`                                                                                                                         |
 | Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `setFacts` / `clearFacts` / `applyUpdates`              | delegates to document notifier                                                                                                  |
@@ -146,10 +147,11 @@ The host’s map instance is never mutated in place.
 
 **Preserved on that input id** (not part of “form values” reset):
 
-| Preserved         | Overlay fields                               |
-| ----------------- | -------------------------------------------- |
-| Visibility        | `isVisible`                                  |
-| Typeahead session | `queryCount`, `querySkip`, `querySearchText` |
+| Preserved              | Overlay fields                               |
+| ---------------------- | -------------------------------------------- |
+| Visibility             | `isVisible`                                  |
+| Typeahead session      | `queryCount`, `querySkip`, `querySearchText` |
+| Password reveal toggle | `revealPasswordEnabled` (`Input.Text` only)  |
 
 **Never modified** by input reset: TextBlock `text`, Image `url`, non-input visibility, **`actionOverlaysById`**, and the host baseline map.
 

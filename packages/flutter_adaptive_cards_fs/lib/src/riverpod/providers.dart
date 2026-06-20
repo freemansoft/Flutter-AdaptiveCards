@@ -116,6 +116,9 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
     if (overlay?.isRequired != null) {
       merged['isRequired'] = overlay!.isRequired;
     }
+    if (overlay?.revealPasswordEnabled != null) {
+      merged['revealPasswordEnabled'] = overlay!.revealPasswordEnabled;
+    }
     if (overlay?.url != null) {
       final type = merged['type'] as String?;
       if (type == 'Media') {
