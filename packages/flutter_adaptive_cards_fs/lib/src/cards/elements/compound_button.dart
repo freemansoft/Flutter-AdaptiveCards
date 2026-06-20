@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
@@ -42,6 +43,11 @@ class AdaptiveCompoundButtonState extends ConsumerState<AdaptiveCompoundButton>
   /// Optional short badge label from `badge`.
   late String? badge;
 
+  /// Resolved handler for the optional `selectAction`, if present.
+  ///
+  /// When absent the button has nothing to do and renders disabled.
+  GenericAction? selectAction;
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +58,18 @@ class AdaptiveCompoundButtonState extends ConsumerState<AdaptiveCompoundButton>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // The selectAction could be any of the action types, so resolve it via the
+    // registry the same way AdaptiveTappable does for element selectActions.
+    if (adaptiveMap.containsKey('selectAction')) {
+      selectAction = actionTypeRegistry.getActionForType(
+        map: adaptiveMap['selectAction'] as Map<String, dynamic>,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final resolver = styleResolver;
     return Visibility(
@@ -59,12 +77,14 @@ class AdaptiveCompoundButtonState extends ConsumerState<AdaptiveCompoundButton>
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: ElevatedButton(
-          onPressed: () {
-            // TODO(username): What does it do? Usually triggers an action or is part of an input?
-            // If it's an "Element" it might be static or act like a button?
-            // If it has selectAction, we should handle it.
-            // For now, no-op or check for selectAction.
-          },
+          onPressed: selectAction == null
+              ? null
+              : () => selectAction!.tap(
+                    context: context,
+                    rawAdaptiveCardState: rawRootCardWidgetState,
+                    adaptiveMap:
+                        adaptiveMap['selectAction'] as Map<String, dynamic>,
+                  ),
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.all(12),
             alignment: Alignment.centerLeft,

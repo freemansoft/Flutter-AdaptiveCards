@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`CompoundButton` now honors `selectAction`:** tapping the button resolves and dispatches its `selectAction` (e.g. `Action.OpenUrl`, `Action.Submit`) via the action registry. When no `selectAction` is present the button renders disabled instead of being a no-op. Also removed a stale markdown TODO in `TextBlock` (markdown is already implemented via `flutter_markdown_plus`; no behavior change).
 - **`Input.Number`, `Input.Date`, and `Input.Time` now validate `min`/`max` bounds on Submit/Execute:** out-of-range values block the action and mark the input invalid instead of submitting silently.
 - **Action `mode: secondary` + overflow:** secondary-mode actions, and any actions beyond HostConfig `maxActions`, now collapse into a reveal-on-demand "•••" overflow toggle instead of being silently dropped (applies to both `ActionSet` and card-level actions).
 - **Action `iconPlacement`:** action buttons now honor `actions.iconPlacement`; the default `aboveTitle` stacks the icon over the label (previously always icon-left).

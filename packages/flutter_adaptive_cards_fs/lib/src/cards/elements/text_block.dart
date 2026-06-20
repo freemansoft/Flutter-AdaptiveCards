@@ -124,9 +124,6 @@ class AdaptiveTextBlockState extends ConsumerState<AdaptiveTextBlock>
     );
   }
 
-  /*child: */
-
-  // TODOcreate own widget that parses_basic markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
   @override
   Widget build(BuildContext context) {
     final resolved = ref.watch(resolvedElementProvider(id));
