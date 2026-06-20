@@ -14,3 +14,4 @@ export 'package:flutter_adaptive_cards_host_fs/src/models/invoke_effect.dart';
 export 'package:flutter_adaptive_cards_host_fs/src/models/invoke_kind.dart';
 export 'package:flutter_adaptive_cards_host_fs/src/models/invoke_request.dart';
 export 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
+export 'package:flutter_adaptive_cards_host_fs/src/security/bounded_json.dart';

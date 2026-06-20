@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **`AdaptiveUriPolicy` / `AdaptiveFetchPolicy` for card-controlled URLs:** new `lib/src/security/` layer validates untrusted URLs (scheme allowlist, loopback/private-host blocking, optional host allowlist) and bounds card-initiated fetches (byte cap + timeout). Exposed via `InheritedAdaptiveCardSecurityPolicy` and optional `RawAdaptiveCard` / `AdaptiveCardsCanvas.network` parameters; defaults to a production-safe policy.
+- **`Action.OpenUrl` and markdown links are validated before launch:** `DefaultOpenUrlAction.tap` rejects disallowed schemes/hosts (e.g. `javascript:`, private IPs) before forwarding to the host handler or `url_launcher`; markdown `TextBlock` links route through the same gate.
+- **SSRF guards on remote fetches:** `Action.OpenUrlDialog` content fetch and `NetworkAdaptiveCardContentProvider` now validate the URL and cap the response body before requesting.
+- **Optional image/media URL gating:** `AdaptiveImageUtils.getImage`/`getImageProvider` accept a policy (denied URLs render a placeholder), and `AdaptiveMedia` validates its source before creating the network player.
+
 ### Fixed
 
+- **`Media` poster placeholder no longer throws `LateInitializationError`:** `AdaptiveMediaState.altText` is now initialized from the card's `altText` (defaulting to empty) in `initState`, so the poster placeholder shown while the video loads (or when its source is policy-blocked) renders instead of crashing. `altText` is not overlayable, so it is read from the baseline map like `Image`.
 - **`CodeBlock` reads spec `codeSnippet` property:** `AdaptiveCodeBlockState.initState` now reads `adaptiveMap['codeSnippet']` first (spec-correct property) and falls back to `adaptiveMap['code']` for backward compatibility. Previously any spec-compliant CodeBlock rendered empty.
 
 ### Changed

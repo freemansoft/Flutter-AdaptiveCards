@@ -1229,6 +1229,7 @@ Widget buildNetworkShowCardWizard(BuildContext context) {
   );
 }
 
+// use case is broken because of https://github.com/microsoft/AdaptiveCards/issues/9382
 @widgetbook.UseCase(
   name: 'Agenda',
   type: widget_types.Microsoft15,

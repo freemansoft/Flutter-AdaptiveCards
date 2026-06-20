@@ -12,6 +12,8 @@ import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_validation.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -218,6 +220,20 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
       altUrl: altUrl,
     );
     if (invoke.url.isEmpty) return;
+
+    // Untrusted card JSON controls this URL. Validate against the active
+    // policy before either forwarding to the host or launching it, so a
+    // malicious scheme/host cannot reach a host handler or url_launcher.
+    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context)
+        .validate(invoke.url);
+    if (validation case AdaptiveUriDenied(:final reason)) {
+      if (kDebugMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('URL blocked: $reason')),
+        );
+      }
+      return;
+    }
 
     final foo = InheritedAdaptiveCardHandlers.of(context);
     if (foo != null) {

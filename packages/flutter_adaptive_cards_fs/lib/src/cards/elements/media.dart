@@ -8,6 +8,9 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/media_source.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_validation.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/media_caption_source.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -17,7 +20,8 @@ import 'package:video_player/video_player.dart';
 /// Implements
 /// * https://adaptivecards.io/explorer/Media.html
 /// * https://adaptivecards.io/explorer/MediaSource.html
-class AdaptiveMedia extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveMedia extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a media player from [adaptiveMap] JSON.
   AdaptiveMedia({
     required this.adaptiveMap,
@@ -71,6 +75,10 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
     );
     sourceUrl = sources.isNotEmpty ? sources[0].url : '';
 
+    // Accessibility label for the poster image; read before first build so the
+    // placeholder path never reads an uninitialized field.
+    altText = adaptiveMap['altText']?.toString() ?? '';
+
     // TODO(captions): render captionSources as VTT tracks on the video surface.
     captionSources = captionSourcesFromJsonList(adaptiveMap['captionSources']);
 
@@ -91,9 +99,16 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
     unawaited(initializePlayer());
   }
 
+  /// URI policy for [sourceUrl]; defaults to the safe standard policy until an
+  /// ancestor [InheritedAdaptiveCardSecurityPolicy] is resolved in
+  /// [didChangeDependencies].
+  AdaptiveUriPolicy _uriPolicy = AdaptiveUriPolicy.standard;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    _uriPolicy = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context);
 
     final resolver = styleResolver;
     final mediaConfig = resolver.getMediaConfig();
@@ -103,7 +118,21 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
   }
 
   /// Initializes [videoPlayerController] and [controller] from [sourceUrl].
+  ///
+  /// [sourceUrl] comes from untrusted card JSON, so it is validated against the
+  /// active URI policy before the network player is created; a denied URL skips
+  /// initialization (leaving [videoPlayerController] null).
   Future<void> initializePlayer() async {
+    if (_uriPolicy.validate(sourceUrl) case AdaptiveUriDenied(:final reason)) {
+      assert(() {
+        developer.log(
+          'media source $sourceUrl blocked by policy: $reason',
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+      return;
+    }
     final player = VideoPlayerController.networkUrl(
       Uri.parse(sourceUrl),
     );

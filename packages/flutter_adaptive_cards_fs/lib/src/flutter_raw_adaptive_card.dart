@@ -17,6 +17,9 @@ import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_fetch_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,6 +39,8 @@ class RawAdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.brightnessMode = AdaptiveCardBrightnessMode.auto,
     this.currentUserId,
+    this.uriPolicy,
+    this.fetchPolicy,
     required this.hostConfigs,
   });
 
@@ -68,6 +73,16 @@ class RawAdaptiveCard extends StatefulWidget {
 
   /// Current user id for root `refresh.userIds` auto-refresh gating.
   final String? currentUserId;
+
+  /// Optional policy for validating card-controlled URLs (`Action.OpenUrl`,
+  /// markdown links, media/image sources). When null, an ancestor
+  /// [InheritedAdaptiveCardSecurityPolicy] is used, falling back to
+  /// [AdaptiveUriPolicy.standard].
+  final AdaptiveUriPolicy? uriPolicy;
+
+  /// Optional policy bounding card-initiated fetches. When null, an ancestor
+  /// policy is used, falling back to [AdaptiveFetchPolicy.standard].
+  final AdaptiveFetchPolicy? fetchPolicy;
 
   @override
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
@@ -588,7 +603,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       style: widget.map['style']?.toString().toLowerCase(),
     );
 
-    return ProviderScope(
+    Widget tree = ProviderScope(
       overrides: [
         cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
         actionTypeRegistryProvider.overrideWithValue(widget.actionTypeRegistry),
@@ -603,6 +618,21 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         child: Card(color: backgroundColor, child: child),
       ),
     );
+
+    // Only install a policy holder when the caller supplied one, resolving any
+    // unspecified policy from an ancestor (or the standard default). Wrapping
+    // unconditionally would shadow a host-provided ancestor policy.
+    if (widget.uriPolicy != null || widget.fetchPolicy != null) {
+      tree = InheritedAdaptiveCardSecurityPolicy(
+        uriPolicy: widget.uriPolicy ??
+            InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context),
+        fetchPolicy: widget.fetchPolicy ??
+            InheritedAdaptiveCardSecurityPolicy.fetchPolicyOf(context),
+        child: tree,
+      );
+    }
+
+    return tree;
   }
 }
 

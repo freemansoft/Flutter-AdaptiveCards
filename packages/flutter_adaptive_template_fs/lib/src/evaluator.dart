@@ -306,8 +306,13 @@ class Evaluator {
 
       if (name == 'json') {
         if (args.isEmpty || args[0] == null) return null;
+        final input = args[0].toString();
+        // Bound untrusted template data: refuse to decode oversized payloads
+        // rather than risk excessive memory/CPU on a malicious card.
+        const maxChars = 256 * 1024;
+        if (input.length > maxChars) return null;
         try {
-          return json.decode(args[0].toString());
+          return json.decode(input);
         } on Object catch (_) {
           return null;
         }

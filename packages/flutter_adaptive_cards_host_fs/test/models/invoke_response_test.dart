@@ -65,6 +65,35 @@ void main() {
       throwsA(isA<StateError>()),
     );
   });
+
+  test('cardValidator rejecting a card throws and skips replacement', () {
+    final state = _RecordingCardState();
+    var replaced = false;
+    expect(
+      () => const AdaptiveCardInvokeResponse([
+        ReplaceCardEffect(<String, dynamic>{'type': 'AdaptiveCard'}),
+      ]).applyTo(
+        state,
+        onCardReplaced: (_) => replaced = true,
+        cardValidator: (_) => false,
+      ),
+      throwsA(isA<AdaptiveCardInvokeResponseParseException>()),
+    );
+    expect(replaced, isFalse);
+  });
+
+  test('cardValidator accepting a card allows replacement', () {
+    final state = _RecordingCardState();
+    Map<String, dynamic>? got;
+    const AdaptiveCardInvokeResponse([
+      ReplaceCardEffect(<String, dynamic>{'type': 'AdaptiveCard'}),
+    ]).applyTo(
+      state,
+      onCardReplaced: (card) => got = card,
+      cardValidator: (_) => true,
+    );
+    expect(got, isNotNull);
+  });
 }
 
 class _RecordingCardState extends RawAdaptiveCardState {

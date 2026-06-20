@@ -3,6 +3,7 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// https://adaptivecards.io/explorer/Image.html
 ///
-class AdaptiveImage extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveImage extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates an image element from [adaptiveMap] JSON.
   ///
   /// [parentMode] controls flex behavior when nested in column/row layouts.
@@ -67,7 +69,10 @@ class AdaptiveImageState extends ConsumerState<AdaptiveImage>
   @override
   Widget build(BuildContext context) {
     final resolved = ref.watch(resolvedElementProvider(id));
-    final url = resolved?['url']?.toString() ?? widget.adaptiveMap['url']?.toString() ?? '';
+    final url =
+        resolved?['url']?.toString() ??
+        widget.adaptiveMap['url']?.toString() ??
+        '';
 
     BoxFit fit = BoxFit.contain;
     if (height != null && width != null && height != width) {
@@ -82,6 +87,7 @@ class AdaptiveImageState extends ConsumerState<AdaptiveImage>
         height: height,
         width: width,
         semanticsLabel: adaptiveMap['altText']?.toString(),
+        uriPolicy: InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context),
       ),
     );
 

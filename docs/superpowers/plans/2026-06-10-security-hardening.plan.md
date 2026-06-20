@@ -10,22 +10,29 @@
 
 **Source:** Security review (2026-06-10) — High: OpenUrlDialog SSRF, NetworkAdaptiveCardContentProvider SSRF; Medium: unvalidated OpenUrl/markdown links, trusted-backend assumptions, unbounded backend JSON; Low: image/media URLs, template `json()`.
 
-## Status (2026-06-16)
+## Status (2026-06-19 — implemented)
 
-| Phase | Status     | Notes                                                   |
-| ----- | ---------- | ------------------------------------------------------- |
-| 1     | ❌ Pending | Policy utilities not yet started                        |
-| 2     | ❌ Pending | OpenUrl and markdown wiring not yet started             |
-| 3     | ❌ Pending | Remote fetch guards not yet started                     |
-| 4     | ❌ Pending | Backend response hardening not yet started              |
-| 5     | ❌ Pending | Resource URL policy not yet started                     |
-| 6     | ❌ Pending | Template bounds, docs, and verification not yet started |
+| Phase | Status      | Notes                                                                    |
+| ----- | ----------- | ------------------------------------------------------------------------ |
+| 1     | ✅ Complete | `lib/src/security/` policy layer + unit tests                            |
+| 2     | ✅ Complete | `DefaultOpenUrlAction.tap` gate; barrel exports; markdown covered transitively |
+| 3     | ✅ Complete | OpenUrlDialog + `NetworkAdaptiveCardContentProvider` SSRF/byte-cap guards |
+| 4     | ✅ Complete | `decodeJsonMapWithLimit` + `maxResponseBytes`; `cardValidator`           |
+| 5     | ✅ Complete | image/media URL gating (opt-in policy param)                             |
+| 6     | ✅ Complete | template `json()` cap; READMEs + backend-host doc; changelogs            |
 
-**Current Codebase Verification:**
+**Verification (2026-06-19, branch `feat/security-hardening-impl`):** repo `fvm flutter analyze` → No issues found. `flutter_adaptive_cards_fs` → 556 passed / 2 skipped (`--exclude-tags=golden`). `flutter_adaptive_cards_host_fs` → 21 passed. `flutter_adaptive_template_fs` → 103 passed.
+
+**Implementation deviations from the original task text:** (1) Markdown links (Task 4) route through the gated `DefaultOpenUrlAction.tap`, so no separate `onTapLink` validation was added — coverage is verified by `text_block_markdown_policy_test`. (2) `InheritedAdaptiveCardSecurityPolicy` is installed by `RawAdaptiveCard` only when a policy is explicitly passed (resolving the unspecified one from an ancestor), avoiding shadowing of a host-provided ancestor policy; the standard default still applies via `*Of` fallbacks. (3) Phase 5 wires the two primary network surfaces (Image element + Media); the remaining icon-sized `getImage` call sites (Badge, CompoundButton, IconButton, background images) keep their default (ungated) behavior and can be wired in a follow-up.
+
+**Re-verified against `main` after PRs #34–#37** (P0 input validation/CodeBlock, P3 element completeness, responsive `targetWidth`/Flow): no security infrastructure has landed. `lib/src/security/` is **absent** in both `flutter_adaptive_cards_fs` and `flutter_adaptive_cards_host_fs`; neither package barrel exports any security types. All six phases remain ❌ Pending. Code-hook **line numbers drifted** since the 2026-06-16 pass and are corrected throughout (see the refreshed Self-review table).
+
+**Current Codebase Verification (2026-06-19):**
 
 - Evaluated against `main` branch (working tree clean).
 - No stashes or branch changes contain partial security implementations.
-- Codebase structure is ready for integration: `default_actions.dart`, `text_block.dart`, `rich_text_block.dart`, `media.dart`, `adaptive_image_utils.dart`, and `evaluator.dart` contain the exact targeted hooks and line mappings defined in this plan.
+- Codebase structure is ready for integration: `default_actions.dart`, `text_block.dart`, `rich_text_block.dart`, `media.dart`, `adaptive_image_utils.dart`, and `evaluator.dart` contain the targeted hooks (line mappings refreshed below).
+- **Added finding:** `rich_text_block.dart` `_recognizerFor` (95–109) routes a run's `selectAction` through `action.tap(...)` (101–106) with no validation — the same unguarded path as OpenUrl. It dispatches through `DefaultOpenUrlAction.tap`, so **Task 3's gate covers it** once that tap validates the effective URL (verification point in Task 4, no extra implementation).
 
 ---
 
@@ -597,7 +604,7 @@ switch (validation) {
 }
 ```
 
-In `flutter_raw_adaptive_card.dart`, wrap the card subtree:
+In `flutter_raw_adaptive_card.dart`, wrap the card subtree (the `ProviderScope` returned from `build()` is at lines **591–605** on current `main`; wrap *outside* it so the inherited policy is visible to the whole card):
 
 ```dart
 import 'package:flutter_adaptive_cards_fs/src/security/adaptive_fetch_policy.dart';
@@ -674,7 +681,9 @@ onTapLink: (text, href, title) {
 
 - [ ] **Step 4: Run test — PASS**
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Verify RichText `selectAction` coverage** — `rich_text_block.dart` `_recognizerFor` (95–109) routes a run's `selectAction` through the same `action.tap(...)` path as OpenUrl (101–106). Confirm Task 3's gate on `DefaultOpenUrlAction.tap` blocks a disallowed `selectAction` URL in a `TextRun`; this is a verification point, not new code (no separate validation needed if Task 3 validates the effective URL).
+
+- [ ] **Step 6: Commit**
 
 ```bash
 git commit -m "feat(cards): validate markdown link hrefs against URI policy"
@@ -1031,13 +1040,14 @@ Expected: all tests pass.
 | Security finding                                                          | Task                  |
 | ------------------------------------------------------------------------- | --------------------- |
 | OpenUrlDialog SSRF (`open_url_dialog_executor.dart:15`)                   | Task 5                |
-| NetworkAdaptiveCardContentProvider SSRF (`adaptive_cards_canvas.dart:77`) | Task 6                |
-| Unvalidated OpenUrl default (`default_actions.dart:179`)                  | Task 3                |
-| Markdown href OpenUrl (`text_block.dart:212`)                             | Task 4                |
-| Backend ReplaceCard trust (`plain_json_invoke_response_parser.dart:23`)   | Task 8 + docs Task 11 |
-| Unbounded backend JSON (`http_backend_client.dart:41`)                    | Task 7                |
-| Image URL loading (`adaptive_image_utils.dart:17`)                        | Task 9                |
-| Media URL (`media.dart:97`)                                               | Task 9                |
+| NetworkAdaptiveCardContentProvider SSRF (`adaptive_cards_canvas.dart:76`) | Task 6                |
+| Unvalidated OpenUrl default (`default_actions.dart:226`)                  | Task 3                |
+| Markdown href OpenUrl (`text_block.dart:189`)                             | Task 4                |
+| RichText selectAction (`rich_text_block.dart:95-109`)                     | Task 3 (via `DefaultOpenUrlAction.tap`) |
+| Backend ReplaceCard trust (`plain_json_invoke_response_parser.dart:96`)   | Task 8 + docs Task 11 |
+| Unbounded backend JSON (`http_backend_client.dart:44`)                    | Task 7                |
+| Image URL loading (`adaptive_image_utils.dart:30,41,58`)                  | Task 9                |
+| Media URL (`media.dart:107`)                                              | Task 9                |
 | Template `json()` (`evaluator.dart:307`)                                  | Task 10               |
 
 No placeholder steps remain. Type names (`AdaptiveUriPolicy`, `AdaptiveFetchPolicy`, `AdaptiveUriPolicyException`, `AdaptiveCardValidator`) are consistent across tasks.

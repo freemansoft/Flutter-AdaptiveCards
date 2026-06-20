@@ -371,6 +371,23 @@ You can insert a `DefaultAdaptiveCardHandlers` in the Widget tree prior to loadi
 
 Your program can pass it's own handlers to the `AdaptiveCard` constructors. See the `NetworkPage` class in the example app.
 
+## Security
+
+Adaptive Card JSON is untrusted input. The library validates card-controlled URLs through a single chokepoint, `AdaptiveUriPolicy`, before any launch or fetch:
+
+- **Default policy (`AdaptiveUriPolicy.standard`)** allows only `https`/`http` and blocks loopback and private-network hosts (SSRF protection). It is applied automatically — no configuration required.
+- **`Action.OpenUrl`, markdown links, `Action.OpenUrlDialog` fetches, and `NetworkAdaptiveCardContentProvider`** all validate the URL first; remote fetches additionally enforce a response **byte cap and timeout** via `AdaptiveFetchPolicy`.
+- **Customize** by wrapping a card with `InheritedAdaptiveCardSecurityPolicy(uriPolicy: …, fetchPolicy: …)`, or by passing `uriPolicy`/`fetchPolicy` to `RawAdaptiveCard` / `AdaptiveCardsCanvas.network`. To permit extra protocols (e.g. `mailto:`, `tel:`) add them to `allowedSchemes`; use `AdaptiveUriPolicy.development` for local dev servers (allows loopback/private hosts).
+- **For production, implement `onOpenUrl`** so URL launches go through your own handler rather than `url_launcher`.
+
+```dart
+InheritedAdaptiveCardSecurityPolicy(
+  uriPolicy: const AdaptiveUriPolicy(allowedSchemes: {'https', 'mailto'}),
+  fetchPolicy: const AdaptiveFetchPolicy(maxBytes: 512 * 1024),
+  child: myAdaptiveCard,
+);
+```
+
 ## Example Execution
 
 There are two example apps and a bunch of tests that demonstrate card usage.

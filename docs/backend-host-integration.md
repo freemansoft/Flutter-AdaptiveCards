@@ -190,6 +190,26 @@ Always provide **`onError`** in production hosts (SnackBar, retry UI, logging).
 
 ---
 
+## Trust boundary & security
+
+There are **two** untrusted edges, each guarded independently:
+
+```
+Card JSON ──▶ renderer (flutter_adaptive_cards_fs)
+              guarded by AdaptiveUriPolicy / AdaptiveFetchPolicy
+              (OpenUrl, markdown, OpenUrlDialog, network card, images, media)
+
+Backend response ──▶ host bridge (flutter_adaptive_cards_host_fs)
+              guarded by maxResponseBytes (decodeJsonMapWithLimit)
+              + optional cardValidator on replaceCard
+```
+
+- **Card → renderer:** untrusted card-controlled URLs are validated by **`AdaptiveUriPolicy`** (scheme allowlist + loopback/private-host blocking) and remote fetches are bounded by **`AdaptiveFetchPolicy`** (byte cap + timeout). See the `flutter_adaptive_cards_fs` README *Security* section.
+- **Backend → host:** the response body is size-capped by **`HttpAdaptiveCardBackendClient.maxResponseBytes`** (throws **`AdaptiveJsonTooLargeException`**), and a **`replaceCard`** payload can be screened with an **`AdaptiveCardValidator`** (`cardValidator` on **`applyTo`** / **`wrap`**) before it renders.
+- **Do not** log **`AdaptiveCardBackendException.body`** in production; it may contain attacker-controlled content.
+
+---
+
 ## Root card refresh
 
 **`AdaptiveCardBackendHandlers`** wires **`onRefresh`** the same as Execute: builds **`AdaptiveCardInvokeRequest`** from **`RefreshActionInvoke`**, POSTs, applies effects. Host replaces card JSON when the response includes **`replaceCard`** or patches fields in place.

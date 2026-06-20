@@ -5,14 +5,43 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_fetch_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_validation.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 /// Fetches remote content for `Action.OpenUrlDialog`.
 ///
-/// Returns parsed card JSON, a fallback URL string for HTML, or null.
-Future<dynamic> fetchOpenUrlDialogContent(String url) async {
-  final response = await http.get(Uri.parse(url));
+/// The [url] comes from untrusted card JSON, so it is validated against
+/// [uriPolicy] before any request is issued (blocking SSRF to loopback/private
+/// hosts) and the response body is capped at [fetchPolicy]'s `maxBytes`. Pass a
+/// [client] to inject HTTP behavior in tests.
+///
+/// Returns parsed card JSON, a fallback URL string for HTML, or null. Throws
+/// [AdaptiveUriPolicyException] when the URL is rejected and
+/// [AdaptiveFetchTooLargeException] when the body exceeds the cap.
+Future<dynamic> fetchOpenUrlDialogContent(
+  String url, {
+  AdaptiveUriPolicy uriPolicy = AdaptiveUriPolicy.standard,
+  AdaptiveFetchPolicy fetchPolicy = AdaptiveFetchPolicy.standard,
+  http.Client? client,
+}) async {
+  final validation = uriPolicy.validate(url);
+  if (validation case AdaptiveUriDenied(:final reason)) {
+    throw AdaptiveUriPolicyException(reason);
+  }
+  final uri = (validation as AdaptiveUriAllowed).uri;
+
+  final httpClient = client ?? http.Client();
+  final http.Response response;
+  try {
+    response = await httpClient.get(uri).timeout(fetchPolicy.timeout);
+  } finally {
+    if (client == null) httpClient.close();
+  }
+  readBodyWithLimit(response.bodyBytes, fetchPolicy.maxBytes);
   final contentType = response.headers['content-type'] ?? '';
 
   if (response.statusCode == 200) {
@@ -72,6 +101,8 @@ Future<void> showOpenUrlDialog({
   required String url,
   required HostConfigs hostConfigs,
 }) async {
+  final uriPolicy = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context);
+  final fetchPolicy = InheritedAdaptiveCardSecurityPolicy.fetchPolicyOf(context);
   await showDialog<void>(
     context: context,
     builder: (dialogContext) {
@@ -81,7 +112,11 @@ Future<void> showOpenUrlDialog({
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: FutureBuilder<dynamic>(
-              future: fetchOpenUrlDialogContent(url),
+              future: fetchOpenUrlDialogContent(
+                url,
+                uriPolicy: uriPolicy,
+                fetchPolicy: fetchPolicy,
+              ),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
