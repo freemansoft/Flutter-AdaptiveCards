@@ -5,30 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.12.0]
 
-### Security
+### Security 0.12.0
 
 - **`AdaptiveUriPolicy` / `AdaptiveFetchPolicy` for card-controlled URLs:** new `lib/src/security/` layer validates untrusted URLs (scheme allowlist, loopback/private-host blocking, optional host allowlist) and bounds card-initiated fetches (byte cap + timeout). Exposed via `InheritedAdaptiveCardSecurityPolicy` and optional `RawAdaptiveCard` / `AdaptiveCardsCanvas.network` parameters; defaults to a production-safe policy.
 - **`Action.OpenUrl` and markdown links are validated before launch:** `DefaultOpenUrlAction.tap` rejects disallowed schemes/hosts (e.g. `javascript:`, private IPs) before forwarding to the host handler or `url_launcher`; markdown `TextBlock` links route through the same gate.
 - **SSRF guards on remote fetches:** `Action.OpenUrlDialog` content fetch and `NetworkAdaptiveCardContentProvider` now validate the URL and cap the response body before requesting.
 - **Optional image/media URL gating:** `AdaptiveImageUtils.getImage`/`getImageProvider` accept a policy (denied URLs render a placeholder), and `AdaptiveMedia` validates its source before creating the network player.
 
-### Fixed
+### Fixed 0.12.0
 
 - **`Input.Text` no longer caps input at 20 characters when `maxLength` is omitted:** the length limit is applied only when `maxLength` is present and greater than 0 (Adaptive Cards spec: absent `maxLength` means no limit).
 - **`Input.Text` / `Input.Number` fast-typing no longer drops characters or resets cursor:** `AdaptiveInputMixin.listenForResolvedValueChanges` previously captured the resolved value at listener-fire time and echoed it back via a post-frame callback. When two keystrokes arrived in the same frame, the stale captured value overwrote the controller and reset the IME cursor (selection to offset -1), desynchronising the IME and dropping characters. The post-frame callback now reads the latest resolved value at execution time (`readResolvedInput().valueRaw`), making the echo a no-op when the controller already reflects the current document state.
 - **`Media` poster placeholder no longer throws `LateInitializationError`:** `AdaptiveMediaState.altText` is now initialized from the card's `altText` (defaulting to empty) in `initState`, so the poster placeholder shown while the video loads (or when its source is policy-blocked) renders instead of crashing. `altText` is not overlayable, so it is read from the baseline map like `Image`.
 - **`CodeBlock` reads spec `codeSnippet` property:** `AdaptiveCodeBlockState.initState` now reads `adaptiveMap['codeSnippet']` first (spec-correct property) and falls back to `adaptiveMap['code']` for backward compatibility. Previously any spec-compliant CodeBlock rendered empty.
 
-### Changed
+### Changed 0.12.0
 
 - **`CompoundButton` now honors `selectAction`:** tapping the button resolves and dispatches its `selectAction` (e.g. `Action.OpenUrl`, `Action.Submit`) via the action registry. When no `selectAction` is present the button renders disabled instead of being a no-op. Also removed a stale markdown TODO in `TextBlock` (markdown is already implemented via `flutter_markdown_plus`; no behavior change).
 - **`Input.Number`, `Input.Date`, and `Input.Time` now validate `min`/`max` bounds on Submit/Execute:** out-of-range values block the action and mark the input invalid instead of submitting silently.
 - **Action `mode: secondary` + overflow:** secondary-mode actions, and any actions beyond HostConfig `maxActions`, now collapse into a reveal-on-demand "•••" overflow toggle instead of being silently dropped (applies to both `ActionSet` and card-level actions).
 - **Action `iconPlacement`:** action buttons now honor `actions.iconPlacement`; the default `aboveTitle` stacks the icon over the label (previously always icon-left).
 
-### Added
+### Added 0.12.0
 
 - **`revealPasswordEnabled` per-element overlay:** `ElementOverlay` gains a `revealPasswordEnabled` field; `AdaptiveCardDocumentNotifier` exposes `setRevealPasswordEnabled` / `clearRevealPasswordEnabled`; `resolvedElementProvider` merges the override into the resolved map; `ResolvedInputState.revealPasswordEnabledOverride` reads it; and `RawAdaptiveCardState` exposes matching facade methods. The field is preserved across `Action.ResetInputs` (like `isVisible`), not cleared.
 - **Responsive layout (`targetWidth` + `Layout.Flow`):** elements gate visibility by card width via `targetWidth` (named buckets `veryNarrow`/`narrow`/`standard`/`wide` plus `atLeast:`/`atMost:`), and `Container` + the card root body honor a `layouts` array, reflowing from a vertical stack to a wrapping `Layout.Flow` (with `columnSpacing`/`rowSpacing`, item alignment, and optional `minItemWidth`/`maxItemWidth`). Width buckets come from a new HostConfig `hostWidthBreakpoints` section (spec defaults when absent) and are published to the element subtree via the scoped Riverpod `cardWidthBucketProvider` (a thin nested `ProviderScope` inside the root `LayoutBuilder` overrides it with the measured bucket, leaving the outer card scope stable). `Layout.AreaGrid`/`grid.area` and `itemFit` remain deferred.
