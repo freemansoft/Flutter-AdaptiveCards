@@ -22,9 +22,9 @@ The text version is
 
 ## Existing functionality
 
-* The function `getBackgroundImageFromMap()` in `adaptive_mixins.dart`  accepts a Map and return an Image.
+* The function `getBackgroundImageFromMap()` in `adaptive_mixins.dart` accepts a Map and returns a `Widget?` (normalizing string/object form via `resolveBackgroundImage()`).
 
-* The function `getBackgroundImage()` in `adaptive_mixins.dart`  accepts a URL and return an Image.
+* The function `getBackgroundImage()` in `adaptive_mixins.dart` accepts a URL and returns a `Widget`.
 
 ## Test cases
 

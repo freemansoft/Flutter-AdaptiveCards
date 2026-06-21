@@ -120,9 +120,9 @@ Guide for Flutter Form-based input implementation. Documents runtime **baseline 
 
 ### [backgroundImage.md](./backgroundImage.md)
 
-**Status**: ⚠️ Needs Verification | **Category**: Implementation Guide
+**Status**: ✅ Current | **Category**: Implementation Guide
 
-Describes support for `backgroundImage` in both string (URL) and object (URL + fillMode) forms. Needs verification that both forms are implemented.
+Describes support for `backgroundImage` in both string (URL) and object (URL + fillMode) forms. Both forms are implemented (`resolveBackgroundImage` in `adaptive_mixins.dart`) and tested (`test/elements/background_image_test.dart`).
 
 ---
 
@@ -180,9 +180,9 @@ Riverpod document **overlay** tests (notifier unit tests + widget integration) a
 
 ### [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md)
 
-**Status**: ⚠️ Documents Bug | **Category**: Known Issue
+**Status**: ✅ Current (documents fixed bug) | **Category**: Known Issue (historical)
 
-Documents bug where AdaptiveColumns in an AdaptiveColumnSet have inconsistent heights instead of matching the tallest column. Needs verification if still current.
+Documents a now-**fixed** bug where AdaptiveColumns in an AdaptiveColumnSet had inconsistent heights instead of matching the tallest column. Fix (`IntrinsicHeight` + `CrossAxisAlignment.stretch`) verified by `test/column_height_test.dart`; kept for historical reference.
 
 ---
 
