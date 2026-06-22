@@ -4,6 +4,8 @@
 # transient docs used to drive AI code generation
 .requirements/
 .agents/brain/
+# draw.io temporary backup files
+**/.$*.bkp
 
 # Partially from https://github.com/flutter/flutter/blob/master/packages/flutter_tools/templates/app/.gitignore.tmpl
 # from https://github.com/github/gitignore/blob/main/Flutter.gitignore

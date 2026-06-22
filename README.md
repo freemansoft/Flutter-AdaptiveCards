@@ -2,12 +2,17 @@
 
 This project is a Flutter implementation of the Adaptive Cards specification. The Adaptive Cards project was originally developed by Microsoft and is now an open source project. You can find more information about Adaptive Cards at <https://adaptivecards.io/>. This particular implementation is a fork of the original project that was created to add support for Flutter. This project is not affiliated with Microsoft. The project was originally created by Neohelden.
 
+## Major Components
+
+![Major components of the Flutter Adaptive Cards repository](docs/Major-Components.draio.png) _a draw.io editable png_
+
 ## About Adaptive Cards
 
 Adaptive Cards is a way of implementing Server Driven UI (SDUI) using a JSON based schema to deliver user interfaces specifications across platforms.
 
 1. See the [AdaptiveCards Getting Started](/packages/flutter_adaptive_cards_fs/README.md) page for more information about the core AdaptiveCards library.
-2. See the [AdaptiveTemplating Getting Started](/packages/flutter_adaptive_template_fs/) for more info about the templating library that can sit in front of adaptive cards.
+2. See the [Adaptive Charts Getting Started](/packages/flutter_adaptive_charts_fs/README.md) page for more information about the charts library that can be used with adaptive cards.
+3. See the [AdaptiveTemplating Getting Started](/packages/flutter_adaptive_template_fs/README.md) for more info about the templating library that can sit in front of adaptive cards.
 
 ## GitHub notes
 
