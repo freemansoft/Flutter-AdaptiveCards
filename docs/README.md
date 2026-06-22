@@ -7,6 +7,7 @@ This directory contains design documents, implementation guides, and architectur
 - **Documentation scope** (packages vs widgetbook samples): [documentation-scope.md](./documentation-scope.md)
 - **Widgetbook overlay demos** (sample program): [widgetbook-overlay-demos.md](./widgetbook-overlay-demos.md)
 - **Cursor and Antigravity created plans** copied from ~/.cursor/plans : [plans](/docs/plans/) (superseded duplicates in [archive/plans](/docs/archive/plans/))
+- **Copilot created plans** _no documentation exists at this time_
 - **Superpowers created specs** [specs](/docs/superpowers/specs/) (implemented duplicates in [archive/specs](/docs/archive/specs/))
 - **AI / LLM agents**: [AI-Agent-Support.md](/docs/AI-Agent-Support.md)
 - **Main Project**: [Repository README](/README.md)
@@ -87,7 +88,15 @@ Invoke round-trips with **`flutter_adaptive_cards_host_fs`** — request/respons
 
 **Status**: ✅ Current | **Category**: Architecture
 
-Riverpod scopes, document notifier, cached baseline on rebuild, **baseline + overlay** model, [overlay test coverage](./reactive-riverpod.md#overlay-test-coverage), visibility (`isVisible`), and reactive inputs, TextBlock text, validation, action `isEnabled`, show-card UI, and submit/reset without mutating host JSON.
+Riverpod scopes, document notifier, cached baseline on rebuild, **baseline + overlay** model, visibility, submit/reset without mutating host JSON. Per-type patch keys: [overlay-properties-by-type.md](./overlay-properties-by-type.md).
+
+---
+
+### [overlay-properties-by-type.md](./overlay-properties-by-type.md)
+
+**Status**: ✅ Current | **Category**: Reference
+
+Host index of runtime patch keys (`applyUpdates`, `applyUpdatesFromMap`) by JSON `type` — which overlays affect UI, typed helpers, and contract tests.
 
 ---
 
@@ -111,9 +120,9 @@ Guide for Flutter Form-based input implementation. Documents runtime **baseline 
 
 ### [backgroundImage.md](./backgroundImage.md)
 
-**Status**: ⚠️ Needs Verification | **Category**: Implementation Guide
+**Status**: ✅ Current | **Category**: Implementation Guide
 
-Describes support for `backgroundImage` in both string (URL) and object (URL + fillMode) forms. Needs verification that both forms are implemented.
+Describes support for `backgroundImage` in both string (URL) and object (URL + fillMode) forms. Both forms are implemented (`resolveBackgroundImage` in `adaptive_mixins.dart`) and tested (`test/elements/background_image_test.dart`).
 
 ---
 
@@ -171,9 +180,9 @@ Riverpod document **overlay** tests (notifier unit tests + widget integration) a
 
 ### [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md)
 
-**Status**: ⚠️ Documents Bug | **Category**: Known Issue
+**Status**: ✅ Current (documents fixed bug) | **Category**: Known Issue (historical)
 
-Documents bug where AdaptiveColumns in an AdaptiveColumnSet have inconsistent heights instead of matching the tallest column. Needs verification if still current.
+Documents a now-**fixed** bug where AdaptiveColumns in an AdaptiveColumnSet had inconsistent heights instead of matching the tallest column. Fix (`IntrinsicHeight` + `CrossAxisAlignment.stretch`) verified by `test/column_height_test.dart`; kept for historical reference.
 
 ---
 

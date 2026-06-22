@@ -2,6 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Layout variants supported by [AdaptiveBarChart] for Adaptive Card bar chart types.
 ///
@@ -45,7 +47,7 @@ BarChartAlignment _toFlChartAlignment(BarChartAlignmentToken token) {
 /// `Chart.VerticalBar`, `Chart.HorizontalBar`, and grouped or stacked variants.
 /// Uses [AdaptiveElementWidgetMixin] for element identity and is wrapped in
 /// [SeparatorElement] for card layout and spacing.
-class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveBarChart extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a bar chart element from [adaptiveMap] with the given [type].
   AdaptiveBarChart({
     required this.adaptiveMap,
@@ -67,8 +69,12 @@ class AdaptiveBarChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveBarChart]; parses JSON data and builds the fl_chart widget.
-class AdaptiveBarChartState extends State<AdaptiveBarChart>
-    with AdaptiveElementMixin, ProviderScopeMixin {
+class AdaptiveBarChartState extends ConsumerState<AdaptiveBarChart>
+    with
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin,
+        ChartOverlayMixin {
   /// Parsed bar groups passed to the underlying [BarChart].
   late List<BarChartGroupData> barGroups;
 
@@ -89,24 +95,24 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
   List<ChartLegendEntry> _legendEntries = [];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void onResolvedChartChanged() {
     _parseData();
   }
 
   void _parseData() {
+    final map = resolvedChartMap;
     final layout = styleResolver.resolveBarChartLayout();
-    final colorSet = adaptiveMap['colorSet']?.toString();
+    final colorSet = map['colorSet']?.toString();
     final palette = styleResolver.resolveChartPalette(colorSet: colorSet);
 
-    _chartTitle = adaptiveMap['title']?.toString();
-    _xAxisTitle = adaptiveMap['xAxisTitle']?.toString();
-    _yAxisTitle = adaptiveMap['yAxisTitle']?.toString();
-    _showBarValues = adaptiveMap['showBarValues'] as bool? ?? false;
-    _showLegend = adaptiveMap['showLegend'] as bool? ?? false;
+    _chartTitle = map['title']?.toString();
+    _xAxisTitle = map['xAxisTitle']?.toString();
+    _yAxisTitle = map['yAxisTitle']?.toString();
+    _showBarValues = map['showBarValues'] as bool? ?? false;
+    _showLegend = map['showLegend'] as bool? ?? false;
     _legendEntries = [];
 
-    final data = adaptiveMap['data'];
+    final data = map['data'];
     barGroups = [];
     xLabels = [];
     barValueLabels = [];
@@ -117,12 +123,12 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
     final bool isStacked =
         widget.type == BarChartType.horizontalStacked ||
         (widget.type == BarChartType.verticalGrouped &&
-            adaptiveMap['stacked'] == true);
+            map['stacked'] == true);
     final bool isGrouped =
         widget.type == BarChartType.verticalGrouped &&
-        (!adaptiveMap.containsKey('stacked') ||
-            adaptiveMap['stacked'] == null ||
-            adaptiveMap['stacked'] == false);
+        (!map.containsKey('stacked') ||
+            map['stacked'] == null ||
+            map['stacked'] == false);
 
     if (isStacked || isGrouped) {
       final Map<String, List<Map<String, dynamic>>> pivotData = {};
@@ -305,6 +311,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
 
   @override
   Widget build(BuildContext context) {
+    listenForChartOverlayChanges();
     final layout = styleResolver.resolveBarChartLayout();
     final bool isHorizontal =
         widget.type == BarChartType.horizontal ||
@@ -339,9 +346,11 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
       return Text(name, style: Theme.of(context).textTheme.labelSmall);
     }
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      child: ChartChrome(
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        child: ChartChrome(
         title: _chartTitle,
         legendEntries: _showLegend ? _legendEntries : const [],
         chart: SizedBox(
@@ -376,6 +385,7 @@ class AdaptiveBarChartState extends State<AdaptiveBarChart>
           ),
         ),
       ),
+    ),
     );
   }
 }

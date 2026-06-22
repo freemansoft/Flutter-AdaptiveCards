@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -43,8 +44,17 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
   bool _isUpdatingFromDocument = false;
   bool _initialValueSynced = false;
 
-  /// Maximum character count from `maxLength`.
-  late int maxLength;
+  /// Whether password characters are currently hidden (`style: password`).
+  ///
+  /// Flipped via `setState` when the reveal (eye-icon) toggle is tapped.
+  bool _obscure = true;
+
+  /// Maximum character count from `maxLength`, or `null` when absent.
+  ///
+  /// Per the Adaptive Cards spec, `maxLength` is optional. A `null` value (or
+  /// a value ≤ 0) means no limit is applied. The formatter is only installed
+  /// when this is a positive integer.
+  int? maxLength;
 
   /// Keyboard type derived from `style` (`tel`, `url`, `email`, etc.).
   TextInputType? inputStyle;
@@ -79,7 +89,7 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
   void didChangeDependencies() {
     super.didChangeDependencies();
     isMultiline = adaptiveMap['isMultiline'] as bool? ?? false;
-    maxLength = adaptiveMap['maxLength'] as int? ?? 20;
+    maxLength = adaptiveMap['maxLength'] as int?;
     inputStyle = resolveTextInputType(style);
 
     if (!_initialValueSynced) {
@@ -111,6 +121,16 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
   Widget build(BuildContext context) {
     listenForResolvedValueChanges();
     final input = watchResolvedInput();
+    final isPassword = input.style == 'password';
+    // Fall back to the fallback InputsConfig when the host provides none
+    // (matches the resolver fallback pattern, e.g. getFontSizesConfig).
+    final inputsConfig =
+        styleResolver.getInputsConfig() ?? FallbackConfigs.inputsConfig;
+    final revealEnabled =
+        input.revealPasswordEnabledOverride ??
+        inputsConfig.text.revealPasswordEnabled;
+    // Capture into a local so Dart flow analysis can promote the nullable field.
+    final effectiveMaxLength = maxLength;
 
     return Visibility(
       visible: isVisible,
@@ -132,9 +152,15 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
                 style: const TextStyle(),
                 controller: controller,
                 // maxLength: maxLength,
-                inputFormatters: [LengthLimitingTextInputFormatter(maxLength)],
+                inputFormatters: [
+                  if (effectiveMaxLength != null && effectiveMaxLength > 0)
+                    LengthLimitingTextInputFormatter(effectiveMaxLength),
+                ],
                 keyboardType: inputStyle,
-                maxLines: isMultiline ? null : 1,
+                obscureText: isPassword && _obscure,
+                enableSuggestions: !isPassword,
+                autocorrect: !isPassword,
+                maxLines: (isMultiline && !isPassword) ? null : 1,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
@@ -162,6 +188,28 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
                   hintText: input.placeholder,
                   // required or box will exist even though field is hidden or half height
                   hintStyle: const TextStyle(),
+                  suffixIcon: (isPassword && revealEnabled)
+                      ? IconButton(
+                          padding: EdgeInsets.zero,
+                          iconSize: 20,
+                          constraints: const BoxConstraints(
+                            maxHeight: 36,
+                            maxWidth: 36,
+                          ),
+                          icon: Icon(
+                            _obscure ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          // Library has no l10n/arb setup (intl is date-only),
+                          // so these accessibility labels are plain strings,
+                          // consistent with the rest of the package.
+                          tooltip: _obscure ? 'Show password' : 'Hide password',
+                          onPressed: () => setState(() => _obscure = !_obscure),
+                        )
+                      : null,
+                  suffixIconConstraints: const BoxConstraints(
+                    maxHeight: 36,
+                    maxWidth: 36,
+                  ),
                   errorStyle: const TextStyle(height: 0),
                 ),
                 validator: (value) {
@@ -230,6 +278,8 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
         return TextInputType.url;
       case 'email':
         return TextInputType.emailAddress;
+      case 'password':
+        return TextInputType.visiblePassword;
       default:
         return null;
     }

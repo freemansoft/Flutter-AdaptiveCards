@@ -42,6 +42,7 @@ The project's AI instructions are organized into two layers to keep context effi
 
 - **FVM:** Always prefix commands with `fvm` (e.g. `fvm flutter pub get`).
 - **Dev Dependencies:** Use `fvm flutter pub add dev:<package>`.
+- **Changelog:** Whenever any file under a `packages/<name>/` directory changes, add a bullet to the `## [Unreleased]` section of that package's `CHANGELOG.md` before marking work complete. See `adaptive-cards-monorepo-workspace` skill for format details.
 
 ## State management (`flutter_adaptive_cards_fs`)
 
@@ -58,11 +59,41 @@ When working in **`packages/flutter_adaptive_cards_fs`**:
 
 For **sample apps and `adaptive_explorer`**, use normal Flutter state patterns (`StatefulWidget`, etc.).
 
+## Optional extension packages (charts, host, templating)
+
+`flutter_adaptive_cards_fs` is the **lean core**. Optional capabilities live in sibling packages and are **injected at runtime** — the core must not depend on them.
+
+| Extension | Package | How hosts opt in |
+| --------- | ------- | ---------------- |
+| `Chart.*` elements + chart overlays | `flutter_adaptive_charts_fs` | `CardTypeRegistry(addedElements: CardChartsRegistry.additionalChartElements, overlayExtensions: CardChartsRegistry.overlayExtensions)` |
+| Templating | `flutter_adaptive_template_fs` | Expand JSON before render |
+| Backend invoke | `flutter_adaptive_cards_host_fs` | Wrap card with `AdaptiveCardBackendHandlers` |
+
+**When editing `flutter_adaptive_cards_fs`:**
+
+- **Do not** add chart-specific types, widgets, overlay fields, or merge logic (`chartData`, `Chart.*` branches, fl_chart imports, etc.).
+- **Do** use generic extension hooks (`ElementOverlayExtension`, `CardTypeRegistry.addedElements`, `CardTypeRegistry.overlayExtensions`, `patchExtensionOverlay`) so optional packages register behavior the same way chart widgets are registered.
+- **Do** put chart widgets, chart overlay extensions, and chart-only tests in `flutter_adaptive_charts_fs`.
+
+See [`docs/optional-packages-and-extensions.md`](docs/optional-packages-and-extensions.md) and **`adaptive-cards-monorepo-workspace`** / **`adaptive-cards-element-registry`** skills.
+
 ## Code Quality
 
 - **Naming:** `PascalCase` (classes), `camelCase` (members), `snake_case` (files).
 - **Functions:** Short (<20 lines) and single-purpose.
 - **Logging:** Use `dart:developer` `log` instead of `print`.
+
+## Git commit and push gate
+
+**Never commit or push without explicit user confirmation.**
+
+Before running any `git commit` or `git push` (including tag pushes):
+
+1. Show the full `git diff` (or `git diff --stat` for large change sets) of everything that will be committed.
+2. Summarize what the commit contains and why.
+3. Wait for the user to explicitly say to proceed before running the commit or push command.
+
+This rule applies even when the overall task description appears to authorize the full workflow (e.g. "tag and push a release"). A broad task description authorizes the *work*; each commit and push still requires a moment-of-action confirmation so the user can review before changes land in the shared repo.
 
 ## Plan completion gate
 
@@ -85,6 +116,20 @@ fvm flutter test --exclude-tags=golden
 ```
 
 If the plan touched other packages, run their suites too (`flutter_adaptive_template_fs`, `flutter_adaptive_charts_fs`, `flutter_adaptive_cards_host_fs`, etc.). See **`adaptive-cards-monorepo-workspace`** and **`adaptive-cards-testing`** skills for directory and tagging details.
+
+## Architecture documentation sync gate
+
+Canonical architecture docs under `docs/` describe how the library is wired and drift silently when code changes. **Before marking work complete**, when a change does any of the following, grep `docs/` for the affected symbols and update the canonical docs in the same change:
+
+- **Adds / removes / renames a Riverpod provider or `ProviderScope`** (including nested scopes), or changes which scope hosts a provider.
+- **Changes a mixin's reactive contract** (e.g. what `AdaptiveVisibilityMixin.isVisible` / `AdaptiveInputMixin` watch or how effective state is computed).
+- **Adds / removes / renames a HostConfig section**, element/action type, or overlay field, or changes an element's public contract.
+
+Procedure:
+
+1. `git grep -n '<old-or-new-symbol>' docs/` (also grep the human name, e.g. `CardWidthScope`, `cardWidthBucketProvider`, `targetWidth`).
+2. Update the matching canonical docs — most commonly [`docs/reactive-riverpod.md`](docs/reactive-riverpod.md) (provider scopes, overlay merge, visibility), [`docs/Architecture-Overview.md`](docs/Architecture-Overview.md) (scope diagram), [`docs/Implementation-Status.md`](docs/Implementation-Status.md) (feature status), and [`docs/hostconfig.md`](docs/hostconfig.md) (HostConfig sections). Keep mermaid diagrams in sync.
+3. A stale doc reference (e.g. a deleted class still named in `docs/`) is a blocker, not a nice-to-have. The **`code-review`** skill's "Documentation impact" check enforces this at the review gate.
 
 ## Documentation Philosophy
 

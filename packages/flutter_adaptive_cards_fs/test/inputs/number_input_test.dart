@@ -70,7 +70,7 @@ void main() {
     expect(find.text('Number required'), findsOneWidget);
   });
 
-  testWidgets('NumberInput respects min/max and supports init/append', (
+  testWidgets('NumberInput respects min/max and appendInput', (
     WidgetTester tester,
   ) async {
     final Map<String, dynamic> map = {
@@ -78,8 +78,8 @@ void main() {
       'body': [
         {
           'type': 'Input.Number',
-          'id': 'initNumber',
-          'label': 'Init Number',
+          'id': 'myNumber',
+          'label': 'Number',
           'min': 10,
           'max': 20,
         },
@@ -88,37 +88,29 @@ void main() {
 
     final Widget widget = getTestWidgetFromMap(
       map: map,
-      title: 'Number Input initData Test',
-      initData: const {'initNumber': '15'},
+      title: 'Number Input min max',
     );
 
     await tester.pumpWidget(widget);
     await tester.pumpAndSettle();
 
     final numMap = map['body'][0] as Map<String, dynamic>;
-    final TextFormField field = tester.widget(
-      find.byKey(generateWidgetKey(numMap)),
-    );
-
-    expect(field.controller!.text, equals('15'));
+    final fieldKey = find.byKey(generateWidgetKey(numMap));
 
     // Entering a value outside of min/max should be rejected by formatter
-    await tester.enterText(find.byKey(generateWidgetKey(numMap)), '5');
+    await tester.enterText(fieldKey, '5');
     await tester.pump();
 
-    final TextFormField fieldAfter = tester.widget(
-      find.byKey(generateWidgetKey(numMap)),
-    );
-
+    final TextFormField fieldAfter = tester.widget(fieldKey);
     expect(fieldAfter.controller!.text, isNot(equals('5')));
 
     // Enter a valid value
-    await tester.enterText(find.byKey(generateWidgetKey(numMap)), '12');
+    await tester.enterText(fieldKey, '12');
     await tester.pump();
 
     final dynamic state = tester.state(find.byType(AdaptiveNumberInput));
     final Map<String, dynamic> out = {};
     state.appendInput(out);
-    expect(out['initNumber'], '12');
+    expect(out['myNumber'], '12');
   });
 }

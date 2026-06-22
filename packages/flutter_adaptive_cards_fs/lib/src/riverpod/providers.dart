@@ -6,8 +6,10 @@ import 'package:flutter_adaptive_cards_fs/src/cards/adaptive_card_element.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/text_run.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/adaptive_card_document_notifier.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/show_card_ui_notifier.dart';
@@ -48,6 +50,18 @@ final styleReferenceResolverProvider = Provider<ReferenceResolver>(
   ),
 );
 
+/// Current card render-width [WidthBucket] for the surrounding card subtree.
+///
+/// Published by a thin nested `ProviderScope` inside the root `LayoutBuilder` in
+/// [AdaptiveCardElement] (overridden via `overrideWithValue`), which only
+/// notifies watchers when the measured bucket actually changes. Elements read it
+/// (`ref.watch`) to gate `targetWidth` visibility and select `layouts`
+/// (`Layout.Flow`). Defaults to [WidthBucket.wide] when no override is present so
+/// an isolated subtree degrades to showing everything / the widest layout
+/// (fail-open), matching responsive-layout semantics.
+final cardWidthBucketProvider = Provider<WidthBucket>(
+  (ref) => WidthBucket.wide,
+);
 /// Deep-copied card JSON baseline for the current raw-card scope.
 final baselineMapProvider = Provider<Map<String, dynamic>>(
   (ref) => throw UnimplementedError('baselineMapProvider override missing'),
@@ -70,6 +84,7 @@ final Provider<Map<String, dynamic>?> Function(String id)
 resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
   (ref, id) {
     final doc = ref.watch(adaptiveCardDocumentProvider);
+    final registry = ref.watch(cardTypeRegistryProvider);
     final baselineNode = doc.nodesById[id];
     if (baselineNode == null) return null;
     final overlay = doc.overlaysById[id];
@@ -86,6 +101,9 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
     if (overlay?.facts != null) {
       merged['facts'] = factsToJsonList(overlay!.facts!);
     }
+    if (overlay?.inlines != null) {
+      merged['inlines'] = inlinesToJsonList(overlay!.inlines!);
+    }
     if (overlay?.errorMessage != null) {
       merged['errorMessage'] = overlay!.errorMessage;
     }
@@ -98,8 +116,29 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
     if (overlay?.isRequired != null) {
       merged['isRequired'] = overlay!.isRequired;
     }
+    if (overlay?.revealPasswordEnabled != null) {
+      merged['revealPasswordEnabled'] = overlay!.revealPasswordEnabled;
+    }
     if (overlay?.url != null) {
-      merged['url'] = overlay!.url;
+      final type = merged['type'] as String?;
+      if (type == 'Media') {
+        final rawSources = merged['sources'];
+        final List<Map<String, dynamic>> sources;
+        if (rawSources is List && rawSources.isNotEmpty) {
+          sources = rawSources
+              .map((entry) => Map<String, dynamic>.from(entry as Map))
+              .toList();
+          sources[0] = Map<String, dynamic>.from(sources[0])
+            ..['url'] = overlay!.url;
+        } else {
+          sources = [
+            {'url': overlay!.url},
+          ];
+        }
+        merged['sources'] = sources;
+      } else {
+        merged['url'] = overlay!.url;
+      }
     }
     if (overlay?.label != null) {
       merged['label'] = overlay!.label;
@@ -121,6 +160,16 @@ resolvedElementProvider = Provider.family<Map<String, dynamic>?, String>(
         choicesData['skip'] = overlay.querySkip;
       }
       merged['choices.data'] = choicesData;
+    }
+    final elementType = merged['type']?.toString() ?? '';
+    final extensionPayloads = overlay?.extensionPayloads;
+    if (extensionPayloads != null) {
+      for (final extension in registry.overlayExtensions.extensions) {
+        if (!extension.appliesTo(elementType)) continue;
+        final payload = extensionPayloads[extension.id];
+        if (payload == null || payload.isEmpty) continue;
+        extension.mergeResolved(merged, payload);
+      }
     }
     return merged;
   },
@@ -146,6 +195,9 @@ resolvedActionProvider = Provider.family<Map<String, dynamic>?, String>(
     }
     if (overlay?.tooltip != null) {
       merged['tooltip'] = overlay!.tooltip;
+    }
+    if (overlay?.iconUrl != null) {
+      merged['iconUrl'] = overlay!.iconUrl;
     }
     return merged;
   },

@@ -1,0 +1,20 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Input.Rating overlay demo",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "Input.Rating",
+      "id": "demoRating",
+      "label": "How was your experience?",
+      "max": 5,
+      "value": 0,
+      "isRequired": false
+    }
+  ]
+}

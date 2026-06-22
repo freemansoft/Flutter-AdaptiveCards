@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_flow_layout.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/layout_selection.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Container.html
 ///
 /// Renders a `Container` that vertically stacks `items` with optional
 /// background, spacing, and `minHeight`.
-class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveContainer extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `Container` element from [adaptiveMap].
   AdaptiveContainer({
     required this.adaptiveMap,
@@ -27,7 +31,7 @@ class AdaptiveContainer extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveContainer].
-class AdaptiveContainerState extends State<AdaptiveContainer>
+class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Vertical alignment of child items from `verticalContentAlignment`.
   late MainAxisAlignment verticalContentAlignment;
@@ -88,16 +92,29 @@ class AdaptiveContainerState extends State<AdaptiveContainer>
       containerChild =
           getBackgroundImageFromMap(adaptiveMap) ?? const SizedBox();
     } else {
+      final selected = selectLayout(
+        adaptiveMap['layouts'] as List<dynamic>?,
+        ref.watch(cardWidthBucketProvider),
+      );
+      final bool useFlow =
+          selected != null && selected['type'] == 'Layout.Flow';
+      final Widget itemsLayout = useFlow
+          ? AdaptiveFlowLayout(
+              layoutMap: selected,
+              styleResolver: styleResolver,
+              children: children,
+            )
+          : Column(
+              mainAxisAlignment: verticalContentAlignment,
+              children: children.toList(),
+            );
       containerChild = Padding(
         // padding: const EdgeInsets.symmetric(vertical: 8.0),
         padding: EdgeInsets.symmetric(
           vertical: spacing,
           horizontal: spacing,
         ),
-        child: Column(
-          mainAxisAlignment: verticalContentAlignment,
-          children: children.toList(),
-        ),
+        child: itemsLayout,
       );
     }
 

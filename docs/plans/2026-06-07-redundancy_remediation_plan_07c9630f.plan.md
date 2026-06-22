@@ -18,11 +18,11 @@ todos:
     content: "Done: AGENTS.md doc paths (6.1) + monorepo skill dependency graph (6.2)"
     status: completed
   - id: phase4-assets
-    content: "PR4: Canonicalize v1.6 JSON fixtures; consolidate Roboto fonts into test_support assets + rootBundle loading; delete cards/charts font trees"
-    status: pending
-  - id: phase5-apps
-    content: "PR5: Widgetbook chart registry + overlay helpers (5.1–5.2 pending); adaptive_explorer README charts claim fixed (5.3 done)"
+    content: "PR4: Canonicalize JSON fixtures across versions (§4.1 pending); Roboto fonts consolidated in test_support (§4.2 done, merged #27/#28)"
     status: in_progress
+  - id: phase5-apps
+    content: "PR5: Widgetbook chart registry (§5.1 done) + overlay scaffold (§5.2 done); explorer README (§5.3 done); widgetbook CHANGELOG + overlay-demos doc updated"
+    status: completed
   - id: phase6-ci
     content: "PR6 (optional): CI matrix for packages, add flutter analyze, align artifact actions, consider widgetbook tests"
     status: pending
@@ -39,14 +39,17 @@ isProject: false
 | **2** Lib consolidation | **Done** | `parseIsVisible`, `parseHostConfigColor`, merged `isVisible` tests |
 | **3** Test infrastructure (Option A) | **Done** | [`flutter_adaptive_cards_test_support`](packages/flutter_adaptive_cards_test_support/) created; cards + template migrated; charts goldens passing (registry wiring fix) |
 | **6.1–6.2** Docs/skills | **Done** | [`AGENTS.md`](AGENTS.md) paths fixed; monorepo skill dependency graph corrected |
-| **4** Fixtures/fonts | Pending | v1.6 JSON still triplicated; Roboto trees still duplicated |
-| **5** Widgetbook/explorer | **Partial** | §5.3 explorer README fixed; §5.1–5.2 widgetbook helpers pending |
+| **4** Fixtures/fonts | **Partial** | §4.2 Roboto fonts consolidated in test_support (~10 MB saved, merged #27/#28); §4.1 JSON still triplicated across versions |
+| **5** Widgetbook/explorer | **Done** | §5.1 [`widgetbook_card_registry.dart`](../../widgetbook/lib/widgetbook_card_registry.dart); §5.2 [`overlay_demo_scaffold.dart`](../../widgetbook/lib/overlay_demo_scaffold.dart); §5.3 explorer README; docs/skill updated |
 | **6.3–6.4** | **Out of scope** | README boilerplate + generic skills dedup (explicit decision) |
 | **7** CI | Pending | Optional matrix + analyze step |
 
 **Verification (latest):**
 
 ```text
+fvm flutter analyze  (widgetbook)
+→ No issues found
+
 fvm flutter analyze packages/flutter_adaptive_cards_test_support packages/flutter_adaptive_cards_fs packages/flutter_adaptive_charts_fs
 → No issues found
 
@@ -60,11 +63,11 @@ fvm flutter test test/golden_v1_6_test.dart  (flutter_adaptive_charts_fs)
 → 7 golden tests passed (no RenderFlex overflow)
 ```
 
-**Charts golden follow-up — resolved:** Failures were caused by calling shared `getV16SampleForGoldenTest`, which uses the default `CardTypeRegistry` (no `Chart.*` types). Unregistered chart elements rendered as debug `ErrorWidget`s (~99k px overflow in the card `Column`). Fix: route chart goldens through charts-local `getTestWidgetFromPath` / `getSampleForGoldenTest`, which injects `CardChartsRegistry`. See [`fix_charts_golden_overflow_6a03dce2.plan.md`](/Users/joefreeman/.cursor/plans/fix_charts_golden_overflow_6a03dce2.plan.md) for root-cause analysis.
+**Charts golden follow-up — resolved:** Failures were caused by calling shared `getV16SampleForGoldenTest`, which uses the default `CardTypeRegistry` (no `Chart.*` types). Unregistered chart elements rendered as debug `ErrorWidget`s (~99k px overflow in the card `Column`). Fix: route chart goldens through charts-local `getChartTestWidgetFromPath` / `getChartSampleForGoldenTest`, which injects `CardChartsRegistry`.
 
-**Optional Phase 3 polish (non-blocking):** Migrate charts `test_utils.dart` to a thin test_support wrapper **only if** golden tests use a charts-specific helper (e.g. `getChartV16SampleForGoldenTest`) and `getV16SampleForGoldenTest` is hidden from the charts re-export.
+**Optional Phase 3 polish (non-blocking):** Hide `getV16SampleForGoldenTest` from charts re-export to prevent regression. Template tools (`generate_example_outputs.dart` / `fix_outputs.dart`) still duplicate expand logic.
 
-**Uncommitted work:** Phases 1–3 and §6.1–6.2 changes are in the working tree (not yet committed/PR’d). Charts package remains on committed test harness (local `getSampleForGoldenTest` + mockito); cards/template use test_support. Suggested split: PR1+2, PR3+6.1–6.2, then PR4–PR6.
+**Remaining work:** §4.1 JSON fixture canonicalization (all versions, not just v1.6); Phase 7 CI (optional). Phases 1–3, §4.2, §5, and §6.1–6.2 are merged or ready to PR (widgetbook §5.1–5.2 may be uncommitted in working tree).
 
 ---
 
@@ -75,10 +78,10 @@ The monorepo’s **package boundaries are sound** (`flutter_adaptive_cards_fs`, 
 - ~~**Dead legacy source files** and **unused pubspec deps**~~ (Phase 1 done)
 - ~~**Copy-pasted test harness** across cards + charts~~ (Phase 3 done via test support package)
 - ~~**Triplicated HostConfig color parsing**~~ (Phase 2 done)
-- **Triplicated v1.6 JSON fixtures** (cards tests, charts tests, widgetbook) — Phase 4
-- **Duplicated font assets** (~10 MB Roboto trees in cards + charts; consolidate into test_support — §4.2)
-- **Boilerplate in widgetbook** (chart registry wiring, overlay-retry pages) — Phase 5
-- ~~**Documentation / skill path drift** (`doc/` vs `docs/`, stale skill references)~~ (§6.1–6.2 done)
+- **Triplicated sample JSON fixtures** (cards tests, charts tests, widgetbook) across versions — Phase 4 §4.1
+- ~~**Duplicated font assets** (~10 MB Roboto trees in cards + charts)~~ (§4.2 done — single copy in test_support)
+- ~~**Boilerplate in widgetbook** (chart registry wiring, overlay-retry pages)~~ (Phase 5 done)
+- ~~**Documentation / skill path drift** (`doc/` vs `docs/`, stale skill references)~~ (§6.1–6.2 done; overlay-demos doc updated for §5.2)
 
 ```mermaid
 flowchart TB
@@ -90,21 +93,22 @@ flowchart TB
   subgraph done [Addressed]
     testSupport[flutter_adaptive_cards_test_support]
     parseColor[parseHostConfigColor unified]
+    widgetbookRegistry[widgetbook_card_registry]
+    overlayScaffold[overlay_demo_scaffold]
+    fontsOnce[test_support Roboto assets]
   end
   subgraph remaining [Still duplicated]
-    fonts[Roboto assets x2 cwd File load]
-    fixtures[v1.6 JSON x3]
+    fixtures[v1.x JSON x3]
   end
-  subgraph phase4target [Phase 4 target]
-    fontsOnce[test_support assets plus rootBundle]
-  end
-  fonts --> phase4target
+  testSupport --> fontsOnce
   testSupport --> cards
   testSupport --> charts
   charts --> cards
   fixtures --> cards
   fixtures --> charts
   fixtures --> widgetbook[widgetbook]
+  widgetbookRegistry --> widgetbook
+  overlayScaffold --> widgetbook
 ```
 
 ---
@@ -150,7 +154,7 @@ Unpublished workspace package ([`README.md`](packages/flutter_adaptive_cards_tes
 **Consumers:**
 
 - [`flutter_adaptive_cards_fs/test/utils/test_utils.dart`](packages/flutter_adaptive_cards_fs/test/utils/test_utils.dart) — re-exports test support; goldens use `getV16SampleForGoldenTest` (default registry includes built-in v1.6 elements)
-- [`flutter_adaptive_charts_fs/test/utils/test_utils.dart`](packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart) — **still local** (mockito HTTP mocks + `CardChartsRegistry` in `getTestWidgetFromMap`); goldens use local `getSampleForGoldenTest` → `getTestWidgetFromPath` (**not** shared `getV16SampleForGoldenTest`)
+- [`flutter_adaptive_charts_fs/test/utils/test_utils.dart`](packages/flutter_adaptive_charts_fs/test/utils/test_utils.dart) — thin wrapper: `chartCardTypeRegistry`, `getChartTestWidgetFromPath`, `getChartSampleForGoldenTest` (re-exports test_support; **not** shared `getV16SampleForGoldenTest` for goldens)
 - Cards [`flutter_test_config.dart`](packages/flutter_adaptive_cards_fs/test/flutter_test_config.dart) delegates to `adaptiveCardsTestExecutable`
 - Charts golden tests: all 7 passing after registry wiring fix
 
@@ -158,7 +162,7 @@ Unpublished workspace package ([`README.md`](packages/flutter_adaptive_cards_tes
 
 - Exported [`InheritedAdaptiveCardHandlers`](packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart) from [`flutter_adaptive_cards_fs.dart`](packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart) (avoids `implementation_imports` in test support)
 - Added to root workspace [`pubspec.yaml`](pubspec.yaml)
-- **Charts:** golden registry wiring documented; `mockito` removal deferred until charts migrates to test_support wrapper safely
+- **Charts:** `mockito` removed; golden registry wiring via `chartCardTypeRegistry`
 
 ### Template package test dedup ✅
 
@@ -171,45 +175,100 @@ Unpublished workspace package ([`README.md`](packages/flutter_adaptive_cards_tes
 
 ### Remaining (Phase 3 polish, lower priority)
 
-- **Charts test_support migration:** optional thin wrapper + `getChartV16SampleForGoldenTest`; hide `getV16SampleForGoldenTest` from charts re-export to prevent regression
+- **Charts re-export:** hide `getV16SampleForGoldenTest` from charts `test_utils.dart` re-export to prevent regression
 - **Template tools:** `tool/generate_example_outputs.dart` / `tool/fix_outputs.dart` still duplicate expand logic
 
 ---
 
-## Phase 4 — Fixture & asset deduplication (~1 PR) — Pending
+## Phase 4 — Fixture & asset deduplication (~1 PR) — Partial (§4.2 done)
 
-### 4.1 v1.6 sample JSON (triplicated)
+### 4.1 Sample JSON fixtures across versions (triplicated) — Pending
 
-Canonical copies still exist in:
+Canonical copies still exist in (for each `v*` sample directory):
 
-- `packages/flutter_adaptive_cards_fs/test/samples/v1.6/`
-- `packages/flutter_adaptive_charts_fs/test/samples/v1.6/`
-- `widgetbook/lib/samples/v1.6/`
+- `packages/flutter_adaptive_cards_fs/test/samples/v*/`
+- `packages/flutter_adaptive_charts_fs/test/samples/v*/`
+- `widgetbook/lib/samples/v*/`
 
-**Recommended approach:** Create `fixtures/adaptive_card_samples/v1.6/` at repo root (or under cards as canonical). Add `tool/sync_samples.dart` or CI drift check.
+#### 4.1.0 Widgetbook renames for “same filename, different JSON” (Pending)
 
-### 4.2 Duplicated Roboto font assets
+Some widgetbook JSON files share the same filename (e.g. `rating.json`, `progress_bar.json`, and certain chart samples) with canonical cards/charts fixtures, but the widgetbook variants are intentionally different. Centralizing fixtures blindly can create ambiguity and accidental reference drift.
 
-#### Current state
+**Rename rule (deterministic):**
+
+- If the widgetbook file is byte-identical to the canonical copy: keep the shared filename.
+- If the widgetbook file has the same basename but different JSON bytes: rename the widgetbook file to include a suffix:
+  - Prefer `_enriched` when the widgetbook version adds extra fields/UX affordances.
+  - Prefer `_2` (or `_3`, etc.) when the widgetbook version is the second distinct variant of the same conceptual sample.
+  - Any suffix is acceptable as long as it is consistent, discoverable, and updated everywhere widgetbook references it.
+
+**Implementation tasks:**
+
+1. Add/extend a small drift-detection tool (e.g. `tool/check_widgetbook_json_collisions.dart`) that:
+   - Finds basenames that exist in both `widgetbook/lib/samples/v*/` and the canonical candidates (`packages/flutter_adaptive_cards_fs/test/samples/v*/` and `packages/flutter_adaptive_charts_fs/test/samples/v*/`).
+   - Compares byte hashes and emits “identical” vs “different” collisions.
+2. For “different” collisions, rename files in `widgetbook/lib/samples/v*/` using the rule above.
+3. Update widgetbook references to renamed assets:
+   - `widgetbook/lib/adaptive_cards_use_cases.dart` (the `url: 'lib/samples/v*/...'` strings)
+   - any overlay/demo pages with hard-coded sample paths (e.g. `_assetPath` constants in `widgetbook/lib/*_page.dart`)
+   - any other direct asset references (including chart knob/demo pages)
+4. Update `widgetbook/pubspec.yaml` assets entries if needed (renamed `lib/samples/v*/**/*.json` should still be covered).
+
+#### 4.1.1 Canonicalize sample JSON fixtures (Pending)
+
+**Recommended approach:** Create `fixtures/adaptive_card_samples/v*/` at repo root (or under cards as canonical). Add `tool/sync_samples.dart` or CI drift check so canonical JSON is copied/kept in sync across consumers.
+
+### 4.2 Duplicated Roboto font assets ✅ Complete
+
+#### Implemented (2026-06)
+
+| Location | Status |
+|----------|--------|
+| [`packages/flutter_adaptive_cards_test_support/assets/fonts/Roboto/`](packages/flutter_adaptive_cards_test_support/assets/fonts/Roboto/) | **Canonical** — 10 `.ttf` faces + `LICENSE.txt` (~1.4 MB) |
+| [`packages/flutter_adaptive_cards_fs/assets/fonts/`](packages/flutter_adaptive_cards_fs/assets/fonts/) | **Deleted** |
+| [`packages/flutter_adaptive_charts_fs/assets/fonts/`](packages/flutter_adaptive_charts_fs/assets/fonts/) | **Deleted** (was byte-identical copy) |
+
+**Migration approach:** `git mv` of the 10 loaded faces from cards → test_support (preserves git history on those paths); `git rm` of charts duplicate tree and unused variants (`material_fonts/`, italic/black faces).
+
+**`loadAdaptiveCardsTestFonts()`:** Removed cwd-relative `fontsRoot` parameter. Fonts resolve via [`package_config`](https://pub.dev/packages/package_config) to the test_support package root, then load with `FontLoader` + `File`. This works while test_support remains a **dev_dependency** (dev-dependency assets are not merged into the Flutter test asset bundle, so `rootBundle.load('packages/flutter_adaptive_cards_test_support/...')` alone fails).
+
+**Also added:** `flutter: assets:` entries in test_support `pubspec.yaml`; [`tool/check_no_duplicate_fonts.sh`](tool/check_no_duplicate_fonts.sh) CI guard.
+
+**Verification (2026-06):**
+
+```text
+cd packages/flutter_adaptive_cards_fs && fvm flutter test --tags=golden   # 19 passed
+cd packages/flutter_adaptive_charts_fs && fvm flutter test --tags=golden  # 8 passed
+tool/check_no_duplicate_fonts.sh                                          # OK
+```
+
+No golden PNG regeneration required (same font bytes).
+
+#### Original plan notes (archived)
+
+<details>
+<summary>Pre-migration state and design options</summary>
+
+#### Former state
 
 | Location | Size | Used by |
 |----------|------|---------|
 | [`packages/flutter_adaptive_cards_fs/assets/fonts/`](packages/flutter_adaptive_cards_fs/assets/fonts/) | ~5.2 MB | Golden/widget tests (via `File('assets/fonts/Roboto/...')`) |
 | [`packages/flutter_adaptive_charts_fs/assets/fonts/`](packages/flutter_adaptive_charts_fs/assets/fonts/) | ~5.2 MB | **Byte-identical copy** for charts golden tests |
 
-Phase 3 centralized **loading** in [`loadAdaptiveCardsTestFonts()`](packages/flutter_adaptive_cards_test_support/lib/src/flutter_test_config.dart), but each package still keeps its own on-disk tree because loading uses a **cwd-relative** path:
+Phase 3 centralized **loading** in [`loadAdaptiveCardsTestFonts()`](packages/flutter_adaptive_cards_test_support/lib/src/flutter_test_config.dart), but each package still kept its own on-disk tree because loading used a **cwd-relative** path:
 
 ```dart
 File('assets/fonts/Roboto/Roboto-Regular.ttf')  // resolves per package when `flutter test` runs
 ```
 
-Neither library `pubspec.yaml` declares these as Flutter `assets:` — they exist only for test `File` I/O. HostConfig maps font names to `'Roboto'` (see [`code_block.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/elements/code_block.dart)); golden tests must register that family via `FontLoader` or text metrics drift across platforms.
+Neither library `pubspec.yaml` declared these as Flutter `assets:` — they existed only for test `File` I/O. HostConfig maps font names to `'Roboto'` (see [`code_block.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/elements/code_block.dart)); golden tests must register that family via `FontLoader` or text metrics drift across platforms.
 
-**Subset actually loaded:** test support loads **10** files (Regular/Bold/Light/Medium/Thin + RobotoMono variants). Each package tree contains **22** `.ttf` files plus unused `material_fonts/` / `material_symbols_outlined/` subtrees (commented out in the old config).
+**Subset actually loaded:** test support loads **10** files (Regular/Bold/Light/Medium/Thin + RobotoMono variants). Each package tree contained **22** `.ttf` files plus unused `material_fonts/` / `material_symbols_outlined/` subtrees (commented out in the old config).
 
 #### Recommended approach: single copy in `flutter_adaptive_cards_test_support`
 
-Store fonts once in the test-support package and load via **`rootBundle`**, not `File`. Dependency-package assets are available in widget tests when declared in the **owning** package’s `pubspec.yaml`.
+Store fonts once in the test-support package. Original plan preferred **`rootBundle`**; implementation uses **package_config + File** because test_support is a dev_dependency.
 
 ```text
 packages/flutter_adaptive_cards_test_support/
@@ -221,34 +280,9 @@ packages/flutter_adaptive_cards_test_support/
   lib/src/flutter_test_config.dart
 ```
 
-**`loadAdaptiveCardsTestFonts()` changes:**
+</details>
 
-1. Remove the `fontsRoot` cwd parameter (or keep as optional override for experiments only).
-2. Load each face with:
-   ```dart
-   rootBundle.load('packages/flutter_adaptive_cards_test_support/assets/fonts/Roboto/$fileName')
-   ```
-3. Requires `TestWidgetsFlutterBinding.ensureInitialized()` before load (already true in `flutter test`).
-
-**Delete after migration:**
-
-- `packages/flutter_adaptive_charts_fs/assets/fonts/` (entire tree)
-- `packages/flutter_adaptive_cards_fs/assets/fonts/` (entire tree)
-
-**Update docs:**
-
-- [`packages/flutter_adaptive_cards_fs/README.md`](packages/flutter_adaptive_cards_fs/README.md) golden-test section — fonts live in test support, not cards package
-- [`packages/flutter_adaptive_cards_test_support/README.md`](packages/flutter_adaptive_cards_test_support/README.md) — document asset paths and `packages/…` bundle keys
-
-**Verification:**
-
-```bash
-cd packages/flutter_adaptive_cards_fs && fvm flutter test --tags=golden
-cd packages/flutter_adaptive_charts_fs && fvm flutter test --tags=golden
-# Expect no FileNotFoundError; golden PNGs may need regen if font paths changed (unlikely if same bytes)
-```
-
-#### Alternative approaches (not recommended unless constraints block Option A)
+#### Alternative approaches (not used)
 
 | Option | How | Pros | Cons |
 |--------|-----|------|------|
@@ -257,29 +291,42 @@ cd packages/flutter_adaptive_charts_fs && fvm flutter test --tags=golden
 | **D. Git symlinks** | `charts/assets/fonts` → `../flutter_adaptive_cards_fs/assets/fonts` | No duplicate bytes locally | Poor Windows/checkout support; easy to break |
 | **E. Trim only** | Delete charts copy; charts tests always run from cards path | Quick | Doesn’t fix duplication at source; charts CI must run from specific cwd |
 
-#### Migration checklist (Phase 4 PR)
+#### Migration checklist (Phase 4 PR) — §4.2 done
 
-1. Copy the **10 loaded** `.ttf` files into `flutter_adaptive_cards_test_support/assets/fonts/Roboto/`.
-2. Add `flutter: assets:` entries to [`packages/flutter_adaptive_cards_test_support/pubspec.yaml`](packages/flutter_adaptive_cards_test_support/pubspec.yaml).
-3. Refactor [`loadAdaptiveCardsTestFonts()`](packages/flutter_adaptive_cards_test_support/lib/src/flutter_test_config.dart) to use `rootBundle.load('packages/flutter_adaptive_cards_test_support/...')`.
-4. Remove `fontsRoot` from [`adaptiveCardsTestExecutable()`](packages/flutter_adaptive_cards_test_support/lib/src/flutter_test_config.dart) unless kept as debug override.
-5. Delete duplicate font trees from cards and charts packages.
-6. Run golden suites for cards + charts; commit regenerated goldens only if pixel diffs appear.
-7. Add a CI guard (optional): `tool/check_no_duplicate_fonts.sh` fails if `assets/fonts/Roboto/*.ttf` exists outside test_support.
+1. ~~Copy the **10 loaded** `.ttf` files into `flutter_adaptive_cards_test_support/assets/fonts/Roboto/`.~~ **Done** (`git mv` from cards)
+2. ~~Add `flutter: assets:` entries to test_support `pubspec.yaml`.~~ **Done**
+3. ~~Refactor `loadAdaptiveCardsTestFonts()` to resolve test_support package path (package_config + File; rootBundle blocked by dev_dependency).~~ **Done**
+4. ~~Remove `fontsRoot` from `adaptiveCardsTestExecutable()`.~~ **Done**
+5. ~~Delete duplicate font trees from cards and charts packages.~~ **Done**
+6. ~~Run golden suites for cards + charts.~~ **Done** — no PNG regen needed
+7. ~~Add CI guard: `tool/check_no_duplicate_fonts.sh`.~~ **Done**
 
-**Savings:** ~10 MB repo size (two ~5.2 MB trees → one ~2 MB subset of 10 files).
+**Savings:** ~10 MB repo checkout size (two ~5.2 MB trees → one ~1.4 MB subset of 10 files).
 
 ---
 
-## Phase 5 — Widgetbook & explorer cleanup (~1 PR) — Pending
+## Phase 5 — Widgetbook & explorer cleanup ✅ Complete
 
-### 5.1 Extract widgetbook helpers
+### 5.1 Extract widgetbook chart registry ✅
 
-Repeated `CardTypeRegistry(addedElements: CardChartsRegistry.additionalChartElements)` in 5 widgetbook pages.
+[`widgetbook/lib/widgetbook_card_registry.dart`](../../widgetbook/lib/widgetbook_card_registry.dart):
 
-### 5.2 Overlay demo scaffold
+- `widgetbookCardTypeRegistry` — chart elements (default for generic, network, chart knobs, dependent choice set, and non-chart-overlay pages)
+- `widgetbookChartOverlayCardTypeRegistry` — chart elements + `CardChartsRegistry.overlayExtensions` (chart overlay demo)
 
-Shared retry/apply overlay logic in `text_block_overlay_page.dart` and `fact_set_overlay_page.dart`.
+Replaced inline `CardTypeRegistry(addedElements: CardChartsRegistry…)` in 9 widgetbook consumers. `CardChartsRegistry` references now live only in the registry module.
+
+### 5.2 Overlay demo scaffold ✅
+
+[`widgetbook/lib/overlay_demo_scaffold.dart`](../../widgetbook/lib/overlay_demo_scaffold.dart) — `OverlayDemoPageState<T>` mixin:
+
+| API | Purpose |
+|-----|---------|
+| `loadOverlayCardAsset` | Bundle load; optional `injectIds` (text_block) |
+| `scheduleOverlayApply` / `runWhenCardReady` | Post-frame queue + 30-attempt retry until `documentContainer` ready |
+| `buildOverlayCard` | Loading spinner + `RawAdaptiveCard` shell |
+
+All five `*_overlay_page.dart` demos refactored; per-page knob sync and overlay apply logic remain in each page. [`docs/widgetbook-overlay-demos.md`](../widgetbook-overlay-demos.md) and widgetbook-overlay-demos skill updated.
 
 ### 5.3 Fix adaptive_explorer documentation drift ✅
 
@@ -328,12 +375,13 @@ Updated `doc/` → `docs/` links (`AdaptiveWidget-Key-Generation.md`, `form-inpu
 
 | PR | Contents | Status |
 |----|----------|--------|
-| **PR1** | Phase 1 | Ready to commit |
-| **PR2** | Phase 2 | Ready to commit |
-| **PR3** | Phase 3 + §6.1–6.2 + test-support README + lint fixes | Ready to commit (charts goldens verified passing) |
-| **PR4** | Phase 4 (fixtures + fonts) | Not started |
-| **PR5** | Phase 5 (widgetbook + explorer) | Not started |
-| **PR6** | Phase 7 (CI matrix) | Not started |
+| **PR1** | Phase 1 | **Merged** |
+| **PR2** | Phase 2 | **Merged** |
+| **PR3** | Phase 3 + §6.1–6.2 + test-support README | **Merged** |
+| **PR4a** | Phase 4 §4.2 fonts (#27, #28) | **Merged** |
+| **PR4b** | Phase 4 §4.1.0 + §4.1.1 JSON canonicalization (incl. widgetbook renames) | **Next** |
+| **PR5** | Phase 5 widgetbook registry + overlay scaffold + CHANGELOG | Ready to commit (if not yet PR’d) |
+| **PR6** | Phase 7 CI matrix | Not started |
 
 **Verification commands** (per AGENTS.md):
 
@@ -351,8 +399,9 @@ cd packages/flutter_adaptive_charts_fs && fvm flutter test test/golden_v1_6_test
 | Metric | Target | Current |
 |--------|--------|---------|
 | Duplicated test code consolidated | ~500+ lines | **Done** (test support package) |
-| Font duplication removed | ~10 MB → single ~2 MB subset in test_support | Pending — see §4.2 migration checklist |
-| JSON fixtures canonicalized | 27+ files | Pending (Phase 4) |
+| Font duplication removed | ~10 MB → single ~1.4 MB subset in test_support | **Done** (§4.2, #27/#28) |
+| Widgetbook registry/scaffold deduped | Single registry + overlay mixin | **Done** (§5.1–5.2) |
+| JSON fixtures canonicalized | 27+ files across v* versions | Pending (Phase 4 §4.1) |
 | Dead source files | 0 | **Done** |
 | AGENTS.md links resolve | Yes | **Done** |
-| Test regressions | None | Cards 360 ✓; template 94 ✓; charts golden 7/7 ✓ |
+| Test regressions | None | Cards 360 ✓; template 94 ✓; charts golden 7/7 ✓; widgetbook analyze ✓ |

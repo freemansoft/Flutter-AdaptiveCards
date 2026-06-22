@@ -56,22 +56,26 @@ class AdaptiveCardBackendHandlers {
   /// Wraps [child] with backend-connected [InheritedAdaptiveCardHandlers].
   ///
   /// Provide [onCardReplaced] when the backend may return a full card JSON
-  /// replacement.
+  /// replacement. Pass [cardValidator] to reject untrusted replacement cards
+  /// that fail a host-defined check before they render.
   Widget wrap(
     Widget child, {
     void Function(Map<String, dynamic> card)? onCardReplaced,
+    AdaptiveCardValidator? cardValidator,
   }) {
     return InheritedAdaptiveCardHandlers(
       onSubmit: (invoke) => unawaited(
         _handle(
           AdaptiveCardInvokeRequest.fromSubmit(invoke),
           onCardReplaced: onCardReplaced,
+          cardValidator: cardValidator,
         ),
       ),
       onExecute: (invoke) => unawaited(
         _handle(
           AdaptiveCardInvokeRequest.fromExecute(invoke),
           onCardReplaced: onCardReplaced,
+          cardValidator: cardValidator,
         ),
       ),
       onRefresh: (invoke) => unawaited(
@@ -84,6 +88,7 @@ class AdaptiveCardBackendHandlers {
             ),
           ),
           onCardReplaced: onCardReplaced,
+          cardValidator: cardValidator,
         ),
       ),
       onChange: (invoke) => unawaited(
@@ -91,6 +96,7 @@ class AdaptiveCardBackendHandlers {
           AdaptiveCardInvokeRequest.fromInputChange(invoke),
           cardState: invoke.cardState,
           onCardReplaced: onCardReplaced,
+          cardValidator: cardValidator,
         ),
       ),
       onOpenUrl: onOpenUrl ?? (_) {},
@@ -103,6 +109,7 @@ class AdaptiveCardBackendHandlers {
     AdaptiveCardInvokeRequest request, {
     RawAdaptiveCardState? cardState,
     void Function(Map<String, dynamic> card)? onCardReplaced,
+    AdaptiveCardValidator? cardValidator,
   }) async {
     final state = cardState ?? cardKey.currentState;
     if (state == null) {
@@ -119,7 +126,11 @@ class AdaptiveCardBackendHandlers {
     try {
       final body = requestAdapter(request);
       final json = await client.post(body);
-      responseParser(json).applyTo(state, onCardReplaced: onCardReplaced);
+      responseParser(json).applyTo(
+        state,
+        onCardReplaced: onCardReplaced,
+        cardValidator: cardValidator,
+      );
     } on Object catch (error, stackTrace) {
       onError?.call(error);
       assert(() {

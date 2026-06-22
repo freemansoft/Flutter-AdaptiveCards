@@ -4,6 +4,8 @@
 # transient docs used to drive AI code generation
 .requirements/
 .agents/brain/
+# generated symlink/junction — recreated by scripts/setup-claude.sh|ps1
+.claude/skills
 # draw.io temporary backup files
 **/.$*.bkp
 

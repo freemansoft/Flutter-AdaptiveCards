@@ -32,8 +32,10 @@ Use this skill for **Widgetbook demo plumbing** (GlobalKey, knob lifecycle, use-
 ## Shared checklist (summary)
 
 - Page-level `GlobalKey` passed from `adaptive_cards_use_cases.dart`
+- `OverlayDemoPageState` mixin from `widgetbook/lib/overlay_demo_scaffold.dart`
+- `widgetbookCardTypeRegistry` / `widgetbookChartOverlayCardTypeRegistry` from `widgetbook/lib/widgetbook_card_registry.dart`
 - Knobs read at top of `build()` before early returns
-- Post-frame apply queue with `_maxApplyAttempts` retry until `documentContainer` ready
+- Per-page `_queue…` + mixin `scheduleOverlayApply` / `runWhenCardReady` (30-attempt retry)
 - `_lastApplied…` dedup
 - Prefer public `flutter_adaptive_cards_fs` imports
 

@@ -3,7 +3,8 @@ name: adaptive-cards-element-registry
 description: >
   How to implement, register, and test a new Adaptive Card element type
   in this project. Covers the StatefulWidget + mixin pattern, CardTypeRegistry
-  registration, and extension API. Use this before adding any new card element.
+  registration, extension API, and optional packages (charts). Use this before
+  adding any new card element.
 ---
 
 # Adaptive Card Element Registry Skill
@@ -23,12 +24,13 @@ so the JSON parser can instantiate them by `"type"` string.
 Located in `lib/src/registry.dart`. Maps JSON `"type"` strings to element
 widgets via two mechanisms:
 
-| Method                                   | Purpose                                 |
-| ---------------------------------------- | --------------------------------------- |
-| `_getBaseElement()` / `_getBaseAction()` | Built-in elements (switch/case)         |
-| `addedElements: {}` constructor param    | Custom/override elements from host apps |
-| `addedActions: {}` constructor param     | Custom/override actions from host apps  |
-| `removedElements: []` constructor param  | Suppress specific element types         |
+| Method                                    | Purpose                                    |
+| ----------------------------------------- | ------------------------------------------ |
+| `_getBaseElement()` / `_getBaseAction()`  | Built-in elements (switch/case)            |
+| `addedElements: {}` constructor param     | Custom/override elements from host apps    |
+| `overlayExtensions: []` constructor param | Optional overlay merge hooks (e.g. charts) |
+| `addedActions: {}` constructor param      | Custom/override actions from host apps     |
+| `removedElements: []` constructor param   | Suppress specific element types            |
 
 ### `ActionTypeRegistry` — Action Handlers
 
@@ -190,11 +192,13 @@ Card JSON is deep-copied into a **baseline** at render time. Runtime changes (in
 
 **Submit / reset:** `collectInputValues()` and `resetAllInputs()` / `resetInput(id)` on the document notifier — do not walk the widget tree. Factory reset clears input overlays including **`label`**, **`placeholder`**, and **`isRequired`** (resolved → baseline); preserves input `isVisible` and typeahead session fields. See [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md#reset-semantics).
 
-Full detail: [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+Full detail: [`overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md), [`reactive-riverpod.md`](../../docs/reactive-riverpod.md).
 
 ---
 
 ## Overlay test coverage
+
+Host-facing **patch keys by JSON `type`**: [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md). **Programmatic lookup:** `CardTypeRegistry.overlayCapabilities` ([`overlay_capability_registry.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart)).
 
 ### Verdict
 
@@ -203,27 +207,19 @@ Full detail: [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md#how-ove
 | **Notifier + `resolvedElementProvider` / `resolvedActionProvider`** | High — [`adaptive_card_document_notifier_test.dart`](../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart) covers most `AdaptiveCardDocumentNotifier` APIs |
 | **Widget / host API per element or action type**                    | Partial — representative paths only; not every `Input.*` or `Action.*` has overlay-specific widget tests                                                                                               |
 
-**Enough** to guard the overlay model and primary host integration paths. **Not enough** to claim exhaustive per-type validation without adding tests listed under [Gaps](#gaps).
+Overlay fields: [`adaptive_card_document.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart). Merge: [`providers.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart).
 
-Overlay fields are defined in [`adaptive_card_document.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart). Merge logic lives in [`providers.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart).
+### Field-level notifier coverage
 
-### Element overlays
-
-| Field                        | Notifier tests | Widget / integration                                                                                                                                                     | Gap                                                           |
-| ---------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
-| `isVisible`                  | Yes            | [`is_visible_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart)                                                                    | —                                                             |
-| `inputValue`                 | Yes            | [`init_data_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/init_data_overlay_test.dart) (Text, Toggle, ChoiceSet)                              | Number, Date, Time, Rating — no overlay-specific widget tests |
-| `choices` / append           | Yes            | [`choice_set_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_overlay_test.dart)                                                      | —                                                             |
-| `queryCount` / `querySkip`   | Yes            | [`choice_set_data_query_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart)                                                | `querySearchText` — notifier only                             |
-| `errorMessage` / `isInvalid` | Yes            | [`input_error_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/inputs/input_error_overlay_test.dart) — Input.Text, Input.Number; host `clearInputError` | Date, Time, Rating                                            |
-| `text`                       | Yes            | [`text_block_text_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/elements/text_block_text_overlay_test.dart) — **TextBlock only**                     | Only element type using `text` overlay                        |
-
-### Action overlays
-
-| API                        | Notifier | Widget                                                                                                                                                                                                                                                                             | Gap                                       |
-| -------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| `setActionEnabled`         | Yes      | Submit: [`action_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/action_enabled_overlay_test.dart); ShowCard: [`show_card_enabled_overlay_test.dart`](../../packages/flutter_adaptive_cards_fs/test/actions/show_card_enabled_overlay_test.dart) | OpenUrl, Execute, other action types      |
-| `setActionsEnabled` (bulk) | Yes      | —                                                                                                                                                                                                                                                                                  | Widget test not required (notifier merge) |
+| Field                                  | Notifier | Example widget test                                               |
+| -------------------------------------- | -------- | ----------------------------------------------------------------- |
+| `isVisible`                            | Yes      | `visibility_overlay_test.dart`                                    |
+| `inputValue`                           | Yes      | `text_overlay_test.dart`, …                                       |
+| `choices` / query session              | Yes      | `choice_set_overlay_test.dart`, `choice_set_data_query_test.dart` |
+| `errorMessage` / `isInvalid`           | Yes      | `text_overlay_test.dart`, …                                       |
+| `text`, `url`, `facts`, `inlines`      | Yes      | See [by-type index](../../docs/overlay-properties-by-type.md)     |
+| Chart extension payload                | Yes      | `chart_overlay_test.dart` (charts package)                        |
+| Action `isEnabled`, `title`, `tooltip` | Yes      | `submit_overlay_test.dart`, …                                     |
 
 Reactive wiring:
 
@@ -243,8 +239,8 @@ Reactive wiring:
 
 Optional follow-up if tightening regressions:
 
-1. Validation overlay widget tests for **Input.Date**, **Input.Time**, **Input.Rating**
-2. `setActionEnabled` on action types beyond Submit / ShowCard (OpenUrl, Execute, …)
+1. Validation overlay widget tests for **Input.Date**, **Input.Time**
+2. `Action.ResetInputs`, `Action.OpenUrlDialog`, `Action.InsertImage` overlay chrome
 3. Rebuild survival with **input value** overlay (visibility and TextBlock covered)
 
 ### How to add tests for a new overlay field
@@ -252,6 +248,7 @@ Optional follow-up if tightening regressions:
 1. **Notifier first** — extend [`adaptive_card_document_notifier_test.dart`](../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart): `ProviderContainer` + `baselineMapProvider.overrideWithValue`, assert `overlaysById` and `resolvedElementProvider` / `resolvedActionProvider`.
 2. **Widget test** — sample JSON under `test/samples/`, `getTestWidgetFromMap` / `getTestWidgetFromPath`, key-first finders per [`adaptive-cards-testing`](../adaptive-cards-testing/SKILL.md).
 3. **Host API** — if exposed on `RawAdaptiveCardState`, add a delegate test mirroring `setText` / `setInputError` patterns.
+4. **Docs** — update [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md) and [`overlay_capability_registry.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart).
 
 Full test file catalog: [`adaptive-cards-testing` skill — Reactive document tests](../adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
 
@@ -307,7 +304,41 @@ final double fontSize = resolver.resolveFontSize(
 > **Note:** Shared services (registries, resolver, card state) come from
 > `ProviderScopeMixin`, which reads card-scoped Riverpod providers installed by
 > `RawAdaptiveCard` / `AdaptiveCardElement`. See
-> [`doc/reactive-riverpod.md`](../../doc/reactive-riverpod.md).
+> [`reactive-riverpod.md`](../../docs/reactive-riverpod.md).
+
+---
+
+## Optional extension packages (charts)
+
+Chart elements and chart runtime overlays belong in **`flutter_adaptive_charts_fs`**, not in the core library.
+
+### Core boundary (`flutter_adaptive_cards_fs`)
+
+- **Avoid** chart-specific classes, imports, overlay fields, and merge logic in core (`chartData`, `ChartProperties`, `fl_chart`, etc.).
+- **Use** generic extension hooks:
+  - `CardTypeRegistry.addedElements` — register optional element widgets by JSON `"type"`
+  - `CardTypeRegistry.overlayExtensions` — register `ElementOverlayExtension` implementations
+  - `ElementOverlay.extensionPayloads` — opaque per-extension overlay storage
+  - `RawAdaptiveCardState.patchExtensionOverlay(...)` — host/runtime patches for extensions
+
+### Charts package (`flutter_adaptive_charts_fs`)
+
+- Register widgets: `CardChartsRegistry.additionalChartElements`
+- Register overlay behavior: `CardChartsRegistry.overlayExtensions` (e.g. `ChartElementOverlayExtension`)
+- Chart overlay host helpers live on extensions in the charts package (e.g. `ChartOverlayHost` on `RawAdaptiveCardState`), not in core.
+
+```dart
+import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
+
+final registry = CardTypeRegistry(
+  addedElements: CardChartsRegistry.additionalChartElements,
+  overlayExtensions: CardChartsRegistry.overlayExtensions,
+);
+```
+
+When adding overlay coverage for chart elements, put tests under `packages/flutter_adaptive_charts_fs/test/` and pass a registry that includes **both** `additionalChartElements` and `overlayExtensions`.
+
+See [`docs/optional-packages-and-extensions.md`](../../docs/optional-packages-and-extensions.md).
 
 ---
 

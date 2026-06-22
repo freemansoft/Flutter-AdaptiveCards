@@ -9,14 +9,16 @@ AI instructions are organized in two layers:
 | Layer           | Location                                | Purpose                                                                                                      |
 | --------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Always-on rules | [`AGENTS.md`](../AGENTS.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation                         |
+| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Link to `Agents.md` to support the same guardrails. Claude doesn't support `AGENTS.md`                       |
 | Task playbooks  | [`.agents/skills/`](../.agents/skills/) | Modular skills loaded when a task matches (testing, spec compliance, TDD, debugging, release engineering, …) |
+| Task playbooks  | [`.claude/skills`](../.claude/skills/)  | Copied from `.agents/skills/` by a vscode tasks. Users can manually copy with a provided script.             |
 
 Supporting files:
 
 - [`skills-lock.json`](../skills-lock.json) — tracks vendored skills from upstream GitHub repos (source, path, content hash) for reproducible installs and updates
 - [`.agents/rules/README.md`](../.agents/rules/README.md) — pointer to `AGENTS.md` and `.agents/skills/`
 
-`AGENTS.md` is derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules), trimmed for Antigravity’s ~12K character limit, and customized for this repo (Very Good Analysis, Adaptive Cards architecture, semantic labels, localization, FVM).
+`AGENTS.md` is derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules), trimmed for Antigravity’s ~12K character limit, and customized for this repo (Very Good Analysis, Adaptive Cards architecture, semantic labels, localization, FVM). `CLAUDE.md` has an internal link to `AGENTS.md`
 
 ---
 
@@ -67,6 +69,12 @@ Project-specific skills are **not** listed in `skills-lock.json`; edit them dire
 
 ---
 
+### Token usage tweaking
+
+#### Cursor
+
+- I (Joe) currently have `Cursor Settings --> Agents --> Start Agent Review on Commit` disabled because of token costs.
+
 ## Installation
 
 All vendored skills are installed with the [`skills` CLI](https://www.npmjs.com/package/skills) (`npx skills`). The `--agent universal` flag installs into `.agents/skills/`, which Cursor, Antigravity, and other agents recognize.
@@ -99,7 +107,7 @@ Source: [github.com/obra/superpowers](https://github.com/obra/superpowers)
 
 This installs 14 skills (brainstorming, writing-plans, test-driven-development, systematic-debugging, …) into `.agents/skills/` and updates `skills-lock.json`.
 
-### Superpowers (Cursor — user-level)
+### Superpowers (everyone but Claude — user-level)
 
 For skills available in **all** projects when using Cursor:
 
@@ -110,6 +118,8 @@ npx skills add obra/superpowers --skill '*' --agent cursor --global --yes
 Skills are copied to `~/.agents/skills/`.
 
 #### Optional: Cursor plugin (hooks and commands)
+
+Cursor *** support will eventually be removed with the purchase of xAI **
 
 For automatic skill activation via Cursor hooks (recommended when using Cursor Agent):
 
@@ -129,7 +139,8 @@ Update or remove the plugin:
 /plugin-remove superpowers
 ```
 
-See [Superpowers — Install on Cursor](https://obra-superpowers.mintlify.app/installation/cursor).
+- See [Superpowers — Install on Cursor](https://obra-superpowers.mintlify.app/installation/cursor).
+- See [Superpowers - Install for Claude Code](https://obra-superpowers.mintlify.app/installation/claude-code).
 
 ---
 

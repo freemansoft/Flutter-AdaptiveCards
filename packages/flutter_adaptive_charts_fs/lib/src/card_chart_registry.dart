@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
+import 'package:flutter_adaptive_charts_fs/src/chart_element_overlay_extension.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/bar_chart.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/gauge_chart.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/line_chart.dart';
@@ -46,4 +48,10 @@ class CardChartsRegistry {
       type: BarChartType.verticalGrouped,
     ),
   };
+
+  /// Chart overlay merge hooks; pass to `CardTypeRegistry.overlayExtensions`.
+  static final CardOverlayExtensionRegistry overlayExtensions =
+      CardOverlayExtensionRegistry(
+    extensions: [ChartElementOverlayExtension.instance],
+  );
 }

@@ -5,11 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.13.0]
+
+- no changes yet
+
+## [0.12.0]
+
+### Security 0.12.0
+
+- **`AdaptiveUriPolicy` / `AdaptiveFetchPolicy` for card-controlled URLs:** new `lib/src/security/` layer validates untrusted URLs (scheme allowlist, loopback/private-host blocking, optional host allowlist) and bounds card-initiated fetches (byte cap + timeout). Exposed via `InheritedAdaptiveCardSecurityPolicy` and optional `RawAdaptiveCard` / `AdaptiveCardsCanvas.network` parameters; defaults to a production-safe policy.
+- **`Action.OpenUrl` and markdown links are validated before launch:** `DefaultOpenUrlAction.tap` rejects disallowed schemes/hosts (e.g. `javascript:`, private IPs) before forwarding to the host handler or `url_launcher`; markdown `TextBlock` links route through the same gate.
+- **SSRF guards on remote fetches:** `Action.OpenUrlDialog` content fetch and `NetworkAdaptiveCardContentProvider` now validate the URL and cap the response body before requesting.
+- **Optional image/media URL gating:** `AdaptiveImageUtils.getImage`/`getImageProvider` accept a policy (denied URLs render a placeholder), and `AdaptiveMedia` validates its source before creating the network player.
+
+### Fixed 0.12.0
+
+- **`Input.Text` no longer caps input at 20 characters when `maxLength` is omitted:** the length limit is applied only when `maxLength` is present and greater than 0 (Adaptive Cards spec: absent `maxLength` means no limit).
+- **`Input.Text` / `Input.Number` fast-typing no longer drops characters or resets cursor:** `AdaptiveInputMixin.listenForResolvedValueChanges` previously captured the resolved value at listener-fire time and echoed it back via a post-frame callback. When two keystrokes arrived in the same frame, the stale captured value overwrote the controller and reset the IME cursor (selection to offset -1), desynchronising the IME and dropping characters. The post-frame callback now reads the latest resolved value at execution time (`readResolvedInput().valueRaw`), making the echo a no-op when the controller already reflects the current document state.
+- **`Media` poster placeholder no longer throws `LateInitializationError`:** `AdaptiveMediaState.altText` is now initialized from the card's `altText` (defaulting to empty) in `initState`, so the poster placeholder shown while the video loads (or when its source is policy-blocked) renders instead of crashing. `altText` is not overlayable, so it is read from the baseline map like `Image`.
+- **`CodeBlock` reads spec `codeSnippet` property:** `AdaptiveCodeBlockState.initState` now reads `adaptiveMap['codeSnippet']` first (spec-correct property) and falls back to `adaptiveMap['code']` for backward compatibility. Previously any spec-compliant CodeBlock rendered empty.
+
+### Changed 0.12.0
+
+- **`CompoundButton` now honors `selectAction`:** tapping the button resolves and dispatches its `selectAction` (e.g. `Action.OpenUrl`, `Action.Submit`) via the action registry. When no `selectAction` is present the button renders disabled instead of being a no-op. Also removed a stale markdown TODO in `TextBlock` (markdown is already implemented via `flutter_markdown_plus`; no behavior change).
+- **`Input.Number`, `Input.Date`, and `Input.Time` now validate `min`/`max` bounds on Submit/Execute:** out-of-range values block the action and mark the input invalid instead of submitting silently.
+- **Action `mode: secondary` + overflow:** secondary-mode actions, and any actions beyond HostConfig `maxActions`, now collapse into a reveal-on-demand "•••" overflow toggle instead of being silently dropped (applies to both `ActionSet` and card-level actions).
+- **Action `iconPlacement`:** action buttons now honor `actions.iconPlacement`; the default `aboveTitle` stacks the icon over the label (previously always icon-left).
+
+### Added 0.12.0
+
+- **`revealPasswordEnabled` per-element overlay:** `ElementOverlay` gains a `revealPasswordEnabled` field; `AdaptiveCardDocumentNotifier` exposes `setRevealPasswordEnabled` / `clearRevealPasswordEnabled`; `resolvedElementProvider` merges the override into the resolved map; `ResolvedInputState.revealPasswordEnabledOverride` reads it; and `RawAdaptiveCardState` exposes matching facade methods. The field is preserved across `Action.ResetInputs` (like `isVisible`), not cleared.
+- **Responsive layout (`targetWidth` + `Layout.Flow`):** elements gate visibility by card width via `targetWidth` (named buckets `veryNarrow`/`narrow`/`standard`/`wide` plus `atLeast:`/`atMost:`), and `Container` + the card root body honor a `layouts` array, reflowing from a vertical stack to a wrapping `Layout.Flow` (with `columnSpacing`/`rowSpacing`, item alignment, and optional `minItemWidth`/`maxItemWidth`). Width buckets come from a new HostConfig `hostWidthBreakpoints` section (spec defaults when absent) and are published to the element subtree via the scoped Riverpod `cardWidthBucketProvider` (a thin nested `ProviderScope` inside the root `LayoutBuilder` overrides it with the measured bucket, leaving the outer card scope stable). `Layout.AreaGrid`/`grid.area` and `itemFit` remain deferred.
+- **Pure range-validation helpers:** `input_range_validation.dart` with `numberInputValueIsValid`, `dateInputValueIsValid`, and `timeInputValueIsValid` — Flutter-free pure functions for `Input.Number`, `Input.Date`, and `Input.Time` bound validation, mirroring `input_text_validation.dart`.
+- **`Image.backgroundColor`:** painted behind the image (visible through transparent PNGs).
+- **`Badge.shape`:** `square` / `rounded` / `circular` mapped to corner radius.
+- **`CompoundButton.badge`:** trailing badge label rendered when present.
+- **`Carousel` `timer` / `orientation` / `loop`:** auto-advance (periodic timer), vertical scroll direction, and wrap-around paging.
+- **`Media.captionSources`:** parsed into a typed `CaptionSource` model (VTT rendering on the video surface remains a follow-up).
 
 ## [0.11.0]
 
-- no changes yet
+### Added 0.11.0
+
+- **`Action.Popover` registry pattern:** `GenericPopoverAction` abstract class and `DefaultPopoverAction` implementation added. `Action.Popover` is now registered in `DefaultActionTypeRegistry` and follows the same injectable handler pattern as Submit, Execute, OpenUrl, ToggleVisibility, and ResetInputs. Host apps can override the default dialog behavior by supplying a custom `ActionTypeRegistry`.
+- **`AdaptivePopoverContainer`** extracted to its own file (`popover_container.dart`) to avoid a circular dependency between `default_actions.dart` and `popover.dart`; re-exported from `popover.dart` for backward compatibility.
+
+### Changed 0.11.0
+
+- **`AdaptiveActionPopoverState`** refactored to resolve its action handler from the registry in `didChangeDependencies()` (matching `AdaptiveActionSubmitState` / `AdaptiveActionExecuteState`). The inline `onTapped()` method and `popupParentResolver` field have been removed; dialog-show logic now lives in `DefaultPopoverAction`. `AdaptiveActionMixin` added to state mixins.
+- **`AdaptiveVisibilityMixin` / `AdaptiveActionStateMixin`:** converted from `on State<T>` to `on ConsumerState<T>`; visibility and action state now read via `ref.watch` / `ref.read` instead of `ProviderScope.containerOf(context)` + manual `ProviderSubscription`. Removes all manual `didChangeDependencies` subscription setup and `dispose` cleanup in these mixins.
+- **All display and structural element widgets** (`AdaptiveColumn`, `AdaptiveColumnSet`, `AdaptiveContainer`, `AdaptiveImageSet`, `AdaptiveTable`, `AdaptiveAccordion`, `ActionSet`, `AdaptiveCarousel`, `AdaptiveCodeBlock`, `AdaptiveCompoundButton`, `AdaptiveIcon`, `AdaptiveProgressBar`, `AdaptiveProgressRing`, `AdaptiveTabSet`, `AdaptiveTextBlock`, `AdaptiveRichTextBlock`, `AdaptiveBadge`, `AdaptiveImage`, `AdaptiveMedia`, `AdaptiveRating`, `AdaptiveFactSet`, `IconButtonAction`) converted from `StatefulWidget`/`State` to `ConsumerStatefulWidget`/`ConsumerState`. Internal refactor; no public API changes.
+- Removed duplicate `assets/fonts/` tree; golden tests load Roboto from `flutter_adaptive_cards_test_support`.
+
+### Fixed 0.11.0
+
+- **`ProviderScope` brightness key bug:** removed `key: ValueKey<Brightness?>` from the inner `ProviderScope` in `RawAdaptiveCard`. The key caused Flutter to destroy and recreate the entire `ProviderScope` subtree on every brightness toggle, wiping `AdaptiveCardDocumentNotifier` state (all input values, overlays, and visibility). Theme propagation continues to work via `didChangeDependencies` — no key is needed. Regression tests added in `test/elements/theme_change_overlay_test.dart`.
+
+### Overlay gaps remediation 0.11.0 (Waves 1–3)
+
+- **`RichTextBlock`:** runtime **`inlines`** overlay; host **`setInlines`** / **`clearInlines`** on **`RawAdaptiveCardState`**; widget listener via `resolvedElementProvider`.
+- **Optional-package overlay hooks:** **`ElementOverlayExtension`**, **`CardOverlayExtensionRegistry`**, and **`CardTypeRegistry.overlayExtensions`** — generic `extensionPayloads` merge in core (chart types live in `flutter_adaptive_charts_fs`).
+- **`OverlayCapabilityRegistry`:** **`ElementOverlayField`** / **`ActionOverlayField`** enums and **`CardTypeRegistry.overlayCapabilities`** for per JSON `type` overlay discovery; debug validation in **`applyUpdates`** (assert in debug builds).
+- Public exports: **`ElementOverlayExtension`**, **`OverlayCapabilityRegistry`**, and overlay field enums from **`flutter_adaptive_cards_fs.dart`**; optional-package authors import **`package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart`** for overlay extension hooks.
+- Docs: [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md) — host index of patch keys by element type.
+- **`Input.Rating`:** new **`AdaptiveRatingInput`** with full overlay contract (`value`, `label`, `isRequired`, validation); registry split from read-only **`Rating`** (`AdaptiveRating`); shared **`RatingStars`** widget.
+- **`Input.Toggle`:** reactive `label`, `isRequired`, and validation UI via `watchResolvedInput()`.
+- **`Badge`:** reactive `text` overlay (`setText` / `applyUpdates`) via `resolvedElementProvider`.
+- **`Action.Popover`:** `isEnabled`, `title`, and `tooltip` overlays via shared **`IconButtonAction`** chrome.
+- **`Media`:** reactive URL overlay — `setUrl` merges into `sources[0].url`; player re-inits on URL change.
+- **`Rating` (display):** reactive `value`, `max`, `color`, and `size` via `resolvedElementProvider` listener.
+- **`Action.*` `iconUrl`:** runtime overlay via **`ActionOverlay.iconUrl`**; merged in **`resolvedActionProvider`**; **`AdaptiveActionStateMixin`** updates **`IconButtonAction`** reactively; host **`applyUpdates`** / **`applyUpdatesFromMap`** with **`clearIconUrl`**.
 
 ## [0.10.0]
 

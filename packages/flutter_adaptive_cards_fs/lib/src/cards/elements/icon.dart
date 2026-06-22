@@ -4,11 +4,12 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/fluent_icon_map.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders the Adaptive Cards hub **Icon** element (Fluent icon catalog).
 ///
 /// See https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format
-class AdaptiveIcon extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveIcon extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an icon element from [adaptiveMap] JSON.
   AdaptiveIcon({
     required this.adaptiveMap,
@@ -27,7 +28,7 @@ class AdaptiveIcon extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveIcon]; resolves Fluent name, size, color, and style.
-class AdaptiveIconState extends State<AdaptiveIcon>
+class AdaptiveIconState extends ConsumerState<AdaptiveIcon>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Fluent icon name from `name`.
   late String? name;

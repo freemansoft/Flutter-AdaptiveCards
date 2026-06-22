@@ -85,6 +85,7 @@ AdaptiveCardsCanvas.map(
   hostConfigs: HostConfigs(),
   cardTypeRegistry: CardTypeRegistry(
     addedElements: CardChartsRegistry.additionalChartElements,
+    overlayExtensions: CardChartsRegistry.overlayExtensions,
   ),
 );
 ```
@@ -119,6 +120,7 @@ AdaptiveCardsCanvas.map(
   hostConfigs: HostConfigs(light: myConfig),
   cardTypeRegistry: CardTypeRegistry(
     addedElements: CardChartsRegistry.additionalChartElements,
+    overlayExtensions: CardChartsRegistry.overlayExtensions,
   ),
 );
 ```

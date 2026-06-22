@@ -14,7 +14,7 @@ Runtime state is stored in Riverpod document **overlays** keyed by input id:
 
 `AdaptiveInputMixin` listens to `resolvedElementProvider(id)` so controllers stay in sync when overlays change. New inputs must call `setDocumentInputValue(...)` on change and handle `onDocumentValueChanged` when syncing controllers from document updates.
 
-For the full overlay model (all element types), see [`reactive-riverpod.md`](reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). The diagram below is **input-only**.
+For the full overlay model (all element types), see [`overlay-properties-by-type.md`](overlay-properties-by-type.md) and [`reactive-riverpod.md`](reactive-riverpod.md). The diagram below is **input-only**.
 
 ## Input overlay architecture
 
@@ -73,14 +73,14 @@ flowchart TB
   edit --> onChange
 ```
 
-| Phase | Path | Result |
-| ----- | ---- | ------ |
-| **Load** | Host JSON → baseline copy; registry builds `Input.*` widgets | Initial display from baseline `value`, `choices`, `label`, … |
-| **Seed** | `initData` / `initInput` → `seedInputValues` / `applyUpdates` | Overlay patches only (post-frame after mount) |
-| **Edit** | User input → `setDocumentInputValue` → `setInputValue` | `inputValue` overlay; validation overlays cleared |
-| **Host patch** | `applyUpdates`, `setInputError`, `loadInput`, … | Choices, validation, dynamic label/required, etc. |
-| **Submit** | `collectInputValues()` | `overlay.inputValue ?? baseline['value']` per input id |
-| **Reset** | `resetInput` / `resetAllInputs` / `Action.ResetInputs` | Value, choices, validation, `isRequired`, `label`, `placeholder` → baseline; `isVisible` and typeahead session preserved |
+| Phase          | Path                                                          | Result                                                                                                                   |
+| -------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Load**       | Host JSON → baseline copy; registry builds `Input.*` widgets  | Initial display from baseline `value`, `choices`, `label`, …                                                             |
+| **Seed**       | `initData` / `initInput` → `seedInputValues` / `applyUpdates` | Overlay patches only (post-frame after mount)                                                                            |
+| **Edit**       | User input → `setDocumentInputValue` → `setInputValue`        | `inputValue` overlay; validation overlays cleared                                                                        |
+| **Host patch** | `applyUpdates`, `setInputError`, `loadInput`, …               | Choices, validation, dynamic label/required, etc.                                                                        |
+| **Submit**     | `collectInputValues()`                                        | `overlay.inputValue ?? baseline['value']` per input id                                                                   |
+| **Reset**      | `resetInput` / `resetAllInputs` / `Action.ResetInputs`        | Value, choices, validation, `isRequired`, `label`, `placeholder` → baseline; `isVisible` and typeahead session preserved |
 
 Deeper dives: [initData vs applyUpdates](#initdata--initinput-vs-applyupdates), [Reset behavior](#reset-behavior-resetallinputs--resetinput--resetinputs), [Dependent ChoiceSet](#dependent-choiceset-country--city) (sequence diagram), [reactive-riverpod.md — Reset semantics](reactive-riverpod.md#reset-semantics).
 
@@ -218,12 +218,12 @@ AdaptiveCardBackendHandlers(
 
 **What the host package handles:**
 
-| Callback | Serialized as | Typical server response |
-| -------- | ------------- | ----------------------- |
-| `onSubmit` | `kind: submit` + merged `data` | `setInputErrors` or `replaceCard` |
-| `onExecute` | `kind: execute` + `verb` + `data` | `applyPatches` (e.g. new `choices`) |
-| `onRefresh` | same as execute | `replaceCard` with refreshed JSON |
-| `onChange` | `kind: inputChange` + `dataQuery` with **`associatedInputs`** siblings | `applyPatches` for dependent ChoiceSet |
+| Callback    | Serialized as                                                          | Typical server response                |
+| ----------- | ---------------------------------------------------------------------- | -------------------------------------- |
+| `onSubmit`  | `kind: submit` + merged `data`                                         | `setInputErrors` or `replaceCard`      |
+| `onExecute` | `kind: execute` + `verb` + `data`                                      | `applyPatches` (e.g. new `choices`)    |
+| `onRefresh` | same as execute                                                        | `replaceCard` with refreshed JSON      |
+| `onChange`  | `kind: inputChange` + `dataQuery` with **`associatedInputs`** siblings | `applyPatches` for dependent ChoiceSet |
 
 **`associatedInputs`** on the card JSON ensures **`InputChangeInvoke.dataQuery.parameters`** already includes sibling values (e.g. `country`) before serialization — the backend does not need a separate client-side merge.
 
@@ -250,20 +250,75 @@ Tests: `test/inputs/choice_filter_test.dart`, `test/inputs/choice_set_test.dart`
 
 Dedicated overlay tests (beyond per-input layout tests under `test/inputs/`):
 
-| Concern                                                           | File                                                                                                     |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `initData` / `initInput` / `applyUpdates`                         | `test/inputs/init_data_overlay_test.dart`, `test/riverpod/apply_updates_test.dart`                       |
-| Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/input_error_overlay_test.dart` (Input.Text, Input.Number)                                   |
-| ChoiceSet dynamic choices                                         | `test/inputs/choice_set_overlay_test.dart`                                                               |
-| Cascaded country → dependent ChoiceSet                            | `test/inputs/cascade_choice_set_test.dart`                                                               |
-| Notifier contract                                                 | `test/riverpod/adaptive_card_document_notifier_test.dart`                                                |
-| Targeted reset / `valueChangedAction`                             | `test/inputs/action_reset_inputs_targeted_test.dart`, `test/inputs/value_changed_action_reset_test.dart` |
+| Concern                                                           | File                                                                                                                  |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `initData` / `initInput` / `applyUpdates`                         | `test/inputs/text_overlay_test.dart`, `test/adaptive_card_overlay_test.dart`, `test/riverpod/apply_updates_test.dart` |
+| Host validation (`setInputError`, `clearInputError`, edit clears) | `test/inputs/text_overlay_test.dart`, `test/inputs/number_overlay_test.dart`                                          |
+| ChoiceSet dynamic choices                                         | `test/inputs/choice_set_overlay_test.dart`                                                                            |
+| Cascaded country → dependent ChoiceSet                            | `test/inputs/cascade_choice_set_test.dart`                                                                            |
+| Notifier contract                                                 | `test/riverpod/adaptive_card_document_notifier_test.dart`                                                             |
+| Targeted reset / `valueChangedAction`                             | `test/inputs/action_reset_inputs_targeted_test.dart`, `test/inputs/value_changed_action_reset_test.dart`              |
 
 See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage) for the full list and gaps.
 
 ## Input.xxx Adaptive card inputs
 
 - AdaptiveCard inputs are located in `flutter_adaptive_cards_fs/lib/src/cards/inputs`. Each class there should have its own associated unit test class in `flutter_adaptive_cards_fs/test/inputs`.
+
+## Input.Text — phone style and character filtering
+
+`Input.Text` with `style: "tel"` sets `keyboardType: TextInputType.phone` on the underlying `TextFormField`. This only controls which virtual keyboard appears on iOS/Android; it does **not** filter characters. On desktop or in widget tests (`tester.enterText` bypasses the keyboard entirely), any character can be typed regardless of keyboard type.
+
+There has never been a `FilteringTextInputFormatter` for phone inputs in this codebase. The only formatter applied to all `Input.Text` fields is `LengthLimitingTextInputFormatter(maxLength)`.
+
+**Validation is submit-time only.** The `regex` field in the card JSON is checked inside `TextFormField.validator`, which runs when `Form.validate()` is called at submit. It is not checked keystroke-by-keystroke. The sequence for a phone field with `regex: "^\(\d{3}\) \d{3}-\d{4}$"`:
+
+1. User types `AAA` → accepted into the field, no error shown
+2. User submits → `Form.validate()` → regex fails → error message rendered
+3. User resumes typing → validation overlays cleared (see [Edit phase above](#input-overlay-architecture))
+
+This matches the Adaptive Cards spec, which specifies `regex` as a validation rule, not an input filter.
+
+**If you want to block non-phone characters at entry time**, add a conditional `FilteringTextInputFormatter` in `text.dart` alongside the existing length formatter:
+
+```dart
+inputFormatters: [
+  LengthLimitingTextInputFormatter(maxLength),
+  if (inputStyle == TextInputType.phone)
+    FilteringTextInputFormatter.allow(RegExp(r'[\d\+\-\(\)\. ]')),
+],
+```
+
+This silently drops any character not matching the allowlist as it is typed. Be aware that `style: "tel"` is optional in the card JSON — a field can carry a phone `regex` without `style: "tel"`, in which case `inputStyle` would be `null` and this guard would not fire. The guard would need to also inspect the `regex` pattern, or be applied unconditionally for fields with any `regex`.
+
+## Input.Text — password masking and reveal toggle
+
+`Input.Text` with `"style": "password"` obscures typed characters using Flutter's `obscureText: true`. This is **client-side only**: the submitted value is always the clear-text string (the overlay `inputValue` / baseline `value` are never encoded). Password fields are forced single-line regardless of `isMultiline`; autocorrect and suggestions are disabled; the system keyboard type is set to `TextInputType.visiblePassword`.
+
+### Eye-icon reveal toggle
+
+An optional eye-icon button in the field suffix lets users temporarily reveal what they typed. Whether the toggle is shown follows a **three-source precedence** (highest wins):
+
+| Priority | Source | Symbol |
+| -------- | ------ | ------ |
+| 1 (highest) | Per-element runtime overlay | `ElementOverlay.revealPasswordEnabled` (bool?) via `ResolvedInputState.revealPasswordEnabledOverride` |
+| 2 | HostConfig `inputs.text.revealPasswordEnabled` | `TextInputConfig.revealPasswordEnabled` on `InputsConfig.text` |
+| 3 (fallback) | `FallbackConfigs.inputsConfig` | `FallbackConfigs.inputsConfig.text.revealPasswordEnabled` (defaults `true`) |
+
+The widget resolves effective availability as:
+`(getInputsConfig() ?? FallbackConfigs.inputsConfig).text.revealPasswordEnabled`
+with the overlay checked first by `ResolvedInputState.revealPasswordEnabledOverride`.
+
+The HostConfig field `inputs.text.revealPasswordEnabled` is **non-standard** (not in the Microsoft spec); it lives on the new `TextInputConfig` class nested under `InputsConfig.text`. By default the reveal toggle is enabled for all password fields.
+
+### Overlay and reset behavior
+
+The per-element reveal toggle can be set or cleared at runtime:
+
+- **Set:** `AdaptiveCardDocumentNotifier.setRevealPasswordEnabled(id, enabled)` / `RawAdaptiveCardState.setRevealPasswordEnabled(id, enabled)`
+- **Clear:** `AdaptiveCardDocumentNotifier.clearRevealPasswordEnabled(id)` / `RawAdaptiveCardState.clearRevealPasswordEnabled(id)`
+
+Unlike value and validation overlays, `revealPasswordEnabled` is **preserved** (not cleared) by `Action.ResetInputs` / `resetInput` / `resetAllInputs` — the same preservation policy as `isVisible` and typeahead session fields. See [Reset semantics in reactive-riverpod.md](reactive-riverpod.md#reset-semantics).
 
 ## Component field implementations
 

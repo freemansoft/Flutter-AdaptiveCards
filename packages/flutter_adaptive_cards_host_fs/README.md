@@ -162,6 +162,24 @@ Effects run **in JSON array order**. Recommended server order:
 
 Always implement `onError` in production hosts.
 
+## Security
+
+Backend invoke responses are untrusted. Two guards bound the blast radius:
+
+- **Response size cap.** `HttpAdaptiveCardBackendClient` caps the decoded body at `maxResponseBytes` (default 1 MiB) via `decodeJsonMapWithLimit`, throwing `AdaptiveJsonTooLargeException` on oversized payloads. Lower it for tighter limits:
+
+  ```dart
+  HttpAdaptiveCardBackendClient(endpoint: uri, maxResponseBytes: 256 * 1024);
+  ```
+
+- **`replaceCard` validation.** Pass a `cardValidator` to reject backend-supplied replacement cards before they render; a rejected card throws `AdaptiveCardInvokeResponseParseException` (routed to `onError`) and is never applied:
+
+  ```dart
+  handlers.wrap(child, onCardReplaced: replace, cardValidator: (card) => isTrusted(card));
+  ```
+
+Never log `AdaptiveCardBackendException.body` in production — it may contain attacker-controlled content.
+
 ## Teams adapter
 
 Use `TeamsInvokeAdapter.toMap` / `TeamsInvokeAdapter.responseFromMap` for Bot Framework–shaped invoke activities:

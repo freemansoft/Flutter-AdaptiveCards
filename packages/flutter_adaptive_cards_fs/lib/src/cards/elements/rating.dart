@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_adaptive_cards_fs/src/widgets/rating_stars.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders the Adaptive Cards **Rating** element as a row of stars.
 ///
 /// See https://adaptivecards.io/explorer/Rating.html
-class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveRating extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a rating display from [adaptiveMap] JSON.
   AdaptiveRating({
     required this.adaptiveMap,
@@ -25,75 +28,28 @@ class AdaptiveRating extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveRating]; renders filled and empty star icons.
-class AdaptiveRatingState extends State<AdaptiveRating>
+class AdaptiveRatingState extends ConsumerState<AdaptiveRating>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
-  /// Current rating from `value`.
-  late double value;
-
-  /// Maximum star count from `max` (default 5).
-  late double max;
-
-  /// Color token from `color` (`neutral`, `marigold`, `light`).
-  late String color;
-
-  /// Icon size token from `size` (`medium` or `large`).
-  late String size;
-
-  @override
-  void initState() {
-    super.initState();
-    value = (adaptiveMap['value'] as num? ?? 0).toDouble();
-    max = (adaptiveMap['max'] as num? ?? 5).toDouble();
-    color = adaptiveMap['color'] as String? ?? 'neutral';
-    size = adaptiveMap['size'] as String? ?? 'medium';
-  }
-
   @override
   Widget build(BuildContext context) {
-    final resolver = styleResolver;
-    Color starColor;
-    if (color == 'marigold') {
-      starColor =
-          resolver.resolveContainerForegroundColor(style: 'warning') ??
-          Colors.orange;
-    } else if (color == 'light') {
-      starColor =
-          resolver.resolveContainerForegroundColor(
-            style: 'default',
-            isSubtle: true,
-          ) ??
-          Colors.white70;
-    } else {
-      starColor =
-          resolver.resolveContainerForegroundColor(
-            style: 'default',
-            isSubtle: false,
-          ) ??
-          Colors.grey;
-    }
+    final resolved = ref.watch(resolvedElementProvider(id));
+    final value = ((resolved?['value'] ?? adaptiveMap['value']) as num? ?? 0).toDouble();
+    final max = ((resolved?['max'] ?? adaptiveMap['max']) as num? ?? 5).toDouble();
+    final color = (resolved?['color'] as String?) ?? (adaptiveMap['color'] as String?) ?? 'neutral';
+    final size = (resolved?['size'] as String?) ?? (adaptiveMap['size'] as String?) ?? 'medium';
 
-    final double iconSize = size == 'large' ? 24 : 16;
+    final starColor = resolveRatingStarColor(styleResolver, color);
+    final iconSize = resolveRatingIconSize(size);
 
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(max.toInt(), (index) {
-            IconData iconData;
-            if (index < value) {
-              iconData = Icons.star;
-            } else {
-              iconData = Icons.star_border;
-            }
-
-            return Icon(
-              iconData,
-              color: starColor,
-              size: iconSize,
-            );
-          }),
+        child: RatingStars(
+          value: value,
+          max: max,
+          starColor: starColor,
+          iconSize: iconSize,
         ),
       ),
     );

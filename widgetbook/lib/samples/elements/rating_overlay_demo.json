@@ -1,0 +1,20 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Display Rating overlay demo",
+      "weight": "Bolder",
+      "wrap": true
+    },
+    {
+      "type": "Rating",
+      "id": "stars",
+      "value": 2,
+      "max": 5,
+      "color": "marigold",
+      "size": "medium"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "CompoundButton Examples",
+      "size": "Medium",
+      "weight": "Bolder"
+    },
+    {
+      "type": "CompoundButton",
+      "title": "Inbox",
+      "description": "View your incoming messages",
+      "iconUrl": "https://adaptivecards.io/content/cats/1.png",
+      "badge": "3",
+      "selectAction": {
+        "type": "Action.OpenUrl",
+        "id": "inbox-open",
+        "url": "https://adaptivecards.io"
+      }
+    },
+    {
+      "type": "CompoundButton",
+      "title": "Drafts",
+      "description": "Continue an unsent message",
+      "selectAction": {
+        "type": "Action.OpenUrl",
+        "id": "drafts-open",
+        "url": "https://adaptivecards.io/explorer/CompoundButton.html"
+      }
+    },
+    {
+      "type": "CompoundButton",
+      "title": "Archive",
+      "description": "Messages you have filed away",
+      "badge": "New",
+      "selectAction": {
+        "type": "Action.OpenUrl",
+        "id": "archive-open",
+        "url": "https://adaptivecards.io/explorer"
+      }
+    }
+  ]
+}

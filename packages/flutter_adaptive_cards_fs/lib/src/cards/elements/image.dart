@@ -3,6 +3,7 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/image_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// https://adaptivecards.io/explorer/Image.html
 ///
-class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveImage extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates an image element from [adaptiveMap] JSON.
   ///
   /// [parentMode] controls flex behavior when nested in column/row layouts.
@@ -40,7 +42,7 @@ class AdaptiveImage extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveImage]; resolves size, style, and reactive URL updates.
-class AdaptiveImageState extends State<AdaptiveImage>
+class AdaptiveImageState extends ConsumerState<AdaptiveImage>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Whether to clip the image to a circle (`style: person`).
   late bool isPerson;
@@ -54,16 +56,6 @@ class AdaptiveImageState extends State<AdaptiveImage>
   /// Horizontal alignment within the parent from `horizontalAlignment`.
   late Alignment horizontalAlignment;
 
-  /// Current image URL, updated from resolved element overlays.
-  late String url;
-  ProviderSubscription<Map<String, dynamic>?>? _urlSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    url = widget.adaptiveMap['url']?.toString() ?? '';
-  }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -72,28 +64,16 @@ class AdaptiveImageState extends State<AdaptiveImage>
     horizontalAlignment = styleResolver.resolveAlignment(
       adaptiveMap['horizontalAlignment'],
     );
-    _urlSubscription?.close();
-    final container = ProviderScope.containerOf(context);
-    _urlSubscription = container.listen<Map<String, dynamic>?>(
-      resolvedElementProvider(id),
-      (previous, next) {
-        final nextUrl = next?['url']?.toString() ?? '';
-        if (nextUrl == url) return;
-        setState(() => url = nextUrl);
-      },
-      fireImmediately: true,
-    );
-  }
-
-  @override
-  void dispose() {
-    _urlSubscription?.close();
-    _urlSubscription = null;
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final resolved = ref.watch(resolvedElementProvider(id));
+    final url =
+        resolved?['url']?.toString() ??
+        widget.adaptiveMap['url']?.toString() ??
+        '';
+
     BoxFit fit = BoxFit.contain;
     if (height != null && width != null && height != width) {
       fit = BoxFit.fill;
@@ -107,8 +87,14 @@ class AdaptiveImageState extends State<AdaptiveImage>
         height: height,
         width: width,
         semanticsLabel: adaptiveMap['altText']?.toString(),
+        uriPolicy: InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context),
       ),
     );
+
+    final bgColor = parseHexColor(adaptiveMap['backgroundColor']?.toString());
+    if (bgColor != null) {
+      image = ColoredBox(color: bgColor, child: image);
+    }
 
     if (isPerson) {
       image = ClipOval(clipper: FullCircleClipper(), child: image);

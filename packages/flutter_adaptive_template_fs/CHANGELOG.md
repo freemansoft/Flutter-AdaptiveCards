@@ -1,12 +1,22 @@
 # Changelog
 
-## [0.11.0]
+## [0.13.0]
 
 - no changes yet
 
-## [Unreleased]
+## [0.12.0]
 
-### Changed
+### Security 0.12.0
+
+- **`json()` builtin input cap:** the template `json()` function now returns `null` for inputs over 256 KiB instead of decoding an unbounded string, bounding memory/CPU on untrusted template data.
+
+### Added 0.12.0
+
+- **Collection functions** `join`, `first`, `last`, `sum`, `average` and **date functions** `formatEpoch`, `getPastTime`, `getFutureTime` added to the expression evaluator. (`select`/`where` remain unimplemented — they require lazy lambda evaluation.)
+
+## [0.11.0]
+
+- no changes yet
 
 ## [0.10.0]
 

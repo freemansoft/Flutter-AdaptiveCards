@@ -7,14 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/media_source.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_validation.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/media_caption_source.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 /// Implements
 /// * https://adaptivecards.io/explorer/Media.html
 /// * https://adaptivecards.io/explorer/MediaSource.html
-class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveMedia extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a media player from [adaptiveMap] JSON.
   AdaptiveMedia({
     required this.adaptiveMap,
@@ -32,10 +39,10 @@ class AdaptiveMedia extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveMedia]; initializes video playback and poster image.
-class AdaptiveMediaState extends State<AdaptiveMedia>
+class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Underlying [VideoPlayerController] for the first `sources` entry.
-  late VideoPlayerController videoPlayerController;
+  VideoPlayerController? videoPlayerController;
 
   /// Chewie UI wrapper; null until the video is initialized.
   ChewieController? controller;
@@ -48,6 +55,10 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
 
   /// Accessibility label for the poster image.
   late String altText;
+
+  /// Caption tracks parsed from `captionSources`.
+  /// Rendering onto the video surface is host-dependent and not yet wired.
+  late List<CaptionSource> captionSources;
 
   /// Placeholder fade animation shown before the player is ready.
   FadeAnimation imageFadeAnim = const FadeAnimation(
@@ -63,6 +74,13 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
       adaptiveMap['sources'],
     );
     sourceUrl = sources.isNotEmpty ? sources[0].url : '';
+
+    // Accessibility label for the poster image; read before first build so the
+    // placeholder path never reads an uninitialized field.
+    altText = adaptiveMap['altText']?.toString() ?? '';
+
+    // TODO(captions): render captionSources as VTT tracks on the video surface.
+    captionSources = captionSourcesFromJsonList(adaptiveMap['captionSources']);
 
     // https://pub.dev/packages/video_player
     if (Platform.isWindows || Platform.isLinux) {
@@ -81,9 +99,16 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
     unawaited(initializePlayer());
   }
 
+  /// URI policy for [sourceUrl]; defaults to the safe standard policy until an
+  /// ancestor [InheritedAdaptiveCardSecurityPolicy] is resolved in
+  /// [didChangeDependencies].
+  AdaptiveUriPolicy _uriPolicy = AdaptiveUriPolicy.standard;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    _uriPolicy = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context);
 
     final resolver = styleResolver;
     final mediaConfig = resolver.getMediaConfig();
@@ -93,13 +118,28 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
   }
 
   /// Initializes [videoPlayerController] and [controller] from [sourceUrl].
+  ///
+  /// [sourceUrl] comes from untrusted card JSON, so it is validated against the
+  /// active URI policy before the network player is created; a denied URL skips
+  /// initialization (leaving [videoPlayerController] null).
   Future<void> initializePlayer() async {
-    videoPlayerController = VideoPlayerController.networkUrl(
+    if (_uriPolicy.validate(sourceUrl) case AdaptiveUriDenied(:final reason)) {
+      assert(() {
+        developer.log(
+          'media source $sourceUrl blocked by policy: $reason',
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+      return;
+    }
+    final player = VideoPlayerController.networkUrl(
       Uri.parse(sourceUrl),
     );
+    videoPlayerController = player;
 
     try {
-      await videoPlayerController.initialize();
+      await player.initialize();
     } on Object catch (e) {
       assert(() {
         developer.log(
@@ -108,29 +148,63 @@ class AdaptiveMediaState extends State<AdaptiveMedia>
         );
         return true;
       }());
+      if (videoPlayerController == player) {
+        videoPlayerController = null;
+      }
+      await player.dispose();
+      return;
+    }
 
-      rethrow;
+    if (!mounted || videoPlayerController != player) {
+      await player.dispose();
+      return;
     }
 
     controller = ChewieController(
       aspectRatio: 3 / 2,
       autoPlay: false,
       looping: true,
-      videoPlayerController: videoPlayerController,
+      videoPlayerController: player,
     );
 
     setState(() {});
   }
 
+  Future<void> _reinitializePlayer(String newUrl) async {
+    sourceUrl = newUrl;
+    controller?.dispose();
+    controller = null;
+    final previousPlayer = videoPlayerController;
+    videoPlayerController = null;
+    if (previousPlayer != null) {
+      await previousPlayer.dispose();
+    }
+    if (!mounted) return;
+    await initializePlayer();
+  }
+
   @override
   void dispose() {
-    unawaited(videoPlayerController.dispose());
+    final player = videoPlayerController;
+    if (player != null) {
+      unawaited(player.dispose());
+    }
     controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<Map<String, dynamic>?>(
+      resolvedElementProvider(id),
+      (previous, next) {
+        final sources = mediaSourcesFromJsonList(next?['sources']);
+        final nextUrl = sources.isNotEmpty ? sources[0].url : '';
+        if (nextUrl == sourceUrl) return;
+        unawaited(_reinitializePlayer(nextUrl));
+      },
+    );
+
     Widget getVideoPlayer() {
       return Chewie(controller: controller!);
     }

@@ -142,7 +142,7 @@ Many!
 
 ## LLM Agent Support
 
-This repo is configured for Cursor, Antigravity, Claude Code, and other coding agents. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
+This repo is configured for Claude Code, Antigravity, CoPilot and ~~Cursor~~, and other coding agents. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
 
 ### Always-on rules — [AGENTS.md](AGENTS.md)
 
@@ -152,12 +152,16 @@ Always-on project guardrails (FVM, monorepo hygiene, Very Good Analysis, Riverpo
 
 Modular skills loaded when a task matches. Vendored upstream skills are tracked in [`skills-lock.json`](skills-lock.json).
 
-| Source | Repository | Count |
-| ------ | ---------- | ----- |
-| Dart team | [dart-lang/skills](https://github.com/dart-lang/skills) | 9 |
-| Flutter team | [flutter/skills](https://github.com/flutter/skills) | 10 |
-| Superpowers | [obra/superpowers](https://github.com/obra/superpowers) | 14 |
-| Project-specific | (authored in-repo) | 11 |
+> **Claude Code:** Opening this workspace in VS Code or Cursor automatically links `.agents/skills/` into `.claude/skills/` via a `folderOpen` task in [`.vscode/tasks.json`](.vscode/tasks.json). You will be prompted to _Allow_ the task once; after that it runs silently on every workspace open. To run it manually: `sh scripts/setup-claude.sh` (Mac/Linux) or `pwsh scripts/setup-claude.ps1` (Windows).
+>
+> Only built in skills show up when typing `/` in the Claude Code prompt. Superpowers and other customized skills do not show up in the `/` list in the VSCode plugin but do in a terminal command line. Claude itself says that the list shouldn't work but it did this morning in my terminal window
+
+| Source           | Repository                                              | Count |
+| ---------------- | ------------------------------------------------------- | ----- |
+| Dart team        | [dart-lang/skills](https://github.com/dart-lang/skills) | 9     |
+| Flutter team     | [flutter/skills](https://github.com/flutter/skills)     | 10    |
+| Superpowers      | [obra/superpowers](https://github.com/obra/superpowers) | 14    |
+| Project-specific | (authored in-repo)                                      | 11    |
 
 **Project-specific skills:** `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-testing`, `code-review`, `release-engineer`, `release-flutter-upgrade-sdk`.
 
@@ -171,7 +175,7 @@ npx skills add flutter/skills --skill '*' --agent universal --yes
 npx skills add obra/superpowers --skill '*' --agent universal --yes
 ```
 
-Update vendored skills: `npx skills update`. For Cursor user-level Superpowers and the optional `/add-plugin superpowers` hook, see [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md).
+Update vendored skills: `npx skills update`. For user-level Superpowers and the optional `/add-plugin superpowers` hook, see [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md).
 
 ## More about adaptive cards and available SDKs
 

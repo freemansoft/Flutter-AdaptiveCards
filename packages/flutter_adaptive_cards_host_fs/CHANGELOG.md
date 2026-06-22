@@ -1,11 +1,19 @@
 # Changelog
 
-## [0.11.0]
+## [0.13.0]
 
 - no changes yet
 
-## [Unreleased]
+## [0.12.0]
 
+### Security 0.12.0
+
+- **Bounded backend response decoding:** `HttpAdaptiveCardBackendClient` gains `maxResponseBytes` (default 1 MiB) and decodes via `decodeJsonMapWithLimit`, throwing `AdaptiveJsonTooLargeException` on oversized bodies instead of decoding unbounded untrusted JSON.
+- **Optional `replaceCard` validator:** `AdaptiveCardInvokeResponse.applyTo` and `AdaptiveCardBackendHandlers.wrap` accept an `AdaptiveCardValidator`; a backend-supplied replacement card that fails validation is rejected (`AdaptiveCardInvokeResponseParseException`) and never rendered.
+
+## [0.11.0]
+
+- no changes yet
 
 ## [0.10.0]
 

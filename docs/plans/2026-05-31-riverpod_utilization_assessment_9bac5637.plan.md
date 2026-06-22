@@ -1,6 +1,6 @@
 ---
 name: Riverpod Utilization Assessment
-overview: Riverpod is **not** leveraged anywhere near its full potential in `flutter_adaptive_cards_fs`. It is used as a thin scoped dependency-injection layer (~5% of Riverpod’s feature set), while real UI and input state remain in `StatefulWidget` + `setState` and host callbacks use `InheritedWidget`.
+overview: Riverpod is **not** leveraged anywhere near its full potential in `flutter_adaptive_cards_fs`. It is used as a thin scoped dependency-injection layer (~5% of Riverpod's feature set), while real UI and input state remain in `StatefulWidget` + `setState` and host callbacks use `InheritedWidget`.
 todos:
   - id: docs-align
     content: Update Architecture-Overview.md and AGENTS.md to match actual DI-only Riverpod usage (or defer to replace-riverpod.md)
@@ -10,17 +10,28 @@ todos:
     status: completed
   - id: handler-consolidation
     content: "Optional: evaluate merging InheritedAdaptiveCardHandlers into one scope model (only if keeping or replacing Riverpod holistically)"
-    status: pending
+    status: won't-do
+  - id: remove-providerscope-key
+    content: "Bug: remove key: ValueKey<Brightness?> from ProviderScope in flutter_raw_adaptive_card.dart — it destroys AdaptiveCardDocumentNotifier state (input values, overlays) on brightness toggle. Override-change propagation via didChangeDependencies already works without it."
+    status: completed
 isProject: false
+---
+
+> **⚠️ PLAN STATUS (evaluated 2026-06-16):** This assessment described a **DI-only** Riverpod pattern. The codebase subsequently took the **opposite path** — full reactive Riverpod was adopted. Most findings below are now obsolete or inverted. Remaining open work is in the last section.
+
 ---
 
 # Is Riverpod leveraged to its potential?
 
-**Verdict: No.** The package uses Riverpod as a **scoped service locator**, not as a state-management framework. That is a valid pattern for this codebase, but it means most of Riverpod’s strengths are unused—and you still pay the dependency and API surface cost.
+**Verdict at time of writing: No.** The package uses Riverpod as a **scoped service locator**, not as a state-management framework. That is a valid pattern for this codebase, but it means most of Riverpod's strengths are unused—and you still pay the dependency and API surface cost.
+
+> **~~OBSOLETE~~** — Since this assessment the codebase adopted reactive Riverpod throughout. `NotifierProvider`, `ConsumerStatefulWidget`, `ref.watch`, and `Provider.family` are now in widespread use. See `AGENTS.md` (state management section) and `docs/reactive-riverpod.md`.
 
 ---
 
 ## What the package actually uses
+
+> **~~OBSOLETE~~** — This table reflected the pre-reactive state. See annotations per row for current status.
 
 ```mermaid
 flowchart LR
@@ -41,75 +52,70 @@ flowchart LR
   IH --> HostCallbacks[onSubmit onChange etc]
 ```
 
-| Capability | Used? | Where |
-|------------|-------|--------|
-| `Provider` + `overrideWithValue` | Yes | [`riverpod_providers.dart`](packages/flutter_adaptive_cards_fs/lib/src/riverpod_providers.dart), [`flutter_raw_adaptive_card.dart`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart), [`adaptive_card_element.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/adaptive_card_element.dart) |
-| Nested `ProviderScope` | Yes | Outer = card root; inner = per `AdaptiveCardElement` |
-| `ProviderScope.containerOf(...).read` | Yes | [`adaptive_mixins.dart`](packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart) (`ProviderScopeMixin`), [`utils.dart`](packages/flutter_adaptive_cards_fs/lib/src/utils/utils.dart), [`default_actions.dart`](packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart) |
-| `listen: false` everywhere | Yes | No reactive subscriptions |
-| `ref.watch` / `ConsumerWidget` | **No** | — |
-| `Notifier` / `AsyncNotifier` / `StateNotifier` | **No** | — |
-| Provider `family` / `autoDispose` | **No** | — |
-| Async/data fetching via providers | **No** | `DataQuery` / network handled outside providers |
-| Input values / visibility state | **No** | [`AdaptiveInputMixin`](packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart) + per-widget `setState` (e.g. [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart), [`text.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/text.dart)) |
-| Host action callbacks | **No** (Riverpod) | [`InheritedAdaptiveCardHandlers`](packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart) |
-
-**~40+** element/action states use [`ProviderScopeMixin`](packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart) only to **read** shared services—not to publish reactive state.
+| Capability                                     | Was used?                                      | Current status (2026-06-16)                                                                                                                                                                                                                     |
+| ---------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Provider` + `overrideWithValue`               | Yes                                            | ✅ Still yes                                                                                                                                                                                                                                    |
+| Nested `ProviderScope`                         | Yes                                            | ✅ Still yes                                                                                                                                                                                                                                    |
+| `ProviderScope.containerOf(...).read`          | Yes                                            | ✅ Still yes in some places                                                                                                                                                                                                                     |
+| `listen: false` everywhere                     | Yes                                            | ~~OBSOLETE~~ — `ref.watch` now used widely                                                                                                                                                                                                      |
+| `ref.watch` / `ConsumerWidget`                 | **No**                                         | ✅ **Now yes** — all input widgets (`choice_set`, `text`, `toggle`, `rating`, `number`, `date`, `time`) and `show_card.dart` use `ConsumerStatefulWidget` / `ConsumerState`; `AdaptiveInputMixin` uses `ref.watch(resolvedElementProvider(id))` |
+| `Notifier` / `AsyncNotifier` / `StateNotifier` | **No**                                         | ✅ **Now yes** — `AdaptiveCardDocumentNotifier extends Notifier` (owns overlays, input values, visibility, text, action-enabled state); `ExpandedShowCardIdNotifier`; both via `NotifierProvider`                                               |
+| Provider `family` / `autoDispose`              | **No**                                         | ✅ **Now yes** — `resolvedElementProvider` and `resolvedActionProvider` are `Provider.family`                                                                                                                                                   |
+| Async/data fetching via providers              | **No**                                         | ➖ Still no                                                                                                                                                                                                                                     |
+| Input values / visibility state                | **No** (was `AdaptiveInputMixin` + `setState`) | ✅ **Now yes** — stored in `AdaptiveCardDocumentNotifier` via `setInputValue`, `setVisibility`, `setText`, `setInputError`, `setActionEnabled`; read via `resolvedElementProvider(id)`                                                          |
+| Host action callbacks                          | **No** (Riverpod)                              | ➖ Still `InheritedAdaptiveCardHandlers` — intentionally kept on `InheritedWidget` (AGENTS.md policy)                                                                                                                                           |
 
 ---
 
 ## Misalignment with docs and AGENTS.md
 
-- [`doc/Architecture-Overview.md`](doc/Architecture-Overview.md) claims `StateNotifierProvider`, input tracking in Riverpod, and `ConsumerWidget`—**none of this exists** in code.
-- Root [`AGENTS.md`](AGENTS.md) recommends `ConsumerWidget` / `AsyncNotifier` for this project—**inconsistent** with library implementation.
-- [`doc/replace-riverpod.md`](doc/replace-riverpod.md) accurately describes current usage (recent draft).
+> **✅ COMPLETED** (`docs-align` todo) — All docs updated:
+>
+> - `AGENTS.md` now documents reactive Riverpod v3.x correctly (see "State management" section).
+> - `docs/Architecture-Overview.md` reflects `AdaptiveCardDocumentNotifier`, `resolvedElementProvider`, and scoped `ProviderScope`.
+> - `docs/reactive-riverpod.md` is the canonical Riverpod usage guide.
+> - The `replace-riverpod.md` path was superseded — removal was not pursued.
 
 ---
 
-## Is the current pattern “wrong”?
+## Is the current pattern "wrong"?
 
-**For this library’s goals, the DI usage is reasonable:**
+> **~~PARTIALLY OBSOLETE~~** — The DI-only concerns no longer apply. Items addressed:
 
-- Deep adaptive tree needs registries, `ReferenceResolver`, and per-card `AdaptiveCardElementState` without drilling constructors through every element type.
-- Extension packages (charts) can mix in `ProviderScopeMixin` and inherit the outer scope.
-- Values are **stable references** overridden once per scope; `listen: false` is correct—there is nothing to “watch” on the provider side.
-
-**Where it under-delivers vs Riverpod’s potential:**
-
-1. **No reactive invalidation** — Theme/`HostConfig` updates rebuild via `RawAdaptiveCardState.setState` and widget lifecycle, not provider listeners. Riverpod’s rebuild optimization is unused.
-2. **Duplicate dependency-injection models** — Riverpod for services + `InheritedWidget` for handlers + dead [`InheritedReferenceResolver`](packages/flutter_adaptive_cards_fs/lib/src/inherited_reference_resolver.dart). Consumers must understand two mechanisms.
-3. **Imperative `containerOf` in `StatelessWidget`s** — Works, but bypasses Riverpod’s widget integration (`Consumer`, `ref`) and is harder to test/mock than explicit `InheritedWidget` or constructor injection.
-4. **Transitive dependency** — [`pubspec.yaml`](packages/flutter_adaptive_cards_fs/pubspec.yaml) pulls `flutter_riverpod` for all consumers even though the public API does not export it ([`flutter_adaptive_cards_fs.dart`](packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart) exports canvas, host config, registry only).
+- ✅ **Reactive invalidation** — now handled via `ref.watch` + Notifiers; `setState` on `RawAdaptiveCardState` is no longer the sole rebuild trigger for input/overlay changes.
+- ✅ **Duplicate DI models reduced** — Riverpod owns document/input/UI state; `InheritedAdaptiveCardHandlers` is intentionally kept for host callbacks only, now documented as policy.
+- 🔄 **Imperative `containerOf`** — still exists in some places alongside `ref.watch`.
+- ➖ **Transitive dependency** — `flutter_riverpod` remains a transitive dep for all consumers (unchanged).
 
 ---
 
-## Would “using Riverpod more” help?
+## Would "using Riverpod more" help?
 
-| Hypothetical adoption | Likely benefit | Fit for adaptive cards |
-|----------------------|----------------|------------------------|
-| Move input state to `NotifierProvider` | Centralized input map, testable reads | High refactor cost; current mixin + `Form` validation works |
-| `ref.watch(styleReferenceResolverProvider)` on theme change | Auto-rebuild on resolver change | Marginal; `didChangeDependencies` + `setState` already handle theme |
-| Replace `InheritedAdaptiveCardHandlers` with providers | Single DI story | Possible, but hosts already know `InheritedWidget`; breaking change |
-| `ConsumerWidget` for elements | Idiomatic Riverpod | Large churn; elements are already `StatefulWidget` by design |
+> **~~MOSTLY OBSOLETE~~** — The hypotheticals were acted on:
 
-**Conclusion:** Pushing further into Riverpod would be **architectural churn** with little gain unless you want host apps to integrate via `ProviderScope` and custom providers—which the library deliberately hides today.
+| Hypothetical adoption                                       | Status                                                                        |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Move input state to `NotifierProvider`                      | ✅ Done — `AdaptiveCardDocumentNotifier` owns overlays                        |
+| `ref.watch(styleReferenceResolverProvider)` on theme change | ✅ Answered 2026-06-16 — see note below                                       |
+| Replace `InheritedAdaptiveCardHandlers` with providers      | ➖ Not done — kept on `InheritedWidget` by AGENTS.md policy                   |
+| `ConsumerWidget` for elements                               | ✅ Done — inputs and show-card use `ConsumerStatefulWidget`                   |
+
+**`styleReferenceResolverProvider` theme rebuild (answered 2026-06-16):** Neither `ref.watch` nor `setState`. Propagation is via Flutter's `didChangeDependencies` mechanism: `ProviderScope.containerOf(context)` (default `listen: true`) registers an InheritedWidget dependency; when the override updates, element `didChangeDependencies()` fires and they re-read `styleResolver` fresh. No `ref.watch` conversion needed. **Side-effect bug found:** `ProviderScope(key: ValueKey<Brightness?>(...))` in [`flutter_raw_adaptive_card.dart`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart) destroys the `AdaptiveCardDocumentNotifier` (all input values, overlays) on brightness toggle — see `remove-providerscope-key` todo.
 
 ---
 
 ## Recommendation summary
 
-| Goal | Recommendation |
-|------|----------------|
-| **Minimize dependencies** (per [`replace-riverpod.md`](doc/replace-riverpod.md)) | **Remove Riverpod**; replace with `InheritedWidget` scopes (partially already there for handlers). Low risk because features are not tied to Riverpod reactivity. |
-| **Keep Riverpod** | Treat it as **DI only**—document that explicitly; fix Architecture/AGENTS docs; do **not** invest in Notifiers/Consumers unless product requirements change. |
-| **Maximize Riverpod** | Only justified if you want hosts to override providers, share async card state app-wide, or unit-test via `ProviderContainer`—none of which are requirements today. |
+> **~~OBSOLETE~~** — The "remove Riverpod" and "DI-only" paths were not taken. The project chose "maximize Riverpod" for internal state while intentionally keeping `InheritedAdaptiveCardHandlers` for host callbacks. This is now documented policy in `AGENTS.md`.
 
 ---
 
-## Optional follow-up work (if you want to act on this)
+## Remaining open work (as of 2026-06-16)
 
-1. **Docs** — Align [`Architecture-Overview.md`](doc/Architecture-Overview.md) and [`AGENTS.md`](AGENTS.md) with actual patterns (or point to [`replace-riverpod.md`](doc/replace-riverpod.md)).
-2. **Spike** — Prototype one `InheritedWidget` scope replacing outer `ProviderScope` to validate removal effort (see “What removal would need to replace” in replace-riverpod doc).
-3. **Consolidate handlers** — If keeping Riverpod, consider moving `InheritedAdaptiveCardHandlers` into the same scope model for one DI story (optional, breaking).
+### `handler-consolidation` — effectively won't-do
 
-No code changes are proposed in this assessment; confirm if you want a removal spike or doc-only updates next.
+`InheritedAdaptiveCardHandlers` still coexists with the Riverpod scope. AGENTS.md has settled on keeping host callbacks there intentionally as a public-API boundary (not a Riverpod implementation detail). This todo is **deferred / won't-do unless product requirements change**. To formally close it, add a note to `docs/reactive-riverpod.md` explaining the intentional split.
+
+### `styleReferenceResolverProvider` theme rebuild path — new open question
+
+The original plan flagged that theme/`HostConfig` updates rebuilt via `RawAdaptiveCardState.setState`. Now that `ref.watch` is the pattern, verify whether widgets that care about style changes watch `styleReferenceResolverProvider` reactively — or still rely on `setState` as the rebuild trigger. If still `setState`, this is a candidate follow-up for reactive wiring.

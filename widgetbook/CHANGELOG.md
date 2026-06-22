@@ -1,15 +1,31 @@
 # Changelog
 
-## [0.11.0]
+## [0.13.0]
 
 - no changes yet
 
-## [Unreleased]
+## [0.12.0]
 
-- **TextBlock → RichTextBlock demo** use case with sample **`lib/samples/v1.2/rich_text_block_demo.json`**.
-- **`pubspec.yaml` assets:** registered **`lib/samples/v1.2/`**.
+- no changes yet
+
+## [0.11.0]
+
+### Sample app plumbing 0.11.0
+
+- **Shared card registry:** [`widgetbook_card_registry.dart`](lib/widgetbook_card_registry.dart) — `widgetbookCardTypeRegistry` (chart elements) and `widgetbookChartOverlayCardTypeRegistry` (+ overlay extensions for the chart overlay demo). Replaces repeated inline `CardTypeRegistry(addedElements: CardChartsRegistry…)` in generic, network, chart knobs, dependent choice set, and overlay pages.
+- **Overlay demo scaffold:** [`overlay_demo_scaffold.dart`](lib/overlay_demo_scaffold.dart) — `OverlayDemoPageState` mixin for asset load, post-frame apply scheduling, document-ready retry (30 attempts), and the common `RawAdaptiveCard` shell. All five `*_overlay_page.dart` demos now use it; per-page knob sync and overlay apply logic stay in each page.
+
+### Overlay demo use cases 0.11.0 (Waves 1–3)
+
+- **Charts → Chart overlay (knob):** **[`ChartOverlayPage`](lib/chart_overlay_page.dart)** with **`lib/samples/charts/chart_overlay_demo.json`** — `setChartData` / `patchChartProperties` via **`RawAdaptiveCardState`** (requires **`CardChartsRegistry.overlayExtensions`**).
+- **Rating → Rating input overlay (knob):** **[`RatingInputOverlayPage`](lib/rating_input_overlay_page.dart)** with **`lib/samples/inputs/rating_input_overlay_demo.json`** — `applyUpdates` / `setInputError` on **`Input.Rating`** id `demoRating`.
+- **Rating → Rating display overlay (knob):** **[`RatingOverlayPage`](lib/rating_overlay_page.dart)** with **`lib/samples/elements/rating_overlay_demo.json`** — slider drives `applyUpdates` on display **`Rating`** id `stars`.
+
+### Other use cases 0.11.0
+
+- **TextBlock → RichTextBlock demo** with sample **`lib/samples/v1.2/rich_text_block_demo.json`**.
 - **AdaptiveCard → Refresh** use case: **[`RefreshDemoPage`](lib/refresh_demo_page.dart)** with sample **`lib/samples/v1.4/refresh_demo.json`** — manual refresh affordance logs **`onRefresh`** to a SnackBar.
-- **`pubspec.yaml` assets:** registered **`lib/samples/v1.4/`** (required for `AdaptiveCardsCanvas.asset` to load new sample directories).
+- **`pubspec.yaml` assets:** registered **`lib/samples/v1.2/`**, **`lib/samples/v1.4/`**, **`lib/samples/elements/`**, and **`lib/samples/charts/`** (as needed per demo JSON).
 
 ## [0.10.0]
 

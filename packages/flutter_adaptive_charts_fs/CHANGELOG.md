@@ -1,8 +1,24 @@
 # Changelog
 
-## [0.11.0]
+## [0.13.0]
 
 - no changes yet
+
+## [0.12.0]
+
+### Fixed 0.12.0
+
+- **`Chart.Line` datetime X axis:** ISO date/datetime `x` values now convert to epoch milliseconds instead of collapsing to 0, so time-series points plot in correct order and spacing.
+
+## [0.11.0]
+
+- **`ChartOverlayMixin` / chart widgets:** `ChartOverlayMixin` converted from `on State<T>` to `on ConsumerState<T>`; `AdaptiveBarChart`, `AdaptiveLineChart`, `AdaptivePieChart`, `AdaptiveGaugeChart` converted from `StatefulWidget`/`State` to `ConsumerStatefulWidget`/`ConsumerState`. Internal refactor; no public API changes.
+- Removed duplicate `assets/fonts/` tree; golden tests load Roboto from `flutter_adaptive_cards_test_support`.
+
+- **Chart runtime overlays:** **`ChartElementOverlayExtension`** registered via **`CardChartsRegistry.overlayExtensions`**; extension methods on **`RawAdaptiveCardState`** (`setChartData`, `patchChartProperties`, `clearChartData`, …).
+- **`ChartOverlayMixin`** + **`AdaptiveVisibilityMixin`** on bar, line, pie/donut, and gauge chart widgets — reactive `data` and chrome patches via `resolvedElementProvider`.
+- **`ElementOverlayExtension.overlayPatchKeys`** whitelists chart host patch keys (`data`, `chartProperties`, …).
+- Tests: **`test/charts/chart_overlay_test.dart`**, **`test/charts/chart_overlay_notifier_test.dart`**.
 
 ## [0.10.0]
 

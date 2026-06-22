@@ -74,6 +74,9 @@ class ElementOverlay {
     this.label,
     this.placeholder,
     this.facts,
+    this.inlines,
+    this.extensionPayloads,
+    this.revealPasswordEnabled,
   });
 
   /// Overrides baseline `"isVisible"` when non-null.
@@ -118,6 +121,16 @@ class ElementOverlay {
   /// Overrides baseline `"facts"` on `FactSet` when non-null.
   final List<Fact>? facts;
 
+  /// Replaces baseline `"inlines"` on `RichTextBlock` when non-null.
+  final List<Map<String, dynamic>>? inlines;
+
+  /// Optional-package overlay payloads keyed by extension id.
+  final Map<String, Map<String, dynamic>>? extensionPayloads;
+
+  /// Overrides the host `inputs.text.revealPasswordEnabled` default for one
+  /// `Input.Text` password field when non-null.
+  final bool? revealPasswordEnabled;
+
   /// Returns a copy with the given fields replaced.
   ElementOverlay copyWith({
     bool? isVisible,
@@ -134,6 +147,9 @@ class ElementOverlay {
     String? label,
     String? placeholder,
     List<Fact>? facts,
+    List<Map<String, dynamic>>? inlines,
+    Map<String, Map<String, dynamic>>? extensionPayloads,
+    bool? revealPasswordEnabled,
     bool clearInputValue = false,
     bool clearChoices = false,
     bool clearQueryCount = false,
@@ -147,6 +163,9 @@ class ElementOverlay {
     bool clearLabel = false,
     bool clearPlaceholder = false,
     bool clearFacts = false,
+    bool clearInlines = false,
+    bool clearExtensionPayloads = false,
+    bool clearRevealPasswordEnabled = false,
   }) {
     return ElementOverlay(
       isVisible: isVisible ?? this.isVisible,
@@ -167,6 +186,13 @@ class ElementOverlay {
       label: clearLabel ? null : (label ?? this.label),
       placeholder: clearPlaceholder ? null : (placeholder ?? this.placeholder),
       facts: clearFacts ? null : (facts ?? this.facts),
+      inlines: clearInlines ? null : (inlines ?? this.inlines),
+      extensionPayloads: clearExtensionPayloads
+          ? null
+          : (extensionPayloads ?? this.extensionPayloads),
+      revealPasswordEnabled: clearRevealPasswordEnabled
+          ? null
+          : (revealPasswordEnabled ?? this.revealPasswordEnabled),
     );
   }
 }
@@ -182,6 +208,7 @@ class ActionOverlay {
     this.isEnabled,
     this.title,
     this.tooltip,
+    this.iconUrl,
   });
 
   /// Overrides baseline `"isEnabled"` when non-null (AC 1.5, default true).
@@ -193,18 +220,24 @@ class ActionOverlay {
   /// Overrides baseline `"tooltip"` when non-null.
   final String? tooltip;
 
+  /// Overrides baseline `"iconUrl"` when non-null.
+  final String? iconUrl;
+
   /// Returns a copy with the given fields replaced.
   ActionOverlay copyWith({
     bool? isEnabled,
     String? title,
     String? tooltip,
+    String? iconUrl,
     bool clearTitle = false,
     bool clearTooltip = false,
+    bool clearIconUrl = false,
   }) {
     return ActionOverlay(
       isEnabled: isEnabled ?? this.isEnabled,
       title: clearTitle ? null : (title ?? this.title),
       tooltip: clearTooltip ? null : (tooltip ?? this.tooltip),
+      iconUrl: clearIconUrl ? null : (iconUrl ?? this.iconUrl),
     );
   }
 }

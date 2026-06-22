@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Shared elevated-button renderer for Adaptive Card actions.
 ///
 /// Reads title, style, `iconUrl`, and tooltip from [adaptiveMap] and invokes
 /// [onTapped] when the action is enabled.
-class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
+class IconButtonAction extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an action button for [adaptiveMap] that calls [onTapped] on press.
   IconButtonAction({
     required this.adaptiveMap,
@@ -32,22 +32,13 @@ class IconButtonAction extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [IconButtonAction].
-class IconButtonActionState extends State<IconButtonAction>
+class IconButtonActionState extends ConsumerState<IconButtonAction>
     with
         AdaptiveActionMixin,
         AdaptiveActionStateMixin,
         AdaptiveElementMixin,
         AdaptiveVisibilityMixin,
         ProviderScopeMixin {
-  /// Optional `iconUrl` from the action JSON, shown beside the title.
-  late String? iconUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    iconUrl = adaptiveMap['iconUrl'] as String?;
-  }
-
   @override
   Widget build(BuildContext context) {
     final resolver = styleResolver;
@@ -63,23 +54,47 @@ class IconButtonActionState extends State<IconButtonAction>
     );
 
     final onPressed = actionEnabled ? () => widget.onTapped(context) : null;
+    final resolvedIconUrl = iconUrl;
 
-    final theButton = (iconUrl != null)
-        ? ElevatedButton.icon(
-            onPressed: onPressed,
-            style: buttonStyle,
-            icon: AdaptiveImageUtils.getImage(
-              iconUrl!,
-              height: 36,
+    final iconPlacement =
+        resolver.getActionsConfig()?.iconPlacement ?? 'aboveTitle';
+
+    Widget theButton;
+    if (resolvedIconUrl == null) {
+      theButton = ElevatedButton(
+        onPressed: onPressed,
+        style: buttonStyle,
+        child: Text(title),
+      );
+    } else if (iconPlacement == 'aboveTitle') {
+      theButton = ElevatedButton(
+        onPressed: onPressed,
+        style: buttonStyle,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AdaptiveImageUtils.getImage(
+              resolvedIconUrl,
+              height: 24,
               semanticsLabel: title,
             ),
-            label: Text(title),
-          )
-        : ElevatedButton(
-            onPressed: onPressed,
-            style: buttonStyle,
-            child: Text(title),
-          );
+            const SizedBox(height: 4),
+            Text(title),
+          ],
+        ),
+      );
+    } else {
+      theButton = ElevatedButton.icon(
+        onPressed: onPressed,
+        style: buttonStyle,
+        icon: AdaptiveImageUtils.getImage(
+          resolvedIconUrl,
+          height: 36,
+          semanticsLabel: title,
+        ),
+        label: Text(title),
+      );
+    }
 
     final wrappedButton = (tooltip != null)
         ? Tooltip(

@@ -1,13 +1,12 @@
 // Host-only demo: calls [RawAdaptiveCardState.setFacts] on the rendered card.
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 import 'package:widgetbook/widgetbook.dart';
+import 'package:widgetbook_workspace/overlay_demo_scaffold.dart';
+import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
 enum FactSetOverlayPreset { baseline, colors, cities, foods }
 
@@ -52,73 +51,44 @@ class FactSetOverlayPage extends StatefulWidget {
   State<FactSetOverlayPage> createState() => _FactSetOverlayPageState();
 }
 
-class _FactSetOverlayPageState extends State<FactSetOverlayPage> {
+class _FactSetOverlayPageState extends State<FactSetOverlayPage>
+    with OverlayDemoPageState<FactSetOverlayPage> {
   static const _assetPath = 'lib/samples/fact_set/facts_overlay_demo.json';
-  static const _maxApplyAttempts = 30;
 
-  final GlobalKey<RawAdaptiveCardState> _cardKey = GlobalKey();
-  late final CardTypeRegistry _cardTypeRegistry = CardTypeRegistry(
-    addedElements: CardChartsRegistry.additionalChartElements,
-  );
-
-  Map<String, dynamic>? _cardMap;
   FactSetOverlayPreset? _lastAppliedPreset;
   FactSetOverlayPreset? _pendingPreset;
   FactSetOverlayPreset? _lastSeenPresetKnob;
   bool _knobsInitialized = false;
-  int _applyAttempts = 0;
-  bool _applyScheduled = false;
 
   @override
   void initState() {
     super.initState();
-    unawaited(_loadCard());
-  }
-
-  Future<void> _loadCard() async {
-    final json = await rootBundle.loadString(_assetPath);
-    final map = jsonDecode(json) as Map<String, dynamic>;
-    if (!mounted) return;
-    setState(() => _cardMap = map);
+    unawaited(loadOverlayCardAsset(_assetPath));
   }
 
   void _queueFactsOverlay(FactSetOverlayPreset preset) {
     _pendingPreset = preset;
     if (_lastAppliedPreset == preset) return;
-    _scheduleApplyOverlay();
-  }
-
-  void _scheduleApplyOverlay() {
-    if (_applyScheduled) return;
-    _applyScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _applyScheduled = false;
-      _flushPendingOverlay();
-    });
+    scheduleOverlayApply(_flushPendingOverlay);
   }
 
   void _flushPendingOverlay() {
     final preset = _pendingPreset;
-    if (!mounted || _cardMap == null || preset == null) return;
+    if (preset == null) return;
 
-    final cardState = _cardKey.currentState;
-    if (cardState == null || cardState.documentContainer == null) {
-      if (_applyAttempts < _maxApplyAttempts) {
-        _applyAttempts++;
-        _scheduleApplyOverlay();
-      }
-      return;
-    }
+    runWhenCardReady(
+      (cardState) {
+        if (_lastAppliedPreset == preset) return;
 
-    _applyAttempts = 0;
-    if (_lastAppliedPreset == preset) return;
-
-    if (preset == FactSetOverlayPreset.baseline) {
-      cardState.clearFacts(_factSetId);
-    } else {
-      cardState.setFacts(_factSetId, factsForPreset(preset)!);
-    }
-    _lastAppliedPreset = preset;
+        if (preset == FactSetOverlayPreset.baseline) {
+          cardState.clearFacts(_factSetId);
+        } else {
+          cardState.setFacts(_factSetId, factsForPreset(preset)!);
+        }
+        _lastAppliedPreset = preset;
+      },
+      reschedule: () => scheduleOverlayApply(_flushPendingOverlay),
+    );
   }
 
   void _syncPresetKnob(FactSetOverlayPreset preset) {
@@ -148,22 +118,6 @@ class _FactSetOverlayPageState extends State<FactSetOverlayPage> {
     );
     _syncPresetKnob(preset);
 
-    final cardMap = _cardMap;
-    if (cardMap == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return SelectionArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(8),
-        child: RawAdaptiveCard.fromMap(
-          key: _cardKey,
-          map: cardMap,
-          cardTypeRegistry: _cardTypeRegistry,
-          hostConfigs: HostConfigs(),
-          showDebugJson: true,
-        ),
-      ),
-    );
+    return buildOverlayCard(registry: widgetbookCardTypeRegistry);
   }
 }

@@ -172,6 +172,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildV16ChartBarVerticalGrouped,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Chart overlay (knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildChartOverlayDemo,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Donut',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildV16ChartDonut,
@@ -300,6 +305,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Select Action',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildColumnSetExample2,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'CompoundButton',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Example 1',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildV16CompoundButton,
           ),
         ],
       ),
@@ -471,6 +486,11 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildInputTextExample2,
           ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Password reveal overlay (knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildInputTextPasswordOverlay,
+          ),
         ],
       ),
       _widgetbook.WidgetbookComponent(
@@ -535,6 +555,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Example 1',
             builder:
                 _widgetbook_workspace_adaptive_cards_use_cases.buildV16Rating,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Rating display overlay (knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildRatingDisplayOverlay,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Rating input overlay (knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildRatingInputOverlay,
           ),
         ],
       ),
@@ -815,6 +845,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Show Card Wizard',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildNetworkShowCardWizard,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'Responsive',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Layout.Flow (width knob)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildResponsiveFlow,
           ),
         ],
       ),

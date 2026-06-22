@@ -23,6 +23,10 @@ See [Style inheritance data flow](adaptive-style.md#style-inheritance-data-flow)
 - **Per-card-element scope** (one per `AdaptiveCardElement`)
   - show-card UI state for that card instance
   - optional nested document fork when rendering nested card subtrees
+- **Width-bucket scope** (a thin nested scope inside each `AdaptiveCardElement`'s root `LayoutBuilder`)
+  - `cardWidthBucketProvider` override with the current responsive [`WidthBucket`](../../packages/flutter_adaptive_cards_fs/lib/src/responsive/width_bucket.dart) derived from the card's measured width (`ReferenceResolver.resolveWidthBucket`)
+  - kept **separate** from the element scope so layout passes only re-supply the bucket override; the element scope and the hoisted card subtree are not rebuilt, and `overrideWithValue` notifies watchers only when the bucket actually changes. See the responsive design doc, weakness W2: [`responsive-layout-targetwidth-flow-design.md`](superpowers/specs/2026-06-18-responsive-layout-targetwidth-flow-design.md).
+  - read via `ref.watch(cardWidthBucketProvider)` by `AdaptiveVisibilityMixin` (`targetWidth` gating) and by `Container` / the card root body (`Layout.Flow` selection); defaults to `WidthBucket.wide` (fail-open) when no scope is present.
 
 ```mermaid
 flowchart TB
@@ -35,8 +39,12 @@ flowchart TB
   subgraph elementScope [AdaptiveCardElement ProviderScope]
     show[expandedShowCardIdProvider]
   end
+  subgraph widthScope [LayoutBuilder nested ProviderScope]
+    bucket[cardWidthBucketProvider override]
+  end
   doc --> elem[Element widgets ref.watch by id]
   show --> showUi[ShowCard action + body slot]
+  bucket --> respon[targetWidth visibility + Layout.Flow selection]
 ```
 
 ## Document model: baseline + overlays
@@ -45,7 +53,7 @@ The document notifier stores:
 
 - **Baseline JSON**: deep-copied map loaded from the host, stored as `_baselineMap` on `RawAdaptiveCardState` and passed to `baselineMapProvider` on each build (same instance until `widget.map` changes). This prevents host rebuilds from producing a new baseline reference every frame and wiping overlays.
 - **Index**: `id -> baseline node` lookup for O(1) targeting.
-- **Overlays**: sparse per-id runtime state (`ElementOverlay` + `ActionOverlay`; see field list below).
+- **Overlays**: sparse per-id runtime state (`ElementOverlay` + `ActionOverlay`; see [overlay properties by type](overlay-properties-by-type.md)).
 
 Widgets render from a **resolved** view (baseline merged with overlays) via family providers like `resolvedElementProvider(id)`.
 
@@ -68,25 +76,9 @@ Instead, overlays isolate runtime changes while keeping baseline patches (host/t
 | **Baseline** | Deep copy of host JSON (`baselineMapProvider` → `AdaptiveCardDocument.baseline`) | No                  |
 | **Overlay**  | Sparse `overlaysById[id]` entries (`ElementOverlay`)                             | Yes                 |
 
-Each overlay holds optional patches for that element id:
+Each overlay holds optional patches for that element id. **Which keys affect which JSON `type`** is indexed in [`overlay-properties-by-type.md`](overlay-properties-by-type.md). Patch key glossary and `applyUpdatesFromMap` field names are there; this doc covers architecture and behavior.
 
 For an **input-only** architecture diagram (baseline, overlay fields, resolved view, submit, reset), see [`form-inputs.md` — Input overlay architecture](form-inputs.md#input-overlay-architecture).
-
-- `isVisible` — overrides baseline `"isVisible"`
-- `inputValue` — overrides baseline `"value"` on input elements
-- `choices` — overrides baseline `"choices"` on `Input.ChoiceSet`
-- `queryCount` / `querySkip` — session overrides merged into baseline `"choices.data"` (typeahead pagination)
-- `querySearchText` — typeahead search text (overlay only; not merged into resolved JSON)
-- `errorMessage` — overrides baseline `"errorMessage"` on input elements (host validation)
-- `isInvalid` — merged into resolved `"isInvalid"` (host-driven validation flag)
-- `isRequired` — overrides baseline `"isRequired"` on input elements (conditional required)
-- `text` — overrides baseline `"text"` on elements such as `TextBlock` (dynamic status, i18n)
-- `facts` — **replaces** baseline `"facts"` on `FactSet` when non-null (full list replacement; `clearFacts` removes overlay)
-- `url` — overrides baseline `"url"` on `Image` / `Media` (signed URL rotation)
-
-**Action overlays** (`actionOverlaysById`, `ActionOverlay`):
-
-- `isEnabled` — overrides baseline `"isEnabled"` on `Action.*` nodes (AC 1.5; default `true` when absent)
 
 Implementation: [`adaptive_card_document.dart`](../packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart), [`adaptive_card_document_notifier.dart`](../packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart).
 
@@ -136,6 +128,7 @@ Changes go **only** into overlays via the document notifier:
 | Submit / Execute                  | `collectInputValues()` + validation via `validateInputs()`                                                                                    | reads overlay ?? baseline `"value"`; marks failing inputs with `setInputError(isInvalid: true)` (required + `Input.Text` regex) |
 | Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                                                                     | delegates to `setChoices`                                                                                                       |
 | Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                                                                   | `ActionOverlay.isEnabled`                                                                                                       |
+| Password reveal toggle            | `setRevealPasswordEnabled(id, enabled)` / `clearRevealPasswordEnabled(id)`; `RawAdaptiveCardState` exposes the same names as facade             | `ElementOverlay.revealPasswordEnabled`; read via `ResolvedInputState.revealPasswordEnabledOverride`                              |
 | Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                                                         | `text`                                                                                                                          |
 | Replace FactSet facts             | `setFacts(id, facts)` / `clearFacts(id)` / `applyUpdates` (`facts` / `clearFacts` on `AdaptiveElementUpdate` or patch `{ clearFacts: true }`) | `facts`                                                                                                                         |
 | Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `setFacts` / `clearFacts` / `applyUpdates`              | delegates to document notifier                                                                                                  |
@@ -154,10 +147,11 @@ The host’s map instance is never mutated in place.
 
 **Preserved on that input id** (not part of “form values” reset):
 
-| Preserved         | Overlay fields                               |
-| ----------------- | -------------------------------------------- |
-| Visibility        | `isVisible`                                  |
-| Typeahead session | `queryCount`, `querySkip`, `querySearchText` |
+| Preserved              | Overlay fields                               |
+| ---------------------- | -------------------------------------------- |
+| Visibility             | `isVisible`                                  |
+| Typeahead session      | `queryCount`, `querySkip`, `querySearchText` |
+| Password reveal toggle | `revealPasswordEnabled` (`Input.Text` only)  |
 
 **Never modified** by input reset: TextBlock `text`, Image `url`, non-input visibility, **`actionOverlaysById`**, and the host baseline map.
 
@@ -205,7 +199,7 @@ Effective value rules:
 
 ### Keeping UI in sync
 
-**Inputs** (`ConsumerStatefulWidget` + `AdaptiveInputMixin`): `watchResolvedInput()` at the start of `build()` for label, placeholder, `isRequired`, validation (`isInvalid` / `errorMessage`), and resolved value; `listenForResolvedValueChanges()` / `ref.listen` syncs controllers via `onDocumentValueChanged`. Form validators and `checkRequired` write validation via **`setLocalValidationError()`** / **`clearLocalValidationError()`** (notifier overlays). Error UI uses **`loadErrorMessage(..., showError: input.isInvalid)`** only.
+**Inputs** (`ConsumerStatefulWidget` + `AdaptiveInputMixin`): `watchResolvedInput()` at the start of `build()` for label, placeholder, `isRequired`, validation (`isInvalid` / `errorMessage`), and resolved value; `listenForResolvedValueChanges()` / `ref.listen` syncs controllers via `onDocumentValueChanged`. The post-frame callback reads the **latest** resolved value at execution time (via `readResolvedInput().valueRaw`) rather than the value captured when `ref.listen` fired — this makes the echo a no-op when the controller already reflects the current document state, preserving IME cursor position during fast typing. Form validators and `checkRequired` write validation via **`setLocalValidationError()`** / **`clearLocalValidationError()`** (notifier overlays). Error UI uses **`loadErrorMessage(..., showError: input.isInvalid)`** only.
 
 `AdaptiveVisibilityMixin`, **`AdaptiveChoiceSet`** (dynamic `choices`), **`AdaptiveFactSet`** (dynamic `facts`), and **`AdaptiveTextBlock`** use `container.listen` on `resolvedElementProvider(id)` in `didChangeDependencies`. `AdaptiveActionStateMixin` and `Action.ShowCard` use `resolvedActionProvider(id)` for action overlays.
 
@@ -240,6 +234,7 @@ Visibility is driven by the document overlay model, not by mutating JSON or walk
 - Baseline `"isVisible"` comes from the adaptive map at load time.
 - Runtime changes (e.g. `Action.ToggleVisibility`) call `AdaptiveCardDocumentNotifier.setVisibility` / `toggleVisibility`, which write `ElementOverlay.isVisible`.
 - `AdaptiveVisibilityMixin` listens to `resolvedElementProvider(id)` and rebuilds when the **merged** `isVisible` changes.
+- Effective visibility is `isVisible` **AND** the element's `targetWidth` match: the mixin also `ref.watch`es `cardWidthBucketProvider` and ANDs in `targetWidthMatches(resolved['targetWidth'], bucket)`. These are independent gates — a runtime `setVisibility(true)` overlay cannot override a `targetWidth` miss, and vice-versa.
 
 Other element overlays (e.g. **TextBlock** `text` via `setText`) use the same provider; see [How overlays change values](#how-overlays-change-values-initialized-from-the-adaptive-map).
 
@@ -258,14 +253,14 @@ Other element overlays (e.g. **TextBlock** `text` via `setText`) use the same pr
 
 ### Tests
 
-Coverage lives in [`test/elements/is_visible_test.dart`](../packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart):
+Coverage lives in [`test/elements/visibility_overlay_test.dart`](../packages/flutter_adaptive_cards_fs/test/elements/visibility_overlay_test.dart):
 
 - JSON `isVisible` on elements
 - `RawAdaptiveCardState.setIsVisible` and notifier `toggleVisibility`
 - `Action.ToggleVisibility`
 - Visibility overlay survives `RawAdaptiveCard.rebuild()`
 
-See [Overlay test coverage](#overlay-test-coverage).
+See [Overlay test coverage](#overlay-test-coverage) and [`overlay-properties-by-type.md`](overlay-properties-by-type.md).
 
 ## Host callbacks
 
@@ -291,99 +286,29 @@ Tests: `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_t
 
 ## Overlay test coverage
 
-### Verdict
+Per-type patch keys and contract tests: [`overlay-properties-by-type.md`](overlay-properties-by-type.md). Programmatic lookup: `CardTypeRegistry.overlayCapabilities` (`OverlayCapabilityRegistry`).
 
-| Layer                                       | Confidence                                                       |
-| ------------------------------------------- | ---------------------------------------------------------------- |
-| **Notifier + merge providers**              | High — `test/riverpod/adaptive_card_document_notifier_test.dart` |
-| **Widget tests per `Input.*` / `Action.*`** | Partial — representative paths, not every type                   |
+| Layer | Confidence |
+| ----- | ---------- |
+| Notifier + merge providers | High — `test/riverpod/adaptive_card_document_notifier_test.dart` |
+| Widget tests per type | Partial — representative `*_overlay_test.dart` files only |
 
-The overlay **model** is well guarded; adding a new overlay field still requires notifier tests plus at least one focused widget test for the element types that consume it. A fuller matrix and gap list also lives in the agent skill [adaptive-cards-element-registry](../.agents/skills/adaptive-cards-element-registry/SKILL.md#overlay-test-coverage) (for implementers).
-
-### Primary test files
-
-| Concern                                                                    | Test file                                                                                                                   |
-| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Notifier contract (inputs, visibility, choices, validation, text, actions) | `test/riverpod/adaptive_card_document_notifier_test.dart`                                                                   |
-| `initData` / `initInput`                                                   | `test/inputs/init_data_overlay_test.dart`                                                                                   |
-| ChoiceSet `loadInput` / `appendChoices` / reset                            | `test/inputs/choice_set_overlay_test.dart`, `test/inputs/action_reset_inputs_test.dart`                                     |
-| Cascaded country → dependent ChoiceSet (`applyUpdates`)                    | `test/inputs/cascade_choice_set_test.dart`                                                                                  |
-| Data.Query session merge + `associatedInputs`                              | `test/inputs/choice_set_data_query_test.dart`, `test/models/data_query_test.dart`, `test/utils/associated_inputs_test.dart` |
-| Backend invoke round-trip (`AdaptiveCardBackendHandlers`)                  | `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_test.dart`                                          |
-| Input validation overlays                                                  | `test/inputs/input_error_overlay_test.dart`                                                                                 |
-| TextBlock `text`                                                           | `test/elements/text_block_text_overlay_test.dart`                                                                           |
-| FactSet `facts`                                                            | `test/containers/fact_set_overlay_test.dart`                                                                                |
-| Visibility / ToggleVisibility                                              | `test/elements/is_visible_test.dart`                                                                                        |
-| Action `isEnabled` (Submit)                                                | `test/actions/action_enabled_overlay_test.dart`, sample `test/samples/v1.5/action_is_enabled.json`                          |
-| Action `isEnabled` (ShowCard)                                              | `test/actions/show_card_enabled_overlay_test.dart`                                                                          |
+Adding a new overlay field requires notifier tests plus a widget test for each consuming type. Implementer checklist: [adaptive-cards-element-registry skill](../.agents/skills/adaptive-cards-element-registry/SKILL.md#overlay-test-coverage).
 
 ### How to add tests
 
 1. **Notifier** — `ProviderContainer` with `baselineMapProvider.overrideWithValue(...)`, assert `resolvedElementProvider` / `resolvedActionProvider` and `overlaysById`.
-2. **Widget** — `getTestWidgetFromMap` / `getTestWidgetFromPath`, key-first finders (`generateWidgetKey`, `generateAdaptiveWidgetKey`); see [adaptive-cards-testing skill](../.agents/skills/adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
-3. **Host API** — delegate tests on `RawAdaptiveCardState` (`setText`, `setFacts`, `setInputError`, `clearInputError`, `setActionEnabled`, …).
+2. **Widget** — extend the type's `*_overlay_test.dart`; see [adaptive-cards-testing skill](../.agents/skills/adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
+3. **Host API** — delegate tests on `RawAdaptiveCardState` when exposing new helpers.
 
-**Example (widgetbook sample):** manual verification — **FactSet → Facts overlay (knob)** (`widgetbook/lib/fact_set_overlay_page.dart`). Package tests: `test/containers/fact_set_overlay_test.dart`.
-
-### Remaining gaps (optional)
-
-- Validation overlay widget tests for `Input.Date`, `Input.Time`, `Input.Rating` (Text and Number covered in `input_error_overlay_test.dart`).
-- `setActionEnabled` on action types beyond Submit and ShowCard.
-- Input-value overlay surviving `RawAdaptiveCard.rebuild()` (visibility and TextBlock covered).
-
-Regression command:
+Regression:
 
 ```bash
 cd packages/flutter_adaptive_cards_fs
 fvm flutter test test/riverpod/adaptive_card_document_notifier_test.dart
-fvm flutter test test/inputs/init_data_overlay_test.dart
-fvm flutter test test/inputs/choice_set_overlay_test.dart
-fvm flutter test test/inputs/input_error_overlay_test.dart
-fvm flutter test test/elements/text_block_text_overlay_test.dart
-fvm flutter test test/elements/is_visible_test.dart
-fvm flutter test test/actions/action_enabled_overlay_test.dart
-fvm flutter test test/actions/show_card_enabled_overlay_test.dart
+fvm flutter test $(find test -name '*_overlay_test.dart')
 ```
 
 ## Overlay backlog
 
-This section is a **planning inventory**: which JSON properties are already driven by document overlays today, and which are reasonable candidates for future work. It is not a roadmap commitment; new overlays should follow the same patterns (`ElementOverlay` / `ActionOverlay`, merge in `resolvedElementProvider` or `resolvedActionProvider`, widget listeners, notifier + host APIs, tests).
-
-### Already implemented
-
-| Target                | Overlay / provider                                                                       |
-| --------------------- | ---------------------------------------------------------------------------------------- |
-| Any element with `id` | `isVisible` → `resolvedElementProvider`                                                  |
-| `Input.*`             | `inputValue`, `errorMessage`, `isInvalid`, `isRequired`, `choices`, query session fields |
-| `TextBlock`           | `text` → `resolvedElementProvider` (`setText` / `clearText`)                             |
-| `FactSet`             | `facts` → `resolvedElementProvider` (`setFacts` / `clearFacts`; full list replacement)   |
-| `Image`, `Media`      | `url` → `resolvedElementProvider`                                                        |
-| `Action.*`            | `isEnabled` → `resolvedActionProvider`                                                   |
-
-### Recommended future overlays (prioritized)
-
-#### Body / display elements
-
-| Property | Element(s)          | Host use case       | Priority                                               |
-| -------- | ------------------- | ------------------- | ------------------------------------------------------ |
-| `url`    | `Image`, `Media`    | Signed URL rotation | Implemented                                            |
-| `text`   | `Badge` (extension) | Dynamic badge label | Low (reuse `ElementOverlay.text` + listener if needed) |
-
-#### Inputs — defer
-
-| Property                  | Notes                                                                 |
-| ------------------------- | --------------------------------------------------------------------- |
-| `placeholder`, `label`    | Hint/label changes without changing submit `value`                    |
-| `choices.data.parameters` | Typeahead parameter binding (separate from count/skip session fields) |
-
-#### Actions — defer
-
-| Property             | Notes                                                                  |
-| -------------------- | ---------------------------------------------------------------------- |
-| `title`              | Button label updates (`AdaptiveActionMixin` reads `adaptiveMap` today) |
-| `tooltip`, `iconUrl` | Runtime UX tweaks on actions                                           |
-| `mode`, `style`      | AC 1.5+; lower host demand                                             |
-
-#### Session-only (overlay field present, not merged into resolved JSON)
-
-- `querySearchText` — ChoiceSet typeahead search text (existing pattern; merged `count`/`skip` go into `choices.data`)
+Future overlays and gaps not in [`overlay-properties-by-type.md`](overlay-properties-by-type.md): `Action.iconUrl`; ChoiceSet `choices.data.parameters` binding. New work should follow existing patterns (`ElementOverlay` / `ActionOverlay`, merge in `resolved*Provider`, widget listeners, tests, update the by-type index).

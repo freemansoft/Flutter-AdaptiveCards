@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/chart_knobs_page.dart';
+import 'package:widgetbook_workspace/chart_overlay_page.dart';
 import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
 import 'package:widgetbook_workspace/fact_set_overlay_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
+import 'package:widgetbook_workspace/input_text_password_overlay_page.dart';
 import 'package:widgetbook_workspace/network_page.dart';
+import 'package:widgetbook_workspace/rating_input_overlay_page.dart';
+import 'package:widgetbook_workspace/rating_overlay_page.dart';
 import 'package:widgetbook_workspace/refresh_demo_page.dart';
+import 'package:widgetbook_workspace/responsive_flow_page.dart';
 import 'package:widgetbook_workspace/text_block_overlay_page.dart';
 import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
 
@@ -767,6 +772,15 @@ Widget buildInputTextExample2(BuildContext context) {
   return const GenericPage(url: 'lib/samples/inputs/input_text/example2.json');
 }
 
+@widgetbook.UseCase(
+  name: 'Password reveal overlay (knob)',
+  type: widget_types.InputText,
+  path: '[Components]',
+)
+Widget buildInputTextPasswordOverlay(BuildContext context) {
+  return InputTextPasswordOverlayPage(key: inputTextPasswordOverlayPageKey);
+}
+
 // =============================================================================
 // INPUT NUMBER Component
 // =============================================================================
@@ -947,6 +961,24 @@ Widget buildV16Rating(BuildContext context) {
   return const GenericPage(url: 'lib/samples/v1.6/rating.json');
 }
 
+@widgetbook.UseCase(
+  name: 'Rating input overlay (knob)',
+  type: widget_types.Rating,
+  path: '[Components]',
+)
+Widget buildRatingInputOverlay(BuildContext context) {
+  return RatingInputOverlayPage(key: ratingInputOverlayPageKey);
+}
+
+@widgetbook.UseCase(
+  name: 'Rating display overlay (knob)',
+  type: widget_types.Rating,
+  path: '[Components]',
+)
+Widget buildRatingDisplayOverlay(BuildContext context) {
+  return RatingOverlayPage(key: ratingOverlayPageKey);
+}
+
 // =============================================================================
 // V1.6 Components - Carousel
 // =============================================================================
@@ -971,6 +1003,19 @@ Widget buildV16Carousel(BuildContext context) {
 )
 Widget buildV16Accordion(BuildContext context) {
   return const GenericPage(url: 'lib/samples/v1.6/accordion.json');
+}
+
+// =============================================================================
+// V1.6 Components - CompoundButton
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Example 1',
+  type: widget_types.CompoundButton,
+  path: '[Components]',
+)
+Widget buildV16CompoundButton(BuildContext context) {
+  return const GenericPage(url: 'lib/samples/v1.6/compound_button.json');
 }
 
 // =============================================================================
@@ -1056,6 +1101,15 @@ Widget buildV16ChartLine(BuildContext context) {
 )
 Widget buildV16ChartGauge(BuildContext context) {
   return _chartKnobsUseCase('lib/samples/v1.6/chart_gauge.json');
+}
+
+@widgetbook.UseCase(
+  name: 'Chart overlay (knob)',
+  type: widget_types.Charts,
+  path: '[Components]',
+)
+Widget buildChartOverlayDemo(BuildContext context) {
+  return ChartOverlayPage(key: chartOverlayPageKey);
 }
 
 @widgetbook.UseCase(
@@ -1185,6 +1239,7 @@ Widget buildNetworkShowCardWizard(BuildContext context) {
   );
 }
 
+// use case is broken because of https://github.com/microsoft/AdaptiveCards/issues/9382
 @widgetbook.UseCase(
   name: 'Agenda',
   type: widget_types.Microsoft15,
@@ -1387,4 +1442,17 @@ Widget buildFormWithInitData(BuildContext context) {
       'gender': 'female',
     },
   );
+}
+
+// =============================================================================
+// RESPONSIVE Component (targetWidth / Layout.Flow)
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Layout.Flow (width knob)',
+  type: widget_types.Responsive,
+  path: '[Other]',
+)
+Widget buildResponsiveFlow(BuildContext context) {
+  return const ResponsiveFlowPage();
 }

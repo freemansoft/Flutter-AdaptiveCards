@@ -14,6 +14,36 @@ Official spec: [HostConfig explorer](https://adaptivecards.io/explorer/HostConfi
 
 ---
 
+## Non-standard HostConfig extensions
+
+This project occasionally adds HostConfig properties that are **not part of the official Adaptive Cards HostConfig schema**. These custom extensions exist to support platform-specific or UX behaviours the spec does not address.
+
+Convention: every non-standard property is flagged with a **Non-standard** callout in both its Dart `///` doc comment and in this section.
+
+### `inputs.text.revealPasswordEnabled` *(Non-standard)*
+
+**Type:** `bool` | **Default:** `true` (`FallbackConfigs.inputsConfig.text.revealPasswordEnabled`)
+
+When `true`, `Input.Text` fields whose `style` is `"password"` render a show/hide eye-icon toggle alongside the field. When `false`, no toggle is shown and the field remains masked.
+
+This property is nested under `inputs.text` (a `TextInputConfig` object exposed as `InputsConfig.text`) rather than directly on `inputs`. Example JSON:
+
+```json
+"inputs": { "text": { "revealPasswordEnabled": true } }
+```
+
+A per-element overlay (`revealPasswordEnabled`) can override this at runtime.
+
+Resolution precedence (highest wins):
+
+1. Per-element overlay (`revealPasswordEnabled` in the document notifier)
+2. `HostConfig` value (`inputs.text.revealPasswordEnabled` in JSON)
+3. `FallbackConfigs.inputsConfig.text.revealPasswordEnabled` (`true`)
+
+Source files: `lib/src/hostconfig/inputs_config.dart`, `lib/src/hostconfig/text_input_config.dart`, `lib/src/hostconfig/fallback_configs.dart`.
+
+---
+
 ## Architecture overview
 
 HostConfig JSON is parsed into typed Dart classes under `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/`. At render time, `ReferenceResolver` bridges HostConfig values to Flutter widgets.

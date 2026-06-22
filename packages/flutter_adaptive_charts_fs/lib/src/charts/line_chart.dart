@@ -2,6 +2,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
+import 'package:flutter_adaptive_charts_fs/src/charts/chart_x_value.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders Adaptive Card line chart elements using fl_chart.
 ///
@@ -10,7 +13,7 @@ import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
 /// and is wrapped in [SeparatorElement] for card layout and spacing.
 ///
 /// See also: https://adaptivecards.microsoft.com/?topic=Chart.Line
-class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveLineChart extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a line chart element from [adaptiveMap].
   AdaptiveLineChart({
     required this.adaptiveMap,
@@ -29,8 +32,12 @@ class AdaptiveLineChart extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveLineChart]; parses JSON data and builds the fl_chart widget.
-class AdaptiveLineChartState extends State<AdaptiveLineChart>
-    with AdaptiveElementMixin, ProviderScopeMixin {
+class AdaptiveLineChartState extends ConsumerState<AdaptiveLineChart>
+    with
+        AdaptiveElementMixin,
+        AdaptiveVisibilityMixin,
+        ProviderScopeMixin,
+        ChartOverlayMixin {
   /// Parsed line series passed to the underlying [LineChart].
   late List<LineChartBarData> lineBarsData;
 
@@ -53,23 +60,23 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
   List<ChartLegendEntry> _legendEntries = [];
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void onResolvedChartChanged() {
     _parseData();
   }
 
   void _parseData() {
+    final map = resolvedChartMap;
     final layout = styleResolver.resolveLineChartLayout();
-    final colorSet = adaptiveMap['colorSet']?.toString();
+    final colorSet = map['colorSet']?.toString();
     final palette = styleResolver.resolveChartPalette(colorSet: colorSet);
 
-    _chartTitle = adaptiveMap['title']?.toString();
-    _xAxisTitle = adaptiveMap['xAxisTitle']?.toString();
-    _yAxisTitle = adaptiveMap['yAxisTitle']?.toString();
-    _showLegend = adaptiveMap['showLegend'] as bool? ?? false;
+    _chartTitle = map['title']?.toString();
+    _xAxisTitle = map['xAxisTitle']?.toString();
+    _yAxisTitle = map['yAxisTitle']?.toString();
+    _showLegend = map['showLegend'] as bool? ?? false;
     _legendEntries = [];
 
-    final data = adaptiveMap['data'];
+    final data = map['data'];
     lineBarsData = [];
 
     minY = layout.emptyMinY;
@@ -89,8 +96,7 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
     int seriesCount = 0;
 
     for (final item in data) {
-      final dynamic rawX = item['x'] ?? 0;
-      final double x = (rawX is num) ? rawX.toDouble() : 0.0;
+      final double x = parseChartXValue(item['x']);
 
       final dynamic rawY = item['y'] ?? item['value'] ?? 0;
       final double y = (rawY is num) ? rawY.toDouble() : 0.0;
@@ -177,47 +183,51 @@ class AdaptiveLineChartState extends State<AdaptiveLineChart>
 
   @override
   Widget build(BuildContext context) {
+    listenForChartOverlayChanges();
     final layout = styleResolver.resolveLineChartLayout();
 
-    return SeparatorElement(
-      adaptiveMap: adaptiveMap,
-      child: ChartChrome(
-        title: _chartTitle,
-        legendEntries: _showLegend ? _legendEntries : const [],
-        chart: SizedBox(
-          height: layout.height,
-          child: LineChart(
-            LineChartData(
-              lineBarsData: lineBarsData,
-              minX: minX,
-              maxX: maxX,
-              minY: minY,
-              maxY: maxY,
-              titlesData: FlTitlesData(
-                show: layout.showTitles,
-                bottomTitles: AxisTitles(
-                  sideTitles: _axisValueTitles(layout),
-                  axisNameWidget: _axisName(context, _xAxisTitle),
-                  axisNameSize: _axisNameSize(_xAxisTitle),
+    return Visibility(
+      visible: isVisible,
+      child: SeparatorElement(
+        adaptiveMap: adaptiveMap,
+        child: ChartChrome(
+          title: _chartTitle,
+          legendEntries: _showLegend ? _legendEntries : const [],
+          chart: SizedBox(
+            height: layout.height,
+            child: LineChart(
+              LineChartData(
+                lineBarsData: lineBarsData,
+                minX: minX,
+                maxX: maxX,
+                minY: minY,
+                maxY: maxY,
+                titlesData: FlTitlesData(
+                  show: layout.showTitles,
+                  bottomTitles: AxisTitles(
+                    sideTitles: _axisValueTitles(layout),
+                    axisNameWidget: _axisName(context, _xAxisTitle),
+                    axisNameSize: _axisNameSize(_xAxisTitle),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: _axisValueTitles(layout),
+                    axisNameWidget: _axisName(context, _yAxisTitle),
+                    axisNameSize: _axisNameSize(_yAxisTitle),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: layout.showRightTitles),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: layout.showTopTitles),
+                  ),
                 ),
-                leftTitles: AxisTitles(
-                  sideTitles: _axisValueTitles(layout),
-                  axisNameWidget: _axisName(context, _yAxisTitle),
-                  axisNameSize: _axisNameSize(_yAxisTitle),
-                ),
-                rightTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: layout.showRightTitles),
-                ),
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: layout.showTopTitles),
-                ),
-              ),
-              gridData: FlGridData(show: layout.showGrid),
-              borderData: FlBorderData(
-                show: layout.showBorder,
-                border: Border.all(
-                  color: layout.borderColor,
-                  width: layout.borderWidth,
+                gridData: FlGridData(show: layout.showGrid),
+                borderData: FlBorderData(
+                  show: layout.showBorder,
+                  border: Border.all(
+                    color: layout.borderColor,
+                    width: layout.borderWidth,
+                  ),
                 ),
               ),
             ),

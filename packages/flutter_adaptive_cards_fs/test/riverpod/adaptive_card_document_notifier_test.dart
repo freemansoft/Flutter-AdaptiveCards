@@ -6,6 +6,20 @@ import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+Map<String, dynamic> _passwordBaseline() {
+  return {
+    'type': 'AdaptiveCard',
+    'version': '1.5',
+    'body': [
+      {
+        'type': 'Input.Text',
+        'id': 'pwd',
+        'style': 'password',
+      },
+    ],
+  };
+}
+
 Map<String, dynamic> _baselineFixture() {
   return {
     'type': 'AdaptiveCard',
@@ -671,6 +685,59 @@ void main() {
       });
     });
 
+    group('inlines overlay', () {
+      late ProviderContainer inlinesContainer;
+
+      setUp(() {
+        inlinesContainer = _createContainer({
+          'type': 'AdaptiveCard',
+          'version': '1.5',
+          'body': [
+            {
+              'type': 'RichTextBlock',
+              'id': 'rtb1',
+              'inlines': [
+                {'type': 'TextRun', 'text': 'Baseline'},
+              ],
+            },
+          ],
+        });
+      });
+
+      tearDown(() {
+        inlinesContainer.dispose();
+      });
+
+      test('setInlines merges into resolvedElementProvider', () {
+        inlinesContainer.read(adaptiveCardDocumentProvider.notifier).setInlines(
+          'rtb1',
+          [
+            {'type': 'TextRun', 'text': 'Overlay'},
+          ],
+        );
+
+        final resolved = inlinesContainer.read(resolvedElementProvider('rtb1'));
+        final inlines = resolved?['inlines'] as List<dynamic>?;
+        expect(inlines, hasLength(1));
+        expect(inlines!.first['text'], 'Overlay');
+      });
+
+      test('clearInlines restores baseline inlines', () {
+        final notifier =
+            inlinesContainer.read(adaptiveCardDocumentProvider.notifier)
+              ..setInlines('rtb1', [
+                {'type': 'TextRun', 'text': 'Overlay'},
+              ])
+              ..clearInlines('rtb1');
+
+        expect(notifier.state.overlaysById['rtb1']?.inlines, isNull);
+
+        final resolved = inlinesContainer.read(resolvedElementProvider('rtb1'));
+        final inlines = resolved?['inlines'] as List<dynamic>?;
+        expect(inlines!.first['text'], 'Baseline');
+      });
+    });
+
     group('TextBlock text overlays', () {
       late ProviderContainer textContainer;
 
@@ -909,65 +976,99 @@ void main() {
         imageBaseline.dispose();
       });
 
-      test('applyUpdates merges label, placeholder, title, and tooltip', () {
-        final actionCard = _createContainer({
+      test('setUrl on Media merges into sources[0].url', () {
+        final mediaContainer = _createContainer({
           'type': 'AdaptiveCard',
           'body': [
             {
-              'type': 'Input.Text',
-              'id': 'name',
-              'label': 'Name',
-              'placeholder': 'Enter name',
-            },
-          ],
-          'actions': [
-            {
-              'type': 'Action.Submit',
-              'id': 'submit',
-              'title': 'Send',
-              'tooltip': 'Submit form',
+              'type': 'Media',
+              'id': 'media1',
+              'sources': [
+                {'url': 'https://old.example/v.mp4'},
+              ],
             },
           ],
         });
+        addTearDown(mediaContainer.dispose);
 
-        actionCard
+        mediaContainer
             .read(adaptiveCardDocumentProvider.notifier)
-            .applyUpdates(
-              elements: const [
-                AdaptiveElementUpdate(
-                  id: 'name',
-                  label: 'Full name',
-                  placeholder: 'Type here',
-                ),
-              ],
-              actions: const [
-                AdaptiveActionUpdate(
-                  id: 'submit',
-                  title: 'Submit now',
-                  tooltip: 'Send the form',
-                ),
-              ],
-            );
+            .setUrl('media1', 'https://new.example/v.mp4');
 
-        expect(
-          actionCard.read(resolvedElementProvider('name'))?['label'],
-          'Full name',
-        );
-        expect(
-          actionCard.read(resolvedElementProvider('name'))?['placeholder'],
-          'Type here',
-        );
-        expect(
-          actionCard.read(resolvedActionProvider('submit'))?['title'],
-          'Submit now',
-        );
-        expect(
-          actionCard.read(resolvedActionProvider('submit'))?['tooltip'],
-          'Send the form',
-        );
-
-        actionCard.dispose();
+        final resolved = mediaContainer.read(resolvedElementProvider('media1'));
+        final sources = resolved?['sources'] as List<dynamic>?;
+        expect(sources, isNotNull);
+        expect(sources!.first['url'], 'https://new.example/v.mp4');
       });
+
+      test(
+        'applyUpdates merges label, placeholder, title, tooltip, and iconUrl',
+        () {
+          final actionCard = _createContainer({
+            'type': 'AdaptiveCard',
+            'body': [
+              {
+                'type': 'Input.Text',
+                'id': 'name',
+                'label': 'Name',
+                'placeholder': 'Enter name',
+              },
+            ],
+            'actions': [
+              {
+                'type': 'Action.Submit',
+                'id': 'submit',
+                'title': 'Send',
+                'tooltip': 'Submit form',
+                'iconUrl': 'https://example.com/send.png',
+              },
+            ],
+          });
+
+          actionCard
+              .read(adaptiveCardDocumentProvider.notifier)
+              .applyUpdates(
+                elements: const [
+                  AdaptiveElementUpdate(
+                    id: 'name',
+                    label: 'Full name',
+                    placeholder: 'Type here',
+                  ),
+                ],
+                actions: const [
+                  AdaptiveActionUpdate(
+                    id: 'submit',
+                    title: 'Submit now',
+                    tooltip: 'Send the form',
+                    iconUrl: 'https://example.com/submit.png',
+                  ),
+                ],
+              );
+
+          expect(
+            actionCard.read(resolvedElementProvider('name'))?['label'],
+            'Full name',
+          );
+          expect(
+            actionCard.read(resolvedElementProvider('name'))?['placeholder'],
+            'Type here',
+          );
+          expect(
+            actionCard.read(resolvedActionProvider('submit'))?['title'],
+            'Submit now',
+          );
+          expect(
+            actionCard.read(resolvedActionProvider('submit'))?['tooltip'],
+            'Send the form',
+          );
+          expect(
+            actionCard.read(resolvedActionProvider('submit'))?['iconUrl'],
+            'https://example.com/submit.png',
+          );
+
+          actionCard.dispose();
+        },
+      );
 
       test('updatesFromPatchMap routes action title patches by node type', () {
         final nodes = {
@@ -1001,6 +1102,51 @@ void main() {
         expect(parsedInput.actions, isEmpty);
         expect(parsedInput.elements.single.label, 'Name');
       });
+    });
+  });
+
+  group('revealPasswordEnabled overlay', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = _createContainer(_passwordBaseline());
+    });
+
+    tearDown(() {
+      container.dispose();
+    });
+
+    test('setRevealPasswordEnabled merges into resolvedElementProvider', () {
+      container
+          .read(adaptiveCardDocumentProvider.notifier)
+          .setRevealPasswordEnabled('pwd', enabled: false);
+
+      final resolved = container.read(resolvedElementProvider('pwd'));
+      expect(resolved?['revealPasswordEnabled'], isFalse);
+    });
+
+    test('clearRevealPasswordEnabled removes the override', () {
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+        ..setRevealPasswordEnabled('pwd', enabled: false)
+        ..clearRevealPasswordEnabled('pwd');
+
+      expect(
+        notifier.state.overlaysById['pwd']?.revealPasswordEnabled,
+        isNull,
+      );
+      final resolved = container.read(resolvedElementProvider('pwd'));
+      expect(resolved?.containsKey('revealPasswordEnabled'), isFalse);
+    });
+
+    test('resetInput preserves revealPasswordEnabled override', () {
+      final notifier = container.read(adaptiveCardDocumentProvider.notifier)
+        ..setRevealPasswordEnabled('pwd', enabled: false)
+        ..resetInput('pwd');
+
+      expect(
+        notifier.state.overlaysById['pwd']?.revealPasswordEnabled,
+        isFalse,
+      );
     });
   });
 }

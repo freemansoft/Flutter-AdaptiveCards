@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/text_run.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/RichTextBlock.html
 ///
-class AdaptiveRichTextBlock extends StatefulWidget
+class AdaptiveRichTextBlock extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a rich text block from [adaptiveMap] JSON.
   AdaptiveRichTextBlock({
@@ -29,12 +31,11 @@ class AdaptiveRichTextBlock extends StatefulWidget
 }
 
 /// State for [AdaptiveRichTextBlock]; builds [TextSpan] children from inlines.
-class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
+class AdaptiveRichTextBlockState extends ConsumerState<AdaptiveRichTextBlock>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   late TextAlign _textAlign;
   late Alignment _horizontalAlignment;
   final List<TapGestureRecognizer> _recognizers = [];
-  List<InlineSpan> _inlineSpans = const [];
 
   @override
   void didChangeDependencies() {
@@ -46,7 +47,6 @@ class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
     _textAlign = resolver.resolveTextAlign(
       adaptiveMap['horizontalAlignment'] as String?,
     );
-    _rebuildInlineSpans();
   }
 
   @override
@@ -108,10 +108,13 @@ class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
     return recognizer;
   }
 
-  List<InlineSpan> _createInlineSpans(BuildContext context) {
+  List<InlineSpan> _createInlineSpans(
+    BuildContext context,
+    Map<String, dynamic> sourceMap,
+  ) {
     _disposeRecognizers();
     final resolver = styleResolver;
-    final inlinesRaw = adaptiveMap['inlines'];
+    final inlinesRaw = sourceMap['inlines'];
     if (inlinesRaw is! List) return const [];
 
     final spans = <InlineSpan>[];
@@ -169,14 +172,10 @@ class AdaptiveRichTextBlockState extends State<AdaptiveRichTextBlock>
     return spans;
   }
 
-  void _rebuildInlineSpans() {
-    _disposeRecognizers();
-    _inlineSpans = _createInlineSpans(context);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final spans = _inlineSpans;
+    final resolved = ref.watch(resolvedElementProvider(id)) ?? adaptiveMap;
+    final spans = _createInlineSpans(context, resolved);
     final isHeading = style?.toLowerCase() == 'heading';
 
     return Visibility(

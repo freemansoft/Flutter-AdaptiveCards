@@ -11,8 +11,9 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 import 'package:format/format.dart';
+
+import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
 /// Mock city lists keyed by country choice value.
 const citiesByCountry = <String, List<Choice>>{
@@ -155,9 +156,7 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         child: AdaptiveCardsCanvas.asset(
           assetPath: assetPath,
-          cardTypeRegistry: CardTypeRegistry(
-            addedElements: CardChartsRegistry.additionalChartElements,
-          ),
+          cardTypeRegistry: widgetbookCardTypeRegistry,
           onChange: handleDependentChoiceSetChange,
           hostConfigs: HostConfigs(),
           showDebugJson: true,

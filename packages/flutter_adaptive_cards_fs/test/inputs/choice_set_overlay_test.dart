@@ -255,4 +255,151 @@ void main() {
     expect((choices!.first as Map)['title'], 'Static Updated');
     expect((choices.first as Map)['value'], 'static');
   });
+
+  testWidgets(
+    'initData seeds ChoiceSet selection when card has choices.data',
+    (WidgetTester tester) async {
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'body': [
+          {
+            'type': 'Input.ChoiceSet',
+            'id': 'myChoice',
+            'style': 'expanded',
+            'choices': [
+              {'title': 'Choice 1', 'value': '1'},
+              {'title': 'Choice 2', 'value': '2'},
+            ],
+            'choices.data': {
+              'type': 'Data.Query',
+              'dataset': 'example.com/items',
+            },
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'initData choice with Data.Query',
+          initData: const {'myChoice': '2'},
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final choiceMap = map['body'][0] as Map<String, dynamic>;
+      final inputFinder = find.byKey(
+        generateWidgetKey(choiceMap, suffix: 'Choice 2'),
+      );
+      final container = ProviderScope.containerOf(
+        tester.element(inputFinder),
+      );
+
+      expect(
+        container.read(resolvedElementProvider('myChoice'))?['value'],
+        '2',
+      );
+      final choicesData =
+          container.read(resolvedElementProvider('myChoice'))?['choices.data']
+              as Map<String, dynamic>?;
+      expect(choicesData?['dataset'], 'example.com/items');
+    },
+  );
+
+  testWidgets('initData seeds ChoiceSet selection in resolved overlay', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.ChoiceSet',
+          'id': 'myChoice',
+          'style': 'expanded',
+          'choices': [
+            {'title': 'Choice 1', 'value': '1'},
+            {'title': 'Choice 2', 'value': '2'},
+          ],
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(
+        map: map,
+        title: 'initData choice overlay',
+        initData: const {'myChoice': '2'},
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final choiceMap = map['body'][0] as Map<String, dynamic>;
+    final inputFinder = find.byKey(
+      generateWidgetKey(choiceMap, suffix: 'Choice 2'),
+    );
+    final container = ProviderScope.containerOf(
+      tester.element(inputFinder),
+    );
+
+    expect(
+      container.read(resolvedElementProvider('myChoice'))?['value'],
+      '2',
+    );
+
+    final Map<String, dynamic> out = {};
+    tester
+        .state<AdaptiveChoiceSetState>(find.byType(AdaptiveChoiceSet))
+        .appendInput(out);
+    expect(out['myChoice'], '2');
+  });
+
+  testWidgets('initData patch map seeds choices via applyUpdatesFromMap', (
+    WidgetTester tester,
+  ) async {
+    final Map<String, dynamic> map = {
+      'type': 'AdaptiveCard',
+      'body': [
+        {
+          'type': 'Input.ChoiceSet',
+          'id': 'myChoice',
+          'style': 'expanded',
+          'choices': [
+            {'title': 'Old', 'value': 'old'},
+          ],
+        },
+      ],
+    };
+
+    await tester.pumpWidget(
+      getTestWidgetFromMap(
+        map: map,
+        title: 'initData patch map',
+        initData: {
+          'myChoice': {
+            'choices': [
+              {'title': 'New', 'value': 'new'},
+            ],
+            'value': 'new',
+          },
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final choiceMap = map['body'][0] as Map<String, dynamic>;
+    final container = ProviderScope.containerOf(
+      tester.element(find.byKey(generateWidgetKey(choiceMap, suffix: 'New'))),
+    );
+
+    expect(
+      container.read(resolvedElementProvider('myChoice'))?['value'],
+      'new',
+    );
+    expect(
+      container.read(resolvedElementProvider('myChoice'))?['choices'],
+      [
+        {'title': 'New', 'value': 'new'},
+      ],
+    );
+  });
 }

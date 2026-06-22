@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders the Adaptive Cards **Badge** element (text and optional icon).
 ///
 /// See https://adaptivecards.io/explorer/Badge.html
-class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveBadge extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a badge from [adaptiveMap] JSON.
   AdaptiveBadge({
     required this.adaptiveMap,
@@ -26,41 +28,26 @@ class AdaptiveBadge extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveBadge]; resolves colors and layout from HostConfig.
-class AdaptiveBadgeState extends State<AdaptiveBadge>
+class AdaptiveBadgeState extends ConsumerState<AdaptiveBadge>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
-  /// Badge label text from `text`.
-  late String? text;
-
-  /// Optional icon URL from `iconUrl`.
-  late String? iconUrl;
-
-  /// Visual style: `filled`, `tint`, `outline`, etc.
-  late String appearance;
-
-  /// Size token: `small`, `medium`, or `large`.
-  late String size;
-
-  /// Optional hover/accessibility tooltip from `tooltip`.
-  late String? tooltip;
-
-  /// Icon placement relative to text: `left` or `right`.
-  late String iconAlignment;
-
-  @override
-  void initState() {
-    super.initState();
-    text = adaptiveMap['text'] as String?;
-    iconUrl = adaptiveMap['iconUrl'] as String?;
-    appearance =
-        adaptiveMap['appearance']?.toString().toLowerCase() ?? 'filled';
-    size = adaptiveMap['size']?.toString().toLowerCase() ?? 'medium';
-    tooltip = adaptiveMap['tooltip'] as String?;
-    iconAlignment =
-        adaptiveMap['iconAlignment']?.toString().toLowerCase() ?? 'left';
-  }
-
   @override
   Widget build(BuildContext context) {
+    final resolved = ref.watch(resolvedElementProvider(id));
+    final text = (resolved?['text'] as String?) ?? (adaptiveMap['text'] as String?);
+    final iconUrl = (resolved?['iconUrl'] as String?) ?? (adaptiveMap['iconUrl'] as String?);
+    final appearance =
+        adaptiveMap['appearance']?.toString().toLowerCase() ?? 'filled';
+    final size = adaptiveMap['size']?.toString().toLowerCase() ?? 'medium';
+    final shape = adaptiveMap['shape']?.toString().toLowerCase() ?? 'circular';
+    final BorderRadius borderRadius = switch (shape) {
+      'square' => BorderRadius.circular(2),
+      'rounded' => BorderRadius.circular(6),
+      _ => BorderRadius.circular(12),
+    };
+    final tooltip = adaptiveMap['tooltip'] as String?;
+    final iconAlignment =
+        adaptiveMap['iconAlignment']?.toString().toLowerCase() ?? 'left';
+
     final resolver = styleResolver;
     final Color backgroundColor =
         resolver.resolveBadgeBackgroundColor(
@@ -83,7 +70,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     Widget? iconWidget;
     if (iconUrl != null) {
       iconWidget = AdaptiveImageUtils.getImage(
-        iconUrl!,
+        iconUrl,
         height: 16,
         width: 16,
         semanticsLabel: text,
@@ -99,7 +86,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     if (text != null) {
       children.add(
         Text(
-          text!,
+          text,
           style: TextStyle(
             color: textColor,
             fontSize: resolver.resolveBadgeFontSize(size),
@@ -116,7 +103,7 @@ class AdaptiveBadgeState extends State<AdaptiveBadge>
     Widget badge = Container(
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12), // Pill shape
+        borderRadius: borderRadius,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(

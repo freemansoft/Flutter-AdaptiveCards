@@ -6,6 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/resolved_input_state.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -209,64 +210,35 @@ mixin AdaptiveActionMixin<T extends AdaptiveElementWidgetMixin> on State<T>
   String? get tooltip => adaptiveMap['tooltip'] as String?;
 }
 
-/// Reactive action label, tooltip, and enabled state from merged baseline +
-/// overlays.
-mixin AdaptiveActionStateMixin<T extends AdaptiveElementWidgetMixin> on State<T>
-    implements AdaptiveElementMixin<T> {
-  bool _actionEnabled = true;
-  String _actionTitle = '';
-  String? _actionTooltip;
-  ProviderSubscription<Map<String, dynamic>?>? _actionStateSubscription;
+/// Reactive action label, tooltip, iconUrl, and enabled state from merged
+/// baseline + overlays.
+mixin AdaptiveActionStateMixin<T extends ConsumerStatefulWidget>
+    on ConsumerState<T> {
+  /// Stable element id; provided by [AdaptiveElementMixin] when mixed in.
+  String get id;
+
+  /// Baseline element JSON; provided by [AdaptiveElementMixin] when mixed in.
+  Map<String, dynamic> get adaptiveMap;
 
   /// Whether the action accepts presses per merged baseline + overlay.
-  bool get actionEnabled => _actionEnabled;
+  bool get actionEnabled =>
+      ref.watch(resolvedActionProvider(id))?['isEnabled'] != false;
 
   /// Merged action label from baseline JSON and runtime overlays.
-  String get title => _actionTitle;
+  String get title =>
+      (ref.watch(resolvedActionProvider(id))?['title'] as String?) ??
+      (adaptiveMap['title'] as String?) ??
+      '';
 
   /// Merged tooltip from baseline JSON and runtime overlays.
-  String? get tooltip => _actionTooltip;
+  String? get tooltip =>
+      (ref.watch(resolvedActionProvider(id))?['tooltip'] as String?) ??
+      (adaptiveMap['tooltip'] as String?);
 
-  @override
-  void initState() {
-    super.initState();
-    _actionTitle = adaptiveMap['title'] as String? ?? '';
-    _actionTooltip = adaptiveMap['tooltip'] as String?;
-    _actionEnabled = adaptiveMap['isEnabled'] != false;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _actionStateSubscription?.close();
-    final container = ProviderScope.containerOf(context);
-    _actionStateSubscription = container.listen<Map<String, dynamic>?>(
-      resolvedActionProvider(id),
-      (previous, next) {
-        final enabled = next?['isEnabled'] != false;
-        final nextTitle = next?['title'] as String? ?? '';
-        final nextTooltip = next?['tooltip'] as String?;
-        if (enabled == _actionEnabled &&
-            nextTitle == _actionTitle &&
-            nextTooltip == _actionTooltip) {
-          return;
-        }
-        setState(() {
-          _actionEnabled = enabled;
-          _actionTitle = nextTitle;
-          _actionTooltip = nextTooltip;
-        });
-      },
-      fireImmediately: true,
-    );
-  }
-
-  @override
-  void dispose() {
-    _actionStateSubscription?.close();
-    _actionStateSubscription = null;
-    super.dispose();
-  }
+  /// Merged `iconUrl` from baseline JSON and runtime overlays.
+  String? get iconUrl =>
+      (ref.watch(resolvedActionProvider(id))?['iconUrl'] as String?) ??
+      (adaptiveMap['iconUrl'] as String?);
 }
 
 /// Shared input overlay, validation, and value-changed-action behavior for
@@ -346,13 +318,21 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   }
 
   /// Call at the top of [build] to sync controllers when resolved value changes.
+  ///
+  /// Registers a `ref.listen` subscription (auto-removed on the next rebuild)
+  /// that schedules a post-frame callback whenever the resolved `'value'` key
+  /// changes.  The callback reads the **latest** resolved value at execution
+  /// time rather than capturing it at listener-fire time.  This prevents a
+  /// stale-echo: if two keystrokes arrive in the same frame, the intermediate
+  /// captured value would be outdated by the time the callback runs.  Reading
+  /// the latest ensures the echo is a no-op when the controller already reflects
+  /// the current document state, preserving the IME cursor position.
   void listenForResolvedValueChanges() {
     ref.listen(resolvedElementProvider(_inputId), (previous, next) {
       if (previous?['value'] == next?['value']) return;
-      final value = next?['value'];
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        onDocumentValueChanged(value);
+        onDocumentValueChanged(readResolvedInput().valueRaw);
       });
     });
   }
@@ -399,47 +379,29 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 mixin AdaptiveTextualInputMixin<T extends ConsumerStatefulWidget>
     on ConsumerState<T> {}
 
-/// Subscribes to merged `isVisible` and exposes [setIsVisible] for hosts.
-mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
-    implements AdaptiveElementMixin<T> {
-  /// Effective visibility after baseline JSON and runtime overlays.
-  late bool isVisible;
-  ProviderSubscription<Map<String, dynamic>?>? _visibilitySubscription;
+/// Reactive `isVisible` from merged baseline + overlays.
+mixin AdaptiveVisibilityMixin<T extends ConsumerStatefulWidget>
+    on ConsumerState<T> {
+  /// Stable element id; provided by [AdaptiveElementMixin] when mixed in.
+  String get id;
 
-  @override
-  void initState() {
-    super.initState();
-    isVisible = true;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _visibilitySubscription?.close();
-
-    final container = ProviderScope.containerOf(context);
-    _visibilitySubscription = container.listen<Map<String, dynamic>?>(
-      resolvedElementProvider(id),
-      (previous, next) {
-        final visible = parseIsVisible(next?['isVisible']);
-        if (visible == isVisible) return;
-        setState(() => isVisible = visible);
-      },
-      fireImmediately: true,
-    );
-  }
-
-  @override
-  void dispose() {
-    _visibilitySubscription?.close();
-    _visibilitySubscription = null;
-    super.dispose();
+  /// Effective visibility: baseline JSON + runtime overlays, ANDed with the
+  /// element's `targetWidth` match against the current card width bucket.
+  ///
+  /// `isVisible` and `targetWidth` are independent gates — a runtime
+  /// `setIsVisible(visible: true)` overlay cannot override a `targetWidth` miss.
+  bool get isVisible {
+    final resolved = ref.watch(resolvedElementProvider(id));
+    final baselineVisible = parseIsVisible(resolved?['isVisible']);
+    final bucket = ref.watch(cardWidthBucketProvider);
+    final matchesWidth =
+        targetWidthMatches(resolved?['targetWidth'] as String?, bucket);
+    return baselineVisible && matchesWidth;
   }
 
   /// Sets runtime visibility overlay for this element id (host or Action.ToggleVisibility).
   void setIsVisible({required bool visible}) {
-    final container = ProviderScope.containerOf(context);
-    container
+    ref
         .read(adaptiveCardDocumentProvider.notifier)
         .setVisibility(id, visible: visible);
   }

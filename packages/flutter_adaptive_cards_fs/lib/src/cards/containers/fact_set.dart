@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
@@ -16,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders a `FactSet` as title/value pairs in two columns, with reactive
 /// updates when overlay `facts` change.
-class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveFactSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `FactSet` from [adaptiveMap].
   AdaptiveFactSet({
     required this.adaptiveMap,
@@ -35,14 +34,10 @@ class AdaptiveFactSet extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveFactSet].
-class AdaptiveFactSetState extends State<AdaptiveFactSet>
+class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
-  /// Title/value pairs from `facts`, including resolved overlay updates.
-  List<Fact> facts = const [];
-
   /// Background color resolved from HostConfig and fact set style.
   Color? backgroundColor;
-  ProviderSubscription<Map<String, dynamic>?>? _factsSubscription;
 
   @override
   void didChangeDependencies() {
@@ -50,30 +45,13 @@ class AdaptiveFactSetState extends State<AdaptiveFactSet>
     backgroundColor = styleResolver.resolveContainerBackgroundColor(
       style: style,
     );
-
-    _factsSubscription?.close();
-    final container = ProviderScope.containerOf(context);
-    _factsSubscription = container.listen<Map<String, dynamic>?>(
-      resolvedElementProvider(id),
-      (previous, next) {
-        if (next == null) return;
-        final nextFacts = factsFromJsonList(next['facts']);
-        if (listEquals(nextFacts, facts)) return;
-        setState(() => facts = nextFacts);
-      },
-      fireImmediately: true,
-    );
-  }
-
-  @override
-  void dispose() {
-    _factsSubscription?.close();
-    _factsSubscription = null;
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final resolved = ref.watch(resolvedElementProvider(id));
+    final facts = resolved != null ? factsFromJsonList(resolved['facts']) : factsFromJsonList(adaptiveMap['facts']);
+
     final ReferenceResolver resolver = styleResolver;
     final FactSetConfig? factSetConfig = resolver.getFactSetConfig();
 

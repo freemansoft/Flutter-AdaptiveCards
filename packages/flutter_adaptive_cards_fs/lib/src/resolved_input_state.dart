@@ -24,6 +24,9 @@ class ResolvedInputState {
   /// Resolved `"label"`.
   String? get label => map['label'] as String?;
 
+  /// Resolved `"style"` (overlay or baseline), lowercased; `null` when absent.
+  String? get style => (map['style'] as String?)?.toLowerCase();
+
   /// Resolved placeholder (explicit placeholder or label fallback).
   String get placeholder => effectivePlaceholder(map);
 
@@ -35,6 +38,12 @@ class ResolvedInputState {
 
   /// Host overlay / baseline `"isInvalid"`.
   bool get isInvalid => map['isInvalid'] == true;
+
+  /// Per-element override of the password reveal toggle, or `null` when unset.
+  ///
+  /// `null` means "no overlay override" — the widget falls back to HostConfig.
+  bool? get revealPasswordEnabledOverride =>
+      map['revealPasswordEnabled'] as bool?;
 
   /// Placeholder fallback used by input widgets and resolved merge.
   static String effectivePlaceholder(Map<String, dynamic> map) {

@@ -2,8 +2,9 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
-import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 import 'package:format/format.dart';
+
+import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
 /// A simplified page widget for Widgetbook that displays a single AdaptiveCard
 /// from a network URL.
@@ -21,10 +22,7 @@ class NetworkPage extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         child: AdaptiveCardsCanvas.network(
           url: url,
-          // add the chart registrations
-          cardTypeRegistry: CardTypeRegistry(
-            addedElements: CardChartsRegistry.additionalChartElements,
-          ),
+          cardTypeRegistry: widgetbookCardTypeRegistry,
           onChange: (invoke) {
             assert(() {
               developer.log(

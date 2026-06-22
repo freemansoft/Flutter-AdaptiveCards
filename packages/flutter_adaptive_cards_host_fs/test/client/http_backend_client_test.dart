@@ -42,4 +42,19 @@ void main() {
       throwsA(isA<AdaptiveCardBackendException>()),
     );
   });
+
+  test('post rejects a response body over maxResponseBytes', () async {
+    final client = HttpAdaptiveCardBackendClient(
+      endpoint: Uri.parse('https://api.example.com/invoke'),
+      maxResponseBytes: 64,
+      client: MockClient(
+        (request) async => http.Response('{"key":"${'x' * 200}"}', 200),
+      ),
+    );
+
+    expect(
+      () => client.post({'kind': 'execute'}),
+      throwsA(isA<AdaptiveJsonTooLargeException>()),
+    );
+  });
 }

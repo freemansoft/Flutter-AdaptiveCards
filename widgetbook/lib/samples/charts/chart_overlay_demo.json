@@ -1,0 +1,22 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Chart overlay demo — knobs call setChartData / patchChartProperties",
+      "wrap": true
+    },
+    {
+      "type": "Chart.VerticalBar",
+      "id": "demoChart",
+      "title": "Baseline title",
+      "showBarValues": true,
+      "data": [
+        {"x": "Category A", "y": 10, "color": "#FF0000"},
+        {"x": "Category B", "y": 25, "color": "#00FF00"},
+        {"x": "Category C", "y": 15, "color": "#0000FF"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "layouts": [
+    { "type": "Layout.Flow", "targetWidth": "atLeast:standard" }
+  ],
+  "body": [
+    { "type": "TextBlock", "text": "rootOne" },
+    { "type": "TextBlock", "text": "rootTwo" }
+  ]
+}

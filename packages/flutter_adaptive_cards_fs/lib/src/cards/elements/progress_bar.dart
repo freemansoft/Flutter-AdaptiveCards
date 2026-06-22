@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Renders the Adaptive Cards **ProgressBar** element.
 ///
 /// See https://adaptivecards.io/explorer/ProgressBar.html
-class AdaptiveProgressBar extends StatefulWidget
+class AdaptiveProgressBar extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a progress bar from [adaptiveMap] JSON.
   AdaptiveProgressBar({
@@ -25,7 +26,7 @@ class AdaptiveProgressBar extends StatefulWidget
 }
 
 /// State for [AdaptiveProgressBar]; maps `value` to a linear indicator.
-class AdaptiveProgressBarState extends State<AdaptiveProgressBar>
+class AdaptiveProgressBarState extends ConsumerState<AdaptiveProgressBar>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Completion fraction 0.0–1.0 from `value`, or null when indeterminate.
   double? percent;

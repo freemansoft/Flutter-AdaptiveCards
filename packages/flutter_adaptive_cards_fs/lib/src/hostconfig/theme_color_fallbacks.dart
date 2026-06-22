@@ -18,10 +18,9 @@ class ThemeColorFallbacks {
 
   /// Light-theme fallbacks for HostConfig JSON parsing when no [ThemeData] is
   /// available at parse time.
-  static ThemeColorFallbacks get forParsing =>
-      _forParsing ??= ThemeColorFallbacks(ThemeData());
-
-  static ThemeColorFallbacks? _forParsing;
+  static final ThemeColorFallbacks forParsing = ThemeColorFallbacks(
+    ThemeData(),
+  );
 
   final ThemeData _theme;
 

@@ -17,6 +17,9 @@ import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_fetch_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,6 +39,8 @@ class RawAdaptiveCard extends StatefulWidget {
     this.showDebugJson = true,
     this.brightnessMode = AdaptiveCardBrightnessMode.auto,
     this.currentUserId,
+    this.uriPolicy,
+    this.fetchPolicy,
     required this.hostConfigs,
   });
 
@@ -69,6 +74,16 @@ class RawAdaptiveCard extends StatefulWidget {
   /// Current user id for root `refresh.userIds` auto-refresh gating.
   final String? currentUserId;
 
+  /// Optional policy for validating card-controlled URLs (`Action.OpenUrl`,
+  /// markdown links, media/image sources). When null, an ancestor
+  /// [InheritedAdaptiveCardSecurityPolicy] is used, falling back to
+  /// [AdaptiveUriPolicy.standard].
+  final AdaptiveUriPolicy? uriPolicy;
+
+  /// Optional policy bounding card-initiated fetches. When null, an ancestor
+  /// policy is used, falling back to [AdaptiveFetchPolicy.standard].
+  final AdaptiveFetchPolicy? fetchPolicy;
+
   @override
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
 }
@@ -88,8 +103,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   /// Riverpod container for this card scope; available after first frame for
   /// advanced host integrations outside widget [build].
   ProviderContainer? documentContainer;
-
-  Brightness? _resolverBrightnessKey;
 
   /// creates a deep copy with ids injected
   static Map<String, dynamic> _deepCopyBaseline(Map<String, dynamic> map) {
@@ -152,7 +165,6 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       hostConfigs: widget.hostConfigs,
       colorFallbacks: ThemeColorFallbacks(Theme.of(context)),
     );
-    _resolverBrightnessKey = brightness;
   }
 
   /// Forces a card subtree rebuild when host logic changes state outside overlay
@@ -256,6 +268,24 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     container.read(adaptiveCardDocumentProvider.notifier).clearText(id);
   }
 
+  /// Overrides the host `inputs.text.revealPasswordEnabled` default for input [id].
+  void setRevealPasswordEnabled(String id, {required bool enabled}) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setRevealPasswordEnabled(id, enabled: enabled);
+  }
+
+  /// Clears the password reveal toggle override for [id].
+  void clearRevealPasswordEnabled(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .clearRevealPasswordEnabled(id);
+  }
+
   /// Replaces effective `"facts"` for `FactSet` [id].
   void setFacts(String id, List<Fact> facts) {
     final container = documentContainer;
@@ -268,6 +298,39 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     final container = documentContainer;
     if (container == null) return;
     container.read(adaptiveCardDocumentProvider.notifier).clearFacts(id);
+  }
+
+  /// Replaces effective `"inlines"` for `RichTextBlock` [id].
+  void setInlines(String id, List<Map<String, dynamic>> inlines) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).setInlines(id, inlines);
+  }
+
+  /// Clears inlines overlay for [id].
+  void clearInlines(String id) {
+    final container = documentContainer;
+    if (container == null) return;
+    container.read(adaptiveCardDocumentProvider.notifier).clearInlines(id);
+  }
+
+  /// Patches optional-package overlay payload for [id] and [extensionId].
+  void patchExtensionOverlay(
+    String id,
+    String extensionId,
+    Map<String, dynamic> patch, {
+    bool clearPayload = false,
+  }) {
+    final container = documentContainer;
+    if (container == null) return;
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .patchExtensionOverlay(
+          id,
+          extensionId,
+          patch,
+          clearPayload: clearPayload,
+        );
   }
 
   /// Sets whether action [id] is enabled (AC 1.5).
@@ -558,8 +621,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       style: widget.map['style']?.toString().toLowerCase(),
     );
 
-    return ProviderScope(
-      key: ValueKey<Brightness?>(_resolverBrightnessKey),
+    Widget tree = ProviderScope(
       overrides: [
         cardTypeRegistryProvider.overrideWithValue(widget.cardTypeRegistry),
         actionTypeRegistryProvider.overrideWithValue(widget.actionTypeRegistry),
@@ -574,6 +636,21 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         child: Card(color: backgroundColor, child: child),
       ),
     );
+
+    // Only install a policy holder when the caller supplied one, resolving any
+    // unspecified policy from an ancestor (or the standard default). Wrapping
+    // unconditionally would shadow a host-provided ancestor policy.
+    if (widget.uriPolicy != null || widget.fetchPolicy != null) {
+      tree = InheritedAdaptiveCardSecurityPolicy(
+        uriPolicy: widget.uriPolicy ??
+            InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context),
+        fetchPolicy: widget.fetchPolicy ??
+            InheritedAdaptiveCardSecurityPolicy.fetchPolicyOf(context),
+        child: tree,
+      );
+    }
+
+    return tree;
   }
 }
 

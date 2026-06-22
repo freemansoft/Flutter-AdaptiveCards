@@ -5,6 +5,10 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/show_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/refresh_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_flow_layout.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/layout_selection.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -47,8 +51,15 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   /// Body elements resolved from `body` via the card type registry.
   late List<Widget> bodyChildren;
 
-  /// Card-level `actions` rendered below the body.
+  /// Card-level primary action widgets rendered inline below the body.
   List<Widget> activeActions = [];
+
+  /// Card-level overflow action widgets (secondary mode or beyond maxActions),
+  /// revealed via the "•••" toggle. No action is silently discarded.
+  List<Widget> overflowActions = [];
+
+  /// Whether the overflow action panel is currently expanded.
+  bool _overflowExpanded = false;
 
   /// `Action.ShowCard` instances among [activeActions].
   List<AdaptiveActionShowCard> showCardActions = [];
@@ -160,20 +171,46 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     }
   }
 
-  /// This is for actions directly on an AdaptiveCardElement
-  /// Not to be confused with actions in the body of an AdaptiveCardElement or on ActionSets
+  /// Resolves card-level actions into [activeActions] (primary) and
+  /// [overflowActions] (secondary-mode or beyond the HostConfig maxActions).
+  ///
+  /// This is for actions directly on an AdaptiveCardElement.
+  /// Not to be confused with actions in the body of an AdaptiveCardElement or
+  /// on ActionSets.
   void loadNonBodyChildren() {
     if (adaptiveMap.containsKey('actions')) {
-      activeActions =
-          List<Map<String, dynamic>>.from(adaptiveMap['actions'] ?? [])
-              .map(
-                (adaptiveMap) => cardTypeRegistry.getAction(
-                  map: adaptiveMap,
-                ),
-              )
-              .toList();
+      final actionsConfig = styleResolver.getActionsConfig();
+      final int maxActions = actionsConfig?.maxActions ?? 10;
+
+      final List<Map<String, dynamic>> allMaps =
+          List<Map<String, dynamic>>.from(adaptiveMap['actions'] ?? []);
+
+      final List<Map<String, dynamic>> primaryMaps = [];
+      final List<Map<String, dynamic>> overflowMaps = [];
+      for (final map in allMaps) {
+        final isSecondary =
+            map['mode']?.toString().toLowerCase() == 'secondary';
+        if (isSecondary || primaryMaps.length >= maxActions) {
+          overflowMaps.add(map);
+        } else {
+          primaryMaps.add(map);
+        }
+      }
+
+      activeActions = primaryMaps
+          .map((map) => cardTypeRegistry.getAction(map: map))
+          .toList();
+      overflowActions = overflowMaps
+          .map((map) => cardTypeRegistry.getAction(map: map))
+          .toList();
+
+      // Track ShowCard targets from both primary and overflow actions so a
+      // secondary-mode ShowCard still expands its card once revealed.
       showCardActions = List<AdaptiveActionShowCard>.from(
-        activeActions.whereType<AdaptiveActionShowCard>().toList(),
+        [
+          ...activeActions.whereType<AdaptiveActionShowCard>(),
+          ...overflowActions.whereType<AdaptiveActionShowCard>(),
+        ],
       );
       showCardTargetElements = List<AdaptiveCardElement>.from(
         showCardActions
@@ -197,44 +234,76 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     // );
     loadNonBodyChildren();
 
-    final List<Widget> widgetChildren = bodyChildren
+    final List<Widget> bodyItems = bodyChildren
         .map((element) => element)
         .toList();
 
-    Widget actionWidget;
-
-    actionWidget = Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      alignment: WrapAlignment.start,
-      direction: actionsOrientation,
-      children: activeActions,
+    final Widget actionWidget = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.start,
+          direction: actionsOrientation,
+          children: [
+            ...activeActions,
+            if (overflowActions.isNotEmpty)
+              IconButton(
+                key: const Key('action_set_overflow'),
+                icon: const Icon(Icons.more_horiz),
+                tooltip: 'More actions',
+                onPressed: () =>
+                    setState(() => _overflowExpanded = !_overflowExpanded),
+              ),
+          ],
+        ),
+        if (_overflowExpanded && overflowActions.isNotEmpty)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: overflowActions,
+          ),
+      ],
     );
 
-    widgetChildren
-      ..add(actionWidget)
-      ..add(
-        Consumer(
-          builder: (context, ref, _) {
-            final expandedId = ref.watch(expandedShowCardIdProvider);
-            if (expandedId == null) return const SizedBox.shrink();
-            final target = showCardTargetElements.where(
-              (c) => c.id == expandedId,
-            );
-            if (target.isEmpty) return const SizedBox.shrink();
-            return target.first;
-          },
-        ),
-      );
+    // The action strip and expanded show-card host render below the body.
+    final List<Widget> trailingWidgets = [
+      actionWidget,
+      Consumer(
+        builder: (context, ref, _) {
+          final expandedId = ref.watch(expandedShowCardIdProvider);
+          if (expandedId == null) return const SizedBox.shrink();
+          final target = showCardTargetElements.where(
+            (c) => c.id == expandedId,
+          );
+          if (target.isEmpty) return const SizedBox.shrink();
+          return target.first;
+        },
+      ),
+    ];
+
+    // Body items honor an optional root `layouts` array (Layout.Flow) chosen for
+    // the current card width; reads cardWidthBucketProvider below, so it reflows
+    // on resize. The listView path stays a flat list (Flow not applied there).
+    final Widget bodyLayout = _AdaptiveCardBody(
+      bodyItems: bodyItems,
+      layouts: adaptiveMap['layouts'] as List<dynamic>?,
+      styleResolver: styleResolver,
+    );
 
     // default to result without a background image
     Widget result = Container(
       margin: const EdgeInsets.all(8),
       child: widget.listView
-          ? ListView(shrinkWrap: true, children: widgetChildren)
+          ? ListView(
+              shrinkWrap: true,
+              children: [...bodyItems, ...trailingWidgets],
+            )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: widgetChildren,
+              children: [bodyLayout, ...trailingWidgets],
             ),
     );
 
@@ -268,14 +337,72 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       );
     }
 
+    // Hoist the card subtree into ONE stable widget instance, captured by the
+    // closure below. Because it is built once per `build()` (not per layout
+    // pass) and passed by identity to the inner ProviderScope, Flutter reuses
+    // its element and does not rebuild the subtree when only the width changes.
+    final Widget cardBody = AdaptiveTappable(
+      adaptiveMap: adaptiveMap,
+      child: Form(key: formKey, child: result),
+    );
+
+    // Two scopes (see the responsive design doc, weakness W2):
+    // - OUTER ProviderScope is stable (document state, registries, element
+    //   state); it is never rebuilt by layout.
+    // - INNER ProviderScope inside the LayoutBuilder publishes the width-derived
+    //   bucket via overrideWithValue. It is re-created each layout pass (a
+    //   trivial allocation) but its element/container persist, its `child` is the
+    //   stable [cardBody], and overrideWithValue only notifies watchers when the
+    //   bucket actually changes — so no per-pass subtree rebuild and no frame lag.
     return ProviderScope(
       overrides: [
         adaptiveCardElementStateProvider.overrideWithValue(this),
       ],
-      child: AdaptiveTappable(
-        adaptiveMap: adaptiveMap,
-        child: Form(key: formKey, child: result),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final WidthBucket bucket =
+              styleResolver.resolveWidthBucket(constraints.maxWidth);
+          return ProviderScope(
+            overrides: [
+              cardWidthBucketProvider.overrideWithValue(bucket),
+            ],
+            child: cardBody,
+          );
+        },
       ),
+    );
+  }
+}
+
+/// Lays out the card's body items, applying a root `Layout.Flow` when one in
+/// the card's `layouts` array matches the current width bucket.
+///
+/// Watches [cardWidthBucketProvider], so it reflows when the card crosses a
+/// width boundary. Falls back to a vertical stack otherwise.
+class _AdaptiveCardBody extends ConsumerWidget {
+  const _AdaptiveCardBody({
+    required this.bodyItems,
+    required this.layouts,
+    required this.styleResolver,
+  });
+
+  final List<Widget> bodyItems;
+  final List<dynamic>? layouts;
+  final ReferenceResolver styleResolver;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selected = selectLayout(layouts, ref.watch(cardWidthBucketProvider));
+    if (selected != null && selected['type'] == 'Layout.Flow') {
+      return AdaptiveFlowLayout(
+        layoutMap: selected,
+        styleResolver: styleResolver,
+        children: bodyItems,
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: bodyItems,
     );
   }
 }

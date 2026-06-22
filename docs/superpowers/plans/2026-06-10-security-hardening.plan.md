@@ -10,18 +10,42 @@
 
 **Source:** Security review (2026-06-10) — High: OpenUrlDialog SSRF, NetworkAdaptiveCardContentProvider SSRF; Medium: unvalidated OpenUrl/markdown links, trusted-backend assumptions, unbounded backend JSON; Low: image/media URLs, template `json()`.
 
+## Status (2026-06-19 — implemented)
+
+| Phase | Status      | Notes                                                                    |
+| ----- | ----------- | ------------------------------------------------------------------------ |
+| 1     | ✅ Complete | `lib/src/security/` policy layer + unit tests                            |
+| 2     | ✅ Complete | `DefaultOpenUrlAction.tap` gate; barrel exports; markdown covered transitively |
+| 3     | ✅ Complete | OpenUrlDialog + `NetworkAdaptiveCardContentProvider` SSRF/byte-cap guards |
+| 4     | ✅ Complete | `decodeJsonMapWithLimit` + `maxResponseBytes`; `cardValidator`           |
+| 5     | ✅ Complete | image/media URL gating (opt-in policy param)                             |
+| 6     | ✅ Complete | template `json()` cap; READMEs + backend-host doc; changelogs            |
+
+**Verification (2026-06-19, branch `feat/security-hardening-impl`):** repo `fvm flutter analyze` → No issues found. `flutter_adaptive_cards_fs` → 556 passed / 2 skipped (`--exclude-tags=golden`). `flutter_adaptive_cards_host_fs` → 21 passed. `flutter_adaptive_template_fs` → 103 passed.
+
+**Implementation deviations from the original task text:** (1) Markdown links (Task 4) route through the gated `DefaultOpenUrlAction.tap`, so no separate `onTapLink` validation was added — coverage is verified by `text_block_markdown_policy_test`. (2) `InheritedAdaptiveCardSecurityPolicy` is installed by `RawAdaptiveCard` only when a policy is explicitly passed (resolving the unspecified one from an ancestor), avoiding shadowing of a host-provided ancestor policy; the standard default still applies via `*Of` fallbacks. (3) Phase 5 wires the two primary network surfaces (Image element + Media); the remaining icon-sized `getImage` call sites (Badge, CompoundButton, IconButton, background images) keep their default (ungated) behavior and can be wired in a follow-up.
+
+**Re-verified against `main` after PRs #34–#37** (P0 input validation/CodeBlock, P3 element completeness, responsive `targetWidth`/Flow): no security infrastructure has landed. `lib/src/security/` is **absent** in both `flutter_adaptive_cards_fs` and `flutter_adaptive_cards_host_fs`; neither package barrel exports any security types. All six phases remain ❌ Pending. Code-hook **line numbers drifted** since the 2026-06-16 pass and are corrected throughout (see the refreshed Self-review table).
+
+**Current Codebase Verification (2026-06-19):**
+
+- Evaluated against `main` branch (working tree clean).
+- No stashes or branch changes contain partial security implementations.
+- Codebase structure is ready for integration: `default_actions.dart`, `text_block.dart`, `rich_text_block.dart`, `media.dart`, `adaptive_image_utils.dart`, and `evaluator.dart` contain the targeted hooks (line mappings refreshed below).
+- **Added finding:** `rich_text_block.dart` `_recognizerFor` (95–109) routes a run's `selectAction` through `action.tap(...)` (101–106) with no validation — the same unguarded path as OpenUrl. It dispatches through `DefaultOpenUrlAction.tap`, so **Task 3's gate covers it** once that tap validates the effective URL (verification point in Task 4, no extra implementation).
+
 ---
 
 ## Phase overview
 
-| Phase | Scope | Addresses | Packages |
-| ----- | ----- | --------- | -------- |
-| **1** | `AdaptiveUriPolicy` + `AdaptiveFetchPolicy` utilities | Foundation for all URL/fetch guards | `flutter_adaptive_cards_fs` |
-| **2** | Wire URI policy into OpenUrl, markdown, OpenUrlDialog launch | Medium OpenUrl + markdown findings | `flutter_adaptive_cards_fs` |
-| **3** | Guard remote card/content fetches (SSRF + size caps) | High OpenUrlDialog + Network provider | `flutter_adaptive_cards_fs` |
-| **4** | Bounded backend JSON decode + optional card validator | Medium backend trust / DoS | `flutter_adaptive_cards_host_fs` |
-| **5** | Resource URL policy for images, SVG, media | Low image/media findings | `flutter_adaptive_cards_fs` |
-| **6** | Template `json()` bounds + docs + full verification | Low template + host integration docs | `flutter_adaptive_template_fs`, docs |
+| Phase | Scope                                                        | Addresses                             | Packages                             |
+| ----- | ------------------------------------------------------------ | ------------------------------------- | ------------------------------------ |
+| **1** | `AdaptiveUriPolicy` + `AdaptiveFetchPolicy` utilities        | Foundation for all URL/fetch guards   | `flutter_adaptive_cards_fs`          |
+| **2** | Wire URI policy into OpenUrl, markdown, OpenUrlDialog launch | Medium OpenUrl + markdown findings    | `flutter_adaptive_cards_fs`          |
+| **3** | Guard remote card/content fetches (SSRF + size caps)         | High OpenUrlDialog + Network provider | `flutter_adaptive_cards_fs`          |
+| **4** | Bounded backend JSON decode + optional card validator        | Medium backend trust / DoS            | `flutter_adaptive_cards_host_fs`     |
+| **5** | Resource URL policy for images, SVG, media                   | Low image/media findings              | `flutter_adaptive_cards_fs`          |
+| **6** | Template `json()` bounds + docs + full verification          | Low template + host integration docs  | `flutter_adaptive_template_fs`, docs |
 
 Each phase ships working, testable software. Phases 1–3 are the highest priority for untrusted card JSON.
 
@@ -31,68 +55,68 @@ Each phase ships working, testable software. Phases 1–3 are the highest priori
 
 ### Phase 1 — Policy utilities
 
-| File | Role |
-| ---- | ---- |
-| `packages/flutter_adaptive_cards_fs/lib/src/security/adaptive_uri_policy.dart` | **Create** — scheme/host validation |
-| `packages/flutter_adaptive_cards_fs/lib/src/security/adaptive_fetch_policy.dart` | **Create** — fetch byte cap + timeout |
-| `packages/flutter_adaptive_cards_fs/lib/src/security/adaptive_uri_validation.dart` | **Create** — sealed result types |
+| File                                                                                 | Role                                    |
+| ------------------------------------------------------------------------------------ | --------------------------------------- |
+| `packages/flutter_adaptive_cards_fs/lib/src/security/adaptive_uri_policy.dart`       | **Create** — scheme/host validation     |
+| `packages/flutter_adaptive_cards_fs/lib/src/security/adaptive_fetch_policy.dart`     | **Create** — fetch byte cap + timeout   |
+| `packages/flutter_adaptive_cards_fs/lib/src/security/adaptive_uri_validation.dart`   | **Create** — sealed result types        |
 | `packages/flutter_adaptive_cards_fs/lib/src/security/inherited_security_policy.dart` | **Create** — `InheritedWidget` resolver |
-| `packages/flutter_adaptive_cards_fs/test/security/adaptive_uri_policy_test.dart` | **Create** — unit tests |
-| `packages/flutter_adaptive_cards_fs/test/security/adaptive_fetch_policy_test.dart` | **Create** — unit tests |
+| `packages/flutter_adaptive_cards_fs/test/security/adaptive_uri_policy_test.dart`     | **Create** — unit tests                 |
+| `packages/flutter_adaptive_cards_fs/test/security/adaptive_fetch_policy_test.dart`   | **Create** — unit tests                 |
 
 ### Phase 2 — Action + markdown wiring
 
-| File | Role |
-| ---- | ---- |
-| `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart` | Validate before `launchUrl` |
-| `packages/flutter_adaptive_cards_fs/lib/src/cards/elements/text_block.dart` | Validate markdown `href` |
-| `packages/flutter_adaptive_cards_fs/lib/src/cards/elements/rich_text_block.dart` | Validate `selectAction` URLs if present |
-| `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart` | Install `InheritedAdaptiveCardSecurityPolicy` |
-| `packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart` | Export public policy types |
-| `packages/flutter_adaptive_cards_fs/test/actions/open_url_policy_test.dart` | **Create** — blocked scheme tests |
-| `packages/flutter_adaptive_cards_fs/test/elements/text_block_markdown_policy_test.dart` | **Create** — blocked link tests |
+| File                                                                                    | Role                                          |
+| --------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart`                | Validate before `launchUrl`                   |
+| `packages/flutter_adaptive_cards_fs/lib/src/cards/elements/text_block.dart`             | Validate markdown `href`                      |
+| `packages/flutter_adaptive_cards_fs/lib/src/cards/elements/rich_text_block.dart`        | Validate `selectAction` URLs if present       |
+| `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart`             | Install `InheritedAdaptiveCardSecurityPolicy` |
+| `packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart`                 | Export public policy types                    |
+| `packages/flutter_adaptive_cards_fs/test/actions/open_url_policy_test.dart`             | **Create** — blocked scheme tests             |
+| `packages/flutter_adaptive_cards_fs/test/elements/text_block_markdown_policy_test.dart` | **Create** — blocked link tests               |
 
 ### Phase 3 — Remote fetch guards
 
-| File | Role |
-| ---- | ---- |
-| `packages/flutter_adaptive_cards_fs/lib/src/action/open_url_dialog_executor.dart` | Policy check + bounded fetch |
-| `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart` | Pass policy into network provider |
-| `packages/flutter_adaptive_cards_fs/test/elements/actions/open_url_dialog_policy_test.dart` | **Create** — blocked fetch tests |
-| `packages/flutter_adaptive_cards_fs/test/adaptive_cards_canvas_network_policy_test.dart` | **Create** — network provider tests |
+| File                                                                                        | Role                                |
+| ------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `packages/flutter_adaptive_cards_fs/lib/src/action/open_url_dialog_executor.dart`           | Policy check + bounded fetch        |
+| `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart`                     | Pass policy into network provider   |
+| `packages/flutter_adaptive_cards_fs/test/elements/actions/open_url_dialog_policy_test.dart` | **Create** — blocked fetch tests    |
+| `packages/flutter_adaptive_cards_fs/test/adaptive_cards_canvas_network_policy_test.dart`    | **Create** — network provider tests |
 
 ### Phase 4 — Host package bounds
 
-| File | Role |
-| ---- | ---- |
-| `packages/flutter_adaptive_cards_host_fs/lib/src/security/bounded_json.dart` | **Create** — `decodeJsonMapWithLimit` |
-| `packages/flutter_adaptive_cards_host_fs/lib/src/client/http_backend_client.dart` | Use bounded decode |
-| `packages/flutter_adaptive_cards_host_fs/lib/src/models/invoke_response.dart` | Optional `cardValidator` on `applyTo` |
-| `packages/flutter_adaptive_cards_host_fs/lib/src/handlers/backend_handlers.dart` | Thread `cardValidator` |
-| `packages/flutter_adaptive_cards_host_fs/lib/flutter_adaptive_cards_host_fs.dart` | Export bounded JSON helper |
-| `packages/flutter_adaptive_cards_host_fs/test/security/bounded_json_test.dart` | **Create** |
-| `packages/flutter_adaptive_cards_host_fs/test/client/http_backend_client_test.dart` | Add oversize body test |
+| File                                                                                | Role                                  |
+| ----------------------------------------------------------------------------------- | ------------------------------------- |
+| `packages/flutter_adaptive_cards_host_fs/lib/src/security/bounded_json.dart`        | **Create** — `decodeJsonMapWithLimit` |
+| `packages/flutter_adaptive_cards_host_fs/lib/src/client/http_backend_client.dart`   | Use bounded decode                    |
+| `packages/flutter_adaptive_cards_host_fs/lib/src/models/invoke_response.dart`       | Optional `cardValidator` on `applyTo` |
+| `packages/flutter_adaptive_cards_host_fs/lib/src/handlers/backend_handlers.dart`    | Thread `cardValidator`                |
+| `packages/flutter_adaptive_cards_host_fs/lib/flutter_adaptive_cards_host_fs.dart`   | Export bounded JSON helper            |
+| `packages/flutter_adaptive_cards_host_fs/test/security/bounded_json_test.dart`      | **Create**                            |
+| `packages/flutter_adaptive_cards_host_fs/test/client/http_backend_client_test.dart` | Add oversize body test                |
 
 ### Phase 5 — Resource loading
 
-| File | Role |
-| ---- | ---- |
-| `packages/flutter_adaptive_cards_fs/lib/src/utils/adaptive_image_utils.dart` | Optional policy gate before network load |
-| `packages/flutter_adaptive_cards_fs/lib/src/cards/elements/media.dart` | Validate `sourceUrl` before player init |
-| `packages/flutter_adaptive_cards_fs/test/utils/adaptive_image_policy_test.dart` | **Create** |
-| `packages/flutter_adaptive_cards_fs/test/elements/media_policy_test.dart` | **Create** |
+| File                                                                            | Role                                     |
+| ------------------------------------------------------------------------------- | ---------------------------------------- |
+| `packages/flutter_adaptive_cards_fs/lib/src/utils/adaptive_image_utils.dart`    | Optional policy gate before network load |
+| `packages/flutter_adaptive_cards_fs/lib/src/cards/elements/media.dart`          | Validate `sourceUrl` before player init  |
+| `packages/flutter_adaptive_cards_fs/test/utils/adaptive_image_policy_test.dart` | **Create**                               |
+| `packages/flutter_adaptive_cards_fs/test/elements/media_policy_test.dart`       | **Create**                               |
 
 ### Phase 6 — Template + docs
 
-| File | Role |
-| ---- | ---- |
-| `packages/flutter_adaptive_template_fs/lib/src/evaluator.dart` | Cap `json()` input length + decode depth |
-| `packages/flutter_adaptive_template_fs/test/unit/evaluator_json_bounds_test.dart` | **Create** |
-| `docs/backend-host-integration.md` | Trust-boundary + policy guidance |
-| `packages/flutter_adaptive_cards_fs/README.md` | `AdaptiveUriPolicy` usage |
-| `packages/flutter_adaptive_cards_host_fs/README.md` | Response size limits + `cardValidator` |
-| `packages/flutter_adaptive_cards_fs/CHANGELOG.md` | `[Unreleased]` security entries |
-| `packages/flutter_adaptive_cards_host_fs/CHANGELOG.md` | `[Unreleased]` security entries |
+| File                                                                              | Role                                     |
+| --------------------------------------------------------------------------------- | ---------------------------------------- |
+| `packages/flutter_adaptive_template_fs/lib/src/evaluator.dart`                    | Cap `json()` input length + decode depth |
+| `packages/flutter_adaptive_template_fs/test/unit/evaluator_json_bounds_test.dart` | **Create**                               |
+| `docs/backend-host-integration.md`                                                | Trust-boundary + policy guidance         |
+| `packages/flutter_adaptive_cards_fs/README.md`                                    | `AdaptiveUriPolicy` usage                |
+| `packages/flutter_adaptive_cards_host_fs/README.md`                               | Response size limits + `cardValidator`   |
+| `packages/flutter_adaptive_cards_fs/CHANGELOG.md`                                 | `[Unreleased]` security entries          |
+| `packages/flutter_adaptive_cards_host_fs/CHANGELOG.md`                            | `[Unreleased]` security entries          |
 
 ---
 
@@ -101,6 +125,7 @@ Each phase ships working, testable software. Phases 1–3 are the highest priori
 ### Task 1: URI validation types and policy
 
 **Files:**
+
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/security/adaptive_uri_validation.dart`
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/security/adaptive_uri_policy.dart`
 - Create: `packages/flutter_adaptive_cards_fs/test/security/adaptive_uri_policy_test.dart`
@@ -159,6 +184,24 @@ void main() {
       );
       final result = devPolicy.validate('http://127.0.0.1:8080');
       expect(result, isA<AdaptiveUriAllowed>());
+    });
+
+    test('permits mailto and tel schemes when added to allowedSchemes', () {
+      const customPolicy = AdaptiveUriPolicy(
+        allowedSchemes: {'https', 'http', 'mailto', 'tel'},
+      );
+      final mailtoResult = customPolicy.validate('mailto:someone@example.com');
+      expect(mailtoResult, isA<AdaptiveUriAllowed>());
+
+      final telResult = customPolicy.validate('tel:123-456-7890');
+      expect(telResult, isA<AdaptiveUriAllowed>());
+    });
+
+    test('denies mailto when not in allowedSchemes', () {
+      const policy = AdaptiveUriPolicy.standard;
+      final result = policy.validate('mailto:someone@example.com');
+      expect(result, isA<AdaptiveUriDenied>());
+      expect((result as AdaptiveUriDenied).reason, contains('scheme'));
     });
   });
 }
@@ -239,20 +282,23 @@ class AdaptiveUriPolicy {
     }
 
     final host = uri.host.toLowerCase();
-    if (host.isEmpty) {
+    final isHttpOrHttps = scheme == 'http' || scheme == 'https';
+    if (isHttpOrHttps && host.isEmpty) {
       return const AdaptiveUriDenied('URL host is missing');
     }
 
-    if (allowedHosts != null && !allowedHosts!.contains(host)) {
-      return AdaptiveUriDenied('Host "$host" is not in the allowlist');
-    }
+    if (host.isNotEmpty) {
+      if (allowedHosts != null && !allowedHosts!.contains(host)) {
+        return AdaptiveUriDenied('Host "$host" is not in the allowlist');
+      }
 
-    if (!allowLoopback && _isLoopback(host)) {
-      return const AdaptiveUriDenied('Loopback hosts are not allowed');
-    }
+      if (!allowLoopback && _isLoopback(host)) {
+        return const AdaptiveUriDenied('Loopback hosts are not allowed');
+      }
 
-    if (!allowPrivateHosts && _isPrivateHost(host)) {
-      return const AdaptiveUriDenied('Private network hosts are not allowed');
+      if (!allowPrivateHosts && _isPrivateHost(host)) {
+        return const AdaptiveUriDenied('Private network hosts are not allowed');
+      }
     }
 
     return AdaptiveUriAllowed(uri);
@@ -305,6 +351,7 @@ git commit -m "feat(cards): add AdaptiveUriPolicy for card-controlled URLs"
 ### Task 2: Fetch policy + inherited resolver
 
 **Files:**
+
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/security/adaptive_fetch_policy.dart`
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/security/inherited_security_policy.dart`
 - Create: `packages/flutter_adaptive_cards_fs/test/security/adaptive_fetch_policy_test.dart`
@@ -431,6 +478,7 @@ git commit -m "feat(cards): add fetch byte caps and inherited security policy"
 ### Task 3: Block disallowed URLs in DefaultOpenUrlAction
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart`
 - Create: `packages/flutter_adaptive_cards_fs/test/actions/open_url_policy_test.dart`
@@ -482,6 +530,49 @@ void main() {
 
     expect(find.textContaining('not allowed'), findsOneWidget);
   });
+
+  testWidgets('DefaultOpenUrl allows mailto: when scheme is allowed', (
+    tester,
+  ) async {
+    const card = {
+      'type': 'AdaptiveCard',
+      'version': '1.0',
+      'body': <Map<String, dynamic>>[],
+      'actions': [
+        {
+          'type': 'Action.OpenUrl',
+          'title': 'Mail',
+          'url': 'mailto:someone@example.com',
+        },
+      ],
+    };
+
+    var called = false;
+    await tester.pumpWidget(
+      InheritedAdaptiveCardSecurityPolicy(
+        uriPolicy: const AdaptiveUriPolicy(
+          allowedSchemes: {'https', 'http', 'mailto'},
+        ),
+        fetchPolicy: AdaptiveFetchPolicy.standard,
+        child: getTestWidgetFromMap(
+          map: card,
+          title: 'open url policy test',
+          onOpenUrl: (invoke) {
+            called = true;
+            expect(invoke.url, 'mailto:someone@example.com');
+          },
+          onSubmit: (_) {},
+          onExecute: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Mail'));
+    await tester.pumpAndSettle();
+
+    expect(called, isTrue);
+  });
 }
 ```
 
@@ -513,7 +604,7 @@ switch (validation) {
 }
 ```
 
-In `flutter_raw_adaptive_card.dart`, wrap the card subtree:
+In `flutter_raw_adaptive_card.dart`, wrap the card subtree (the `ProviderScope` returned from `build()` is at lines **591–605** on current `main`; wrap *outside* it so the inherited policy is visible to the whole card):
 
 ```dart
 import 'package:flutter_adaptive_cards_fs/src/security/adaptive_fetch_policy.dart';
@@ -556,6 +647,7 @@ git commit -m "feat(cards): validate Action.OpenUrl URLs against AdaptiveUriPoli
 ### Task 4: Validate markdown link hrefs
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/elements/text_block.dart`
 - Create: `packages/flutter_adaptive_cards_fs/test/elements/text_block_markdown_policy_test.dart`
 
@@ -589,7 +681,9 @@ onTapLink: (text, href, title) {
 
 - [ ] **Step 4: Run test — PASS**
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Verify RichText `selectAction` coverage** — `rich_text_block.dart` `_recognizerFor` (95–109) routes a run's `selectAction` through the same `action.tap(...)` path as OpenUrl (101–106). Confirm Task 3's gate on `DefaultOpenUrlAction.tap` blocks a disallowed `selectAction` URL in a `TextRun`; this is a verification point, not new code (no separate validation needed if Task 3 validates the effective URL).
+
+- [ ] **Step 6: Commit**
 
 ```bash
 git commit -m "feat(cards): validate markdown link hrefs against URI policy"
@@ -602,6 +696,7 @@ git commit -m "feat(cards): validate markdown link hrefs against URI policy"
 ### Task 5: Guard OpenUrlDialog fetch
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/open_url_dialog_executor.dart`
 - Create: `packages/flutter_adaptive_cards_fs/test/elements/actions/open_url_dialog_policy_test.dart`
 
@@ -646,6 +741,7 @@ git commit -m "fix(cards): block SSRF in OpenUrlDialog remote fetch"
 ### Task 6: Guard NetworkAdaptiveCardContentProvider
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart`
 - Create: `packages/flutter_adaptive_cards_fs/test/adaptive_cards_canvas_network_policy_test.dart`
 
@@ -698,6 +794,7 @@ git commit -m "fix(cards): validate URLs in NetworkAdaptiveCardContentProvider"
 ### Task 7: Bounded JSON decode in HTTP client
 
 **Files:**
+
 - Create: `packages/flutter_adaptive_cards_host_fs/lib/src/security/bounded_json.dart`
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/client/http_backend_client.dart`
 - Create: `packages/flutter_adaptive_cards_host_fs/test/security/bounded_json_test.dart`
@@ -770,6 +867,7 @@ git commit -m "feat(host): bound backend invoke response JSON size"
 ### Task 8: Optional card validator on ReplaceCardEffect
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/models/invoke_response.dart`
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/handlers/backend_handlers.dart`
 - Modify: `packages/flutter_adaptive_cards_host_fs/test/models/invoke_response_test.dart`
@@ -812,6 +910,7 @@ git commit -m "feat(host): optional cardValidator for ReplaceCardEffect"
 ### Task 9: Gate image and media network loads
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/utils/adaptive_image_utils.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/elements/media.dart`
 - Create: `packages/flutter_adaptive_cards_fs/test/utils/adaptive_image_policy_test.dart`
@@ -838,6 +937,7 @@ git commit -m "feat(cards): optional URI policy for images and media sources"
 ### Task 10: Cap template `json()` builtin
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_template_fs/lib/src/evaluator.dart`
 - Create: `packages/flutter_adaptive_template_fs/test/unit/evaluator_json_bounds_test.dart`
 
@@ -872,12 +972,13 @@ git commit -m "fix(template): cap json() builtin input size"
 ### Task 11: Documentation updates
 
 **Files:**
+
 - Modify: `docs/backend-host-integration.md`
 - Modify: `packages/flutter_adaptive_cards_fs/README.md`
 - Modify: `packages/flutter_adaptive_cards_host_fs/README.md`
 - Modify: both packages' `CHANGELOG.md`
 
-- [ ] **Step 1: Add "Security" section to cards README** — document `AdaptiveUriPolicy.standard` vs `.development`, `InheritedAdaptiveCardSecurityPolicy`, recommendation to implement `onOpenUrl` for production.
+- [ ] **Step 1: Add "Security" section to cards README** — document `AdaptiveUriPolicy.standard` vs `.development`, `InheritedAdaptiveCardSecurityPolicy`, custom scheme configurations for custom protocols (e.g. `mailto:`, `tel:`), and recommendation to implement `onOpenUrl` for production.
 
 - [ ] **Step 2: Add host README section** — `maxResponseBytes`, `cardValidator`, never log `AdaptiveCardBackendException.body` in production.
 
@@ -936,17 +1037,18 @@ Expected: all tests pass.
 
 ## Self-review (spec coverage)
 
-| Security finding | Task |
-| ---------------- | ---- |
-| OpenUrlDialog SSRF (`open_url_dialog_executor.dart:15`) | Task 5 |
-| NetworkAdaptiveCardContentProvider SSRF (`adaptive_cards_canvas.dart:77`) | Task 6 |
-| Unvalidated OpenUrl default (`default_actions.dart:179`) | Task 3 |
-| Markdown href OpenUrl (`text_block.dart:212`) | Task 4 |
-| Backend ReplaceCard trust (`plain_json_invoke_response_parser.dart:23`) | Task 8 + docs Task 11 |
-| Unbounded backend JSON (`http_backend_client.dart:41`) | Task 7 |
-| Image URL loading (`adaptive_image_utils.dart:17`) | Task 9 |
-| Media URL (`media.dart:97`) | Task 9 |
-| Template `json()` (`evaluator.dart:307`) | Task 10 |
+| Security finding                                                          | Task                  |
+| ------------------------------------------------------------------------- | --------------------- |
+| OpenUrlDialog SSRF (`open_url_dialog_executor.dart:15`)                   | Task 5                |
+| NetworkAdaptiveCardContentProvider SSRF (`adaptive_cards_canvas.dart:76`) | Task 6                |
+| Unvalidated OpenUrl default (`default_actions.dart:226`)                  | Task 3                |
+| Markdown href OpenUrl (`text_block.dart:189`)                             | Task 4                |
+| RichText selectAction (`rich_text_block.dart:95-109`)                     | Task 3 (via `DefaultOpenUrlAction.tap`) |
+| Backend ReplaceCard trust (`plain_json_invoke_response_parser.dart:96`)   | Task 8 + docs Task 11 |
+| Unbounded backend JSON (`http_backend_client.dart:44`)                    | Task 7                |
+| Image URL loading (`adaptive_image_utils.dart:30,41,58`)                  | Task 9                |
+| Media URL (`media.dart:107`)                                              | Task 9                |
+| Template `json()` (`evaluator.dart:307`)                                  | Task 10               |
 
 No placeholder steps remain. Type names (`AdaptiveUriPolicy`, `AdaptiveFetchPolicy`, `AdaptiveUriPolicyException`, `AdaptiveCardValidator`) are consistent across tasks.
 

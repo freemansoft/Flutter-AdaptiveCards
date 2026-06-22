@@ -11,7 +11,7 @@
     },
     {
       "type": "TextBlock",
-      "text": "positive, destructive, default, default",
+      "text": "positive, destructive, default, default; the secondary action collapses into the overflow (•••) menu",
       "wrap": true
     },
     {
@@ -55,6 +55,13 @@
               }
             ]
           }
+        },
+        {
+          "id": "actionSecondary-1",
+          "title": "Secondary (overflow)",
+          "type": "Action.OpenUrl",
+          "url": "https://adaptivecards.io/",
+          "mode": "secondary"
         }
       ]
     }

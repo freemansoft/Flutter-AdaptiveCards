@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// https://adaptivecards.io/explorer/TextBlock.html
 ///
-class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveTextBlock extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a text block from [adaptiveMap] JSON.
   ///
   /// When [supportMarkdown] is true, renders markdown and routes link taps
@@ -38,7 +38,7 @@ class AdaptiveTextBlock extends StatefulWidget with AdaptiveElementWidgetMixin {
 }
 
 /// State for [AdaptiveTextBlock]; resolves typography and reactive text.
-class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
+class AdaptiveTextBlockState extends ConsumerState<AdaptiveTextBlock>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Resolved font weight from HostConfig and element properties.
   late FontWeight fontWeight = FontWeight.normal;
@@ -63,7 +63,6 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
 
   /// Merged size, weight, color, and subtle flags from HostConfig.
   late ResolvedTextAppearance _textAppearance = const ResolvedTextAppearance();
-  ProviderSubscription<Map<String, dynamic>?>? _textSubscription;
 
   ///We're assuming that the only type of action on a text block is an open url
   late GenericActionOpenUrl action;
@@ -84,28 +83,8 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   }
 
   @override
-  void initState() {
-    super.initState();
-    text = _formatDisplayText(widget.adaptiveMap['text']?.toString() ?? '');
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    _textSubscription?.close();
-    final container = ProviderScope.containerOf(context);
-    _textSubscription = container.listen<Map<String, dynamic>?>(
-      resolvedElementProvider(id),
-      (previous, next) {
-        if (next == null) return;
-        final nextRaw = next['text']?.toString() ?? '';
-        final nextDisplay = _formatDisplayText(nextRaw);
-        if (nextDisplay == text) return;
-        setState(() => text = nextDisplay);
-      },
-      fireImmediately: true,
-    );
 
     // gag me with a hack - the api is built against a type key in a map
     action =
@@ -146,17 +125,12 @@ class AdaptiveTextBlockState extends State<AdaptiveTextBlock>
   }
 
   @override
-  void dispose() {
-    _textSubscription?.close();
-    _textSubscription = null;
-    super.dispose();
-  }
-
-  /*child: */
-
-  // TODOcreate own widget that parses_basic markdown. This might help: https://docs.flutter.io/flutter/widgets/Wrap-class.html
-  @override
   Widget build(BuildContext context) {
+    final resolved = ref.watch(resolvedElementProvider(id));
+    text = _formatDisplayText(
+      resolved?['text']?.toString() ?? widget.adaptiveMap['text']?.toString() ?? '',
+    );
+
     final textBody = widget.supportMarkdown
         ? getMarkdownText(context: context)
         : getText();

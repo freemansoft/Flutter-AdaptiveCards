@@ -297,23 +297,9 @@ flowchart TB
   resolvedAct --> actionUi["Submit ShowCard Action buttons"]
 ```
 
-### Overlay fields (summary)
+### Overlay fields
 
-| Overlay (element)                    | Resolved JSON key          | Typical host API                         |
-| ------------------------------------ | -------------------------- | ---------------------------------------- |
-| `inputValue`                         | `value`                    | `initInput`, user edit, `setInputValue`  |
-| `choices`, query session             | `choices` / `choices.data` | `loadInput`, `setChoices`, typeahead     |
-| `isVisible`                          | `isVisible`                | `setVisibility`, ToggleVisibility        |
-| `errorMessage`, `isInvalid`          | same                       | `setInputError`, Submit validation       |
-| `isRequired`, `label`, `placeholder` | same                       | `applyUpdates`                           |
-| `text`, `url`                        | `text`, `url`              | `setText`, dynamic media URLs            |
-| `facts`                              | `facts`                    | `setFacts`, `clearFacts`, `applyUpdates` |
-
-| Overlay (action) | Resolved key | API                                     |
-| ---------------- | ------------ | --------------------------------------- |
-| `isEnabled`      | `isEnabled`  | `setActionEnabled`, `setActionsEnabled` |
-
-For the full runtime-writes matrix and merge rules, see [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map). For an **input-only** architecture diagram, see [`docs/form-inputs.md` — Input overlay architecture](../../docs/form-inputs.md#input-overlay-architecture).
+Per JSON `type` patch keys, typed helpers, and contract tests: [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md). Architecture and reset: [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md). Input flow: [`docs/form-inputs.md`](../../docs/form-inputs.md#input-overlay-architecture).
 
 ### Seeding values (`initData` / `initInput`)
 
@@ -375,7 +361,8 @@ Details: [`docs/reactive-riverpod.md` — Reset semantics](../../docs/reactive-r
 
 ### Further reading
 
-- [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md) — canonical overlay model, provider scopes, test matrix, backlog
+- [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md) — overlay model, provider scopes, reset
+- [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md) — patch keys by JSON `type`
 - [`docs/form-inputs.md`](../../docs/form-inputs.md) — form inputs, validation, and reset from a host perspective
 
 ## Event Handlers
@@ -383,6 +370,23 @@ Details: [`docs/reactive-riverpod.md` — Reset semantics](../../docs/reactive-r
 You can insert a `DefaultAdaptiveCardHandlers` in the Widget tree prior to loading the `AdaptiveCard`s. Those handlers will be used for all actions.
 
 Your program can pass it's own handlers to the `AdaptiveCard` constructors. See the `NetworkPage` class in the example app.
+
+## Security
+
+Adaptive Card JSON is untrusted input. The library validates card-controlled URLs through a single chokepoint, `AdaptiveUriPolicy`, before any launch or fetch:
+
+- **Default policy (`AdaptiveUriPolicy.standard`)** allows only `https`/`http` and blocks loopback and private-network hosts (SSRF protection). It is applied automatically — no configuration required.
+- **`Action.OpenUrl`, markdown links, `Action.OpenUrlDialog` fetches, and `NetworkAdaptiveCardContentProvider`** all validate the URL first; remote fetches additionally enforce a response **byte cap and timeout** via `AdaptiveFetchPolicy`.
+- **Customize** by wrapping a card with `InheritedAdaptiveCardSecurityPolicy(uriPolicy: …, fetchPolicy: …)`, or by passing `uriPolicy`/`fetchPolicy` to `RawAdaptiveCard` / `AdaptiveCardsCanvas.network`. To permit extra protocols (e.g. `mailto:`, `tel:`) add them to `allowedSchemes`; use `AdaptiveUriPolicy.development` for local dev servers (allows loopback/private hosts).
+- **For production, implement `onOpenUrl`** so URL launches go through your own handler rather than `url_launcher`.
+
+```dart
+InheritedAdaptiveCardSecurityPolicy(
+  uriPolicy: const AdaptiveUriPolicy(allowedSchemes: {'https', 'mailto'}),
+  fetchPolicy: const AdaptiveFetchPolicy(maxBytes: 512 * 1024),
+  child: myAdaptiveCard,
+);
+```
 
 ## Example Execution
 
@@ -396,7 +400,7 @@ There are two example apps and a bunch of tests that demonstrate card usage.
 
 There are functional Unit tests and _golden_ unit tests located in the `test` folder. They all use use the standard flutter testing mechanism. Golden tests may load a font so as not to use the `ahem` block font.
 
-- The tests load the Roboto fonts so that the golden tests don't just show the block font. Spacing can be off between platforms so the golden tests are organized into platform-specific subdirectories (e.g., `gold_files/linux/`, `gold_files/macos/`).
+- Golden tests load Roboto fonts from [`flutter_adaptive_cards_test_support`](../flutter_adaptive_cards_test_support/) (via `adaptiveCardsTestExecutable`) so they don't render with the block font. Spacing can differ between platforms, so golden images are organized into platform-specific subdirectories (e.g., `gold_files/linux/`, `gold_files/macos/`).
 - Golden images are platform-specific. The **Linux (CI)** images are the project's source of truth. Golden tests dynamically select the appropriate subdirectory based on the host OS. See: <https://github.com/flutter/flutter/issues/2943>.
 
 ## Compatibility

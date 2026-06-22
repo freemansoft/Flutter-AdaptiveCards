@@ -22,3 +22,13 @@ export 'package:flutter_adaptive_cards_fs/src/models/text_run.dart';
 /// `CardTypeRegistry` and `ActionTypeRegistry` for customizing element and action
 /// rendering; pass instances into `AdaptiveCardsCanvas` or `RawAdaptiveCard`.
 export 'package:flutter_adaptive_cards_fs/src/registry.dart';
+export 'package:flutter_adaptive_cards_fs/src/riverpod/element_overlay_extension.dart';
+export 'package:flutter_adaptive_cards_fs/src/riverpod/overlay_capability_registry.dart';
+
+/// Security policies for card-controlled URLs and card-initiated fetches.
+/// Wrap a card with `InheritedAdaptiveCardSecurityPolicy` (or pass policies to
+/// `RawAdaptiveCard`) to customize scheme/host allowlists and fetch byte caps.
+export 'package:flutter_adaptive_cards_fs/src/security/adaptive_fetch_policy.dart';
+export 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart';
+export 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_validation.dart';
+export 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';

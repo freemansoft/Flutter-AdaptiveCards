@@ -306,8 +306,13 @@ class Evaluator {
 
       if (name == 'json') {
         if (args.isEmpty || args[0] == null) return null;
+        final input = args[0].toString();
+        // Bound untrusted template data: refuse to decode oversized payloads
+        // rather than risk excessive memory/CPU on a malicious card.
+        const maxChars = 256 * 1024;
+        if (input.length > maxChars) return null;
         try {
-          return json.decode(args[0].toString());
+          return json.decode(input);
         } on Object catch (_) {
           return null;
         }
@@ -459,6 +464,68 @@ class Evaluator {
         } on Object catch (_) {
           return null;
         }
+      }
+
+      // Collection functions (eager)
+      if (name == 'join') {
+        if (args.isEmpty || args[0] is! List) return null;
+        final sep = args.length > 1 ? args[1]?.toString() ?? '' : '';
+        return (args[0] as List).map((e) => e?.toString() ?? '').join(sep);
+      }
+      if (name == 'first') {
+        if (args.isEmpty || args[0] is! List) return null;
+        final list = args[0] as List;
+        return list.isEmpty ? null : list.first;
+      }
+      if (name == 'last') {
+        if (args.isEmpty || args[0] is! List) return null;
+        final list = args[0] as List;
+        return list.isEmpty ? null : list.last;
+      }
+      if (name == 'sum') {
+        if (args.isEmpty || args[0] is! List) return null;
+        num total = 0;
+        for (final e in args[0] as List) {
+          if (e is num) total += e;
+        }
+        return total;
+      }
+      if (name == 'average') {
+        if (args.isEmpty || args[0] is! List) return null;
+        final nums = (args[0] as List).whereType<num>().toList();
+        if (nums.isEmpty) return null;
+        return nums.reduce((a, b) => a + b) / nums.length;
+      }
+
+      // Additional date functions
+      if (name == 'formatEpoch') {
+        if (args.isEmpty || args[0] is! num) return null;
+        final epochDate = DateTime.fromMillisecondsSinceEpoch(
+          (args[0] as num).toInt() * 1000,
+          isUtc: true,
+        );
+        final epochFormat = args.length > 1
+            ? args[1]?.toString() ?? "yyyy-MM-dd'T'HH:mm:ss"
+            : "yyyy-MM-dd'T'HH:mm:ss";
+        return DateFormat(epochFormat).format(epochDate);
+      }
+      if (name == 'getPastTime' || name == 'getFutureTime') {
+        if (args.isEmpty || args[0] is! num) return null;
+        final amount = (args[0] as num).toInt();
+        final unit = args.length > 1 ? args[1]?.toString() ?? 'D' : 'D';
+        final duration = switch (unit.toUpperCase()) {
+          'D' => Duration(days: amount),
+          'H' => Duration(hours: amount),
+          'M' => Duration(minutes: amount),
+          _ => Duration(days: amount),
+        };
+        final now = DateTime.now();
+        final relativeDate =
+            name == 'getPastTime' ? now.subtract(duration) : now.add(duration);
+        final relativeFormat = args.length > 2
+            ? args[2]?.toString() ?? "yyyy-MM-dd'T'HH:mm:ss"
+            : "yyyy-MM-dd'T'HH:mm:ss";
+        return DateFormat(relativeFormat).format(relativeDate);
       }
 
       // Unknown function

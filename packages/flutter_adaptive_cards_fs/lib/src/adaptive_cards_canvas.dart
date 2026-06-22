@@ -9,6 +9,9 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_fetch_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_validation.dart';
 import 'package:http/http.dart' as http;
 
 /// Async source of root card JSON for [AdaptiveCardsCanvas].
@@ -63,17 +66,41 @@ class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 }
 
 /// Card source that fetches JSON over HTTP(S).
+///
+/// The [url] is untrusted, so it is validated against [uriPolicy] before any
+/// request (blocking SSRF to loopback/private hosts) and the response body is
+/// capped by [fetchPolicy]. Pass an optional `client` to inject HTTP in tests.
 class NetworkAdaptiveCardContentProvider
     implements AdaptiveCardContentProvider {
   /// Fetches card JSON from a remote [url] when content is requested.
-  NetworkAdaptiveCardContentProvider({required this.url}) : super();
+  NetworkAdaptiveCardContentProvider({
+    required this.url,
+    this.uriPolicy = AdaptiveUriPolicy.standard,
+    this.fetchPolicy = AdaptiveFetchPolicy.standard,
+    http.Client? client,
+  }) : _client = client ?? http.Client();
 
   /// Remote URL fetched when the canvas loads.
   String url;
 
+  /// Policy validating [url] before the request is issued.
+  final AdaptiveUriPolicy uriPolicy;
+
+  /// Policy bounding the response size and request timeout.
+  final AdaptiveFetchPolicy fetchPolicy;
+
+  final http.Client _client;
+
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() async {
-    final body = (await http.get(Uri.parse(url))).bodyBytes;
+    final validation = uriPolicy.validate(url);
+    if (validation case AdaptiveUriDenied(:final reason)) {
+      throw AdaptiveUriPolicyException(reason);
+    }
+    final uri = (validation as AdaptiveUriAllowed).uri;
+
+    final response = await _client.get(uri).timeout(fetchPolicy.timeout);
+    final body = readBodyWithLimit(response.bodyBytes, fetchPolicy.maxBytes);
 
     return json.decode(utf8.decode(body)) as Map<String, dynamic>;
   }
@@ -99,6 +126,9 @@ class AdaptiveCardsCanvas extends StatefulWidget {
   });
 
   /// Convenience constructor for remote card JSON.
+  ///
+  /// [uriPolicy] / [fetchPolicy] guard the remote fetch against SSRF and
+  /// oversized responses; they default to the production-safe presets.
   AdaptiveCardsCanvas.network({
     super.key,
     this.placeholder,
@@ -112,9 +142,13 @@ class AdaptiveCardsCanvas extends StatefulWidget {
     this.supportMarkdown = true,
     this.brightnessMode = AdaptiveCardBrightnessMode.auto,
     this.currentUserId,
+    AdaptiveUriPolicy uriPolicy = AdaptiveUriPolicy.standard,
+    AdaptiveFetchPolicy fetchPolicy = AdaptiveFetchPolicy.standard,
     required this.hostConfigs,
   }) : adaptiveCardContentProvider = NetworkAdaptiveCardContentProvider(
          url: url,
+         uriPolicy: uriPolicy,
+         fetchPolicy: fetchPolicy,
        );
 
   /// Convenience constructor for asset-backed card JSON.
@@ -288,6 +322,7 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
       removedElements: base.removedElements,
       addedElements: base.addedElements,
       addedActions: base.addedActions,
+      overlayExtensions: base.overlayExtensions,
       listView: widget.listView,
       supportMarkdown: widget.supportMarkdown,
     );

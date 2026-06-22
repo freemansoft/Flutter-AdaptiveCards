@@ -29,6 +29,8 @@ Charts are **Teams / documentation-hub extensions**, not part of the legacy [sch
 
 Keeping charts in `flutter_adaptive_charts_fs` lets chart-free apps depend only on `flutter_adaptive_cards_fs` while chart-enabled apps add one explicit dependency and register chart types at startup.
 
+**Core boundary:** Do not add chart widgets, chart model classes, or chart-specific overlay fields (e.g. `chartData`) to `flutter_adaptive_cards_fs`. Chart runtime overlays use the generic `ElementOverlayExtension` hook (`CardChartsRegistry.overlayExtensions`); chart overlay helpers live in the charts package.
+
 Registered chart type strings (merge via `CardChartsRegistry.additionalChartElements`):
 
 | Type string                   | Renderer                                                        |
@@ -85,6 +87,7 @@ AdaptiveCardsCanvas.map(
       ...CardChartsRegistry.additionalChartElements,
       // ...other extension registries
     },
+    overlayExtensions: CardChartsRegistry.overlayExtensions,
   ),
 );
 ```
@@ -92,7 +95,7 @@ AdaptiveCardsCanvas.map(
 ### Rules for new optional packages
 
 1. **Depend on core, not the other way around** — `flutter_adaptive_cards_fs` must not depend on extension packages.
-2. **Export a registry map** — e.g. `CardChartsRegistry.additionalChartElements`, not silent auto-registration inside core.
+2. **Export a registry map** — e.g. `CardChartsRegistry.additionalChartElements` and `CardChartsRegistry.overlayExtensions`, not silent auto-registration inside core.
 3. **Document opt-in** — README and [Implementation-Status.md](./Implementation-Status.md) must state that the feature is optional and list the extra `pubspec` dependency.
 4. **Widgetbook / explorer** — **sample apps** may depend on all packages; production hosts choose subsets. [widgetbook](../widgetbook/) (demonstration gallery) merges chart registries for chart samples; [adaptive_explorer](../adaptive_explorer/README.md) does **not** render `Chart.*` types unless the host wires `CardChartsRegistry.additionalChartElements`. See [`documentation-scope.md`](documentation-scope.md).
 5. **Split again only when necessary** — if a future extension needs a fundamentally different dependency tree than its siblings, consider a separate package rather than bloating an existing optional package. **`Chart.Gauge` stays in `flutter_adaptive_charts_fs`** (CustomPainter alongside fl_chart charts).
@@ -117,7 +120,7 @@ dependencies:
   flutter_adaptive_charts_fs: ^0.10.0
 ```
 
-Merge `CardChartsRegistry.additionalChartElements` into `CardTypeRegistry.addedElements`.
+Merge `CardChartsRegistry.additionalChartElements` and `CardChartsRegistry.overlayExtensions` into `CardTypeRegistry`.
 
 **Templating only**
 

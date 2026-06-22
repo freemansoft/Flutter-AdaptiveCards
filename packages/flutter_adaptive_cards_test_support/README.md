@@ -59,7 +59,11 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
 }
 ```
 
-Font paths are resolved relative to the **consuming package’s** working directory (typically `assets/fonts/Roboto`).
+Roboto fonts for golden tests live in this package under `assets/fonts/Roboto/` (20 faces: upright + italic for Roboto and RobotoMono).
+Flutter can calculate the italic if not provided by slanting the base font. The italic fonts look better than the slanted on some platforms.
+`loadAdaptiveCardsTestFonts()` resolves that directory via the package URI (so consuming
+packages can keep test_support as a **dev_dependency**) and registers each face with
+`FontLoader`. Consuming packages do not need their own font asset trees.
 
 ## Scope
 

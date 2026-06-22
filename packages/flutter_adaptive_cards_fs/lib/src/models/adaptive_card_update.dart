@@ -22,6 +22,8 @@ class AdaptiveElementUpdate {
     this.label,
     this.placeholder,
     this.facts,
+    this.inlines,
+    this.extensionPatches,
     this.clearValue = false,
     this.clearError = false,
     this.clearChoices = false,
@@ -31,6 +33,8 @@ class AdaptiveElementUpdate {
     this.clearLabel = false,
     this.clearPlaceholder = false,
     this.clearFacts = false,
+    this.clearInlines = false,
+    this.clearExtensions = const {},
   });
 
   /// Target element or input id from card JSON.
@@ -78,6 +82,12 @@ class AdaptiveElementUpdate {
   /// Replaces `FactSet` `"facts"`.
   final List<Fact>? facts;
 
+  /// Replaces `RichTextBlock` `"inlines"`.
+  final List<Map<String, dynamic>>? inlines;
+
+  /// Patches optional-package overlay payloads keyed by extension id.
+  final Map<String, Map<String, dynamic>>? extensionPatches;
+
   /// Clears the `inputValue` overlay.
   final bool clearValue;
 
@@ -104,6 +114,12 @@ class AdaptiveElementUpdate {
 
   /// Clears the `facts` overlay.
   final bool clearFacts;
+
+  /// Clears the `inlines` overlay.
+  final bool clearInlines;
+
+  /// Clears optional-package overlay payloads for these extension ids.
+  final Set<String> clearExtensions;
 }
 
 /// Action overlay patch for `Action.*` nodes.
@@ -115,8 +131,10 @@ class AdaptiveActionUpdate {
     this.isEnabled,
     this.title,
     this.tooltip,
+    this.iconUrl,
     this.clearTitle = false,
     this.clearTooltip = false,
+    this.clearIconUrl = false,
   });
 
   /// Target action id from card JSON.
@@ -131,9 +149,15 @@ class AdaptiveActionUpdate {
   /// Overrides baseline `"tooltip"`.
   final String? tooltip;
 
+  /// Overrides baseline `"iconUrl"`.
+  final String? iconUrl;
+
   /// Clears the `title` overlay.
   final bool clearTitle;
 
   /// Clears the `tooltip` overlay.
   final bool clearTooltip;
+
+  /// Clears the `iconUrl` overlay.
+  final bool clearIconUrl;
 }

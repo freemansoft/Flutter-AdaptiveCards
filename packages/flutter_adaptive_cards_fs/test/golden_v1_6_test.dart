@@ -21,6 +21,20 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
 
+  testWidgets('Golden CompoundButton', (tester) async {
+    configureTestView();
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getV16SampleForGoldenTest(key, 'compound_button');
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('v1_6_compound_button.png')),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+  }, tags: ['golden']);
+
   testWidgets('Golden Rating', (tester) async {
     configureTestView();
     const ValueKey key = ValueKey('paint');

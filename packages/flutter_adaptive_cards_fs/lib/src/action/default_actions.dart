@@ -6,10 +6,14 @@ import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/open_url_dialog_executor.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/reset_inputs_executor.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/actions/popover_container.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_range_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/input_text_validation.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_validation.dart';
+import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,6 +44,51 @@ bool validateInputs(ProviderContainer container) {
         value: value?.toString(),
         isRequired: isRequired,
         regexPattern: regexPattern,
+      )) {
+        valid = false;
+        notifier.setInputError(entry.key, isInvalid: true);
+      }
+      continue;
+    }
+
+    if (type == 'Input.Number') {
+      // node['min'/'max'] are num in dart:convert-decoded JSON, but guard
+      // against string-encoded bounds from template expansion or loose typing.
+      final numMin =
+          node['min'] is num ? node['min'] as num : num.tryParse(node['min']?.toString() ?? '');
+      final numMax =
+          node['max'] is num ? node['max'] as num : num.tryParse(node['max']?.toString() ?? '');
+      if (!numberInputValueIsValid(
+        value: value?.toString(),
+        isRequired: isRequired,
+        min: numMin,
+        max: numMax,
+      )) {
+        valid = false;
+        notifier.setInputError(entry.key, isInvalid: true);
+      }
+      continue;
+    }
+
+    if (type == 'Input.Date') {
+      if (!dateInputValueIsValid(
+        value: value?.toString(),
+        isRequired: isRequired,
+        min: node['min'] as String?,
+        max: node['max'] as String?,
+      )) {
+        valid = false;
+        notifier.setInputError(entry.key, isInvalid: true);
+      }
+      continue;
+    }
+
+    if (type == 'Input.Time') {
+      if (!timeInputValueIsValid(
+        value: value?.toString(),
+        isRequired: isRequired,
+        min: node['min'] as String?,
+        max: node['max'] as String?,
       )) {
         valid = false;
         notifier.setInputError(entry.key, isInvalid: true);
@@ -172,6 +221,20 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
     );
     if (invoke.url.isEmpty) return;
 
+    // Untrusted card JSON controls this URL. Validate against the active
+    // policy before either forwarding to the host or launching it, so a
+    // malicious scheme/host cannot reach a host handler or url_launcher.
+    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context)
+        .validate(invoke.url);
+    if (validation case AdaptiveUriDenied(:final reason)) {
+      if (kDebugMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('URL blocked: $reason')),
+        );
+      }
+      return;
+    }
+
     final foo = InheritedAdaptiveCardHandlers.of(context);
     if (foo != null) {
       foo.onOpenUrl(invoke);
@@ -238,6 +301,42 @@ class DefaultResetInputsAction extends GenericActionResetInputs {
     required Map<String, dynamic> adaptiveMap,
   }) {
     executeResetInputsAction(context, adaptiveMap);
+  }
+}
+
+/// Default handler for `Action.Popover` — shows the nested `card` payload
+/// in a modal dialog, inheriting HostConfig from the parent card.
+class DefaultPopoverAction extends GenericPopoverAction {
+  /// Creates a default popover action handler.
+  const DefaultPopoverAction();
+
+  @override
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+    required Map<String, dynamic> adaptiveMap,
+  }) {
+    final card = adaptiveMap['card'] as Map<String, dynamic>?;
+    if (card == null) return;
+
+    unawaited(
+      showDialog<void>(
+        context: context,
+        builder: (context) => Dialog(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
+            child: SingleChildScrollView(
+              child: AdaptivePopoverContainer(
+                child: RawAdaptiveCard.fromMap(
+                  map: card,
+                  hostConfigs: rawAdaptiveCardState.widget.hostConfigs,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -1,0 +1,22 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "Container",
+      "layouts": [
+        {
+          "type": "Layout.Flow",
+          "targetWidth": "atLeast:standard",
+          "columnSpacing": "small",
+          "rowSpacing": "small"
+        }
+      ],
+      "items": [
+        { "type": "TextBlock", "text": "Alpha" },
+        { "type": "TextBlock", "text": "Beta" },
+        { "type": "TextBlock", "text": "Gamma" }
+      ]
+    }
+  ]
+}
