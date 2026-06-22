@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -118,6 +119,67 @@ void main() {
 
       // Verify onChange was called with the value '2'
       expect(selectedValue, equals('2'));
+    },
+  );
+
+  testWidgets(
+    'AdaptiveChoiceSet compact supports type-ahead keyboard selection',
+    (WidgetTester tester) async {
+      String? selectedValue;
+
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'body': [
+          {
+            'type': 'Input.ChoiceSet',
+            'id': 'myChoiceSet',
+            'style': 'compact',
+            'choices': [
+              {'title': 'New York', 'value': 'nyc'},
+              {'title': 'Los Angeles', 'value': 'la'},
+            ],
+          },
+        ],
+      };
+
+      // Type-ahead requires the DropdownMenu to be focusable, which it is only
+      // on desktop platforms (a keyboard is present). Override the platform so
+      // this test exercises the keyboard path; on mobile the field is tap-only.
+      // Reset inside the body (not addTearDown) so the framework's debug-var
+      // invariant check, which runs before tearDowns, does not fail.
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      try {
+        await tester.pumpWidget(
+          getTestWidgetFromMap(
+            map: map,
+            title: 'ChoiceSet Compact Type-ahead Test',
+            onChange: (invoke) {
+              if (invoke.inputId == 'myChoiceSet') {
+                selectedValue = invoke.value as String?;
+              }
+            },
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final choiceMap = map['body'][0] as Map<String, dynamic>;
+
+        // Open the DropdownMenu, type to highlight a match, commit with Enter —
+        // no tap on the menu item. Proves keyboard navigation, matching the web
+        // renderer's native `<select>` behavior.
+        await tester.tap(find.byKey(generateWidgetKey(choiceMap)));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byType(TextField).first, 'Los Angeles');
+        await tester.pumpAndSettle();
+
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+
+        expect(selectedValue, equals('la'));
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
     },
   );
 

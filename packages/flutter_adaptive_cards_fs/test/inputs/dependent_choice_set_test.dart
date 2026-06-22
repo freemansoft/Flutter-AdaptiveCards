@@ -127,6 +127,18 @@ void main() {
       expect(cityDataQuery, isNotNull);
       expect(cityDataQuery!.dataset, equals('cities'));
       expect(cityDataQuery!.parameters?['country'], equals('france'));
+
+      // The Data.Query onChange re-applies city choices on the next frame; the
+      // user's selection must survive that re-apply (regression: the handler
+      // used to clear the value when repopulating choices).
+      final cityState = tester.state<AdaptiveChoiceSetState>(
+        find.byWidgetPredicate(
+          (widget) => widget is AdaptiveChoiceSet && widget.id == 'city',
+        ),
+      );
+      final submitted = <String, dynamic>{};
+      cityState.appendInput(submitted);
+      expect(submitted['city'], equals('paris'));
     },
   );
 

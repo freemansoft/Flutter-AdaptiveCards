@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.13.0]
 
-- no changes yet
+### Changed 0.13.0
+
+- **Single-select compact `Input.ChoiceSet` now uses Material 3 `DropdownMenu`:** replaced the legacy `DropdownButton` so the field supports type-ahead keyboard navigation (typing a character jumps to the matching choice, Enter selects it), restoring parity with the web renderer's native `<select>`. Type-ahead is **platform-aware**: enabled on desktop platforms (macOS/Linux/Windows) where a physical keyboard is present, and the field is tap-only on mobile (iOS/Android/Fuchsia) so it does not pop the soft keyboard for a simple dropdown. Uses `enableSearch` (highlight/jump, full list stays visible) rather than `enableFilter` (narrow the list); both this and the focus policy are flagged as future HostConfig options. Display text is driven by the input controller and kept in sync with the resolved selection; selection still stores choice values. Multi-select compact and expanded styles are unchanged. Golden `sample2` images were regenerated for the new dropdown rendering.
+
+### Fixed 0.13.0
+
+- **Dependent `Input.ChoiceSet` (`Data.Query`) no longer drops the selected value:** the dependent-choice-set sample handler re-applied the resolved city choices on the city `onChange`. Because `applyUpdates` treats "new `choices` without a `value`" as a stale-value reset, the value the user just selected was cleared on the next frame. The handler now passes `value: invoke.value` when repopulating choices so the selection persists; a regression test (`dependent_choice_set_test.dart`) now asserts the submitted city value survives the Data.Query re-apply.
 
 ## [0.12.0]
 

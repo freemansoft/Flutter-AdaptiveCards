@@ -231,6 +231,14 @@ For response effect ordering, error handling, and Teams adapters, see [backend-h
 
 Tests: `packages/flutter_adaptive_cards_host_fs/test/`.
 
+## Compact ChoiceSet style (`style: "compact"`, single-select)
+
+Single-select compact inputs render with Material 3 [`DropdownMenu`](https://api.flutter.dev/flutter/material/DropdownMenu-class.html) (not the legacy `DropdownButton`). This gives **type-ahead keyboard navigation** — typing a character jumps to the matching choice and pressing Enter selects it — matching the web renderer's native `<select>` behavior.
+
+The displayed text is driven by the widget's `TextEditingController`, kept in sync with the resolved single selection (selected choice **title**, or empty when none). Selection still stores choice **values**, identical to filtered and expanded styles. Multi-select compact (`isMultiSelect: true`) renders as checkboxes, not a dropdown.
+
+Tests: `test/inputs/choice_set_test.dart` (compact selection + type-ahead keyboard selection).
+
 ## Filtered ChoiceSet style (`style: "filtered"`)
 
 Filtered inputs open a typeahead modal ([`ChoiceFilter`](../packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_filter.dart)) over resolved `choices`:

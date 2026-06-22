@@ -135,13 +135,16 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
         if (!invoke.cardState.mounted) {
           return;
         }
+        // Re-apply the resolved Data.Query choices, but preserve the value the
+        // user just selected. Passing [value] keeps the selection: applying
+        // `choices` without a `value` would clear the input (the notifier treats
+        // "new choices, no value" as a stale-value reset), wiping the pick.
         invoke.cardState.applyUpdates(
           elements: [
             AdaptiveElementUpdate(
               id: 'city',
               choices: choices,
-              clearValue: true,
-              clearError: true,
+              value: invoke.value,
             ),
           ],
         );

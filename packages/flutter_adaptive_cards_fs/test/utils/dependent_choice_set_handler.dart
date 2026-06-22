@@ -70,13 +70,14 @@ void handleDependentChoiceSetChange(InputChangeInvoke invoke) {
         : citiesByCountry[countryCode] ?? const <Choice>[];
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (!invoke.cardState.mounted) return;
+      // Preserve the just-selected city: applying `choices` without a `value`
+      // would clear the input (notifier resets the stale value), losing the pick.
       invoke.cardState.applyUpdates(
         elements: [
           AdaptiveElementUpdate(
             id: 'city',
             choices: choices,
-            clearValue: true,
-            clearError: true,
+            value: invoke.value,
           ),
         ],
       );

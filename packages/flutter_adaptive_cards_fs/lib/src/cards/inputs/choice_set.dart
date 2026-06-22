@@ -89,14 +89,8 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
       _selectedChoices.addAll(
         next.isEmpty ? const <String>[] : next.split(','),
       );
-      if (isFiltered) {
-        final choices = choicesFromJsonList(readResolvedInput().map['choices']);
-        _syncFilteredControllerText(choices);
-      } else {
-        controller.text = _selectedChoices.isNotEmpty
-            ? _selectedChoices.first
-            : '';
-      }
+      final choices = choicesFromJsonList(readResolvedInput().map['choices']);
+      _syncSelectionControllerText(choices);
     }
   }
 
@@ -135,9 +129,12 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
   ///   replace choices via `setChoices`) before `setDocumentInputValue`, so the
   ///   document can briefly hold a value that no longer exists in the new list.
   ///
-  /// [_singleChoiceValueFor] avoids a DropdownButton assertion on that stale frame;
-  /// this method finishes the job post-frame by syncing to the **valid intersection**
-  /// of document value(s) and current [choices], or `''` when none apply. We must
+  /// [_singleChoiceValueFor] keeps the rendered selection (the [DropdownMenu]
+  /// `initialSelection` / expanded group value) consistent with the current
+  /// [choices] on that stale frame by returning `null` for a value no longer in
+  /// the list; this method finishes the job post-frame by syncing to the
+  /// **valid intersection** of document value(s) and current [choices], or `''`
+  /// when none apply. We must
   /// not call [onDocumentValueChanged] with the raw resolved value when it is
   /// invalid — that re-applies the stale value and causes an infinite rebuild loop
   /// (see `choice_set_data_query_test.dart`, loadInput-after-onChange case).
@@ -192,8 +189,13 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     return storedValue;
   }
 
-  void _syncFilteredControllerText(List<Choice> choices) {
-    if (!isFiltered) {
+  /// Syncs [controller] text to the title of the current single selection.
+  ///
+  /// Both the filtered field and the compact [DropdownMenu] display through
+  /// [controller], so each must reflect the selected choice's title (or empty
+  /// when nothing is selected). Expanded styles do not use [controller].
+  void _syncSelectionControllerText(List<Choice> choices) {
+    if (!isFiltered && !isCompact) {
       return;
     }
     controller.text = _selectedChoices.isEmpty
@@ -326,44 +328,67 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     );
   }
 
-  /// This is built when multiSelect is false and isCompact is true
+  /// Built when `isMultiSelect` is false and the style is `compact`.
+  ///
+  /// Uses Material 3 [DropdownMenu] (not the legacy `DropdownButton`) so the
+  /// field supports type-ahead keyboard navigation — typing a character jumps to
+  /// the matching choice, matching the web renderer's native `<select>`. Display
+  /// text is driven by [controller], which the widget keeps in sync with the
+  /// resolved single selection (see [_syncSelectionControllerText]); we cannot
+  /// rely on `initialSelection` alone because [DropdownMenu] does not clear the
+  /// field when the selection resets to a value absent from the entries.
   Widget _buildCompact(List<Choice> choices) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      height: 40,
-      decoration: BoxDecoration(
-        border: Border.all(),
-        borderRadius: const BorderRadius.all(Radius.circular(4)),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          key: generateWidgetKey(adaptiveMap),
-
-          isExpanded: true,
-          icon: const Icon(Icons.arrow_drop_down),
-          style: TextStyle(
-            color: styleResolver.resolveInputForegroundColor(
-              context: context,
-              style: null,
-            ),
-            backgroundColor: styleResolver.resolveInputBackgroundColor(
-              context: context,
-              style: null,
-            ),
-          ),
-          items: choices
-              .map(
-                (choice) => DropdownMenuItem<String>(
-                  key: generateWidgetKey(adaptiveMap, suffix: choice.title),
-                  value: choice.value,
-                  child: Text(choice.title),
-                ),
-              )
-              .toList(),
-          onChanged: (choice) => select(choice, choices),
-          value: _singleChoiceValueFor(choices),
+    return DropdownMenu<String>(
+      key: generateWidgetKey(adaptiveMap),
+      controller: controller,
+      initialSelection: _singleChoiceValueFor(choices),
+      // `enableSearch` (true) makes typing *jump to / highlight* the matching
+      // entry while keeping the full list visible — the closest analog to a
+      // native HTML `<select>`. The alternative, `enableFilter` (not set here),
+      // instead *narrows the list* to entries matching the typed text, behaving
+      // more like the `filtered` style's search modal. We default to search to
+      // preserve compact-dropdown semantics.
+      //
+      // TODO(hostconfig): expose this (search vs filter, and whether type-ahead
+      // is enabled at all) via a future HostConfig setting so hosts can opt into
+      // filtering.
+      enableSearch: true,
+      // Intentionally omit `requestFocusOnTap` so [DropdownMenu] applies its
+      // platform-aware default: focusable (and thus keyboard type-ahead) on
+      // desktop platforms where a physical keyboard is present (macOS/Linux/
+      // Windows), and tap-only on mobile (iOS/Android/Fuchsia) so we don't pop
+      // the soft keyboard for a simple dropdown. Forcing `true` would enable
+      // type-ahead on phones, which is not the desired UX.
+      //
+      // TODO(hostconfig): a future HostConfig setting could let hosts override
+      // this (e.g. force type-ahead on tablets that report an attached keyboard).
+      expandedInsets: EdgeInsets.zero,
+      textStyle: TextStyle(
+        color: styleResolver.resolveInputForegroundColor(
+          context: context,
+          style: null,
+        ),
+        backgroundColor: styleResolver.resolveInputBackgroundColor(
+          context: context,
+          style: null,
         ),
       ),
+      inputDecorationTheme: const InputDecorationTheme(
+        isDense: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      ),
+      onSelected: (choice) => select(choice, choices),
+      dropdownMenuEntries: choices
+          .map(
+            (choice) => DropdownMenuEntry<String>(
+              value: choice.value,
+              label: choice.title,
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -435,7 +460,7 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     setDocumentInputValue(joined);
     notifyUserInputValueChanged(joined, committed: true);
     setState(() {
-      _syncFilteredControllerText(choices);
+      _syncSelectionControllerText(choices);
     });
   }
 
@@ -448,14 +473,8 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
         ..addAll(
           next.isEmpty ? const <String>[] : next.split(','),
         );
-      if (isFiltered) {
-        final choices = choicesFromJsonList(readResolvedInput().map['choices']);
-        _syncFilteredControllerText(choices);
-      } else {
-        controller.text = _selectedChoices.isNotEmpty
-            ? _selectedChoices.first
-            : '';
-      }
+      final choices = choicesFromJsonList(readResolvedInput().map['choices']);
+      _syncSelectionControllerText(choices);
     });
   }
 
