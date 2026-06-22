@@ -1,6 +1,6 @@
 # Flutter Adaptive Cards
 
-This project is a Flutter implementation of the Adaptive Cards specification. The Adaptive Cards project was originally developed by Microsoft and is now an open source project. You can find more information about Adaptive Cards at <https://adaptivecards.io/>. This particular implementation is a fork of the original project that was created to add support for Flutter. This project is not affiliated with Microsoft. The project was originally created by Neohelden.
+This project is a Flutter implementation of the Adaptive Cards specification. The Adaptive Cards project was originally developed by Microsoft and is now an open source project. You can find more information about Adaptive Cards at <https://adaptivecards.io/>. This particular implementation is a fork of the original project that was created to add support for Flutter. This project is not affiliated with Microsoft.
 
 ## Major Components
 
@@ -193,3 +193,7 @@ There is also
 
 - A [React Native designer SDK](https://learn.microsoft.com/en-us/adaptive-cards/sdk/designer)
 - A [Javascript Templating SDK](https://learn.microsoft.com/en-us/adaptive-cards/templating/sdk) that can be used as a designer
+
+## History of this repository
+
+The last commit in the original repository was in Q1 2020. I picked it up in Q2 of 2023 and updated it to support Flutter 3.0. I mucked it up a bit and stopped work for two years until Q4 of 2025. It kind of languished until LLMs got good at the end of 2025 and into 2026.  The current version is highly reshaped by the specs and plans in docs an via the use of LLMs.

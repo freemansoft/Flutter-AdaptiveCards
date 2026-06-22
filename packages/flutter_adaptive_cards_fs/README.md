@@ -533,25 +533,25 @@ TODO for the example programs moved to [example README](example/README.md)
 
 Everything below this line is from the original README.md
 
-The referenced GitHub repository has vanished. Look at the forking train to figure out where the current repository was forked from or look here:
+The original GitHub repository has been deleted. Look at the forking train to figure out where the current repository was forked from or look here:
 
 1. <https://github.com/freemansoft/Flutter-AdaptiveCards> Mine forked from
-1. <https://github.com/lannes/Flutter-AdaptiveCards> forked from
-1. <https://github.com/juansoilan/Flutter-AdaptiveCards> forked from the original
-1. <https://github.com/rodydavis/Flutter-AdaptiveCards> the original but possibly from the no longer here repo
-1. <https://github.com/neohelden/Flutter-AdaptiveCards>
+2. <https://github.com/lannes/Flutter-AdaptiveCards> forked from
+3. <https://github.com/juansoilan/Flutter-AdaptiveCards> forked from the original
+4. <https://github.com/rodydavis/Flutter-AdaptiveCards> the original but possibly from the no longer here repo
+5. <https://github.com/neohelden/Flutter-AdaptiveCards>
 
 ---
 
 ## Installing
 
-The current release is **0.10.0** under the `_fs` namespace.
+All of the packages in this repository have the same version number are published to pub.dev.
 
-Add this to your package's pubspec.yaml file:
+Find the latest on pub.dev or from this project and updated your dependencies accordingly. If the current was `0.13.0` then add the following t your package's pubspec.yaml file:
 
 ```yml
 dependencies:
-  flutter_adaptive_cards_fs: ^0.10.0
+  flutter_adaptive_cards_fs: ^0.13.0
 ```
 
 ```dart
