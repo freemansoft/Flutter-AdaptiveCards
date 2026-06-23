@@ -1,0 +1,21 @@
+# Per-package minimum line coverage %, enforced by tool/coverage/check_coverage.dart.
+#
+# Ratchet floors: each value is a lower bound the CI coverage gate will not let a
+# package drop below. Raise a floor (in its own commit) after you land tests that
+# lift a package's coverage -- never lower one to make a red build pass.
+#
+# Format: a flat `package_name: <int percent>` map. Comments start with '#'.
+#
+# Values are the baseline measured with golden tests EXCLUDED, rounded down with a
+# ~1-point jitter buffer. CI measures coverage with a dedicated golden-excluded pass
+# (see .github/workflows/test.yml), so the CI number equals what you get locally with
+# `fvm flutter test --coverage --exclude-tags=golden` -- there is no CI/local drift.
+# These floors are therefore authoritative, not provisional. See docs/testing-coverage.md.
+#
+# flutter_adaptive_cards_test_support is intentionally omitted: it is a test helper
+# package with no tests of its own.
+
+flutter_adaptive_cards_fs: 88
+flutter_adaptive_template_fs: 95
+flutter_adaptive_cards_host_fs: 81
+flutter_adaptive_charts_fs: 83

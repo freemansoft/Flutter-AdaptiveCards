@@ -192,13 +192,13 @@ Card JSON is deep-copied into a **baseline** at render time. Runtime changes (in
 
 **Submit / reset:** `collectInputValues()` and `resetAllInputs()` / `resetInput(id)` on the document notifier — do not walk the widget tree. Factory reset clears input overlays including **`label`**, **`placeholder`**, and **`isRequired`** (resolved → baseline); preserves input `isVisible` and typeahead session fields. See [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md#reset-semantics).
 
-Full detail: [`overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md), [`reactive-riverpod.md`](../../docs/reactive-riverpod.md).
+Full detail: [`overlay-properties-by-type.md`](../../../docs/overlay-properties-by-type.md), [`reactive-riverpod.md`](../../../docs/reactive-riverpod.md).
 
 ---
 
 ## Overlay test coverage
 
-Host-facing **patch keys by JSON `type`**: [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md). **Programmatic lookup:** `CardTypeRegistry.overlayCapabilities` ([`overlay_capability_registry.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart)).
+Host-facing **patch keys by JSON `type`**: [`docs/overlay-properties-by-type.md`](../../../docs/overlay-properties-by-type.md). **Programmatic lookup:** `CardTypeRegistry.overlayCapabilities` ([`overlay_capability_registry.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart)).
 
 ### Verdict
 
@@ -217,7 +217,7 @@ Overlay fields: [`adaptive_card_document.dart`](../../packages/flutter_adaptive_
 | `inputValue`                           | Yes      | `text_overlay_test.dart`, …                                       |
 | `choices` / query session              | Yes      | `choice_set_overlay_test.dart`, `choice_set_data_query_test.dart` |
 | `errorMessage` / `isInvalid`           | Yes      | `text_overlay_test.dart`, …                                       |
-| `text`, `url`, `facts`, `inlines`      | Yes      | See [by-type index](../../docs/overlay-properties-by-type.md)     |
+| `text`, `url`, `facts`, `inlines`      | Yes      | See [by-type index](../../../docs/overlay-properties-by-type.md)     |
 | Chart extension payload                | Yes      | `chart_overlay_test.dart` (charts package)                        |
 | Action `isEnabled`, `title`, `tooltip` | Yes      | `submit_overlay_test.dart`, …                                     |
 
@@ -248,7 +248,7 @@ Optional follow-up if tightening regressions:
 1. **Notifier first** — extend [`adaptive_card_document_notifier_test.dart`](../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart): `ProviderContainer` + `baselineMapProvider.overrideWithValue`, assert `overlaysById` and `resolvedElementProvider` / `resolvedActionProvider`.
 2. **Widget test** — sample JSON under `test/samples/`, `getTestWidgetFromMap` / `getTestWidgetFromPath`, key-first finders per [`adaptive-cards-testing`](../adaptive-cards-testing/SKILL.md).
 3. **Host API** — if exposed on `RawAdaptiveCardState`, add a delegate test mirroring `setText` / `setInputError` patterns.
-4. **Docs** — update [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md) and [`overlay_capability_registry.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart).
+4. **Docs** — update [`docs/overlay-properties-by-type.md`](../../../docs/overlay-properties-by-type.md) and [`overlay_capability_registry.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart).
 
 Full test file catalog: [`adaptive-cards-testing` skill — Reactive document tests](../adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
 
@@ -304,7 +304,7 @@ final double fontSize = resolver.resolveFontSize(
 > **Note:** Shared services (registries, resolver, card state) come from
 > `ProviderScopeMixin`, which reads card-scoped Riverpod providers installed by
 > `RawAdaptiveCard` / `AdaptiveCardElement`. See
-> [`reactive-riverpod.md`](../../docs/reactive-riverpod.md).
+> [`reactive-riverpod.md`](../../../docs/reactive-riverpod.md).
 
 ---
 
@@ -338,7 +338,7 @@ final registry = CardTypeRegistry(
 
 When adding overlay coverage for chart elements, put tests under `packages/flutter_adaptive_charts_fs/test/` and pass a registry that includes **both** `additionalChartElements` and `overlayExtensions`.
 
-See [`docs/optional-packages-and-extensions.md`](../../docs/optional-packages-and-extensions.md).
+See [`docs/optional-packages-and-extensions.md`](../../../docs/optional-packages-and-extensions.md).
 
 ---
 

@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Dependent `Input.ChoiceSet` (`Data.Query`) no longer drops the selected value:** the dependent-choice-set sample handler re-applied the resolved city choices on the city `onChange`. Because `applyUpdates` treats "new `choices` without a `value`" as a stale-value reset, the value the user just selected was cleared on the next frame. The handler now passes `value: invoke.value` when repopulating choices so the selection persists; a regression test (`dependent_choice_set_test.dart`) now asserts the submitted city value survives the Data.Query re-apply.
 
+### Tests 0.13.0
+
+- Added unit and widget tests to raise line coverage toward the new CI coverage gate: `Action.InsertImage`, `ReferenceResolver` style/color/font resolution, `AdaptiveCardDocumentNotifier` patch-map and clear/session paths, and `RawAdaptiveCard` host-facade methods (`setText`, `setFacts`, `setActionEnabled`, `loadInput`, `changeValue`, `showError`, …).
+
 ## [0.12.0]
 
 ### Security 0.12.0

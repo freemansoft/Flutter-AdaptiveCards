@@ -8,11 +8,11 @@ description: >
 
 # Widgetbook overlay demo pages (sample program)
 
-> **`widgetbook/`** is a demonstration app. Library overlay contracts live in [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md) and package tests. See [`docs/documentation-scope.md`](../../docs/documentation-scope.md).
+> **`widgetbook/`** is a demonstration app. Library overlay contracts live in [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md) and package tests. See [`docs/documentation-scope.md`](../../../docs/documentation-scope.md).
 
-Canonical reference: [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md)
+Canonical reference: [`docs/widgetbook-overlay-demos.md`](../../../docs/widgetbook-overlay-demos.md)
 
-Use this skill for **Widgetbook demo plumbing** (GlobalKey, knob lifecycle, use-case registration). Library overlay APIs are covered by **`adaptive-cards-testing`** and [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md).
+Use this skill for **Widgetbook demo plumbing** (GlobalKey, knob lifecycle, use-case registration). Library overlay APIs are covered by **`adaptive-cards-testing`** and [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md).
 
 ## When to use
 
@@ -23,7 +23,7 @@ Use this skill for **Widgetbook demo plumbing** (GlobalKey, knob lifecycle, use-
 
 ## Quick workflow
 
-1. Read [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md) — shared checklist + **registry**.
+1. Read [`docs/widgetbook-overlay-demos.md`](../../../docs/widgetbook-overlay-demos.md) — shared checklist + **registry**.
 2. If the user names a page, review only that file; otherwise glob `widgetbook/lib/*_overlay_page.dart` and check each registry row.
 3. Load page-specific spec/plan from the registry **Spec / plan** column (if any).
 4. Compare code vs shared checklist + page-specific docs.
@@ -57,7 +57,7 @@ Full columns (assets, knobs, spec links): see the doc registry table.
 
 ## Adding a new overlay page
 
-Follow **Adding a new overlay demo** in [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md). Minimum deliverables:
+Follow **Adding a new overlay demo** in [`docs/widgetbook-overlay-demos.md`](../../../docs/widgetbook-overlay-demos.md). Minimum deliverables:
 
 1. `*_overlay_page.dart` + sample JSON with element `id`
 2. Use case + `GlobalKey`

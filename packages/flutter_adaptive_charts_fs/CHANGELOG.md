@@ -2,7 +2,9 @@
 
 ## [0.13.0]
 
-- no changes yet
+### Tests 0.13.0
+
+- Added `Chart.Pie` / `Chart.Donut` widget tests (data parsing, `value`/`y` and `legend`/`title`/`x` fallbacks, legend rendering, empty-data, and donut center space) covering the previously-untested `pie_donut_chart.dart`.
 
 ## [0.12.0]
 

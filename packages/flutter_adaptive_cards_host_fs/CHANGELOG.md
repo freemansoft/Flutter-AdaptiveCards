@@ -2,7 +2,9 @@
 
 ## [0.13.0]
 
-- no changes yet
+### Tests 0.13.0
+
+- Expanded `AdaptiveCardBackendHandlers` tests to cover Execute / Refresh / onChange invoke kinds and both error paths (missing mounted card state, backend `post` failure), bringing `backend_handlers.dart` to full coverage.
 
 ## [0.12.0]
 

@@ -4,7 +4,7 @@ jobs:
   test:
     name: Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
+    timeout-minutes: 15
     strategy:
       matrix:
         os: [ubuntu-24.04]
@@ -21,8 +21,12 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
 
-      - name: Run adaptive_cards tests including golden tests
-        run: flutter test -r expanded
+      # Golden render validation. Golden tests are tagged 'golden'; this pass runs
+      # ONLY them (--tags=golden) and the coverage passes below run ONLY non-golden
+      # tests, so every test runs exactly once. Only adaptive_cards and
+      # adaptive_charts have golden tests.
+      - name: Run adaptive_cards golden tests
+        run: flutter test -r expanded --tags=golden
         working-directory: ./packages/flutter_adaptive_cards_fs
 
       - name: Upload adaptive_cards golden test failure images
@@ -33,8 +37,8 @@ jobs:
           path: packages/flutter_adaptive_cards_fs/test/failures # The path where Flutter saves failure images
           retention-days: 7 # Optional: how long to keep the artifact
 
-      - name: Run adaptive_charts tests including golden tests
-        run: flutter test -r expanded
+      - name: Run adaptive_charts golden tests
+        run: flutter test -r expanded --tags=golden
         working-directory: ./packages/flutter_adaptive_charts_fs
 
       - name: Upload adaptive_charts golden test failure images
@@ -45,14 +49,35 @@ jobs:
           path: packages/flutter_adaptive_charts_fs/test/failures # The path where Flutter saves failure images
           retention-days: 7 # Optional: how long to keep the artifact
 
-      - name: Run adaptive_cards_host tests
-        run: flutter test -r expanded
-        working-directory: ./packages/flutter_adaptive_cards_host_fs
-
-      - name: Run adaptive_templating tests
-        run: flutter test -r expanded
-        working-directory: ./packages/flutter_adaptive_template_fs
-
       - name: Run adaptive_explorer tests
         run: flutter test -r expanded
         working-directory: ./adaptive_explorer
+
+      # Coverage passes (non-golden, with coverage). --exclude-tags=golden means the
+      # measured number matches local `fvm flutter test --coverage
+      # --exclude-tags=golden`, so CI and local never diverge. adaptive_cards_host and
+      # adaptive_templating have no golden tests, so this is also their full test run.
+      # Together with the golden passes above, every test runs exactly once.
+      - name: Coverage pass - adaptive_cards
+        run: flutter test -r failures-only --coverage --exclude-tags=golden
+        working-directory: ./packages/flutter_adaptive_cards_fs
+
+      - name: Coverage pass - adaptive_charts
+        run: flutter test -r failures-only --coverage --exclude-tags=golden
+        working-directory: ./packages/flutter_adaptive_charts_fs
+
+      - name: Coverage pass - adaptive_cards_host
+        run: flutter test -r failures-only --coverage --exclude-tags=golden
+        working-directory: ./packages/flutter_adaptive_cards_host_fs
+
+      - name: Coverage pass - adaptive_templating
+        run: flutter test -r failures-only --coverage --exclude-tags=golden
+        working-directory: ./packages/flutter_adaptive_template_fs
+
+      # Ratchet coverage gate. Compares each package's coverage/lcov.info against
+      # the floor in tool/coverage_floors.yaml. Floors are golden-excluded numbers,
+      # identical to local measurement, so the gate is deterministic. Currently
+      # --report-only (prints the table, never fails the build) to validate the CI
+      # plumbing; drop --report-only to make it enforcing. See docs/testing-coverage.md.
+      - name: Coverage gate (report-only)
+        run: dart run tool/coverage/check_coverage.dart

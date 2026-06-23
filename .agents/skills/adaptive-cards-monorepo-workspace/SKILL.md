@@ -158,7 +158,7 @@ flutter_adaptive_cards_host_fs ──► flutter_adaptive_cards_fs, http
   - `addedElements: CardChartsRegistry.additionalChartElements` — register chart element widgets
   - `overlayExtensions: CardChartsRegistry.overlayExtensions` — register chart overlay merge/patch hooks
 - **Do not** add chart classes, chart data structures, or chart-specific overlay fields to the core package. Use `ElementOverlayExtension` + `patchExtensionOverlay` in this package instead.
-- Docs: [`docs/optional-packages-and-extensions.md`](../../docs/optional-packages-and-extensions.md)
+- Docs: [`docs/optional-packages-and-extensions.md`](../../../docs/optional-packages-and-extensions.md)
 
 ### `packages/flutter_adaptive_template_fs` — Template Package
 
@@ -171,7 +171,7 @@ flutter_adaptive_cards_host_fs ──► flutter_adaptive_cards_fs, http
 - **Published to pub.dev** (entry: `lib/flutter_adaptive_cards_host_fs.dart`)
 - Optional serialize → POST → parse → apply pipeline for Submit/Execute/Refresh/`onChange`.
 - Depends on **`flutter_adaptive_cards_fs`** and **`http`**.
-- Docs: [backend-host-integration.md](../../docs/backend-host-integration.md).
+- Docs: [backend-host-integration.md](../../../docs/backend-host-integration.md).
 
 ### `adaptive_explorer` — Desktop Editor/Preview App
 
@@ -182,9 +182,9 @@ flutter_adaptive_cards_host_fs ──► flutter_adaptive_cards_fs, http
 
 ### `widgetbook` — Sample demonstration app
 
-- **Not published** — **example / sample program** only; not described as package architecture in `docs/` (see [`documentation-scope.md`](../../docs/documentation-scope.md)).
+- **Not published** — **example / sample program** only; not described as package architecture in `docs/` (see [`documentation-scope.md`](../../../docs/documentation-scope.md)).
 - Uses [widgetbook.io](https://widgetbook.io) to catalog card element types and host-callback demos.
-- Overlay knob demos: [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md).
+- Overlay knob demos: [`docs/widgetbook-overlay-demos.md`](../../../docs/widgetbook-overlay-demos.md).
 - Use cases defined in `lib/adaptive_cards_use_cases.dart`.
 - Sample JSON lives under `lib/samples/`; **`AdaptiveCardsCanvas.asset`** loads paths from the Flutter asset bundle.
 - **New sample directories:** add a line under `flutter: assets:` in `widgetbook/pubspec.yaml` for every **new** folder under `lib/samples/` (for example `lib/samples/v1.4/`). Without this registration, asset loads fail at runtime even when the JSON file exists on disk.

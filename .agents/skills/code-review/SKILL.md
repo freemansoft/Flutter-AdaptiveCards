@@ -25,9 +25,9 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 
 Architecture docs drift silently. If this change touches any of the triggers below, `git grep` the affected symbols in `docs/` and confirm the canonical docs were updated **in this change** (see the "Architecture documentation sync gate" in `AGENTS.md`).
 
-- [ ] **Providers / scopes**: Did it add/remove/rename a Riverpod provider or `ProviderScope` (including nested scopes), or move a provider between scopes? → Update [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md) (provider scopes + diagram) and [`docs/Architecture-Overview.md`](../../docs/Architecture-Overview.md) (scope diagram).
-- [ ] **Mixin contracts**: Did it change what a mixin watches or how effective state is computed (e.g. `AdaptiveVisibilityMixin.isVisible`, `AdaptiveInputMixin`)? → Update the relevant section of [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md).
-- [ ] **HostConfig / element contracts**: Did it add/remove/rename a HostConfig section, element/action type, or overlay field? → Update [`docs/hostconfig.md`](../../docs/hostconfig.md), [`docs/Implementation-Status.md`](../../docs/Implementation-Status.md), and [`docs/overlay-properties-by-type.md`](../../docs/overlay-properties-by-type.md) as applicable.
+- [ ] **Providers / scopes**: Did it add/remove/rename a Riverpod provider or `ProviderScope` (including nested scopes), or move a provider between scopes? → Update [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md) (provider scopes + diagram) and [`docs/Architecture-Overview.md`](../../../docs/Architecture-Overview.md) (scope diagram).
+- [ ] **Mixin contracts**: Did it change what a mixin watches or how effective state is computed (e.g. `AdaptiveVisibilityMixin.isVisible`, `AdaptiveInputMixin`)? → Update the relevant section of [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md).
+- [ ] **HostConfig / element contracts**: Did it add/remove/rename a HostConfig section, element/action type, or overlay field? → Update [`docs/hostconfig.md`](../../../docs/hostconfig.md), [`docs/Implementation-Status.md`](../../../docs/Implementation-Status.md), and [`docs/overlay-properties-by-type.md`](../../../docs/overlay-properties-by-type.md) as applicable.
 - [ ] **No stale references**: `git grep -n '<removed-or-renamed-symbol>' docs/` returns nothing pointing at deleted/renamed code (a stale doc reference is a blocker, not a nit).
 
 ---
@@ -98,13 +98,14 @@ See **`adaptive-cards-backend-host`** skill for file paths and invoke round-trip
   - Have golden tests been added/updated for UI changes?
   - **New goldens:** generate with `--update-goldens` on macOS, then **copy each new PNG from `test/gold_files/macos/` to `test/gold_files/linux/`** so CI has a baseline (see `adaptive-cards-testing` skill and `test/gold_files/README.md`).
   - **CI pixel failures:** replace `linux/` files from CI artifact zips for canonical Linux images.
+- [ ] **Coverage gate**: New untested code lowers a package toward its floor in `tool/coverage_floors.yaml`. The CI coverage gate (golden-excluded line coverage) must stay green — add tests rather than lowering a floor. Raising a floor after landing tests is fine; lowering one to pass is a red flag. See [`docs/testing-coverage.md`](../../../docs/testing-coverage.md).
 
 ### `widgetbook` changes (sample app)
 
 - [ ] **Asset registration**: New folders under `widgetbook/lib/samples/` are listed in `widgetbook/pubspec.yaml` under `flutter: assets:` (required for `AdaptiveCardsCanvas.asset`).
 - [ ] **Use case / codegen**: `@widgetbook.UseCase` added or updated in `adaptive_cards_use_cases.dart`; `fvm dart run build_runner build` run when use cases change.
 - [ ] **Changelog**: `widgetbook/CHANGELOG.md` updated when the demo app changes.
-- [ ] **Docs**: Overlay knob pages → registry row in [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md); package behavior docs tag widgetbook as **Example (widgetbook sample)** per [`documentation-scope.md`](../../docs/documentation-scope.md).
+- [ ] **Docs**: Overlay knob pages → registry row in [`docs/widgetbook-overlay-demos.md`](../../../docs/widgetbook-overlay-demos.md); package behavior docs tag widgetbook as **Example (widgetbook sample)** per [`documentation-scope.md`](../../../docs/documentation-scope.md).
 
 ---
 

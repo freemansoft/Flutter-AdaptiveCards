@@ -13,8 +13,8 @@ Optional package: **`packages/flutter_adaptive_cards_host_fs`**
 
 - **Depends on:** `flutter_adaptive_cards_fs`, `http`
 - **Published:** Yes — [pub.dev](https://pub.dev/packages/flutter_adaptive_cards_host_fs) (barrel: `lib/flutter_adaptive_cards_host_fs.dart`)
-- **Docs:** [docs/backend-host-integration.md](../../docs/backend-host-integration.md)
-- **Design history:** [docs/archive/specs/2026-06-07-backend-host-integration-design.md](../../docs/archive/specs/2026-06-07-backend-host-integration-design.md)
+- **Docs:** [docs/backend-host-integration.md](../../../docs/backend-host-integration.md)
+- **Design history:** [docs/archive/specs/2026-06-07-backend-host-integration-design.md](../../../docs/archive/specs/2026-06-07-backend-host-integration-design.md)
 
 ## When to use
 

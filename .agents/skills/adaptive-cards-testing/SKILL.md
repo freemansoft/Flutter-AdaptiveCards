@@ -268,8 +268,8 @@ Input values, visibility, TextBlock text, validation, ChoiceSet choices, and act
 - **initData / initInput overlays**: per input type — `test/inputs/text_overlay_test.dart`, `number_overlay_test.dart`, `date_overlay_test.dart`, `time_overlay_test.dart`, `toggle_overlay_test.dart`, `choice_set_overlay_test.dart`; host compose in `test/adaptive_card_overlay_test.dart`.
 - **Submit / reset**: pump user interactions, then assert `onSubmit` mock received expected values, or tap Reset and assert UI reverts to baseline JSON values. See `test/inherited_reference_resolver_test.dart`, `test/elements/visibility_overlay_test.dart`, `test/inputs/action_reset_inputs_test.dart`, and input tests under `test/inputs/`.
 - **Dynamic choices**: `test/inputs/choice_set_overlay_test.dart` — `loadInput`, `appendChoices`, selection clear, dedupe, `resetAllInputs` clearing choice overlays.
-- **Cascaded / dependent ChoiceSet**: `test/inputs/cascade_choice_set_test.dart`, `test/inputs/value_changed_action_reset_test.dart` — `valueChangedAction` reset + `applyUpdates` choices; **example (widgetbook sample):** `widgetbook/lib/dependent_choice_set_demo_page.dart` (see [form-inputs.md](../../docs/form-inputs.md#dependent-choiceset-country--city)).
-- **Data.Query / typeahead**: `test/inputs/choice_set_data_query_test.dart` — `onChange` passes `DataQuery`, `loadInput` refresh with `choices.data`, `setDataQuerySession` on resolved `choices.data`; **`associatedInputs`** merges sibling values into `DataQuery` when the action requests them. Filtered modal: `test/inputs/choice_filter_test.dart`, `test/inputs/choice_set_test.dart` — list/search **titles**, submit/`onChange` **values** ([form-inputs.md § Filtered ChoiceSet](../../docs/form-inputs.md#filtered-choiceset-style-style-filtered)).
+- **Cascaded / dependent ChoiceSet**: `test/inputs/cascade_choice_set_test.dart`, `test/inputs/value_changed_action_reset_test.dart` — `valueChangedAction` reset + `applyUpdates` choices; **example (widgetbook sample):** `widgetbook/lib/dependent_choice_set_demo_page.dart` (see [form-inputs.md](../../../docs/form-inputs.md#dependent-choiceset-country--city)).
+- **Data.Query / typeahead**: `test/inputs/choice_set_data_query_test.dart` — `onChange` passes `DataQuery`, `loadInput` refresh with `choices.data`, `setDataQuerySession` on resolved `choices.data`; **`associatedInputs`** merges sibling values into `DataQuery` when the action requests them. Filtered modal: `test/inputs/choice_filter_test.dart`, `test/inputs/choice_set_test.dart` — list/search **titles**, submit/`onChange` **values** ([form-inputs.md § Filtered ChoiceSet](../../../docs/form-inputs.md#filtered-choiceset-style-style-filtered)).
 - **Input validation overlays**: `test/inputs/text_overlay_test.dart`, `test/inputs/number_overlay_test.dart`, `test/inputs/rating_input_overlay_test.dart`; notifier group in `adaptive_card_document_notifier_test.dart`.
 - **Action overlays**: `test/actions/submit_overlay_test.dart`, `show_card_overlay_test.dart`, `popover_overlay_test.dart`, `execute_overlay_test.dart`, `open_url_overlay_test.dart`, `toggle_visibility_overlay_test.dart`; sample `test/samples/v1.5/action_is_enabled.json`.
 - **Element overlays**: `test/elements/text_block_overlay_test.dart`, `badge_overlay_test.dart`, `image_overlay_test.dart`, `media_overlay_test.dart`, `rating_overlay_test.dart`, `rich_text_block_inlines_overlay_test.dart`; `test/containers/fact_set_overlay_test.dart`.
@@ -289,7 +289,7 @@ notifier.seedInputValues({'myText': 'seeded'});
 expect(container.read(resolvedElementProvider('myText'))?['value'], 'seeded');
 ```
 
-Baseline + overlay model: [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
+Baseline + overlay model: [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md#how-overlays-change-values-initialized-from-the-adaptive-map).
 
 ### Widgetbook sample JSON (optional — not package tests)
 
@@ -299,7 +299,7 @@ When adding an interactive demo under **`widgetbook/`** (sample program, not pub
 2. Add the use case in `widgetbook/lib/adaptive_cards_use_cases.dart` (or a dedicated `*_page.dart` when host callbacks are required).
 3. Run `cd widgetbook && fvm dart run build_runner build` after use-case changes.
 
-For **host-overlay knob demos** (`*_overlay_page.dart`, `setText` / `setFacts`, page `GlobalKey` pattern), follow **`widgetbook-overlay-demos`** and [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md).
+For **host-overlay knob demos** (`*_overlay_page.dart`, `setText` / `setFacts`, page `GlobalKey` pattern), follow **`widgetbook-overlay-demos`** and [`docs/widgetbook-overlay-demos.md`](../../../docs/widgetbook-overlay-demos.md).
 
 See [`widgetbook/README.md`](../../../widgetbook/README.md).
 
@@ -316,3 +316,24 @@ Always add a new sample JSON when implementing a feature or fixing a bug to enab
 
 1. Create `test/samples/feature_name.json`.
 2. Reference via `getTestWidgetFromPath(path: 'feature_name.json')`.
+
+---
+
+## Line coverage gate
+
+CI enforces a **per-package line-coverage floor** (ratchet). Coverage is measured by a
+**golden-excluded** pass — the same command you run locally — so CI and local never diverge:
+
+```bash
+# Measure (from the affected package dir)
+cd packages/flutter_adaptive_cards_fs
+fvm flutter test --coverage --exclude-tags=golden
+
+# Check against the floors (from the repo ROOT)
+fvm dart run tool/coverage/check_coverage.dart        # enforcing
+fvm dart run tool/coverage/check_coverage.dart --self-test
+```
+
+Floors live in `tool/coverage_floors.yaml`. **Raise** a floor (own commit) after adding
+tests that lift coverage; **never lower** one to make a red build pass — a drop means a
+missing test. Full details: [`docs/testing-coverage.md`](../../../docs/testing-coverage.md).
