@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
@@ -326,4 +327,78 @@ void main() {
     expect(find.text('Los Angeles'), findsOneWidget);
     expect(find.text('New York'), findsNothing);
   });
+
+  testWidgets(
+    'compact dropdown defaults to enableSearch true / requestFocusOnTap null',
+    (tester) async {
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'body': [
+          {
+            'type': 'Input.ChoiceSet',
+            'id': 'cs',
+            'style': 'compact',
+            'choices': [
+              {'title': 'Choice 1', 'value': '1'},
+            ],
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(map: map, title: 'ChoiceSet Default Search'),
+      );
+      await tester.pumpAndSettle();
+
+      final dropdown = tester.widget<DropdownMenu<String>>(
+        find.byType(DropdownMenu<String>),
+      );
+      expect(dropdown.enableSearch, isTrue);
+      expect(dropdown.requestFocusOnTap, isNull);
+    },
+  );
+
+  testWidgets(
+    'compact dropdown honors HostConfig inputs.choiceSet overrides',
+    (tester) async {
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'body': [
+          {
+            'type': 'Input.ChoiceSet',
+            'id': 'cs',
+            'style': 'compact',
+            'choices': [
+              {'title': 'Choice 1', 'value': '1'},
+            ],
+          },
+        ],
+      };
+
+      const hostJson = {
+        'inputs': {
+          'choiceSet': {'enableSearch': false, 'requestFocusOnTap': true},
+        },
+      };
+      final hostConfigs = HostConfigs(
+        light: HostConfig.fromJson(hostJson),
+        dark: HostConfig.fromJson(hostJson),
+      );
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'ChoiceSet Search Override',
+          hostConfigs: hostConfigs,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final dropdown = tester.widget<DropdownMenu<String>>(
+        find.byType(DropdownMenu<String>),
+      );
+      expect(dropdown.enableSearch, isFalse);
+      expect(dropdown.requestFocusOnTap, isTrue);
+    },
+  );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/choice_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/error_message_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_weights_config.dart';
@@ -72,11 +73,13 @@ class FallbackConfigs {
 
   /// Default `inputs` section values.
   ///
-  /// **Non-standard:** the `text.revealPasswordEnabled` flag is a custom
-  /// extension, not part of the official Adaptive Cards HostConfig schema.
+  /// **Non-standard:** the `text.revealPasswordEnabled` flag and the entire
+  /// `choiceSet` section are custom extensions, not part of the official
+  /// Adaptive Cards HostConfig schema.
   static final InputsConfig inputsConfig = InputsConfig(
     label: LabelConfig.fromJson(const <String, dynamic>{}),
     errorMessage: ErrorMessageConfig.fromJson(const <String, dynamic>{}),
     text: TextInputConfig(revealPasswordEnabled: true),
+    choiceSet: ChoiceSetConfig(enableSearch: true),
   );
 }

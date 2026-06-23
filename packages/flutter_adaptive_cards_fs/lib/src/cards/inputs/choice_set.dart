@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/resolved_input_state.dart';
@@ -338,30 +339,28 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
   /// rely on `initialSelection` alone because [DropdownMenu] does not clear the
   /// field when the selection resets to a value absent from the entries.
   Widget _buildCompact(List<Choice> choices) {
+    // `inputs.choiceSet` HostConfig (non-standard); defaults reproduce the
+    // dropdown's prior hardcoded behavior. See docs/hostconfig.md.
+    final choiceSetConfig =
+        (styleResolver.getInputsConfig() ?? FallbackConfigs.inputsConfig)
+            .choiceSet;
     return DropdownMenu<String>(
       key: generateWidgetKey(adaptiveMap),
       controller: controller,
       initialSelection: _singleChoiceValueFor(choices),
-      // `enableSearch` (true) makes typing *jump to / highlight* the matching
-      // entry while keeping the full list visible — the closest analog to a
-      // native HTML `<select>`. The alternative, `enableFilter` (not set here),
-      // instead *narrows the list* to entries matching the typed text, behaving
-      // more like the `filtered` style's search modal. We default to search to
-      // preserve compact-dropdown semantics.
-      //
-      // TODO(hostconfig): expose this (search vs filter, and whether type-ahead
-      // is enabled at all) via a future HostConfig setting so hosts can opt into
-      // filtering.
-      enableSearch: true,
-      // Intentionally omit `requestFocusOnTap` so [DropdownMenu] applies its
+      // `enableSearch` (default true) makes typing *jump to / highlight* the
+      // matching entry while keeping the full list visible — the closest analog
+      // to a native HTML `<select>`. The alternative, `enableFilter` (not set
+      // here), instead *narrows the list* to entries matching the typed text,
+      // behaving more like the `filtered` style's search modal.
+      enableSearch: choiceSetConfig.enableSearch,
+      // `requestFocusOnTap` defaults to null, so [DropdownMenu] applies its
       // platform-aware default: focusable (and thus keyboard type-ahead) on
       // desktop platforms where a physical keyboard is present (macOS/Linux/
       // Windows), and tap-only on mobile (iOS/Android/Fuchsia) so we don't pop
-      // the soft keyboard for a simple dropdown. Forcing `true` would enable
-      // type-ahead on phones, which is not the desired UX.
-      //
-      // TODO(hostconfig): a future HostConfig setting could let hosts override
-      // this (e.g. force type-ahead on tablets that report an attached keyboard).
+      // the soft keyboard for a simple dropdown. A host can override via
+      // `inputs.choiceSet.requestFocusOnTap`.
+      requestFocusOnTap: choiceSetConfig.requestFocusOnTap,
       expandedInsets: EdgeInsets.zero,
       textStyle: TextStyle(
         color: styleResolver.resolveInputForegroundColor(

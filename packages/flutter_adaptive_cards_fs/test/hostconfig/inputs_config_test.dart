@@ -24,6 +24,11 @@ void main() {
 
       expect(config.errorMessage.size, 'medium');
       expect(config.errorMessage.spacing, 'small');
+
+      expect(config.text.revealPasswordEnabled, isFalse);
+
+      expect(config.choiceSet.enableSearch, isFalse);
+      expect(config.choiceSet.requestFocusOnTap, isTrue);
     });
 
     test('should use default values when JSON is empty', () {
@@ -32,6 +37,12 @@ void main() {
       expect(config.label.inputSpacing, 'default');
       expect(config.label.requiredInputs.color, 'default');
       expect(config.errorMessage.size, 'default');
+    });
+
+    test('choiceSet defaults when absent', () {
+      final config = InputsConfig.fromJson({});
+      expect(config.choiceSet.enableSearch, isTrue);
+      expect(config.choiceSet.requestFocusOnTap, isNull);
     });
 
     test('text.revealPasswordEnabled defaults to true when absent', () {

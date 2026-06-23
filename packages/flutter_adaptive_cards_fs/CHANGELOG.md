@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.13.0]
 
+### Added 0.13.0
+
+- **Non-standard HostConfig `inputs.choiceSet` section** lets hosts tune the compact single-select `Input.ChoiceSet` dropdown (`DropdownMenu`) without touching element JSON: `enableSearch` (`bool`, default `true`) toggles type-ahead jump-to-match, and `requestFocusOnTap` (`bool?`, default `null`) overrides the platform-aware focus-on-tap default (`null` keeps it focusable on desktop, tap-only on mobile). Both default to the dropdown's prior hardcoded behavior, so omitting the section is a no-op. Replaces the two `TODO(hostconfig)` placeholders in `choice_set.dart`. See `docs/hostconfig.md`.
+
 ### Changed 0.13.0
 
 - **Single-select compact `Input.ChoiceSet` now uses Material 3 `DropdownMenu`:** replaced the legacy `DropdownButton` so the field supports type-ahead keyboard navigation (typing a character jumps to the matching choice, Enter selects it), restoring parity with the web renderer's native `<select>`. Type-ahead is **platform-aware**: enabled on desktop platforms (macOS/Linux/Windows) where a physical keyboard is present, and the field is tap-only on mobile (iOS/Android/Fuchsia) so it does not pop the soft keyboard for a simple dropdown. Uses `enableSearch` (highlight/jump, full list stays visible) rather than `enableFilter` (narrow the list); both this and the focus policy are flagged as future HostConfig options. Display text is driven by the input controller and kept in sync with the resolved selection; selection still stores choice values. Multi-select compact and expanded styles are unchanged. Golden `sample2` images were regenerated for the new dropdown rendering.

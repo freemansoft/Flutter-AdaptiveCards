@@ -1,3 +1,4 @@
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/choice_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/error_message_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/label_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_input_config.dart';
@@ -10,6 +11,7 @@ class InputsConfig {
     required this.label,
     required this.errorMessage,
     required this.text,
+    required this.choiceSet,
   });
 
   /// Parses `inputs` from HostConfig JSON.
@@ -18,6 +20,7 @@ class InputsConfig {
       label: LabelConfig.fromJson(json['label'] ?? {}),
       errorMessage: ErrorMessageConfig.fromJson(json['errorMessage'] ?? {}),
       text: TextInputConfig.fromJson(json['text'] ?? {}),
+      choiceSet: ChoiceSetConfig.fromJson(json['choiceSet'] ?? {}),
     );
   }
 
@@ -32,4 +35,10 @@ class InputsConfig {
   /// **Non-standard:** `inputs.text` is a custom extension, not part of the
   /// official Adaptive Cards HostConfig schema.
   final TextInputConfig text;
+
+  /// Compact `Input.ChoiceSet` dropdown settings (`inputs.choiceSet`).
+  ///
+  /// **Non-standard:** `inputs.choiceSet` is a custom extension, not part of the
+  /// official Adaptive Cards HostConfig schema.
+  final ChoiceSetConfig choiceSet;
 }

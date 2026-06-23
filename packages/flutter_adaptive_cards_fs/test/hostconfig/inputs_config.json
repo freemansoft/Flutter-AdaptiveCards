@@ -20,5 +20,12 @@
     "size": "medium",
     "spacing": "small",
     "weight": "normal"
+  },
+  "text": {
+    "revealPasswordEnabled": false
+  },
+  "choiceSet": {
+    "enableSearch": false,
+    "requestFocusOnTap": true
   }
 }

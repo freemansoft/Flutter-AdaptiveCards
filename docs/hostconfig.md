@@ -42,6 +42,31 @@ Resolution precedence (highest wins):
 
 Source files: `lib/src/hostconfig/inputs_config.dart`, `lib/src/hostconfig/text_input_config.dart`, `lib/src/hostconfig/fallback_configs.dart`.
 
+### `inputs.choiceSet.enableSearch` *(Non-standard)*
+
+**Type:** `bool` | **Default:** `true` (`FallbackConfigs.inputsConfig.choiceSet.enableSearch`)
+
+Controls the compact single-select `Input.ChoiceSet` dropdown (Material 3 `DropdownMenu`). When `true`, typing a character *jumps to / highlights* the matching entry while keeping the full list visible — the closest analog to a native HTML `<select>`. When `false`, type-ahead jump is disabled. Maps to `DropdownMenu.enableSearch`.
+
+### `inputs.choiceSet.requestFocusOnTap` *(Non-standard)*
+
+**Type:** `bool?` | **Default:** `null` → platform-aware (`DropdownMenu`'s own default)
+
+Controls whether the compact dropdown takes focus (enabling keyboard type-ahead) when tapped. When `null`, `DropdownMenu` applies its platform-aware default: focusable on desktop (macOS/Linux/Windows) and tap-only on mobile (iOS/Android/Fuchsia) so it does not pop the soft keyboard for a simple dropdown. Set `true`/`false` to force the behavior regardless of platform. Maps to `DropdownMenu.requestFocusOnTap`.
+
+Both properties are nested under `inputs.choiceSet` (a `ChoiceSetConfig` object exposed as `InputsConfig.choiceSet`). Example JSON:
+
+```json
+"inputs": { "choiceSet": { "enableSearch": true, "requestFocusOnTap": false } }
+```
+
+Resolution precedence (highest wins):
+
+1. `HostConfig` value (`inputs.choiceSet.*` in JSON)
+2. `FallbackConfigs.inputsConfig.choiceSet.*` (`enableSearch: true`, `requestFocusOnTap: null`)
+
+Source files: `lib/src/hostconfig/inputs_config.dart`, `lib/src/hostconfig/choice_set_config.dart`, `lib/src/hostconfig/fallback_configs.dart`.
+
 ---
 
 ## Architecture overview

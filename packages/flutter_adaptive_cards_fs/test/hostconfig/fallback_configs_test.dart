@@ -54,6 +54,13 @@ void main() {
       expect(config.large, 18);
       expect(config.extraLarge, 22);
     });
+
+    test('inputsConfig.choiceSet has correct defaults', () {
+      final choiceSet = FallbackConfigs.inputsConfig.choiceSet;
+
+      expect(choiceSet.enableSearch, isTrue);
+      expect(choiceSet.requestFocusOnTap, isNull);
+    });
   });
 
   group('ThemeColorFallbacks', () {
