@@ -1,4 +1,11 @@
-on: [push, pull_request]
+# Build on pushes to main (merges) and on pull requests. Scoping `push` to main
+# avoids the duplicate run you'd get from `on: [push, pull_request]` when pushing
+# to a branch that has an open PR (both events fire). Feature-branch commits are
+# covered by the `pull_request` event once a PR is open.
+on:
+  push:
+    branches: [main]
+  pull_request:
 
 jobs:
   test:
