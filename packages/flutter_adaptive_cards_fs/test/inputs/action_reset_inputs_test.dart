@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/choice_set.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/inputs/time.dart';
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 void main() {
-  // TODO(username): add missing reset tests for date, time
   testWidgets('ResetInputs action resets all fields to original values', (
     WidgetTester tester,
   ) async {
@@ -173,5 +173,80 @@ void main() {
       container.read(resolvedElementProvider('myText1'))?['isInvalid'],
       isNull,
     );
+  });
+
+  testWidgets('ResetInputs action resets Date input to its original value', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      getTestWidgetFromPath(path: 'action_reset_inputs.json'),
+    );
+    await tester.pumpAndSettle();
+
+    final dateField = find.byKey(generateWidgetKeyFromId('DateVal'));
+
+    // Initial value comes from the card JSON.
+    expect(
+      tester.widget<TextFormField>(dateField).controller!.text,
+      equals('2025-07-23'),
+    );
+
+    // Simulate the user picking a different date (the same document overlay
+    // path the platform date picker drives via setDocumentInputValue).
+    final container = ProviderScope.containerOf(tester.element(dateField));
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputValue('DateVal', '2025-09-15');
+    await tester.pump();
+    expect(
+      tester.widget<TextFormField>(dateField).controller!.text,
+      equals('2025-09-15'),
+    );
+
+    // Reset returns the field to its original value.
+    await tester.tap(find.text('Reset Inputs'));
+    await tester.pump();
+    expect(
+      tester.widget<TextFormField>(dateField).controller!.text,
+      equals('2025-07-23'),
+    );
+  });
+
+  testWidgets('ResetInputs action resets Time input to its original value', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      getTestWidgetFromPath(path: 'action_reset_inputs.json'),
+    );
+    await tester.pumpAndSettle();
+
+    final timeState = tester.state<AdaptiveTimeInputState>(
+      find.byType(AdaptiveTimeInput),
+    );
+
+    // Initial value comes from the card JSON.
+    final Map<String, dynamic> initialOut = {};
+    timeState.appendInput(initialOut);
+    expect(initialOut['TimeVal'], equals('16:59'));
+
+    // Simulate the user picking a different time (the same document overlay
+    // path the platform time picker drives via setDocumentInputValue).
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(AdaptiveTimeInput)),
+    );
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInputValue('TimeVal', '08:15');
+    await tester.pump();
+    final Map<String, dynamic> changedOut = {};
+    timeState.appendInput(changedOut);
+    expect(changedOut['TimeVal'], equals('08:15'));
+
+    // Reset returns the field to its original value.
+    await tester.tap(find.text('Reset Inputs'));
+    await tester.pump();
+    final Map<String, dynamic> resetOut = {};
+    timeState.appendInput(resetOut);
+    expect(resetOut['TimeVal'], equals('16:59'));
   });
 }
