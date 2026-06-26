@@ -2,6 +2,10 @@
 
 ## [0.13.0]
 
+### Changed 0.13.0
+
+- **Docs:** README now has an **Implementation status** section summarizing Phase 1 / Phase 2 coverage and linking to the central status matrix.
+
 ### Tests 0.13.0
 
 - Expanded `AdaptiveCardBackendHandlers` tests to cover Execute / Refresh / onChange invoke kinds and both error paths (missing mounted card state, backend `post` failure), bringing `backend_handlers.dart` to full coverage.

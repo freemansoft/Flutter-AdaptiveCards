@@ -8,7 +8,8 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
-/// httfps://adaptivecards.io/explorer/Input.Text.html
+/// https://adaptivecards.io/explorer/Input.Text.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/input-text
 ///
 class AdaptiveTextInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {

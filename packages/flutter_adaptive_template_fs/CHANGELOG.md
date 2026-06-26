@@ -2,7 +2,9 @@
 
 ## [0.13.0]
 
-- no changes yet
+### Changed 0.13.0
+
+- **Docs:** README **Status** section now includes the detailed per-feature coverage table (with legend) and a templating **Known gaps** note, moved here from the central `docs/Implementation-Status.md` so it is visible on pub.dev.
 
 ## [0.12.0]
 

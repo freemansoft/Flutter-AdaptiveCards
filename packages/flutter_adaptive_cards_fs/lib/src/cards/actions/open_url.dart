@@ -6,6 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.OpenUrl.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/action-open-url
 ///
 /// Renders `Action.OpenUrl` as an elevated button and opens the URL via the
 /// host [GenericActionOpenUrl] handler.

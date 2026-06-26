@@ -6,6 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.Execute.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/action-execute
 ///
 /// Renders `Action.Execute` as an elevated button and forwards taps to the host
 /// via [GenericExecuteAction].

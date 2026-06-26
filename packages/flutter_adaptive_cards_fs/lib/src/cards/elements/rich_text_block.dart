@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/RichTextBlock.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/rich-text-block
 ///
 class AdaptiveRichTextBlock extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {

@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// This is actually classified under _cards_ and not _elements_ in the taxonomy
 /// https://adaptivecards.io/explorer/
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/adaptive-card
 class AdaptiveCardElement extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates the root `AdaptiveCard` element from [adaptiveMap].

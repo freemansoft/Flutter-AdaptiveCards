@@ -4,7 +4,9 @@ import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 /// Fact model for AdaptiveCards FactSet element
 ///
 /// * https://adaptivecards.io/explorer/FactSet.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/fact-set
 /// * https://adaptivecards.io/explorer/Fact.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/fact
 @immutable
 class Fact {
   /// One FactSet row; [title] is the label column, [value] the value column.

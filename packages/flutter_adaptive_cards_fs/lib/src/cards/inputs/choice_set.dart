@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.ChoiceSet.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/input-choice-set
 ///
 /// Renders `Input.ChoiceSet` in compact, expanded, or filtered styles.
 ///

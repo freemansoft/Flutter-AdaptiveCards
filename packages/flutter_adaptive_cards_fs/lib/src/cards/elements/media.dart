@@ -19,7 +19,9 @@ import 'package:video_player/video_player.dart';
 
 /// Implements
 /// * https://adaptivecards.io/explorer/Media.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/media
 /// * https://adaptivecards.io/explorer/MediaSource.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/media-source
 class AdaptiveMedia extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a media player from [adaptiveMap] JSON.

@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 /// Choice model for AdaptiveCards Input.ChoiceSet element
 ///
 /// * https://adaptivecards.io/explorer/Input.ChoiceSet.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/input-choice-set
 /// * https://adaptivecards.io/explorer/Input.Choice.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/input-choice
 @immutable
 class Choice {
   /// One ChoiceSet option; [title] is shown, [value] is submitted.

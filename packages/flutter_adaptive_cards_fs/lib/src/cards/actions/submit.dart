@@ -6,6 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.Submit.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/action-submit
 ///
 /// Renders `Action.Submit` as an elevated button and collects input values for
 /// the host via [GenericSubmitAction].

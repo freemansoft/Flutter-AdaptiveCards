@@ -1,6 +1,7 @@
 /// Root-level `refresh` object on an Adaptive Card (v1.4+).
 ///
 /// See [Refresh](https://adaptivecards.io/explorer/Refresh.html).
+/// See [Refresh](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/refresh).
 class RefreshConfig {
   /// Creates refresh metadata from parsed JSON fields.
   const RefreshConfig({

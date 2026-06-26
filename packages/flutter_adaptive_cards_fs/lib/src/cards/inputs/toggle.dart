@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Toggle.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/input-toggle
 ///
 class AdaptiveToggle extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {

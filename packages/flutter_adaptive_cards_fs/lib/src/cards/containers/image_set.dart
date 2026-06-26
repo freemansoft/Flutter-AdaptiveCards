@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ImageSet.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/image-set
 ///
 /// Renders an `ImageSet` as a wrapped row of [AdaptiveImage] children sized by
 /// `imageSize`.

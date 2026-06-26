@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.ShowCard.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/action-show-card
 ///
 /// Renders `Action.ShowCard` as a toggle button that expands or collapses the
 /// nested `card` via [expandedShowCardIdProvider].

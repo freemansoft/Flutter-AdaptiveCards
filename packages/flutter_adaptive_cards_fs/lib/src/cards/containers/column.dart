@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Column.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/column
 ///
 /// Renders a `Column` inside a `ColumnSet`, sizing by `width` and laying out
 /// `items` vertically.

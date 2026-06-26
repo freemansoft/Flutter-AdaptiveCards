@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/TextBlock.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/text-block
 ///
 class AdaptiveTextBlock extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a text block from [adaptiveMap] JSON.

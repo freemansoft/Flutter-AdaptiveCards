@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Image.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/image
 ///
 class AdaptiveImage extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {

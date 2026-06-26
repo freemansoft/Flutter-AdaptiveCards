@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ActionSet.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/action-set
 ///
 /// This class is described as a _Container_ in the docs but is located in elements for some reason
 ///

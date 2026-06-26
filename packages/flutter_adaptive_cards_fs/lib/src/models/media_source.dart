@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 /// MediaSource model for AdaptiveCards Media element
 ///
 /// * https://adaptivecards.io/explorer/Media.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/media
 /// * https://adaptivecards.io/explorer/MediaSource.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/media-source
 @immutable
 class MediaSource {
   /// One playback source for a Media element.

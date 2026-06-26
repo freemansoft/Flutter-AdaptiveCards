@@ -207,6 +207,10 @@ class MyBackendClient implements AdaptiveCardBackendClient {
 }
 ```
 
+## Implementation status
+
+**Complete.** Phase 1 (Teams-correct invoke payloads — `associatedInputs` on Submit/Execute/Data.Query) ships in core `flutter_adaptive_cards_fs`; Phase 2 (serialize → POST → parse → apply effects) is this package: `AdaptiveCardBackendHandlers`, PlainJson + Teams adapters, HTTP client, and `applyPatches` / `setInputErrors` / `replaceCard` effects. See the project-wide [Implementation Status Matrix](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/docs/Implementation-Status.md) for the rest of the ecosystem.
+
 ## Related documentation
 
 - [Backend host integration guide](../../docs/backend-host-integration.md)

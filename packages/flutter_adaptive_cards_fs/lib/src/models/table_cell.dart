@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 /// TableCell model for AdaptiveCards Table element
 ///
 /// * https://adaptivecards.io/explorer/Table.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/table
 /// * https://adaptivecards.io/explorer/TableCell.html
+/// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/table-cell
 @immutable
 class TableCellModel {
   /// Creates a table cell from parsed JSON properties.

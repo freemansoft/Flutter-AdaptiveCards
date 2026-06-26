@@ -2,6 +2,10 @@
 
 ## [0.13.0]
 
+### Changed 0.13.0
+
+- **Docs:** README now carries the package's **Implementation status** (per-chart status + property-gap tables, legend, and a chart **Known gaps** note), moved here from the central `docs/Implementation-Status.md` so it is visible on pub.dev.
+
 ### Tests 0.13.0
 
 - Added `Chart.Pie` / `Chart.Donut` widget tests (data parsing, `value`/`y` and `legend`/`title`/`x` fallbacks, legend rendering, empty-data, and donut center space) covering the previously-untested `pie_donut_chart.dart`.

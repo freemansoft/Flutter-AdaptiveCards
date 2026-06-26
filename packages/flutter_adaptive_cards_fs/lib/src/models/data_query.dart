@@ -3,6 +3,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
 /// Parsed `Data.Query` object from `choices.data` on `Input.ChoiceSet`.
 ///
 /// See https://adaptivecards.io/explorer/Data.Query.html
+/// See https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/data-query
 class DataQuery {
   /// Creates a data query for the given [dataset] and optional paging fields.
   DataQuery({

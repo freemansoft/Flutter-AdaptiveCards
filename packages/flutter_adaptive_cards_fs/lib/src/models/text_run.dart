@@ -1,6 +1,7 @@
 /// Parsed **`TextRun`** inline from a **`RichTextBlock`** `inlines` array.
 ///
 /// See [TextRun](https://adaptivecards.io/explorer/TextRun.html).
+/// See [TextRun](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/text-run).
 class TextRunModel {
   /// Creates a text run with display [text] and optional inline styling.
   const TextRunModel({

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/ColumnSet.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/column-set
 ///
 /// Renders a `ColumnSet` as a horizontal row of [AdaptiveColumn] children.
 class AdaptiveColumnSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {

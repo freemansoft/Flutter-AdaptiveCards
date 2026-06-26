@@ -72,6 +72,46 @@ See [optional-packages-and-extensions.md](../../docs/optional-packages-and-exten
 - `Chart.HorizontalBar.Stacked` : Horizontal Stacked Bar Charts
 - `Chart.Gauge` : Gauge Charts — rendered with `CustomPainter` (not fl_chart)
 
+## Implementation status
+
+Status of `Chart.*` elements against the Microsoft/Teams charts reference. This is the package-specific slice of the project-wide [Implementation Status Matrix](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/docs/Implementation-Status.md) (core elements, inputs, actions, and HostConfig live there).
+
+Legend: ✅ complete · ⚠️ partial · ❌ missing
+
+| Chart Type                    | Microsoft Spec                                                                                                                  | Implementation | Tests      | Notes                                                                                                                                                                                                    |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Chart.Line`                  | [Teams charts](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/charts-in-adaptive-cards) | ⚠️ Partial     | ⚠️ Limited | Data + axis rendering; `title` / axis titles via [ChartChrome](lib/src/charts/chart_chrome.dart); ISO datetime `x` values parsed to epoch ms (`parseChartXValue`)                                        |
+| `Chart.Pie`                   | Teams charts                                                                                                                    | ⚠️ Partial     | ⚠️ Limited | Slice rendering; `title` / `showLegend` via ChartChrome                                                                                                                                                  |
+| `Chart.Donut`                 | Teams charts                                                                                                                    | ⚠️ Partial     | ⚠️ Limited | Same as Pie with hole radius + ChartChrome                                                                                                                                                               |
+| `Chart.VerticalBar`           | Teams charts                                                                                                                    | ⚠️ Partial     | ⚠️ Limited | Bars + `title`, axis titles, `showBarValues`, `showLegend`, `colorSet`                                                                                                                                   |
+| `Chart.HorizontalBar`         | Teams charts                                                                                                                    | ⚠️ Partial     | ⚠️ Limited | Same chrome as vertical bar                                                                                                                                                                              |
+| `Chart.VerticalBar.Grouped`   | Teams charts                                                                                                                    | ⚠️ Partial     | ⚠️ Limited | Grouped and stacked (`stacked: true`) modes supported                                                                                                                                                    |
+| `Chart.HorizontalBar.Stacked` | Teams charts                                                                                                                    | ⚠️ Partial     | ⚠️ Limited | Stacked horizontal bars                                                                                                                                                                                  |
+| `Chart.Gauge`                 | Teams charts                                                                                                                    | ✅ Implemented | ✅ Yes     | `CustomPainter` semicircular gauge (`value`, `min`/`max`, `segments`, `valueFormat`, legend)                                                                                                             |
+
+Microsoft does **not** define a separate `Chart.VerticalBar.Stacked` type; stacked vertical bars use `Chart.VerticalBar.Grouped` with `"stacked": true`.
+
+### Chart property gaps (all chart types)
+
+| Property / area             | Status | Notes                                                                                                                                                                                                                                                |
+| --------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data`                      | ✅     | Parsed and rendered for implemented chart types                                                                                                                                                                                                      |
+| `color` (per point)         | ⚠️     | Hex + Teams semantic tokens (`good`, `categoricalBlue`, `divergingRed`, …) via [chart_colors_config.dart](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/packages/flutter_adaptive_cards_fs/lib/src/hostconfig/chart_colors_config.dart) |
+| `colorSet`                  | ✅     | Named palettes (`categorical`, `sequential`, `diverging`) on chart JSON + HostConfig `defaultPalette` fallback                                                                                                                                       |
+| `title`                     | ✅     | Rendered via ChartChrome on bar, line, pie, donut, and gauge                                                                                                                                                                                         |
+| `xAxisTitle` / `yAxisTitle` | ✅     | Bar and line charts (fl_chart axis titles)                                                                                                                                                                                                           |
+| `showBarValues`             | ✅     | Vertical and horizontal bar charts                                                                                                                                                                                                                   |
+| `showLegend`                | ✅     | Pie, donut, gauge segment legend; bar/line when enabled                                                                                                                                                                                              |
+| `targetWidth`               | ❌     | Responsive layout not implemented                                                                                                                                                                                                                    |
+| `grid.area`                 | ❌     | `Layout.AreaGrid` placement not implemented                                                                                                                                                                                                          |
+| `height: stretch`           | ❌     | Block height modes not implemented on chart elements                                                                                                                                                                                                 |
+| HostConfig `chartColors`    | ✅     | `defaultPalette` and `defaultColor`                                                                                                                                                                                                                  |
+| HostConfig `chartsLayout`   | ✅     | Line, bar, pie, and donut layout chrome — see [charts layout plan](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/docs/superpowers/plans/2026-06-08-charts-layout-config.plan.md)                                                    |
+
+### Known gaps
+
+`Chart.Gauge`, chart chrome (`ChartChrome`: title, legend, axis labels), and `colorSet` palettes are **implemented**. The remaining cross-cutting chart gaps — responsive `targetWidth`, `grid.area` placement, and block `height: stretch` — are listed in the **Chart property gaps** table above.
+
 ## Getting started
 
 Merge chart element creators into `CardTypeRegistry.addedElements` when building the card:

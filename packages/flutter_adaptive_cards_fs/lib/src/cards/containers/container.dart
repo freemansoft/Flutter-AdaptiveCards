@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Container.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/container
 ///
 /// Renders a `Container` that vertically stacks `items` with optional
 /// background, spacing, and `minHeight`.

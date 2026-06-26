@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Number.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/input-number
 ///
 // ignore_for_file: unnecessary_const
 class AdaptiveNumberInput extends ConsumerStatefulWidget

@@ -6,6 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Action.ToggleVisibility.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/action-toggle-visibility
 ///
 /// Renders `Action.ToggleVisibility` as an elevated button and updates element
 /// visibility via [GenericActionToggleVisibility].

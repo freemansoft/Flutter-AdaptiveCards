@@ -11,7 +11,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Implements
 /// https://adaptivecards.io/explorer/FactSet.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/fact-set
 /// https://adaptivecards.io/explorer/Fact.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/fact
 ///
 /// Renders a `FactSet` as title/value pairs in two columns, with reactive
 /// updates when overlay `facts` change.

@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 
 ///
 /// https://adaptivecards.io/explorer/Input.Date.html
+/// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/input-date
 ///
 class AdaptiveDateInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
