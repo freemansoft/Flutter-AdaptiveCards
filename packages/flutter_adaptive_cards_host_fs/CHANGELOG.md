@@ -2,6 +2,10 @@
 
 ## [0.13.0]
 
+### Added 0.13.0
+
+- **`Action.Http` transport (deprecated/legacy action)** — `Action.Http` is the original Adaptive Cards HTTP action model (schema v1.0), superseded by `Action.Execute` (Universal Action Model, schema v1.4) and still used by Outlook Actionable Messages. New `AdaptiveHttpExecutor` interface and default `HttpAdaptiveHttpExecutor` (built on `package:http`) perform the card-authored `GET`/`POST`. `AdaptiveCardBackendHandlers` gains an optional `httpExecutor` and wires the core `onHttp` callback: on success it honors `CARD-UPDATE-IN-BODY: true` by replacing the rendered card (reusing `onCardReplaced` + `cardValidator`), and surfaces `CARD-ACTION-STATUS` / non-2xx failures via `onError`. Response bodies are byte-capped.
+
 ### Changed 0.13.0
 
 - **Docs:** README now has an **Implementation status** section summarizing Phase 1 / Phase 2 coverage and linking to the central status matrix.

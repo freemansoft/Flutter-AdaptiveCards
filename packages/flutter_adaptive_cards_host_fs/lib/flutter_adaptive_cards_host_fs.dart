@@ -8,6 +8,7 @@ export 'package:flutter_adaptive_cards_host_fs/src/adapters/plain_json_invoke_ad
 export 'package:flutter_adaptive_cards_host_fs/src/adapters/plain_json_invoke_response_parser.dart';
 export 'package:flutter_adaptive_cards_host_fs/src/adapters/teams_invoke_adapter.dart';
 export 'package:flutter_adaptive_cards_host_fs/src/client/backend_client.dart';
+export 'package:flutter_adaptive_cards_host_fs/src/client/http_action_executor.dart';
 export 'package:flutter_adaptive_cards_host_fs/src/client/http_backend_client.dart';
 export 'package:flutter_adaptive_cards_host_fs/src/handlers/backend_handlers.dart';
 export 'package:flutter_adaptive_cards_host_fs/src/models/invoke_effect.dart';

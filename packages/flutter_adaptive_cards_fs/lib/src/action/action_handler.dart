@@ -20,6 +20,7 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
 
     required this.onChange,
     this.onRefresh,
+    this.onHttp,
     required super.child,
   });
 
@@ -52,6 +53,17 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
   ///
   /// When null, refresh falls back to [onExecute] with the same payload shape.
   final void Function(RefreshActionInvoke invoke)? onRefresh;
+
+  /// Called when an `Action.Http` is pressed and default handlers run.
+  ///
+  /// **Deprecated/legacy:** `Action.Http` was the original Adaptive Cards HTTP
+  /// action model (schema v1.0), superseded by `Action.Execute` (Universal
+  /// Action Model, schema v1.4); still used by Outlook Actionable Messages.
+  /// `invoke` carries the resolved method/url/headers/body (after
+  /// `{{inputId.value}}` substitution) plus the raw input values. When null,
+  /// the action does nothing beyond a debug-mode notice; wire a host handler
+  /// (for example `flutter_adaptive_cards_host_fs`) to perform the request.
+  final void Function(HttpActionInvoke invoke)? onHttp;
 
   /// Lookup for host callbacks installed above the card.
   ///

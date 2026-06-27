@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -192,6 +193,81 @@ class DefaultExecuteAction extends GenericExecuteAction {
           content: Text(
             'No custom handler found for onExecute: '
             'verb: ${invoke.verb} id: ${invoke.actionId}\n ${invoke.data}',
+          ),
+        ),
+      );
+    }
+  }
+}
+
+/// Default handler for `Action.Http`.
+///
+/// **Deprecated/legacy:** `Action.Http` was the original Adaptive Cards HTTP
+/// action model (schema v1.0), superseded by `Action.Execute` (Universal Action
+/// Model, schema v1.4). It is still used by Outlook Actionable Messages.
+///
+/// Validates inputs, resolves `{{inputId.value}}` substitution, gates the URL
+/// against the active URI policy, then forwards an [HttpActionInvoke] to
+/// [InheritedAdaptiveCardHandlers.onHttp]. The core library never performs the
+/// request itself; wire a host handler (for example
+/// `flutter_adaptive_cards_host_fs`) to do the GET/POST.
+class DefaultHttpAction extends GenericHttpAction {
+  /// Creates the default `Action.Http` handler.
+  const DefaultHttpAction();
+
+  @override
+  void tap({
+    required BuildContext context,
+    required RawAdaptiveCardState rawAdaptiveCardState,
+    required Map<String, dynamic> adaptiveMap,
+  }) {
+    final container = ProviderScope.containerOf(context);
+
+    if (!validateInputs(container)) return;
+
+    final values = container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .collectInputValues();
+
+    final invoke = HttpActionInvoke.fromActionMap(adaptiveMap, values);
+
+    // Untrusted card JSON controls this URL. Validate against the active policy
+    // before forwarding, mirroring DefaultOpenUrlAction.
+    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context)
+        .validate(invoke.url);
+    if (validation case AdaptiveUriDenied(:final reason)) {
+      if (kDebugMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Action.Http URL blocked: $reason')),
+        );
+      }
+      return;
+    }
+
+    // Surface card-controlled credential headers so authors notice untrusted
+    // injection. The header still forwards; the host decides what to do.
+    for (final header in invoke.headers) {
+      final lname = header.name.toLowerCase();
+      if (lname == 'authorization' || lname == 'cookie') {
+        assert(() {
+          developer.log(
+            'Action.Http carries a sensitive header from card JSON: '
+            '${header.name}',
+          );
+          return true;
+        }());
+      }
+    }
+
+    final handlers = InheritedAdaptiveCardHandlers.of(context);
+    if (handlers?.onHttp != null) {
+      handlers!.onHttp!(invoke);
+    } else if (kDebugMode) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'No custom handler found for onHttp: '
+            '${invoke.method} ${invoke.url}',
           ),
         ),
       );

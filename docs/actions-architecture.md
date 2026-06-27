@@ -63,6 +63,20 @@ When **`DefaultOpenUrlDialogAction`** runs:
 1. Build **`OpenUrlDialogActionInvoke`** with action **`url`** and optional action **`id`** (`actionId`).
 2. Call **`InheritedAdaptiveCardHandlers.onOpenUrlDialog(invoke)`**.
 
+## Action.Http payload (deprecated/legacy)
+
+> **Deprecated/legacy:** `Action.Http` was the original Adaptive Cards HTTP action model (schema v1.0). It was superseded by `Action.Execute` (the [Universal Action Model](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/universal-action-model), schema v1.4) and no longer renders in newer SDKs/schemas, but is still used by [Outlook Actionable Messages](https://learn.microsoft.com/en-us/outlook/actionable-messages/adaptive-card). Prefer `Action.Execute`/`Action.Submit` for new cards. The core library forwards the request and **never performs it**; wire `flutter_adaptive_cards_host_fs` (`AdaptiveHttpExecutor`) for the actual transport.
+
+When **`DefaultHttpAction`** runs:
+
+1. **`validateInputs`** — abort (marking fields) if any required/regex/range input is invalid, like `Action.Submit`.
+2. **`collectInputValues()`**, then resolve **`{{inputId.value}}`** substitution (via `substituteInputValues`) in **`url`**, **`body`**, and each header **`value`**.
+3. Gate the resolved **`url`** through the active **URI policy** (`InheritedAdaptiveCardSecurityPolicy.uriPolicy`); abort on denial, like `Action.OpenUrl`.
+4. Debug-flag card-controlled sensitive headers (`Authorization`/`Cookie`). The header still forwards; the host decides.
+5. Build **`HttpActionInvoke`** (`method`, resolved `url`/`body`/`headers`, raw `inputValues`, optional `actionId`) and call **`InheritedAdaptiveCardHandlers.onHttp(invoke)`** (nullable).
+
+On the host side, `AdaptiveCardBackendHandlers.httpExecutor` performs the GET/POST and honors the Outlook response conventions: `CARD-UPDATE-IN-BODY: true` replaces the rendered card (reusing `onCardReplaced` + `cardValidator`), and `CARD-ACTION-STATUS` surfaces a failure message via `onError`.
+
 ## Input onChange payload
 
 When an input value changes, **`RawAdaptiveCardState.changeValue`** builds **`InputChangeInvoke`** (`inputId`, `value`, `dataQuery`, `cardState`) and calls the host **`onChange`** handler (from **`AdaptiveCardsCanvas.onChange`** or **`InheritedAdaptiveCardHandlers.onChange`**).

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/execute.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/actions/http.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/insert_image.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/open_url.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/open_url_dialog.dart';
@@ -267,6 +268,10 @@ class CardTypeRegistry {
         return AdaptiveActionSubmit(adaptiveMap: map);
       case 'Action.Execute':
         return AdaptiveActionExecute(
+          adaptiveMap: map,
+        );
+      case 'Action.Http':
+        return AdaptiveActionHttp(
           adaptiveMap: map,
         );
       case 'Action.ResetInputs':

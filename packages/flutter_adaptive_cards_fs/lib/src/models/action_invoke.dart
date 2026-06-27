@@ -1,5 +1,6 @@
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/input_substitution.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// Reads author-defined action `id` from card JSON, or null when absent or
@@ -163,6 +164,102 @@ class OpenUrlDialogActionInvoke {
 
   /// URL from action JSON (or `altUrl` when supplied by selectAction routing).
   final String url;
+
+  /// Author-defined action `id` from card JSON, when present.
+  final String? actionId;
+}
+
+/// A single HTTP header carried by an [HttpActionInvoke].
+///
+/// Headers are kept as an ordered list (rather than a map) so author order is
+/// preserved and duplicate header names are allowed.
+class HttpActionHeader {
+  /// Creates a header with [name] and resolved [value].
+  const HttpActionHeader({required this.name, required this.value});
+
+  /// Header field name, for example `Content-Type`.
+  final String name;
+
+  /// Header value, after `{{inputId.value}}` substitution.
+  final String value;
+}
+
+/// Payload delivered to the host `onHttp` callback for `Action.Http`.
+///
+/// **Deprecated/legacy:** `Action.Http` was the original Adaptive Cards HTTP
+/// action model (schema v1.0), superseded by `Action.Execute` (Universal Action
+/// Model, schema v1.4). It is still used by Outlook Actionable Messages
+/// (<https://learn.microsoft.com/en-us/outlook/actionable-messages/adaptive-card>).
+/// The library resolves
+/// `{{inputId.value}}` substitution in [url], [body], and header values before
+/// delivering this payload, so hosts receive request-ready values and never
+/// re-implement the substitution mini-language. The raw [inputValues] map is
+/// included so hosts can re-derive values if needed.
+class HttpActionInvoke {
+  /// Creates an HTTP action payload with already-resolved request fields.
+  const HttpActionInvoke({
+    required this.method,
+    required this.url,
+    required this.headers,
+    required this.inputValues,
+    this.body,
+    this.actionId,
+  });
+
+  /// Builds from `Action.Http` JSON and collected [inputValues].
+  ///
+  /// `method` is upper-cased; `url`, `body`, and each header `value` have
+  /// `{{inputId.value}}` tokens substituted from [inputValues].
+  factory HttpActionInvoke.fromActionMap(
+    Map<String, dynamic> actionMap,
+    Map<String, dynamic> inputValues,
+  ) {
+    final rawUrl = actionMap['url'] as String? ?? '';
+    final rawBody = actionMap['body'] as String?;
+    final rawHeaders = actionMap['headers'] as List<dynamic>? ?? const [];
+
+    final headers = <HttpActionHeader>[];
+    for (final entry in rawHeaders) {
+      if (entry is! Map) continue;
+      final name = entry['name'] as String?;
+      if (name == null) continue;
+      headers.add(
+        HttpActionHeader(
+          name: name,
+          value: substituteInputValues(
+            entry['value'] as String? ?? '',
+            inputValues,
+          ),
+        ),
+      );
+    }
+
+    return HttpActionInvoke(
+      method: (actionMap['method'] as String? ?? 'GET').toUpperCase(),
+      url: substituteInputValues(rawUrl, inputValues),
+      body: rawBody == null
+          ? null
+          : substituteInputValues(rawBody, inputValues),
+      headers: headers,
+      inputValues: inputValues,
+      actionId: actionIdFromMap(actionMap),
+    );
+  }
+
+  /// HTTP method, upper-cased (`GET` or `POST`).
+  final String method;
+
+  /// Target URL, after `{{inputId.value}}` substitution.
+  final String url;
+
+  /// Request body, after substitution; `null` when the action has no `body`.
+  final String? body;
+
+  /// Request headers in author order, with values substituted.
+  final List<HttpActionHeader> headers;
+
+  /// Raw collected input values, before substitution.
+  final Map<String, dynamic> inputValues;
 
   /// Author-defined action `id` from card JSON, when present.
   final String? actionId;

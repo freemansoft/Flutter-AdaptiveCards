@@ -79,6 +79,7 @@ flutter:
     - lib/samples/fact_set/
     - lib/samples/image_set/
     - lib/samples/action_execute/
+    - lib/samples/action_http/
     - lib/samples/action_set/
     - lib/samples/action_open_url/
     - lib/samples/action_submit/

@@ -5,6 +5,7 @@ import 'package:widgetbook_workspace/chart_overlay_page.dart';
 import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
 import 'package:widgetbook_workspace/fact_set_overlay_page.dart';
 import 'package:widgetbook_workspace/generic_page.dart';
+import 'package:widgetbook_workspace/http_action_demo_page.dart';
 import 'package:widgetbook_workspace/input_text_password_overlay_page.dart';
 import 'package:widgetbook_workspace/network_page.dart';
 import 'package:widgetbook_workspace/rating_input_overlay_page.dart';
@@ -714,6 +715,19 @@ Widget buildActionIsEnabledExample1(BuildContext context) {
 )
 Widget buildActionExecuteExample1(BuildContext context) {
   return const GenericPage(url: 'lib/samples/action_execute/example1.json');
+}
+
+// =============================================================================
+// ACTION HTTP Component (deprecated/legacy)
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Action.Http (deprecated, input substitution)',
+  type: widget_types.Actions,
+  path: '[Components]',
+)
+Widget buildActionHttpExample1(BuildContext context) {
+  return const HttpActionDemoPage();
 }
 
 // =============================================================================

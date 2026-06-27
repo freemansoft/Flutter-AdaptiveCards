@@ -15,6 +15,7 @@ Widget getTestWidgetFromPath({
   void Function(ExecuteActionInvoke invoke)? onExecute,
   void Function(InputChangeInvoke invoke)? onChange,
   void Function(RefreshActionInvoke invoke)? onRefresh,
+  void Function(HttpActionInvoke invoke)? onHttp,
   String? currentUserId,
   Map? initData,
   HostConfigs? hostConfigs,
@@ -37,6 +38,7 @@ Widget getTestWidgetFromPath({
     onExecute: onExecute,
     onChange: onChange,
     onRefresh: onRefresh,
+    onHttp: onHttp,
     currentUserId: currentUserId,
     initData: initData,
     hostConfigs: hostConfigs,
@@ -59,6 +61,7 @@ Widget getTestWidgetFromMap({
   void Function(ExecuteActionInvoke invoke)? onExecute,
   void Function(InputChangeInvoke invoke)? onChange,
   void Function(RefreshActionInvoke invoke)? onRefresh,
+  void Function(HttpActionInvoke invoke)? onHttp,
   String? currentUserId,
   Map? initData,
   HostConfigs? hostConfigs,
@@ -97,7 +100,8 @@ Widget getTestWidgetFromMap({
       onSubmit != null ||
       onExecute != null ||
       onChange != null ||
-      onRefresh != null) {
+      onRefresh != null ||
+      onHttp != null) {
     // wrap in handlers
     return MaterialApp(
       home: Scaffold(
@@ -113,6 +117,7 @@ Widget getTestWidgetFromMap({
               onExecute: onExecute ?? (_) {},
               onChange: onChange ?? (_) {},
               onRefresh: onRefresh,
+              onHttp: onHttp,
               child: adaptiveCard,
             ),
           ),

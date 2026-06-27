@@ -52,6 +52,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                 .buildActionExecuteExample1,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Action.Http (deprecated, input substitution)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildActionHttpExample1,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Action.OpenUrl Example 1',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildActionOpenUrlExample1,

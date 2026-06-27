@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/src/action/action_type_registry.dart';
+import 'package:flutter_adaptive_cards_fs/src/action/default_actions.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/actions/http.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/media.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/text_block.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/elements/unknown.dart';
@@ -86,6 +89,29 @@ void main() {
     await tester.pumpWidget(element);
 
     expect(find.text('Test'), findsOneWidget);
+  });
+
+  testWidgets('Action.Http resolves to AdaptiveActionHttp widget', (
+    tester,
+  ) async {
+    final Widget action = const CardTypeRegistry().getAction(
+      map: {
+        'type': 'Action.Http',
+        'title': 'Go',
+        'method': 'GET',
+        'url': 'https://example.com',
+      },
+    );
+
+    expect(action.runtimeType, equals(AdaptiveActionHttp));
+  });
+
+  test('Action.Http resolves to DefaultHttpAction handler', () {
+    final action = const DefaultActionTypeRegistry().getActionForType(
+      map: {'type': 'Action.Http'},
+    );
+
+    expect(action, isA<DefaultHttpAction>());
   });
 }
 

@@ -264,7 +264,7 @@ See [Overlay test coverage](#overlay-test-coverage) and [`overlay-properties-by-
 
 ## Host callbacks
 
-Host callbacks (`onSubmit`, `onExecute`, `onRefresh`, `onOpenUrl`, `onOpenUrlDialog`, `onChange`, …) remain on **`InheritedAdaptiveCardHandlers`**. These are host integration points, not reactive document state. Each callback receives a typed invoke payload: **`SubmitActionInvoke`**, **`ExecuteActionInvoke`**, **`RefreshActionInvoke`**, **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, or **`InputChangeInvoke`**. **`AdaptiveCardsCanvas.onChange`** accepts **`InputChangeInvoke`** directly.
+Host callbacks (`onSubmit`, `onExecute`, `onRefresh`, `onOpenUrl`, `onOpenUrlDialog`, `onChange`, `onHttp`, …) remain on **`InheritedAdaptiveCardHandlers`**. These are host integration points, not reactive document state. Each callback receives a typed invoke payload: **`SubmitActionInvoke`**, **`ExecuteActionInvoke`**, **`RefreshActionInvoke`**, **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, **`InputChangeInvoke`**, or **`HttpActionInvoke`** (the nullable `onHttp` handles the deprecated/legacy `Action.Http` — original Adaptive Cards HTTP action model superseded by `Action.Execute` in schema v1.4, still used by Outlook Actionable Messages; the core forwards a resolved request and never performs it). **`AdaptiveCardsCanvas.onChange`** accepts **`InputChangeInvoke`** directly.
 
 When a ChoiceSet with `choices.data` fires `onChange`, **`InputChangeInvoke.dataQuery`** includes sibling input values in **`parameters`** when `associatedInputs` is **`"auto"`** (default when omitted). The firing input id is excluded; set **`"none"`** to pass JSON `parameters` only. See [Dependent ChoiceSet](form-inputs.md#dependent-choiceset-country--city).
 

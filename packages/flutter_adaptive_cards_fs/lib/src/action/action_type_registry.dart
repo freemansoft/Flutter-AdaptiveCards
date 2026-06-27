@@ -45,6 +45,8 @@ class DefaultActionTypeRegistry extends ActionTypeRegistry {
         return const DefaultSubmitAction();
       case 'Action.Execute':
         return const DefaultExecuteAction();
+      case 'Action.Http':
+        return const DefaultHttpAction();
       case 'Action.ResetInputs':
         return const DefaultResetInputsAction();
       case 'Action.ToggleVisibility':

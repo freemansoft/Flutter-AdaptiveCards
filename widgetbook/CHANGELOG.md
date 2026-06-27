@@ -2,7 +2,7 @@
 
 ## [0.13.0]
 
-- no changes yet
+- Added an **Action.Http** demo use case (Components → Actions): `HttpActionDemoPage` wires `onHttp` to a SnackBar showing the resolved method/url/body/headers after `{{nameInput.value}}` substitution. New sample `lib/samples/action_http/example1.json`. `Action.Http` is the deprecated/legacy original Adaptive Cards HTTP action model (superseded by `Action.Execute`), still used by Outlook Actionable Messages.
 
 ## [0.12.0]
 

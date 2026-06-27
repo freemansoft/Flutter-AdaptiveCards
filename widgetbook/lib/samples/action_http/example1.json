@@ -1,0 +1,48 @@
+{
+  "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Action.Http (deprecated/legacy)",
+      "weight": "bolder",
+      "size": "medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Original Adaptive Cards HTTP action model (v1.0), superseded by Action.Execute (Universal Action Model, v1.4). Still used by Outlook Actionable Messages. The button's url/body embed {{nameInput.value}}, resolved from the input below before onHttp fires.",
+      "wrap": true,
+      "isSubtle": true,
+      "spacing": "small"
+    },
+    {
+      "type": "Input.Text",
+      "id": "nameInput",
+      "label": "Your name",
+      "placeholder": "Type your name",
+      "value": "David"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Http",
+      "id": "say-hello-get",
+      "title": "Say hello (GET)",
+      "method": "GET",
+      "url": "https://contoso.com/sayhello?name={{nameInput.value}}"
+    },
+    {
+      "type": "Action.Http",
+      "id": "say-hello-post",
+      "title": "Say hello (POST)",
+      "method": "POST",
+      "url": "https://contoso.com/sayhello",
+      "body": "{\"name\":\"{{nameInput.value}}\"}",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ]
+    }
+  ]
+}
