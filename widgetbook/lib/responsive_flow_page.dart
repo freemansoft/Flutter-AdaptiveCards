@@ -20,6 +20,7 @@ class ResponsiveFlowPage extends StatelessWidget {
   static const _samples = <String, String>{
     'Container flow': 'lib/samples/responsive/flow_container.json',
     'Column flow (itemWidth)': 'lib/samples/responsive/flow_column.json',
+    'AreaGrid (image + text)': 'lib/samples/responsive/area_grid.json',
   };
 
   @override

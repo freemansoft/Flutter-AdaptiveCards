@@ -58,18 +58,19 @@ Templating lives in a **separate opt-in package**. Core binding (`${...}`, `$dat
 
 ## Priority Recommendations
 
+> [!NOTE]
+> **Prioritization updated 2026-06-28.** Responsive `Layout.Flow`, **`Layout.AreaGrid`**, and block **`height: "stretch"`** have all shipped (Container, root, Column, TableCell). Responsive layout is now **feature-complete except `Layout.Flow` `itemFit: "Fill"`** (see Low priority). Two items remain **deprioritized by maintainer decision** — see **Deferred** below: `requires` + action `fallback` + version gating, and all `rtl` rendering.
+
 ### High priority — standard cards
 
-1. **Responsive layout**: `targetWidth` ✅ and `Layout.Flow` ✅ (Container, root body, Column, TableCell) shipped ([design](./superpowers/specs/2026-06-27-finish-layout-flow-design.md)); remaining: `Layout.AreaGrid` / `grid.area`, and Flow `itemFit: "Fill"`. (`ColumnSet` has no `layouts` property in the spec.)
-2. **`requires` + action `fallback` + version gating**: Graceful degradation for mixed-schema hosts.
+_None currently — the prior top priorities (`Layout.AreaGrid` + `grid.area` and block `height: "stretch"`) shipped 2026-06-28; see **Recently completed**._
 
 ### Medium priority
 
-1. **Complete `Table`**: `auto`/`stretch` column widths, cell `rtl` rendering, `bleed`.
+1. **Complete `Table`**: `auto`/`stretch` column widths and `bleed`. (Cell `rtl` rendering → **Deferred**.)
 2. **`Icon` element**: Expand Fluent name catalog beyond ~68 built-in mappings.
-3. **Block `height: stretch`**: Apply across containers and chart elements.
-4. **AdaptiveCard root features**: `rtl`, `fallbackText`, `minHeight`, `verticalContentAlignment` (`refresh` ✅, `selectAction` ✅ — see [plan workstream B](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-b--refresh-property-v14)).
-5. **Media poster fix**: Resolve poster attribute display issue.
+3. **AdaptiveCard root features**: `fallbackText`, `minHeight`, root `verticalContentAlignment` (`refresh` ✅, `selectAction` ✅ — see [plan workstream B](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-b--refresh-property-v14)). (Root `rtl` → **Deferred**.)
+4. **Media poster fix**: Resolve poster attribute display issue.
 
 ### Low priority
 
@@ -78,6 +79,15 @@ Templating lives in a **separate opt-in package**. Core binding (`${...}`, `$dat
 3. **`CaptionSource`**: Render parsed caption tracks (VTT) on the Media video surface.
 4. **`bleed`**: Container full-bleed layouts.
 5. **Adaptive Expressions**: `select`/`where` collection functions in templating (require lazy lambda evaluation; other collection and date functions are now implemented).
+6. **Flow follow-ups** (deferred from the [2026-06-27 finish-Flow work](./superpowers/specs/2026-06-27-finish-layout-flow-design.md)): `itemFit: "Fill"` (needs a custom row-packing layout), Flow on the `listView` body path, and the W4 width-measurement remainder (margin-inclusive measurement; nested `Action.ShowCard` width).
+7. **Load icon font in golden tests** (follow-up to the 2026-06-28 icon-catalog expansion): `flutter test` doesn't load the `MaterialIcons` glyph font, so icon goldens (`v1_5_icon_demo`, `v1_6_icon_catalog`, and any golden containing icons) render missing-glyph tofu boxes — they lock layout but can't catch a wrong glyph or a `help_outline` fallback. Fix by loading fonts from `FontManifest.json` via `FontLoader` once in `adaptiveCardsTestExecutable` (`flutter_adaptive_cards_test_support`, invoked by each package's `test/flutter_test_config.dart`); no new dependency. **Cross-cutting:** touches shared test infra and requires regenerating every icon-containing golden baseline on both `macos` and `linux`, so it warrants its own change. Until then, the name→`IconData` mapping is verified by `fluent_icon_map_test.dart`, not the goldens.
+
+### Deferred (by maintainer decision, 2026-06-27)
+
+These are **not** being scheduled now despite their value; revisit after the responsive layout work (AreaGrid) lands.
+
+1. **`requires` + action `fallback` + version gating**: Graceful degradation for mixed-schema hosts (unknown actions still `assert(false)`; `requires` capability checks and `fallbackText` unimplemented). High value for production Teams/Bot hosts — explicitly deferred, not dropped.
+2. **`rtl` rendering**: cell-level `rtl` (Table — parsed in `TableCellModel` but not applied) and root/element `rtl`. Low priority for current consumers.
 
 ---
 
@@ -110,6 +120,15 @@ fvm flutter test --exclude-tags=golden
 ---
 
 ## Recently completed
+
+### Layout.AreaGrid + block height: stretch (2026-06-28)
+
+Plan: [2026-06-28-areagrid-and-height-stretch.md](./superpowers/plans/2026-06-28-areagrid-and-height-stretch.md) — designs: [block height: stretch](./superpowers/specs/2026-06-28-block-height-stretch-design.md), [Layout.AreaGrid](./superpowers/specs/2026-06-28-layout-areagrid-design.md).
+
+- **`Layout.AreaGrid` + `grid.area`** via a bespoke `RenderAdaptiveAreaGrid` (no new core dependency): percent/px/implied columns, `columnSpan`/`rowSpan`, `columnSpacing`/`rowSpacing`, `targetWidth`-selected grids, and fail-open fallback for unplaced/unknown-area elements (rendered below the grid, logged). Reuses `selectLayout` + `cardWidthBucketProvider`; threaded into Container/Column/TableCell/root via `buildLayoutChildren(childMaps:)`.
+- **Block `height: "stretch"`** on Container/Column/root body in bounded contexts (degrades to `auto` when unbounded), via `buildStretchableColumn` + shared `isStretchHeight`. Backed by a custom intrinsics-aware `RenderStretchColumn` (not a `LayoutBuilder`), so stretch works inside `IntrinsicHeight` (ColumnSet columns, Table rows); AreaGrid cells consume the same predicate.
+- **Deviation from plan (approved):** the height:stretch mechanism uses a custom `RenderObject` instead of a `LayoutBuilder`, which throws inside `IntrinsicHeight`.
+- Responsive layout is now feature-complete except `Layout.Flow` `itemFit: "Fill"`.
 
 ### Finish Layout.Flow (2026-06-27)
 

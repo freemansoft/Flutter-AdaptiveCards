@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_area_grid.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_flow_layout.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -64,6 +65,67 @@ Map<String, dynamic> _tableFlowCard() => {
             },
           ],
         },
+      ],
+    };
+
+// A ColumnSet is a genuinely height-bounded context (columns share an equal
+// row band via IntrinsicHeight), so a `height: "stretch"` child there fills the
+// band. (A standalone `minHeight` Container under the unbounded card-root Column
+// is NOT bounded — its child degrades to auto, per the design.)
+Map<String, dynamic> _stretchColumnSetCard() => {
+      'type': 'AdaptiveCard',
+      'version': '1.6',
+      'body': [
+        {
+          'type': 'ColumnSet',
+          'columns': [
+            {
+              'type': 'Column',
+              'width': 'stretch',
+              'items': [
+                {
+                  'type': 'Container',
+                  'minHeight': '300px',
+                  'items': <Map<String, dynamic>>[],
+                },
+              ],
+            },
+            {
+              'type': 'Column',
+              'width': 'stretch',
+              'items': [
+                {'type': 'TextBlock', 'text': 'top'},
+                {
+                  'type': 'Container',
+                  'height': 'stretch',
+                  'items': [
+                    {'type': 'TextBlock', 'text': 'filler'},
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+Map<String, dynamic> _areaGridCard() => {
+      'type': 'AdaptiveCard',
+      'version': '1.6',
+      'layouts': [
+        {
+          'type': 'Layout.AreaGrid',
+          'targetWidth': 'atLeast:standard',
+          'columns': [50, 50],
+          'areas': [
+            {'name': 'l', 'column': 1},
+            {'name': 'r', 'column': 2},
+          ],
+        },
+      ],
+      'body': [
+        {'type': 'TextBlock', 'text': 'L', 'grid.area': 'l'},
+        {'type': 'TextBlock', 'text': 'R', 'grid.area': 'r'},
       ],
     };
 
@@ -148,5 +210,41 @@ void main() {
     await _pumpCardAtWidth(tester, _tableFlowCard(), 150);
     expect(find.byType(AdaptiveFlowLayout), findsNothing);
     expect(find.text('CellOne'), findsOneWidget);
+  });
+
+  testWidgets('root body uses AreaGrid when wide', (tester) async {
+    await _pumpCardAtWidth(tester, _areaGridCard(), 1000);
+    expect(find.byType(AdaptiveAreaGrid), findsOneWidget);
+    final l = tester.getTopLeft(find.text('L'));
+    final r = tester.getTopLeft(find.text('R'));
+    expect(l.dy, r.dy);
+    expect(r.dx, greaterThan(l.dx));
+  });
+
+  testWidgets('root body stacks (no AreaGrid) when narrow', (tester) async {
+    await _pumpCardAtWidth(tester, _areaGridCard(), 150);
+    expect(find.byType(AdaptiveAreaGrid), findsNothing);
+    expect(find.text('L'), findsOneWidget);
+    expect(find.text('R'), findsOneWidget);
+  });
+
+  testWidgets('height:stretch inside a ColumnSet renders without throwing',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(600, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      getTestWidgetFromMap(map: _stretchColumnSetCard(), title: 'stretch'),
+    );
+    await tester.pumpAndSettle();
+    // The regression this guards: a stretch child inside ColumnSet's
+    // IntrinsicHeight must not throw (a LayoutBuilder-based stack would).
+    expect(tester.takeException(), isNull);
+    expect(find.text('top'), findsOneWidget);
+    expect(find.text('filler'), findsOneWidget);
+    // The ColumnSet row band is at least the first column's 300px minHeight.
+    expect(
+      tester.getSize(find.byType(IntrinsicHeight).first).height,
+      greaterThanOrEqualTo(300),
+    );
   });
 }

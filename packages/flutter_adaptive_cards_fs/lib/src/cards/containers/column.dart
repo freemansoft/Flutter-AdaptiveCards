@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/stretchable_column.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/layout_children.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -39,6 +40,9 @@ class AdaptiveColumnState extends ConsumerState<AdaptiveColumn>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin, ProviderScopeMixin {
   /// Child elements from the column's `items` array.
   late List<Widget> items;
+
+  /// Raw item JSON, index-aligned with [items].
+  late List<Map<String, dynamic>> itemMaps;
 
   /// Parsed `width` mode: `auto`, `stretch`, `weighted`, or `px`.
   late String mode;
@@ -95,16 +99,12 @@ class AdaptiveColumnState extends ConsumerState<AdaptiveColumn>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    items = adaptiveMap['items'] != null
-        ? List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
-            child,
-          ) {
-            return cardTypeRegistry.getElement(
-              map: child,
-              parentMode: mode,
-            );
-          }).toList()
-        : [];
+    itemMaps = adaptiveMap['items'] != null
+        ? List<Map<String, dynamic>>.from(adaptiveMap['items'])
+        : <Map<String, dynamic>>[];
+    items = itemMaps
+        .map((child) => cardTypeRegistry.getElement(map: child, parentMode: mode))
+        .toList();
     horizontalAlignment = styleResolver.resolveHorzontalCrossAxisAlignment(
       adaptiveMap['horizontalAlignment'],
     );
@@ -156,11 +156,13 @@ class AdaptiveColumnState extends ConsumerState<AdaptiveColumn>
           bucket: ref.watch(cardWidthBucketProvider),
           styleResolver: styleResolver,
           children: [...items.map((it) => it)],
-          stackBuilder: (children) => Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: horizontalAlignment,
-            mainAxisAlignment: verticalAlignment,
+          childMaps: itemMaps,
+          stackBuilder: (children) => buildStretchableColumn(
+            childMaps: itemMaps,
             children: children,
+            mainAxisAlignment: verticalAlignment,
+            crossAxisAlignment: horizontalAlignment,
+            mainAxisSize: MainAxisSize.max,
           ),
         ),
       );

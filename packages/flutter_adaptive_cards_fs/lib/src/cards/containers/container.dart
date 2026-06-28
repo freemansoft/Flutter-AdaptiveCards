@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/stretchable_column.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/layout_children.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -39,6 +40,9 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
   /// Child elements from the container's `items` array.
   late List<Widget> children;
 
+  /// Raw item JSON, index-aligned with [children] (for stretch + AreaGrid).
+  late List<Map<String, dynamic>> childMaps;
+
   /// Resolved spacing between container children.
   late double spacing;
 
@@ -52,14 +56,12 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (adaptiveMap['items'] != null) {
-      children = List<Map<String, dynamic>>.from(adaptiveMap['items']).map((
-        child,
-      ) {
-        return cardTypeRegistry.getElement(
-          map: child,
-        );
-      }).toList();
+      childMaps = List<Map<String, dynamic>>.from(adaptiveMap['items']);
+      children = childMaps
+          .map((child) => cardTypeRegistry.getElement(map: child))
+          .toList();
     } else {
+      childMaps = [];
       children = [];
     }
     spacing = styleResolver.resolveSpacing(
@@ -105,9 +107,14 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
         bucket: ref.watch(cardWidthBucketProvider),
         styleResolver: styleResolver,
         children: children,
-        stackBuilder: (items) => Column(
+        childMaps: childMaps,
+        stackBuilder: (items) => buildStretchableColumn(
+          childMaps: childMaps,
+          children: items,
           mainAxisAlignment: verticalContentAlignment,
-          children: items.toList(),
+          // Preserve the prior Column default (center) so non-stretch containers
+          // render identically; only height:stretch behavior is added here.
+          crossAxisAlignment: CrossAxisAlignment.center,
         ),
       );
       containerChild = Padding(

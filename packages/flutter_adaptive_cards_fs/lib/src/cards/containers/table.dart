@@ -367,6 +367,7 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
         bucket: ref.watch(cardWidthBucketProvider),
         styleResolver: styleResolver,
         children: cellWidgets,
+        childMaps: oneCellItems,
         stackBuilder: (children) => Wrap(children: children),
       ),
     );

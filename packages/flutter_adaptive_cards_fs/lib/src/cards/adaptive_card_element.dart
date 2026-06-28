@@ -3,6 +3,7 @@ import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/show_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/stretchable_column.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/refresh_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
@@ -50,6 +51,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
   /// Body elements resolved from `body` via the card type registry.
   late List<Widget> bodyChildren;
+
+  /// Raw body JSON, index-aligned with [bodyChildren].
+  late List<Map<String, dynamic>> bodyMaps;
 
   /// Card-level primary action widgets rendered inline below the body.
   List<Widget> activeActions = [];
@@ -102,16 +106,10 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    bodyChildren =
-        List<Map<String, dynamic>>.from(
-              adaptiveMap['body'],
-            )
-            .map(
-              (map) => cardTypeRegistry.getElement(
-                map: map,
-              ),
-            )
-            .toList();
+    bodyMaps = List<Map<String, dynamic>>.from(adaptiveMap['body']);
+    bodyChildren = bodyMaps
+        .map((map) => cardTypeRegistry.getElement(map: map))
+        .toList();
     final String stringAxis = styleResolver.resolveOrientation(null);
     actionsOrientation = stringAxis == 'Vertical'
         ? Axis.vertical
@@ -289,6 +287,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     // on resize. The listView path stays a flat list (Flow not applied there).
     final Widget bodyLayout = _AdaptiveCardBody(
       bodyItems: bodyItems,
+      childMaps: bodyMaps,
       layouts: adaptiveMap['layouts'] as List<dynamic>?,
       styleResolver: styleResolver,
     );
@@ -382,11 +381,15 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 class _AdaptiveCardBody extends ConsumerWidget {
   const _AdaptiveCardBody({
     required this.bodyItems,
+    required this.childMaps,
     required this.layouts,
     required this.styleResolver,
   });
 
   final List<Widget> bodyItems;
+
+  /// Raw body JSON, index-aligned with [bodyItems].
+  final List<Map<String, dynamic>> childMaps;
   final List<dynamic>? layouts;
   final ReferenceResolver styleResolver;
 
@@ -397,9 +400,12 @@ class _AdaptiveCardBody extends ConsumerWidget {
       bucket: ref.watch(cardWidthBucketProvider),
       styleResolver: styleResolver,
       children: bodyItems,
-      stackBuilder: (items) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      childMaps: childMaps,
+      stackBuilder: (items) => buildStretchableColumn(
+        childMaps: childMaps,
         children: items,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
       ),
     );
   }

@@ -100,7 +100,7 @@ flowchart TB
   RACT -. "ref.watch by id" .-> AW
   RS -->|"initData, applyUpdates, collectInputValues"| DOC
   SC -. "expand or collapse" .-> AW
-  WB -. "targetWidth + Layout.Flow" .-> WT
+  WB -. "targetWidth + Layout.Flow/AreaGrid" .-> WT
 ```
 
 Deeper dives: [reactive-riverpod.md](./reactive-riverpod.md) (overlay merge and provider scopes), [adaptive-style.md](./adaptive-style.md#style-inheritance-data-flow) (style pipeline), [actions-architecture.md](./actions-architecture.md) (action dispatch), [backend-host-integration.md](./backend-host-integration.md) (optional invoke round-trip).

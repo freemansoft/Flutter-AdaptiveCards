@@ -26,7 +26,7 @@ See [Style inheritance data flow](adaptive-style.md#style-inheritance-data-flow)
 - **Width-bucket scope** (a thin nested scope inside each `AdaptiveCardElement`'s root `LayoutBuilder`)
   - `cardWidthBucketProvider` override with the current responsive [`WidthBucket`](../../packages/flutter_adaptive_cards_fs/lib/src/responsive/width_bucket.dart) derived from the card's measured width (`ReferenceResolver.resolveWidthBucket`)
   - kept **separate** from the element scope so layout passes only re-supply the bucket override; the element scope and the hoisted card subtree are not rebuilt, and `overrideWithValue` notifies watchers only when the bucket actually changes. See the responsive design doc, weakness W2: [`responsive-layout-targetwidth-flow-design.md`](superpowers/specs/2026-06-18-responsive-layout-targetwidth-flow-design.md).
-  - read via `ref.watch(cardWidthBucketProvider)` by `AdaptiveVisibilityMixin` (`targetWidth` gating) and by `Container` / the card root body (`Layout.Flow` selection); defaults to `WidthBucket.wide` (fail-open) when no scope is present.
+  - read via `ref.watch(cardWidthBucketProvider)` by `AdaptiveVisibilityMixin` (`targetWidth` gating) and by `Container` / `Column` / `TableCell` / the card root body (`Layout.Flow` and `Layout.AreaGrid` selection via `buildLayoutChildren`); defaults to `WidthBucket.wide` (fail-open) when no scope is present.
 
 ```mermaid
 flowchart TB
@@ -44,7 +44,7 @@ flowchart TB
   end
   doc --> elem[Element widgets ref.watch by id]
   show --> showUi[ShowCard action + body slot]
-  bucket --> respon[targetWidth visibility + Layout.Flow selection]
+  bucket --> respon[targetWidth visibility + Layout.Flow/AreaGrid selection]
 ```
 
 ## Document model: baseline + overlays

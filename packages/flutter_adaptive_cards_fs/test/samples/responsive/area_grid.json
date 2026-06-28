@@ -1,0 +1,19 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "layouts": [
+    {
+      "type": "Layout.AreaGrid",
+      "targetWidth": "atLeast:standard",
+      "columns": [40, 60],
+      "areas": [
+        { "name": "image", "column": 1 },
+        { "name": "text", "column": 2 }
+      ]
+    }
+  ],
+  "body": [
+    { "type": "TextBlock", "text": "IMAGE", "grid.area": "image" },
+    { "type": "TextBlock", "text": "Title and description text", "wrap": true, "grid.area": "text" }
+  ]
+}
