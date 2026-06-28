@@ -1,0 +1,19 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        { "type": "Column", "width": "auto", "items": [ { "type": "Icon", "name": "play", "size": "Large" } ] },
+        { "type": "Column", "width": "auto", "items": [ { "type": "Icon", "name": "bookmark", "size": "Large" } ] },
+        { "type": "Column", "width": "auto", "items": [ { "type": "Icon", "name": "cart", "size": "Large" } ] },
+        { "type": "Column", "width": "auto", "items": [ { "type": "Icon", "name": "dashboard", "size": "Large" } ] },
+        { "type": "Column", "width": "auto", "items": [ { "type": "Icon", "name": "trophy", "size": "Large" } ] },
+        { "type": "Column", "width": "auto", "items": [ { "type": "Icon", "name": "wifi", "size": "Large" } ] },
+        { "type": "Column", "width": "auto", "items": [ { "type": "Icon", "name": "car", "size": "Large" } ] },
+        { "type": "Column", "width": "auto", "items": [ { "type": "Icon", "name": "lightbulb", "size": "Large" } ] }
+      ]
+    }
+  ]
+}

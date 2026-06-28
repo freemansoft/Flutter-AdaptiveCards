@@ -17,4 +17,15 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 100));
   }, tags: ['golden']);
+
+  testWidgets('Icon catalog golden — expanded names', (tester) async {
+    configureTestView(size: const Size(420, 120));
+    const ValueKey key = ValueKey('paint');
+    await tester.pumpWidget(getSampleForGoldenTest(key, 'v1.6/icon_catalog'));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('v1_6_icon_catalog.png')),
+    );
+  }, tags: ['golden']);
 }
