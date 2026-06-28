@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed 0.13.0
 
+- **`backgroundImage` on an item-less `Container`/`Column` now fills the element again:** since the HostConfig style pipeline added `horizontalAlignment` inheritance (#13), a background-image-only column under an inherited `horizontalAlignment` (e.g. a `ColumnSet` with `"horizontalAlignment": "Center"`, as in the image-carousel sample) had its image shrunk and centered by the Container's content `alignment` instead of filling the cell. The image is now wrapped to fill the width (height from `minHeight` / the stretched row band). It stays a foreground widget rather than a `DecorationImage` so **SVG** background images keep rendering. Regression test: `background_image_fill_test.dart`.
 - **Dependent `Input.ChoiceSet` (`Data.Query`) no longer drops the selected value:** the dependent-choice-set sample handler re-applied the resolved city choices on the city `onChange`. Because `applyUpdates` treats "new `choices` without a `value`" as a stale-value reset, the value the user just selected was cleared on the next frame. The handler now passes `value: invoke.value` when repopulating choices so the selection persists; a regression test (`dependent_choice_set_test.dart`) now asserts the submitted city value survives the Data.Query re-apply.
 
 ### Tests 0.13.0

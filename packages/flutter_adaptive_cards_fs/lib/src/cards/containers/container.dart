@@ -89,8 +89,16 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
 
     Widget containerChild;
     if (!hasChildren && hasBackgroundImage) {
-      containerChild =
-          getBackgroundImageFromMap(adaptiveMap) ?? const SizedBox();
+      // A background image should fill the container, not size to its natural
+      // dimensions. Wrapping it to fill the width (height from `minHeight`)
+      // keeps it covering the cell. Kept as a foreground widget — not a
+      // DecorationImage — so SVG backgrounds still render. See
+      // `background_image_fill_test.dart`.
+      containerChild = SizedBox(
+        width: double.infinity,
+        height: minHeight,
+        child: getBackgroundImageFromMap(adaptiveMap) ?? const SizedBox(),
+      );
     } else {
       final Widget itemsLayout = buildLayoutChildren(
         layouts: adaptiveMap['layouts'] as List<dynamic>?,

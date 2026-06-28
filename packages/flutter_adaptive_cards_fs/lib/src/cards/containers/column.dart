@@ -137,8 +137,17 @@ class AdaptiveColumnState extends ConsumerState<AdaptiveColumn>
 
     Widget containerChild;
     if (!hasChildren && hasBackgroundImage) {
-      containerChild =
-          getBackgroundImageFromMap(adaptiveMap) ?? const SizedBox();
+      // A background image should fill the column, not size to its natural
+      // dimensions. Wrapping it to fill the width (height from `minHeight` /
+      // the ColumnSet's stretched row band) prevents the Container's (possibly
+      // inherited) `alignment` from shrinking and centering it. Kept as a
+      // foreground widget — not a DecorationImage — so SVG backgrounds still
+      // render. See `background_image_fill_test.dart`.
+      containerChild = SizedBox(
+        width: double.infinity,
+        height: minHeight,
+        child: getBackgroundImageFromMap(adaptiveMap) ?? const SizedBox(),
+      );
     } else {
       containerChild = ChildStyler(
         adaptiveMap: adaptiveMap,
