@@ -80,7 +80,6 @@ _None currently — the prior top priorities (`Layout.AreaGrid` + `grid.area` an
 4. **`bleed`**: Container full-bleed layouts.
 5. **Adaptive Expressions**: `select`/`where` collection functions in templating (require lazy lambda evaluation; other collection and date functions are now implemented).
 6. **Flow follow-ups** (deferred from the [2026-06-27 finish-Flow work](./superpowers/specs/2026-06-27-finish-layout-flow-design.md)): `itemFit: "Fill"` (needs a custom row-packing layout), Flow on the `listView` body path, and the W4 width-measurement remainder (margin-inclusive measurement; nested `Action.ShowCard` width).
-7. **Load icon font in golden tests** (follow-up to the 2026-06-28 icon-catalog expansion): `flutter test` doesn't load the `MaterialIcons` glyph font, so icon goldens (`v1_5_icon_demo`, `v1_6_icon_catalog`, and any golden containing icons) render missing-glyph tofu boxes — they lock layout but can't catch a wrong glyph or a `help_outline` fallback. Fix by loading fonts from `FontManifest.json` via `FontLoader` once in `adaptiveCardsTestExecutable` (`flutter_adaptive_cards_test_support`, invoked by each package's `test/flutter_test_config.dart`); no new dependency. **Cross-cutting:** touches shared test infra and requires regenerating every icon-containing golden baseline on both `macos` and `linux`, so it warrants its own change. Until then, the name→`IconData` mapping is verified by `fluent_icon_map_test.dart`, not the goldens.
 
 ### Deferred (by maintainer decision, 2026-06-27)
 
@@ -120,6 +119,11 @@ fvm flutter test --exclude-tags=golden
 ---
 
 ## Recently completed
+
+### Load icon font in golden tests (2026-06-28)
+
+- Golden tests now load **all bundled fonts** from `FontManifest.json` (most importantly **MaterialIcons**) via a new `loadBundledTestFonts()` in `flutter_adaptive_cards_test_support`, run from `adaptiveCardsTestExecutable`'s `setUpAll` alongside the Roboto loader. Icon-bearing goldens (`v1_5_icon_demo`, `v1_6_icon_catalog`, `v1_6_accordion`, `v1_6_rating`, `sample1*`, `sample2*`, `sample5*`) now render real glyphs instead of missing-glyph tofu boxes, so they can catch wrong glyphs and `help_outline` fallbacks — not just layout.
+- macOS baselines regenerated; Linux CI baselines refresh on the next build. Charts goldens were unaffected (byte-identical — no icon glyphs).
 
 ### Layout.AreaGrid + block height: stretch (2026-06-28)
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -49,6 +50,37 @@ Future<void> loadAdaptiveCardsTestFonts() async {
   await fontLoader.load();
 }
 
+/// Loads fonts bundled into the test asset bundle via `FontManifest.json`.
+///
+/// Crucially this includes **MaterialIcons** (present because the consuming
+/// package sets `uses-material-design: true`), which backs the Adaptive Cards
+/// `Icon`/`Badge`/rating glyphs. Without it golden images render icons as empty
+/// tofu boxes. Any package-declared fonts in the manifest are loaded too.
+Future<void> loadBundledTestFonts() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  final manifestRaw = await rootBundle.loadString('FontManifest.json');
+  final manifest = (json.decode(manifestRaw) as List<dynamic>)
+      .cast<Map<String, dynamic>>();
+
+  for (final font in manifest) {
+    final family = _deriveFontFamily(font['family'] as String);
+    final loader = FontLoader(family);
+    for (final asset in (font['fonts'] as List<dynamic>)
+        .cast<Map<String, dynamic>>()) {
+      loader.addFont(rootBundle.load(asset['asset'] as String));
+    }
+    await loader.load();
+  }
+}
+
+/// Strips the `packages/<name>/` prefix the font tool adds to packaged
+/// font families so the loaded family name matches the resolved `IconData`.
+String _deriveFontFamily(String family) {
+  final match = RegExp(r'^packages/[^/]+/(.+)$').firstMatch(family);
+  return match?.group(1) ?? family;
+}
+
 Future<Directory> _resolveRobotoFontsDirectory() async {
   final config = await findPackageConfig(Directory.current);
   if (config == null) {
@@ -80,6 +112,7 @@ Future<void> adaptiveCardsTestExecutable(
   setUpAll(() async {
     HttpOverrides.global = MyTestHttpOverrides();
     await loadAdaptiveCardsTestFonts();
+    await loadBundledTestFonts();
   });
 
   await testMain();

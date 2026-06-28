@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added unit and widget tests to raise line coverage toward the new CI coverage gate: `Action.InsertImage`, `ReferenceResolver` style/color/font resolution, `AdaptiveCardDocumentNotifier` patch-map and clear/session paths, and `RawAdaptiveCard` host-facade methods (`setText`, `setFacts`, `setActionEnabled`, `loadInput`, `changeValue`, `showError`, …).
 - Filled the previously-`TODO`'d `Action.ResetInputs` gaps for `Input.Date` and `Input.Time`: `action_reset_inputs_test.dart` now verifies a changed Date and Time each revert to their original card-JSON value after a global reset.
 - Resolved the long-standing `TODO`s in `basic_test.dart`: the `TextBlock`/`FactSet`-value `find.text` assertions now pass using `findRichText: true` (those render as `MarkdownBody`/`RichText`, not plain `Text`), and the `Input.Date` show-card flow now sets a value and asserts it reaches the host `onSubmit` payload.
+- **Golden baselines refreshed (macOS)** — icon-bearing goldens (`v1_5_icon_demo`, `v1_6_icon_catalog`, `v1_6_accordion`, `v1_6_rating`, `sample1*`, `sample2*`, `sample5*`) now render real Material/Fluent icon glyphs instead of empty tofu boxes, thanks to `flutter_adaptive_cards_test_support` loading the bundled **MaterialIcons** font in golden tests. Linux CI baselines refresh on the next build.
 
 ## [0.12.0]
 
