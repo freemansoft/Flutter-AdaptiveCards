@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/layout_children.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -140,11 +142,17 @@ class AdaptiveColumnState extends ConsumerState<AdaptiveColumn>
     } else {
       containerChild = ChildStyler(
         adaptiveMap: adaptiveMap,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: horizontalAlignment,
-          mainAxisAlignment: verticalAlignment,
+        child: buildLayoutChildren(
+          layouts: adaptiveMap['layouts'] as List<dynamic>?,
+          bucket: ref.watch(cardWidthBucketProvider),
+          styleResolver: styleResolver,
           children: [...items.map((it) => it)],
+          stackBuilder: (children) => Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: horizontalAlignment,
+            mainAxisAlignment: verticalAlignment,
+            children: children,
+          ),
         ),
       );
     }

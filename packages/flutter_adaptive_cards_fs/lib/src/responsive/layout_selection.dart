@@ -16,6 +16,7 @@ Map<String, dynamic>? selectLayout(
   if (layouts == null || layouts.isEmpty) return null;
 
   Map<String, dynamic>? relationalMatch;
+  int? relationalBestSpecificity;
   Map<String, dynamic>? defaultMatch;
 
   for (final raw in layouts) {
@@ -30,7 +31,13 @@ Map<String, dynamic>? selectLayout(
     if (targetWidth == null || targetWidth.trim().isEmpty) {
       defaultMatch ??= layout;
     } else {
-      relationalMatch ??= layout;
+      final specificity = relationalSpecificity(targetWidth);
+      if (specificity != null &&
+          (relationalBestSpecificity == null ||
+              specificity < relationalBestSpecificity)) {
+        relationalBestSpecificity = specificity;
+        relationalMatch = layout;
+      }
     }
   }
 

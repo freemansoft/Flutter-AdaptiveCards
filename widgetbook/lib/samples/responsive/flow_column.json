@@ -1,0 +1,29 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.6",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "layouts": [
+            {
+              "type": "Layout.Flow",
+              "targetWidth": "atLeast:standard",
+              "columnSpacing": "small",
+              "rowSpacing": "small",
+              "itemWidth": "80px"
+            }
+          ],
+          "items": [
+            { "type": "TextBlock", "text": "One" },
+            { "type": "TextBlock", "text": "Two" },
+            { "type": "TextBlock", "text": "Three" }
+          ]
+        }
+      ]
+    }
+  ]
+}

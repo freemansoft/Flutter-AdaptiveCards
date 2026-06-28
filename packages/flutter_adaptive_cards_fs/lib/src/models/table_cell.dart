@@ -24,6 +24,7 @@ class TableCellModel {
     this.isVisible,
     this.requires,
     this.rtl,
+    this.layouts,
   });
 
   /// Creates a TableCellModel from JSON map
@@ -48,6 +49,7 @@ class TableCellModel {
       requires: (json['requires'] as Map<String, dynamic>?)
           ?.cast<String, String>(),
       rtl: json['rtl'] as bool?,
+      layouts: json['layouts'] as List<dynamic>?,
     );
   }
 
@@ -92,6 +94,9 @@ class TableCellModel {
 
   /// Right-to-left text
   final bool? rtl;
+
+  /// Optional responsive `layouts` array (e.g. `Layout.Flow`) for this cell.
+  final List<dynamic>? layouts;
 
   /// Converts TableCellModel to JSON map
   Map<String, dynamic> toJson() {

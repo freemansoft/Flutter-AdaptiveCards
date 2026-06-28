@@ -5,6 +5,8 @@ import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/table_cell.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/layout_children.dart';
+import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -360,7 +362,13 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
     });
 
     Widget content = Scrollbar(
-      child: Wrap(children: cellWidgets),
+      child: buildLayoutChildren(
+        layouts: cellModel.layouts,
+        bucket: ref.watch(cardWidthBucketProvider),
+        styleResolver: styleResolver,
+        children: cellWidgets,
+        stackBuilder: (children) => Wrap(children: children),
+      ),
     );
 
     // Horizontal alignment is now handled by parent Align widget

@@ -6,8 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/cards/actions/show_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/refresh_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
-import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_flow_layout.dart';
-import 'package:flutter_adaptive_cards_fs/src/responsive/layout_selection.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/layout_children.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
@@ -393,17 +392,15 @@ class _AdaptiveCardBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selected = selectLayout(layouts, ref.watch(cardWidthBucketProvider));
-    if (selected != null && selected['type'] == 'Layout.Flow') {
-      return AdaptiveFlowLayout(
-        layoutMap: selected,
-        styleResolver: styleResolver,
-        children: bodyItems,
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return buildLayoutChildren(
+      layouts: layouts,
+      bucket: ref.watch(cardWidthBucketProvider),
+      styleResolver: styleResolver,
       children: bodyItems,
+      stackBuilder: (items) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: items,
+      ),
     );
   }
 }

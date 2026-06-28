@@ -184,7 +184,19 @@ surfaced the following gaps. They are tracked as follow-up tasks in the
 implementation plan (`docs/superpowers/plans/2026-06-18-responsive-layout-targetwidth-flow.md`,
 section "Follow-up tasks: post-implementation review").
 
-### W1 — `IntrinsicWidth` per flow item is a correctness *and* performance risk
+### W1 — `IntrinsicWidth` per flow item ⚠️ REVISITED (2026-06-27) — remediation rejected
+
+> **Status: remediation rejected.** The proposed fix below ("remove `IntrinsicWidth`
+> because `Wrap` already content-sizes children") rests on a **false premise**. Several
+> elements wrap their content in an expanding `Align` (e.g. `TextBlock`,
+> `lib/src/cards/elements/text_block.dart`), so inside a `Wrap` they stretch to the full
+> row and stop flowing without `IntrinsicWidth`. The 2026-06-27 finish-Flow work therefore
+> **keeps `IntrinsicWidth` for content-fit items** and skips it **only when `itemWidth` is
+> set** (which uses a `SizedBox` — a perf win on that path and a safe escape for items that
+> can't report an intrinsic width). The residual throw risk for a non-intrinsic item used
+> *directly* as a content-fit flow child is documented in `AdaptiveFlowLayout`; authors
+> give such items an `itemWidth`. See
+> [2026-06-27 finish-Layout.Flow design](./2026-06-27-finish-layout-flow-design.md).
 
 `AdaptiveFlowLayout` wraps every item in `IntrinsicWidth`
 (`lib/src/responsive/adaptive_flow_layout.dart`). Two problems:
@@ -310,7 +322,12 @@ bucket a first-class Riverpod value.
 > mechanism and to leave the door open for non-widget (provider/`Notifier`)
 > consumers of the bucket.
 
-### W3 — `selectLayout` precedence among relational matches is arbitrary
+### W3 — `selectLayout` precedence among relational matches ✅ RESOLVED (2026-06-27, see finish-layout-flow plan)
+
+> **Status: implemented.** `selectLayout` now prefers the **most specific** relational
+> match — the one whose covered width range is narrowest (`relationalSpecificity` in
+> `lib/src/responsive/width_bucket.dart`), with array order as a stable tiebreak. See
+> [2026-06-27 finish-Layout.Flow design](./2026-06-27-finish-layout-flow-design.md).
 
 `selectLayout` (`lib/src/responsive/layout_selection.dart`) takes the **first**
 relational match in array order (`relationalMatch ??= layout`). For
@@ -342,5 +359,7 @@ The bucket derives from the root `LayoutBuilder`'s `constraints.maxWidth`:
   design listed all three as deferred, so the shipped scope quietly expanded. Align
   the `AdaptiveFlowLayout` doc and `Implementation-Status.md` with what actually ships.
 - **No `layouts` on `ColumnSet` / `Column` / `TableCell`**, no `Layout.AreaGrid`
-  (separate spec).
+  (separate spec). ✅ **Update (2026-06-27):** `Layout.Flow` now supported on **`Column`**
+  and **`TableCell`**; **`ColumnSet` is *not* in the spec** (it has no `layouts` property),
+  so it is intentionally excluded. `Layout.AreaGrid` remains a separate spec.
 - **`listView` body path skips `Layout.Flow` entirely** — documented, but a real hole.

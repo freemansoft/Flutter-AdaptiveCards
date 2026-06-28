@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 
@@ -40,6 +42,13 @@ class HostWidthsConfig {
   /// Resolves a [WidthBucket] for [width] using [config] (or spec defaults when
   /// [config] is null).
   static WidthBucket resolveBucket(HostWidthsConfig? config, double width) {
+    if (!width.isFinite) {
+      developer.log(
+        'Card width is unbounded ($width); defaulting to WidthBucket.wide',
+        name: 'responsive.host_widths_config',
+      );
+      return WidthBucket.wide;
+    }
     final c = config ?? FallbackConfigs.hostWidthsConfig;
     if (width < c.veryNarrowMax) return WidthBucket.veryNarrow;
     if (width < c.narrowMax) return WidthBucket.narrow;

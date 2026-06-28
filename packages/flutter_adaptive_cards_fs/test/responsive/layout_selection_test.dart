@@ -45,5 +45,45 @@ void main() {
       final layouts = ['nonsense', {'type': 'Layout.Flow', 'targetWidth': 'wide'}];
       expect(selectLayout(layouts, WidthBucket.wide)?['type'], 'Layout.Flow');
     });
+
+    test('nearest relational match wins (atLeast) at wide', () {
+      final layouts = [
+        {'type': 'Layout.Stack', 'targetWidth': 'atLeast:narrow'},
+        {'type': 'Layout.Flow', 'targetWidth': 'atLeast:standard'},
+      ];
+      // At wide, atLeast:standard covers 2 buckets and atLeast:narrow covers 3,
+      // so atLeast:standard is more specific and wins.
+      expect(selectLayout(layouts, WidthBucket.wide)?['type'], 'Layout.Flow');
+    });
+
+    test('nearest relational match wins regardless of array order', () {
+      final layouts = [
+        {'type': 'Layout.Flow', 'targetWidth': 'atLeast:standard'},
+        {'type': 'Layout.Stack', 'targetWidth': 'atLeast:narrow'},
+      ];
+      expect(selectLayout(layouts, WidthBucket.wide)?['type'], 'Layout.Flow');
+    });
+
+    test('nearest relational match wins (atMost) at veryNarrow', () {
+      final layouts = [
+        {'type': 'Layout.Stack', 'targetWidth': 'atMost:wide'},
+        {'type': 'Layout.Flow', 'targetWidth': 'atMost:narrow'},
+      ];
+      // At veryNarrow, atMost:narrow covers 2 buckets and atMost:wide covers 4,
+      // so atMost:narrow is more specific and wins.
+      expect(
+        selectLayout(layouts, WidthBucket.veryNarrow)?['type'],
+        'Layout.Flow',
+      );
+    });
+
+    test('equal-specificity relational matches keep array order', () {
+      final layouts = [
+        {'type': 'Layout.Flow', 'targetWidth': 'atLeast:narrow'},
+        {'type': 'Layout.Stack', 'targetWidth': 'atMost:standard'},
+      ];
+      // At standard both cover 3 buckets (equal specificity); first wins.
+      expect(selectLayout(layouts, WidthBucket.standard)?['type'], 'Layout.Flow');
+    });
   });
 }

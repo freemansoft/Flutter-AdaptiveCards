@@ -20,6 +20,14 @@ void main() {
     });
   });
 
+  group('HostWidthsConfig.resolveBucket (unbounded width)', () {
+    test('resolveBucket returns wide for non-finite (unbounded) width', () {
+      expect(HostWidthsConfig.resolveBucket(null, double.infinity),
+          WidthBucket.wide);
+      expect(HostWidthsConfig.resolveBucket(null, double.nan), WidthBucket.wide);
+    });
+  });
+
   group('HostWidthsConfig.fromJson', () {
     test('honors host overrides', () {
       final config = HostWidthsConfig.fromJson(

@@ -34,10 +34,44 @@ Future<void> _pumpCardAtWidth(
   await tester.pumpAndSettle();
 }
 
+Map<String, dynamic> _tableFlowCard() => {
+      'type': 'AdaptiveCard',
+      'version': '1.6',
+      'body': [
+        {
+          'type': 'Table',
+          'columns': [
+            {'width': 1},
+          ],
+          'rows': [
+            {
+              'type': 'TableRow',
+              'cells': [
+                {
+                  'type': 'TableCell',
+                  'layouts': [
+                    {
+                      'type': 'Layout.Flow',
+                      'targetWidth': 'atLeast:standard',
+                    },
+                  ],
+                  'items': [
+                    {'type': 'TextBlock', 'text': 'CellOne'},
+                    {'type': 'TextBlock', 'text': 'CellTwo'},
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
 void main() {
   final targetWidthCard = _loadCard('responsive/target_width.json');
   final flowCard = _loadCard('responsive/flow_container.json');
   final rootFlowCard = _loadCard('responsive/flow_root.json');
+  final flowColumnCard = _loadCard('responsive/flow_column.json');
 
   testWidgets('targetWidth hides element when card is narrow', (tester) async {
     await _pumpCardAtWidth(tester, targetWidthCard, 150);
@@ -88,5 +122,31 @@ void main() {
     expect(find.byType(AdaptiveFlowLayout), findsNothing);
     expect(find.text('rootOne'), findsOneWidget);
     expect(find.text('rootTwo'), findsOneWidget);
+  });
+
+  testWidgets('Column uses Flow when wide', (tester) async {
+    await _pumpCardAtWidth(tester, flowColumnCard, 1000);
+    expect(find.byType(AdaptiveFlowLayout), findsOneWidget);
+    expect(find.text('One'), findsOneWidget);
+    expect(find.text('Three'), findsOneWidget);
+  });
+
+  testWidgets('Column stays a stack when narrow', (tester) async {
+    await _pumpCardAtWidth(tester, flowColumnCard, 150);
+    expect(find.byType(AdaptiveFlowLayout), findsNothing);
+    expect(find.text('One'), findsOneWidget);
+    expect(find.text('Three'), findsOneWidget);
+  });
+
+  testWidgets('TableCell uses Flow when wide', (tester) async {
+    await _pumpCardAtWidth(tester, _tableFlowCard(), 1000);
+    expect(find.byType(AdaptiveFlowLayout), findsOneWidget);
+    expect(find.text('CellOne'), findsOneWidget);
+  });
+
+  testWidgets('TableCell stays non-Flow when narrow', (tester) async {
+    await _pumpCardAtWidth(tester, _tableFlowCard(), 150);
+    expect(find.byType(AdaptiveFlowLayout), findsNothing);
+    expect(find.text('CellOne'), findsOneWidget);
   });
 }

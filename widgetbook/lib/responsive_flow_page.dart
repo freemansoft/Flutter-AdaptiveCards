@@ -6,14 +6,21 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
 /// Widgetbook demo for responsive layout (`targetWidth` / `Layout.Flow`).
 ///
-/// Renders the same `flow_container.json` card the golden and widget tests use,
+/// Renders the same responsive sample cards the golden and widget tests use,
 /// inside a width-constrained box whose width is driven by a knob. Dragging the
-/// width across the breakpoints flips the card's width bucket, so the container
-/// reflows between a vertical stack (narrow) and a wrapping flow (wide).
+/// width across the breakpoints flips the card's width bucket, so containers
+/// reflow between a vertical stack (narrow) and a wrapping flow (wide). A second
+/// knob picks which responsive sample to render.
 class ResponsiveFlowPage extends StatelessWidget {
   const ResponsiveFlowPage({super.key});
 
-  static const _assetPath = 'lib/samples/responsive/flow_container.json';
+  /// Selectable responsive samples (label → asset path). Each file is a copy of
+  /// the matching `test/samples/responsive/*.json` fixture used by the package
+  /// golden and widget tests.
+  static const _samples = <String, String>{
+    'Container flow': 'lib/samples/responsive/flow_container.json',
+    'Column flow (itemWidth)': 'lib/samples/responsive/flow_column.json',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +31,13 @@ class ResponsiveFlowPage extends StatelessWidget {
       max: 1000,
       divisions: 90,
     );
+    final sampleLabel = context.knobs.object.dropdown<String>(
+      label: 'Sample',
+      options: _samples.keys.toList(),
+      initialOption: _samples.keys.first,
+      labelBuilder: (value) => value,
+    );
+    final assetPath = _samples[sampleLabel]!;
 
     return Align(
       alignment: Alignment.topCenter,
@@ -40,7 +54,7 @@ class ResponsiveFlowPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               AdaptiveCardsCanvas.asset(
-                assetPath: _assetPath,
+                assetPath: assetPath,
                 cardTypeRegistry: widgetbookCardTypeRegistry,
                 hostConfigs: HostConfigs(),
                 showDebugJson: false,

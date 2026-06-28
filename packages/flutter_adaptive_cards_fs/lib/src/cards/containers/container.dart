@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
-import 'package:flutter_adaptive_cards_fs/src/responsive/adaptive_flow_layout.dart';
-import 'package:flutter_adaptive_cards_fs/src/responsive/layout_selection.dart';
+import 'package:flutter_adaptive_cards_fs/src/responsive/layout_children.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -93,24 +92,17 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
       containerChild =
           getBackgroundImageFromMap(adaptiveMap) ?? const SizedBox();
     } else {
-      final selected = selectLayout(
-        adaptiveMap['layouts'] as List<dynamic>?,
-        ref.watch(cardWidthBucketProvider),
+      final Widget itemsLayout = buildLayoutChildren(
+        layouts: adaptiveMap['layouts'] as List<dynamic>?,
+        bucket: ref.watch(cardWidthBucketProvider),
+        styleResolver: styleResolver,
+        children: children,
+        stackBuilder: (items) => Column(
+          mainAxisAlignment: verticalContentAlignment,
+          children: items.toList(),
+        ),
       );
-      final bool useFlow =
-          selected != null && selected['type'] == 'Layout.Flow';
-      final Widget itemsLayout = useFlow
-          ? AdaptiveFlowLayout(
-              layoutMap: selected,
-              styleResolver: styleResolver,
-              children: children,
-            )
-          : Column(
-              mainAxisAlignment: verticalContentAlignment,
-              children: children.toList(),
-            );
       containerChild = Padding(
-        // padding: const EdgeInsets.symmetric(vertical: 8.0),
         padding: EdgeInsets.symmetric(
           vertical: spacing,
           horizontal: spacing,

@@ -60,7 +60,7 @@ Templating lives in a **separate opt-in package**. Core binding (`${...}`, `$dat
 
 ### High priority — standard cards
 
-1. **Responsive layout**: `targetWidth` ✅ and `Layout.Flow` ✅ (Container + root body) shipped ([design](./superpowers/specs/2026-06-18-responsive-layout-targetwidth-flow-design.md)); remaining: `Layout.AreaGrid` / `grid.area`, Flow `itemFit`, and Flow on `ColumnSet`/`Column`/`TableCell`.
+1. **Responsive layout**: `targetWidth` ✅ and `Layout.Flow` ✅ (Container, root body, Column, TableCell) shipped ([design](./superpowers/specs/2026-06-27-finish-layout-flow-design.md)); remaining: `Layout.AreaGrid` / `grid.area`, and Flow `itemFit: "Fill"`. (`ColumnSet` has no `layouts` property in the spec.)
 2. **`requires` + action `fallback` + version gating**: Graceful degradation for mixed-schema hosts.
 
 ### Medium priority
@@ -110,6 +110,15 @@ fvm flutter test --exclude-tags=golden
 ---
 
 ## Recently completed
+
+### Finish Layout.Flow (2026-06-27)
+
+Plan: [2026-06-27-finish-layout-flow.md](./superpowers/plans/2026-06-27-finish-layout-flow.md) — design: [2026-06-27-finish-layout-flow-design.md](./superpowers/specs/2026-06-27-finish-layout-flow-design.md).
+
+- `Layout.Flow` extended to **Column** and **TableCell** (Container + root already shipped); shared `buildLayoutChildren` helper.
+- `itemWidth` + `itemFit` parsing (`Fit` honored; `Fill` deferred, falls back to `Fit` with a log).
+- `itemWidth` items skip `IntrinsicWidth` (fixed `SizedBox`); content-fit items keep it (W1's "remove it" was rejected — its premise was wrong; `Wrap` does not content-size elements that wrap content in an expanding `Align`, e.g. `TextBlock`). `selectLayout` prefers the most-specific relational match (W3); unbounded card width logs and defaults to `wide` (W4 partial).
+- **Spec correction:** `ColumnSet` has no `layouts` property — earlier "Flow on ColumnSet" wording was wrong.
 
 ### Action behavior unification (2026-06-17)
 

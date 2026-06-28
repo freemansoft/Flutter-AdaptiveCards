@@ -74,6 +74,32 @@ WidthBucket? _parseBucket(String value) {
   }
 }
 
+/// Specificity of a relational [targetWidth], as the number of width buckets it
+/// covers (fewer buckets = more specific).
+///
+/// `'atLeast:<b>'` covers `<b>` through the widest bucket; `'atMost:<b>'` covers
+/// the narrowest bucket through `<b>`. Returns `null` for non-relational, null,
+/// or unparseable values (including an unknown operator). Layout selection
+/// prefers the most specific (smallest) relational match.
+int? relationalSpecificity(String? targetWidth) {
+  if (targetWidth == null) return null;
+  final raw = targetWidth.trim();
+  if (!raw.contains(':')) return null;
+  final parts = raw.split(':');
+  if (parts.length != 2) return null;
+  final op = parts[0].trim().toLowerCase();
+  final target = _parseBucket(parts[1]);
+  if (target == null) return null;
+  switch (op) {
+    case 'atleast':
+      return WidthBucket.values.length - target.index;
+    case 'atmost':
+      return target.index + 1;
+    default:
+      return null;
+  }
+}
+
 bool _failOpen(String raw) {
   developer.log('Unrecognized targetWidth "$raw"; treating as always-visible',
       name: 'responsive.width_bucket');
