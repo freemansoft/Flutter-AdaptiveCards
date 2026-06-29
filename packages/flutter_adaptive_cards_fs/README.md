@@ -733,7 +733,7 @@ TODO for the example programs moved to [example README](example/README.md)
 
 Everything below this line is from the original README.md
 
-The original GitHub repository has been deleted. Look at the forking train to figure out where the current repository was forked from or look here:
+The original GitHub repository has been deleted. This repository has been pulled out of the fork tree as all upstream are now dead.  The original fork path is as follows working up to the original:
 
 1. <https://github.com/freemansoft/Flutter-AdaptiveCards> Mine forked from
 2. <https://github.com/lannes/Flutter-AdaptiveCards> forked from
