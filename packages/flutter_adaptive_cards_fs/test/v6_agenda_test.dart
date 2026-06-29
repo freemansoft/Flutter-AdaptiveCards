@@ -52,13 +52,15 @@ void main() {
   });
 
   testWidgets('Agenda-full smoke test', (tester) async {
-    final Widget widget = getTestWidgetFromPath(path: 'v1.5/Agenda-full.json');
-
-    // widget = SingleChildScrollView(child: IntrinsicHeight(child: widget));
+    // Tall card: render scrollable so it isn't clipped by the test viewport.
+    final Widget widget = getTestWidgetFromPath(
+      path: 'v1.5/Agenda-full.json',
+      scrollable: true,
+    );
 
     await tester.pumpWidget(widget);
     await tester.pump(
       const Duration(seconds: 1),
     ); // skip past any activity or animation
-  }, skip: true);
+  });
 }

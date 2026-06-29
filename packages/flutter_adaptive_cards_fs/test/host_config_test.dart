@@ -4,23 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('HostConfig Tests', () {
-    // this test isn't valid.  Hostconfi first level properties can be null and have no defaults
-    test('HostConfig defaults with empty json', () {
-      final config = HostConfig.fromJson({});
-
-      expect(config.imageSet?.imageSizeSmall, 64);
-      expect(
-        config.foregroundColors?.defaultColor.defaultColor,
-        const Color(0xFF000000),
-      );
-      expect(
-        config.foregroundColors?.accent.defaultColor,
-        const Color(0xFF0000FF),
-      );
-      expect(config.textStyles?.heading.weight, 'bolder');
-      expect(config.textStyles?.heading.size, 'large');
-    }, skip: true);
-
     test('HostConfig custom values', () {
       final json = {
         'imageSet': {

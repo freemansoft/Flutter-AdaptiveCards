@@ -43,5 +43,39 @@ void main() {
         theme.colorScheme.surfaceContainerHighest,
       );
     });
+
+    test(
+      'parses optional good/attention/warning/accent styles when present',
+      () {
+        final colorDefaults = ThemeColorFallbacks(ThemeData.light());
+        final config = ContainerStylesConfig.fromJson(
+          {
+            'good': {'backgroundColor': '#FF00FF00'},
+            'attention': {'backgroundColor': '#FFFF0000'},
+            'warning': {'backgroundColor': '#FFFFFF00'},
+            'accent': {'backgroundColor': '#FF0000FF'},
+          },
+          colorDefaults: colorDefaults,
+        );
+
+        expect(config.good?.backgroundColor, const Color(0xFF00FF00));
+        expect(config.attention?.backgroundColor, const Color(0xFFFF0000));
+        expect(config.warning?.backgroundColor, const Color(0xFFFFFF00));
+        expect(config.accent?.backgroundColor, const Color(0xFF0000FF));
+      },
+    );
+
+    test('leaves optional styles null when absent from JSON', () {
+      final colorDefaults = ThemeColorFallbacks(ThemeData.light());
+      final config = ContainerStylesConfig.fromJson(
+        {},
+        colorDefaults: colorDefaults,
+      );
+
+      expect(config.good, isNull);
+      expect(config.attention, isNull);
+      expect(config.warning, isNull);
+      expect(config.accent, isNull);
+    });
   });
 }

@@ -15,7 +15,7 @@
 # flutter_adaptive_cards_test_support is intentionally omitted: it is a test helper
 # package with no tests of its own.
 
-flutter_adaptive_cards_fs: 88
+flutter_adaptive_cards_fs: 90
 flutter_adaptive_template_fs: 95
 flutter_adaptive_cards_host_fs: 81
 flutter_adaptive_charts_fs: 83

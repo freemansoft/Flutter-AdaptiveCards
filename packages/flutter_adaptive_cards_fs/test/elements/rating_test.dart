@@ -37,4 +37,25 @@ void main() {
     expect(find.byIcon(Icons.star), findsNothing);
     expect(find.byIcon(Icons.star_border), findsNWidgets(5));
   });
+
+  for (final color in ['marigold', 'light']) {
+    testWidgets('renders with the "$color" color token', (tester) async {
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: _card({
+            'type': 'Rating',
+            'id': 'stars',
+            'value': 3,
+            'max': 5,
+            'color': color,
+          }),
+          title: 'rating color $color',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.star), findsNWidgets(3));
+      expect(find.byIcon(Icons.star_border), findsNWidgets(2));
+    });
+  }
 }
