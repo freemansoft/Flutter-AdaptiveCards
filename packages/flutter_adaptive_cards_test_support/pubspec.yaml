@@ -16,7 +16,7 @@ dependencies:
   package_config: ^2.2.0
 
 dev_dependencies:
-  very_good_analysis: ^10.2.0
+  very_good_analysis: ^10.3.0
 
 flutter:
   uses-material-design: true
