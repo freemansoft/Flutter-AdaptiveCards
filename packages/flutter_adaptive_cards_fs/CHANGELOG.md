@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.14.0]
 
-- no changes yet
+### Added 0.14.0
+
+- **Behavioral tests for custom/extended elements** previously marked "Limited" (visibility-only coverage). New dedicated test files exercise element behavior: `Accordion` (per-section expand/collapse), `ProgressBar` and `ProgressRing` (determinate/indeterminate + `value` clamping; ring `label`/`labelPosition`), `TabSet` (tab rendering + tap-to-switch), `CarouselPage` (`items` + `showBorder`), and the read-only `Rating` display (filled/empty star rendering + defaults). README Tests column upgraded to ✅ for these rows.
+
+### Changed 0.14.0
+
+- **README implementation status** — corrected the `Rating` row, which incorrectly claimed the read-only display element (`AdaptiveRating`) was "also registered as `Input.Rating`". `Rating` and `Input.Rating` are distinct widgets; added a separate `Input.Rating` row documenting the interactive star-picker input (`AdaptiveRatingInput`: `max`/`color`/`size`/`allowHalfSteps`, value submission, `isRequired`). Also corrected the Icon **Known gaps** row, which still listed "~68 icons" — `kFluentIconMap` now has ~200 entries (matching the Icon element row), so the gap impact drops to Low.
 
 ## [0.13.0]
 
