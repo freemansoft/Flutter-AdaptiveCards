@@ -12,6 +12,7 @@ import 'package:widgetbook_workspace/rating_input_overlay_page.dart';
 import 'package:widgetbook_workspace/rating_overlay_page.dart';
 import 'package:widgetbook_workspace/refresh_demo_page.dart';
 import 'package:widgetbook_workspace/responsive_flow_page.dart';
+import 'package:widgetbook_workspace/table_knobs_page.dart';
 import 'package:widgetbook_workspace/text_block_overlay_page.dart';
 import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
 
@@ -934,6 +935,22 @@ Widget buildTableExample1(BuildContext context) {
 )
 Widget buildTableExample2(BuildContext context) {
   return const GenericPage(url: 'lib/samples/table/example2.json');
+}
+
+Widget _tableKnobsUseCase(String assetPath) {
+  return TableKnobsPage(
+    key: tableKnobsPageKeyFor(assetPath),
+    assetPath: assetPath,
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Column widths + minHeight (knobs)',
+  type: widget_types.Table,
+  path: '[Components]',
+)
+Widget buildTableWidthsKnobs(BuildContext context) {
+  return _tableKnobsUseCase('lib/samples/table/table_widths_demo.json');
 }
 
 // =============================================================================
