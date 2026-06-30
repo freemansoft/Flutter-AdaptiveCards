@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/containers/table.dart';
+import 'package:flutter_adaptive_cards_fs/src/cards/elements/text_block.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
@@ -189,14 +190,17 @@ void main() {
 
       const tableKey = 'testTable_adaptive';
 
-      // Find SizedBox with spacing
+      // Flutter Table holds rows directly — no spacer rows when showGridLines=false.
       final columnFinder = find.byKey(AdaptiveTable.tableColumnKey(tableKey));
-      final column = tester.widget<Column>(columnFinder);
-      expect(column.children.length, 3); // Row 1, Spacer, Row 2
+      final table = tester.widget<Table>(columnFinder);
+      expect(
+        table.children.length,
+        2,
+      ); // Row 1, Row 2 — no spacer rows in Table
 
-      final row1Finder = find.byKey(AdaptiveTable.rowKey(tableKey, 0));
-      final row1 = tester.widget<Row>(row1Finder);
-      expect(row1.children.length, 3); // Cell 1, Spacer, Cell 2
+      // TableRow is not findable; verify via the cell key instead.
+      final cell00Finder = find.byKey(AdaptiveTable.cellKey(tableKey, 0, 0));
+      expect(cell00Finder, findsOneWidget);
     });
 
     testWidgets('applies verticalCellContentAlignment', (tester) async {
@@ -244,18 +248,19 @@ void main() {
       expect(align.alignment, Alignment.topLeft); // 'top' -> topLeft
     });
 
-    testWidgets('applies column widths (flex)', (tester) async {
+    testWidgets('maps column widths onto Table.columnWidths', (tester) async {
       final cardMap = {
         'type': 'AdaptiveCard',
         'version': '1.5',
         'body': [
           {
-            'id': 'testTable',
             'type': 'Table',
+            'id': 'testTable',
             'columns': [
               {'width': 1},
               {'width': 2},
-              {'width': 1},
+              {'width': 'auto'},
+              {'width': '40px'},
             ],
             'rows': [
               {
@@ -264,19 +269,25 @@ void main() {
                   {
                     'type': 'TableCell',
                     'items': [
-                      {'type': 'TextBlock', 'text': 'C1'},
+                      {'type': 'TextBlock', 'text': 'a'},
                     ],
                   },
                   {
                     'type': 'TableCell',
                     'items': [
-                      {'type': 'TextBlock', 'text': 'C2'},
+                      {'type': 'TextBlock', 'text': 'b'},
                     ],
                   },
                   {
                     'type': 'TableCell',
                     'items': [
-                      {'type': 'TextBlock', 'text': 'C3'},
+                      {'type': 'TextBlock', 'text': 'c'},
+                    ],
+                  },
+                  {
+                    'type': 'TableCell',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'd'},
                     ],
                   },
                 ],
@@ -287,23 +298,25 @@ void main() {
       };
 
       await tester.pumpWidget(
-        getTestWidgetFromMap(
-          map: cardMap,
-          title: 'Column Widths Test',
-        ),
+        getTestWidgetFromMap(map: cardMap, title: 'Column Widths Test'),
       );
-
       await tester.pumpAndSettle();
 
-      const tableKey = 'testTable_adaptive';
-      // Find Expanded widgets wrapping the content
-      final c1Finder = find.byKey(AdaptiveTable.columnKey(tableKey, 0));
-      final c2Finder = find.byKey(AdaptiveTable.columnKey(tableKey, 1));
-      final c3Finder = find.byKey(AdaptiveTable.columnKey(tableKey, 2));
-
-      expect(tester.widget<Expanded>(c1Finder).flex, 1);
-      expect(tester.widget<Expanded>(c2Finder).flex, 2);
-      expect(tester.widget<Expanded>(c3Finder).flex, 1);
+      // TableColumnWidth subclasses don't override `==`; assert type + value.
+      final table = tester.widget<Table>(find.byType(Table));
+      expect(
+        table.columnWidths![0],
+        isA<FlexColumnWidth>().having((w) => w.value, 'value', 1.0),
+      );
+      expect(
+        table.columnWidths![1],
+        isA<FlexColumnWidth>().having((w) => w.value, 'value', 2.0),
+      );
+      expect(table.columnWidths![2], isA<IntrinsicColumnWidth>());
+      expect(
+        table.columnWidths![3],
+        isA<FixedColumnWidth>().having((w) => w.value, 'value', 40.0),
+      );
     });
 
     testWidgets('applies firstRowAsHeader with bold styling', (tester) async {
@@ -355,8 +368,25 @@ void main() {
 
       expect(find.text('Header'), findsOneWidget);
       expect(find.text('Data'), findsOneWidget);
-      // Header row should have bold DefaultTextStyle
-      expect(find.byType(DefaultTextStyle), findsWidgets);
+      // firstRowAsHeader bakes the columnHeader weight (bolder) into the header
+      // cell's TextBlock map; the body row's TextBlock keeps no explicit weight.
+      final headerBlock = tester.widget<AdaptiveTextBlock>(
+        find.ancestor(
+          of: find.text('Header'),
+          matching: find.byType(AdaptiveTextBlock),
+        ),
+      );
+      final bodyBlock = tester.widget<AdaptiveTextBlock>(
+        find.ancestor(
+          of: find.text('Data'),
+          matching: find.byType(AdaptiveTextBlock),
+        ),
+      );
+      expect(bodyBlock.adaptiveMap['weight'], isNull);
+      expect(
+        headerBlock.adaptiveMap['weight'].toString().toLowerCase(),
+        'bolder',
+      );
     });
 
     testWidgets('applies background color from cell style', (tester) async {
@@ -494,6 +524,291 @@ void main() {
         warningDecoration?.color,
         themeContainerStyles.warning!.backgroundColor,
       );
+    });
+
+    testWidgets('auto column has the same width across rows', (tester) async {
+      final cardMap = {
+        'type': 'AdaptiveCard',
+        'version': '1.5',
+        'body': [
+          {
+            'type': 'Table',
+            'id': 'testTable',
+            'columns': [
+              {'width': 'auto'},
+              {'width': 'stretch'},
+            ],
+            'rows': [
+              {
+                'type': 'TableRow',
+                'cells': [
+                  {
+                    'type': 'TableCell',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'X'},
+                    ],
+                  },
+                  {
+                    'type': 'TableCell',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'short'},
+                    ],
+                  },
+                ],
+              },
+              {
+                'type': 'TableRow',
+                'cells': [
+                  {
+                    'type': 'TableCell',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'a much longer label'},
+                    ],
+                  },
+                  {
+                    'type': 'TableCell',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'short'},
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(map: cardMap, title: 'Auto Width Test'),
+      );
+      await tester.pumpAndSettle();
+
+      const tableKey = 'testTable_adaptive';
+      final col0Row0 = tester.getSize(
+        find.byKey(AdaptiveTable.cellKey(tableKey, 0, 0)),
+      );
+      final col0Row1 = tester.getSize(
+        find.byKey(AdaptiveTable.cellKey(tableKey, 1, 0)),
+      );
+      // Auto column is sized to the widest cell content across all rows.
+      expect(col0Row0.width, col0Row1.width);
+    });
+
+    testWidgets('stretch column consumes width beyond the auto column', (
+      tester,
+    ) async {
+      final cardMap = {
+        'type': 'AdaptiveCard',
+        'version': '1.5',
+        'body': [
+          {
+            'type': 'Table',
+            'id': 'testTable',
+            'columns': [
+              {'width': 'auto'},
+              {'width': 'stretch'},
+            ],
+            'rows': [
+              {
+                'type': 'TableRow',
+                'cells': [
+                  {
+                    'type': 'TableCell',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'A'},
+                    ],
+                  },
+                  {
+                    'type': 'TableCell',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'B'},
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(map: cardMap, title: 'Stretch Width Test'),
+      );
+      await tester.pumpAndSettle();
+
+      const tableKey = 'testTable_adaptive';
+      final autoCell = tester.getSize(
+        find.byKey(AdaptiveTable.cellKey(tableKey, 0, 0)),
+      );
+      final stretchCell = tester.getSize(
+        find.byKey(AdaptiveTable.cellKey(tableKey, 0, 1)),
+      );
+      // The single-character "auto" column is far narrower than the stretch one.
+      expect(stretchCell.width, greaterThan(autoCell.width));
+    });
+
+    testWidgets('cell minHeight raises the row height', (tester) async {
+      final cardMap = {
+        'type': 'AdaptiveCard',
+        'version': '1.5',
+        'body': [
+          {
+            'type': 'Table',
+            'id': 'testTable',
+            'columns': [
+              {'width': 'stretch'},
+            ],
+            'rows': [
+              {
+                'type': 'TableRow',
+                'cells': [
+                  {
+                    'type': 'TableCell',
+                    'minHeight': '120px',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'tall'},
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(map: cardMap, title: 'MinHeight Test'),
+      );
+      await tester.pumpAndSettle();
+
+      const tableKey = 'testTable_adaptive';
+      final cell = tester.getSize(
+        find.byKey(AdaptiveTable.cellKey(tableKey, 0, 0)),
+      );
+      expect(cell.height, greaterThanOrEqualTo(120.0));
+    });
+
+    testWidgets('cell backgroundImage renders a DecorationImage', (
+      tester,
+    ) async {
+      final cardMap = {
+        'type': 'AdaptiveCard',
+        'version': '1.5',
+        'body': [
+          {
+            'type': 'Table',
+            'id': 'testTable',
+            'columns': [
+              {'width': 'stretch'},
+            ],
+            'rows': [
+              {
+                'type': 'TableRow',
+                'cells': [
+                  {
+                    'type': 'TableCell',
+                    'backgroundImage': 'https://example.com/bg.png',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'bg'},
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(map: cardMap, title: 'Cell Background Image Test'),
+      );
+      await tester.pumpAndSettle();
+
+      const tableKey = 'testTable_adaptive';
+      final container = tester.widget<Container>(
+        find.byKey(AdaptiveTable.cellKey(tableKey, 0, 0)),
+      );
+      final decoration = container.decoration! as BoxDecoration;
+      expect(decoration.image, isNotNull);
+    });
+
+    testWidgets('ragged rows (fewer cells than columns) render without error', (
+      tester,
+    ) async {
+      final cardMap = {
+        'type': 'AdaptiveCard',
+        'version': '1.5',
+        'body': [
+          {
+            'type': 'Table',
+            'id': 'testTable',
+            'columns': [
+              {'width': 'stretch'},
+              {'width': 'stretch'},
+            ],
+            'rows': [
+              {
+                'type': 'TableRow',
+                'cells': [
+                  {
+                    'type': 'TableCell',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'one'},
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(map: cardMap, title: 'Ragged Rows Test'),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(Table), findsOneWidget);
+      expect(find.text('one'), findsOneWidget);
+    });
+
+    testWidgets('showGridLines true draws a TableBorder', (tester) async {
+      final cardMap = {
+        'type': 'AdaptiveCard',
+        'version': '1.5',
+        'body': [
+          {
+            'type': 'Table',
+            'id': 'testTable',
+            'showGridLines': true,
+            'columns': [
+              {'width': 'stretch'},
+            ],
+            'rows': [
+              {
+                'type': 'TableRow',
+                'cells': [
+                  {
+                    'type': 'TableCell',
+                    'items': [
+                      {'type': 'TextBlock', 'text': 'g'},
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(map: cardMap, title: 'Grid Lines Test'),
+      );
+      await tester.pumpAndSettle();
+
+      final table = tester.widget<Table>(find.byType(Table));
+      expect(table.border, isNotNull);
     });
   });
 }

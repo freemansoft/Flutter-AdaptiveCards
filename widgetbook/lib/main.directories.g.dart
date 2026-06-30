@@ -577,6 +577,11 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Table',
         useCases: [
           _widgetbook.WidgetbookUseCase(
+            name: 'Column widths + minHeight (knobs)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildTableWidthsKnobs,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Example 1',
             builder: _widgetbook_workspace_adaptive_cards_use_cases
                 .buildTableExample1,

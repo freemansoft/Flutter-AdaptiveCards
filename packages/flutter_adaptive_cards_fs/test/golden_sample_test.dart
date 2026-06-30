@@ -256,4 +256,19 @@ void main() {
 
     await tester.pump(const Duration(seconds: 1));
   }, tags: ['golden']);
+
+  testWidgets('Golden Table 3 widths', (tester) async {
+    configureTestView();
+
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'table3_widths');
+
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('table3_widths-base.png')),
+    );
+  }, tags: ['golden']);
 }

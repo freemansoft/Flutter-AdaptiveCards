@@ -1,0 +1,61 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Table column widths + cell minHeight",
+      "weight": "Bolder",
+      "size": "Medium",
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "text": "Use the knobs to change each column's width mode (auto / stretch / numeric / px) and the highlighted cell's minHeight and style.",
+      "isSubtle": true,
+      "wrap": true
+    },
+    {
+      "type": "Table",
+      "gridStyle": "accent",
+      "firstRowAsHeader": true,
+      "showGridLines": true,
+      "columns": [
+        { "width": "auto" },
+        { "width": "stretch" },
+        { "width": "60px" },
+        { "width": 2 }
+      ],
+      "rows": [
+        {
+          "type": "TableRow",
+          "cells": [
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Code", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Description", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Qty", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Notes", "wrap": true } ] }
+          ]
+        },
+        {
+          "type": "TableRow",
+          "cells": [
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "A1", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "A reasonably long description that wraps onto multiple lines", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "3", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "ok", "wrap": true } ] }
+          ]
+        },
+        {
+          "type": "TableRow",
+          "cells": [
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "B22", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Short", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "10", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "n/a", "wrap": true } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

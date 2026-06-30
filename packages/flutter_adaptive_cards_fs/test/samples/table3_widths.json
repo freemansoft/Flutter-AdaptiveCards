@@ -1,0 +1,47 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Table",
+      "gridStyle": "accent",
+      "firstRowAsHeader": true,
+      "columns": [
+        { "width": "auto" },
+        { "width": "stretch" },
+        { "width": "60px" },
+        { "width": 2 }
+      ],
+      "rows": [
+        {
+          "type": "TableRow",
+          "cells": [
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Code" } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Description" } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Qty" } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Notes" } ] }
+          ]
+        },
+        {
+          "type": "TableRow",
+          "cells": [
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "A1" } ] },
+            { "type": "TableCell", "style": "good", "minHeight": "80px", "items": [ { "type": "TextBlock", "text": "A reasonably long description that wraps", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "3" } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "ok" } ] }
+          ]
+        },
+        {
+          "type": "TableRow",
+          "cells": [
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "B22" } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "Short", "wrap": true } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "10" } ] },
+            { "type": "TableCell", "items": [ { "type": "TextBlock", "text": "n/a" } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -69,17 +69,16 @@ Legend: ✅ complete · ⚠️ partial · ❌ missing · 📝 planned. Each row 
 | FactSet   | [spec](https://adaptivecards.io/explorer/FactSet.html)   | [learn](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/fact-set)   | ✅ Complete    | ✅ Yes     | [reactive-riverpod.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/docs/reactive-riverpod.md)                                         | Runtime `facts` overlay (`setFacts` / `clearFacts`)                           |
 | Fact      | [spec](https://adaptivecards.io/explorer/Fact.html)      | [learn](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/fact)       | ✅ Complete    | ✅ Yes     | -                                                                                                                                                        | Typed `Fact` model                                                            |
 | ImageSet  | [spec](https://adaptivecards.io/explorer/ImageSet.html)  | [learn](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/image-set)  | ✅ Complete    | ⚠️ Limited | -                                                                                                                                                        | -                                                                             |
-| Table     | [spec](https://adaptivecards.io/explorer/Table.html)     | [learn](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/table)      | ⚠️ Partial     | ⚠️ Basic   | -                                                                                                                                                        | See [Table gaps](#table-gaps) below                                           |
+| Table     | [spec](https://adaptivecards.io/explorer/Table.html)     | [learn](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/table)      | ⚠️ Partial     | ✅ Yes     | -                                                                                                                                                        | See [Table gaps](#table-gaps) below                                           |
 | TableCell | [spec](https://adaptivecards.io/explorer/TableCell.html) | [learn](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/table-cell) | ⚠️ Inline      | ✅ Yes     | -                                                                                                                                                        | Implemented inline in Table; `selectAction` supported and tested              |
 | TableRow  | [spec](https://adaptivecards.io/explorer/TableRow.html)  | —                                                                                    | ⚠️ Partial     | ❌ No      | -                                                                                                                                                        | Part of Table implementation                                                  |
 
 #### Table gaps
 
-Implemented: `columns`, `rows`, `showGridLines`, `gridStyle`, `firstRowAsHeader`, cell alignment, header styling, `selectAction` on cells.
+Implemented: `columns`, `rows` with all column `width` modes (`auto`, `stretch`, numeric weight, `Npx`), `showGridLines`, `gridStyle`, `firstRowAsHeader`, cell alignment, header styling, `selectAction` on cells, cell `minHeight`, cell `backgroundImage`.
 
 Not implemented or incomplete:
 
-- Column `width` modes `auto` / `stretch` (numeric flex and `px` only)
 - Cell-level `rtl` (parsed in `TableCellModel` but not applied in rendering)
 - Block `height: stretch` on the table element
 - `bleed` on cells or the table
@@ -227,7 +226,7 @@ Cross-cutting core gaps that affect many card types:
 | **`requires` + version gating** | No capability checks; `fallbackText` unused                                                                                          | Medium–high — mixed-schema production hosts                                  |
 | **Action `fallback`**           | Unknown actions assert instead of degrading                                                                                          | Medium — action fallback lists in Teams chart docs                           |
 | **Icon**                        | Partial Fluent name map (~200 icons)                                                                                                 | Low — uncommon hub icon names fall back to `help_outline`                    |
-| **Table completeness**          | `auto`/`stretch` widths, cell `rtl`, `bleed`                                                                                         | Medium — complex table scenarios                                             |
+| **Table completeness**          | cell `rtl`, `bleed` (`auto`/`stretch` widths ✅, cell `minHeight` ✅)                                                                | Low — niche table scenarios                                                  |
 | **TextBlock text features**     | Plain path: ✅ `maxLines`, `color`, `isSubtle`, `weight`; markdown path: subset only (no `maxLines`)                                 | Low — full HTML markdown out of scope                                        |
 | **AdaptiveCard root**           | `authentication`, `rtl`, `minHeight`, `verticalContentAlignment` (`refresh` ✅, `selectAction` ✅)                                   | Medium — Bot/Teams integration                                               |
 | **CaptionSource**               | Parsed to typed model; VTT track rendering on the video surface not wired                                                            | Low — media captions                                                         |
@@ -733,7 +732,7 @@ TODO for the example programs moved to [example README](example/README.md)
 
 Everything below this line is from the original README.md
 
-The original GitHub repository has been deleted. This repository has been pulled out of the fork tree as all upstream are now dead.  The original fork path is as follows working up to the original:
+The original GitHub repository has been deleted. This repository has been pulled out of the fork tree as all upstream are now dead. The original fork path is as follows working up to the original:
 
 1. <https://github.com/freemansoft/Flutter-AdaptiveCards> Mine forked from
 2. <https://github.com/lannes/Flutter-AdaptiveCards> forked from
