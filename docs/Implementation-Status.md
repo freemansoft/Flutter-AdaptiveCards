@@ -68,9 +68,8 @@ _None currently — the prior top priorities (`Layout.AreaGrid` + `grid.area` an
 ### Medium priority
 
 1. **Complete `Table`**: `auto`/`stretch` column widths and `bleed`. (Cell `rtl` rendering → **Deferred**.)
-2. **`Icon` element**: Expand Fluent name catalog beyond ~68 built-in mappings.
-3. **AdaptiveCard root features**: `fallbackText`, `minHeight`, root `verticalContentAlignment` (`refresh` ✅, `selectAction` ✅ — see [plan workstream B](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-b--refresh-property-v14)). (Root `rtl` → **Deferred**.)
-4. **Media poster fix**: Resolve poster attribute display issue.
+2. **AdaptiveCard root features**: `fallbackText`, `minHeight`, root `verticalContentAlignment` (`refresh` ✅, `selectAction` ✅ — see [plan workstream B](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-b--refresh-property-v14)). (Root `rtl` → **Deferred**.)
+3. **Media poster fix**: Resolve poster attribute display issue.
 
 ### Low priority
 
@@ -79,7 +78,8 @@ _None currently — the prior top priorities (`Layout.AreaGrid` + `grid.area` an
 3. **`CaptionSource`**: Render parsed caption tracks (VTT) on the Media video surface.
 4. **`bleed`**: Container full-bleed layouts.
 5. **Adaptive Expressions**: `select`/`where` collection functions in templating (require lazy lambda evaluation; other collection and date functions are now implemented).
-6. **Flow follow-ups** (deferred from the [2026-06-27 finish-Flow work](./superpowers/specs/2026-06-27-finish-layout-flow-design.md)): `itemFit: "Fill"` (needs a custom row-packing layout), Flow on the `listView` body path, and the W4 width-measurement remainder (margin-inclusive measurement; nested `Action.ShowCard` width).
+6. **`Icon` catalog long tail**: The Fluent name catalog now maps ~210 names (`lib/src/utils/fluent_icon_map.dart`); expand further for uncommon hub icon names that still fall back to `help_outline`.
+7. **Flow follow-ups** (deferred from the [2026-06-27 finish-Flow work](./superpowers/specs/2026-06-27-finish-layout-flow-design.md)): `itemFit: "Fill"` (needs a custom row-packing layout), Flow on the `listView` body path, and the W4 width-measurement remainder (margin-inclusive measurement; nested `Action.ShowCard` width).
 
 ### Deferred (by maintainer decision, 2026-06-27)
 
@@ -119,6 +119,10 @@ fvm flutter test --exclude-tags=golden
 ---
 
 ## Recently completed
+
+### Fluent icon catalog expansion (2026-06-28)
+
+- The `Icon` element's Fluent name catalog grew from the original ~68 mappings to **~210** (`packages/flutter_adaptive_cards_fs/lib/src/utils/fluent_icon_map.dart`), so far fewer hub icon names fall back to `help_outline`. Remaining long-tail coverage is now a **Low priority** follow-up rather than a Medium gap (PR #54).
 
 ### Load icon font in golden tests (2026-06-28)
 
@@ -206,5 +210,5 @@ See [backend-host-integration.md](./backend-host-integration.md) and [archived d
 
 ---
 
-_Last Updated: 2026-06-25_
+_Last Updated: 2026-06-29_
 _Based on v1.6.0 of Microsoft Adaptive Cards specification_
