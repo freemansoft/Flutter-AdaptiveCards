@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 0.14.0
 
+- **`Table` `auto`/`stretch` column widths + cell `minHeight`** — the `Table` element now renders through Flutter's `Table` widget, so column `width` values `auto` (content-sized, consistent across rows) and `stretch` (fills remaining space) work alongside the existing numeric weights and `Npx` pixel widths. Cell `minHeight` is now applied. Equal row height and per-cell background fill are preserved via `TableCellVerticalAlignment.intrinsicHeight`; grid lines now use `TableBorder`. All existing cell behaviors (background color/image, header styling, `selectAction`, alignment, responsive `layouts`) are unchanged. Remaining `Table` gaps: `bleed` and cell-level `rtl`.
 - **Behavioral tests for custom/extended elements** previously marked "Limited" (visibility-only coverage). New dedicated test files exercise element behavior: `Accordion` (per-section expand/collapse), `ProgressBar` and `ProgressRing` (determinate/indeterminate + `value` clamping; ring `label`/`labelPosition`), `TabSet` (tab rendering + tap-to-switch), `CarouselPage` (`items` + `showBorder`), and the read-only `Rating` display (filled/empty star rendering + defaults). README Tests column upgraded to ✅ for these rows.
 - **Coverage tests for low-coverage classes** — Lifts `flutter_adaptive_cards_fs` line coverage from ~88.9% to ~90.1%; CI coverage floor raised 88 → 90.
 
 ### Changed 0.14.0
 
+- **`Table` `firstRowAsHeader` now actually styles header text.** Header styling previously relied on an ambient `DefaultTextStyle`, which `AdaptiveTextBlock` overrides with its own explicit `TextStyle` — so header rows were never bolder than body rows. Header cells now bake the HostConfig `columnHeader` text style (weight/size/color/fontType/isSubtle) into each `TextBlock`'s appearance, with the element's own properties still winning when set.
 - **README implementation status** — corrected the `Rating` row, which incorrectly claimed the read-only display element (`AdaptiveRating`) was "also registered as `Input.Rating`". `Rating` and `Input.Rating` are distinct widgets; added a separate `Input.Rating` row documenting the interactive star-picker input (`AdaptiveRatingInput`: `max`/`color`/`size`/`allowHalfSteps`, value submission, `isRequired`). Also corrected the Icon **Known gaps** row, which still listed "~68 icons" — `kFluentIconMap` now has ~200 entries (matching the Icon element row), so the gap impact drops to Low.
 
 ## [0.13.0]

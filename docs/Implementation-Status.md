@@ -67,7 +67,7 @@ _None currently — the prior top priorities (`Layout.AreaGrid` + `grid.area` an
 
 ### Medium priority
 
-1. **Complete `Table`**: `auto`/`stretch` column widths and `bleed`. (Cell `rtl` rendering → **Deferred**.)
+1. **Complete `Table`**: `bleed`. (`auto`/`stretch` column widths ✅ and cell `minHeight` ✅ — 2026-06-30; cell `rtl` rendering → **Deferred**.)
 2. **AdaptiveCard root features**: `fallbackText`, `minHeight`, root `verticalContentAlignment` (`refresh` ✅, `selectAction` ✅ — see [plan workstream B](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-b--refresh-property-v14)). (Root `rtl` → **Deferred**.)
 3. **Media poster fix**: Resolve poster attribute display issue.
 
@@ -119,6 +119,10 @@ fvm flutter test --exclude-tags=golden
 ---
 
 ## Recently completed
+
+### Table auto/stretch widths + cell minHeight (2026-06-30)
+
+- `Table` re-rendered through Flutter's `Table` widget: `auto` (content-sized, cross-row consistent), `stretch`, numeric weight, and `Npx` column widths via a pure `mapColumnWidth` helper; equal-row-height + per-cell background fill via `TableCellVerticalAlignment.intrinsicHeight`; grid lines via `TableBorder`. Cell `minHeight` now applied. Ragged rows are padded to a uniform column count. New golden `table3_widths-base.png`; `table1`/`table2` baselines regenerated. Remaining `Table` gaps: `bleed` and cell `rtl` (deferred). Design: [2026-06-29-table-auto-stretch-minheight-design.md](./superpowers/specs/2026-06-29-table-auto-stretch-minheight-design.md).
 
 ### Fluent icon catalog expansion (2026-06-28)
 
@@ -210,5 +214,5 @@ See [backend-host-integration.md](./backend-host-integration.md) and [archived d
 
 ---
 
-_Last Updated: 2026-06-29_
+_Last Updated: 2026-06-30_
 _Based on v1.6.0 of Microsoft Adaptive Cards specification_
