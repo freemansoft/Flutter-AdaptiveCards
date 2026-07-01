@@ -70,13 +70,14 @@ void main() {
     final state = _RecordingCardState();
     var replaced = false;
     expect(
-      () => const AdaptiveCardInvokeResponse([
-        ReplaceCardEffect(<String, dynamic>{'type': 'AdaptiveCard'}),
-      ]).applyTo(
-        state,
-        onCardReplaced: (_) => replaced = true,
-        cardValidator: (_) => false,
-      ),
+      () =>
+          const AdaptiveCardInvokeResponse([
+            ReplaceCardEffect(<String, dynamic>{'type': 'AdaptiveCard'}),
+          ]).applyTo(
+            state,
+            onCardReplaced: (_) => replaced = true,
+            cardValidator: (_) => false,
+          ),
       throwsA(isA<AdaptiveCardInvokeResponseParseException>()),
     );
     expect(replaced, isFalse);

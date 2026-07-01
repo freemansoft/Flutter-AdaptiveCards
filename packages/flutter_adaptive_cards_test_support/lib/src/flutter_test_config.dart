@@ -66,8 +66,8 @@ Future<void> loadBundledTestFonts() async {
   for (final font in manifest) {
     final family = _deriveFontFamily(font['family'] as String);
     final loader = FontLoader(family);
-    for (final asset in (font['fonts'] as List<dynamic>)
-        .cast<Map<String, dynamic>>()) {
+    for (final asset
+        in (font['fonts'] as List<dynamic>).cast<Map<String, dynamic>>()) {
       loader.addFont(rootBundle.load(asset['asset'] as String));
     }
     await loader.load();
