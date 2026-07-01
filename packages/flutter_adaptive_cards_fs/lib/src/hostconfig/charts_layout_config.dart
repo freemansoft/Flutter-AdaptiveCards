@@ -3,9 +3,10 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// Resolved layout values for `Chart.Line` rendering.
 ///
-/// Populated from HostConfig `chartsLayout.line` via [LineChartLayoutSection.toLayout]
-/// or [ChartsLayoutConfig.resolveLineLayout]. Chart renderers consume these
-/// directly; field names match fl_chart layout options.
+/// Populated from HostConfig `chartsLayout.line` via
+/// [LineChartLayoutSection.toLayout] or [ChartsLayoutConfig.resolveLineLayout].
+/// Chart renderers consume these directly; field names match fl_chart layout
+/// options.
 class LineChartLayout {
   /// Resolved line chart layout for chart renderers.
   const LineChartLayout({
@@ -97,7 +98,8 @@ class LineChartLayout {
 /// From HostConfig `chartsLayout.bar` via [BarChartLayoutSection.toLayout] or
 /// [ChartsLayoutConfig.resolveBarLayout].
 class BarChartLayout {
-  /// Resolved bar chart layout for vertical, horizontal, grouped, and stacked charts.
+  /// Resolved bar chart layout for vertical, horizontal, grouped, and stacked
+  /// charts.
   const BarChartLayout({
     required this.height,
     required this.emptyMaxY,
@@ -202,13 +204,14 @@ class PieChartLayout {
   final Color titleColor;
 }
 
-/// Resolved layout values for `Chart.Donut` and `Chart.Gauge` (same shape as pie).
+/// Resolved layout values for `Chart.Donut` and `Chart.Gauge` (same shape as
+/// pie).
 typedef DonutChartLayout = PieChartLayout;
 
 /// HostConfig `chartsLayout.line` section.
 ///
-/// Override fields in host JSON or build in code, then call [toLayout] at render
-/// time (or use [ChartsLayoutConfig.resolveLineLayout]).
+/// Override fields in host JSON or build in code, then call [toLayout] at
+/// render time (or use [ChartsLayoutConfig.resolveLineLayout]).
 class LineChartLayoutSection {
   /// HostConfig overrides for line chart layout.
   const LineChartLayoutSection({
@@ -532,11 +535,12 @@ class PieChartLayoutSection {
 
 /// HostConfig `chartsLayout` section for chart element dimensions and chrome.
 ///
-/// Attach via `HostConfig.chartsLayout`. Each subsection maps to a chart family;
-/// use [resolveLineLayout], [resolveBarLayout], [resolvePieLayout], and
+/// Attach via `HostConfig.chartsLayout`. Each subsection maps to a chart
+/// family; use [resolveLineLayout], [resolveBarLayout], [resolvePieLayout], and
 /// [resolveDonutLayout] when rendering (falls back to [defaults]).
 class ChartsLayoutConfig {
-  /// HostConfig overrides for all chart families; omit fields to keep [defaults].
+  /// HostConfig overrides for all chart families; omit fields to keep
+  /// [defaults].
   const ChartsLayoutConfig({
     required this.line,
     required this.bar,

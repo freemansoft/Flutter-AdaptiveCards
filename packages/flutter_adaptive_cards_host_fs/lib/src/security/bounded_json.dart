@@ -21,8 +21,8 @@ class AdaptiveJsonTooLargeException implements Exception {
 ///
 /// Enforces the size cap on the UTF-8 byte length before decoding, then
 /// requires the result to be a JSON object. Throws
-/// [AdaptiveJsonTooLargeException] when oversized and [FormatException] when the
-/// payload is not a JSON object.
+/// [AdaptiveJsonTooLargeException] when oversized and [FormatException]
+/// when the payload is not a JSON object.
 Map<String, dynamic> decodeJsonMapWithLimit(
   String body, {
   int maxBytes = 1024 * 1024,

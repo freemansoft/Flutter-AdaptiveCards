@@ -18,7 +18,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 mixin AdaptiveElementWidgetMixin on StatefulWidget {
   // this is an abstract method that everyone needs to implmenet
 
-  /// Baseline element JSON for this widget; required by element implementations.
+  /// Baseline element JSON for this widget; required by element
+  /// implementations.
   Map<String, dynamic> get adaptiveMap;
 
   /// Stable element id used for overlays, keys, and provider lookups.
@@ -114,7 +115,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     }
   }
 
-  /// Background [Widget] for container-style elements; supports network and data URLs.
+  /// Background [Widget] for container-style elements; supports network and
+  /// data URLs.
   Widget getBackgroundImage(
     String url, {
     ImageRepeat repeat = ImageRepeat.noRepeat,
@@ -123,7 +125,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     return AdaptiveImageUtils.getImage(url, fit: fit, semanticsLabel: null);
   }
 
-  /// [ImageProvider] for [DecorationImage] backgrounds on container-style elements.
+  /// [ImageProvider] for [DecorationImage] backgrounds on container-style
+  /// elements.
   ImageProvider getBackgroundImageProvider(String url) {
     return AdaptiveImageUtils.getImageProvider(url);
   }
@@ -165,7 +168,8 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
     return getBackgroundImage(props.url, repeat: props.repeat, fit: props.fit);
   }
 
-  /// [BoxDecoration] with optional background color and image from element JSON.
+  /// [BoxDecoration] with optional background color and image from element
+  /// JSON.
   BoxDecoration getDecorationFromMap(Map element, {Color? backgroundColor}) {
     final decorationImage = getDecorationImageFromMap(element);
     return BoxDecoration(image: decorationImage, color: backgroundColor);
@@ -300,7 +304,8 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         );
   }
 
-  /// Clears validation overlays for this input (e.g. when Form validation passes).
+  /// Clears validation overlays for this input (e.g. when Form validation
+  /// passes).
   void clearLocalValidationError() {
     ref.read(adaptiveCardDocumentProvider.notifier).clearInputError(_inputId);
   }
@@ -317,16 +322,17 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     return ResolvedInputState(resolved ?? _inputAdaptiveMap);
   }
 
-  /// Call at the top of [build] to sync controllers when resolved value changes.
+  /// Call at the top of [build] to sync controllers when resolved value
+  /// changes.
   ///
   /// Registers a `ref.listen` subscription (auto-removed on the next rebuild)
   /// that schedules a post-frame callback whenever the resolved `'value'` key
-  /// changes.  The callback reads the **latest** resolved value at execution
-  /// time rather than capturing it at listener-fire time.  This prevents a
+  /// changes. The callback reads the **latest** resolved value at execution
+  /// time rather than capturing it at listener-fire time. This prevents a
   /// stale-echo: if two keystrokes arrive in the same frame, the intermediate
-  /// captured value would be outdated by the time the callback runs.  Reading
-  /// the latest ensures the echo is a no-op when the controller already reflects
-  /// the current document state, preserving the IME cursor position.
+  /// captured value would be outdated by the time the callback runs. Reading
+  /// the latest ensures the echo is a no-op when the controller already
+  /// reflects the current document state, preserving the IME cursor position.
   void listenForResolvedValueChanges() {
     ref.listen(resolvedElementProvider(_inputId), (previous, next) {
       if (previous?['value'] == next?['value']) return;
@@ -344,7 +350,8 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
         .setInputValue(_inputId, newValue);
   }
 
-  /// Clears the runtime value overlay so resolved `value` falls back to baseline.
+  /// Clears the runtime value overlay so resolved `value` falls back to
+  /// baseline.
   void clearDocumentInputValue() {
     ref.read(adaptiveCardDocumentProvider.notifier).clearInputValue(_inputId);
   }
@@ -389,7 +396,8 @@ mixin AdaptiveVisibilityMixin<T extends ConsumerStatefulWidget>
   /// element's `targetWidth` match against the current card width bucket.
   ///
   /// `isVisible` and `targetWidth` are independent gates — a runtime
-  /// `setIsVisible(visible: true)` overlay cannot override a `targetWidth` miss.
+  /// `setIsVisible(visible: true)` overlay cannot override a `targetWidth`
+  /// miss.
   bool get isVisible {
     final resolved = ref.watch(resolvedElementProvider(id));
     final baselineVisible = parseIsVisible(resolved?['isVisible']);
@@ -401,7 +409,8 @@ mixin AdaptiveVisibilityMixin<T extends ConsumerStatefulWidget>
     return baselineVisible && matchesWidth;
   }
 
-  /// Sets runtime visibility overlay for this element id (host or Action.ToggleVisibility).
+  /// Sets runtime visibility overlay for this element id (host or
+  /// Action.ToggleVisibility).
   void setIsVisible({required bool visible}) {
     ref
         .read(adaptiveCardDocumentProvider.notifier)

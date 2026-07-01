@@ -52,7 +52,8 @@ void main() {
         await tester.pumpAndSettle();
       }
 
-      // 3) Some pickers provide smaller clickable labels like '09' or '09:'; try common variants.
+      // 3) Some pickers provide smaller clickable labels like '09' or '09:';
+      // try common variants.
       final hour09 = find.text('09');
       if (hour09.evaluate().isNotEmpty) {
         await tester.tap(hour09.first);
@@ -65,7 +66,8 @@ void main() {
       }
     }
 
-    // If UI interaction didn't change the time, fall back to setting the value programmatically
+    // If UI interaction didn't change the time, fall back to setting the value
+    // programmatically
     final dynamic state = tester.state(find.byType(AdaptiveTimeInput));
 
     // Confirm selection button exists
@@ -79,8 +81,9 @@ void main() {
     // now figure out if it actually changed
     // this is kind of ugly really because we bypass the UI if it didn't work.
 
-    // If picker interaction did not change selection yet, set it programmatically to 09:45
-    // (some picker implementations in test environments don't expose interactive taps reliably)
+    // If picker interaction did not change selection yet, set it
+    // programmatically to 09:45 (some picker implementations in test
+    // environments don't expose interactive taps reliably)
     final Map<String, dynamic> pre = {};
     state.appendInput(pre);
     final String before = pre['pickTimeInteractive'].toString();

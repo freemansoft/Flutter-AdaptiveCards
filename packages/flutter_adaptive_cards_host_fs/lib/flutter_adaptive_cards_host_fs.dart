@@ -1,7 +1,8 @@
 /// Backend invoke bridge for Flutter Adaptive Cards.
 ///
 /// Serialize host callbacks, POST to a flow-service, parse responses, and
-/// apply overlay patches or full card replacement via `AdaptiveCardBackendHandlers`.
+/// apply overlay patches or full card replacement
+/// via `AdaptiveCardBackendHandlers`.
 library;
 
 export 'package:flutter_adaptive_cards_host_fs/src/adapters/plain_json_invoke_adapter.dart';

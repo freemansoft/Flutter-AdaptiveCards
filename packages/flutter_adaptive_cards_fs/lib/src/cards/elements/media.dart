@@ -96,8 +96,9 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
       }());
     }
 
-    // We could use mediaConfig.allowInlinePlayback to decide whether to initialize player
-    // but for now we'll respect it as a hint for the UI if needed.
+    // We could use mediaConfig.allowInlinePlayback to decide whether to
+    // initialize player but for now we'll respect it as a hint for the UI if
+    // needed.
     unawaited(initializePlayer());
   }
 

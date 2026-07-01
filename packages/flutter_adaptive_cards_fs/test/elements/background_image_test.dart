@@ -60,7 +60,8 @@ void main() {
   });
 
   testWidgets(
-    'Container with only backgroundImage renders it as a child for aspect ratio scaling',
+    'Container with only backgroundImage renders it as a child for '
+    'aspect ratio scaling',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         getTestWidgetFromString(
@@ -81,7 +82,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // The Container should contain an Image or RawImage widget directly since it has no children
+      // The Container should contain an Image or RawImage widget directly since
+      // it has no children
       final imageFinder = find.byType(Image);
       expect(imageFinder, findsOneWidget);
 
@@ -95,7 +97,8 @@ void main() {
   );
 
   testWidgets(
-    'Column with only backgroundImage renders it as a child for aspect ratio scaling',
+    'Column with only backgroundImage renders it as a child for '
+    'aspect ratio scaling',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         getTestWidgetFromString(
@@ -122,7 +125,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // The Column should contain an Image or RawImage widget directly since it has no children
+      // The Column should contain an Image or RawImage widget directly since it
+      // has no children
       final imageFinder = find.byType(Image);
       expect(imageFinder, findsOneWidget);
 

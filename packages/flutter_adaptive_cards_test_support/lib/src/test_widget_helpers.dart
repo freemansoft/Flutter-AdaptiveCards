@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
-/// Builds a [MaterialApp] + [AdaptiveCardsCanvas] from a JSON file under [samplesDirectory];
+/// Builds a [MaterialApp] + [AdaptiveCardsCanvas]
+/// from a JSON file under [samplesDirectory];
 /// use [key] on [RepaintBoundary] for golden capture.
 Widget getTestWidgetFromPath({
   required String path,
@@ -49,7 +50,8 @@ Widget getTestWidgetFromPath({
   );
 }
 
-/// Renders [map] as an adaptive card with optional [InheritedAdaptiveCardHandlers]
+/// Renders [map] as an adaptive card
+/// with optional [InheritedAdaptiveCardHandlers]
 /// callbacks for interaction tests.
 Widget getTestWidgetFromMap({
   required Map<String, dynamic> map,
@@ -138,8 +140,8 @@ Widget getTestWidgetFromMap({
   }
 }
 
-/// Same as [getTestWidgetFromMap] but parses [jsonString] first — handy for inline
-/// fixture JSON in tests.
+/// Same as [getTestWidgetFromMap]
+/// but parses [jsonString] first — handy for inline fixture JSON in tests.
 Widget getTestWidgetFromString({required String jsonString, Key? key}) {
   final Map<String, dynamic> map =
       json.decode(jsonString) as Map<String, dynamic>;

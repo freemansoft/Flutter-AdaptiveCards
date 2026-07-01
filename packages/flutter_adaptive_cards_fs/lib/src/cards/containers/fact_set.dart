@@ -136,7 +136,8 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
     );
   }
 
-  /// Builds markdown styling for fact values from HostConfig [factSetTextConfig].
+  /// Builds markdown styling for fact values from HostConfig
+  /// [factSetTextConfig].
   MarkdownStyleSheet loadMarkdownStyleSheet({
     required ReferenceResolver resolver,
     required BuildContext context,

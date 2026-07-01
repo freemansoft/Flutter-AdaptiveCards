@@ -55,7 +55,8 @@ enum ElementOverlayField {
   /// Creates a field identifier with host [patchKey] name where applicable.
   const ElementOverlayField(this.patchKey);
 
-  /// Key used in `applyUpdatesFromMap` for this field (not used for extension payload).
+  /// Key used in `applyUpdatesFromMap` for this field (not used for extension
+  /// payload).
   final String patchKey;
 }
 
@@ -91,7 +92,8 @@ class OverlayCapabilityRegistry {
     this.overlayExtensions = const CardOverlayExtensionRegistry(),
   });
 
-  /// Registered overlay extensions (e.g. charts) that add [ElementOverlayField.extensionPayload].
+  /// Registered overlay extensions (e.g. charts) that add
+  /// [ElementOverlayField.extensionPayload].
   final CardOverlayExtensionRegistry overlayExtensions;
 
   static const Set<ElementOverlayField> _visibilityOnly = {
@@ -174,7 +176,8 @@ class OverlayCapabilityRegistry {
     return actionFieldsFor(actionType).contains(field);
   }
 
-  /// Human-readable issues when [update] sets fields unsupported for [elementType].
+  /// Human-readable issues when [update] sets fields unsupported for
+  /// [elementType].
   List<String> validateElementUpdate(
     String elementType,
     AdaptiveElementUpdate update,
@@ -199,7 +202,8 @@ class OverlayCapabilityRegistry {
     return issues;
   }
 
-  /// Human-readable issues when [update] sets fields unsupported for [actionType].
+  /// Human-readable issues when [update] sets fields unsupported for
+  /// [actionType].
   List<String> validateActionUpdate(
     String actionType,
     AdaptiveActionUpdate update,
@@ -234,14 +238,16 @@ class OverlayCapabilityRegistry {
     if (!_extensionAppliesTo(elementType)) {
       if (update.extensionPatches != null &&
           update.extensionPatches!.isNotEmpty) {
-        return [
-          'extensionPayload is not supported for element type $elementType (no overlay extension registered)',
-        ];
+        final message =
+            'extensionPayload is not supported for element type '
+            '$elementType (no overlay extension registered)';
+        return [message];
       }
       if (update.clearExtensions.isNotEmpty) {
-        return [
-          'clearExtensions is not supported for element type $elementType (no overlay extension registered)',
-        ];
+        final message =
+            'clearExtensions is not supported for element type '
+            '$elementType (no overlay extension registered)';
+        return [message];
       }
       return const [];
     }

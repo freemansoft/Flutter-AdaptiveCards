@@ -2,12 +2,14 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/default_actions.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/generic_action.dart';
 
-/// Finds the action processor for a given action type
-/// This is the way "Action" card type handelers are registered and discovered.
+/// Finds the action processor for a given action type This is the way "Action"
+/// card type handelers are registered and discovered.
 ///
-/// Applications can inject their own custom action registry when constructing [AdaptiveCardsCanvas]
+/// Applications can inject their own custom action registry when constructing
+/// [AdaptiveCardsCanvas]
 abstract class ActionTypeRegistry {
-  /// Creates a registry that maps action JSON `type` strings to [GenericAction]s.
+  /// Creates a registry that maps action JSON `type` strings to
+  /// [GenericAction]s.
   const ActionTypeRegistry();
 
   /// Gets a [GenericAction] for the provided action map.
@@ -17,9 +19,11 @@ abstract class ActionTypeRegistry {
   });
 }
 
-/// The default action registry if none is passed into [AdaptiveCardsCanvas] constructors
+/// The default action registry if none is passed into [AdaptiveCardsCanvas]
+/// constructors
 class DefaultActionTypeRegistry extends ActionTypeRegistry {
-  /// Built-in registry used when [AdaptiveCardsCanvas] does not override actions.
+  /// Built-in registry used when [AdaptiveCardsCanvas] does not override
+  /// actions.
   const DefaultActionTypeRegistry();
 
   /// Gets a [GenericAction] for the provided action map.

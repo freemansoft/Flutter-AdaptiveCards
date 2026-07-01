@@ -38,7 +38,7 @@ class InputsConfig {
 
   /// Compact `Input.ChoiceSet` dropdown settings (`inputs.choiceSet`).
   ///
-  /// **Non-standard:** `inputs.choiceSet` is a custom extension, not part of the
-  /// official Adaptive Cards HostConfig schema.
+  /// **Non-standard:** `inputs.choiceSet` is a custom extension, not part of
+  /// the official Adaptive Cards HostConfig schema.
   final ChoiceSetConfig choiceSet;
 }

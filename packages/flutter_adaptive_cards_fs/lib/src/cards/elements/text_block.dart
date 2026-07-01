@@ -222,7 +222,8 @@ class AdaptiveTextBlockState extends ConsumerState<AdaptiveTextBlock>
       fontSize: fontSize,
       color: color,
     );
-    // this doesn't actually work as is documented in flutter_markdown and flutter_markdown_plus
+    // this doesn't actually work as is documented in flutter_markdown and
+    // flutter_markdown_plus
     final TextStyle pStyle = (maxLines == 1)
         ? TextStyle(
             fontWeight: fontWeight,

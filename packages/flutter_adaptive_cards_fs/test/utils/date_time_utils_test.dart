@@ -5,7 +5,8 @@ void main() {
   group('DateTimeUtils', () {
     test('formatText replaces DATE macros', () {
       const input =
-          'Created on {{DATE(2017-02-14T06:08:39Z, SHORT)}} and {{DATE(2017-02-14T06:08:39Z)}}.';
+          'Created on {{DATE(2017-02-14T06:08:39Z, SHORT)}} '
+          'and {{DATE(2017-02-14T06:08:39Z)}}.';
       final output = DateTimeUtils.formatText(input);
 
       expect(output.contains('{{DATE'), isFalse);

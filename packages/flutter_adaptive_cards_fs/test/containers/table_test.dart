@@ -110,10 +110,9 @@ void main() {
       // expect(find.byType(Divider), findsNothing);
       expect(find.byType(VerticalDivider), findsNothing);
 
-      // Should find SizedBox (spacing) instead
-      // 1 row separator (between row 1 and row end? no, between rows), only 1 row here?
-      // Wait, 1 row means no row separators.
-      // But 1 column? 1 column means no column separators.
+      // Should find SizedBox (spacing) instead 1 row separator (between row 1
+      // and row end? no, between rows), only 1 row here? Wait, 1 row means no
+      // row separators. But 1 column? 1 column means no column separators.
       // Let's add more rows/columns to verify spacing.
     });
 
@@ -190,7 +189,8 @@ void main() {
 
       const tableKey = 'testTable_adaptive';
 
-      // Flutter Table holds rows directly — no spacer rows when showGridLines=false.
+      // Flutter Table holds rows directly — no spacer rows when
+      // showGridLines=false.
       final columnFinder = find.byKey(AdaptiveTable.tableColumnKey(tableKey));
       final table = tester.widget<Table>(columnFinder);
       expect(
@@ -369,7 +369,8 @@ void main() {
       expect(find.text('Header'), findsOneWidget);
       expect(find.text('Data'), findsOneWidget);
       // firstRowAsHeader bakes the columnHeader weight (bolder) into the header
-      // cell's TextBlock map; the body row's TextBlock keeps no explicit weight.
+      // cell's TextBlock map; the body row's TextBlock keeps no explicit
+      // weight.
       final headerBlock = tester.widget<AdaptiveTextBlock>(
         find.ancestor(
           of: find.text('Header'),
@@ -643,7 +644,8 @@ void main() {
       final stretchCell = tester.getSize(
         find.byKey(AdaptiveTable.cellKey(tableKey, 0, 1)),
       );
-      // The single-character "auto" column is far narrower than the stretch one.
+      // The single-character "auto" column is far narrower than the stretch
+      // one.
       expect(stretchCell.width, greaterThan(autoCell.width));
     });
 

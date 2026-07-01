@@ -4,38 +4,43 @@ import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 void main() {
-  testWidgets('AdaptiveIcon renders Calendar with Medium size and Accent color', (
+  testWidgets(
+    'AdaptiveIcon renders Calendar with Medium size and Accent color',
+    (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: {
+            'type': 'AdaptiveCard',
+            'version': '1.5',
+            'body': [
+              {
+                'type': 'Icon',
+                'id': 'calendarIcon',
+                'name': 'Calendar',
+                'size': 'Medium',
+                'color': 'Accent',
+                'style': 'Filled',
+              },
+            ],
+          },
+          title: 'Icon test',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Icon), findsOneWidget);
+
+      final icon = tester.widget<Icon>(find.byType(Icon));
+      expect(icon.icon, Icons.calendar_today);
+      expect(icon.size, 20);
+    },
+  );
+
+  testWidgets('AdaptiveIcon Regular style uses outlined variant', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      getTestWidgetFromMap(
-        map: {
-          'type': 'AdaptiveCard',
-          'version': '1.5',
-          'body': [
-            {
-              'type': 'Icon',
-              'id': 'calendarIcon',
-              'name': 'Calendar',
-              'size': 'Medium',
-              'color': 'Accent',
-              'style': 'Filled',
-            },
-          ],
-        },
-        title: 'Icon test',
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.byType(Icon), findsOneWidget);
-
-    final icon = tester.widget<Icon>(find.byType(Icon));
-    expect(icon.icon, Icons.calendar_today);
-    expect(icon.size, 20);
-  });
-
-  testWidgets('AdaptiveIcon Regular style uses outlined variant', (tester) async {
     await tester.pumpWidget(
       getTestWidgetFromMap(
         map: {

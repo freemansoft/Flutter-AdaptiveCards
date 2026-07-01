@@ -15,7 +15,9 @@ void main() {
     const ValueKey key = ValueKey('paint');
     final Widget sample = getSampleForGoldenTest(key, 'example1');
 
-    //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample), key: key,))));
+    // await tester.pumpWidget(SizedBox(width:100,height:100,child:
+    // Center(child: RepaintBoundary(child: SizedBox(width:500, height:
+    // 1200,child: sample), key: key,))));
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
@@ -46,7 +48,8 @@ void main() {
   }, tags: ['golden']);
 
   //
-  // This test is a little bogus because the frame looks the same after tapping the buttons
+  // This test is a little bogus because the frame looks the same after tapping
+  // the buttons
   //
   testWidgets('Golden Sample 2', (tester) async {
     configureTestView();
@@ -54,7 +57,9 @@ void main() {
     const ValueKey key = ValueKey('paint');
     final Widget sample = getSampleForGoldenTest(key, 'example2');
 
-    //await tester.pumpWidget(SizedBox(width:100,height:100,child: Center(child: RepaintBoundary(child: SizedBox(width:500, height: 1200,child: sample), key: key,))));
+    // await tester.pumpWidget(SizedBox(width:100,height:100,child:
+    // Center(child: RepaintBoundary(child: SizedBox(width:500, height:
+    // 1200,child: sample), key: key,))));
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 

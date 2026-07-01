@@ -63,7 +63,9 @@ void main() {
 
     state.setRevealPasswordEnabled('pwd', enabled: true);
     expect(
-      container.read(adaptiveCardDocumentProvider).overlaysById['pwd']
+      container
+          .read(adaptiveCardDocumentProvider)
+          .overlaysById['pwd']
           ?.revealPasswordEnabled,
       isTrue,
     );

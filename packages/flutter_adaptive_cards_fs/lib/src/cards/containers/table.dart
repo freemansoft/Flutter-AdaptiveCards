@@ -15,12 +15,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/Table.html
 /// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/table
 ///
-/// Reasonable test schema is https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json
+/// Reasonable test schema is
+/// https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json
 ///
 /// Renders a `Table` with `auto`/`stretch`/numeric/pixel column widths, grid
-/// lines, and optional header row styling from `firstRowAsHeader`. Column widths
-/// are resolved across all rows by a single Flutter [Table], so `auto` columns
-/// size to their widest content consistently.
+/// lines, and optional header row styling from `firstRowAsHeader`. Column
+/// widths are resolved across all rows by a single Flutter [Table], so `auto`
+/// columns size to their widest content consistently.
 class AdaptiveTable extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a `Table` from [adaptiveMap].
@@ -204,8 +205,8 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
   }
 
   /// Builds a single cell: background decoration (fills the row height via
-  /// `intrinsicHeight`), optional `minHeight`, content alignment, header styling,
-  /// `selectAction`, and gutter padding when grid lines are disabled.
+  /// `intrinsicHeight`), optional `minHeight`, content alignment, header
+  /// styling, `selectAction`, and gutter padding when grid lines are disabled.
   Widget _buildCell(
     TableCellModel cellModel,
     ReferenceResolver resolver, {

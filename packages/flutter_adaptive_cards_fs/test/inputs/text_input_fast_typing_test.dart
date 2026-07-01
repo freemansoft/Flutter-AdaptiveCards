@@ -1,14 +1,17 @@
+// This file keeps its execution-trace comments and long test names verbatim:
+// wrapping the FIFO-ordering diagrams to 80 columns would obscure them.
+// ignore_for_file: lines_longer_than_80_chars
+//
 // Regression test for the stale-echo bug in listenForResolvedValueChanges.
 //
-// FIX STRATEGY (post-frame FIFO ordering):
-//   Register an "IME advance" post-frame callback FIRST, then trigger a
-//   resolved-value change so the stale-echo callback is queued AFTER it.
-//   Flutter guarantees FIFO post-frame ordering, so:
+// FIX STRATEGY (post-frame FIFO ordering): Register an "IME advance" post-frame
+// callback FIRST, then trigger a resolved-value change so the stale-echo
+// callback is queued AFTER it. Flutter guarantees FIFO post-frame ordering, so:
 //     [1] advance callback runs: controller → 'ab'/offset:1; doc → 'ab'
 //     [2] stale-echo callback runs:
 //         BUG: captured stale value clobbers controller and resets selection
 //         FIX: reads latest resolved value ('ab') → controller already 'ab' → no-op
-//   This test FAILS before the fix and PASSES after.
+// This test FAILS before the fix and PASSES after.
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/number.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/inputs/text.dart';
@@ -22,13 +25,13 @@ import '../utils/test_utils.dart';
 
 void main() {
   // ---------------------------------------------------------------------------
-  // The key discriminating test.  This MUST FAIL before the fix and PASS after.
+  // The key discriminating test. This MUST FAIL before the fix and PASS after.
   //
-  // Setup: Establish doc='a', then register an "IME advance" post-frame callback
-  // that moves controller and doc to 'ab'/offset:1.  Then call setInputValue('')
-  // to force ref.listen to fire — queuing the stale-echo callback AFTER the advance.
-  //   [1] advance callback: controller → 'ab'/offset:1; doc notifier → 'ab'
-  //   [2] stale-echo callback:
+  // Setup: Establish doc='a', then register an "IME advance" post-frame
+  // callback that moves controller and doc to 'ab'/offset:1. Then call
+  // setInputValue('') to force ref.listen to fire — queuing the stale-echo
+  // callback AFTER the advance. [1] advance callback: controller →
+  // 'ab'/offset:1; doc notifier → 'ab' [2] stale-echo callback:
   //       BUG (captured ''): controller 'ab' ≠ '' → clobbers text + resets cursor
   //       FIX (reads latest 'ab'): controller 'ab' == 'ab' → no-op, selection kept
   // ---------------------------------------------------------------------------
@@ -55,8 +58,9 @@ void main() {
 
       final textMap = map['body'][0] as Map<String, dynamic>;
       final inputFinder = find.byKey(generateWidgetKey(textMap));
-      final inputState =
-          tester.state<AdaptiveTextInputState>(find.byType(AdaptiveTextInput));
+      final inputState = tester.state<AdaptiveTextInputState>(
+        find.byType(AdaptiveTextInput),
+      );
       final controller = inputState.controller;
       final container = ProviderScope.containerOf(tester.element(inputFinder));
 
@@ -67,10 +71,10 @@ void main() {
       await tester.pump();
       expect(controller.text, 'a');
 
-      // Step 2: Register the "IME advances" post-frame callback.
-      // This simulates the user typing the next character BEFORE the post-frame
-      // callbacks drain: controller advances to 'ab' at offset:1 AND the doc
-      // is also advanced to 'ab' (as the IME would cause via controller listener).
+      // Step 2: Register the "IME advances" post-frame callback. This simulates
+      // the user typing the next character BEFORE the post-frame callbacks
+      // drain: controller advances to 'ab' at offset:1 AND the doc is also
+      // advanced to 'ab' (as the IME would cause via controller listener).
       //
       // IMPORTANT: We register this BEFORE setInputValue below so it fires
       // BEFORE the stale-echo post-frame callback (FIFO ordering).
@@ -90,12 +94,12 @@ void main() {
       // will later be advanced to 'ab' by the step 2 callback.
       notifier.setInputValue('t', '');
 
-      // Step 4: pump() — the frame runs:
-      //   a. Riverpod flush: resolvedElementProvider 'a' → '' (doc is now '')
+      // Step 4: pump() — the frame runs: a. Riverpod flush:
+      // resolvedElementProvider 'a' → '' (doc is now '')
       //      ref.listen fires: previous?['value']='a', next?['value']='' → differ
       //      OLD: addPostFrameCallback(onDocumentValueChanged(capturedValue=''))
       //      NEW: addPostFrameCallback(onDocumentValueChanged(readResolvedInput().valueRaw))
-      //   b. Post-frame callbacks fire in FIFO order:
+      // b. Post-frame callbacks fire in FIFO order:
       //      [1] "IME advances" callback: controller → 'ab'/offset:1; doc → 'ab'
       //      [2] stale-echo callback:
       //          OLD: onDocumentValueChanged('') → controller='ab' ≠ '' → SETS ''
@@ -122,7 +126,8 @@ void main() {
   );
 
   // ---------------------------------------------------------------------------
-  // Regression guard 1: External programmatic doc change must still sync controller.
+  // Regression guard 1: External programmatic doc change must still sync
+  // controller.
   // ---------------------------------------------------------------------------
   testWidgets(
     'fast-typing: external programmatic value change still syncs controller',
@@ -146,8 +151,9 @@ void main() {
 
       final textMap = map['body'][0] as Map<String, dynamic>;
       final inputFinder = find.byKey(generateWidgetKey(textMap));
-      final inputState =
-          tester.state<AdaptiveTextInputState>(find.byType(AdaptiveTextInput));
+      final inputState = tester.state<AdaptiveTextInputState>(
+        find.byType(AdaptiveTextInput),
+      );
       final controller = inputState.controller;
       final container = ProviderScope.containerOf(tester.element(inputFinder));
 
@@ -196,8 +202,9 @@ void main() {
 
       final textMap = map['body'][0] as Map<String, dynamic>;
       final inputFinder = find.byKey(generateWidgetKey(textMap));
-      final inputState =
-          tester.state<AdaptiveTextInputState>(find.byType(AdaptiveTextInput));
+      final inputState = tester.state<AdaptiveTextInputState>(
+        find.byType(AdaptiveTextInput),
+      );
       final controller = inputState.controller;
       final container = ProviderScope.containerOf(tester.element(inputFinder));
       final notifier = container.read(adaptiveCardDocumentProvider.notifier);
@@ -237,10 +244,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final cardState =
-          tester.state<RawAdaptiveCardState>(find.byType(RawAdaptiveCard));
-      final inputState =
-          tester.state<AdaptiveTextInputState>(find.byType(AdaptiveTextInput));
+      final cardState = tester.state<RawAdaptiveCardState>(
+        find.byType(RawAdaptiveCard),
+      );
+      final inputState = tester.state<AdaptiveTextInputState>(
+        find.byType(AdaptiveTextInput),
+      );
       final controller = inputState.controller;
 
       cardState.documentContainer!
@@ -281,8 +290,9 @@ void main() {
 
       final numMap = map['body'][0] as Map<String, dynamic>;
       final inputFinder = find.byKey(generateWidgetKey(numMap));
-      final inputState = tester
-          .state<AdaptiveNumberInputState>(find.byType(AdaptiveNumberInput));
+      final inputState = tester.state<AdaptiveNumberInputState>(
+        find.byType(AdaptiveNumberInput),
+      );
       final controller = inputState.controller;
       final container = ProviderScope.containerOf(tester.element(inputFinder));
 

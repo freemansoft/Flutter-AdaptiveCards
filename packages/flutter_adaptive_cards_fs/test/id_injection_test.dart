@@ -4,7 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('injectIds tests', () {
     test(
-      'should inject IDs into elements with type but no id (excluding root AdaptiveCard)',
+      'should inject IDs into elements with type but no id '
+      '(excluding root AdaptiveCard)',
       () {
         final map = <String, dynamic>{
           'type': 'AdaptiveCard',
@@ -59,7 +60,8 @@ void main() {
     });
 
     test(
-      'should generate different IDs for distinct map instances with same content',
+      'should generate different IDs for distinct map instances with '
+      'same content',
       () {
         final map = <String, dynamic>{
           'type': 'AdaptiveCard',

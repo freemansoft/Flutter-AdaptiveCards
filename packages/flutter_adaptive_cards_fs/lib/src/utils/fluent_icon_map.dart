@@ -24,7 +24,8 @@ String normalizeFluentIconName(String name) =>
 
 /// Built-in Fluent name → Material icon lookup (~50 common names).
 ///
-/// Unknown names return `null`; callers should fall back to [Icons.help_outline].
+/// Unknown names return `null`; callers should fall back to
+/// [Icons.help_outline].
 const Map<String, FluentIconEntry> kFluentIconMap = {
   'accesstime': FluentIconEntry(
     filled: Icons.access_time,

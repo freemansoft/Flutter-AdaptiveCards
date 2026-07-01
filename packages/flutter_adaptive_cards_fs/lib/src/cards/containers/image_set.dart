@@ -76,10 +76,8 @@ class AdaptiveImageSetState extends ConsumerState<AdaptiveImageSet>
 
   @override
   Widget build(BuildContext context) {
-    // developer.log(
-    //   'Building ImageSet $id with ${images.length} images maybeSize: $maybeSize',
-    //   name: runtimeType.toString(),
-    // );
+    // developer.log( 'Building ImageSet $id with ${images.length} images
+    // maybeSize: $maybeSize', name: runtimeType.toString(), );
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(

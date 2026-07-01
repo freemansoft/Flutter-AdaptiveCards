@@ -27,7 +27,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Prefer [AdaptiveCardsCanvas] for loading and host wiring.
 class RawAdaptiveCard extends StatefulWidget {
-  /// Renders [map] with [hostConfigs] and optional registries; ids are injected at runtime.
+  /// Renders [map] with [hostConfigs] and optional registries; ids are injected
+  /// at runtime.
   const RawAdaptiveCard.fromMap({
     super.key,
     required this.map,
@@ -68,7 +69,8 @@ class RawAdaptiveCard extends StatefulWidget {
   /// When true, the root card body scrolls as a list.
   final bool listView;
 
-  /// Selects light vs dark [HostConfigs] when not [AdaptiveCardBrightnessMode.auto].
+  /// Selects light vs dark [HostConfigs] when not
+  /// [AdaptiveCardBrightnessMode.auto].
   final AdaptiveCardBrightnessMode brightnessMode;
 
   /// Current user id for root `refresh.userIds` auto-refresh gating.
@@ -88,7 +90,8 @@ class RawAdaptiveCard extends StatefulWidget {
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
 }
 
-/// Host-facing card state: runtime overlays, validation, and imperative updates without mutating baseline JSON.
+/// Host-facing card state: runtime overlays, validation, and imperative updates
+/// without mutating baseline JSON.
 class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   ///.  Wrapper around the host config
   late ReferenceResolver _resolver;
@@ -114,7 +117,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   @override
   void initState() {
     super.initState();
-    // Resolver initialization moved to didChangeDependencies to access context Theme
+    // Resolver initialization moved to didChangeDependencies to access context
+    // Theme
 
     _baselineMap = _deepCopyBaseline(widget.map);
     _adaptiveElement = widget.cardTypeRegistry.getElement(
@@ -167,8 +171,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     );
   }
 
-  /// Forces a card subtree rebuild when host logic changes state outside overlay
-  /// notifiers.
+  /// Forces a card subtree rebuild when host logic changes state outside
+  /// overlay notifiers.
   void rebuild() {
     setState(() {});
   }
@@ -176,7 +180,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   /// Seeds input overlays from [map] (e.g. `RawAdaptiveCard.initData`).
   ///
   /// Flat maps `{id: value}` seed input values only. Maps whose values are
-  /// patch objects `{id: {choices: …, value: …}}` delegate to [applyUpdatesFromMap].
+  /// patch objects `{id: {choices: …, value: …}}` delegate to
+  /// [applyUpdatesFromMap].
   void initInput(Map map) {
     final container = documentContainer;
     if (container == null) return;
@@ -205,7 +210,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
         );
   }
 
-  /// Parses [byId] patch maps (Adaptive Card property names) into overlay updates.
+  /// Parses [byId] patch maps (Adaptive Card property names) into overlay
+  /// updates.
   void applyUpdatesFromMap(Map<String, Object?> byId) {
     final container = documentContainer;
     if (container == null) return;
@@ -268,7 +274,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     container.read(adaptiveCardDocumentProvider.notifier).clearText(id);
   }
 
-  /// Overrides the host `inputs.text.revealPasswordEnabled` default for input [id].
+  /// Overrides the host `inputs.text.revealPasswordEnabled` default for input
+  /// [id].
   void setRevealPasswordEnabled(String id, {required bool enabled}) {
     final container = documentContainer;
     if (container == null) return;
@@ -383,7 +390,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  /// Presents a modal [ChoiceFilter] sheet and returns the selection via [callback].
+  /// Presents a modal [ChoiceFilter] sheet and returns the selection via
+  /// [callback].
   Future<void> searchList(
     List<Choice>? data,
     void Function(Choice? value) callback, {
@@ -502,7 +510,8 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     TimeOfDay? maximumTime,
   ) async {
     final TimeOfDay initialTimeOfDay = defaultTime ?? TimeOfDay.now();
-    // the picker requires a DateTime but won't be carried forward in the results
+    // the picker requires a DateTime but won't be carried forward in the
+    // results
     final DateTime initialDateTime = DateTime(
       1,
       1,
@@ -526,7 +535,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     );
     assert(() {
       developer.log(
-        'CupertinoPicker: initialtimeOfDay:$initialTimeOfDay initialDateTime:$initialDateTime minDateTime:$minDateTime maxDateTime:$maxDateTime',
+        'CupertinoPicker: initialtimeOfDay:$initialTimeOfDay '
+        'initialDateTime:$initialDateTime minDateTime:$minDateTime '
+        'maxDateTime:$maxDateTime',
         name: runtimeType.toString(),
       );
 

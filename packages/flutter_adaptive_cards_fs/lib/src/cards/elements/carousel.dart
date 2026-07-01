@@ -121,8 +121,9 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
   Widget build(BuildContext context) {
     if (pages.isEmpty) return const SizedBox.shrink();
 
-    // The implementation needs to render the pages AND the controls.
-    // The previous implementation used a SeparatorElement. We should probably keep that.
+    // The implementation needs to render the pages AND the controls. The
+    // previous implementation used a SeparatorElement. We should probably keep
+    // that.
 
     return Visibility(
       visible: isVisible,
@@ -142,9 +143,10 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
                 itemCount: pages.length,
                 itemBuilder: (context, index) {
                   final pageContent = pages[index];
-                  // We expect pageContent to likely be type: CarouselPage
-                  // But it could be any element if the JSON is weak.
-                  // If it is CarouselPage, the Registry will pick it up (if we register it).
+                  // We expect pageContent to likely be type: CarouselPage But
+                  // it could be any element if the JSON is weak. If it is
+                  // CarouselPage, the Registry will pick it up (if we register
+                  // it).
 
                   return cardTypeRegistry.getElement(
                     map: pageContent,
@@ -162,8 +164,9 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
   }
 
   Widget _buildControls(ReferenceResolver resolver) {
-    // "The control has a smal circular button for each each CarouselPage...
-    // The current page will be bar the same width as 3 of the non selected page dots."
+    // "The control has a smal circular button for each each CarouselPage... The
+    // current page will be bar the same width as 3 of the non selected page
+    // dots."
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(pages.length, (index) {

@@ -12,8 +12,9 @@ void main() {
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 
-    // We don't have goldens yet, this first run might just pass or fail saying missing golden.
-    // We rely on the fact that we can generate them or just verify it renders without error.
+    // We don't have goldens yet, this first run might just pass or fail saying
+    // missing golden. We rely on the fact that we can generate them or just
+    // verify it renders without error.
     await expectLater(
       find.byKey(key),
       matchesGoldenFile(getGoldenPath('v1_6_badge.png')),

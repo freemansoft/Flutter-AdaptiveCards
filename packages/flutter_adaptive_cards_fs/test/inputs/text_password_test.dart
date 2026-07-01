@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import '../utils/test_utils.dart';
 
 Map<String, dynamic> _cardWith(Map<String, dynamic> input) => {
-      'type': 'AdaptiveCard',
-      'body': [input],
-    };
+  'type': 'AdaptiveCard',
+  'body': [input],
+};
 
 void main() {
   testWidgets('password style obscures the text field', (tester) async {
@@ -44,8 +44,9 @@ void main() {
     expect(editable.obscureText, isFalse);
   });
 
-  testWidgets('password style disables suggestions and autocorrect',
-      (tester) async {
+  testWidgets('password style disables suggestions and autocorrect', (
+    tester,
+  ) async {
     final widget = getTestWidgetFromMap(
       map: _cardWith({
         'type': 'Input.Text',
@@ -63,8 +64,9 @@ void main() {
     expect(editable.autocorrect, isFalse);
   });
 
-  testWidgets('multiline password field collapses to single line',
-      (tester) async {
+  testWidgets('multiline password field collapses to single line', (
+    tester,
+  ) async {
     final widget = getTestWidgetFromMap(
       map: _cardWith({
         'type': 'Input.Text',
@@ -82,8 +84,9 @@ void main() {
     expect(editable.maxLines, 1);
   });
 
-  testWidgets('eye-icon shows by default and toggles obscure state',
-      (tester) async {
+  testWidgets('eye-icon shows by default and toggles obscure state', (
+    tester,
+  ) async {
     final widget = getTestWidgetFromMap(
       map: _cardWith({
         'type': 'Input.Text',
@@ -98,15 +101,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.visibility), findsOneWidget);
-    expect(tester.widget<EditableText>(find.byType(EditableText)).obscureText,
-        isTrue);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).obscureText,
+      isTrue,
+    );
 
     await tester.tap(find.byIcon(Icons.visibility));
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.visibility_off), findsOneWidget);
-    expect(tester.widget<EditableText>(find.byType(EditableText)).obscureText,
-        isFalse);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).obscureText,
+      isFalse,
+    );
   });
 
   testWidgets('eye-icon hidden when HostConfig disables it', (tester) async {
@@ -139,7 +146,9 @@ void main() {
 
     expect(find.byIcon(Icons.visibility), findsNothing);
     expect(find.byIcon(Icons.visibility_off), findsNothing);
-    expect(tester.widget<EditableText>(find.byType(EditableText)).obscureText,
-        isTrue);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).obscureText,
+      isTrue,
+    );
   });
 }

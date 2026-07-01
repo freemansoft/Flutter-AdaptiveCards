@@ -7,7 +7,10 @@ void main() {
   testWidgets('Golden RichTextBlock', (tester) async {
     configureTestView();
     const ValueKey key = ValueKey('paint');
-    final Widget sample = getSampleForGoldenTest(key, 'v1.2/rich_text_block_demo');
+    final Widget sample = getSampleForGoldenTest(
+      key,
+      'v1.2/rich_text_block_demo',
+    );
     await tester.pumpWidget(sample);
     await tester.pumpAndSettle();
 

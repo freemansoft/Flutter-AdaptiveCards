@@ -59,13 +59,15 @@ class AdaptiveAccordionState extends ConsumerState<AdaptiveAccordion>
             // We extract title and content from it.
             final String title = itemMap['title']?.toString() ?? 'Untitled';
 
-            // The content of the page is likely in 'items' or 'body' of the AccordionPage
-            // OR the AccordionPage itself is to be rendered?
-            // If we use Registry to render AccordionPage, we need AccordionPage to be a Column-like container.
-            // But ExpansionTile expects a widget for body.
+            // The content of the page is likely in 'items' or 'body' of the
+            // AccordionPage OR the AccordionPage itself is to be rendered? If
+            // we use Registry to render AccordionPage, we need AccordionPage to
+            // be a Column-like container. But ExpansionTile expects a widget
+            // for body.
 
-            // Approach: If the Registry can render AccordionPage as a widget (Column), we put it in children.
-            // But AccordionPage might just be a data holder for Accordion.
+            // Approach: If the Registry can render AccordionPage as a widget
+            // (Column), we put it in children. But AccordionPage might just be
+            // a data holder for Accordion.
 
             // Let's assume AccordionPage has 'items' (list of elements).
             final List<Widget> children = [];

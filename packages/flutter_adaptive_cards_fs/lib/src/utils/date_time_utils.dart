@@ -7,7 +7,8 @@ class DateTimeUtils {
   static final RegExp _dateRegex = RegExp(r'\{\{DATE\((.*?)\)\}\}');
   static final RegExp _timeRegex = RegExp(r'\{\{TIME\((.*?)\)\}\}');
 
-  /// Parses an Adaptive Cards text string and replaces {{DATE}} and {{TIME}} macros.
+  /// Parses an Adaptive Cards text string and replaces {{DATE}} and {{TIME}}
+  /// macros.
   static String formatText(String input) {
     var result = input;
 

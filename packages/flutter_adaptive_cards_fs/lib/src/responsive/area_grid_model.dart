@@ -10,7 +10,8 @@ class AreaGridTrack {
   /// Whether [value] is a percentage of available width (vs. fixed pixels).
   final bool isPercent;
 
-  /// Parses one `columns` entry: a number → percent; a `"<n>px"` string → pixels.
+  /// Parses one `columns` entry: a number → percent; a `"<n>px"` string →
+  /// pixels.
   ///
   /// Returns `null` for unparseable entries; the solver treats the shortfall as
   /// implied equal-share columns.
@@ -110,7 +111,8 @@ class AreaGridLayout {
   /// Named areas elements are placed into via `grid.area`.
   final List<GridAreaModel> areas;
 
-  /// Spacing token between columns (HostConfig spacing name; resolved by widget).
+  /// Spacing token between columns (HostConfig spacing name; resolved by
+  /// widget).
   final String? columnSpacing;
 
   /// Spacing token between rows (HostConfig spacing name; resolved by widget).

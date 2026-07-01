@@ -8,10 +8,12 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 /// The root default beahvior for onTaps in each of the Action types
 /// Each action type has its own implementation
 abstract class GenericAction {
-  /// Base type for injectable action tap handlers resolved by `ActionTypeRegistry`.
+  /// Base type for injectable action tap handlers resolved by
+  /// `ActionTypeRegistry`.
   const GenericAction();
 
-  /// Returns the action label from [adaptiveMap], typically the `title` property.
+  /// Returns the action label from [adaptiveMap], typically the `title`
+  /// property.
   String? title(Map<String, dynamic> adaptiveMap) =>
       adaptiveMap['title'] as String?;
 

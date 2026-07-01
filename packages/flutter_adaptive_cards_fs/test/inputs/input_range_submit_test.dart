@@ -9,37 +9,37 @@ import '../utils/test_utils.dart';
 /// The value is seeded in JSON so it bypasses the UI formatter and is present
 /// in the document state when Submit fires.
 Map<String, dynamic> _numberCardOutOfRange() => <String, dynamic>{
-      'type': 'AdaptiveCard',
-      'version': '1.5',
-      'body': <Map<String, dynamic>>[
-        {
-          'type': 'Input.Number',
-          'id': 'qty',
-          'min': 1,
-          'max': 5,
-          'value': 99,
-        },
-      ],
-      'actions': <Map<String, dynamic>>[
-        {'type': 'Action.Submit', 'title': 'OK'},
-      ],
-    };
+  'type': 'AdaptiveCard',
+  'version': '1.5',
+  'body': <Map<String, dynamic>>[
+    {
+      'type': 'Input.Number',
+      'id': 'qty',
+      'min': 1,
+      'max': 5,
+      'value': 99,
+    },
+  ],
+  'actions': <Map<String, dynamic>>[
+    {'type': 'Action.Submit', 'title': 'OK'},
+  ],
+};
 
 Map<String, dynamic> _numberCardInRange() => <String, dynamic>{
-      'type': 'AdaptiveCard',
-      'version': '1.5',
-      'body': <Map<String, dynamic>>[
-        {
-          'type': 'Input.Number',
-          'id': 'qty',
-          'min': 1,
-          'max': 5,
-        },
-      ],
-      'actions': <Map<String, dynamic>>[
-        {'type': 'Action.Submit', 'title': 'OK'},
-      ],
-    };
+  'type': 'AdaptiveCard',
+  'version': '1.5',
+  'body': <Map<String, dynamic>>[
+    {
+      'type': 'Input.Number',
+      'id': 'qty',
+      'min': 1,
+      'max': 5,
+    },
+  ],
+  'actions': <Map<String, dynamic>>[
+    {'type': 'Action.Submit', 'title': 'OK'},
+  ],
+};
 
 void main() {
   testWidgets('out-of-range number blocks Submit and marks input invalid', (
@@ -67,7 +67,10 @@ void main() {
     final container = ProviderScope.containerOf(
       tester.element(find.byKey(generateWidgetKeyFromId('qty')).first),
     );
-    expect(container.read(resolvedElementProvider('qty'))?['isInvalid'], isTrue);
+    expect(
+      container.read(resolvedElementProvider('qty'))?['isInvalid'],
+      isTrue,
+    );
   });
 
   testWidgets('in-range number allows Submit', (WidgetTester tester) async {

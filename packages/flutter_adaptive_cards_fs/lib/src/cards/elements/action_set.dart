@@ -9,7 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/ActionSet.html
 /// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/action-set
 ///
-/// This class is described as a _Container_ in the docs but is located in elements for some reason
+/// This class is described as a _Container_ in the docs but is located in
+/// elements for some reason
 ///
 class ActionSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an action set from [adaptiveMap] JSON.
@@ -136,8 +137,9 @@ class ActionSetState extends ConsumerState<ActionSet>
         return WrapAlignment.end;
       case 'stretch':
       default:
-        // Wrap doesn't have a direct "stretch" that behaves like Flex's crossAxisAlignment.stretch
-        // but for actions it usually means spread or start depending on orientation.
+        // Wrap doesn't have a direct "stretch" that behaves like Flex's
+        // crossAxisAlignment.stretch but for actions it usually means spread or
+        // start depending on orientation.
         return WrapAlignment.start;
     }
   }

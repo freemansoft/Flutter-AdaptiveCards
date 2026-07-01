@@ -16,15 +16,27 @@ void main() {
     });
 
     test('atLeast matches that bucket and wider', () {
-      expect(targetWidthMatches('atLeast:standard', WidthBucket.standard), isTrue);
+      expect(
+        targetWidthMatches('atLeast:standard', WidthBucket.standard),
+        isTrue,
+      );
       expect(targetWidthMatches('atLeast:standard', WidthBucket.wide), isTrue);
-      expect(targetWidthMatches('atLeast:standard', WidthBucket.narrow), isFalse);
+      expect(
+        targetWidthMatches('atLeast:standard', WidthBucket.narrow),
+        isFalse,
+      );
     });
 
     test('atMost matches that bucket and narrower', () {
       expect(targetWidthMatches('atMost:narrow', WidthBucket.narrow), isTrue);
-      expect(targetWidthMatches('atMost:narrow', WidthBucket.veryNarrow), isTrue);
-      expect(targetWidthMatches('atMost:narrow', WidthBucket.standard), isFalse);
+      expect(
+        targetWidthMatches('atMost:narrow', WidthBucket.veryNarrow),
+        isTrue,
+      );
+      expect(
+        targetWidthMatches('atMost:narrow', WidthBucket.standard),
+        isFalse,
+      );
     });
 
     test('malformed targetWidth fails open (matches)', () {

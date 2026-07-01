@@ -36,98 +36,98 @@ Future<void> _pumpCardAtWidth(
 }
 
 Map<String, dynamic> _tableFlowCard() => {
-      'type': 'AdaptiveCard',
-      'version': '1.6',
-      'body': [
+  'type': 'AdaptiveCard',
+  'version': '1.6',
+  'body': [
+    {
+      'type': 'Table',
+      'columns': [
+        {'width': 1},
+      ],
+      'rows': [
         {
-          'type': 'Table',
-          'columns': [
-            {'width': 1},
-          ],
-          'rows': [
+          'type': 'TableRow',
+          'cells': [
             {
-              'type': 'TableRow',
-              'cells': [
+              'type': 'TableCell',
+              'layouts': [
                 {
-                  'type': 'TableCell',
-                  'layouts': [
-                    {
-                      'type': 'Layout.Flow',
-                      'targetWidth': 'atLeast:standard',
-                    },
-                  ],
-                  'items': [
-                    {'type': 'TextBlock', 'text': 'CellOne'},
-                    {'type': 'TextBlock', 'text': 'CellTwo'},
-                  ],
+                  'type': 'Layout.Flow',
+                  'targetWidth': 'atLeast:standard',
                 },
+              ],
+              'items': [
+                {'type': 'TextBlock', 'text': 'CellOne'},
+                {'type': 'TextBlock', 'text': 'CellTwo'},
               ],
             },
           ],
         },
       ],
-    };
+    },
+  ],
+};
 
-// A ColumnSet is a genuinely height-bounded context (columns share an equal
-// row band via IntrinsicHeight), so a `height: "stretch"` child there fills the
-// band. (A standalone `minHeight` Container under the unbounded card-root Column
-// is NOT bounded — its child degrades to auto, per the design.)
+// A ColumnSet is a genuinely height-bounded context (columns share an equal row
+// band via IntrinsicHeight), so a `height: "stretch"` child there fills the
+// band. (A standalone `minHeight` Container under the unbounded card-root
+// Column is NOT bounded — its child degrades to auto, per the design.)
 Map<String, dynamic> _stretchColumnSetCard() => {
-      'type': 'AdaptiveCard',
-      'version': '1.6',
-      'body': [
+  'type': 'AdaptiveCard',
+  'version': '1.6',
+  'body': [
+    {
+      'type': 'ColumnSet',
+      'columns': [
         {
-          'type': 'ColumnSet',
-          'columns': [
+          'type': 'Column',
+          'width': 'stretch',
+          'items': [
             {
-              'type': 'Column',
-              'width': 'stretch',
-              'items': [
-                {
-                  'type': 'Container',
-                  'minHeight': '300px',
-                  'items': <Map<String, dynamic>>[],
-                },
-              ],
+              'type': 'Container',
+              'minHeight': '300px',
+              'items': <Map<String, dynamic>>[],
             },
+          ],
+        },
+        {
+          'type': 'Column',
+          'width': 'stretch',
+          'items': [
+            {'type': 'TextBlock', 'text': 'top'},
             {
-              'type': 'Column',
-              'width': 'stretch',
+              'type': 'Container',
+              'height': 'stretch',
               'items': [
-                {'type': 'TextBlock', 'text': 'top'},
-                {
-                  'type': 'Container',
-                  'height': 'stretch',
-                  'items': [
-                    {'type': 'TextBlock', 'text': 'filler'},
-                  ],
-                },
+                {'type': 'TextBlock', 'text': 'filler'},
               ],
             },
           ],
         },
       ],
-    };
+    },
+  ],
+};
 
 Map<String, dynamic> _areaGridCard() => {
-      'type': 'AdaptiveCard',
-      'version': '1.6',
-      'layouts': [
-        {
-          'type': 'Layout.AreaGrid',
-          'targetWidth': 'atLeast:standard',
-          'columns': [50, 50],
-          'areas': [
-            {'name': 'l', 'column': 1},
-            {'name': 'r', 'column': 2},
-          ],
-        },
+  'type': 'AdaptiveCard',
+  'version': '1.6',
+  'layouts': [
+    {
+      'type': 'Layout.AreaGrid',
+      'targetWidth': 'atLeast:standard',
+      'columns': [50, 50],
+      'areas': [
+        {'name': 'l', 'column': 1},
+        {'name': 'r', 'column': 2},
       ],
-      'body': [
-        {'type': 'TextBlock', 'text': 'L', 'grid.area': 'l'},
-        {'type': 'TextBlock', 'text': 'R', 'grid.area': 'r'},
-      ],
-    };
+    },
+  ],
+  'body': [
+    {'type': 'TextBlock', 'text': 'L', 'grid.area': 'l'},
+    {'type': 'TextBlock', 'text': 'R', 'grid.area': 'r'},
+  ],
+};
 
 void main() {
   final targetWidthCard = _loadCard('responsive/target_width.json');
@@ -161,8 +161,9 @@ void main() {
     expect(find.text('Beta'), findsOneWidget);
   });
 
-  testWidgets('Flow items sit side-by-side when wide (not full-width stack)',
-      (tester) async {
+  testWidgets('Flow items sit side-by-side when wide (not full-width stack)', (
+    tester,
+  ) async {
     await _pumpCardAtWidth(tester, flowCard, 1000);
     // Same row (equal dy), different columns (different dx): items size to
     // content and flow, rather than each expanding to the full row width.
@@ -228,8 +229,9 @@ void main() {
     expect(find.text('R'), findsOneWidget);
   });
 
-  testWidgets('height:stretch inside a ColumnSet renders without throwing',
-      (tester) async {
+  testWidgets('height:stretch inside a ColumnSet renders without throwing', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(600, 800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(

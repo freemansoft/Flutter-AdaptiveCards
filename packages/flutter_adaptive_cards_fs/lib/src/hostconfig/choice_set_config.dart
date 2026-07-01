@@ -7,8 +7,8 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 /// element JSON. Defaults reproduce the dropdown's prior hardcoded behavior, so
 /// omitting the section is a no-op.
 ///
-/// **Non-standard:** this is a custom extension to HostConfig and is not part of
-/// the official Adaptive Cards HostConfig schema.
+/// **Non-standard:** this is a custom extension to HostConfig and is not part
+/// of the official Adaptive Cards HostConfig schema.
 class ChoiceSetConfig {
   /// Creates compact `Input.ChoiceSet` dropdown settings from explicit values.
   ChoiceSetConfig({required this.enableSearch, this.requestFocusOnTap});

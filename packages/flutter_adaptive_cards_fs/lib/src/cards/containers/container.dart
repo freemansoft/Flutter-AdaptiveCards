@@ -113,8 +113,9 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
           childMaps: childMaps,
           children: items,
           mainAxisAlignment: verticalContentAlignment,
-          // Preserve the prior Column default (center) so non-stretch containers
-          // render identically; only height:stretch behavior is added here.
+          // Preserve the prior Column default (center) so non-stretch
+          // containers render identically; only height:stretch behavior is
+          // added here.
           crossAxisAlignment: CrossAxisAlignment.center,
         ),
       );

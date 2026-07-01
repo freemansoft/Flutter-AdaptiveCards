@@ -9,9 +9,9 @@ import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart'
 /// (`Action.OpenUrl`, markdown links, media, images) can validate
 /// card-controlled URLs without threading policy objects through every
 /// constructor. Host apps may wrap a card with their own instance to override
-/// the defaults. The `*Of` accessors fall back to the [AdaptiveUriPolicy.standard]
-/// / [AdaptiveFetchPolicy.standard] defaults when no ancestor is present, so
-/// validation is never silently skipped.
+/// the defaults. The `*Of` accessors fall back to the
+/// [AdaptiveUriPolicy.standard] / [AdaptiveFetchPolicy.standard] defaults when
+/// no ancestor is present, so validation is never silently skipped.
 class InheritedAdaptiveCardSecurityPolicy extends InheritedWidget {
   /// Creates the inherited policy holder wrapping [child].
   const InheritedAdaptiveCardSecurityPolicy({

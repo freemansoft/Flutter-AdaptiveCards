@@ -14,7 +14,8 @@ import 'package:flutter_adaptive_cards_fs/src/utils/block_height.dart';
 
 /// Placement + stretch flag for one placed grid child (1-based indices).
 class AreaGridPlacement {
-  /// Creates a placement spanning [columnSpan]×[rowSpan] from ([column], [row]).
+  /// Creates a placement spanning [columnSpan]×[rowSpan] from ([column],
+  /// [row]).
   const AreaGridPlacement({
     required this.column,
     required this.columnSpan,
@@ -41,8 +42,8 @@ class AreaGridPlacement {
 
 /// Renders a container's children as a `Layout.AreaGrid`.
 ///
-/// Children whose `grid.area` matches a named area are placed (and spanned) by a
-/// custom [RenderAdaptiveAreaGrid]; children with a missing or unknown
+/// Children whose `grid.area` matches a named area are placed (and spanned) by
+/// a custom [RenderAdaptiveAreaGrid]; children with a missing or unknown
 /// `grid.area` are not dropped — they render in a fallback [Column] below the
 /// grid (and are logged), mirroring the fail-open `targetWidth` philosophy.
 class AdaptiveAreaGrid extends StatelessWidget {

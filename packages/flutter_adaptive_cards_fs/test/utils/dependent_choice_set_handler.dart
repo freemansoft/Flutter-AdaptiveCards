@@ -3,7 +3,8 @@ import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
 
-/// Mock city lists keyed by country choice value (Teams dependent-input demo data).
+/// Mock city lists keyed by country choice value (Teams dependent-input demo
+/// data).
 const citiesByCountry = <String, List<Choice>>{
   'usa': [
     Choice(title: 'New York', value: 'nyc'),
@@ -19,7 +20,8 @@ const citiesByCountry = <String, List<Choice>>{
   ],
 };
 
-/// Resolves country codes from onChange values (all ChoiceSet styles pass `value`).
+/// Resolves country codes from onChange values (all ChoiceSet styles pass
+/// `value`).
 String? countryCodeFromOnChangeValue(Object? value) {
   final raw = value?.toString() ?? '';
   if (raw.isEmpty) return null;
@@ -36,9 +38,9 @@ String? countryCodeFromOnChangeValue(Object? value) {
 
 /// Host onChange handler for country → city dependent ChoiceSet samples.
 ///
-/// City choice updates are scheduled for the next frame so they run after embedded
-/// `valueChangedAction` reset on the country field (reset runs after the host
-/// `onChange` callback in the input notification path).
+/// City choice updates are scheduled for the next frame so they run after
+/// embedded `valueChangedAction` reset on the country field (reset runs after
+/// the host `onChange` callback in the input notification path).
 void handleDependentChoiceSetChange(InputChangeInvoke invoke) {
   if (invoke.inputId == 'country') {
     final countryCode = countryCodeFromOnChangeValue(invoke.value);
@@ -71,7 +73,8 @@ void handleDependentChoiceSetChange(InputChangeInvoke invoke) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (!invoke.cardState.mounted) return;
       // Preserve the just-selected city: applying `choices` without a `value`
-      // would clear the input (notifier resets the stale value), losing the pick.
+      // would clear the input (notifier resets the stale value), losing the
+      // pick.
       invoke.cardState.applyUpdates(
         elements: [
           AdaptiveElementUpdate(

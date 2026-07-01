@@ -8,11 +8,12 @@ import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Riverpod notifier for card document state (baseline JSON + runtime overlays).
+/// Riverpod notifier for card document state (baseline JSON + runtime
+/// overlays).
 ///
 /// Seeded from [baselineMapProvider] on build. Public methods write sparse
-/// [ElementOverlay] entries rather than mutating the host baseline map.
-/// Scoped to one `RawAdaptiveCard` via `adaptiveCardDocumentProvider`.
+/// [ElementOverlay] entries rather than mutating the host baseline map. Scoped
+/// to one `RawAdaptiveCard` via `adaptiveCardDocumentProvider`.
 class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
   @override
   AdaptiveCardDocument build() {
@@ -121,7 +122,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     );
   }
 
-  /// Clears inlines overlay for [id]; effective inlines revert to baseline JSON.
+  /// Clears inlines overlay for [id]; effective inlines revert to baseline
+  /// JSON.
   void clearInlines(String id) {
     _updateOverlay(
       id,
@@ -308,7 +310,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     );
   }
 
-  /// Overrides the host `inputs.text.revealPasswordEnabled` default for input [id].
+  /// Overrides the host `inputs.text.revealPasswordEnabled` default for input
+  /// [id].
   void setRevealPasswordEnabled(String id, {required bool enabled}) {
     _updateOverlay(
       id,
@@ -662,7 +665,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     );
   }
 
-  /// Appends [choices] to baseline static + existing overlay (deduped by value).
+  /// Appends [choices] to baseline static + existing overlay (deduped by
+  /// value).
   void appendChoices(String id, List<Choice> choices) {
     final byValue = <String, Choice>{};
     for (final choice in _effectiveChoices(id)) {
@@ -779,7 +783,8 @@ class AdaptiveCardDocumentNotifier extends Notifier<AdaptiveCardDocument> {
     return result;
   }
 
-  /// Keeps visibility and typeahead session fields; strips factory-reset fields.
+  /// Keeps visibility and typeahead session fields; strips factory-reset
+  /// fields.
   void _applyFactoryResetToOverlayMap(
     Map<String, ElementOverlay> overlays,
     String id,

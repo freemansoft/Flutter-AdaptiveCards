@@ -73,12 +73,13 @@ class AdaptiveFlowLayout extends StatelessWidget {
   /// Applies the spec item-sizing rules.
   ///
   /// `itemWidth` (fixed) takes precedence and uses a [SizedBox] — no
-  /// [IntrinsicWidth], so it also safely sizes items that can't report intrinsic
-  /// dimensions. Otherwise the item is content-fit: wrapped in [IntrinsicWidth]
-  /// so it shrinks to its natural width instead of filling the row (several
-  /// elements — e.g. `TextBlock`, which wraps its text in an expanding [Align] —
-  /// would otherwise stretch to the full [Wrap] width and stop flowing), and
-  /// clamped by [ConstrainedBox] when `min`/`maxItemWidth` are present.
+  /// [IntrinsicWidth], so it also safely sizes items that can't report
+  /// intrinsic dimensions. Otherwise the item is content-fit: wrapped in
+  /// [IntrinsicWidth] so it shrinks to its natural width instead of filling the
+  /// row (several elements — e.g. `TextBlock`, which wraps its text in an
+  /// expanding [Align] — would otherwise stretch to the full [Wrap] width and
+  /// stop flowing), and clamped by [ConstrainedBox] when `min`/`maxItemWidth`
+  /// are present.
   Widget _sizedItem(
     Widget child,
     double? itemWidth,

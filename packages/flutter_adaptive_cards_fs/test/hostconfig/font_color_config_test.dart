@@ -19,12 +19,16 @@ void main() {
     expect(config.subtleColor, const Color(0xB2654321));
   });
 
-  test('FontColorConfig should use theme-derived defaults when JSON is empty', () {
-    final themeDefaults =
-        ThemeColorFallbacks(ThemeData()).foregroundColors.defaultColor;
-    final config = FontColorConfig.fromJson({});
+  test(
+    'FontColorConfig should use theme-derived defaults when JSON is empty',
+    () {
+      final themeDefaults = ThemeColorFallbacks(
+        ThemeData(),
+      ).foregroundColors.defaultColor;
+      final config = FontColorConfig.fromJson({});
 
-    expect(config.defaultColor, themeDefaults.defaultColor);
-    expect(config.subtleColor, themeDefaults.subtleColor);
-  });
+      expect(config.defaultColor, themeDefaults.defaultColor);
+      expect(config.subtleColor, themeDefaults.subtleColor);
+    },
+  );
 }

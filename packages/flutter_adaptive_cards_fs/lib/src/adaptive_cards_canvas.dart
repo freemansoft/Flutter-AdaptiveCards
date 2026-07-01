@@ -18,7 +18,8 @@ import 'package:http/http.dart' as http;
 ///
 /// Implement or use a built-in provider (memory, JSON string, asset, network).
 abstract class AdaptiveCardContentProvider {
-  /// Called by the canvas on first build; return the parsed root `AdaptiveCard` map.
+  /// Called by the canvas on first build; return the parsed root `AdaptiveCard`
+  /// map.
   Future<Map<String, dynamic>> loadAdaptiveCardContent();
 }
 
@@ -106,7 +107,8 @@ class NetworkAdaptiveCardContentProvider
   }
 }
 
-/// Host entry widget: loads card JSON, applies [HostConfigs], and renders [RawAdaptiveCard].
+/// Host entry widget: loads card JSON, applies [HostConfigs], and renders
+/// [RawAdaptiveCard].
 class AdaptiveCardsCanvas extends StatefulWidget {
   /// Creates a canvas that loads content from [adaptiveCardContentProvider].
   const AdaptiveCardsCanvas({
@@ -221,16 +223,19 @@ class AdaptiveCardsCanvas extends StatefulWidget {
   /// Action handler registry; extend to customize action behavior.
   final ActionTypeRegistry actionTypeRegistry;
 
-  /// data that may be copied into `Input` cards to replace their templated state
+  /// data that may be copied into `Input` cards to replace their templated
+  /// state
   final Map? initData;
 
-  /// Host callback for input edits; falls back to [InheritedAdaptiveCardHandlers.onChange].
+  /// Host callback for input edits; falls back to
+  /// [InheritedAdaptiveCardHandlers.onChange].
   final void Function(InputChangeInvoke invoke)? onChange;
 
   /// When true (debug only), shows a button that displays the source JSON.
   final bool showDebugJson;
 
-  /// When false, [CardTypeRegistry] disables Markdown rendering in text elements.
+  /// When false, [CardTypeRegistry] disables Markdown rendering in text
+  /// elements.
   final bool supportMarkdown;
 
   /// When true, the root adaptive card body scrolls as a list.
@@ -249,12 +254,14 @@ class AdaptiveCardsCanvas extends StatefulWidget {
   AdaptiveCardsCanvasState createState() => AdaptiveCardsCanvasState();
 }
 
-/// Holds loaded card JSON and resolved [onChange] while [AdaptiveCardsCanvas] builds [RawAdaptiveCard].
+/// Holds loaded card JSON and resolved [onChange] while [AdaptiveCardsCanvas]
+/// builds [RawAdaptiveCard].
 class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
   /// Loaded root card JSON after the content provider completes.
   Map<String, dynamic>? map;
 
-  /// data that may be copied into `Input` cards to replace their templated state
+  /// data that may be copied into `Input` cards to replace their templated
+  /// state
   Map? initData;
 
   /// Effective input-change handler after widget vs inherited resolution.
@@ -291,7 +298,8 @@ class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Update the onChange if one is provided or there is one in the DefaultAdapterCardHandlers
+    // Update the onChange if one is provided or there is one in the
+    // DefaultAdapterCardHandlers
     if (widget.onChange != null) {
       onChange = widget.onChange;
     } else {

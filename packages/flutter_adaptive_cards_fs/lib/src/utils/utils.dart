@@ -126,7 +126,8 @@ bool parseIsVisible(Object? value) {
   return true;
 }
 
-/// Parses HostConfig hex colors (`#RRGGBB` or `#AARRGGBB`); returns null when invalid.
+/// Parses HostConfig hex colors (`#RRGGBB` or `#AARRGGBB`); returns null when
+/// invalid.
 Color? parseHostConfigColor(dynamic value) {
   if (value is! String) return null;
   if (!value.startsWith('#')) return null;
@@ -158,7 +159,8 @@ String getDayOfMonthSuffix(int n) {
   }
 }
 
-/// Expands Adaptive Cards `{{DATE(...)}}` and `{{TIME(...)}}` templates in display text.
+/// Expands Adaptive Cards `{{DATE(...)}}` and `{{TIME(...)}}` templates in
+/// display text.
 String parseTextString(String text, {String? locale}) {
   return text.replaceAllMapped(RegExp('{{.*}}'), (match) {
     final String? res = match.group(0);
@@ -345,7 +347,8 @@ bool idIsNatural(Map aMap) {
   return UUIDGenerator().isNaturalId(id, type);
 }
 
-/// Resolves element id from JSON; generates one if missing (normally pre-injected).
+/// Resolves element id from JSON; generates one if missing (normally
+/// pre-injected).
 String loadId(Map aMap) {
   if (aMap.containsKey('id')) {
     return aMap['id'].toString();
@@ -403,7 +406,8 @@ class UUIDGenerator {
     return newId;
   }
 
-  /// Returns true when [id] was author-supplied (not auto-generated from [type]).
+  /// Returns true when [id] was author-supplied (not auto-generated from
+  /// [type]).
   bool isNaturalId(String? id, String? type) {
     if (id == null) return false;
     if (type == null) return true;
@@ -424,14 +428,16 @@ void injectIds(
         type: data['type'].toString(),
       );
     }
-    // Create a copy of values to avoid ConcurrentModificationError when injecting 'id'
+    // Create a copy of values to avoid ConcurrentModificationError when
+    // injecting 'id'
     final values = data.values.toList();
     for (int i = 0; i < values.length; i++) {
       final value = values[i];
       injectIds(value);
     }
   } else if (data is List) {
-    // Create a copy of list to be safe, although less likely to be modified here
+    // Create a copy of list to be safe, although less likely to be modified
+    // here
     final items = data.toList();
     for (int i = 0; i < items.length; i++) {
       final item = items[i];

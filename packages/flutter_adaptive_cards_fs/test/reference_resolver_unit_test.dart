@@ -114,8 +114,10 @@ void main() {
         'default',
         'bogus',
       ]) {
-        expect(() => resolver.resolveTextBlockStyle(styleName: name),
-            returnsNormally);
+        expect(
+          () => resolver.resolveTextBlockStyle(styleName: name),
+          returnsNormally,
+        );
       }
       final overridden = resolver.resolveTextBlockStyle(
         styleName: 'heading',
@@ -133,10 +135,14 @@ void main() {
     });
 
     test('effective horizontal alignment applies inheritance', () {
-      expect(_resolver().resolveEffectiveHorizontalAlignment('CENTER'), 'center');
       expect(
-        _resolver(inheritedHorizontalAlignment: 'right')
-            .resolveEffectiveHorizontalAlignment(null),
+        _resolver().resolveEffectiveHorizontalAlignment('CENTER'),
+        'center',
+      );
+      expect(
+        _resolver(
+          inheritedHorizontalAlignment: 'right',
+        ).resolveEffectiveHorizontalAlignment(null),
         'right',
       );
       expect(_resolver().resolveEffectiveHorizontalAlignment(null), 'left');
@@ -180,7 +186,10 @@ void main() {
       final scheme = Theme.of(context).colorScheme;
 
       expect(
-        resolver.resolveButtonBackgroundColor(context: context, style: 'default'),
+        resolver.resolveButtonBackgroundColor(
+          context: context,
+          style: 'default',
+        ),
         scheme.primary,
       );
       expect(

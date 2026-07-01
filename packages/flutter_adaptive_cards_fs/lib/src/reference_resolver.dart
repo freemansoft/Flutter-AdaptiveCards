@@ -40,7 +40,8 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// https://github.com/microsoft/AdaptiveCards/blob/main/schemas/1.5.0/adaptive-card.json
 ///
 class ReferenceResolver {
-  /// Creates a resolver bound to [hostConfigs] and optional inherited style context.
+  /// Creates a resolver bound to [hostConfigs] and optional inherited style
+  /// context.
   ReferenceResolver({
     this.inheritedContainerStyle,
     this.inheritedHorizontalAlignment,
@@ -67,7 +68,8 @@ class ReferenceResolver {
   /// Theme-derived color defaults when HostConfig omits color sections.
   final ThemeColorFallbacks colorFallbacks;
 
-  /// Computes the container-style context children inherit after this container.
+  /// Computes the container-style context children inherit after this
+  /// container.
   static String? inheritedContainerStyleForChildren({
     required String? parentInherited,
     required String? ownContainerStyle,
@@ -161,8 +163,9 @@ class ReferenceResolver {
 
   /// JSON Schema definition "Colors"
   ///
-  /// Resolves a color type from the Theme palette if colorType is null or 'default'
-  /// Resovles a color to the host config if colorType is not null and not 'default'
+  /// Resolves a color type from the Theme palette if colorType is null or
+  /// 'default' Resovles a color to the host config if colorType is not null and
+  /// not 'default'
   ///
   /// Typically one of the following colors:
   /// - default
@@ -173,7 +176,8 @@ class ReferenceResolver {
   /// - warning
   /// - attention
   ///
-  /// If the color type is 'default' then it picks the standard color for the current style.
+  /// If the color type is 'default' then it picks the standard color for the
+  /// current style.
   Color? resolveContainerForegroundColor({
     String? style,
     bool? isSubtle,
@@ -200,7 +204,9 @@ class ReferenceResolver {
 
     assert(() {
       developer.log(
-        'resolved foreground inherited:$inheritedContainerStyle colorToken:$colorToken color:$style subtle:$subtleOrDefault to color:$foregroundColor',
+        'resolved foreground inherited:$inheritedContainerStyle '
+        'colorToken:$colorToken color:$style '
+        'subtle:$subtleOrDefault to color:$foregroundColor',
         name: runtimeType.toString(),
       );
       return true;
@@ -208,9 +214,8 @@ class ReferenceResolver {
     return foregroundColor;
   }
 
-  /// JSON Schema definition "ContainerStyle"
-  /// Resolves a background color from the host config
-  /// Assumes you always want a color call
+  /// JSON Schema definition "ContainerStyle" Resolves a background color from
+  /// the host config Assumes you always want a color call
   ///
   /// Typically one of the following ContainerStyles styles - v 1.0
   ///
@@ -224,7 +229,8 @@ class ReferenceResolver {
   ///
   /// Maps to surface and primaryContainer or SecondaryContainer
   ///
-  /// Use resolveContainerBackgroundColorIfNoBackgroundAndNoStyle() if you want no color if nothing specified
+  /// Use resolveContainerBackgroundColorIfNoBackgroundAndNoStyle() if you want
+  /// no color if nothing specified
 
   Color? resolveContainerBackgroundColor({
     required String? style,
@@ -665,13 +671,12 @@ class ReferenceResolver {
     }
   }
 
-  /// JSON Schema definition "VerticalAlignment"
-  ///   Used in Table and Table Row
-  ///   Used in Column
-  ///   Used in Container
+  /// JSON Schema definition "VerticalAlignment" Used in Table and Table Row
+  /// Used in Column Used in Container
   ///
-  /// JSON Schema definition "VerticalContentAlignment" "VerticalCellContentAlignment"
-  ///   Defines how content should be aligned vertically within the container
+  /// JSON Schema definition "VerticalContentAlignment"
+  /// "VerticalCellContentAlignment" Defines how content should be aligned
+  /// vertically within the container
   ///
   /// Resolves vertical alignment from a string value
   ///
@@ -938,7 +943,8 @@ class ReferenceResolver {
   DonutChartLayout resolveDonutChartLayout() =>
       ChartsLayoutConfig.resolveDonutLayout(getChartsLayoutConfig());
 
-  /// Resolves the color palette for charts, optionally using element `colorSet`.
+  /// Resolves the color palette for charts, optionally using element
+  /// `colorSet`.
   List<Color> resolveChartPalette({String? colorSet}) {
     final setName = parseChartColorSetName(colorSet);
     if (setName != ChartColorSetName.defaultPalette) {

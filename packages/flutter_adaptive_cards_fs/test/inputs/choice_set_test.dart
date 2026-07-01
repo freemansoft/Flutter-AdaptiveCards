@@ -275,7 +275,8 @@ void main() {
     await tester.tap(find.byKey(generateWidgetKey(choiceMap)));
     await tester.pumpAndSettle();
 
-    // After opening modal, the card field, the ChoiceFilter widget and the modal search field share the key
+    // After opening modal, the card field, the ChoiceFilter widget and the
+    // modal search field share the key
     expect(find.byKey(generateWidgetKey(choiceMap)), findsNWidgets(3));
 
     // The modal lists choice titles — tap 'Choice 2'

@@ -78,9 +78,10 @@ class AdaptiveProgressBarState extends ConsumerState<AdaptiveProgressBar>
         borderRadius: BorderRadius.circular(5),
       );
     } else {
-      // Indeterminate
-      // Indeterminate LinearProgressIndicator in Material default behavior is "move back and forth"
-      // "foreground should be 10% of the full width" - Material default might not be exactly 10% but matches behavior.
+      // Indeterminate Indeterminate LinearProgressIndicator in Material default
+      // behavior is "move back and forth" "foreground should be 10% of the full
+      // width" - Material default might not be exactly 10% but matches
+      // behavior.
       progressBar = LinearProgressIndicator(
         color: progressColor,
         backgroundColor: styleResolver.resolveProgressBackgroundColor(),

@@ -46,19 +46,21 @@ typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 
 /// Entry point for registering adaptive cards
 ///
-/// 1. Providing custom elements
-/// Add the element to [addedElements]. It takes the name of the element
-/// as its key and an [ElementCreator] that builds a widget from the element map.
+/// 1. Providing custom elements Add the element to [addedElements]. It takes
+///    the name of the element as its key and an [ElementCreator] that builds a
+///    widget from the element map.
 ///
-/// 2. Overwriting custom elements
-/// Just use the same name as the element you want to override
+/// 2. Overwriting custom elements Just use the same name as the element you
+///    want to override
 ///
 /// 3. Deleting existing elements
 ///
-/// Delete an element even if you have provided it yourself via the [addedElements]
+/// Delete an element even if you have provided it yourself via the
+/// [addedElements]
 ///
 class CardTypeRegistry {
-  /// Creates a registry with optional custom, removed, and action element types.
+  /// Creates a registry with optional custom, removed, and action element
+  /// types.
   const CardTypeRegistry({
     this.removedElements = const [],
     this.addedElements = const {},
@@ -71,7 +73,8 @@ class CardTypeRegistry {
   /// Custom element builders keyed by `type`; same key overrides built-ins.
   final Map<String, ElementCreator> addedElements;
 
-  /// Custom action widgets keyed by action `type` (for example `Action.Submit`).
+  /// Custom action widgets keyed by action `type` (for example
+  /// `Action.Submit`).
   final Map<String, ElementCreator> addedActions;
 
   /// Optional-package overlay merge hooks (e.g. chart data patches).
@@ -86,15 +89,16 @@ class CardTypeRegistry {
   /// Element/action `type` strings rendered as [AdaptiveUnknown] instead of built-ins.
   final List<String> removedElements;
 
-  // Due to https://github.com/flutter/flutter_markdown/issues/171,
-  // markdown support doesn't work at the same time as content alignment in a column set
+  // Due to https://github.com/flutter/flutter_markdown/issues/171, markdown
+  // support doesn't work at the same time as content alignment in a column set
   /// When false, built-in text elements skip Markdown rendering.
   final bool supportMarkdown;
 
   /// When true, the root `AdaptiveCard` body uses list scrolling.
   final bool listView;
 
-  /// Builds the widget for an element JSON map, honoring [addedElements], [removedElements], and fallback.
+  /// Builds the widget for an element JSON map, honoring [addedElements],
+  /// [removedElements], and fallback.
   Widget getElement({
     required Map<String, dynamic> map,
     String parentMode = 'stretch',
@@ -119,7 +123,8 @@ class CardTypeRegistry {
     }
   }
 
-  /// Builds the widget for an action JSON map, honoring custom and removed action types.
+  /// Builds the widget for an action JSON map, honoring custom and removed
+  /// action types.
   Widget getAction({
     required Map<String, dynamic> map,
   }) {
@@ -230,9 +235,10 @@ class CardTypeRegistry {
       case 'Accordion':
         return AdaptiveAccordion(adaptiveMap: map);
       case 'TabSet':
-      case 'TabPage': // Fallback if TabPage is used as container or we map it to TabSet
-        // Actually "TabPage" is likely a child. But if user used "Other" for type...
-        // Let's support TabSet as the container.
+      // Fallback if TabPage is used as a container or we map it to TabSet.
+      case 'TabPage':
+        // Actually "TabPage" is likely a child. But if user used "Other" for
+        // type... Let's support TabSet as the container.
         return AdaptiveTabSet(adaptiveMap: map);
     }
 

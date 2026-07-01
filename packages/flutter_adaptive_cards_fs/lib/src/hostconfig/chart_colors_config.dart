@@ -148,7 +148,8 @@ List<Color> chartPaletteForSet(ChartColorSetName name) {
   };
 }
 
-/// Resolves a Teams chart color token; returns null when [colorStr] is not a known token.
+/// Resolves a Teams chart color token; returns null when [colorStr] is not a
+/// known token.
 Color? resolveChartColorToken(String? colorStr) {
   if (colorStr == null || colorStr.isEmpty) {
     return null;
