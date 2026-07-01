@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// Typeahead list inside the filtered `Input.ChoiceSet` bottom sheet.
 ///
@@ -32,6 +33,15 @@ class ChoiceFilterState extends State<ChoiceFilter> {
 
   final List<Choice> _searchResult = [];
   List<Choice> _data = [];
+
+  /// Base id for child widget keys, taken from the [ValueKey] the parent
+  /// (`Input.ChoiceSet` id) passes to this sheet. Falls back to a defensive
+  /// literal only when constructed without a keyed parent (e.g. isolated
+  /// tests). All child keys derive from this via [generateWidgetKeyFromId] so
+  /// there is a single source of the key format.
+  String get _baseKey => (widget.key is ValueKey<String>)
+      ? (widget.key! as ValueKey<String>).value
+      : 'choiceFilter';
 
   @override
   void initState() {
@@ -70,9 +80,6 @@ class ChoiceFilterState extends State<ChoiceFilter> {
           height: 40,
           child: Builder(
             builder: (context) {
-              final String keyValue = (widget.key is ValueKey<String>)
-                  ? (widget.key! as ValueKey<String>).value
-                  : 'choiceFilter';
               // Keep the clear control out of [InputDecoration.suffix]. Suffix
               // semantics can get an inverted rect during sheet dismiss when
               // semantics are enabled (Widgetbook Semantics addon).
@@ -80,7 +87,7 @@ class ChoiceFilterState extends State<ChoiceFilter> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                      key: ValueKey(keyValue),
+                      key: generateWidgetKeyFromId(_baseKey),
                       autofocus: true,
                       style: const TextStyle(),
                       controller: _searchController,
@@ -121,12 +128,10 @@ class ChoiceFilterState extends State<ChoiceFilter> {
               ? ListView.builder(
                   itemCount: _searchResult.length,
                   itemBuilder: (context, index) {
-                    final String keyValue = (widget.key is ValueKey<String>)
-                        ? (widget.key! as ValueKey<String>).value
-                        : 'choiceFilter';
                     return ListTile(
-                      key: ValueKey(
-                        '${keyValue}_${_searchResult[index].title}',
+                      key: generateWidgetKeyFromId(
+                        _baseKey,
+                        suffix: _searchResult[index].title,
                       ),
                       title: Text(_searchResult[index].title),
                       onTap: () {
@@ -139,11 +144,11 @@ class ChoiceFilterState extends State<ChoiceFilter> {
               : ListView.builder(
                   itemCount: _data.length,
                   itemBuilder: (context, index) {
-                    final String keyValue = (widget.key is ValueKey<String>)
-                        ? (widget.key! as ValueKey<String>).value
-                        : 'choiceFilter';
                     return ListTile(
-                      key: ValueKey('${keyValue}_${_data[index].title}'),
+                      key: generateWidgetKeyFromId(
+                        _baseKey,
+                        suffix: _data[index].title,
+                      ),
                       title: Text(_data[index].title),
                       onTap: () {
                         Navigator.pop(context);

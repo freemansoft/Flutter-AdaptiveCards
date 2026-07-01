@@ -406,7 +406,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
       builder: (BuildContext builder) => SizedBox(
         height: MediaQuery.of(context).copyWith().size.height / 2,
         child: ChoiceFilter(
-          key: inputId != null ? ValueKey(inputId) : null,
+          key: inputId != null ? generateWidgetKeyFromId(inputId) : null,
           data: data,
           callback: callback,
         ),
