@@ -520,8 +520,9 @@ class Evaluator {
           _ => Duration(days: amount),
         };
         final now = DateTime.now();
-        final relativeDate =
-            name == 'getPastTime' ? now.subtract(duration) : now.add(duration);
+        final relativeDate = name == 'getPastTime'
+            ? now.subtract(duration)
+            : now.add(duration);
         final relativeFormat = args.length > 2
             ? args[2]?.toString() ?? "yyyy-MM-dd'T'HH:mm:ss"
             : "yyyy-MM-dd'T'HH:mm:ss";

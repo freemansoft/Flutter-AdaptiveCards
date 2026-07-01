@@ -15,7 +15,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// See also:
 /// * https://adaptivecards.microsoft.com/?topic=Chart.Pie
 /// * https://adaptivecards.microsoft.com/?topic=Chart.Donut
-class AdaptivePieChart extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptivePieChart extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a pie or donut chart element from [adaptiveMap].
   ///
   /// Set [isDonut] to `true` for donut charts.
@@ -32,14 +33,16 @@ class AdaptivePieChart extends ConsumerStatefulWidget with AdaptiveElementWidget
   @override
   late final String id;
 
-  /// Whether to render a donut chart with a hollow center instead of a full pie.
+  /// Whether to render a donut chart with a hollow center instead of a full
+  /// pie.
   final bool isDonut;
 
   @override
   AdaptivePieChartState createState() => AdaptivePieChartState();
 }
 
-/// State for [AdaptivePieChart]; parses JSON data and builds the fl_chart widget.
+/// State for [AdaptivePieChart]; parses JSON data and builds the fl_chart
+/// widget.
 class AdaptivePieChartState extends ConsumerState<AdaptivePieChart>
     with
         AdaptiveElementMixin,

@@ -10,7 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Renders the Adaptive Cards **Carousel** element with page dots.
 ///
 /// See https://adaptivecards.io/explorer/Carousel.html
-class AdaptiveCarousel extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveCarousel extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a carousel from [adaptiveMap] JSON.
   AdaptiveCarousel({
     required this.adaptiveMap,

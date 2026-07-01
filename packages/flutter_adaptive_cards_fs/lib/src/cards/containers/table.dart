@@ -261,15 +261,10 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
 
     Widget cell = Container(
       key: AdaptiveTable.cellKey(tableKey, rowIndex, col),
-      decoration: isHeaderRow
-          ? getHeaderCellDecoration(
-              cellModel.toJson(),
-              backgroundColor: backgroundColor,
-            )
-          : getDecorationFromMap(
-              cellModel.toJson(),
-              backgroundColor: backgroundColor,
-            ),
+      decoration: getDecorationFromMap(
+        cellModel.toJson(),
+        backgroundColor: backgroundColor,
+      ),
       child: content,
     );
 
@@ -293,14 +288,6 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
     return cell;
   }
 
-  /// Build decoration for header cells.
-  BoxDecoration getHeaderCellDecoration(
-    Map<String, dynamic> cellJson, {
-    Color? backgroundColor,
-  }) {
-    return getDecorationFromMap(cellJson, backgroundColor: backgroundColor);
-  }
-
   /// Build cell content (responsive `layouts`, scrollbar, header text style).
   Widget buildCellContent({
     required List<Map<String, dynamic>> oneCellItems,
@@ -314,10 +301,13 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
     final cellWidgets = List<Widget>.generate(effectiveItems.length, (
       widgetIndex,
     ) {
-      developer.log(
-        'onCellItems for index $widgetIndex : ${effectiveItems[widgetIndex]}',
-        name: runtimeType.toString(),
-      );
+      assert(() {
+        developer.log(
+          'onCellItems for index $widgetIndex : ${effectiveItems[widgetIndex]}',
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
       return cardTypeRegistry.getElement(
         map: effectiveItems[widgetIndex],
       );

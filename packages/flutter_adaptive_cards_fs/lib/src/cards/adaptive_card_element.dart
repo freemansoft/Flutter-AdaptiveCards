@@ -359,8 +359,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       ],
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final WidthBucket bucket =
-              styleResolver.resolveWidthBucket(constraints.maxWidth);
+          final WidthBucket bucket = styleResolver.resolveWidthBucket(
+            constraints.maxWidth,
+          );
           return ProviderScope(
             overrides: [
               cardWidthBucketProvider.overrideWithValue(bucket),

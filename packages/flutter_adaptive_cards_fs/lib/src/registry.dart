@@ -78,7 +78,8 @@ class CardTypeRegistry {
   final CardOverlayExtensionRegistry overlayExtensions;
 
   /// Supported runtime overlay fields for elements/actions in this card scope.
-  OverlayCapabilityRegistry get overlayCapabilities => OverlayCapabilityRegistry(
+  OverlayCapabilityRegistry get overlayCapabilities =>
+      OverlayCapabilityRegistry(
         overlayExtensions: overlayExtensions,
       );
 

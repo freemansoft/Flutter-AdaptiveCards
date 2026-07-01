@@ -16,7 +16,14 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 /// `auto` sizes a column to its content (consistent across rows), `stretch`
 /// fills remaining space, a bare number is a relative flex weight, and `Npx` is
 /// a fixed pixel width.
-const tableWidthOptions = <String>['auto', 'stretch', '1', '2', '60px', '120px'];
+const tableWidthOptions = <String>[
+  'auto',
+  'stretch',
+  '1',
+  '2',
+  '60px',
+  '120px',
+];
 
 /// Container-style options for the highlighted cell (and `gridStyle`).
 const tableStyleOptions = <String>[
@@ -51,7 +58,8 @@ class TableKnobDefaults {
   /// Grid line color token (`gridStyle`).
   final String gridStyle;
 
-  /// Per-column `width` values, as strings (e.g. `auto`, `stretch`, `60px`, `2`).
+  /// Per-column `width` values, as strings
+  /// (e.g. `auto`, `stretch`, `60px`, `2`).
   final List<String> columnWidths;
 }
 
@@ -66,7 +74,7 @@ GlobalKey<State<TableKnobsPage>> tableKnobsPageKeyFor(String assetPath) {
   );
 }
 
-/// Widgetbook page that deep-clones a base card and patches its first Table from
+/// Widgetbook page deep-clones a base card and patches its first Table from
 /// knobs, demonstrating `auto`/`stretch`/numeric/`px` column widths plus cell
 /// `minHeight` and `style`.
 class TableKnobsPage extends StatefulWidget {
@@ -190,7 +198,11 @@ class _TableKnobsPageState extends State<TableKnobsPage> {
       }
     }
 
-    _patchHighlightCell(table, cellMinHeight: cellMinHeight, cellStyle: cellStyle);
+    _patchHighlightCell(
+      table,
+      cellMinHeight: cellMinHeight,
+      cellStyle: cellStyle,
+    );
     return patched;
   }
 

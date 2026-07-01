@@ -8,7 +8,7 @@ import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_workspace/overlay_demo_scaffold.dart';
 import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
-/// Keeps [TextBlockOverlayPage] mounted when Widgetbook knob query params change.
+/// Keeps [TextBlockOverlayPage] mounted when knob query params change.
 ///
 /// Widgetbook's workbench keys the use-case builder with `ValueKey(uri)`, so
 /// knob edits recreate that subtree; this key preserves card + document state.

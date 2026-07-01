@@ -80,5 +80,4 @@ List<Map<String, dynamic>> inlinesFromJsonList(Object? raw) {
 /// Serializes inlines for overlay merge boundaries.
 List<Map<String, dynamic>> inlinesToJsonList(
   List<Map<String, dynamic>> inlines,
-) =>
-    inlines.map(Map<String, dynamic>.from).toList();
+) => inlines.map(Map<String, dynamic>.from).toList();

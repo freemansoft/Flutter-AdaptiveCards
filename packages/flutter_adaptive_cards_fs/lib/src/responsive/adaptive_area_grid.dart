@@ -81,7 +81,9 @@ class AdaptiveAreaGrid extends StatelessWidget {
     final unplaced = <Widget>[];
 
     for (var i = 0; i < children.length; i++) {
-      final map = i < childMaps.length ? childMaps[i] : const <String, dynamic>{};
+      final map = i < childMaps.length
+          ? childMaps[i]
+          : const <String, dynamic>{};
       final areaName = map['grid.area'] as String?;
       final area = areaName == null ? null : areasByName[areaName];
       if (area == null) {
@@ -190,12 +192,12 @@ class RenderAdaptiveAreaGrid extends RenderBox
     required double columnSpacing,
     required double rowSpacing,
     required List<AreaGridPlacement> placements,
-  })  : _columns = columns,
-        _colCount = colCount,
-        _rowCount = rowCount,
-        _columnSpacing = columnSpacing,
-        _rowSpacing = rowSpacing,
-        _placements = placements;
+  }) : _columns = columns,
+       _colCount = colCount,
+       _rowCount = rowCount,
+       _columnSpacing = columnSpacing,
+       _rowSpacing = rowSpacing,
+       _placements = placements;
 
   /// Declared column tracks.
   List<AreaGridTrack> get columns => _columns;
@@ -281,9 +283,11 @@ class RenderAdaptiveAreaGrid extends RenderBox
 
     double cellWidth(AreaGridPlacement p) {
       var w = 0.0;
-      for (var c = p.column - 1;
-          c < p.column - 1 + p.columnSpan && c < colWidths.length;
-          c++) {
+      for (
+        var c = p.column - 1;
+        c < p.column - 1 + p.columnSpan && c < colWidths.length;
+        c++
+      ) {
         w += colWidths[c];
       }
       return w + _columnSpacing * (p.columnSpan - 1);
@@ -308,8 +312,9 @@ class RenderAdaptiveAreaGrid extends RenderBox
       if (p.rowSpan == 1) {
         final r = p.row - 1;
         if (r >= 0 && r < _rowCount) {
-          rowHeights[r] =
-              rowHeights[r] > c.size.height ? rowHeights[r] : c.size.height;
+          rowHeights[r] = rowHeights[r] > c.size.height
+              ? rowHeights[r]
+              : c.size.height;
         }
       }
     }
@@ -325,7 +330,11 @@ class RenderAdaptiveAreaGrid extends RenderBox
       final deficit = c.size.height - spanned;
       if (deficit > 0) {
         final add = deficit / p.rowSpan;
-        for (var r = p.row - 1; r < p.row - 1 + p.rowSpan && r < _rowCount; r++) {
+        for (
+          var r = p.row - 1;
+          r < p.row - 1 + p.rowSpan && r < _rowCount;
+          r++
+        ) {
           rowHeights[r] += add;
         }
       }

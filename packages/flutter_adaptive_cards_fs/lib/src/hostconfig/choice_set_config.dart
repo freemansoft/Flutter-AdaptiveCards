@@ -16,7 +16,8 @@ class ChoiceSetConfig {
   /// Parses `inputs.choiceSet` from HostConfig JSON.
   factory ChoiceSetConfig.fromJson(Map<String, dynamic> json) {
     return ChoiceSetConfig(
-      enableSearch: json['enableSearch'] as bool? ??
+      enableSearch:
+          json['enableSearch'] as bool? ??
           FallbackConfigs.inputsConfig.choiceSet.enableSearch,
       requestFocusOnTap: json['requestFocusOnTap'] as bool?,
     );

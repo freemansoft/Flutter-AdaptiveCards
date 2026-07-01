@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders an `ImageSet` as a wrapped row of [AdaptiveImage] children sized by
 /// `imageSize`.
-class AdaptiveImageSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveImageSet extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates an `ImageSet` from [adaptiveMap].
   AdaptiveImageSet({
     required this.adaptiveMap,

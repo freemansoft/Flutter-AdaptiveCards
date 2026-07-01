@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Renders the Adaptive Cards **TabSet** container with [TabBar] pages.
 ///
 /// See https://adaptivecards.io/explorer/TabSet.html
-class AdaptiveTabSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveTabSet extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a tab set from [adaptiveMap] JSON.
   AdaptiveTabSet({
     required this.adaptiveMap,

@@ -394,8 +394,10 @@ mixin AdaptiveVisibilityMixin<T extends ConsumerStatefulWidget>
     final resolved = ref.watch(resolvedElementProvider(id));
     final baselineVisible = parseIsVisible(resolved?['isVisible']);
     final bucket = ref.watch(cardWidthBucketProvider);
-    final matchesWidth =
-        targetWidthMatches(resolved?['targetWidth'] as String?, bucket);
+    final matchesWidth = targetWidthMatches(
+      resolved?['targetWidth'] as String?,
+      bucket,
+    );
     return baselineVisible && matchesWidth;
   }
 

@@ -54,27 +54,30 @@ void main() {
     expect(seen.body, '{"name":"David"}');
   });
 
-  test('result exposes lower-cased response headers and failure status', () async {
-    final executor = HttpAdaptiveHttpExecutor(
-      client: MockClient(
-        (request) async => http.Response(
-          'bad',
-          400,
-          headers: {'CARD-ACTION-STATUS': 'Nope'},
+  test(
+    'result exposes lower-cased response headers and failure status',
+    () async {
+      final executor = HttpAdaptiveHttpExecutor(
+        client: MockClient(
+          (request) async => http.Response(
+            'bad',
+            400,
+            headers: {'CARD-ACTION-STATUS': 'Nope'},
+          ),
         ),
-      ),
-    );
+      );
 
-    final result = await executor.execute(
-      const HttpActionInvoke(
-        method: 'GET',
-        url: 'https://contoso.com',
-        headers: [],
-        inputValues: {},
-      ),
-    );
+      final result = await executor.execute(
+        const HttpActionInvoke(
+          method: 'GET',
+          url: 'https://contoso.com',
+          headers: [],
+          inputValues: {},
+        ),
+      );
 
-    expect(result.isSuccess, isFalse);
-    expect(result.headers['card-action-status'], 'Nope');
-  });
+      expect(result.isSuccess, isFalse);
+      expect(result.headers['card-action-status'], 'Nope');
+    },
+  );
 }

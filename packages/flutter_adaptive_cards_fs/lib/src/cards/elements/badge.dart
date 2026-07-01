@@ -9,7 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Renders the Adaptive Cards **Badge** element (text and optional icon).
 ///
 /// See https://adaptivecards.io/explorer/Badge.html
-class AdaptiveBadge extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveBadge extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a badge from [adaptiveMap] JSON.
   AdaptiveBadge({
     required this.adaptiveMap,
@@ -33,8 +34,11 @@ class AdaptiveBadgeState extends ConsumerState<AdaptiveBadge>
   @override
   Widget build(BuildContext context) {
     final resolved = ref.watch(resolvedElementProvider(id));
-    final text = (resolved?['text'] as String?) ?? (adaptiveMap['text'] as String?);
-    final iconUrl = (resolved?['iconUrl'] as String?) ?? (adaptiveMap['iconUrl'] as String?);
+    final text =
+        (resolved?['text'] as String?) ?? (adaptiveMap['text'] as String?);
+    final iconUrl =
+        (resolved?['iconUrl'] as String?) ??
+        (adaptiveMap['iconUrl'] as String?);
     final appearance =
         adaptiveMap['appearance']?.toString().toLowerCase() ?? 'filled';
     final size = adaptiveMap['size']?.toString().toLowerCase() ?? 'medium';

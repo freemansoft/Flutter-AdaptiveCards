@@ -304,7 +304,9 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   void setInlines(String id, List<Map<String, dynamic>> inlines) {
     final container = documentContainer;
     if (container == null) return;
-    container.read(adaptiveCardDocumentProvider.notifier).setInlines(id, inlines);
+    container
+        .read(adaptiveCardDocumentProvider.notifier)
+        .setInlines(id, inlines);
   }
 
   /// Clears inlines overlay for [id].
@@ -642,9 +644,11 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
     // unconditionally would shadow a host-provided ancestor policy.
     if (widget.uriPolicy != null || widget.fetchPolicy != null) {
       tree = InheritedAdaptiveCardSecurityPolicy(
-        uriPolicy: widget.uriPolicy ??
+        uriPolicy:
+            widget.uriPolicy ??
             InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context),
-        fetchPolicy: widget.fetchPolicy ??
+        fetchPolicy:
+            widget.fetchPolicy ??
             InheritedAdaptiveCardSecurityPolicy.fetchPolicyOf(context),
         child: tree,
       );

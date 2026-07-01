@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders a `Container` that vertically stacks `items` with optional
 /// background, spacing, and `minHeight`.
-class AdaptiveContainer extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveContainer extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a `Container` element from [adaptiveMap].
   AdaptiveContainer({
     required this.adaptiveMap,

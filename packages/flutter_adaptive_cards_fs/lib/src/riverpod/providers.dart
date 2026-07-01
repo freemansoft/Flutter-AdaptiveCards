@@ -62,6 +62,7 @@ final styleReferenceResolverProvider = Provider<ReferenceResolver>(
 final cardWidthBucketProvider = Provider<WidthBucket>(
   (ref) => WidthBucket.wide,
 );
+
 /// Deep-copied card JSON baseline for the current raw-card scope.
 final baselineMapProvider = Provider<Map<String, dynamic>>(
   (ref) => throw UnimplementedError('baselineMapProvider override missing'),

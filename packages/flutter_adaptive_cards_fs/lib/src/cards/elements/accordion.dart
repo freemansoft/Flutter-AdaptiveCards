@@ -7,7 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Renders the Adaptive Cards **Accordion** element as expandable sections.
 ///
 /// See https://adaptivecards.io/explorer/Accordion.html
-class AdaptiveAccordion extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveAccordion extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates an accordion from [adaptiveMap] JSON.
   AdaptiveAccordion({
     required this.adaptiveMap,

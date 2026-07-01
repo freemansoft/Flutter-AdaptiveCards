@@ -6,7 +6,7 @@ analyzer:
     # implementation_imports: ignore
     one_member_abstracts: ignore
     prefer_asserts_with_message: ignore
-    lines_longer_than_80_chars: ignore
+    # lines_longer_than_80_chars: ignore
     # prefer_const_constructors: ignore
 
 linter:

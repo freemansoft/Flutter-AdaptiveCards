@@ -9,7 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Renders the Adaptive Cards **Rating** element as a row of stars.
 ///
 /// See https://adaptivecards.io/explorer/Rating.html
-class AdaptiveRating extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveRating extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a rating display from [adaptiveMap] JSON.
   AdaptiveRating({
     required this.adaptiveMap,
@@ -33,10 +34,18 @@ class AdaptiveRatingState extends ConsumerState<AdaptiveRating>
   @override
   Widget build(BuildContext context) {
     final resolved = ref.watch(resolvedElementProvider(id));
-    final value = ((resolved?['value'] ?? adaptiveMap['value']) as num? ?? 0).toDouble();
-    final max = ((resolved?['max'] ?? adaptiveMap['max']) as num? ?? 5).toDouble();
-    final color = (resolved?['color'] as String?) ?? (adaptiveMap['color'] as String?) ?? 'neutral';
-    final size = (resolved?['size'] as String?) ?? (adaptiveMap['size'] as String?) ?? 'medium';
+    final value = ((resolved?['value'] ?? adaptiveMap['value']) as num? ?? 0)
+        .toDouble();
+    final max = ((resolved?['max'] ?? adaptiveMap['max']) as num? ?? 5)
+        .toDouble();
+    final color =
+        (resolved?['color'] as String?) ??
+        (adaptiveMap['color'] as String?) ??
+        'neutral';
+    final size =
+        (resolved?['size'] as String?) ??
+        (adaptiveMap['size'] as String?) ??
+        'medium';
 
     final starColor = resolveRatingStarColor(styleResolver, color);
     final iconSize = resolveRatingIconSize(size);

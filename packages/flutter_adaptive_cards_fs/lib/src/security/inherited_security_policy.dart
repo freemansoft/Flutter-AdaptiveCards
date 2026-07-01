@@ -39,8 +39,10 @@ class InheritedAdaptiveCardSecurityPolicy extends InheritedWidget {
 
   /// Returns the nearest ancestor instance, or null if none is present.
   static InheritedAdaptiveCardSecurityPolicy? maybeOf(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<
-        InheritedAdaptiveCardSecurityPolicy>();
+    return context
+        .dependOnInheritedWidgetOfExactType<
+          InheritedAdaptiveCardSecurityPolicy
+        >();
   }
 
   @override

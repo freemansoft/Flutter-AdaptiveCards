@@ -12,7 +12,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart'
 /// Shared state for widgetbook overlay demo pages.
 ///
 /// Provides card loading, post-frame apply scheduling with retry until
-/// [RawAdaptiveCardState.documentContainer] is ready, and the common card shell.
+/// [RawAdaptiveCardState.documentContainer] is ready, and common card shell.
 mixin OverlayDemoPageState<T extends StatefulWidget> on State<T> {
   static const _maxApplyAttempts = 30;
 
@@ -25,7 +25,7 @@ mixin OverlayDemoPageState<T extends StatefulWidget> on State<T> {
 
   /// Loads overlay demo JSON from the widgetbook asset bundle.
   ///
-  /// When [injectIds] is true, assigns stable element ids (text_block demo only).
+  /// If [injectIds] is true, assigns stable element ids (text_block demo only).
   Future<void> loadOverlayCardAsset(
     String assetPath, {
     bool injectIds = false,

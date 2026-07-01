@@ -2,7 +2,9 @@
 
 ## [0.14.0]
 
-- no changes yet
+### Changed 0.14.0
+
+- **Internal cleanup (no behavior change)** — applied `dart format` across the package (`lib/` + `test/`), fixing formatting drift, and re-wrapped 14 over-long `///` doc comments to satisfy the now-enabled `lines_longer_than_80_chars` lint. No API or runtime changes.
 
 ## [0.13.0]
 

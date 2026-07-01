@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// and is wrapped in [SeparatorElement] for card layout and spacing.
 ///
 /// See also: https://adaptivecards.microsoft.com/?topic=Chart.Line
-class AdaptiveLineChart extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveLineChart extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a line chart element from [adaptiveMap].
   AdaptiveLineChart({
     required this.adaptiveMap,
@@ -31,7 +32,8 @@ class AdaptiveLineChart extends ConsumerStatefulWidget with AdaptiveElementWidge
   AdaptiveLineChartState createState() => AdaptiveLineChartState();
 }
 
-/// State for [AdaptiveLineChart]; parses JSON data and builds the fl_chart widget.
+/// State for [AdaptiveLineChart]; parses JSON data and builds the fl_chart
+/// widget.
 class AdaptiveLineChartState extends ConsumerState<AdaptiveLineChart>
     with
         AdaptiveElementMixin,
@@ -179,7 +181,8 @@ class AdaptiveLineChartState extends ConsumerState<AdaptiveLineChart>
     );
   }
 
-  double _axisNameSize(String? name) => name != null && name.isNotEmpty ? 24 : 0;
+  double _axisNameSize(String? name) =>
+      name != null && name.isNotEmpty ? 24 : 0;
 
   @override
   Widget build(BuildContext context) {

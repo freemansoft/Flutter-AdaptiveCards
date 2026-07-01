@@ -2,7 +2,9 @@
 
 ## [0.14.0]
 
-- no changes yet
+### Changed 0.14.0
+
+- **Internal cleanup (no behavior change)** — applied `dart format` to `evaluator.dart` (formatting drift), and removed the stray git-tracked `analysis_options copy.yaml` backup file (the analyzer only reads `analysis_options.yaml`).
 
 ## [0.13.0]
 

@@ -9,7 +9,7 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 /// Renders the same responsive sample cards the golden and widget tests use,
 /// inside a width-constrained box whose width is driven by a knob. Dragging the
 /// width across the breakpoints flips the card's width bucket, so containers
-/// reflow between a vertical stack (narrow) and a wrapping flow (wide). A second
+/// reflow between vertical stack (narrow) and a wrapping flow (wide). A second
 /// knob picks which responsive sample to render.
 class ResponsiveFlowPage extends StatelessWidget {
   const ResponsiveFlowPage({super.key});

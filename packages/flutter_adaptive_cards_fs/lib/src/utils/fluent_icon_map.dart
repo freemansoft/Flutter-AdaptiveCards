@@ -448,7 +448,10 @@ const Map<String, FluentIconEntry> kFluentIconMap = {
   'temperature': FluentIconEntry(filled: Icons.thermostat),
 
   // --- aliases (author name variants) ---
-  'trash': FluentIconEntry(filled: Icons.delete, regular: Icons.delete_outlined),
+  'trash': FluentIconEntry(
+    filled: Icons.delete,
+    regular: Icons.delete_outlined,
+  ),
   'bin': FluentIconEntry(filled: Icons.delete, regular: Icons.delete_outlined),
   'gear': FluentIconEntry(
     filled: Icons.settings,
@@ -482,7 +485,10 @@ const Map<String, FluentIconEntry> kFluentIconMap = {
     regular: Icons.people_outlined,
   ),
   'photo': FluentIconEntry(filled: Icons.image, regular: Icons.image_outlined),
-  'picture': FluentIconEntry(filled: Icons.image, regular: Icons.image_outlined),
+  'picture': FluentIconEntry(
+    filled: Icons.image,
+    regular: Icons.image_outlined,
+  ),
   'information': FluentIconEntry(
     filled: Icons.info,
     regular: Icons.info_outlined,
@@ -509,8 +515,7 @@ const Map<String, FluentIconEntry> kFluentIconMap = {
   ),
   'house': FluentIconEntry(filled: Icons.home, regular: Icons.home_outlined),
   'house2': FluentIconEntry(filled: Icons.home, regular: Icons.home_outlined),
-  'starfilled':
-      FluentIconEntry(filled: Icons.star, regular: Icons.star_border),
+  'starfilled': FluentIconEntry(filled: Icons.star, regular: Icons.star_border),
   'question': FluentIconEntry(
     filled: Icons.help,
     regular: Icons.help_outlined,

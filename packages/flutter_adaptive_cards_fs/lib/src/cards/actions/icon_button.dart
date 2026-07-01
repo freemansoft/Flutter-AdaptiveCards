@@ -9,7 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Reads title, style, `iconUrl`, and tooltip from [adaptiveMap] and invokes
 /// [onTapped] when the action is enabled.
-class IconButtonAction extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class IconButtonAction extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates an action button for [adaptiveMap] that calls [onTapped] on press.
   IconButtonAction({
     required this.adaptiveMap,

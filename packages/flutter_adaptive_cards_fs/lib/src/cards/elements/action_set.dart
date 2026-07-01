@@ -62,8 +62,7 @@ class ActionSetState extends ConsumerState<ActionSet>
     final List<Map<String, dynamic>> overflowMaps = [];
     for (final raw in actionMaps) {
       final map = Map<String, dynamic>.from(raw as Map);
-      final isSecondary =
-          map['mode']?.toString().toLowerCase() == 'secondary';
+      final isSecondary = map['mode']?.toString().toLowerCase() == 'secondary';
       if (isSecondary || primaryMaps.length >= maxActions) {
         overflowMaps.add(map);
       } else {

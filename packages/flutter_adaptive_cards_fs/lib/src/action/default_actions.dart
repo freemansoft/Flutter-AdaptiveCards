@@ -55,10 +55,12 @@ bool validateInputs(ProviderContainer container) {
     if (type == 'Input.Number') {
       // node['min'/'max'] are num in dart:convert-decoded JSON, but guard
       // against string-encoded bounds from template expansion or loose typing.
-      final numMin =
-          node['min'] is num ? node['min'] as num : num.tryParse(node['min']?.toString() ?? '');
-      final numMax =
-          node['max'] is num ? node['max'] as num : num.tryParse(node['max']?.toString() ?? '');
+      final numMin = node['min'] is num
+          ? node['min'] as num
+          : num.tryParse(node['min']?.toString() ?? '');
+      final numMax = node['max'] is num
+          ? node['max'] as num
+          : num.tryParse(node['max']?.toString() ?? '');
       if (!numberInputValueIsValid(
         value: value?.toString(),
         isRequired: isRequired,
@@ -233,8 +235,9 @@ class DefaultHttpAction extends GenericHttpAction {
 
     // Untrusted card JSON controls this URL. Validate against the active policy
     // before forwarding, mirroring DefaultOpenUrlAction.
-    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context)
-        .validate(invoke.url);
+    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(
+      context,
+    ).validate(invoke.url);
     if (validation case AdaptiveUriDenied(:final reason)) {
       if (kDebugMode) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -300,8 +303,9 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
     // Untrusted card JSON controls this URL. Validate against the active
     // policy before either forwarding to the host or launching it, so a
     // malicious scheme/host cannot reach a host handler or url_launcher.
-    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context)
-        .validate(invoke.url);
+    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(
+      context,
+    ).validate(invoke.url);
     if (validation case AdaptiveUriDenied(:final reason)) {
       if (kDebugMode) {
         ScaffoldMessenger.of(context).showSnackBar(

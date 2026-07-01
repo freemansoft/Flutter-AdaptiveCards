@@ -155,7 +155,8 @@ class AdaptiveCardBackendHandlers {
         final state = cardKey.currentState;
         if (state == null) {
           throw StateError(
-            'RawAdaptiveCardState not found — assign cardKey to RawAdaptiveCard',
+            'RawAdaptiveCardState not found '
+            '— assign cardKey to RawAdaptiveCard',
           );
         }
         if (onCardReplaced == null) {

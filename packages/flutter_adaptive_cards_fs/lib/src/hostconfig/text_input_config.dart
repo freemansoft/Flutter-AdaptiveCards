@@ -11,7 +11,8 @@ class TextInputConfig {
   /// Parses `inputs.text` from HostConfig JSON.
   factory TextInputConfig.fromJson(Map<String, dynamic> json) {
     return TextInputConfig(
-      revealPasswordEnabled: json['revealPasswordEnabled'] as bool? ??
+      revealPasswordEnabled:
+          json['revealPasswordEnabled'] as bool? ??
           FallbackConfigs.inputsConfig.text.revealPasswordEnabled,
     );
   }

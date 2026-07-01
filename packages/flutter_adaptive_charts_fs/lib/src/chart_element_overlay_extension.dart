@@ -32,13 +32,13 @@ class ChartElementOverlayExtension extends ElementOverlayExtension {
 
   @override
   Set<String> get overlayPatchKeys => const {
-        'data',
-        'chartData',
-        'chartProperties',
-        'clearChartData',
-        'clearChartProperties',
-        'clearPayload',
-      };
+    'data',
+    'chartData',
+    'chartProperties',
+    'clearChartData',
+    'clearChartProperties',
+    'clearPayload',
+  };
 
   @override
   bool appliesTo(String elementType) => elementType.startsWith('Chart.');

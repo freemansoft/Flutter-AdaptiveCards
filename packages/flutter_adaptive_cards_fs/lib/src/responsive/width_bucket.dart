@@ -101,7 +101,9 @@ int? relationalSpecificity(String? targetWidth) {
 }
 
 bool _failOpen(String raw) {
-  developer.log('Unrecognized targetWidth "$raw"; treating as always-visible',
-      name: 'responsive.width_bucket');
+  developer.log(
+    'Unrecognized targetWidth "$raw"; treating as always-visible',
+    name: 'responsive.width_bucket',
+  );
   return true;
 }

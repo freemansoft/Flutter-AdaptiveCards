@@ -35,10 +35,8 @@ bool dateInputValueIsValid({
   if (text.isEmpty) return !isRequired;
   final parsed = DateTime.tryParse(text);
   if (parsed == null) return false;
-  final lower =
-      (min == null || min.isEmpty) ? null : DateTime.tryParse(min);
-  final upper =
-      (max == null || max.isEmpty) ? null : DateTime.tryParse(max);
+  final lower = (min == null || min.isEmpty) ? null : DateTime.tryParse(min);
+  final upper = (max == null || max.isEmpty) ? null : DateTime.tryParse(max);
   if (lower != null && parsed.isBefore(lower)) return false;
   if (upper != null && parsed.isAfter(upper)) return false;
   return true;

@@ -10,7 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // TODO(username): Add language specific highlighting and line folding.
 // language specific highlighting is complex without 3p support
 //
-class AdaptiveCodeBlock extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveCodeBlock extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a code block from [adaptiveMap] JSON.
   AdaptiveCodeBlock({
     required this.adaptiveMap,

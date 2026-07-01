@@ -80,11 +80,11 @@ class AdaptiveCompoundButtonState extends ConsumerState<AdaptiveCompoundButton>
           onPressed: selectAction == null
               ? null
               : () => selectAction!.tap(
-                    context: context,
-                    rawAdaptiveCardState: rawRootCardWidgetState,
-                    adaptiveMap:
-                        adaptiveMap['selectAction'] as Map<String, dynamic>,
-                  ),
+                  context: context,
+                  rawAdaptiveCardState: rawRootCardWidgetState,
+                  adaptiveMap:
+                      adaptiveMap['selectAction'] as Map<String, dynamic>,
+                ),
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.all(12),
             alignment: Alignment.centerLeft,
@@ -118,8 +118,10 @@ class AdaptiveCompoundButtonState extends ConsumerState<AdaptiveCompoundButton>
               if (badge != null) ...[
                 const SizedBox(width: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(10),
