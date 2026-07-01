@@ -102,7 +102,9 @@ Future<void> showOpenUrlDialog({
   required HostConfigs hostConfigs,
 }) async {
   final uriPolicy = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context);
-  final fetchPolicy = InheritedAdaptiveCardSecurityPolicy.fetchPolicyOf(context);
+  final fetchPolicy = InheritedAdaptiveCardSecurityPolicy.fetchPolicyOf(
+    context,
+  );
   await showDialog<void>(
     context: context,
     builder: (dialogContext) {

@@ -54,7 +54,8 @@ class HostConfigs {
   final HostConfig dark;
 }
 
-/// Parsed Adaptive Cards HostConfig JSON that maps spec tokens to Flutter styling.
+/// Parsed Adaptive Cards HostConfig JSON that maps spec tokens to Flutter
+/// styling.
 ///
 /// Scalar fields ([imageBaseUrl], [fontFamily], [supportsInteractivity]) apply
 /// globally. Each nested section property mirrors a HostConfig JSON object and
@@ -90,7 +91,8 @@ class HostConfig {
     this.hostWidthBreakpoints,
   });
 
-  /// Load HostConfig from card host JSON; optional [theme] supplies Material color fallbacks.
+  /// Load HostConfig from card host JSON; optional [theme] supplies Material
+  /// color fallbacks.
   factory HostConfig.fromJson(
     Map<String, dynamic> json, {
     ThemeData? theme,

@@ -15,8 +15,9 @@ void main() {
 
   Widget stackBuilder(List<Widget> children) => Column(children: children);
 
-  testWidgets('returns AdaptiveFlowLayout when a Layout.Flow matches',
-      (tester) async {
+  testWidgets('returns AdaptiveFlowLayout when a Layout.Flow matches', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -36,8 +37,9 @@ void main() {
     expect(find.byType(AdaptiveFlowLayout), findsOneWidget);
   });
 
-  testWidgets('delegates to stackBuilder when no layout applies',
-      (tester) async {
+  testWidgets('delegates to stackBuilder when no layout applies', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(

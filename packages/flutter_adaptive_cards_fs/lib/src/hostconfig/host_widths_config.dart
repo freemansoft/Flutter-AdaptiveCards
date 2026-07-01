@@ -18,8 +18,9 @@ class HostWidthsConfig {
   });
 
   /// Parses `hostWidthBreakpoints` from HostConfig JSON, defaulting any missing
-  /// key to the corresponding spec default in [FallbackConfigs.hostWidthsConfig]
-  /// (the single source of truth for the default breakpoints).
+  /// key to the corresponding spec default in
+  /// [FallbackConfigs.hostWidthsConfig] (the single source of truth for the
+  /// default breakpoints).
   factory HostWidthsConfig.fromJson(Map<String, dynamic> json) {
     final defaults = FallbackConfigs.hostWidthsConfig;
     return HostWidthsConfig(

@@ -249,6 +249,8 @@ class TransparentImage {
 class Blue8x8Image {
   // 1. Base64 encoded string of a simple 1x1 blue pixel (non-transparent)
   static String blue8x8ImageBase64 =
+      // breaking up this strign would be stupid
+      // ignore: lines_longer_than_80_chars
       'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAFElEQVR4nGNkYPjPgA0wYRUdtBIAy0MBD1YkjLoAAAAASUVORK5CYII=';
   static Uint8List bytes = base64Decode(blue8x8ImageBase64);
 }

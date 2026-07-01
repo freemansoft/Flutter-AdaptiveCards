@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 
-/// Card render-width bucket used by responsive layout (`targetWidth`, `layouts`).
+/// Card render-width bucket used by responsive layout (`targetWidth`,
+/// `layouts`).
 ///
 /// Ordered narrowest → widest; the enum index doubles as the comparison rank
 /// for `atLeast:` / `atMost:` relational matching.
@@ -77,10 +78,10 @@ WidthBucket? _parseBucket(String value) {
 /// Specificity of a relational [targetWidth], as the number of width buckets it
 /// covers (fewer buckets = more specific).
 ///
-/// `'atLeast:<b>'` covers `<b>` through the widest bucket; `'atMost:<b>'` covers
-/// the narrowest bucket through `<b>`. Returns `null` for non-relational, null,
-/// or unparseable values (including an unknown operator). Layout selection
-/// prefers the most specific (smallest) relational match.
+/// `'atLeast:<b>'` covers `<b>` through the widest bucket; `'atMost:<b>'`
+/// covers the narrowest bucket through `<b>`. Returns `null` for
+/// non-relational, null, or unparseable values (including an unknown operator).
+/// Layout selection prefers the most specific (smallest) relational match.
 int? relationalSpecificity(String? targetWidth) {
   if (targetWidth == null) return null;
   final raw = targetWidth.trim();
@@ -101,7 +102,9 @@ int? relationalSpecificity(String? targetWidth) {
 }
 
 bool _failOpen(String raw) {
-  developer.log('Unrecognized targetWidth "$raw"; treating as always-visible',
-      name: 'responsive.width_bucket');
+  developer.log(
+    'Unrecognized targetWidth "$raw"; treating as always-visible',
+    name: 'responsive.width_bucket',
+  );
   return true;
 }

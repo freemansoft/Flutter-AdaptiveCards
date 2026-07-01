@@ -12,7 +12,8 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// Renders `Action.Http` as a button and forwards an `HttpActionInvoke` to the
 /// host via [GenericHttpAction].
-class AdaptiveActionHttp extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveActionHttp extends StatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates an `Action.Http` widget from [adaptiveMap].
   AdaptiveActionHttp({
     required this.adaptiveMap,

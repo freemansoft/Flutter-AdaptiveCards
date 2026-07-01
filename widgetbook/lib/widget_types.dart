@@ -1,5 +1,5 @@
 // =============================================================================
-// Stub classes for Widgetbook navigation (matching route names from example app)
+// Stub classes for Widgetbook navigation (matching route from example app)
 // These are used as `type` in @widgetbook.UseCase to group use cases
 // =============================================================================
 

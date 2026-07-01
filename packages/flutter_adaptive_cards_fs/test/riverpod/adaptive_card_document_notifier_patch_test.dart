@@ -140,59 +140,53 @@ void main() {
     test('clear patches revert resolved values to baseline', () {
       notifier
         ..applyUpdates(
-          elements: notifier
-              .updatesFromPatchMap({
-                'txt': {
-                  'isRequired': true,
-                  'label': 'L',
-                  'placeholder': 'P',
-                  'value': 'V',
-                },
-                'cs': {
-                  'choices': [
-                    {'title': 'X', 'value': 'x'},
-                  ],
-                },
-                'tb': {'text': 'newText'},
-                'fs': {
-                  'facts': [
-                    {'title': 'A', 'value': '9'},
-                  ],
-                },
-                'rtb': {
-                  'inlines': [
-                    {'type': 'TextRun', 'text': 'run'},
-                  ],
-                },
-                'img': {'url': 'https://e/x.png'},
-              })
-              .elements,
+          elements: notifier.updatesFromPatchMap({
+            'txt': {
+              'isRequired': true,
+              'label': 'L',
+              'placeholder': 'P',
+              'value': 'V',
+            },
+            'cs': {
+              'choices': [
+                {'title': 'X', 'value': 'x'},
+              ],
+            },
+            'tb': {'text': 'newText'},
+            'fs': {
+              'facts': [
+                {'title': 'A', 'value': '9'},
+              ],
+            },
+            'rtb': {
+              'inlines': [
+                {'type': 'TextRun', 'text': 'run'},
+              ],
+            },
+            'img': {'url': 'https://e/x.png'},
+          }).elements,
         )
         ..applyUpdates(
-          elements: notifier
-              .updatesFromPatchMap({
-                'txt': {
-                  'clearIsRequired': true,
-                  'clearLabel': true,
-                  'clearPlaceholder': true,
-                  'clearValue': true,
-                },
-                'cs': {'clearChoices': true},
-                'tb': {'clearText': true},
-                'fs': {'clearFacts': true},
-                'rtb': {'clearInlines': true},
-                'img': {'clearUrl': true},
-              })
-              .elements,
-          actions: notifier
-              .updatesFromPatchMap({
-                'act': {
-                  'clearTitle': true,
-                  'clearTooltip': true,
-                  'clearIconUrl': true,
-                },
-              })
-              .actions,
+          elements: notifier.updatesFromPatchMap({
+            'txt': {
+              'clearIsRequired': true,
+              'clearLabel': true,
+              'clearPlaceholder': true,
+              'clearValue': true,
+            },
+            'cs': {'clearChoices': true},
+            'tb': {'clearText': true},
+            'fs': {'clearFacts': true},
+            'rtb': {'clearInlines': true},
+            'img': {'clearUrl': true},
+          }).elements,
+          actions: notifier.updatesFromPatchMap({
+            'act': {
+              'clearTitle': true,
+              'clearTooltip': true,
+              'clearIconUrl': true,
+            },
+          }).actions,
         );
 
       final txt = container.read(resolvedElementProvider('txt'));
@@ -206,7 +200,10 @@ void main() {
             .first['value'],
         'static',
       );
-      expect(container.read(resolvedElementProvider('tb'))?['text'], 'baseText');
+      expect(
+        container.read(resolvedElementProvider('tb'))?['text'],
+        'baseText',
+      );
       expect(
         (container.read(resolvedElementProvider('fs'))?['facts'] as List)
             .first['title'],
@@ -240,7 +237,10 @@ void main() {
 
     test('clearIsRequired reverts to baseline isRequired', () {
       notifier.setIsRequired('txt', required: true);
-      expect(container.read(resolvedElementProvider('txt'))?['isRequired'], true);
+      expect(
+        container.read(resolvedElementProvider('txt'))?['isRequired'],
+        true,
+      );
 
       notifier.clearIsRequired('txt');
       expect(

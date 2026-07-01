@@ -10,7 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // TODO(username): Add language specific highlighting and line folding.
 // language specific highlighting is complex without 3p support
 //
-class AdaptiveCodeBlock extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveCodeBlock extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a code block from [adaptiveMap] JSON.
   AdaptiveCodeBlock({
     required this.adaptiveMap,
@@ -60,10 +61,9 @@ class AdaptiveCodeBlockState extends ConsumerState<AdaptiveCodeBlock>
       lineNumbers.writeln('${startLineNumber + i}');
     }
 
-    // Using a Row with two Text widgets.
-    // The Line numbers are non-selectable usually, but if we want them to scroll together,
-    // they should be in the same scrollable.
-    // To match height, we use the same Text Style.
+    // Using a Row with two Text widgets. The Line numbers are non-selectable
+    // usually, but if we want them to scroll together, they should be in the
+    // same scrollable. To match height, we use the same Text Style.
 
     const textStyle = TextStyle(
       fontFamily: 'Roboto',

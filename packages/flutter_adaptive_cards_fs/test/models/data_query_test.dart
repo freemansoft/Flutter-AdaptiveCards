@@ -13,7 +13,8 @@ void main() {
     });
 
     test(
-      'withMergedSiblingInputs merges when auto (country in parameters, city excluded)',
+      'withMergedSiblingInputs merges when auto '
+      '(country in parameters, city excluded)',
       () {
         final query = DataQuery(
           dataset: 'cities',

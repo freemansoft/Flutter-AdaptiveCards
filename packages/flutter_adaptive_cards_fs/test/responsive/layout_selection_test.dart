@@ -22,7 +22,10 @@ void main() {
         {'type': 'Layout.Flow', 'targetWidth': 'atLeast:narrow'},
         {'type': 'Layout.Stack', 'targetWidth': 'standard'},
       ];
-      expect(selectLayout(layouts, WidthBucket.standard)?['type'], 'Layout.Stack');
+      expect(
+        selectLayout(layouts, WidthBucket.standard)?['type'],
+        'Layout.Stack',
+      );
     });
 
     test('relational match preferred over no-targetWidth default', () {
@@ -42,7 +45,10 @@ void main() {
     });
 
     test('ignores non-map entries', () {
-      final layouts = ['nonsense', {'type': 'Layout.Flow', 'targetWidth': 'wide'}];
+      final layouts = [
+        'nonsense',
+        {'type': 'Layout.Flow', 'targetWidth': 'wide'},
+      ];
       expect(selectLayout(layouts, WidthBucket.wide)?['type'], 'Layout.Flow');
     });
 
@@ -83,7 +89,10 @@ void main() {
         {'type': 'Layout.Stack', 'targetWidth': 'atMost:standard'},
       ];
       // At standard both cover 3 buckets (equal specificity); first wins.
-      expect(selectLayout(layouts, WidthBucket.standard)?['type'], 'Layout.Flow');
+      expect(
+        selectLayout(layouts, WidthBucket.standard)?['type'],
+        'Layout.Flow',
+      );
     });
   });
 }

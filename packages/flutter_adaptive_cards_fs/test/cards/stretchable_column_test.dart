@@ -29,8 +29,9 @@ void main() {
     );
   }
 
-  testWidgets('bounded height: single stretch child fills height',
-      (tester) async {
+  testWidgets('bounded height: single stretch child fills height', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       host(
         maxHeight: 600,
@@ -49,8 +50,9 @@ void main() {
     expect(tester.getSize(find.byKey(const Key('s'))).height, 600);
   });
 
-  testWidgets('bounded height: two stretch children split the height',
-      (tester) async {
+  testWidgets('bounded height: two stretch children split the height', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       host(
         maxHeight: 600,
@@ -73,8 +75,9 @@ void main() {
     expect(tester.getSize(find.byKey(const Key('b'))).height, 300);
   });
 
-  testWidgets('unbounded height: stretch degrades to auto, no Expanded',
-      (tester) async {
+  testWidgets('unbounded height: stretch degrades to auto, no Expanded', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       host(
         maxHeight: null,
@@ -95,8 +98,9 @@ void main() {
     expect(tester.getSize(find.byKey(const Key('s'))).height, 10);
   });
 
-  testWidgets('stretch child fills row band inside IntrinsicHeight',
-      (tester) async {
+  testWidgets('stretch child fills row band inside IntrinsicHeight', (
+    tester,
+  ) async {
     // IntrinsicHeight is how ColumnSet/Table give columns a bounded height;
     // the render object must report intrinsics (a LayoutBuilder would throw).
     await tester.pumpWidget(
@@ -168,22 +172,25 @@ void main() {
     );
   }
 
-  testWidgets('crossAxisAlignment.center centers the narrow child',
-      (tester) async {
+  testWidgets('crossAxisAlignment.center centers the narrow child', (
+    tester,
+  ) async {
     await tester.pumpWidget(crossHost(cross: CrossAxisAlignment.center));
     // width collapses to 100; narrow (50) centered → dx = 25.
     expect(tester.getTopLeft(find.byKey(const Key('narrow'))).dx, 25);
   });
 
-  testWidgets('crossAxisAlignment.end right-aligns the narrow child',
-      (tester) async {
+  testWidgets('crossAxisAlignment.end right-aligns the narrow child', (
+    tester,
+  ) async {
     await tester.pumpWidget(crossHost(cross: CrossAxisAlignment.end));
     // width 100; narrow (50) at end → dx = 50.
     expect(tester.getTopLeft(find.byKey(const Key('narrow'))).dx, 50);
   });
 
-  testWidgets('crossAxisAlignment.stretch fills the bounded width',
-      (tester) async {
+  testWidgets('crossAxisAlignment.stretch fills the bounded width', (
+    tester,
+  ) async {
     await tester.pumpWidget(crossHost(cross: CrossAxisAlignment.stretch));
     // cross-stretch + bounded width → children tightened to 300.
     expect(tester.getSize(find.byKey(const Key('narrow'))).width, 300);
@@ -227,8 +234,9 @@ void main() {
     expect(tester.getSize(find.byKey(const Key('w'))).width, 120);
   });
 
-  testWidgets('updateRenderObject applies changed cross alignment',
-      (tester) async {
+  testWidgets('updateRenderObject applies changed cross alignment', (
+    tester,
+  ) async {
     await tester.pumpWidget(crossHost(cross: CrossAxisAlignment.start));
     expect(tester.getTopLeft(find.byKey(const Key('narrow'))).dx, 0);
     // Re-pump with a different alignment: the element reuses the render object,

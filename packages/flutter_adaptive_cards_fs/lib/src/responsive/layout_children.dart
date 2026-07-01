@@ -10,9 +10,9 @@ import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 ///
 /// Chooses the best entry from [layouts] (see [selectLayout]): `Layout.Flow` →
 /// [AdaptiveFlowLayout]; `Layout.AreaGrid` → [AdaptiveAreaGrid] (needs
-/// [childMaps] — the raw item JSON, index-aligned with [children] — to read each
-/// child's `grid.area`); otherwise delegates to [stackBuilder] (the caller's own
-/// stack), so non-layout rendering is unchanged. Callers pass
+/// [childMaps] — the raw item JSON, index-aligned with [children] — to read
+/// each child's `grid.area`); otherwise delegates to [stackBuilder] (the
+/// caller's own stack), so non-layout rendering is unchanged. Callers pass
 /// `ref.watch(cardWidthBucketProvider)` as [bucket] to reflow on resize.
 Widget buildLayoutChildren({
   required List<dynamic>? layouts,

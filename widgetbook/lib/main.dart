@@ -26,7 +26,7 @@ final MaterialThemeAddon _materialThemeAddon = MaterialThemeAddon(
 );
 
 /// [MaterialApp] sits outside the addon tree, so forward the active theme
-/// addon selection via [WidgetbookState] (same source [MaterialThemeAddon] uses).
+/// addon selection via [WidgetbookState] (same [MaterialThemeAddon] uses).
 Widget _widgetbookAppBuilder(BuildContext context, Widget child) {
   final state = WidgetbookState.of(context);
   return ListenableBuilder(
@@ -70,7 +70,7 @@ class WidgetbookApp extends StatelessWidget {
       addons: [
         // DeviceFrame AddOn deprecated in favor of ViewportAddon
         ViewportAddon(Viewports.all),
-        // Required for Widgetbook accessibility tooling, experimental usage is expected
+        // Required for Widgetbook accessibility tooling, exp usage is expected
         // ignore: experimental_member_use
         SemanticsAddon(),
         _materialThemeAddon,

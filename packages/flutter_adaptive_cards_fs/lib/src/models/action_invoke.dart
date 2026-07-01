@@ -21,7 +21,8 @@ String? actionIdFromMap(Map<String, dynamic> actionMap) {
 /// Contains merged action `data` and input values in `data`, plus optional
 /// author-defined `actionId` from the action JSON.
 class SubmitActionInvoke {
-  /// Creates a submit callback payload with merged [data] and optional [actionId].
+  /// Creates a submit callback payload with merged [data] and optional
+  /// [actionId].
   const SubmitActionInvoke({
     required this.data,
     this.actionId,
@@ -51,7 +52,8 @@ class SubmitActionInvoke {
 /// Wraps the nested `refresh.action` map plus merged input values. When no
 /// `onRefresh` handler is installed, the library falls back to `onExecute`.
 class RefreshActionInvoke {
-  /// Creates a refresh callback payload with merged [data], [verb], and [actionId].
+  /// Creates a refresh callback payload with merged [data], [verb], and
+  /// [actionId].
   const RefreshActionInvoke({
     required this.data,
     this.verb,
@@ -70,7 +72,8 @@ class RefreshActionInvoke {
     );
   }
 
-  /// Merged action `data` and collected input values (inputs win on key collision).
+  /// Merged action `data` and collected input values (inputs win on key
+  /// collision).
   final Map<String, dynamic> data;
 
   /// Verb from the nested `Action.Execute` map.
@@ -85,7 +88,8 @@ class RefreshActionInvoke {
 /// Contains merged action `data` and input values in `data`, plus optional
 /// `verb` and author-defined `actionId` from the action JSON.
 class ExecuteActionInvoke {
-  /// Creates an execute callback payload with merged [data], [verb], and [actionId].
+  /// Creates an execute callback payload with merged [data], [verb], and
+  /// [actionId].
   const ExecuteActionInvoke({
     required this.data,
     this.verb,
@@ -265,7 +269,8 @@ class HttpActionInvoke {
   final String? actionId;
 }
 
-/// Payload delivered to the host `onChange` callback when an input value changes.
+/// Payload delivered to the host `onChange` callback when an input value
+/// changes.
 class InputChangeInvoke {
   /// Creates an input-change callback for [inputId] with the new [value].
   const InputChangeInvoke({

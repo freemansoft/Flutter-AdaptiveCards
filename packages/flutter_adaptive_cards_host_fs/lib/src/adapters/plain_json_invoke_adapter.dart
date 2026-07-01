@@ -4,7 +4,8 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_kind.dart';
 import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_request.dart';
 import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
 
-/// Serializes [AdaptiveCardInvokeRequest] to flat JSON for custom flow-services.
+/// Serializes [AdaptiveCardInvokeRequest] to flat JSON
+/// for custom flow-services.
 ///
 /// Default wire format for `AdaptiveCardBackendHandlers`: assign
 /// `PlainJsonInvokeAdapter.toMap` as `requestAdapter` and

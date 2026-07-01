@@ -55,10 +55,12 @@ bool validateInputs(ProviderContainer container) {
     if (type == 'Input.Number') {
       // node['min'/'max'] are num in dart:convert-decoded JSON, but guard
       // against string-encoded bounds from template expansion or loose typing.
-      final numMin =
-          node['min'] is num ? node['min'] as num : num.tryParse(node['min']?.toString() ?? '');
-      final numMax =
-          node['max'] is num ? node['max'] as num : num.tryParse(node['max']?.toString() ?? '');
+      final numMin = node['min'] is num
+          ? node['min'] as num
+          : num.tryParse(node['min']?.toString() ?? '');
+      final numMax = node['max'] is num
+          ? node['max'] as num
+          : num.tryParse(node['max']?.toString() ?? '');
       if (!numberInputValueIsValid(
         value: value?.toString(),
         isRequired: isRequired,
@@ -114,7 +116,8 @@ bool validateInputs(ProviderContainer container) {
 /// Default actions for onTaps for Action.Submit
 /// Expects there to be supplementary data in 'data' property
 class DefaultSubmitAction extends GenericSubmitAction {
-  /// Validates inputs, merges `data`, and forwards to [InheritedAdaptiveCardHandlers.onSubmit].
+  /// Validates inputs, merges `data`, and forwards to
+  /// [InheritedAdaptiveCardHandlers.onSubmit].
   const DefaultSubmitAction();
 
   @override
@@ -159,7 +162,8 @@ class DefaultSubmitAction extends GenericSubmitAction {
 /// Default actions for onTaps for Action.Execute
 /// Expects there to be supplementary data in 'data' property
 class DefaultExecuteAction extends GenericExecuteAction {
-  /// Validates inputs, merges `data`, and forwards to [InheritedAdaptiveCardHandlers.onExecute].
+  /// Validates inputs, merges `data`, and forwards to
+  /// [InheritedAdaptiveCardHandlers.onExecute].
   const DefaultExecuteAction();
 
   @override
@@ -233,8 +237,9 @@ class DefaultHttpAction extends GenericHttpAction {
 
     // Untrusted card JSON controls this URL. Validate against the active policy
     // before forwarding, mirroring DefaultOpenUrlAction.
-    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context)
-        .validate(invoke.url);
+    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(
+      context,
+    ).validate(invoke.url);
     if (validation case AdaptiveUriDenied(:final reason)) {
       if (kDebugMode) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -300,8 +305,9 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
     // Untrusted card JSON controls this URL. Validate against the active
     // policy before either forwarding to the host or launching it, so a
     // malicious scheme/host cannot reach a host handler or url_launcher.
-    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(context)
-        .validate(invoke.url);
+    final validation = InheritedAdaptiveCardSecurityPolicy.uriPolicyOf(
+      context,
+    ).validate(invoke.url);
     if (validation case AdaptiveUriDenied(:final reason)) {
       if (kDebugMode) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -333,7 +339,8 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
 ///
 /// idential to DefaultOpenUrlAction for now
 class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
-  /// Forwards to [InheritedAdaptiveCardHandlers.onOpenUrlDialog] or shows the built-in dialog.
+  /// Forwards to [InheritedAdaptiveCardHandlers.onOpenUrlDialog] or shows the
+  /// built-in dialog.
   const DefaultOpenUrlDialogAction();
 
   @override
@@ -419,7 +426,8 @@ class DefaultPopoverAction extends GenericPopoverAction {
 /// Default actions for Action.ToggleVisibility
 ///
 class DefaultToggleVisibilityAction extends GenericActionToggleVisibility {
-  /// Toggles visibility for each `targetElements` entry via the document notifier.
+  /// Toggles visibility for each `targetElements` entry via the document
+  /// notifier.
   const DefaultToggleVisibilityAction();
 
   @override

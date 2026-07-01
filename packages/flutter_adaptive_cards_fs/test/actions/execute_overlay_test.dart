@@ -52,9 +52,7 @@ void main() {
     await tester.pump();
 
     expect(
-      tester
-          .widget<ElevatedButton>(_actionButtonFinder())
-          .onPressed,
+      tester.widget<ElevatedButton>(_actionButtonFinder()).onPressed,
       isNull,
     );
 

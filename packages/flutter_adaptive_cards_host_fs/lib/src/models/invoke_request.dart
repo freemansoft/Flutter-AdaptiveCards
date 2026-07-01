@@ -18,7 +18,8 @@ class AdaptiveCardInvokeRequest {
     this.url,
   });
 
-  /// Maps Submit callback data for backend POST via `AdaptiveCardBackendHandlers`.
+  /// Maps Submit callback data for backend POST
+  /// via `AdaptiveCardBackendHandlers`.
   factory AdaptiveCardInvokeRequest.fromSubmit(SubmitActionInvoke invoke) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.submit,

@@ -55,7 +55,9 @@ void main() {
     // Set the date value the same way the platform picker does (via the
     // document overlay), submit the show-card's OK action, and verify the
     // collected input value reaches the host's onSubmit payload.
-    final container = ProviderScope.containerOf(tester.element(textFieldFinder));
+    final container = ProviderScope.containerOf(
+      tester.element(textFieldFinder),
+    );
     container
         .read(adaptiveCardDocumentProvider.notifier)
         .setInputValue('dueDate', '2025-09-15');

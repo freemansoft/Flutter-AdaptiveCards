@@ -11,32 +11,34 @@ void main() {
     colorFallbacks: ThemeColorFallbacks(ThemeData.light()),
   );
 
-  testWidgets('renders children inside a Wrap with resolved spacing/alignment',
-      (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: AdaptiveFlowLayout(
-            layoutMap: const {
-              'type': 'Layout.Flow',
-              'columnSpacing': 'small',
-              'rowSpacing': 'large',
-              'horizontalItemsAlignment': 'center',
-            },
-            styleResolver: resolver,
-            children: const [Text('a'), Text('b')],
+  testWidgets(
+    'renders children inside a Wrap with resolved spacing/alignment',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: AdaptiveFlowLayout(
+              layoutMap: const {
+                'type': 'Layout.Flow',
+                'columnSpacing': 'small',
+                'rowSpacing': 'large',
+                'horizontalItemsAlignment': 'center',
+              },
+              styleResolver: resolver,
+              children: const [Text('a'), Text('b')],
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('a'), findsOneWidget);
-    expect(find.text('b'), findsOneWidget);
-    final wrap = tester.widget<Wrap>(find.byType(Wrap));
-    expect(wrap.alignment, WrapAlignment.center);
-    expect(wrap.spacing, 4); // 'small' via FallbackConfigs.spacingsConfig
-    expect(wrap.runSpacing, 16); // 'large' via FallbackConfigs.spacingsConfig
-  });
+      expect(find.text('a'), findsOneWidget);
+      expect(find.text('b'), findsOneWidget);
+      final wrap = tester.widget<Wrap>(find.byType(Wrap));
+      expect(wrap.alignment, WrapAlignment.center);
+      expect(wrap.spacing, 4); // 'small' via FallbackConfigs.spacingsConfig
+      expect(wrap.runSpacing, 16); // 'large' via FallbackConfigs.spacingsConfig
+    },
+  );
 
   testWidgets('clamps item width to minItemWidth', (tester) async {
     await tester.pumpWidget(
@@ -73,8 +75,9 @@ void main() {
     );
   });
 
-  testWidgets('no sizing → each item is content-fit via IntrinsicWidth',
-      (tester) async {
+  testWidgets('no sizing → each item is content-fit via IntrinsicWidth', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -99,8 +102,9 @@ void main() {
     expect(find.text('a'), findsOneWidget);
   });
 
-  testWidgets('itemWidth gives each item a fixed-width SizedBox',
-      (tester) async {
+  testWidgets('itemWidth gives each item a fixed-width SizedBox', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -114,15 +118,14 @@ void main() {
     );
 
     final sized = tester.widget<SizedBox>(
-      find
-          .ancestor(of: find.text('x'), matching: find.byType(SizedBox))
-          .first,
+      find.ancestor(of: find.text('x'), matching: find.byType(SizedBox)).first,
     );
     expect(sized.width, 120);
   });
 
-  testWidgets('itemFit "Fill" does not throw and renders as Fit',
-      (tester) async {
+  testWidgets('itemFit "Fill" does not throw and renders as Fit', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -139,8 +142,9 @@ void main() {
     expect(find.text('a'), findsOneWidget);
   });
 
-  testWidgets('itemWidth is the safe escape for items without intrinsic width',
-      (tester) async {
+  testWidgets('itemWidth is safe escape for items without intrinsic width', (
+    tester,
+  ) async {
     // A nested Wrap has no intrinsic-width support, so the content-fit path
     // (IntrinsicWidth) cannot size it. Setting itemWidth switches to a SizedBox
     // (no IntrinsicWidth), which sizes such items without throwing.

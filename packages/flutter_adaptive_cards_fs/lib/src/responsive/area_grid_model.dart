@@ -10,12 +10,15 @@ class AreaGridTrack {
   /// Whether [value] is a percentage of available width (vs. fixed pixels).
   final bool isPercent;
 
-  /// Parses one `columns` entry: a number → percent; a `"<n>px"` string → pixels.
+  /// Parses one `columns` entry: a number → percent; a `"<n>px"` string →
+  /// pixels.
   ///
   /// Returns `null` for unparseable entries; the solver treats the shortfall as
   /// implied equal-share columns.
   static AreaGridTrack? fromJson(Object? raw) {
-    if (raw is num) return AreaGridTrack(value: raw.toDouble(), isPercent: true);
+    if (raw is num) {
+      return AreaGridTrack(value: raw.toDouble(), isPercent: true);
+    }
     if (raw is String) {
       final t = raw.trim();
       final isPx = t.toLowerCase().endsWith('px');
@@ -42,12 +45,12 @@ class GridAreaModel {
   /// Parses one `areas` entry, applying spec defaults (column/row 1, spans 1)
   /// and clamping non-positive values to 1.
   factory GridAreaModel.fromJson(Map<String, dynamic> json) => GridAreaModel(
-        name: (json['name'] as String?) ?? '',
-        column: _posInt(json['column'], 1),
-        columnSpan: _posInt(json['columnSpan'], 1),
-        row: _posInt(json['row'], 1),
-        rowSpan: _posInt(json['rowSpan'], 1),
-      );
+    name: (json['name'] as String?) ?? '',
+    column: _posInt(json['column'], 1),
+    columnSpan: _posInt(json['columnSpan'], 1),
+    row: _posInt(json['row'], 1),
+    rowSpan: _posInt(json['rowSpan'], 1),
+  );
 
   /// Area name; matched against an element's `grid.area`.
   final String name;
@@ -108,7 +111,8 @@ class AreaGridLayout {
   /// Named areas elements are placed into via `grid.area`.
   final List<GridAreaModel> areas;
 
-  /// Spacing token between columns (HostConfig spacing name; resolved by widget).
+  /// Spacing token between columns (HostConfig spacing name; resolved by
+  /// widget).
   final String? columnSpacing;
 
   /// Spacing token between rows (HostConfig spacing name; resolved by widget).

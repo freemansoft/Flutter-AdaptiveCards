@@ -10,14 +10,16 @@ import 'package:flutter_adaptive_charts_fs/src/charts/pie_donut_chart.dart';
 /// receives the element JSON map and returns the widget to render.
 typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 
-/// Registry of chart element type strings to widget builders for the card renderer.
+/// Registry of chart element type strings to widget builders for the card
+/// renderer.
 ///
 /// Merge [additionalChartElements] into the host app's element dispatch table
 /// (via `addElements`) so `Chart.*` types render with [AdaptivePieChart],
 /// [AdaptiveLineChart], and [AdaptiveBarChart].
 class CardChartsRegistry {
-  /// Default `Chart.*` type → builder map; pass to `CardTypeRegistry.addElements`
-  /// (or equivalent) when wiring charts into a host app.
+  /// Default `Chart.*` type → builder map; pass to
+  /// `CardTypeRegistry.addElements` (or equivalent) when wiring charts into a
+  /// host app.
   static Map<String, ElementCreator> additionalChartElements = {
     'Chart.Donut': (map) => AdaptivePieChart(
       adaptiveMap: map,
@@ -52,6 +54,6 @@ class CardChartsRegistry {
   /// Chart overlay merge hooks; pass to `CardTypeRegistry.overlayExtensions`.
   static final CardOverlayExtensionRegistry overlayExtensions =
       CardOverlayExtensionRegistry(
-    extensions: [ChartElementOverlayExtension.instance],
-  );
+        extensions: [ChartElementOverlayExtension.instance],
+      );
 }

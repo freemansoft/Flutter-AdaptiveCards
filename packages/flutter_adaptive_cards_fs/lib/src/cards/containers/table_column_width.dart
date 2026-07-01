@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-/// Maps an Adaptive Cards `Table` column `width` to a Flutter [TableColumnWidth].
+/// Maps an Adaptive Cards `Table` column `width` to a Flutter
+/// [TableColumnWidth].
 ///
 /// Callers pass the raw `width` JSON value (a number or string). `"auto"` sizes
 /// the column to its content; `"stretch"`, a missing value, or anything
@@ -27,8 +28,8 @@ TableColumnWidth mapColumnWidth(Object? width) {
 
 /// Parses an Adaptive Cards cell `minHeight` (e.g. `"80px"`) to a pixel value.
 ///
-/// Returns null when the value is absent, unparseable, or non-positive so callers
-/// can skip applying a constraint entirely.
+/// Returns null when the value is absent, unparseable, or non-positive so
+/// callers can skip applying a constraint entirely.
 double? parseCellMinHeightPx(String? minHeight) {
   if (minHeight == null) return null;
   final value = minHeight.trim().toLowerCase();

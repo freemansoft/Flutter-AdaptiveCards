@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders a `Container` that vertically stacks `items` with optional
 /// background, spacing, and `minHeight`.
-class AdaptiveContainer extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveContainer extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a `Container` element from [adaptiveMap].
   AdaptiveContainer({
     required this.adaptiveMap,
@@ -112,8 +113,9 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
           childMaps: childMaps,
           children: items,
           mainAxisAlignment: verticalContentAlignment,
-          // Preserve the prior Column default (center) so non-stretch containers
-          // render identically; only height:stretch behavior is added here.
+          // Preserve the prior Column default (center) so non-stretch
+          // containers render identically; only height:stretch behavior is
+          // added here.
           crossAxisAlignment: CrossAxisAlignment.center,
         ),
       );

@@ -7,7 +7,8 @@
 /// <https://learn.microsoft.com/en-us/outlook/actionable-messages/adaptive-card>.
 ///
 /// This is the literal Outlook `{{id.value}}` form only; it is intentionally
-/// unrelated to the `flutter_adaptive_template_fs` templating engine (`${...}`).
+/// unrelated to the `flutter_adaptive_template_fs` templating engine
+/// (`${...}`).
 library;
 
 /// Matches `{{ inputId.value }}` tokens, capturing the input id. Surrounding

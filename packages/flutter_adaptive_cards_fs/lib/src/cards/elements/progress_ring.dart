@@ -71,10 +71,10 @@ class AdaptiveProgressRingState extends ConsumerState<AdaptiveProgressRing>
     label = adaptiveMap['label'] as String?;
     labelPosition = (adaptiveMap['labelPosition'] as String? ?? 'Above')
         .toLowerCase();
-    // "Above" is default? JSON says "Above (default)" in label text, but let's assume Above.
-    // Spec says default is likely Top/Above?
-    // JSON used "Before", "After" which map to Left/Right?
-    // User request: "Above", "Below", "left" "right".
+    // "Above" is default? JSON says "Above (default)" in label text, but let's
+    // assume Above. Spec says default is likely Top/Above? JSON used "Before",
+    // "After" which map to Left/Right? User request: "Above", "Below", "left"
+    // "right".
     if (labelPosition == 'before') labelPosition = 'left';
     if (labelPosition == 'after') labelPosition = 'right';
   }

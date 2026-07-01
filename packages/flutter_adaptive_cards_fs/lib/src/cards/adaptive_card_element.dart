@@ -226,10 +226,8 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 
   @override
   Widget build(BuildContext context) {
-    // developer.log(
-    //   'Building AdaptiveCardElement $id with ${bodyChildren.length} children',
-    //   name: runtimeType.toString(),
-    // );
+    // developer.log( 'Building AdaptiveCardElement $id with
+    // ${bodyChildren.length} children', name: runtimeType.toString(), );
     loadNonBodyChildren();
 
     final List<Widget> bodyItems = bodyChildren
@@ -282,9 +280,10 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       ),
     ];
 
-    // Body items honor an optional root `layouts` array (Layout.Flow) chosen for
-    // the current card width; reads cardWidthBucketProvider below, so it reflows
-    // on resize. The listView path stays a flat list (Flow not applied there).
+    // Body items honor an optional root `layouts` array (Layout.Flow) chosen
+    // for the current card width; reads cardWidthBucketProvider below, so it
+    // reflows on resize. The listView path stays a flat list (Flow not applied
+    // there).
     final Widget bodyLayout = _AdaptiveCardBody(
       bodyItems: bodyItems,
       childMaps: bodyMaps,
@@ -348,19 +347,21 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     // Two scopes (see the responsive design doc, weakness W2):
     // - OUTER ProviderScope is stable (document state, registries, element
     //   state); it is never rebuilt by layout.
-    // - INNER ProviderScope inside the LayoutBuilder publishes the width-derived
-    //   bucket via overrideWithValue. It is re-created each layout pass (a
-    //   trivial allocation) but its element/container persist, its `child` is the
-    //   stable [cardBody], and overrideWithValue only notifies watchers when the
-    //   bucket actually changes — so no per-pass subtree rebuild and no frame lag.
+    // - INNER ProviderScope inside the LayoutBuilder publishes the
+    //   width-derived bucket via overrideWithValue. It is re-created each
+    //   layout pass (a trivial allocation) but its element/container persist,
+    //   its `child` is the stable [cardBody], and overrideWithValue only
+    //   notifies watchers when the bucket actually changes — so no per-pass
+    //   subtree rebuild and no frame lag.
     return ProviderScope(
       overrides: [
         adaptiveCardElementStateProvider.overrideWithValue(this),
       ],
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final WidthBucket bucket =
-              styleResolver.resolveWidthBucket(constraints.maxWidth);
+          final WidthBucket bucket = styleResolver.resolveWidthBucket(
+            constraints.maxWidth,
+          );
           return ProviderScope(
             overrides: [
               cardWidthBucketProvider.overrideWithValue(bucket),

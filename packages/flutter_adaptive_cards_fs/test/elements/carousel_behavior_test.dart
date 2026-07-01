@@ -36,7 +36,10 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      getTestWidgetFromMap(map: _carousel(orientation: 'vertical'), title: 'v'),
+      getTestWidgetFromMap(
+        map: _carousel(orientation: 'vertical'),
+        title: 'v',
+      ),
     );
     await tester.pump();
 
@@ -62,8 +65,9 @@ void main() {
     );
     await tester.pump();
 
-    final controller =
-        tester.widget<PageView>(find.byType(PageView)).controller!;
+    final controller = tester
+        .widget<PageView>(find.byType(PageView))
+        .controller!;
     expect(controller.page?.round() ?? controller.initialPage, 0);
 
     await tester.pump(const Duration(milliseconds: 1100));

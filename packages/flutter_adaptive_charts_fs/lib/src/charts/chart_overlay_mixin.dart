@@ -1,7 +1,8 @@
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_extend_fs.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Listens to [resolvedElementProvider] and reparses chart state on overlay changes.
+/// Listens to [resolvedElementProvider] and reparses chart state on overlay
+/// changes.
 mixin ChartOverlayMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// Stable element id; provided by [AdaptiveElementMixin] when mixed in.
   String get id;

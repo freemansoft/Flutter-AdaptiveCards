@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders a `Column` inside a `ColumnSet`, sizing by `width` and laying out
 /// `items` vertically.
-class AdaptiveColumn extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveColumn extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a `Column` from [adaptiveMap] within a parent `ColumnSet`.
   AdaptiveColumn({
     required this.adaptiveMap,
@@ -103,7 +104,9 @@ class AdaptiveColumnState extends ConsumerState<AdaptiveColumn>
         ? List<Map<String, dynamic>>.from(adaptiveMap['items'])
         : <Map<String, dynamic>>[];
     items = itemMaps
-        .map((child) => cardTypeRegistry.getElement(map: child, parentMode: mode))
+        .map(
+          (child) => cardTypeRegistry.getElement(map: child, parentMode: mode),
+        )
         .toList();
     horizontalAlignment = styleResolver.resolveHorzontalCrossAxisAlignment(
       adaptiveMap['horizontalAlignment'],

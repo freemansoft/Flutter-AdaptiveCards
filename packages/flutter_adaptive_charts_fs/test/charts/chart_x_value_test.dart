@@ -9,15 +9,16 @@ void main() {
     });
 
     test('parses ISO datetime to epoch milliseconds', () {
-      final expected = DateTime.parse('2026-06-17T00:00:00Z')
-          .millisecondsSinceEpoch
-          .toDouble();
+      final expected = DateTime.parse(
+        '2026-06-17T00:00:00Z',
+      ).millisecondsSinceEpoch.toDouble();
       expect(parseChartXValue('2026-06-17T00:00:00Z'), expected);
     });
 
     test('parses ISO date to epoch milliseconds', () {
-      final expected =
-          DateTime.parse('2026-06-17').millisecondsSinceEpoch.toDouble();
+      final expected = DateTime.parse(
+        '2026-06-17',
+      ).millisecondsSinceEpoch.toDouble();
       expect(parseChartXValue('2026-06-17'), expected);
     });
 

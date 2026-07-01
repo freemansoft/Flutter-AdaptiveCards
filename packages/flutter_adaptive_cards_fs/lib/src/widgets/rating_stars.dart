@@ -66,7 +66,8 @@ class RatingStars extends StatelessWidget {
   /// Called when the user selects a new rating (interactive mode only).
   final ValueChanged<double>? onRatingChanged;
 
-  /// When true, fractional [value] renders with [Icons.star_half] (display only).
+  /// When true, fractional [value] renders with [Icons.star_half] (display
+  /// only).
   final bool useHalfStarDisplay;
 
   IconData _iconForIndex(int index) {

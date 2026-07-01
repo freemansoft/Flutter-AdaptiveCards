@@ -3,7 +3,8 @@ bool shouldMergeAssociatedInputs(String? associatedInputs) {
   return associatedInputs != 'none';
 }
 
-/// Merges [siblingValues] into [existingParameters], excluding [excludeInputId].
+/// Merges [siblingValues] into [existingParameters], excluding
+/// [excludeInputId].
 Map<String, dynamic> mergeSiblingInputParameters({
   required Map<String, dynamic> siblingValues,
   required String excludeInputId,

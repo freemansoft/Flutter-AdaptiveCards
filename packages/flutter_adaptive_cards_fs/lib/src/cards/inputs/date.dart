@@ -146,7 +146,8 @@ class AdaptiveDateInputState extends ConsumerState<AdaptiveDateInput>
                   ),
                   suffixIcon: const Icon(Icons.calendar_today, size: 15),
                   hintText: input.placeholder,
-                  // required or box will exist even though field is hidden or half height
+                  // required or box will exist even though field is hidden or
+                  // half height
                   hintStyle: const TextStyle(),
                   errorStyle: const TextStyle(height: 0),
                 ),

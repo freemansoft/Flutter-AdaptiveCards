@@ -1,14 +1,16 @@
 /// Unit tests for [OverlayCapabilityRegistry] — the shared map of supported
 /// runtime overlay fields per Adaptive Card JSON `type`.
 ///
-/// The registry is exposed on [CardTypeRegistry.overlayCapabilities] and mirrors
+/// The registry is exposed on [CardTypeRegistry.overlayCapabilities] and
+/// mirrors
 /// [`docs/overlay-properties-by-type.md`](../../../../docs/overlay-properties-by-type.md).
 /// These tests guard:
 ///
 /// - Standard input, display, and action field sets
 /// - [OverlayCapabilityRegistry.validateElementUpdate] /
 ///   [OverlayCapabilityRegistry.validateActionUpdate]
-/// - Optional [ElementOverlayExtension] registration (`extensionPayload`, [ElementOverlayExtension.overlayPatchKeys])
+/// - Optional [ElementOverlayExtension] registration (`extensionPayload`,
+///   [ElementOverlayExtension.overlayPatchKeys])
 ///
 /// Widget-level overlay behavior remains in `*_overlay_test.dart` files; merge
 /// semantics stay in `adaptive_card_document_notifier_test.dart`.

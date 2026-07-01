@@ -5,7 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('AdaptiveCardContentProvider tests', () {
     const jsonString =
-        '{"type": "AdaptiveCard", "version": "1.0", "body": [{"type": "TextBlock", "text": "Hello"}]}';
+        '{"type": "AdaptiveCard", "version": "1.0", '
+        '"body": [{"type": "TextBlock", "text": "Hello"}]}';
     final contentMap = {
       'type': 'AdaptiveCard',
       'version': '1.0',
@@ -29,7 +30,8 @@ void main() {
 
   group('AdaptiveCard constructors', () {
     const jsonString =
-        '{"type": "AdaptiveCard", "version": "1.0", "body": [{"type": "TextBlock", "text": "Hello"}]}';
+        '{"type": "AdaptiveCard", "version": "1.0", '
+        '"body": [{"type": "TextBlock", "text": "Hello"}]}';
     final contentMap = {
       'type': 'AdaptiveCard',
       'version': '1.0',

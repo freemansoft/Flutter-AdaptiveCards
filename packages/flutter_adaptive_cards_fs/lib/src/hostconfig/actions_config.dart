@@ -1,4 +1,5 @@
-/// HostConfig `actions.showCard` settings controlling ShowCard action rendering.
+/// HostConfig `actions.showCard` settings controlling ShowCard action
+/// rendering.
 class ShowCardConfig {
   /// Creates show-card layout settings from explicit values.
   ShowCardConfig({
@@ -26,7 +27,8 @@ class ShowCardConfig {
   final int inlineTopMargin;
 }
 
-/// HostConfig `actions` section controlling action set layout and button chrome.
+/// HostConfig `actions` section controlling action set layout and button
+/// chrome.
 class ActionsConfig {
   /// Creates action-set layout settings from explicit values.
   ActionsConfig({

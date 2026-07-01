@@ -31,7 +31,7 @@ const citiesByCountry = <String, List<Choice>>{
   ],
 };
 
-/// Resolves country codes from onChange values (all ChoiceSet styles pass `value`).
+/// Resolves country codes from onChange (all ChoiceSet styles pass `value`).
 String? countryCodeFromOnChangeValue(Object? value) {
   final raw = value?.toString() ?? '';
   if (raw.isEmpty) return null;
@@ -46,14 +46,14 @@ String? countryCodeFromOnChangeValue(Object? value) {
   return null;
 }
 
-/// Widgetbook page demonstrating country → city dependent Input.ChoiceSet fields.
+/// Widgetbook demonstrating country → city dependent Input.ChoiceSet fields.
 ///
 /// Both use cases ("host cascade" and "Teams Data.Query") use this widget with
 /// different [assetPath] values but the same [handleDependentChoiceSetChange]
 /// handler.
 ///
 /// Card JSON defines valueChangedAction reset on the country field. This page
-/// supplies country-specific city choices via RawAdaptiveCardState.applyUpdates.
+/// supplies country-specific choices via RawAdaptiveCardState.applyUpdates.
 ///
 /// Phase 1: associatedInputs merges sibling input values into Data.Query
 /// parameters on city onChange. Country change preloads city choices; the city
@@ -74,7 +74,7 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
   /// this method implements both paths via two branches.
   ///
   /// Option 1 = host-driven cascade with a compact city dropdown;
-  /// Option 2 = same cascade plus a Teams-style filtered city field backed by choices.data.
+  /// Option 2 = cascade plus Teams-style filtered city backed by choices.data.
   /// The handler’s country branch serves both;
   /// the city/Data.Query branch is Option 2 only.
   static void handleDependentChoiceSetChange(InputChangeInvoke invoke) {
@@ -84,7 +84,7 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
     // Option 1 shows compact dropdown updating (USA vs France cities).
     //
     // Option 2 preloads overlay choices before the filtered city picker opens.
-    // Defer until after valueChangedAction reset (runs after onChange in ChoiceSet).
+    // Defer until after valueChangedAction reset (after onChange in ChoiceSet).
     if (invoke.inputId == 'country') {
       final countryCode = countryCodeFromOnChangeValue(invoke.value);
       final choices = countryCode == null
@@ -137,7 +137,7 @@ class DependentChoiceSetDemoPage extends StatelessWidget {
         }
         // Re-apply the resolved Data.Query choices, but preserve the value the
         // user just selected. Passing [value] keeps the selection: applying
-        // `choices` without a `value` would clear the input (the notifier treats
+        // `choices` without `value` would clear the input (the notifier treats
         // "new choices, no value" as a stale-value reset), wiping the pick.
         invoke.cardState.applyUpdates(
           elements: [

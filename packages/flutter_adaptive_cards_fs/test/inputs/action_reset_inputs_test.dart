@@ -104,7 +104,8 @@ void main() {
   });
 
   testWidgets(
-    'ResetInputs action restores static choices after loadInput dynamic overlay',
+    'ResetInputs action restores static choices after loadInput '
+    'dynamic overlay',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         getTestWidgetFromPath(path: 'action_reset_inputs.json'),

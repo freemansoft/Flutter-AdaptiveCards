@@ -28,7 +28,8 @@ class AdaptiveRatingInput extends ConsumerStatefulWidget
   AdaptiveRatingInputState createState() => AdaptiveRatingInputState();
 }
 
-/// State for [AdaptiveRatingInput]; syncs star selection with document overlays.
+/// State for [AdaptiveRatingInput]; syncs star selection with document
+/// overlays.
 class AdaptiveRatingInputState extends ConsumerState<AdaptiveRatingInput>
     with
         AdaptiveInputMixin,

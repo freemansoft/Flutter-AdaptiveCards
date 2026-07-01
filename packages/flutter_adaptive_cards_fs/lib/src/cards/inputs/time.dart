@@ -100,17 +100,19 @@ class AdaptiveTimeInputState extends ConsumerState<AdaptiveTimeInput>
                 rawRootCardWidgetState.showError(
                   'Time ${result.hour} '
                   'must be after ${min.hour} and before ${max.hour} ',
-                  // old code
-                  //'must be after ${context.mounted ? min.format(rawRootCardWidgetState.context) : min.toString()}'
-                  // old code
-                  //' and before ${context.mounted ? max.format(rawRootCardWidgetState.context) : max.toString()}',
+                  // old code 'must be after ${context.mounted ?
+                  // min.format(rawRootCardWidgetState.context) :
+                  // min.toString()}' old code ' and before ${context.mounted ?
+                  // max.format(rawRootCardWidgetState.context) :
+                  // max.toString()}',
                 );
               } else {
                 setState(() {
                   selectedTime = result;
                 });
-                final value =
-                    '${result.hour.toString().padLeft(2, '0')}:${result.minute.toString().padLeft(2, '0')}';
+                final hh = result.hour.toString().padLeft(2, '0');
+                final mm = result.minute.toString().padLeft(2, '0');
+                final value = '$hh:$mm';
                 setDocumentInputValue(value);
                 rawRootCardWidgetState.changeValue(id, value);
                 notifyUserInputValueChanged(value, committed: true);
@@ -133,9 +135,14 @@ class AdaptiveTimeInputState extends ConsumerState<AdaptiveTimeInput>
 
   @override
   void appendInput(Map map) {
-    map[id] = selectedTime == null
-        ? null
-        : '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}';
+    final time = selectedTime;
+    if (time == null) {
+      map[id] = null;
+    } else {
+      final hh = time.hour.toString().padLeft(2, '0');
+      final mm = time.minute.toString().padLeft(2, '0');
+      map[id] = '$hh:$mm';
+    }
   }
 
   @override

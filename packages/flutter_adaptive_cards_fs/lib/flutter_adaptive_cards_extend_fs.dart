@@ -17,5 +17,6 @@ export 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.da
 export 'package:flutter_adaptive_cards_fs/src/riverpod/element_overlay_extension.dart';
 export 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
 
-/// key generation and other utils used when creating components with our key generation
+/// key generation and other utils used when creating components with our key
+/// generation
 export 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';

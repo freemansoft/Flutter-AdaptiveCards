@@ -130,7 +130,8 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
     final revealEnabled =
         input.revealPasswordEnabledOverride ??
         inputsConfig.text.revealPasswordEnabled;
-    // Capture into a local so Dart flow analysis can promote the nullable field.
+    // Capture into a local so Dart flow analysis can promote the nullable
+    // field.
     final effectiveMaxLength = maxLength;
 
     return Visibility(
@@ -187,7 +188,8 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
                     style: null,
                   ),
                   hintText: input.placeholder,
-                  // required or box will exist even though field is hidden or half height
+                  // required or box will exist even though field is hidden or
+                  // half height
                   hintStyle: const TextStyle(),
                   suffixIcon: (isPassword && revealEnabled)
                       ? IconButton(

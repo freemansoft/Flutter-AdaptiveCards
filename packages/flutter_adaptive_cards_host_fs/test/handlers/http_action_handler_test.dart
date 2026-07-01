@@ -27,19 +27,20 @@ Future<void> _pump(
   await tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
-        body: AdaptiveCardBackendHandlers(
-          client: _NoopBackendClient(),
-          cardKey: cardKey,
-          httpExecutor: executor,
-          onError: onError,
-        ).wrap(
-          RawAdaptiveCard.fromMap(
-            key: cardKey,
-            map: _httpCard,
-            hostConfigs: HostConfigs(),
-          ),
-          onCardReplaced: onCardReplaced,
-        ),
+        body:
+            AdaptiveCardBackendHandlers(
+              client: _NoopBackendClient(),
+              cardKey: cardKey,
+              httpExecutor: executor,
+              onError: onError,
+            ).wrap(
+              RawAdaptiveCard.fromMap(
+                key: cardKey,
+                map: _httpCard,
+                hostConfigs: HostConfigs(),
+              ),
+              onCardReplaced: onCardReplaced,
+            ),
       ),
     ),
   );

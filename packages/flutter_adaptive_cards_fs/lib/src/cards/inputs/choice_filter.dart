@@ -115,7 +115,8 @@ class ChoiceFilterState extends State<ChoiceFilter> {
           ),
         ),
         Expanded(
-          // Empty search: all [_data]. Non-empty: [_searchResult] from title match.
+          // Empty search: all [_data]. Non-empty: [_searchResult] from title
+          // match.
           child: _searchResult.isNotEmpty || _searchController.text.isNotEmpty
               ? ListView.builder(
                   itemCount: _searchResult.length,

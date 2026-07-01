@@ -87,7 +87,8 @@ void main() {
   );
 
   testWidgets(
-    'dependent query sample preloads city choices and passes DataQuery on select',
+    'dependent query sample preloads city choices and passes '
+    'DataQuery on select',
     (WidgetTester tester) async {
       DataQuery? cityDataQuery;
       String? cityChangeId;
@@ -185,7 +186,8 @@ void main() {
   );
 
   testWidgets(
-    'valueChangedAction resets city value when country changes before host cascade',
+    'valueChangedAction resets city value when country changes before '
+    'host cascade',
     (WidgetTester tester) async {
       await tester.pumpWidget(
         getTestWidgetFromPath(

@@ -3,11 +3,12 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Regression tests for https://github.com/freemansoft/Flutter-AdaptiveCards
-// (remove ValueKey<Brightness?> from ProviderScope in flutter_raw_adaptive_card.dart).
+// (remove ValueKey<Brightness?> from ProviderScope in
+// flutter_raw_adaptive_card.dart).
 //
 // Before the fix, a brightness change caused ProviderScope to receive a new
 // ValueKey, which destroyed the AdaptiveCardDocumentNotifier and wiped all
-// runtime overlays and typed input.  These tests confirm both survive.
+// runtime overlays and typed input. These tests confirm both survive.
 
 /// A wrapper whose theme can be switched after initial render without
 /// replacing the AdaptiveCardsCanvas subtree.
@@ -172,8 +173,11 @@ void main() {
       ]) {
         themeMode.value = mode;
         await tester.pumpAndSettle();
-        expect(find.text('Persistent'), findsOneWidget,
-            reason: 'overlay lost after switch to $mode');
+        expect(
+          find.text('Persistent'),
+          findsOneWidget,
+          reason: 'overlay lost after switch to $mode',
+        );
       }
     });
   });

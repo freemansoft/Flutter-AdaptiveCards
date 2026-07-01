@@ -5,7 +5,8 @@ import 'package:flutter_adaptive_charts_fs/src/charts/chart_chrome.dart';
 import 'package:flutter_adaptive_charts_fs/src/charts/chart_overlay_mixin.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Layout variants supported by [AdaptiveBarChart] for Adaptive Card bar chart types.
+/// Layout variants supported by [AdaptiveBarChart] for Adaptive Card bar chart
+/// types.
 ///
 /// See also:
 /// * https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar
@@ -47,7 +48,8 @@ BarChartAlignment _toFlChartAlignment(BarChartAlignmentToken token) {
 /// `Chart.VerticalBar`, `Chart.HorizontalBar`, and grouped or stacked variants.
 /// Uses [AdaptiveElementWidgetMixin] for element identity and is wrapped in
 /// [SeparatorElement] for card layout and spacing.
-class AdaptiveBarChart extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveBarChart extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a bar chart element from [adaptiveMap] with the given [type].
   AdaptiveBarChart({
     required this.adaptiveMap,
@@ -68,7 +70,8 @@ class AdaptiveBarChart extends ConsumerStatefulWidget with AdaptiveElementWidget
   AdaptiveBarChartState createState() => AdaptiveBarChartState();
 }
 
-/// State for [AdaptiveBarChart]; parses JSON data and builds the fl_chart widget.
+/// State for [AdaptiveBarChart]; parses JSON data and builds the fl_chart
+/// widget.
 class AdaptiveBarChartState extends ConsumerState<AdaptiveBarChart>
     with
         AdaptiveElementMixin,
@@ -122,8 +125,7 @@ class AdaptiveBarChartState extends ConsumerState<AdaptiveBarChart>
 
     final bool isStacked =
         widget.type == BarChartType.horizontalStacked ||
-        (widget.type == BarChartType.verticalGrouped &&
-            map['stacked'] == true);
+        (widget.type == BarChartType.verticalGrouped && map['stacked'] == true);
     final bool isGrouped =
         widget.type == BarChartType.verticalGrouped &&
         (!map.containsKey('stacked') ||
@@ -142,8 +144,7 @@ class AdaptiveBarChartState extends ConsumerState<AdaptiveBarChart>
 
         final String seriesLegend =
             series['legend']?.toString() ?? 'Series ${seriesIndex + 1}';
-        final Color defaultSeriesColor =
-            palette[seriesIndex % palette.length];
+        final Color defaultSeriesColor = palette[seriesIndex % palette.length];
         final Color seriesColor = styleResolver.resolveChartColor(
           series['color']?.toString(),
           fallback: defaultSeriesColor,
@@ -351,41 +352,41 @@ class AdaptiveBarChartState extends ConsumerState<AdaptiveBarChart>
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: ChartChrome(
-        title: _chartTitle,
-        legendEntries: _showLegend ? _legendEntries : const [],
-        chart: SizedBox(
-          height: layout.height,
-          child: BarChart(
-            BarChartData(
-              barGroups: barGroups,
-              maxY: maxY,
-              alignment: _toFlChartAlignment(layout.alignment),
-              titlesData: FlTitlesData(
-                show: true,
-                topTitles: AxisTitles(
-                  sideTitles: topValueAxis,
+          title: _chartTitle,
+          legendEntries: _showLegend ? _legendEntries : const [],
+          chart: SizedBox(
+            height: layout.height,
+            child: BarChart(
+              BarChartData(
+                barGroups: barGroups,
+                maxY: maxY,
+                alignment: _toFlChartAlignment(layout.alignment),
+                titlesData: FlTitlesData(
+                  show: true,
+                  topTitles: AxisTitles(
+                    sideTitles: topValueAxis,
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: isHorizontal ? valueAxis : categoryAxis,
+                    axisNameWidget: isHorizontal
+                        ? axisName(_yAxisTitle)
+                        : axisName(_xAxisTitle),
+                    axisNameSize: 24,
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: isHorizontal ? categoryAxis : valueAxis,
+                    axisNameWidget: isHorizontal
+                        ? axisName(_xAxisTitle)
+                        : axisName(_yAxisTitle),
+                    axisNameSize: 24,
+                  ),
                 ),
-                bottomTitles: AxisTitles(
-                  sideTitles: isHorizontal ? valueAxis : categoryAxis,
-                  axisNameWidget: isHorizontal
-                      ? axisName(_yAxisTitle)
-                      : axisName(_xAxisTitle),
-                  axisNameSize: 24,
-                ),
-                leftTitles: AxisTitles(
-                  sideTitles: isHorizontal ? categoryAxis : valueAxis,
-                  axisNameWidget: isHorizontal
-                      ? axisName(_xAxisTitle)
-                      : axisName(_yAxisTitle),
-                  axisNameSize: 24,
-                ),
+                rotationQuarterTurns: isHorizontal ? 1 : 0,
               ),
-              rotationQuarterTurns: isHorizontal ? 1 : 0,
             ),
           ),
         ),
       ),
-    ),
     );
   }
 }

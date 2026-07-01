@@ -57,7 +57,7 @@ class GenericPage extends StatelessWidget {
             //     SnackBar(
             //       content: Text(
             //         format(
-            //           'onChange: id: {}, value: {}, dataQuery: {}, state: {}',
+            //           'onChange: id:{}, value: {}, dataQuery: {}, state: {}',
             //           id,
             //           value,
             //           dataQuery,

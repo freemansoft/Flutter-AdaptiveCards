@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
 
-/// Golden tests use a taller viewport to fit chart chrome (title, axis names, legend).
+/// Golden tests use a taller viewport to fit chart chrome (title, axis names,
+/// legend).
 const Size kChartGoldenTestViewSize = Size(500, 800);
 
 void main() {

@@ -18,41 +18,44 @@ ProviderContainer _documentContainer(WidgetTester tester, Finder inputFinder) {
 }
 
 void main() {
-  testWidgets('initData seeds text overlay visible in resolvedElementProvider', (
-    WidgetTester tester,
-  ) async {
-    final Map<String, dynamic> map = {
-      'type': 'AdaptiveCard',
-      'body': [
-        {
-          'type': 'Input.Text',
-          'id': 'initText',
-          'label': 'Init',
-        },
-      ],
-    };
+  testWidgets(
+    'initData seeds text overlay visible in resolvedElementProvider',
+    (
+      WidgetTester tester,
+    ) async {
+      final Map<String, dynamic> map = {
+        'type': 'AdaptiveCard',
+        'body': [
+          {
+            'type': 'Input.Text',
+            'id': 'initText',
+            'label': 'Init',
+          },
+        ],
+      };
 
-    await tester.pumpWidget(
-      getTestWidgetFromMap(
-        map: map,
-        title: 'initData text overlay',
-        initData: const {'initText': 'initial value'},
-      ),
-    );
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'initData text overlay',
+          initData: const {'initText': 'initial value'},
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    final textMap = map['body'][0] as Map<String, dynamic>;
-    final inputFinder = find.byKey(generateWidgetKey(textMap));
-    final container = _documentContainer(tester, inputFinder);
+      final textMap = map['body'][0] as Map<String, dynamic>;
+      final inputFinder = find.byKey(generateWidgetKey(textMap));
+      final container = _documentContainer(tester, inputFinder);
 
-    expect(
-      container.read(resolvedElementProvider('initText'))?['value'],
-      'initial value',
-    );
+      expect(
+        container.read(resolvedElementProvider('initText'))?['value'],
+        'initial value',
+      );
 
-    final field = tester.widget<TextFormField>(inputFinder);
-    expect(field.controller!.text, 'initial value');
-  });
+      final field = tester.widget<TextFormField>(inputFinder);
+      expect(field.controller!.text, 'initial value');
+    },
+  );
 
   testWidgets('programmatic initInput updates resolved overlay after mount', (
     WidgetTester tester,

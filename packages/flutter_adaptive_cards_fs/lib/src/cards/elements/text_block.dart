@@ -13,7 +13,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/TextBlock.html
 /// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/text-block
 ///
-class AdaptiveTextBlock extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveTextBlock extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a text block from [adaptiveMap] JSON.
   ///
   /// When [supportMarkdown] is true, renders markdown and routes link taps
@@ -129,7 +130,9 @@ class AdaptiveTextBlockState extends ConsumerState<AdaptiveTextBlock>
   Widget build(BuildContext context) {
     final resolved = ref.watch(resolvedElementProvider(id));
     text = _formatDisplayText(
-      resolved?['text']?.toString() ?? widget.adaptiveMap['text']?.toString() ?? '',
+      resolved?['text']?.toString() ??
+          widget.adaptiveMap['text']?.toString() ??
+          '',
     );
 
     final textBody = widget.supportMarkdown
@@ -219,7 +222,8 @@ class AdaptiveTextBlockState extends ConsumerState<AdaptiveTextBlock>
       fontSize: fontSize,
       color: color,
     );
-    // this doesn't actually work as is documented in flutter_markdown and flutter_markdown_plus
+    // this doesn't actually work as is documented in flutter_markdown and
+    // flutter_markdown_plus
     final TextStyle pStyle = (maxLines == 1)
         ? TextStyle(
             fontWeight: fontWeight,

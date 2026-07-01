@@ -119,34 +119,38 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
     return isValid ? selected : null;
   }
 
-  /// Keeps widget selection in sync when resolved [choices] change under a stale value.
+  /// Keeps widget selection in sync when resolved [choices] change under a
+  /// stale value.
   ///
-  /// Two common paths leave `_selectedChoices` or the document overlay out of step
-  /// with the current choice list for a frame (or longer):
+  /// Two common paths leave `_selectedChoices` or the document overlay out of
+  /// step with the current choice list for a frame (or longer):
   ///
-  /// - **Dependent inputs:** country `valueChangedAction` clears the city document
-  ///   value, then the host repopulates city choices on the next frame — local
-  ///   selection can still hold the previous city when the compact dropdown rebuilds.
-  /// - **Data.Query / `loadInput`:** `select()` calls host `onChange` (which may
-  ///   replace choices via `setChoices`) before `setDocumentInputValue`, so the
-  ///   document can briefly hold a value that no longer exists in the new list.
+  /// - **Dependent inputs:** country `valueChangedAction` clears the city
+  ///   document value, then the host repopulates city choices on the next frame
+  ///   — local selection can still hold the previous city when the compact
+  ///   dropdown rebuilds.
+  /// - **Data.Query / `loadInput`:** `select()` calls host `onChange` (which
+  ///   may replace choices via `setChoices`) before `setDocumentInputValue`, so
+  ///   the document can briefly hold a value that no longer exists in the new
+  ///   list.
   ///
   /// [_singleChoiceValueFor] keeps the rendered selection (the [DropdownMenu]
   /// `initialSelection` / expanded group value) consistent with the current
   /// [choices] on that stale frame by returning `null` for a value no longer in
   /// the list; this method finishes the job post-frame by syncing to the
   /// **valid intersection** of document value(s) and current [choices], or `''`
-  /// when none apply. We must
-  /// not call [onDocumentValueChanged] with the raw resolved value when it is
-  /// invalid — that re-applies the stale value and causes an infinite rebuild loop
-  /// (see `choice_set_data_query_test.dart`, loadInput-after-onChange case).
+  /// when none apply. We must not call [onDocumentValueChanged] with the raw
+  /// resolved value when it is invalid — that re-applies the stale value and
+  /// causes an infinite rebuild loop (see `choice_set_data_query_test.dart`,
+  /// loadInput-after-onChange case).
   void _scheduleSelectionReconcile(
     ResolvedInputState input,
     List<Choice> choices,
   ) {
     final choiceValues = choices.map((choice) => choice.value).toSet();
     final resolvedValues = _valuesFromResolved(input);
-    // Target is only values still present in the current list — never stale ids.
+    // Target is only values still present in the current list — never stale
+    // ids.
     final validResolved = resolvedValues.where(choiceValues.contains).toSet();
     final target = validResolved.isEmpty ? '' : validResolved.join(',');
     final localInvalid = _selectedChoices.any(
@@ -307,7 +311,8 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
           filled: true,
           suffixIcon: const Icon(Icons.arrow_drop_down),
           hintText: input.placeholder,
-          // required or box will exist even though field is hidden or half height
+          // required or box will exist even though field is hidden or half
+          // height
           hintStyle: const TextStyle(),
           errorStyle: const TextStyle(height: 0),
         ),
@@ -319,7 +324,8 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
           return null;
         },
         onTap: () async {
-          // Snapshot at open time; modal does not observe later overlay updates.
+          // Snapshot at open time; modal does not observe later overlay
+          // updates.
           await rawRootCardWidgetState.searchList(choices, (Choice? value) {
             setState(() {
               select(value?.value, choices);
@@ -333,12 +339,13 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
   /// Built when `isMultiSelect` is false and the style is `compact`.
   ///
   /// Uses Material 3 [DropdownMenu] (not the legacy `DropdownButton`) so the
-  /// field supports type-ahead keyboard navigation — typing a character jumps to
-  /// the matching choice, matching the web renderer's native `<select>`. Display
-  /// text is driven by [controller], which the widget keeps in sync with the
-  /// resolved single selection (see [_syncSelectionControllerText]); we cannot
-  /// rely on `initialSelection` alone because [DropdownMenu] does not clear the
-  /// field when the selection resets to a value absent from the entries.
+  /// field supports type-ahead keyboard navigation — typing a character jumps
+  /// to the matching choice, matching the web renderer's native `<select>`.
+  /// Display text is driven by [controller], which the widget keeps in sync
+  /// with the resolved single selection (see [_syncSelectionControllerText]);
+  /// we cannot rely on `initialSelection` alone because [DropdownMenu] does not
+  /// clear the field when the selection resets to a value absent from the
+  /// entries.
   Widget _buildCompact(List<Choice> choices) {
     // `inputs.choiceSet` HostConfig (non-standard); defaults reproduce the
     // dropdown's prior hardcoded behavior. See docs/hostconfig.md.

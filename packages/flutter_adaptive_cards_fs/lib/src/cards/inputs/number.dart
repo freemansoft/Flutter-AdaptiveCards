@@ -156,7 +156,8 @@ class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
                     style: null,
                   ),
                   hintText: input.placeholder,
-                  // required or box will exist even though field is hidden or half height
+                  // required or box will exist even though field is hidden or
+                  // half height
                   hintStyle: const TextStyle(),
                   errorStyle: const TextStyle(height: 0),
                 ),

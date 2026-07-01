@@ -7,7 +7,8 @@ import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 
 export 'package:flutter_adaptive_cards_test_support/flutter_adaptive_cards_test_support.dart';
 
-/// [CardTypeRegistry] with chart element types registered for chart package tests.
+/// [CardTypeRegistry] with chart element types registered for chart package
+/// tests.
 final CardTypeRegistry chartCardTypeRegistry = CardTypeRegistry(
   addedElements: CardChartsRegistry.additionalChartElements,
   overlayExtensions: CardChartsRegistry.overlayExtensions,

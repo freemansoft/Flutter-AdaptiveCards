@@ -52,16 +52,17 @@ final styleReferenceResolverProvider = Provider<ReferenceResolver>(
 
 /// Current card render-width [WidthBucket] for the surrounding card subtree.
 ///
-/// Published by a thin nested `ProviderScope` inside the root `LayoutBuilder` in
-/// [AdaptiveCardElement] (overridden via `overrideWithValue`), which only
-/// notifies watchers when the measured bucket actually changes. Elements read it
-/// (`ref.watch`) to gate `targetWidth` visibility and select `layouts`
-/// (`Layout.Flow`). Defaults to [WidthBucket.wide] when no override is present so
-/// an isolated subtree degrades to showing everything / the widest layout
+/// Published by a thin nested `ProviderScope` inside the root `LayoutBuilder`
+/// in [AdaptiveCardElement] (overridden via `overrideWithValue`), which only
+/// notifies watchers when the measured bucket actually changes. Elements read
+/// it (`ref.watch`) to gate `targetWidth` visibility and select `layouts`
+/// (`Layout.Flow`). Defaults to [WidthBucket.wide] when no override is present
+/// so an isolated subtree degrades to showing everything / the widest layout
 /// (fail-open), matching responsive-layout semantics.
 final cardWidthBucketProvider = Provider<WidthBucket>(
   (ref) => WidthBucket.wide,
 );
+
 /// Deep-copied card JSON baseline for the current raw-card scope.
 final baselineMapProvider = Provider<Map<String, dynamic>>(
   (ref) => throw UnimplementedError('baselineMapProvider override missing'),
@@ -203,6 +204,7 @@ resolvedActionProvider = Provider.family<Map<String, dynamic>?, String>(
   },
 ).call;
 
-/// Returns the current theme brightness from [context] (for HostConfig selection).
+/// Returns the current theme brightness from [context] (for HostConfig
+/// selection).
 Brightness adaptiveCardBrightnessOf(BuildContext context) =>
     Theme.of(context).brightness;

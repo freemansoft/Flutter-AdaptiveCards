@@ -13,9 +13,6 @@ analyzer:
   errors:
     # key: on widget is not named but is usually first by convention
     always_put_required_named_parameters_first: ignore
-    # ignored because some comments are longer than 80 lines_longer_than_80_chars:
-    # formatter will fix long code
-    lines_longer_than_80_chars: ignore
     # I like local variable types for clarity
     omit_local_variable_types: ignore
     # public_member_api_docs: ignore

@@ -17,7 +17,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders a `FactSet` as title/value pairs in two columns, with reactive
 /// updates when overlay `facts` change.
-class AdaptiveFactSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveFactSet extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a `FactSet` from [adaptiveMap].
   AdaptiveFactSet({
     required this.adaptiveMap,
@@ -52,7 +53,9 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
   @override
   Widget build(BuildContext context) {
     final resolved = ref.watch(resolvedElementProvider(id));
-    final facts = resolved != null ? factsFromJsonList(resolved['facts']) : factsFromJsonList(adaptiveMap['facts']);
+    final facts = resolved != null
+        ? factsFromJsonList(resolved['facts'])
+        : factsFromJsonList(adaptiveMap['facts']);
 
     final ReferenceResolver resolver = styleResolver;
     final FactSetConfig? factSetConfig = resolver.getFactSetConfig();
@@ -133,7 +136,8 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
     );
   }
 
-  /// Builds markdown styling for fact values from HostConfig [factSetTextConfig].
+  /// Builds markdown styling for fact values from HostConfig
+  /// [factSetTextConfig].
   MarkdownStyleSheet loadMarkdownStyleSheet({
     required ReferenceResolver resolver,
     required BuildContext context,

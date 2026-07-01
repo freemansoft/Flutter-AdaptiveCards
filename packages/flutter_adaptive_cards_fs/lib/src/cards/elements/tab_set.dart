@@ -4,16 +4,17 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Assuming there is a container (TabSet?) that holds TabPages.
-// If "TabPage" is the valid element mentioned by user, then likely there is a parent "TabSet".
-// Or maybe "TabPage" behaves like a container that renders as a page in a tab view?
-// AC usually has a "TabSet" container.
-// I will implement "AdaptiveTabSet" which looks for "TabPage" items.
+// Assuming there is a container (TabSet?) that holds TabPages. If "TabPage" is
+// the valid element mentioned by user, then likely there is a parent "TabSet".
+// Or maybe "TabPage" behaves like a container that renders as a page in a tab
+// view? AC usually has a "TabSet" container. I will implement "AdaptiveTabSet"
+// which looks for "TabPage" items.
 
 /// Renders the Adaptive Cards **TabSet** container with [TabBar] pages.
 ///
 /// See https://adaptivecards.io/explorer/TabSet.html
-class AdaptiveTabSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveTabSet extends ConsumerStatefulWidget
+    with AdaptiveElementWidgetMixin {
   /// Creates a tab set from [adaptiveMap] JSON.
   AdaptiveTabSet({
     required this.adaptiveMap,
@@ -88,12 +89,11 @@ class AdaptiveTabSetState extends ConsumerState<AdaptiveTabSet>
               tabs: tabs.map((t) => Tab(text: t['title'] ?? 'Tab')).toList(),
             ),
             SizedBox(
-              // TabBarView needs constrained height or expanded.
-              // Adaptive Cards usually flow.
-              // We can measure content or use a fixed height // layout builder?
-              // "Expandable" tab view is tricky.
-              // For MVP: Fixed height or resizing wrapper.
-              // I'll use a constrained height for now (same as Carousel MVP issue)
+              // TabBarView needs constrained height or expanded. Adaptive Cards
+              // usually flow. We can measure content or use a fixed height //
+              // layout builder? "Expandable" tab view is tricky. For MVP: Fixed
+              // height or resizing wrapper. I'll use a constrained height for
+              // now (same as Carousel MVP issue)
               height: 400,
               child: TabBarView(
                 controller: _tabController,

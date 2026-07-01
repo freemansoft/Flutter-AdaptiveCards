@@ -99,8 +99,10 @@ void main() {
         );
 
       expect(
-        notifier.state.overlaysById['demoChart']?.extensionPayloads?[
-            chartOverlayExtensionId]?['chartData'],
+        notifier
+            .state
+            .overlaysById['demoChart']
+            ?.extensionPayloads?[chartOverlayExtensionId]?['chartData'],
         isNull,
       );
 

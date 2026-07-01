@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Executes `Action.ResetInputs` from `actionMap`, honoring `targetInputIds`.
 ///
-/// Omitted or null `targetInputIds` resets all inputs; an empty array is a no-op.
+/// Omitted or null `targetInputIds` resets all inputs; an empty array is a
+/// no-op.
 void executeResetInputsAction(
   BuildContext context,
   Map<String, dynamic> actionMap,

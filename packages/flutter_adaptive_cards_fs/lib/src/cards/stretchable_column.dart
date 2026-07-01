@@ -114,10 +114,10 @@ class RenderStretchColumn extends RenderBox
     required MainAxisSize mainAxisSize,
     required List<bool> stretchFlags,
     required TextDirection textDirection,
-  })  : _crossAxisAlignment = crossAxisAlignment,
-        _mainAxisSize = mainAxisSize,
-        _stretchFlags = stretchFlags,
-        _textDirection = textDirection;
+  }) : _crossAxisAlignment = crossAxisAlignment,
+       _mainAxisSize = mainAxisSize,
+       _stretchFlags = stretchFlags,
+       _textDirection = textDirection;
 
   /// Horizontal alignment of children (see [Column.crossAxisAlignment]).
   CrossAxisAlignment get crossAxisAlignment => _crossAxisAlignment;
@@ -262,8 +262,9 @@ class RenderStretchColumn extends RenderBox
     }
 
     // Pass 2: distribute leftover space to stretch children equally.
-    final double free =
-        heightBounded ? _atLeastZero(constraints.maxHeight - nonFlexHeight) : 0;
+    final double free = heightBounded
+        ? _atLeastZero(constraints.maxHeight - nonFlexHeight)
+        : 0;
     if (stretchKids.isNotEmpty) {
       final each = free / stretchKids.length;
       for (final child in stretchKids) {
@@ -272,8 +273,9 @@ class RenderStretchColumn extends RenderBox
       }
     }
 
-    final double width =
-        crossStretch ? constraints.maxWidth : constraints.constrainWidth(maxChildWidth);
+    final double width = crossStretch
+        ? constraints.maxWidth
+        : constraints.constrainWidth(maxChildWidth);
 
     final double childrenHeight =
         nonFlexHeight + (stretchKids.isNotEmpty ? free : 0.0);

@@ -296,7 +296,8 @@ void main() {
   );
 
   testWidgets(
-    'AdaptiveContainer selectAction (Submit) calls onSubmit with actionId and data',
+    'AdaptiveContainer selectAction (Submit) calls onSubmit with '
+    'actionId and data',
     (tester) async {
       SubmitActionInvoke? captured;
 
@@ -340,7 +341,8 @@ void main() {
   );
 
   testWidgets(
-    'AdaptiveContainer selectAction (Execute) calls onExecute with verb and data',
+    'AdaptiveContainer selectAction (Execute) calls onExecute with '
+    'verb and data',
     (tester) async {
       ExecuteActionInvoke? captured;
 

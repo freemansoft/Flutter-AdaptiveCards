@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 /// A colored segment on the gauge arc.
 class GaugeSegment {
-  /// Creates a gauge segment with [color], proportional [size], and optional [legend].
+  /// Creates a gauge segment with [color], proportional [size], and optional
+  /// [legend].
   const GaugeSegment({
     required this.color,
     required this.size,
@@ -38,7 +39,8 @@ double normalizeGaugeValue(double value, double min, double max) {
   return ((value - min) / (max - min)).clamp(0.0, 1.0);
 }
 
-/// Converts a normalized fraction to an angle in radians on the semicircular gauge.
+/// Converts a normalized fraction to an angle in radians on the semicircular
+/// gauge.
 ///
 /// The arc runs from left (π radians) through the top to right (0), clockwise.
 double gaugeFractionToAngle(double fraction) => math.pi + fraction * math.pi;
@@ -63,7 +65,8 @@ String formatGaugeValue({
 
 /// Paints a semicircular gauge with colored segments and a value needle.
 class GaugePainter extends CustomPainter {
-  /// Creates a gauge painter with the given scale, segments, and display options.
+  /// Creates a gauge painter with the given scale, segments, and display
+  /// options.
   GaugePainter({
     required this.value,
     required this.min,
