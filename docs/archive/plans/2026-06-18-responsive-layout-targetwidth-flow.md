@@ -1,10 +1,15 @@
 # Responsive Layout (`targetWidth` + `Layout.Flow`) Implementation Plan
 
-> **Status:** ✅ **Core plan complete** — Tasks 1–12 + Final verification shipped in
-> commit `533fd1a` (PR #36). Remaining open work is in the
-> **"Follow-up tasks: post-implementation review"** section (FW1–FW5); of those,
-> **FW2 is done** (returned to the Riverpod `cardWidthBucketProvider`, 2026-06-19).
-> FW1, FW3, FW4, FW5 are outstanding.
+> **Status: ✅ Complete (superseded). Archived 2026-07-02.** Core plan (Tasks 1–12 +
+> Final verification) shipped in commit `533fd1a` (PR #36). The post-implementation
+> follow-ups (FW1–FW5) are now resolved or reassigned: **FW2** returned to the Riverpod
+> `cardWidthBucketProvider` (2026-06-19); **FW1** (`IntrinsicWidth` removal) was
+> **rejected** as resting on a false premise and **FW3** (relational precedence) was
+> **resolved**, both in the 2026-06-27 finish-`Layout.Flow` work. The remaining
+> **FW4/FW5** remnants (unbounded / margin-inclusive width measurement, nested
+> `Action.ShowCard` width, `listView` body path) are tracked in
+> [Implementation-Status → Low priority "Flow follow-ups"](../../Implementation-Status.md#low-priority).
+> Checkbox state below is historical.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

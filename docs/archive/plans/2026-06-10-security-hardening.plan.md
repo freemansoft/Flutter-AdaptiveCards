@@ -1,5 +1,10 @@
 # Security Hardening Implementation Plan
 
+> **Status: ✅ Complete** — shipped in PR #38. Archived 2026-07-02.
+> Checkbox state below is historical and was not ticked at merge time.
+
+---
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Harden the Flutter-AdaptiveCards monorepo against untrusted card JSON and backend responses by introducing shared URL/fetch policies, wiring them into default action and content-loading paths, and adding bounded deserialization in the host package — delivered in six incremental phases.

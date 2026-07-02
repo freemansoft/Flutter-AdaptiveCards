@@ -1,5 +1,10 @@
 # `Layout.AreaGrid` + block `height: stretch` Implementation Plan
 
+> **Status: ✅ Complete** — shipped in PR #56. Archived 2026-07-02.
+> Checkbox state below is historical and was not ticked at merge time.
+
+---
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement general block `height: "stretch"` for core containers, then `Layout.AreaGrid` + `grid.area` (named-area responsive grid) on top of it.

@@ -1,5 +1,10 @@
 # Table `auto`/`stretch` Widths + Cell `minHeight` Implementation Plan
 
+> **Status: ✅ Complete** — shipped in commit `05560c7` (`d8a2052`). Archived 2026-07-02.
+> Checkbox state below is historical and was not ticked at merge time.
+
+---
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Render the Adaptive Cards `Table` through Flutter's `Table` widget so `auto` and `stretch` column widths work (cross-row consistent), and apply the parsed-but-ignored cell `minHeight`.

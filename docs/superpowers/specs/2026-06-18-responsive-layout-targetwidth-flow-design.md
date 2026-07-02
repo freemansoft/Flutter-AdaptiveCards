@@ -1,7 +1,7 @@
 # Responsive layout — `targetWidth` + `Layout.Flow` (design)
 
 **Date:** 2026-06-18
-**Status:** Approved (brainstorming) — pending implementation plan
+**Status:** ✅ Shipped (commit `533fd1a`, PR #36). Post-implementation follow-ups (W1–W5) below are resolved/rejected or tracked in [Implementation-Status → Low priority "Flow follow-ups"](../../Implementation-Status.md#low-priority); the delivering plan is archived at [`docs/archive/plans/2026-06-18-responsive-layout-targetwidth-flow.md`](../../archive/plans/2026-06-18-responsive-layout-targetwidth-flow.md).
 **Package:** `flutter_adaptive_cards_fs`
 **Spec basis:** Adaptive Cards v1.6 responsive layout ([documentation hub](https://adaptivecards.microsoft.com/))
 
@@ -181,7 +181,7 @@ card render width (root LayoutBuilder.constraints.maxWidth)
 
 The first slice shipped (commit `533fd1a`, PR #36). A review of the landed code
 surfaced the following gaps. They are tracked as follow-up tasks in the
-implementation plan (`docs/superpowers/plans/2026-06-18-responsive-layout-targetwidth-flow.md`,
+implementation plan (`docs/archive/plans/2026-06-18-responsive-layout-targetwidth-flow.md`,
 section "Follow-up tasks: post-implementation review").
 
 ### W1 — `IntrinsicWidth` per flow item ⚠️ REVISITED (2026-06-27) — remediation rejected

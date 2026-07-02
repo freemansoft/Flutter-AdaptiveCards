@@ -1,5 +1,10 @@
 # Finish `Layout.Flow` Implementation Plan
 
+> **Status: ✅ Complete** — shipped in PR #53. Archived 2026-07-02.
+> Checkbox state below is historical and was not ticked at merge time.
+
+---
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Complete `Layout.Flow` support — add `itemWidth` + `itemFit` parsing, extend `layouts`/`Layout.Flow` to `Column` and `TableCell`, refine the `IntrinsicWidth` wrapper (W1: keep for content-fit, skip for `itemWidth`), give `selectLayout` a specificity tiebreak (W3), guard unbounded width, and keep the golden/test sample in sync with the widgetbook demo.

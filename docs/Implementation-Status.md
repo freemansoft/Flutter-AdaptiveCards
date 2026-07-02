@@ -80,6 +80,8 @@ _None currently — the prior top priorities (`Layout.AreaGrid` + `grid.area` an
 5. **Adaptive Expressions**: `select`/`where` collection functions in templating (require lazy lambda evaluation; other collection and date functions are now implemented).
 6. **`Icon` catalog long tail**: The Fluent name catalog now maps ~210 names (`lib/src/utils/fluent_icon_map.dart`); expand further for uncommon hub icon names that still fall back to `help_outline`.
 7. **Flow follow-ups** (deferred from the [2026-06-27 finish-Flow work](./superpowers/specs/2026-06-27-finish-layout-flow-design.md)): `itemFit: "Fill"` (needs a custom row-packing layout), Flow on the `listView` body path, and the W4 width-measurement remainder (margin-inclusive measurement; nested `Action.ShowCard` width).
+8. **Accessibility localization (#9)**: localize the remaining hard-coded English strings (`'Refresh card'`, `'Rating'`, `'Go to slide N'`, `'choiceFilter'`) into `.arb`. Deferred to a repo-wide l10n effort — see [2026-07-01 review](./reviews/2026-07-01-accessibility-and-key-generation-review.md).
+9. **Standalone `Icon` semantics (#10, partial)**: a standalone `Icon` still announces its Fluent token because the AC `Icon` element has no `altText`; full suppression needs a schema/`role` author signal to mark it decorative.
 
 ### Deferred (by maintainer decision, 2026-06-27)
 
@@ -120,6 +122,15 @@ fvm flutter test --exclude-tags=golden
 
 ## Recently completed
 
+### Accessibility & key-generation semantics (2026-07-01)
+
+Merged PRs #2–#6; audit: [2026-07-01-accessibility-and-key-generation-review.md](./reviews/2026-07-01-accessibility-and-key-generation-review.md).
+
+- **Deterministic keys:** centralized `selectAction` wrapper / `AdaptiveTappable` key generation so keys derive deterministically from `adaptiveMap` (Table, `choiceFilter`, `additional.dart`).
+- **Semantics:** decorative-image handling, `selectAction` button role/label, Rating value/adjustable semantics (also fixed a latent interactive-rating assertion), carousel dot labels, and input-label association for `Input.Toggle` / `Input.Rating` / `Input.ChoiceSet` (compact/filtered/expanded).
+- **TextBlock heading** emits `Semantics(headingLevel:)` from HostConfig `textBlock.headingLevel` (default 2, clamped 1–6); **FactSet** announces each fact as one `"title: value"` unit (value column `ExcludeSemantics`); icon carrying a `selectAction` no longer double-announces its Fluent token.
+- **Still open** (tracked in Priority Recommendations): #9 localization of hard-coded English strings; #10 standalone `Icon` still announces its Fluent token (no `altText`/`role` author signal).
+
 ### Table auto/stretch widths + cell minHeight (2026-06-30)
 
 - `Table` re-rendered through Flutter's `Table` widget: `auto` (content-sized, cross-row consistent), `stretch`, numeric weight, and `Npx` column widths via a pure `mapColumnWidth` helper; equal-row-height + per-cell background fill via `TableCellVerticalAlignment.intrinsicHeight`; grid lines via `TableBorder`. Cell `minHeight` now applied. Ragged rows are padded to a uniform column count. New golden `table3_widths-base.png`; `table1`/`table2` baselines regenerated. Remaining `Table` gaps: `bleed` and cell `rtl` (deferred). Design: [2026-06-29-table-auto-stretch-minheight-design.md](./superpowers/specs/2026-06-29-table-auto-stretch-minheight-design.md).
@@ -135,7 +146,7 @@ fvm flutter test --exclude-tags=golden
 
 ### Layout.AreaGrid + block height: stretch (2026-06-28)
 
-Plan: [2026-06-28-areagrid-and-height-stretch.md](./superpowers/plans/2026-06-28-areagrid-and-height-stretch.md) — designs: [block height: stretch](./superpowers/specs/2026-06-28-block-height-stretch-design.md), [Layout.AreaGrid](./superpowers/specs/2026-06-28-layout-areagrid-design.md).
+Plan: [2026-06-28-areagrid-and-height-stretch.md](./archive/plans/2026-06-28-areagrid-and-height-stretch.md) — designs: [block height: stretch](./superpowers/specs/2026-06-28-block-height-stretch-design.md), [Layout.AreaGrid](./superpowers/specs/2026-06-28-layout-areagrid-design.md).
 
 - **`Layout.AreaGrid` + `grid.area`** via a bespoke `RenderAdaptiveAreaGrid` (no new core dependency): percent/px/implied columns, `columnSpan`/`rowSpan`, `columnSpacing`/`rowSpacing`, `targetWidth`-selected grids, and fail-open fallback for unplaced/unknown-area elements (rendered below the grid, logged). Reuses `selectLayout` + `cardWidthBucketProvider`; threaded into Container/Column/TableCell/root via `buildLayoutChildren(childMaps:)`.
 - **Block `height: "stretch"`** on Container/Column/root body in bounded contexts (degrades to `auto` when unbounded), via `buildStretchableColumn` + shared `isStretchHeight`. Backed by a custom intrinsics-aware `RenderStretchColumn` (not a `LayoutBuilder`), so stretch works inside `IntrinsicHeight` (ColumnSet columns, Table rows); AreaGrid cells consume the same predicate.
@@ -144,7 +155,7 @@ Plan: [2026-06-28-areagrid-and-height-stretch.md](./superpowers/plans/2026-06-28
 
 ### Finish Layout.Flow (2026-06-27)
 
-Plan: [2026-06-27-finish-layout-flow.md](./superpowers/plans/2026-06-27-finish-layout-flow.md) — design: [2026-06-27-finish-layout-flow-design.md](./superpowers/specs/2026-06-27-finish-layout-flow-design.md).
+Plan: [2026-06-27-finish-layout-flow.md](./archive/plans/2026-06-27-finish-layout-flow.md) — design: [2026-06-27-finish-layout-flow-design.md](./superpowers/specs/2026-06-27-finish-layout-flow-design.md).
 
 - `Layout.Flow` extended to **Column** and **TableCell** (Container + root already shipped); shared `buildLayoutChildren` helper.
 - `itemWidth` + `itemFit` parsing (`Fit` honored; `Fill` deferred, falls back to `Fit` with a log).
@@ -214,5 +225,5 @@ See [backend-host-integration.md](./backend-host-integration.md) and [archived d
 
 ---
 
-_Last Updated: 2026-06-30_
+_Last Updated: 2026-07-02_
 _Based on v1.6.0 of Microsoft Adaptive Cards specification_

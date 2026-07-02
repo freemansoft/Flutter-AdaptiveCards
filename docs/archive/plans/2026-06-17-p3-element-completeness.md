@@ -1,5 +1,10 @@
 # P3 Spec-Compliance: Element & Feature Completeness Implementation Plan
 
+> **Status: ✅ Complete** — shipped in PR #35. Archived 2026-07-02.
+> Checkbox state below is historical and was not ticked at merge time.
+
+---
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Close the P3 spec-compliance gaps from the [audit addendum](../specs/2026-06-17-spec-compliance-audit-addendum.md) and [main audit](../specs/2026-06-17-spec-compliance-audit.md): action overflow menu, Badge/CompoundButton/Carousel property completeness, `Image.backgroundColor`, `iconPlacement`, `Media.captionSources`, chart datetime axes, TextBlock markdown `maxLines`, and templating collection/date functions.

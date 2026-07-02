@@ -1,5 +1,10 @@
 # P0 Remediation: Input min/max Validation + CodeBlock `codeSnippet` Key
 
+> **Status: ✅ Complete** — shipped in PR #34. Archived 2026-07-02.
+> Checkbox state below is historical and was not ticked at merge time.
+
+---
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Close the two P0 spec-compliance findings from the [audit addendum](../specs/2026-06-17-spec-compliance-audit-addendum.md): (A2) `CodeBlock` renders nothing because it reads the wrong JSON key, and (A1) `Input.Number` / `Input.Date` / `Input.Time` submit out-of-range values silently because `validateInputs()` never checks `min`/`max`.
