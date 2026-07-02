@@ -108,9 +108,13 @@ class RatingStars extends StatelessWidget {
     onRatingChanged?.call(next);
   }
 
+  /// Formats [v] for the semantics value: whole numbers drop the decimal.
+  String _formatValue(double v) =>
+      v == v.roundToDouble() ? '${v.toInt()}' : '$v';
+
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final Widget stars = Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(max.toInt(), (index) {
         final iconData = readOnly
@@ -148,6 +152,35 @@ class RatingStars extends StatelessWidget {
           child: icon,
         );
       }),
+    );
+
+    final bool interactive = !readOnly && onRatingChanged != null;
+    String starsLabel(double v) => '${_formatValue(v)} of ${max.toInt()} stars';
+
+    if (!interactive) {
+      // Display rating: announce the value, no adjust actions.
+      return Semantics(
+        readOnly: true,
+        label: 'Rating',
+        value: starsLabel(value),
+        child: ExcludeSemantics(child: stars),
+      );
+    }
+
+    // Interactive rating: adjustable control with increase/decrease. Flutter
+    // requires value/increasedValue/decreasedValue to accompany the actions.
+    final double step = allowHalfSteps ? 0.5 : 1.0;
+    final double up = (value + step).clamp(0.0, max);
+    final double down = (value - step).clamp(0.0, max);
+    return Semantics(
+      label: 'Rating',
+      slider: true,
+      value: starsLabel(value),
+      increasedValue: starsLabel(up),
+      decreasedValue: starsLabel(down),
+      onIncrease: value < max ? () => onRatingChanged?.call(up) : null,
+      onDecrease: value > 0 ? () => onRatingChanged?.call(down) : null,
+      child: ExcludeSemantics(child: stars),
     );
   }
 }

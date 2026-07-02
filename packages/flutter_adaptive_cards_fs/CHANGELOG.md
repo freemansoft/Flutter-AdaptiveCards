@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **`selectAction` wrapper (`AdaptiveTappable`) now uses a deterministic widget key.** It previously minted a fresh UUID on every build, so the key changed each frame — the wrapper (and its wrapped Image/Icon/Container subtree) could not be reused by Flutter across rebuilds and could not be located in tests. The key is now `{id}_selectAction`, seeded from the wrapped element's id (`loadId`), with a stable positional seed for table cells (which have no injected id). New regression tests in `test/select_action_tappable_key_test.dart` pin the format and element reuse.
+- **Interactive `Input.Rating` no longer asserts when semantics are enabled.** The adjustable rating declared `increase`/`decrease` actions without the `increasedValue`/`decreasedValue` that Flutter requires alongside a semantic `value`, which threw during the semantics build (e.g. with a screen reader or the Widgetbook Semantics addon). The rating now supplies all three.
+- **Decorative images are no longer announced as "alt text not set".** Images without an `altText` (including container/cell background images) were labeled with a placeholder string, polluting screen-reader output. A null label now passes through so Flutter excludes the decorative image from the semantics tree; images with `altText` are unchanged.
+
+### Added
+
+- **Accessibility semantics for interactive elements.** `selectAction` targets are now exposed as buttons with an accessible name (the action `title`/`tooltip`); the `Rating` display and `Input.Rating` announce their value (`"x of y stars"`), with the interactive input adjustable via increase/decrease; and carousel page dots carry `"Go to slide N"` labels with selected state. Covered by `test/accessibility_semantics_test.dart`.
 
 ### Changed
 

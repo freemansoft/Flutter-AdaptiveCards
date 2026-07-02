@@ -28,7 +28,10 @@ class AdaptiveImageUtils {
     String? semanticsLabel,
     AdaptiveUriPolicy? uriPolicy,
   }) {
-    final resolvedSemanticsLabel = semanticsLabel ?? 'alt text not set';
+    // Pass the label through as-is. A null label (decorative / no altText)
+    // must stay null so Flutter excludes the image from the semantics tree,
+    // rather than announcing a placeholder string to screen readers.
+    final resolvedSemanticsLabel = semanticsLabel;
     final isDataUri = url.startsWith('data:image/') && url.contains('base64,');
     if (uriPolicy != null &&
         !isDataUri &&
