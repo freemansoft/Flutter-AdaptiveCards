@@ -92,20 +92,30 @@ class AdaptiveRatingInputState extends ConsumerState<AdaptiveRatingInput>
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            loadLabel(
-              context: context,
-              label: input.label,
-              isRequired: input.isRequired,
-            ),
-            RatingStars(
-              key: generateWidgetKey(adaptiveMap),
-              value: displayValue,
-              max: max,
-              starColor: starColor,
-              iconSize: iconSize,
-              readOnly: false,
-              allowHalfSteps: allowHalfSteps,
-              onRatingChanged: _onRatingChanged,
+            // Merge the label with the (single) rating control so the slider
+            // announces the input label alongside its value.
+            MergeSemantics(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  loadLabel(
+                    context: context,
+                    label: input.label,
+                    isRequired: input.isRequired,
+                  ),
+                  RatingStars(
+                    key: generateWidgetKey(adaptiveMap),
+                    value: displayValue,
+                    max: max,
+                    starColor: starColor,
+                    iconSize: iconSize,
+                    readOnly: false,
+                    allowHalfSteps: allowHalfSteps,
+                    onRatingChanged: _onRatingChanged,
+                  ),
+                ],
+              ),
             ),
             loadErrorMessage(
               context: context,

@@ -256,25 +256,52 @@ class AdaptiveChoiceSetState extends ConsumerState<AdaptiveChoiceSet>
       }
     }
 
+    final Widget labelWidget = loadLabel(
+      context: context,
+      label: input.label,
+      isRequired: input.isRequired,
+    );
+    final Widget errorWidget = loadErrorMessage(
+      context: context,
+      errorMessage: input.errorMessage,
+      showError: input.isInvalid,
+    );
+
+    // Associate the input label with the control for screen readers. A single
+    // control (compact dropdown, filtered field) merges label + field into one
+    // node so focusing the field announces its name. Expanded choice lists have
+    // multiple option controls that must stay individually focusable, so the
+    // label is exposed as a group name instead of merged.
+    // Inner columns keep the original outer Column's default cross-axis
+    // alignment (center) so wrapping the control for semantics does not shift
+    // layout; only the semantics tree changes.
+    final bool singleControl = isFiltered || (isCompact && !isMultiSelect);
+    final Widget labeledControl = singleControl
+        ? MergeSemantics(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [labelWidget, widget],
+            ),
+          )
+        : Semantics(
+            container: true,
+            label: input.label,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ExcludeSemantics(child: labelWidget),
+                widget,
+              ],
+            ),
+          );
+
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            loadLabel(
-              context: context,
-              label: input.label,
-              isRequired: input.isRequired,
-            ),
-            widget,
-            loadErrorMessage(
-              context: context,
-              errorMessage: input.errorMessage,
-              showError: input.isInvalid,
-            ),
-          ],
+          children: [labeledControl, errorWidget],
         ),
       ),
     );

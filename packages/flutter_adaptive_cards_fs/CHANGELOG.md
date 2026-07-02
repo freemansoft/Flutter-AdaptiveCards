@@ -5,22 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Fixed
-
-- **`selectAction` wrapper (`AdaptiveTappable`) now uses a deterministic widget key.** It previously minted a fresh UUID on every build, so the key changed each frame — the wrapper (and its wrapped Image/Icon/Container subtree) could not be reused by Flutter across rebuilds and could not be located in tests. The key is now `{id}_selectAction`, seeded from the wrapped element's id (`loadId`), with a stable positional seed for table cells (which have no injected id). New regression tests in `test/select_action_tappable_key_test.dart` pin the format and element reuse.
-- **Interactive `Input.Rating` no longer asserts when semantics are enabled.** The adjustable rating declared `increase`/`decrease` actions without the `increasedValue`/`decreasedValue` that Flutter requires alongside a semantic `value`, which threw during the semantics build (e.g. with a screen reader or the Widgetbook Semantics addon). The rating now supplies all three.
-- **Decorative images are no longer announced as "alt text not set".** Images without an `altText` (including container/cell background images) were labeled with a placeholder string, polluting screen-reader output. A null label now passes through so Flutter excludes the decorative image from the semantics tree; images with `altText` are unchanged.
-
-### Added
-
-- **Accessibility semantics for interactive elements.** `selectAction` targets are now exposed as buttons with an accessible name (the action `title`/`tooltip`); the `Rating` display and `Input.Rating` announce their value (`"x of y stars"`), with the interactive input adjustable via increase/decrease; and carousel page dots carry `"Go to slide N"` labels with selected state. Covered by `test/accessibility_semantics_test.dart`.
-
-### Changed
-
-- **Widget-key generation centralized.** Table key helpers (`AdaptiveTable.cellKey`/`columnKey`/`rowKey`/`tableColumnKey`) now delegate to shared `generateTable*Key` functions in `utils.dart`, and `ChoiceFilter` / the filtered-choice modal build their keys via `generateWidgetKeyFromId` instead of inline `ValueKey(...)`. Key values are unchanged; the format now has a single source that tests import. See [`docs/AdaptiveWidget-Key-Generation.md`](../../docs/AdaptiveWidget-Key-Generation.md).
-
 ## [0.14.0]
 
 ### Added 0.14.0
@@ -28,12 +12,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`Table` `auto`/`stretch` column widths + cell `minHeight`** — the `Table` element now renders through Flutter's `Table` widget, so column `width` values `auto` (content-sized, consistent across rows) and `stretch` (fills remaining space) work alongside the existing numeric weights and `Npx` pixel widths. Cell `minHeight` is now applied. Equal row height and per-cell background fill are preserved via `TableCellVerticalAlignment.intrinsicHeight`; grid lines now use `TableBorder`. All existing cell behaviors (background color/image, header styling, `selectAction`, alignment, responsive `layouts`) are unchanged. Remaining `Table` gaps: `bleed` and cell-level `rtl`.
 - **Behavioral tests for custom/extended elements** previously marked "Limited" (visibility-only coverage). New dedicated test files exercise element behavior: `Accordion` (per-section expand/collapse), `ProgressBar` and `ProgressRing` (determinate/indeterminate + `value` clamping; ring `label`/`labelPosition`), `TabSet` (tab rendering + tap-to-switch), `CarouselPage` (`items` + `showBorder`), and the read-only `Rating` display (filled/empty star rendering + defaults). README Tests column upgraded to ✅ for these rows.
 - **Coverage tests for low-coverage classes** — Lifts `flutter_adaptive_cards_fs` line coverage from ~88.9% to ~90.1%; CI coverage floor raised 88 → 90.
+- **Accessibility semantics for interactive elements.** `selectAction` targets are now exposed as buttons with an accessible name (the action `title`/`tooltip`); the `Rating` display and `Input.Rating` announce their value (`"x of y stars"`), with the interactive input adjustable via increase/decrease; and carousel page dots carry `"Go to slide N"` labels with selected state. Covered by `test/accessibility_semantics_test.dart`.
+- **Input label → control association for `Input.Toggle`, `Input.Rating`, and `Input.ChoiceSet`.** The `Input.Toggle` switch, the `Input.Rating` star control, and the compact/filtered `Input.ChoiceSet` field now announce their input `label` (previously only a detached visual `Text`); expanded `Input.ChoiceSet` exposes the `label` as a group name while keeping each option individually focusable. (`Input.Text`/`Number`/`Date` already associated their label via the underlying `TextFormField`, so they are unchanged.) Covered by `test/input_label_semantics_test.dart`.
 
 ### Changed 0.14.0
 
 - **`Table` `firstRowAsHeader` now actually styles header text.** Header styling previously relied on an ambient `DefaultTextStyle`, which `AdaptiveTextBlock` overrides with its own explicit `TextStyle` — so header rows were never bolder than body rows. Header cells now bake the HostConfig `columnHeader` text style (weight/size/color/fontType/isSubtle) into each `TextBlock`'s appearance, with the element's own properties still winning when set.
 - **README implementation status** — corrected the `Rating` row, which incorrectly claimed the read-only display element (`AdaptiveRating`) was "also registered as `Input.Rating`". `Rating` and `Input.Rating` are distinct widgets; added a separate `Input.Rating` row documenting the interactive star-picker input (`AdaptiveRatingInput`: `max`/`color`/`size`/`allowHalfSteps`, value submission, `isRequired`). Also corrected the Icon **Known gaps** row, which still listed "~68 icons" — `kFluentIconMap` now has ~200 entries (matching the Icon element row), so the gap impact drops to Low.
 - **Internal cleanup (no behavior change)** — applied `dart format` across the package (fixing formatting drift in 34 files); guarded the per-cell `developer.log` in `AdaptiveTable.buildCellContent` with `assert(() { … }())` so it no longer runs in release builds; and inlined the no-op `getHeaderCellDecoration` wrapper in `table.dart`. Also added braces to a single-statement `if` in `area_grid_model.dart` surfaced by re-formatting (`curly_braces_in_flow_control_structures`).
+- **Widget-key generation centralized.** Table key helpers (`AdaptiveTable.cellKey`/`columnKey`/`rowKey`/`tableColumnKey`) now delegate to shared `generateTable*Key` functions in `utils.dart`, and `ChoiceFilter` / the filtered-choice modal build their keys via `generateWidgetKeyFromId` instead of inline `ValueKey(...)`. Key values are unchanged; the format now has a single source that tests import. See [`docs/AdaptiveWidget-Key-Generation.md`](../../docs/AdaptiveWidget-Key-Generation.md).
+
+### Fixed 0.14.0
+
+- **`selectAction` wrapper (`AdaptiveTappable`) now uses a deterministic widget key.** It previously minted a fresh UUID on every build, so the key changed each frame — the wrapper (and its wrapped Image/Icon/Container subtree) could not be reused by Flutter across rebuilds and could not be located in tests. The key is now `{id}_selectAction`, seeded from the wrapped element's id (`loadId`), with a stable positional seed for table cells (which have no injected id). New regression tests in `test/select_action_tappable_key_test.dart` pin the format and element reuse.
+- **Interactive `Input.Rating` no longer asserts when semantics are enabled.** The adjustable rating declared `increase`/`decrease` actions without the `increasedValue`/`decreasedValue` that Flutter requires alongside a semantic `value`, which threw during the semantics build (e.g. with a screen reader or the Widgetbook Semantics addon). The rating now supplies all three.
+- **Decorative images are no longer announced as "alt text not set".** Images without an `altText` (including container/cell background images) were labeled with a placeholder string, polluting screen-reader output. A null label now passes through so Flutter excludes the decorative image from the semantics tree; images with `altText` are unchanged.
 
 ## [0.13.0]
 
