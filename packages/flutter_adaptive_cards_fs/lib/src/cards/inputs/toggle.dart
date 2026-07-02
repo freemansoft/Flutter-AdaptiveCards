@@ -75,29 +75,34 @@ class AdaptiveToggleState extends ConsumerState<AdaptiveToggle>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: <Widget>[
-                Switch(
-                  key: generateWidgetKey(adaptiveMap),
-                  value: boolValue,
-                  onChanged: (newValue) {
-                    setState(() {
-                      boolValue = newValue;
-                    });
-                    final docValue = boolValue ? valueOn : valueOff;
-                    setDocumentInputValue(docValue);
-                    rawRootCardWidgetState.changeValue(id, docValue);
-                    notifyUserInputValueChanged(docValue, committed: true);
-                  },
-                ),
-                Expanded(
-                  child: loadLabel(
-                    context: context,
-                    label: input.label ?? title,
-                    isRequired: input.isRequired,
+            // Merge the switch and its adjacent label into one semantics node
+            // so a screen reader announces the label with the toggle state
+            // (the Row holds only the switch + its label, so merging is safe).
+            MergeSemantics(
+              child: Row(
+                children: <Widget>[
+                  Switch(
+                    key: generateWidgetKey(adaptiveMap),
+                    value: boolValue,
+                    onChanged: (newValue) {
+                      setState(() {
+                        boolValue = newValue;
+                      });
+                      final docValue = boolValue ? valueOn : valueOff;
+                      setDocumentInputValue(docValue);
+                      rawRootCardWidgetState.changeValue(id, docValue);
+                      notifyUserInputValueChanged(docValue, committed: true);
+                    },
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: loadLabel(
+                      context: context,
+                      label: input.label ?? title,
+                      isRequired: input.isRequired,
+                    ),
+                  ),
+                ],
+              ),
             ),
             loadErrorMessage(
               context: context,

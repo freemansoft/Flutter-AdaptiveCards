@@ -5,8 +5,9 @@
 **Status:**
 - **Implemented (branch `fix/adaptive-tappable-deterministic-keys`):** #1, #2, #8 + key-helper centralization.
 - **Implemented (branch `fix/accessibility-semantics`):** #3 (decorative-image semantics), #4 (selectAction button role/label), #5 (Rating value/adjustable semantics — also fixed a latent runtime assertion in interactive rating), #6 (carousel dot labels).
-- **Deferred #7 (input label→field association):** found unsafe to implement as planned — inputs contain sub-controls (password reveal button, expanded `Input.ChoiceSet` options) that a blanket `MergeSemantics` would incorrectly collapse. Needs per-input-type work + semantics tests; see note below.
+- **Implemented (branch `fix/input-label-semantics`):** #7 — but the finding was **partly inaccurate**. Empirical semantics dumps showed `Input.Text`/`Number`/`Date` **already** associate their label (via the underlying `TextFormField`). The real gaps were `Input.Toggle` (Switch), `Input.Rating` (star control), and `Input.ChoiceSet` (compact/filtered/expanded), now fixed per-control: `MergeSemantics` for single controls (toggle, rating, compact/filtered dropdown), and a `Semantics` group label for expanded (options stay individually focusable — a blanket merge would have collapsed them). Covered by `test/input_label_semantics_test.dart`.
 - **Deferred #9 (localization) and #10 (minor):** #9 to a separate repo-wide l10n effort; #10 is best-effort/no-op.
+- **Follow-up (not in the original findings):** `FactSet` renders each fact as a `Row[title | value]` — two separate semantics nodes, so screen readers read the title and value as disconnected items. Wrapping each fact row in `MergeSemantics` would announce each pair together ("Name: John"). Left for a dedicated change.
 **Reviewer:** AI-assisted static audit
 
 This review evaluates the core library for **missing or broken accessibility
