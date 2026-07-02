@@ -2,10 +2,11 @@
 
 **Date:** 2026-07-01
 **Scope:** `packages/flutter_adaptive_cards_fs/lib/`
-**Status:** In progress — key findings (#1/#2/#8 + centralization) implemented on
-branch `fix/adaptive-tappable-deterministic-keys`; semantics findings
-(#3/#4/#5/#6/#7/#10) pending. #9 (localization) deferred to a separate
-repo-wide l10n effort.
+**Status:**
+- **Implemented (branch `fix/adaptive-tappable-deterministic-keys`):** #1, #2, #8 + key-helper centralization.
+- **Implemented (branch `fix/accessibility-semantics`):** #3 (decorative-image semantics), #4 (selectAction button role/label), #5 (Rating value/adjustable semantics — also fixed a latent runtime assertion in interactive rating), #6 (carousel dot labels).
+- **Deferred #7 (input label→field association):** found unsafe to implement as planned — inputs contain sub-controls (password reveal button, expanded `Input.ChoiceSet` options) that a blanket `MergeSemantics` would incorrectly collapse. Needs per-input-type work + semantics tests; see note below.
+- **Deferred #9 (localization) and #10 (minor):** #9 to a separate repo-wide l10n effort; #10 is best-effort/no-op.
 **Reviewer:** AI-assisted static audit
 
 This review evaluates the core library for **missing or broken accessibility

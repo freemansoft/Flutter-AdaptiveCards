@@ -134,16 +134,31 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
 
   @override
   Widget build(BuildContext context) {
-    return action == null
-        ? widget.child
-        : InkWell(
-            onTap: () => action?.tap(
-              context: context,
-              rawAdaptiveCardState: rawRootCardWidgetState,
-              adaptiveMap: adaptiveMap['selectAction'],
-            ),
-            child: widget.child,
-          );
+    if (action == null) {
+      return widget.child;
+    }
+
+    final selectAction = adaptiveMap['selectAction'];
+    final String? label = selectAction is Map
+        ? (selectAction['title'] as String?) ??
+              (selectAction['tooltip'] as String?)
+        : null;
+
+    // Expose the tap target as a button with an accessible name so screen
+    // readers announce the selectAction (the wrapped child may be an image or
+    // decorative content with no name of its own).
+    return Semantics(
+      button: true,
+      label: label,
+      child: InkWell(
+        onTap: () => action?.tap(
+          context: context,
+          rawAdaptiveCardState: rawRootCardWidgetState,
+          adaptiveMap: adaptiveMap['selectAction'],
+        ),
+        child: widget.child,
+      ),
+    );
   }
 }
 

@@ -171,25 +171,30 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(pages.length, (index) {
         final bool isSelected = index == _currentIndex;
-        return GestureDetector(
-          onTap: () => _goToPage(index),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            width: isSelected ? 24.0 : 8.0, // Bar width vs Dot width
-            height: 8,
-            decoration: BoxDecoration(
-              color: _currentIndex == index
-                  ? resolver.resolveContainerForegroundColor(
-                          style: 'default',
-                        ) ??
-                        Colors.black
-                  : resolver.resolveContainerForegroundColor(
-                          style: 'default',
-                          isSubtle: true,
-                        ) ??
-                        Colors.grey.withAlpha(128),
-              borderRadius: BorderRadius.circular(4), // Fully rounded
+        return Semantics(
+          button: true,
+          selected: isSelected,
+          label: 'Go to slide ${index + 1}',
+          child: GestureDetector(
+            onTap: () => _goToPage(index),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: isSelected ? 24.0 : 8.0, // Bar width vs Dot width
+              height: 8,
+              decoration: BoxDecoration(
+                color: _currentIndex == index
+                    ? resolver.resolveContainerForegroundColor(
+                            style: 'default',
+                          ) ??
+                          Colors.black
+                    : resolver.resolveContainerForegroundColor(
+                            style: 'default',
+                            isSubtle: true,
+                          ) ??
+                          Colors.grey.withAlpha(128),
+                borderRadius: BorderRadius.circular(4), // Fully rounded
+              ),
             ),
           ),
         );
