@@ -141,14 +141,21 @@ class AdaptiveTextBlockState extends ConsumerState<AdaptiveTextBlock>
 
     final isHeading = style?.toLowerCase() == 'heading';
 
+    // Adaptive Cards has no per-element heading level; the level for all
+    // heading-styled TextBlocks comes from HostConfig `textBlock.headingLevel`
+    // (default 2). `Semantics.headingLevel` accepts only null (not a heading)
+    // or 1–6, so pass null for non-headings and clamp the config value.
+    final int? headingLevel = isHeading
+        ? (styleResolver.getTextBlockConfig()?.headingLevel ?? 2).clamp(1, 6)
+        : null;
+
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
         child: Semantics(
           header: isHeading,
-          // Heading level doesn't have a direct field in Semantics,
-          // but we can potentially use custom semantics if needed.
+          headingLevel: headingLevel,
           child: Align(
             // IntrinsicWidth fixed a few things, but breaks more
             alignment: horizontalAlignment,

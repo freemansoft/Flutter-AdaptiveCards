@@ -1,14 +1,17 @@
 # Accessibility & Key-Generation Review — `flutter_adaptive_cards_fs`
 
 **Date:** 2026-07-01
+**Status last verified:** 2026-07-02 (against `main` @ `f06d7ab`)
 **Scope:** `packages/flutter_adaptive_cards_fs/lib/`
 **Status:**
-- **Implemented (branch `fix/adaptive-tappable-deterministic-keys`):** #1, #2, #8 + key-helper centralization.
-- **Implemented (branch `fix/accessibility-semantics`):** #3 (decorative-image semantics), #4 (selectAction button role/label), #5 (Rating value/adjustable semantics — also fixed a latent runtime assertion in interactive rating), #6 (carousel dot labels).
-- **Implemented (branch `fix/input-label-semantics`):** #7 — but the finding was **partly inaccurate**. Empirical semantics dumps showed `Input.Text`/`Number`/`Date` **already** associate their label (via the underlying `TextFormField`). The real gaps were `Input.Toggle` (Switch), `Input.Rating` (star control), and `Input.ChoiceSet` (compact/filtered/expanded), now fixed per-control: `MergeSemantics` for single controls (toggle, rating, compact/filtered dropdown), and a `Semantics` group label for expanded (options stay individually focusable — a blanket merge would have collapsed them). Covered by `test/input_label_semantics_test.dart`.
-- **Deferred #9 (localization) and #10 (minor):** #9 to a separate repo-wide l10n effort; #10 is best-effort/no-op.
-- **Follow-up (not in the original findings):** `FactSet` renders each fact as a `Row[title | value]` — two separate semantics nodes, so screen readers read the title and value as disconnected items. Wrapping each fact row in `MergeSemantics` would announce each pair together ("Name: John"). Left for a dedicated change.
-**Reviewer:** AI-assisted static audit
+
+- **Implemented (branch `fix/adaptive-tappable-deterministic-keys`, merged PR #4):** #1, #2, #8 + key-helper centralization.
+- **Implemented (branch `fix/accessibility-semantics`, merged PR #3):** #3 (decorative-image semantics), #4 (selectAction button role/label), #5 (Rating value/adjustable semantics — also fixed a latent runtime assertion in interactive rating), #6 (carousel dot labels).
+- **Implemented (branch `fix/input-label-semantics`, merged PR #5):** #7 — but the finding was **partly inaccurate**. Empirical semantics dumps showed `Input.Text`/`Number`/`Date` **already** associate their label (via the underlying `TextFormField`). The real gaps were `Input.Toggle` (Switch), `Input.Rating` (star control), and `Input.ChoiceSet` (compact/filtered/expanded), now fixed per-control: `MergeSemantics` for single controls (toggle, rating, compact/filtered dropdown), and a `Semantics` group label for expanded (options stay individually focusable — a blanket merge would have collapsed them). Covered by `test/input_label_semantics_test.dart`.
+- **Still open — #9 (localization):** hard-coded English strings remain (`'Refresh card'` at `adaptive_card_element.dart:425,428`; `'Rating'` in `rating_stars.dart:164,176`; `'Go to slide N'` in `carousel.dart:177`; `'choiceFilter'` fallback in `choice_filter.dart:44`). Deferred to a separate repo-wide l10n effort.
+- **Implemented (branch `fix/textblock-heading-level-and-factset-semantics`):** #10 — TextBlock heading now emits `Semantics(headingLevel:)` from HostConfig `textBlock.headingLevel` (default 2, clamped 1–6); an icon carrying a `selectAction` no longer double-announces its Fluent token (the `AdaptiveTappable` button label wins). **Partial:** a standalone icon still announces its token — the AC `Icon` element has no `altText`, so there is no author signal to mark it purely decorative; full suppression would need a schema/`role` addition.
+- **Implemented (branch `fix/textblock-heading-level-and-factset-semantics`):** #11 (FactSet, was the unnumbered follow-up) — the two-column layout is unchanged (golden-safe); each fact's title node now carries the combined `"title: value"` label and the value column is wrapped in `ExcludeSemantics`, so a screen reader announces each fact as one unit in reading order. **Trade-off:** interactive markdown links inside a fact *value* lose their own semantics (fact values are short text in practice); a per-row `MergeSemantics` restructure would preserve them but changes the visual layout and all FactSet goldens.
+  **Reviewer:** AI-assisted static audit
 
 This review evaluates the core library for **missing or broken accessibility
 semantics** and **widget key creation**, measured against the project's own
@@ -18,14 +21,14 @@ requirements.
 
 ## Requirements evaluated against
 
-| Source | Requirement |
-| --- | --- |
+| Source                                        | Requirement                                                                                                 |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `AGENTS.md` → Semantic Labels and Widget Keys | "Apply semantic labels for accessibility (for example, use `altText` from card JSON for images and icons)." |
-| `AGENTS.md` → Semantic Labels and Widget Keys | "Use deterministic keys via `generateAdaptiveWidgetKey()` and `generateWidgetKey()`." |
-| `AGENTS.md` → Documentation Philosophy | "All UI strings must be localized in `.arb` files." |
-| `docs/AdaptiveWidget-Key-Generation.md` | Keys "must be generated **deterministically** from `adaptiveMap`." |
-| `docs/form-inputs.md:353-356` | Adaptive wrapper key = `{id}_adaptive`; field key = `{id}`. |
-| Adaptive Cards spec | `Image.altText`; `selectAction` targets operable & labeled; inputs labeled. |
+| `AGENTS.md` → Semantic Labels and Widget Keys | "Use deterministic keys via `generateAdaptiveWidgetKey()` and `generateWidgetKey()`."                       |
+| `AGENTS.md` → Documentation Philosophy        | "All UI strings must be localized in `.arb` files."                                                         |
+| `docs/AdaptiveWidget-Key-Generation.md`       | Keys "must be generated **deterministically** from `adaptiveMap`."                                          |
+| `docs/form-inputs.md:353-356`                 | Adaptive wrapper key = `{id}_adaptive`; field key = `{id}`.                                                 |
+| Adaptive Cards spec                           | `Image.altText`; `selectAction` targets operable & labeled; inputs labeled.                                 |
 
 Severity legend: 🔴 high · 🟡 medium · ⚪ low.
 
@@ -33,18 +36,19 @@ Severity legend: 🔴 high · 🟡 medium · ⚪ low.
 
 ## Summary
 
-| # | Area | Finding | Severity |
-| --- | --- | --- | --- |
-| 1 | Keys | `AdaptiveTappable` mints a fresh UUID key on every build (non-deterministic) | 🔴 |
-| 2 | Keys | `AdaptiveTappable` keys off `type`, ignoring the element `id` | 🔴 (same fix as #1) |
-| 3 | Semantics | Decorative / alt-less images announce literal `"alt text not set"` | 🔴 |
-| 4 | Semantics | `selectAction` wrapper has no button role or accessible name | 🔴 |
-| 5 | Semantics | Rating control exposes no value/role semantics | 🔴 |
-| 6 | Semantics | Carousel page indicators are unlabeled | 🟡 |
-| 7 | Semantics | Input labels are not programmatically associated with their fields | 🟡 |
-| 8 | Keys | `choice_filter.dart` bypasses the key generators | 🟡 |
-| 9 | Localization | Hard-coded English accessibility strings | 🟡 |
-| 10 | Semantics | TextBlock heading has no heading level; icon token always announced | ⚪ |
+| #   | Area         | Finding                                                                               | Severity            | Status                                                                    |
+| --- | ------------ | ------------------------------------------------------------------------------------- | ------------------- | ------------------------------------------------------------------------- |
+| 1   | Keys         | `AdaptiveTappable` mints a fresh UUID key on every build (non-deterministic)          | 🔴                  | ✅ Fixed (PR #4)                                                          |
+| 2   | Keys         | `AdaptiveTappable` keys off `type`, ignoring the element `id`                         | 🔴 (same fix as #1) | ✅ Fixed (PR #4)                                                          |
+| 3   | Semantics    | Decorative / alt-less images announce literal `"alt text not set"`                    | 🔴                  | ✅ Fixed (PR #3)                                                          |
+| 4   | Semantics    | `selectAction` wrapper has no button role or accessible name                          | 🔴                  | ✅ Fixed (PR #3)                                                          |
+| 5   | Semantics    | Rating control exposes no value/role semantics                                        | 🔴                  | ✅ Fixed (PR #3)                                                          |
+| 6   | Semantics    | Carousel page indicators are unlabeled                                                | 🟡                  | ✅ Fixed (PR #3)                                                          |
+| 7   | Semantics    | Input labels are not programmatically associated with their fields                    | 🟡                  | ✅ Fixed (PR #5)                                                          |
+| 8   | Keys         | `choice_filter.dart` bypasses the key generators                                      | 🟡                  | ✅ Fixed (PR #4) — `'choiceFilter'` retained only as a defensive fallback |
+| 9   | Localization | Hard-coded English accessibility strings                                              | 🟡                  | ⬜ Open — deferred to repo-wide l10n                                      |
+| 10  | Semantics    | TextBlock heading has no heading level; icon token always announced                   | ⚪                  | ✅ Fixed (heading level) · partial (icon: dup announcement removed)       |
+| 11  | Semantics    | **Follow-up:** `FactSet` title/value read as disconnected nodes (no `MergeSemantics`) | 🟡                  | ✅ Fixed (combined label on title, value excluded)                        |
 
 ---
 
@@ -56,7 +60,7 @@ Severity legend: 🔴 high · 🟡 medium · ⚪ low.
 > never by inline `ValueKey('...')` construction or ad-hoc string literals. This
 > is the existing contract in `docs/AdaptiveWidget-Key-Generation.md` ("Tests
 > must use the same generator functions — never hard-code the key string"). The
-> point is symmetry: tests call the *same* function on the element's
+> point is symmetry: tests call the _same_ function on the element's
 > `adaptiveMap`/id to locate the widget, so a key-format change updates both
 > sides at once. **Every fix below routes through a function** — including any
 > new seed (e.g. table-cell ids), which must be produced by a named helper that
@@ -64,13 +68,13 @@ Severity legend: 🔴 high · 🟡 medium · ⚪ low.
 
 **Inventory of key construction that bypasses the shared generators:**
 
-| Site | Current | Verdict |
-| --- | --- | --- |
-| `additional.dart:87` | `ValueKey<String>(uniqueId)` (random UUID) | 🔴 finding #1 — inline **and** non-deterministic |
-| `choice_filter.dart:83,128,146` | `ValueKey(keyValue)` / `'${keyValue}_${title}'` w/ `'choiceFilter'` literal | 🟡 finding #8 — inline |
-| `flutter_raw_adaptive_card.dart:409` | `ValueKey(inputId)` | 🟡 inline; should be `generateWidgetKeyFromId(inputId)` |
-| `table.dart:50-63` | `columnKey` / `cellKey` / `rowKey` / `tableColumnKey` static helpers | 🟢 *are* functions, but **local to the widget** and build `ValueKey` inline |
-| `adaptive_card_element.dart:78` | `GlobalKey<FormState>()` | ⚪ ok — internal Form handle, not an addressable element key |
+| Site                                 | Current                                                                     | Verdict                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `additional.dart:87`                 | `ValueKey<String>(uniqueId)` (random UUID)                                  | 🔴 finding #1 — inline **and** non-deterministic                            |
+| `choice_filter.dart:83,128,146`      | `ValueKey(keyValue)` / `'${keyValue}_${title}'` w/ `'choiceFilter'` literal | 🟡 finding #8 — inline                                                      |
+| `flutter_raw_adaptive_card.dart:409` | `ValueKey(inputId)`                                                         | 🟡 inline; should be `generateWidgetKeyFromId(inputId)`                     |
+| `table.dart:50-63`                   | `columnKey` / `cellKey` / `rowKey` / `tableColumnKey` static helpers        | 🟢 _are_ functions, but **local to the widget** and build `ValueKey` inline |
+| `adaptive_card_element.dart:78`      | `GlobalKey<FormState>()`                                                    | ⚪ ok — internal Form handle, not an addressable element key                |
 
 The `table.dart` helpers are the right idea done in the wrong place: they are
 named functions a test could call, but they live on the widget class and
@@ -110,17 +114,17 @@ that carries a `selectAction`** and reads `adaptiveMap['selectAction']`
 already has an id (`injectIds()` injects one at load for any node with a
 `"type"`):
 
-| Call site | Wrapped map | id source |
-| --- | --- | --- |
-| `adaptive_card_element.dart:342` | card `adaptiveMap` | card id |
-| `image.dart:83` | Image element | injected |
-| `icon.dart:89` | Icon element | injected |
-| `container.dart:142` | Container | injected |
-| `column.dart:185` | Column | injected |
-| `column_set.dart:99` | ColumnSet | injected |
-| `table.dart:273` | `TableCell.toJson()` | **nullable** — needs fallback |
+| Call site                        | Wrapped map          | id source                     |
+| -------------------------------- | -------------------- | ----------------------------- |
+| `adaptive_card_element.dart:342` | card `adaptiveMap`   | card id                       |
+| `image.dart:83`                  | Image element        | injected                      |
+| `icon.dart:89`                   | Icon element         | injected                      |
+| `container.dart:142`             | Container            | injected                      |
+| `column.dart:185`                | Column               | injected                      |
+| `column_set.dart:99`             | ColumnSet            | injected                      |
+| `table.dart:273`                 | `TableCell.toJson()` | **nullable** — needs fallback |
 
-So a deterministic seed *is* available (the wrapped element's id). The only case
+So a deterministic seed _is_ available (the wrapped element's id). The only case
 without a guaranteed id is the **table cell** — and even there the fix is a
 stable computed seed, not a per-build random UUID.
 
@@ -169,11 +173,11 @@ so `loadId(adaptiveMap)` returns the same value on every rebuild.
 
 **Consequence:** for every layout element except table cells, there is **no
 "id-missing" case at build time** — author-optional in JSON, always present after
-injection. `AdaptiveTappable` simply needs to *read* that id via
+injection. `AdaptiveTappable` simply needs to _read_ that id via
 `loadId(adaptiveMap)` instead of minting a fresh UUID.
 
 **The one real gap — the `AdaptiveTappable` inside a table cell.** The cell
-*widget* already gets a deterministic key from the existing
+_widget_ already gets a deterministic key from the existing
 `AdaptiveTable.cellKey(tableKey, row, col)` helper (`table.dart:54`), so the cell
 itself is fine. The gap is narrower: `table.dart:273` wraps the cell content in
 `AdaptiveTappable(adaptiveMap: cellModel.toJson(), ...)`, and
@@ -190,8 +194,8 @@ principle, do not inline the seed at either the production or the test site.
 **Decision: do not make `id` mandatory and do not add a validation gate.** That
 would violate the AC spec (id is optional on layout elements) and reject valid
 host cards. `injectIds` is exactly the mechanism that removes the need for a
-gate. The invariant to lean on is: *every rendered node has an id post-injection;
-keys derive from it.*
+gate. The invariant to lean on is: _every rendered node has an id post-injection;
+keys derive from it._
 
 **Caveat (pre-existing, not introduced here):** the injected id is a random
 `UniqueKey`-based UUID, so it is stable **across rebuilds** (fixing the churn)
@@ -250,7 +254,7 @@ This default is applied to **every** image path (network, memory, SVG,
 broken-image icon). Background/decorative images call
 `getImage(..., semanticsLabel: null)` (`adaptive_mixins.dart:125`), so a screen
 reader reads out **"alt text not set"** for purely decorative art. This is
-*worse* than correct behavior: a Flutter `Image` with a null `semanticLabel` is
+_worse_ than correct behavior: a Flutter `Image` with a null `semanticLabel` is
 excluded from the semantics tree.
 
 Two violations in one line:
@@ -292,7 +296,7 @@ There is **no `Semantics`** anywhere:
 - Interactive: no label, no button/slider role, no increase/decrease actions,
   no announced value.
 - Read-only (`Input.Rating` display and the `Rating` element): no
-  "*x of y stars*" value announcement.
+  "_x of y stars_" value announcement.
 
 A screen-reader user cannot perceive or operate the rating.
 
@@ -337,12 +341,42 @@ The `Semantics(button: true, label: …)` pattern here is the model to follow
 elsewhere, but the literal strings — plus `'alt text not set'` from #3 — violate
 the localization requirement (`.arb`).
 
-### ⚪ 10. Minor / acknowledged
+### ⚪ 10. Minor / acknowledged — ✅ heading level fixed · icon partial
 
-- `text_block.dart:148-151` sets `Semantics(header: isHeading)` but no heading
-  level — already noted in a code comment; low priority.
-- `icon.dart:86` passes `semanticLabel: name` (the Fluent token, e.g. `"Home"`);
-  reasonable, but decorative icons still announce the token with no suppression.
+- **Fixed:** `text_block.dart` now sets `Semantics(headingLevel:)` for heading-
+  styled TextBlocks, sourced from HostConfig `textBlock.headingLevel` (default 2,
+  clamped to 1–6; `null` for non-headings, since the `Semantics` widget accepts
+  only `null` or 1–6). AC has no per-element heading level, so the HostConfig
+  value applies to all heading TextBlocks.
+- **Partial:** `icon.dart` previously passed `semanticLabel: name` (the Fluent
+  token, e.g. `"Home"`) on every icon. It now suppresses that token when the
+  icon carries a `selectAction` whose `title`/`tooltip` already labels the
+  `AdaptiveTappable` button, removing the double announcement. A **standalone**
+  icon still announces the token — the AC `Icon` element exposes no `altText`,
+  so there is no author signal distinguishing a meaningful icon from a purely
+  decorative one. Full decorative suppression would require a schema/`role`
+  addition and is out of scope here.
+
+### 🟡 11. `FactSet` title/value announced as disconnected nodes — ✅ fixed
+
+**File:** `lib/src/cards/containers/fact_set.dart`
+
+`FactSet` renders titles and values in **two parallel columns** (a `Row` of a
+title `Column` and a value `Column`), so each fact's title and value are
+separate semantics nodes with no association — a screen reader reads the title,
+then later the value, as unrelated items.
+
+**Fix:** the two-column visual layout is left unchanged (golden-safe). Each
+fact's title node now carries the combined `"${title}: ${value}"` label, and the
+value column is wrapped in `ExcludeSemantics`. In geometric reading order the
+screen reader announces each fact once, as a unit ("Name: John"), top to bottom.
+
+**Trade-off:** interactive markdown links inside a fact **value** lose their own
+semantics because the value column is excluded. Fact values are short text in
+practice, so this is acceptable; the alternative — restructuring to per-fact
+`Row`s wrapped in `MergeSemantics` — preserves link semantics but changes the
+visual layout (title/value alignment) and every FactSet golden, so it was not
+taken.
 
 ---
 

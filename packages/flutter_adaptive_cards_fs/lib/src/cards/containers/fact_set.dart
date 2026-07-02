@@ -81,20 +81,32 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
                               ? factSetConfig.title.maxWidth.toDouble()
                               : double.infinity,
                         ),
-                        child: Text(
-                          fact.title,
-                          softWrap: factSetConfig?.title.wrap ?? true,
-                          style: TextStyle(
-                            fontWeight: resolver.resolveFontWeight(
-                              factSetConfig?.title.weight ?? 'default',
-                            ),
-                            fontSize: resolver.resolveFontSize(
-                              context: context,
-                              sizeString: factSetConfig?.title.size ?? 'normal',
-                            ),
-                            color: resolver.resolveContainerForegroundColor(
-                              style: factSetConfig?.title.color,
-                              isSubtle: factSetConfig?.title.isSubtle,
+                        // The title and value render in two separate columns,
+                        // so they are distinct semantics nodes. Carry the
+                        // combined "title: value" on the title node and exclude
+                        // the value column below, so a screen reader announces
+                        // each fact as one unit ("Name: John") in reading order
+                        // instead of a disconnected title then value.
+                        child: Semantics(
+                          label: '${fact.title}: ${fact.value}',
+                          child: ExcludeSemantics(
+                            child: Text(
+                              fact.title,
+                              softWrap: factSetConfig?.title.wrap ?? true,
+                              style: TextStyle(
+                                fontWeight: resolver.resolveFontWeight(
+                                  factSetConfig?.title.weight ?? 'default',
+                                ),
+                                fontSize: resolver.resolveFontSize(
+                                  context: context,
+                                  sizeString:
+                                      factSetConfig?.title.size ?? 'normal',
+                                ),
+                                color: resolver.resolveContainerForegroundColor(
+                                  style: factSetConfig?.title.color,
+                                  isSubtle: factSetConfig?.title.isSubtle,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -116,12 +128,17 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
                                 ? factSetConfig.value.maxWidth.toDouble()
                                 : double.infinity,
                           ),
-                          child: MarkdownBody(
-                            data: fact.value,
-                            styleSheet: loadMarkdownStyleSheet(
-                              resolver: resolver,
-                              context: context,
-                              factSetTextConfig: factSetConfig?.value,
+                          // Value semantics are folded into the title node's
+                          // combined label above, so exclude this column to
+                          // avoid announcing the value a second time.
+                          child: ExcludeSemantics(
+                            child: MarkdownBody(
+                              data: fact.value,
+                              styleSheet: loadMarkdownStyleSheet(
+                                resolver: resolver,
+                                context: context,
+                                factSetTextConfig: factSetConfig?.value,
+                              ),
                             ),
                           ),
                         ),

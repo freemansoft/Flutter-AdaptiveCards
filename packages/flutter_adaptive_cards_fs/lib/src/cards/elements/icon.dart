@@ -79,11 +79,22 @@ class AdaptiveIconState extends ConsumerState<AdaptiveIcon>
             : null) ??
         Icons.help_outline;
 
+    // When a `selectAction` supplies a button label, [AdaptiveTappable]
+    // announces it; suppress the icon's own Fluent-token label so screen
+    // readers don't announce the token twice. A standalone icon keeps the
+    // token as its only available accessible name (the AC `Icon` element has no
+    // `altText`, so there is no author signal to mark it purely decorative).
+    final selectAction = adaptiveMap['selectAction'];
+    final bool actionProvidesLabel =
+        selectAction is Map &&
+        (((selectAction['title'] as String?)?.isNotEmpty ?? false) ||
+            ((selectAction['tooltip'] as String?)?.isNotEmpty ?? false));
+
     Widget icon = Icon(
       iconData,
       size: resolveIconSize(sizeToken),
       color: _resolveIconColor(resolver, context),
-      semanticLabel: name,
+      semanticLabel: actionProvidesLabel ? null : name,
     );
 
     icon = AdaptiveTappable(
