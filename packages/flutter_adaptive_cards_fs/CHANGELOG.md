@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **`selectAction` wrapper (`AdaptiveTappable`) now uses a deterministic widget key.** It previously minted a fresh UUID on every build, so the key changed each frame — the wrapper (and its wrapped Image/Icon/Container subtree) could not be reused by Flutter across rebuilds and could not be located in tests. The key is now `{id}_selectAction`, seeded from the wrapped element's id (`loadId`), with a stable positional seed for table cells (which have no injected id). New regression tests in `test/select_action_tappable_key_test.dart` pin the format and element reuse.
+
+### Changed
+
+- **Widget-key generation centralized.** Table key helpers (`AdaptiveTable.cellKey`/`columnKey`/`rowKey`/`tableColumnKey`) now delegate to shared `generateTable*Key` functions in `utils.dart`, and `ChoiceFilter` / the filtered-choice modal build their keys via `generateWidgetKeyFromId` instead of inline `ValueKey(...)`. Key values are unchanged; the format now has a single source that tests import. See [`docs/AdaptiveWidget-Key-Generation.md`](../../docs/AdaptiveWidget-Key-Generation.md).
+
 ## [0.14.0]
 
 ### Added 0.14.0

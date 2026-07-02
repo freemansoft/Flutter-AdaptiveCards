@@ -380,6 +380,29 @@ ValueKey<String> generateWidgetKeyFromId(String id, {String? suffix}) {
   return ValueKey(id);
 }
 
+/// Deterministic [ValueKey] for the [Table] widget that wraps a card table's
+/// rows (`{tableKey}_column`).
+///
+/// Table key formats are centralized here so production widgets and tests
+/// generate the same keys from one source. See
+/// [docs/AdaptiveWidget-Key-Generation.md].
+ValueKey<String> generateTableWrapperKey(String tableKey) =>
+    generateWidgetKeyFromId(tableKey, suffix: 'column');
+
+/// Deterministic [ValueKey] for a table column at [col]
+/// (`{tableKey}_col_{col}`).
+ValueKey<String> generateTableColumnKey(String tableKey, int col) =>
+    generateWidgetKeyFromId(tableKey, suffix: 'col_$col');
+
+/// Deterministic [ValueKey] for a table row at [row] (`{tableKey}_row_{row}`).
+ValueKey<String> generateTableRowKey(String tableKey, int row) =>
+    generateWidgetKeyFromId(tableKey, suffix: 'row_$row');
+
+/// Deterministic [ValueKey] for the cell at [row], [col]
+/// (`{tableKey}_{row}_{col}`).
+ValueKey<String> generateTableCellKey(String tableKey, int row, int col) =>
+    generateWidgetKeyFromId(tableKey, suffix: '${row}_$col');
+
 /// Shared id generation for elements missing author-supplied `id` values.
 class UUIDGenerator {
   /// Access the shared [UUIDGenerator] instance used across the library.

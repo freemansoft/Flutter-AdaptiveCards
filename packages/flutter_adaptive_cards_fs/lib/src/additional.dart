@@ -74,17 +74,22 @@ class SeparatorElement extends StatelessWidget {
 /// renderers.
 class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Wraps [child] with an [InkWell] when [adaptiveMap] defines `selectAction`.
+  ///
+  /// The wrapper key is deterministic (`{id}_selectAction`) so element reuse
+  /// and integration-test lookups are stable across rebuilds. The seed is the
+  /// wrapped element's own id via [loadId]; callers whose map has no id (e.g.
+  /// table cells, whose `toJson()` omits `type`) must pass [idSeed] with a
+  /// stable positional id. See [docs/AdaptiveWidget-Key-Generation.md].
   factory AdaptiveTappable({
     required Widget child,
     required Map<String, dynamic> adaptiveMap,
+    String? idSeed,
   }) {
-    final uniqueId = UUIDGenerator().generateUniqueId(
-      type: adaptiveMap['type'],
-    );
+    final String seed = idSeed ?? loadId(adaptiveMap);
     return AdaptiveTappable._(
       adaptiveMap: adaptiveMap,
-      id: uniqueId,
-      key: ValueKey<String>(uniqueId),
+      id: seed,
+      key: generateWidgetKeyFromId(seed, suffix: 'selectAction'),
       child: child,
     );
   }

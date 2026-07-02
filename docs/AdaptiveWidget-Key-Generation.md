@@ -103,3 +103,36 @@ If a JSON map element has a `"type"` property but no `"id"`, the loader
 calls `injectIds()` (in `utils.dart`) before building the widget tree to
 generate a synthetic UUID-based id. This means `loadId(adaptiveMap)` always
 returns a valid string at widget construction time.
+
+---
+
+## `selectAction` Wrapper Key
+
+`AdaptiveTappable` wraps any element that defines a `selectAction`
+(Image, Icon, Container, Column, ColumnSet, table cell, the card body). Its key
+is **deterministic** — `generateWidgetKeyFromId(loadId(adaptiveMap), suffix:
+'selectAction')` → `ValueKey('${id}_selectAction')` — so element reuse and test
+lookups are stable across rebuilds. The `_selectAction` suffix keeps it distinct
+from the wrapped element's own `{id}_adaptive` wrapper key.
+
+Table cells carry no injected id (`TableCellModel.toJson()` omits `type`, so
+`injectIds()` skips them), so `table.dart` passes an explicit `idSeed` derived
+from the cell's positional key (`generateTableCellKey(tableKey, row, col)`).
+
+---
+
+## Centralized Table Keys
+
+Table key formats live in `utils.dart` and are the single source both production
+and tests use:
+
+| Function | Key format |
+| --- | --- |
+| `generateTableWrapperKey(tableKey)` | `ValueKey('${tableKey}_column')` |
+| `generateTableColumnKey(tableKey, col)` | `ValueKey('${tableKey}_col_$col')` |
+| `generateTableRowKey(tableKey, row)` | `ValueKey('${tableKey}_row_$row')` |
+| `generateTableCellKey(tableKey, row, col)` | `ValueKey('${tableKey}_${row}_$col')` |
+
+The `AdaptiveTable.cellKey` / `columnKey` / `rowKey` / `tableColumnKey` static
+methods are retained as thin delegators to these functions for backward
+compatibility.

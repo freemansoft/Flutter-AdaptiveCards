@@ -46,21 +46,25 @@ class AdaptiveTable extends ConsumerStatefulWidget
 
   /// Widget key for a table column at index [col]. Retained for backward
   /// compatibility; the Flutter [Table] owns column sizing, so this key is no
-  /// longer attached to a per-column widget.
+  /// longer attached to a per-column widget. Delegates to the shared
+  /// [generateTableColumnKey] so the key format has a single source.
   static ValueKey<String> columnKey(String tableKey, int col) =>
-      ValueKey('${tableKey}_col_$col');
+      generateTableColumnKey(tableKey, col);
 
-  /// Widget key for the cell at [rowIndex], [col].
+  /// Widget key for the cell at [rowIndex], [col]; delegates to the shared
+  /// [generateTableCellKey].
   static ValueKey<String> cellKey(String tableKey, int rowIndex, int col) =>
-      ValueKey('${tableKey}_${rowIndex}_$col');
+      generateTableCellKey(tableKey, rowIndex, col);
 
-  /// Local key for the row at [rowIndex] (set on the [TableRow]).
+  /// Local key for the row at [rowIndex] (set on the [TableRow]); delegates to
+  /// the shared [generateTableRowKey].
   static ValueKey<String> rowKey(String tableKey, int rowIndex) =>
-      ValueKey('${tableKey}_row_$rowIndex');
+      generateTableRowKey(tableKey, rowIndex);
 
-  /// Widget key for the [Table] that wraps all rows.
+  /// Widget key for the [Table] that wraps all rows; delegates to the shared
+  /// [generateTableWrapperKey].
   static ValueKey<String> tableColumnKey(String tableKey) =>
-      ValueKey('${tableKey}_column');
+      generateTableWrapperKey(tableKey);
 }
 
 /// State for [AdaptiveTable].
@@ -270,7 +274,14 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
     );
 
     if (cellModel.selectAction != null) {
-      cell = AdaptiveTappable(adaptiveMap: cellModel.toJson(), child: cell);
+      cell = AdaptiveTappable(
+        adaptiveMap: cellModel.toJson(),
+        // Cells have no injected id (toJson omits `type`); seed the tap
+        // wrapper key from the same positional identity as the cell key so it
+        // is deterministic and testable.
+        idSeed: generateTableCellKey(tableKey, rowIndex, col).value,
+        child: cell,
+      );
     }
 
     // When grid lines are off, a Table cannot hold spacer children, so create
