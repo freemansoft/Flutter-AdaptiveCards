@@ -328,6 +328,39 @@ The per-element reveal toggle can be set or cleared at runtime:
 
 Unlike value and validation overlays, `revealPasswordEnabled` is **preserved** (not cleared) by `Action.ResetInputs` / `resetInput` / `resetAllInputs` — the same preservation policy as `isVisible` and typeahead session fields. See [Reset semantics in reactive-riverpod.md](reactive-riverpod.md#reset-semantics).
 
+## Accessibility (screen readers)
+
+The visible label rendered by `loadLabel` is a **sibling** widget above the
+control, so on its own a screen reader announces it as a separate, unlinked
+node. Inputs associate the label with the field so focusing the control
+announces its name:
+
+- **Label → field association.** `Input.Text` / `Input.Number` / `Input.Date`
+  wrap their field with `labelInputSemantics(...)` (a layout-neutral
+  `MergeSemantics` + `Semantics(label:)`) and exclude the visible label from the
+  semantics tree with `ExcludeSemantics`. `Input.Time` (a picker button that
+  previously had **no** label at all) now renders `loadLabel` and merges it onto
+  the button. `Input.Toggle`, `Input.Rating`, and `Input.ChoiceSet` already
+  merge their label onto the control. The helpers live in
+  [`utils.dart`](../packages/flutter_adaptive_cards_fs/lib/src/utils/utils.dart)
+  (`inputSemanticsLabel`, `labelInputSemantics`).
+- **Required state is spoken.** The visible label marks required fields only
+  with a `*` glyph. `inputSemanticsLabel` appends `", required"` to the spoken
+  name so assistive technology conveys it explicitly.
+- **Validation errors are live regions.** `loadErrorMessage` wraps the error
+  text in `Semantics(liveRegion: true, …)`, so a screen reader announces the
+  message when it appears (e.g. after `setInputError`) without the user
+  re-focusing the field.
+
+Progress indicators (`ProgressBar`, `ProgressRing`) expose their completion
+percentage — and, for the ring, its author `label` — via the Flutter
+indicators' built-in `semanticsLabel` / `semanticsValue`.
+
+Regression tests:
+[`input_label_semantics_test.dart`](../packages/flutter_adaptive_cards_fs/test/input_label_semantics_test.dart),
+[`input_error_and_progress_a11y_test.dart`](../packages/flutter_adaptive_cards_fs/test/input_error_and_progress_a11y_test.dart),
+[`accessibility_semantics_test.dart`](../packages/flutter_adaptive_cards_fs/test/accessibility_semantics_test.dart).
+
 ## Component field implementations
 
 All of the data entry components in lib/src/cards/inputs should be form componets instead of plain flutter inputs.

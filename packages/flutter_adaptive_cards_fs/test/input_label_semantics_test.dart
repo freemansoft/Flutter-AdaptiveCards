@@ -6,11 +6,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
 
-/// Regression tests for input label → field association (finding #7).
+/// Regression tests for input label → field association.
 ///
-/// Text/Number/Date fields already carried their label via the `TextFormField`
-/// structure; these tests pin the controls that did not — `Input.Toggle`
-/// (Switch), and `Input.ChoiceSet` in compact, filtered, and expanded styles.
+/// The visible label built by `loadLabel` is a sibling widget; on its own a
+/// screen reader announces it as an unlinked node. These tests pin that each
+/// control's own semantics node carries the author label (and a spoken
+/// "required" hint) so focusing the field announces its name:
+/// `Input.Text` / `Input.Number` / `Input.Date` / `Input.Time`, `Input.Toggle`
+/// (Switch), `Input.Rating`, and `Input.ChoiceSet` (compact/filtered/expanded).
 void main() {
   setUp(() {
     HttpOverrides.global = MyTestHttpOverrides();
@@ -27,6 +30,98 @@ void main() {
     onSubmit: (_) {},
     onExecute: (_) {},
   );
+
+  testWidgets('Input.Text field node carries the input label', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      buildCard({'type': 'Input.Text', 'id': 't', 'label': 'Full name'}),
+    );
+    await tester.pumpAndSettle();
+
+    final data = tester
+        .getSemantics(find.byType(TextFormField))
+        .getSemanticsData();
+    expect(data.flagsCollection.isTextField, isTrue);
+    expect(data.label, contains('Full name'));
+    handle.dispose();
+  });
+
+  testWidgets('Input.Text required field announces a "required" hint', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      buildCard({
+        'type': 'Input.Text',
+        'id': 't',
+        'label': 'Email',
+        'isRequired': true,
+      }),
+    );
+    await tester.pumpAndSettle();
+
+    // The visible label conveys required only with a `*` glyph; the semantics
+    // label spells it out so assistive tech announces it.
+    final data = tester
+        .getSemantics(find.byType(TextFormField))
+        .getSemanticsData();
+    expect(data.label, contains('Email'));
+    expect(data.label, contains('required'));
+    handle.dispose();
+  });
+
+  testWidgets('Input.Number field node carries the input label', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      buildCard({'type': 'Input.Number', 'id': 'n', 'label': 'Age'}),
+    );
+    await tester.pumpAndSettle();
+
+    final data = tester
+        .getSemantics(find.byType(TextFormField))
+        .getSemanticsData();
+    expect(data.flagsCollection.isTextField, isTrue);
+    expect(data.label, contains('Age'));
+    handle.dispose();
+  });
+
+  testWidgets('Input.Date field node carries the input label', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      buildCard({'type': 'Input.Date', 'id': 'd', 'label': 'Due date'}),
+    );
+    await tester.pumpAndSettle();
+
+    final data = tester
+        .getSemantics(find.byType(TextFormField))
+        .getSemanticsData();
+    expect(data.label, contains('Due date'));
+    handle.dispose();
+  });
+
+  testWidgets('Input.Time button node carries the input label', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      buildCard({'type': 'Input.Time', 'id': 'tm', 'label': 'Start time'}),
+    );
+    await tester.pumpAndSettle();
+
+    // Input.Time renders a picker button; the label is merged onto it so the
+    // control announces its name (previously the label was dropped entirely).
+    final data = tester
+        .getSemantics(find.byType(ElevatedButton))
+        .getSemanticsData();
+    expect(data.label, contains('Start time'));
+    handle.dispose();
+  });
 
   testWidgets('Input.Toggle switch node carries the input label', (
     tester,

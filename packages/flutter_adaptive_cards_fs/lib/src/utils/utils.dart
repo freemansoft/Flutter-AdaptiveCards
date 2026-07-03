@@ -216,6 +216,49 @@ String parseTextString(String text, {String? locale}) {
   });
 }
 
+/// Builds the spoken accessibility name for an input by combining the author
+/// [label] with a "required" hint.
+///
+/// The visible label marks required fields only with a `*` glyph, which screen
+/// readers do not reliably convey; appending "required" gives assistive
+/// technology an explicit signal. Returns `null` when there is no author label
+/// to announce, so callers can leave the control's intrinsic semantics intact.
+String? inputSemanticsLabel({String? label, bool isRequired = false}) {
+  if (label == null || label.isEmpty) {
+    return null;
+  }
+  return isRequired ? '$label, required' : label;
+}
+
+/// Associates an input [field] with its author [label] for screen readers.
+///
+/// Focusing the returned control announces the label (and required state)
+/// merged with the field's own value, because the visible label built by
+/// [loadLabel] is a sibling widget that assistive technology otherwise reads as
+/// a separate, unlinked node. Callers should wrap that visible label in
+/// [ExcludeSemantics] to avoid a duplicate announcement. When there is no
+/// author label the [field] is returned unchanged. Layout is unaffected — only
+/// the semantics tree changes.
+Widget labelInputSemantics({
+  required Widget field,
+  String? label,
+  bool isRequired = false,
+}) {
+  final String? semanticsLabel = inputSemanticsLabel(
+    label: label,
+    isRequired: isRequired,
+  );
+  if (semanticsLabel == null) {
+    return field;
+  }
+  return MergeSemantics(
+    child: Semantics(
+      label: semanticsLabel,
+      child: field,
+    ),
+  );
+}
+
 /// Builds the label row above an input using HostConfig label styles.
 Widget loadLabel({
   required BuildContext context,
@@ -328,12 +371,18 @@ Widget loadErrorMessage({
     alignment: Alignment.centerLeft,
     child: Padding(
       padding: EdgeInsets.only(top: topPadding, bottom: 0),
-      child: Text(
-        errorMessage,
-        style: TextStyle(
-          color: color,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
+      // liveRegion asks assistive technology to announce the message when it
+      // appears, so a screen-reader user learns a field failed validation
+      // without having to re-focus the control.
+      child: Semantics(
+        liveRegion: true,
+        child: Text(
+          errorMessage,
+          style: TextStyle(
+            color: color,
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+          ),
         ),
       ),
     ),

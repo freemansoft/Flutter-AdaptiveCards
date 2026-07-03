@@ -83,51 +83,63 @@ class AdaptiveTimeInputState extends ConsumerState<AdaptiveTimeInput>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: ElevatedButton(
-          key: generateWidgetKey(adaptiveMap),
-          onPressed: () async {
-            final TimeOfDay? result = await rawRootCardWidgetState
-                .timePickerForPlatform(
-                  context,
-                  selectedTime,
-                  min,
-                  max,
-                );
-            if (result != null) {
-              // this should take into account minutes too
-              if (result.hour < min.hour && result.hour > max.hour) {
-                // can't count on context in async
-                rawRootCardWidgetState.showError(
-                  'Time ${result.hour} '
-                  'must be after ${min.hour} and before ${max.hour} ',
-                  // old code 'must be after ${context.mounted ?
-                  // min.format(rawRootCardWidgetState.context) :
-                  // min.toString()}' old code ' and before ${context.mounted ?
-                  // max.format(rawRootCardWidgetState.context) :
-                  // max.toString()}',
-                );
-              } else {
-                setState(() {
-                  selectedTime = result;
-                });
-                final hh = result.hour.toString().padLeft(2, '0');
-                final mm = result.minute.toString().padLeft(2, '0');
-                final value = '$hh:$mm';
-                setDocumentInputValue(value);
-                rawRootCardWidgetState.changeValue(id, value);
-                notifyUserInputValueChanged(value, committed: true);
-              }
-            } else {
-              setState(() {
-                selectedTime = result;
-              });
-            }
-          },
-          child: Text(
-            selectedTime == null
-                ? input.placeholder
-                : selectedTime!.format(rawRootCardWidgetState.context),
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExcludeSemantics(
+              child: loadLabel(
+                context: context,
+                label: input.label,
+                isRequired: input.isRequired,
+              ),
+            ),
+            labelInputSemantics(
+              label: input.label,
+              isRequired: input.isRequired,
+              field: ElevatedButton(
+                key: generateWidgetKey(adaptiveMap),
+                onPressed: () async {
+                  final TimeOfDay? result = await rawRootCardWidgetState
+                      .timePickerForPlatform(
+                        context,
+                        selectedTime,
+                        min,
+                        max,
+                      );
+                  if (result != null) {
+                    // this should take into account minutes too
+                    if (result.hour < min.hour && result.hour > max.hour) {
+                      // can't count on context in async
+                      rawRootCardWidgetState.showError(
+                        'Time ${result.hour} '
+                        'must be after ${min.hour} and before ${max.hour} ',
+                      );
+                    } else {
+                      setState(() {
+                        selectedTime = result;
+                      });
+                      final hh = result.hour.toString().padLeft(2, '0');
+                      final mm = result.minute.toString().padLeft(2, '0');
+                      final value = '$hh:$mm';
+                      setDocumentInputValue(value);
+                      rawRootCardWidgetState.changeValue(id, value);
+                      notifyUserInputValueChanged(value, committed: true);
+                    }
+                  } else {
+                    setState(() {
+                      selectedTime = result;
+                    });
+                  }
+                },
+                child: Text(
+                  selectedTime == null
+                      ? input.placeholder
+                      : selectedTime!.format(rawRootCardWidgetState.context),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
