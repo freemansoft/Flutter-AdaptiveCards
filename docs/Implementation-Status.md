@@ -122,6 +122,10 @@ fvm flutter test --exclude-tags=golden
 
 ## Recently completed
 
+### Root `authentication` sign-in (2026-07-02)
+
+- Sign-in button path (`buttons[].type: signin`) implemented in `flutter_adaptive_cards_fs`: parses `authentication` into `AuthenticationConfig` + `AuthCardButton`, renders `_AuthenticationRegion` below the card body, and forwards `SigninActionInvoke` to the new nullable `onSignin` handler on `InheritedAdaptiveCardHandlers` (falls back to `onOpenUrl` for URL values). SSO `tokenExchangeResource` is parsed and preserved on the model but not exchanged. Phase 2 (host round-trip via `flutter_adaptive_cards_host_fs`) is deferred.
+
 ### Accessibility & key-generation semantics (2026-07-01)
 
 Merged PRs #2–#6; audit: [2026-07-01-accessibility-and-key-generation-review.md](./reviews/2026-07-01-accessibility-and-key-generation-review.md).

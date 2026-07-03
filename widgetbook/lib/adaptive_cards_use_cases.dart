@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook_workspace/authentication_demo_page.dart';
 import 'package:widgetbook_workspace/chart_knobs_page.dart';
 import 'package:widgetbook_workspace/chart_overlay_page.dart';
 import 'package:widgetbook_workspace/dependent_choice_set_demo_page.dart';
@@ -186,6 +187,15 @@ Widget buildAdaptiveCardSelectAction(BuildContext context) {
 )
 Widget buildAdaptiveCardRefreshDemo(BuildContext context) {
   return const RefreshDemoPage();
+}
+
+@widgetbook.UseCase(
+  name: 'Authentication',
+  type: widget_types.AdaptiveCardElement,
+  path: '[Components]',
+)
+Widget buildAdaptiveCardAuthenticationDemo(BuildContext context) {
+  return const AuthenticationDemoPage();
 }
 
 // =============================================================================

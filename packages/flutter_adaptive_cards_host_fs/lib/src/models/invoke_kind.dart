@@ -14,4 +14,7 @@ enum AdaptiveCardInvokeKind {
 
   /// `Action.OpenUrlDialog` (Teams extension).
   openUrlDialog,
+
+  /// Card `authentication` sign-in completion (Bot Framework `signin/*`).
+  signin,
 }

@@ -1,0 +1,28 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "Sign in required",
+      "weight": "Bolder",
+      "size": "Large"
+    },
+    {
+      "type": "TextBlock",
+      "text": "This card carries a root `authentication` object. Tap a sign-in button to fire onSignin. The host opens the URL, completes OAuth, and returns the real card.",
+      "wrap": true
+    }
+  ],
+  "authentication": {
+    "text": "Please sign in to continue",
+    "connectionName": "widgetbook-demo-connection",
+    "buttons": [
+      {
+        "type": "signin",
+        "title": "Sign in",
+        "value": "https://login.example.com/oauth/authorize?client_id=demo"
+      }
+    ]
+  }
+}

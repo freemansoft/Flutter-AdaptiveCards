@@ -85,14 +85,29 @@ Assign the same `GlobalKey<RawAdaptiveCardState>` to both `AdaptiveCardBackendHa
 
 ## Wired callbacks
 
-| Handler     | Invoked when                                                        |
-| ----------- | ------------------------------------------------------------------- |
-| `onSubmit`  | `Action.Submit`                                                     |
-| `onExecute` | `Action.Execute`                                                    |
-| `onRefresh` | Root card refresh (manual affordance or auto-expire)                |
-| `onChange`  | Input value changes (includes `Data.Query` with `associatedInputs`) |
+| Handler     | Invoked when                                                                                                                |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `onSubmit`  | `Action.Submit`                                                                                                             |
+| `onExecute` | `Action.Execute`                                                                                                            |
+| `onRefresh` | Root card refresh (manual affordance or auto-expire)                                                                        |
+| `onChange`  | Input value changes (includes `Data.Query` with `associatedInputs`)                                                         |
+| `onSignin`  | Card `authentication` sign-in button tapped (opens URL via `urlOpener`; call `completeSignin(state:)` after OAuth redirect) |
 
 Pass `onOpenUrl` / `onOpenUrlDialog` on `AdaptiveCardBackendHandlers` when you need non–backend URL handling (defaults to no-op).
+
+## How actions reach your handlers
+
+The callbacks this package wires are the **outbound edge** of a two-layer pipeline in core `flutter_adaptive_cards_fs`: a **`GenericAction`** (the `Default*Action` resolved by `ActionTypeRegistry`) does the in-card work — collect input values, `validateInputs()`, merge `data`, apply the URI policy — and **then may** call the host callback on `InheritedAdaptiveCardHandlers`. The `GenericAction` is the gatekeeper; your handler is the outbound edge.
+
+What that means for wiring a backend:
+
+- **Your callback fires** for `Action.Submit` / `Action.Execute` / `Action.OpenUrl` / `Action.OpenUrlDialog` / `Action.Http` — **after** in-card validation passes.
+- **No callback fires** for `Action.ToggleVisibility` / `Action.ResetInputs` / `Action.Popover` / `Action.ShowCard` (handled entirely in-card), or when Submit/Execute fails validation.
+- Root **`refresh`** and **`authentication`** skip the registry and call `onRefresh` / `onSignin` **directly**.
+
+> `onSignin` (root `authentication` sign-in) opens the sign-in URL via `urlOpener`; call `completeSignin(state:)` after your app captures the OAuth redirect code. See [Sign-in (authentication)](../../docs/backend-host-integration.md#sign-in-authentication).
+
+**Full per-action table + dispatch diagrams:** [actions-architecture.md → Action dispatch overview](../../docs/actions-architecture.md#action-dispatch-overview).
 
 ## PlainJson request shape
 
@@ -209,7 +224,7 @@ class MyBackendClient implements AdaptiveCardBackendClient {
 
 ## Implementation status
 
-**Complete.** Phase 1 (Teams-correct invoke payloads — `associatedInputs` on Submit/Execute/Data.Query) ships in core `flutter_adaptive_cards_fs`; Phase 2 (serialize → POST → parse → apply effects) is this package: `AdaptiveCardBackendHandlers`, PlainJson + Teams adapters, HTTP client, and `applyPatches` / `setInputErrors` / `replaceCard` effects. See the project-wide [Implementation Status Matrix](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/docs/Implementation-Status.md) for the rest of the ecosystem.
+**Complete.** Phase 1 (Teams-correct invoke payloads — `associatedInputs` on Submit/Execute/Data.Query) ships in core `flutter_adaptive_cards_fs`; Phase 2 (serialize → POST → parse → apply effects) is this package: `AdaptiveCardBackendHandlers`, PlainJson + Teams adapters, HTTP client, and `applyPatches` / `setInputErrors` / `replaceCard` effects. Card `authentication` sign-in round-trip (`urlOpener` → `completeSignin`) ships in v0.14.0. See the project-wide [Implementation Status Matrix](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/docs/Implementation-Status.md) for the rest of the ecosystem.
 
 ## Related documentation
 

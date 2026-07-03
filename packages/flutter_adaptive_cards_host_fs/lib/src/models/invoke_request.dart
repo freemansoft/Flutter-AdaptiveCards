@@ -16,6 +16,7 @@ class AdaptiveCardInvokeRequest {
     this.value,
     this.dataQuery,
     this.url,
+    this.connectionName,
   });
 
   /// Maps Submit callback data for backend POST
@@ -72,6 +73,22 @@ class AdaptiveCardInvokeRequest {
     );
   }
 
+  /// Sign-in completion payload from a card `authentication` button.
+  ///
+  /// [state] is the magic code / verification state the app captured from the
+  /// OAuth redirect.
+  factory AdaptiveCardInvokeRequest.fromSignin(
+    SigninActionInvoke invoke, {
+    required String state,
+  }) {
+    return AdaptiveCardInvokeRequest(
+      kind: AdaptiveCardInvokeKind.signin,
+      connectionName: invoke.connectionName,
+      url: invoke.value,
+      value: state,
+    );
+  }
+
   /// Callback category being forwarded to the backend.
   final AdaptiveCardInvokeKind kind;
 
@@ -95,4 +112,7 @@ class AdaptiveCardInvokeRequest {
 
   /// Target URL for open-url invoke kinds.
   final String? url;
+
+  /// OAuth connection name for [AdaptiveCardInvokeKind.signin].
+  final String? connectionName;
 }

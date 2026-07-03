@@ -64,6 +64,14 @@ class TeamsInvokeAdapter {
             },
           },
         };
+      case AdaptiveCardInvokeKind.signin:
+        return {
+          'type': 'invoke',
+          'name': 'signin/verifyState',
+          'value': {
+            'state': request.value?.toString(),
+          },
+        };
     }
   }
 

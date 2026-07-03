@@ -2,7 +2,16 @@
 
 ## [0.14.0]
 
-- no changes yet
+### Added 0.14.0
+
+- Add card `authentication` sign-in support: `AdaptiveCardBackendHandlers` opens
+  the sign-in URL via `urlOpener` and `completeSignin(state:)` POSTs a signin
+  invoke (`signin/verifyState` for Teams) whose `replaceCard` response swaps in
+  the returned card. Adds `AdaptiveCardInvokeKind.signin`, `AdaptiveCardInvokeRequest.fromSignin`, and `connectionName` field on the request model.
+
+### Docs 0.14.0
+
+- **README:** "How actions reach your handlers" is now a short host-focused summary (when your callback fires vs. not) that links to the canonical per-action table and dispatch diagrams in `docs/actions-architecture.md`. The full `GenericAction` → `InheritedAdaptiveCardHandlers` table + a component and sequence diagram moved there; `docs/backend-host-integration.md` gained sequence diagrams for the invoke and sign-in round-trips.
 
 ## [0.13.0]
 
