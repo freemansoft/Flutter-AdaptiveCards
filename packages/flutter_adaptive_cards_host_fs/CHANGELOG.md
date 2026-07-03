@@ -2,7 +2,9 @@
 
 ## [0.14.0]
 
-- no changes yet
+### Docs 0.14.0
+
+- **README:** added a "How actions reach your handlers" section explaining the core `GenericAction` → `InheritedAdaptiveCardHandlers` pipeline (which `Default*Action` forwards to each callback, and when a handler is skipped), with a per-action table and the root `refresh` / `authentication` direct-handler cases.
 
 ## [0.13.0]
 

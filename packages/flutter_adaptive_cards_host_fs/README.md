@@ -94,6 +94,37 @@ Assign the same `GlobalKey<RawAdaptiveCardState>` to both `AdaptiveCardBackendHa
 
 Pass `onOpenUrl` / `onOpenUrlDialog` on `AdaptiveCardBackendHandlers` when you need non–backend URL handling (defaults to no-op).
 
+## How actions reach your handlers
+
+The callbacks this package wires (`onSubmit`, `onExecute`, …) are the **outbound edge** of a two-layer pipeline in core `flutter_adaptive_cards_fs`. Understanding it tells you exactly when your handler runs — and when it does **not**.
+
+- **`GenericAction`** (core, `generic_action.dart`) — the in-card dispatch strategy resolved by `ActionTypeRegistry` from an `Action.*` element's JSON `type`. Its `.tap()` does the in-card work (collect input values, `validateInputs()`, merge `data`, apply the URI policy) and **then** forwards to a host handler.
+- **`InheritedAdaptiveCardHandlers`** (core, `action_handler.dart`) — the host callbacks this package supplies via `AdaptiveCardBackendHandlers.wrap()`.
+
+So for a tapped `Action.Submit`: `DefaultSubmitAction.tap()` runs, and **only if validation passes and a handler is installed** does it call `onSubmit`. They chain — the `GenericAction` is the gatekeeper that may then call your handler.
+
+| JSON `type`               | `GenericAction` default impl (core)      | Handler it forwards to                                             |
+| ------------------------- | ---------------------------------------- | ------------------------------------------------------------------ |
+| `Action.Submit`           | `DefaultSubmitAction`                    | `onSubmit` — only if `validateInputs()` passes + handler installed |
+| `Action.Execute`          | `DefaultExecuteAction`                   | `onExecute` — same gating                                          |
+| `Action.OpenUrl`          | `DefaultOpenUrlAction`                   | `onOpenUrl` (else launches the URL itself)                         |
+| `Action.OpenUrlDialog`    | `DefaultOpenUrlDialogAction`             | `onOpenUrlDialog` (else shows dialog itself)                       |
+| `Action.Http`             | `DefaultHttpAction`                      | `onHttp` — only if non-null                                        |
+| `Action.ToggleVisibility` | `DefaultToggleVisibilityAction`          | **none** — done in-card (mutates document state)                   |
+| `Action.ResetInputs`      | `DefaultResetInputsAction`               | **none** — in-card reset                                           |
+| `Action.Popover`          | `DefaultPopoverAction`                   | **none** — renders nested card in a dialog, in-card                |
+| `Action.ShowCard`         | special-cased (root card only)           | **none** — in-card UI toggle                                       |
+| root `refresh`            | **no `GenericAction`** (not in registry) | `onRefresh` (direct)                                               |
+| root `authentication`     | **no `GenericAction`** (not in registry) | `onSignin` (direct)                                                |
+
+Three cases fall out of this:
+
+1. **Both run (GenericAction → handler):** Submit, Execute, OpenUrl, OpenUrlDialog, Http — the `Default*Action` does in-card work, then calls your callback.
+2. **Only the GenericAction:** ToggleVisibility, ResetInputs, Popover, and root-card ShowCard have no matching host callback (handled entirely in-card); Submit/Execute also stop here when validation fails or no handler is installed.
+3. **Only the handler (no GenericAction):** root `refresh` → `onRefresh` and root `authentication` → `onSignin` skip the registry and call the handler directly.
+
+> `onSignin` (root `authentication` sign-in) is a core mechanism; wiring it into `AdaptiveCardBackendHandlers` is tracked as backend-invoke Phase 2. See the canonical [actions architecture doc](../../docs/actions-architecture.md) for the full pipeline.
+
 ## PlainJson request shape
 
 ```json
