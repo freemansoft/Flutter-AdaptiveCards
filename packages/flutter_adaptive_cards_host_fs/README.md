@@ -85,12 +85,13 @@ Assign the same `GlobalKey<RawAdaptiveCardState>` to both `AdaptiveCardBackendHa
 
 ## Wired callbacks
 
-| Handler     | Invoked when                                                        |
-| ----------- | ------------------------------------------------------------------- |
-| `onSubmit`  | `Action.Submit`                                                     |
-| `onExecute` | `Action.Execute`                                                    |
-| `onRefresh` | Root card refresh (manual affordance or auto-expire)                |
-| `onChange`  | Input value changes (includes `Data.Query` with `associatedInputs`) |
+| Handler     | Invoked when                                                                                                                |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `onSubmit`  | `Action.Submit`                                                                                                             |
+| `onExecute` | `Action.Execute`                                                                                                            |
+| `onRefresh` | Root card refresh (manual affordance or auto-expire)                                                                        |
+| `onChange`  | Input value changes (includes `Data.Query` with `associatedInputs`)                                                         |
+| `onSignin`  | Card `authentication` sign-in button tapped (opens URL via `urlOpener`; call `completeSignin(state:)` after OAuth redirect) |
 
 Pass `onOpenUrl` / `onOpenUrlDialog` on `AdaptiveCardBackendHandlers` when you need non–backend URL handling (defaults to no-op).
 
@@ -123,7 +124,7 @@ Three cases fall out of this:
 2. **Only the GenericAction:** ToggleVisibility, ResetInputs, Popover, and root-card ShowCard have no matching host callback (handled entirely in-card); Submit/Execute also stop here when validation fails or no handler is installed.
 3. **Only the handler (no GenericAction):** root `refresh` → `onRefresh` and root `authentication` → `onSignin` skip the registry and call the handler directly.
 
-> `onSignin` (root `authentication` sign-in) is a core mechanism; wiring it into `AdaptiveCardBackendHandlers` is tracked as backend-invoke Phase 2. See the canonical [actions architecture doc](../../docs/actions-architecture.md) for the full pipeline.
+> `onSignin` (root `authentication` sign-in) opens the sign-in URL via `urlOpener`; call `completeSignin(state:)` after your app captures the OAuth redirect code to POST the verification and apply the returned card. See [Sign-in (authentication)](../../docs/backend-host-integration.md#sign-in-authentication) in the backend integration guide.
 
 ## PlainJson request shape
 
@@ -240,7 +241,7 @@ class MyBackendClient implements AdaptiveCardBackendClient {
 
 ## Implementation status
 
-**Complete.** Phase 1 (Teams-correct invoke payloads — `associatedInputs` on Submit/Execute/Data.Query) ships in core `flutter_adaptive_cards_fs`; Phase 2 (serialize → POST → parse → apply effects) is this package: `AdaptiveCardBackendHandlers`, PlainJson + Teams adapters, HTTP client, and `applyPatches` / `setInputErrors` / `replaceCard` effects. See the project-wide [Implementation Status Matrix](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/docs/Implementation-Status.md) for the rest of the ecosystem.
+**Complete.** Phase 1 (Teams-correct invoke payloads — `associatedInputs` on Submit/Execute/Data.Query) ships in core `flutter_adaptive_cards_fs`; Phase 2 (serialize → POST → parse → apply effects) is this package: `AdaptiveCardBackendHandlers`, PlainJson + Teams adapters, HTTP client, and `applyPatches` / `setInputErrors` / `replaceCard` effects. Card `authentication` sign-in round-trip (`urlOpener` → `completeSignin`) ships in v0.14.0. See the project-wide [Implementation Status Matrix](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/docs/Implementation-Status.md) for the rest of the ecosystem.
 
 ## Related documentation
 

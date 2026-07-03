@@ -194,7 +194,7 @@ Always provide **`onError`** in production hosts (SnackBar, retry UI, logging).
 
 There are **two** untrusted edges, each guarded independently:
 
-```
+```txt
 Card JSON ──▶ renderer (flutter_adaptive_cards_fs)
               guarded by AdaptiveUriPolicy / AdaptiveFetchPolicy
               (OpenUrl, markdown, OpenUrlDialog, network card, images, media)
@@ -215,6 +215,47 @@ Backend response ──▶ host bridge (flutter_adaptive_cards_host_fs)
 **`AdaptiveCardBackendHandlers`** wires **`onRefresh`** the same as Execute: builds **`AdaptiveCardInvokeRequest`** from **`RefreshActionInvoke`**, POSTs, applies effects. Host replaces card JSON when the response includes **`replaceCard`** or patches fields in place.
 
 **Example (widgetbook sample):** **AdaptiveCard → Refresh** (`widgetbook/lib/refresh_demo_page.dart`).
+
+---
+
+## Sign-in (authentication)
+
+Cards with a root **`authentication`** object render a sign-in region (prompt text + buttons). When a button is tapped, core dispatches **`SigninActionInvoke`** to **`onSignin`**.
+
+**`AdaptiveCardBackendHandlers`** handles the full round-trip:
+
+1. User taps the sign-in button → core calls **`onSignin`** → the handler stores the pending invoke and opens `invoke.value` (the sign-in URL) via **`urlOpener`**.
+2. Your app captures the OAuth redirect code (the *magic state* / verification code).
+3. Call **`handlers.completeSignin(state: '<code>')`** → POSTs a **`signin`** invoke (`AdaptiveCardInvokeKind.signin`) with the connection name and state, parses the response as a normal effect pipeline, and applies a **`replaceCard`** effect to swap in the authenticated card.
+
+```dart
+final cardKey = GlobalKey<RawAdaptiveCardState>();
+final handlers = AdaptiveCardBackendHandlers(
+  client: myClient,
+  cardKey: cardKey,
+  urlOpener: (url) async {
+    // open in an in-app browser / external browser and capture the redirect
+    final code = await myAuthFlow.open(url);
+    await handlers.completeSignin(state: code);
+  },
+  onError: (e) => log('sign-in failed', error: e),
+);
+
+handlers.wrap(
+  RawAdaptiveCard.fromMap(key: cardKey, map: cardJson, hostConfigs: HostConfigs()),
+  onCardReplaced: (map) => setState(() => cardJson = map),
+);
+```
+
+**Teams:** `completeSignin` serializes via `TeamsInvokeAdapter` when it is set as `requestAdapter`, emitting `signin/verifyState` with `value.state` set to the captured code.
+
+**PlainJson shape:**
+
+```json
+{ "kind": "signin", "connectionName": "myConn", "url": "https://login...", "value": "<code>" }
+```
+
+**Error cases:** if `completeSignin` is called before any sign-in button has been tapped, `onError` receives a `StateError`. Network/parse failures follow the normal `onError` path.
 
 ---
 
