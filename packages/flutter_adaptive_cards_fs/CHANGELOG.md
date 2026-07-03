@@ -5,19 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.14.0]
 
-### Added
+### Added 0.14.0
 
 - Add root `authentication` sign-in button support: parse the `authentication`
   object, render a sign-in region, and forward a `SigninActionInvoke` to the new
   nullable `onSignin` handler (falls back to `onOpenUrl` for URL values). SSO
   `tokenExchangeResource` is parsed but not exchanged.
-
-## [0.14.0]
-
-### Added 0.14.0
-
 - **`Table` `auto`/`stretch` column widths + cell `minHeight`** — the `Table` element now renders through Flutter's `Table` widget, so column `width` values `auto` (content-sized, consistent across rows) and `stretch` (fills remaining space) work alongside the existing numeric weights and `Npx` pixel widths. Cell `minHeight` is now applied. Equal row height and per-cell background fill are preserved via `TableCellVerticalAlignment.intrinsicHeight`; grid lines now use `TableBorder`. All existing cell behaviors (background color/image, header styling, `selectAction`, alignment, responsive `layouts`) are unchanged. Remaining `Table` gaps: `bleed` and cell-level `rtl`.
 - **Behavioral tests for custom/extended elements** previously marked "Limited" (visibility-only coverage). New dedicated test files exercise element behavior: `Accordion` (per-section expand/collapse), `ProgressBar` and `ProgressRing` (determinate/indeterminate + `value` clamping; ring `label`/`labelPosition`), `TabSet` (tab rendering + tap-to-switch), `CarouselPage` (`items` + `showBorder`), and the read-only `Rating` display (filled/empty star rendering + defaults). README Tests column upgraded to ✅ for these rows.
 - **Coverage tests for low-coverage classes** — Lifts `flutter_adaptive_cards_fs` line coverage from ~88.9% to ~90.1%; CI coverage floor raised 88 → 90.
