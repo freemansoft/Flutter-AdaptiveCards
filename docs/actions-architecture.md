@@ -25,6 +25,76 @@ This document describes how the Adaptive Cards action system is organized and ho
 
 ---
 
+## Action dispatch overview
+
+Two layers cooperate on every action. **`GenericAction`** (the `Default*Action` resolved by `ActionTypeRegistry`) is the in-card dispatch strategy — its `.tap()` does the in-card work (collect input values, `validateInputs()`, merge `data`, apply the URI policy) and **then may** forward to a host callback on **`InheritedAdaptiveCardHandlers`**. The `GenericAction` is the gatekeeper; the host handler is the outbound edge. Per-action payload details are in the sections below; this is the map.
+
+```mermaid
+flowchart TB
+  json["Action.* JSON (type)"] --> reg["ActionTypeRegistry.getActionForType"]
+  reg --> def["Default*Action\n(default_actions.dart)"]
+  def --> work["Action-specific in-card work\n(e.g. collectInputValues · validateInputs\nmergeActionData · URI policy)"]
+  work -->|"valid + handler installed"| ih["InheritedAdaptiveCardHandlers.onX"]
+  ih --> host["Host app"]
+  work -. "invalid / no handler / in-card only" .-> stop["No handler call"]
+
+  root["root refresh / authentication"] -. "skips registry" .-> direct["onRefresh / onSignin (direct)"]
+  direct --> host
+```
+
+A tapped `Action.Submit`, end to end:
+
+```mermaid
+sequenceDiagram
+  actor User
+  participant W as Action widget
+  participant A as DefaultSubmitAction
+  participant D as AdaptiveCardDocumentNotifier
+  participant H as InheritedAdaptiveCardHandlers
+  participant Host
+
+  User->>W: tap Submit
+  W->>A: tap(context, cardState, adaptiveMap)
+  A->>D: collectInputValues()
+  D-->>A: input values
+  A->>A: mergeActionData(data + inputs)
+  A->>D: validateInputs()
+  alt inputs invalid
+    D-->>A: false
+    A-->>W: abort — no handler call
+  else inputs valid
+    D-->>A: true
+    A->>H: onSubmit(SubmitActionInvoke)
+    H->>Host: invoke.data + actionId
+  end
+```
+
+Which `GenericAction` handles each type, and which host handler (if any) it forwards to:
+
+| JSON `type`               | `GenericAction` default impl (core)      | Handler it forwards to                                             |
+| ------------------------- | ---------------------------------------- | ------------------------------------------------------------------ |
+| `Action.Submit`           | `DefaultSubmitAction`                    | `onSubmit` — only if `validateInputs()` passes + handler installed |
+| `Action.Execute`          | `DefaultExecuteAction`                   | `onExecute` — same gating                                          |
+| `Action.OpenUrl`          | `DefaultOpenUrlAction`                   | `onOpenUrl` (else launches the URL itself)                         |
+| `Action.OpenUrlDialog`    | `DefaultOpenUrlDialogAction`             | `onOpenUrlDialog` (else shows dialog itself)                       |
+| `Action.Http`             | `DefaultHttpAction`                      | `onHttp` — only if non-null                                        |
+| `Action.ToggleVisibility` | `DefaultToggleVisibilityAction`          | **none** — done in-card (mutates document state)                   |
+| `Action.ResetInputs`      | `DefaultResetInputsAction`               | **none** — in-card reset                                           |
+| `Action.Popover`          | `DefaultPopoverAction`                   | **none** — renders nested card in a dialog, in-card                |
+| `Action.ShowCard`         | special-cased (root card only)           | **none** — in-card UI toggle                                       |
+| root `refresh`            | **no `GenericAction`** (not in registry) | `onRefresh` (direct)                                               |
+| root `authentication`     | **no `GenericAction`** (not in registry) | `onSignin` (direct)                                                |
+
+Three cases fall out of this:
+
+1. **Both run (GenericAction → handler):** Submit, Execute, OpenUrl, OpenUrlDialog, Http — the `Default*Action` does in-card work, then calls the host callback.
+2. **Only the GenericAction:** ToggleVisibility, ResetInputs, Popover, and root-card ShowCard have no matching host callback (handled entirely in-card); Submit/Execute also stop here when validation fails or no handler is installed.
+3. **Only the handler (no GenericAction):** root `refresh` → `onRefresh` and root `authentication` → `onSignin` skip the registry and call the handler directly.
+
+> Source of truth: the type→class map in `lib/src/action/action_type_registry.dart` and each `Default*Action.tap` in `lib/src/action/default_actions.dart`.
+
+---
+
 ## Host action callbacks
 
 Submit, Execute, and OpenUrl are **not** configured on `AdaptiveCardsCanvas` or `AdaptiveCardsCanvasState`. Wrap the card with **`InheritedAdaptiveCardHandlers`**.
@@ -109,7 +179,7 @@ For each button in `authentication.buttons` where `type == "signin"`:
 
 1. Build **`SigninActionInvoke`** from the button (`value` = sign-in URL, `connectionName` = `authentication.connectionName`).
 2. Call **`InheritedAdaptiveCardHandlers.onSignin(invoke)`** when set.
-3. **Fallback:** when `onSignin` is null and `invoke.value` starts with `http`, call **`onOpenUrl`** with the sign-in URL.  A non-URL value with no handler is a debug-logged no-op.
+3. **Fallback:** when `onSignin` is null and `invoke.value` starts with `http`, call **`onOpenUrl`** with the sign-in URL. A non-URL value with no handler is a debug-logged no-op.
 
 ### `onOpenUrl` fallback
 
@@ -173,15 +243,15 @@ class MySubmitAction implements GenericSubmitAction {
 ### Core Logic Action.OpenUrlDialog
 
 1. **Fetch Content**: When triggered, the action performs an HTTP GET request to the specified `url`.
-    **Content Negotiation**:
-    - It checks the `Content-Type` header of the response.
-    - It attempts to parse the response body as JSON.
-    **Display Strategy**:
-    - **JSON Content**: If the response is valid Adaptive Card JSON (typically `application/json`), the card is rendered directly within the dialog.
-    - **Web Content (Fallback)**: If the response is NOT JSON (e.g., standard HTML web page) or parsing fails:
-      - The action **automatically launches the system default browser** to the target URL using `url_launcher`.
-      - The dialog closes automatically to provide a seamless transition.
-    - **Error Handling**: Network errors or other failures may display an error message in the dialog or trigger the fallback mechanism depending on the failure type.
+   **Content Negotiation**:
+   - It checks the `Content-Type` header of the response.
+   - It attempts to parse the response body as JSON.
+     **Display Strategy**:
+   - **JSON Content**: If the response is valid Adaptive Card JSON (typically `application/json`), the card is rendered directly within the dialog.
+   - **Web Content (Fallback)**: If the response is NOT JSON (e.g., standard HTML web page) or parsing fails:
+     - The action **automatically launches the system default browser** to the target URL using `url_launcher`.
+     - The dialog closes automatically to provide a seamless transition.
+   - **Error Handling**: Network errors or other failures may display an error message in the dialog or trigger the fallback mechanism depending on the failure type.
 
 ## Action.Popover Behavior 🗳️
 

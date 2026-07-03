@@ -45,6 +45,38 @@ flowchart LR
 3. Response JSON parses to **`AdaptiveCardInvokeResponse`** with ordered **effects**.
 4. **`response.applyTo(cardState)`** writes overlays via core APIs (`applyUpdates`, validation errors) or calls **`onCardReplaced`** for full card JSON.
 
+The round-trip over time:
+
+```mermaid
+sequenceDiagram
+  actor User
+  participant BH as AdaptiveCardBackendHandlers
+  participant AD as Adapter (PlainJson/Teams)
+  participant CL as AdaptiveCardBackendClient
+  participant FS as Flow service
+  participant RS as RawAdaptiveCardState
+
+  User->>BH: Submit / Execute / Refresh / onChange
+  BH->>BH: AdaptiveCardInvokeRequest.fromSubmit / fromExecute / …
+  BH->>AD: serialize request
+  AD-->>BH: JSON body
+  BH->>CL: client.post(body)
+  CL->>FS: HTTP POST
+  FS-->>CL: invoke response JSON
+  CL-->>BH: JSON map
+  BH->>AD: responseParser(json)
+  AD-->>BH: AdaptiveCardInvokeResponse (ordered effects)
+  BH->>RS: response.applyTo(cardState)
+  Note over RS: effects run in order:<br/>applyPatches → setInputErrors → replaceCard
+  alt replaceCard effect
+    RS->>BH: onCardReplaced(card)
+  else applyPatches / setInputErrors
+    RS->>RS: applyUpdates(overlays)
+  end
+```
+
+On failure at any step (`post`, parse, apply), the error routes to **`onError`** and the rendered card is left unchanged.
+
 ---
 
 ## Quick start
@@ -204,7 +236,7 @@ Backend response ──▶ host bridge (flutter_adaptive_cards_host_fs)
               + optional cardValidator on replaceCard
 ```
 
-- **Card → renderer:** untrusted card-controlled URLs are validated by **`AdaptiveUriPolicy`** (scheme allowlist + loopback/private-host blocking) and remote fetches are bounded by **`AdaptiveFetchPolicy`** (byte cap + timeout). See the `flutter_adaptive_cards_fs` README *Security* section.
+- **Card → renderer:** untrusted card-controlled URLs are validated by **`AdaptiveUriPolicy`** (scheme allowlist + loopback/private-host blocking) and remote fetches are bounded by **`AdaptiveFetchPolicy`** (byte cap + timeout). See the `flutter_adaptive_cards_fs` README _Security_ section.
 - **Backend → host:** the response body is size-capped by **`HttpAdaptiveCardBackendClient.maxResponseBytes`** (throws **`AdaptiveJsonTooLargeException`**), and a **`replaceCard`** payload can be screened with an **`AdaptiveCardValidator`** (`cardValidator` on **`applyTo`** / **`wrap`**) before it renders.
 - **Do not** log **`AdaptiveCardBackendException.body`** in production; it may contain attacker-controlled content.
 
@@ -225,8 +257,41 @@ Cards with a root **`authentication`** object render a sign-in region (prompt te
 **`AdaptiveCardBackendHandlers`** handles the full round-trip:
 
 1. User taps the sign-in button → core calls **`onSignin`** → the handler stores the pending invoke and opens `invoke.value` (the sign-in URL) via **`urlOpener`**.
-2. Your app captures the OAuth redirect code (the *magic state* / verification code).
+2. Your app captures the OAuth redirect code (the _magic state_ / verification code).
 3. Call **`handlers.completeSignin(state: '<code>')`** → POSTs a **`signin`** invoke (`AdaptiveCardInvokeKind.signin`) with the connection name and state, parses the response as a normal effect pipeline, and applies a **`replaceCard`** effect to swap in the authenticated card.
+
+This is a **two-phase** flow — the app's OAuth step happens between them:
+
+```mermaid
+sequenceDiagram
+  actor User
+  participant SR as Sign-in region (core)
+  participant BH as AdaptiveCardBackendHandlers
+  participant OA as App OAuth (urlOpener)
+  participant FS as Flow service
+  participant RS as RawAdaptiveCardState
+
+  rect rgb(238,244,255)
+  Note over User,BH: Phase 1 — hand off
+  User->>SR: tap sign-in button
+  SR->>BH: onSignin(SigninActionInvoke)
+  BH->>BH: store pending invoke
+  BH->>OA: urlOpener(invoke.value)
+  end
+
+  OA->>OA: open browser, user authenticates
+  OA-->>OA: capture redirect code (state)
+
+  rect rgb(238,255,238)
+  Note over OA,RS: Phase 2 — complete
+  OA->>BH: completeSignin(state)
+  BH->>FS: POST fromSignin(pending, state)
+  FS-->>BH: invoke response (replaceCard)
+  BH->>RS: applyTo → onCardReplaced(card)
+  end
+
+  Note over BH: completeSignin with no pending invoke → StateError → onError
+```
 
 ```dart
 final cardKey = GlobalKey<RawAdaptiveCardState>();
@@ -252,7 +317,12 @@ handlers.wrap(
 **PlainJson shape:**
 
 ```json
-{ "kind": "signin", "connectionName": "myConn", "url": "https://login...", "value": "<code>" }
+{
+  "kind": "signin",
+  "connectionName": "myConn",
+  "url": "https://login...",
+  "value": "<code>"
+}
 ```
 
 **Error cases:** if `completeSignin` is called before any sign-in button has been tapped, `onError` receives a `StateError`. Network/parse failures follow the normal `onError` path.

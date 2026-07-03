@@ -11,7 +11,7 @@
 
 ### Docs 0.14.0
 
-- **README:** added a "How actions reach your handlers" section explaining the core `GenericAction` → `InheritedAdaptiveCardHandlers` pipeline (which `Default*Action` forwards to each callback, and when a handler is skipped), with a per-action table and the root `refresh` / `authentication` direct-handler cases.
+- **README:** "How actions reach your handlers" is now a short host-focused summary (when your callback fires vs. not) that links to the canonical per-action table and dispatch diagrams in `docs/actions-architecture.md`. The full `GenericAction` → `InheritedAdaptiveCardHandlers` table + a component and sequence diagram moved there; `docs/backend-host-integration.md` gained sequence diagrams for the invoke and sign-in round-trips.
 
 ## [0.13.0]
 
