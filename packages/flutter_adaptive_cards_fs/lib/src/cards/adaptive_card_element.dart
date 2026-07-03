@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/action/action_handler.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/actions/show_card.dart';
 import 'package:flutter_adaptive_cards_fs/src/cards/stretchable_column.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/authentication_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/refresh_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/responsive/layout_children.dart';
@@ -78,6 +81,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
   final formKey = GlobalKey<FormState>();
 
   RefreshConfig? _refreshConfig;
+  AuthenticationConfig? _authConfig;
   var _refreshFired = false;
   var _expireRefreshScheduled = false;
 
@@ -95,6 +99,12 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     if (refreshRaw is Map) {
       _refreshConfig = RefreshConfig.fromJson(
         Map<String, dynamic>.from(refreshRaw),
+      );
+    }
+    final authRaw = adaptiveMap['authentication'];
+    if (authRaw is Map) {
+      _authConfig = AuthenticationConfig.fromJson(
+        Map<String, dynamic>.from(authRaw),
       );
     }
     // developer.log(
@@ -167,6 +177,45 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
     if (!manual) {
       _refreshFired = true;
     }
+  }
+
+  void _triggerSignin(AuthCardButton button) {
+    if (button.type.toLowerCase() != 'signin') {
+      assert(() {
+        developer.log(
+          'Ignoring non-signin authentication button: ${button.type}',
+          name: runtimeType.toString(),
+        );
+        return true;
+      }());
+      return;
+    }
+
+    final invoke = SigninActionInvoke.fromButton(
+      button,
+      connectionName: _authConfig?.connectionName,
+    );
+
+    final handlers = InheritedAdaptiveCardHandlers.of(context);
+    if (handlers?.onSignin != null) {
+      handlers!.onSignin!(invoke);
+      return;
+    }
+
+    final value = invoke.value;
+    if (handlers != null && value.startsWith('http')) {
+      handlers.onOpenUrl(OpenUrlActionInvoke(url: value));
+      return;
+    }
+
+    assert(() {
+      developer.log(
+        'authentication sign-in tapped but no onSignin handler '
+        'and value is not a URL: $value',
+        name: runtimeType.toString(),
+      );
+      return true;
+    }());
   }
 
   /// Resolves card-level actions into [activeActions] (primary) and
@@ -291,17 +340,36 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       styleResolver: styleResolver,
     );
 
+    // Sign-in region (root `authentication`) renders between the body and the
+    // action strip. Built here so both the listView and Column paths place it
+    // in the same spot.
+    final Widget? authRegion =
+        (_authConfig != null && _authConfig!.buttons.isNotEmpty)
+        ? _AuthenticationRegion(
+            config: _authConfig!,
+            onSignin: _triggerSignin,
+          )
+        : null;
+
     // default to result without a background image
     Widget result = Container(
       margin: const EdgeInsets.all(8),
       child: widget.listView
           ? ListView(
               shrinkWrap: true,
-              children: [...bodyItems, ...trailingWidgets],
+              children: [
+                ...bodyItems,
+                ?authRegion,
+                ...trailingWidgets,
+              ],
             )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [bodyLayout, ...trailingWidgets],
+              children: [
+                bodyLayout,
+                ?authRegion,
+                ...trailingWidgets,
+              ],
             ),
     );
 
@@ -407,6 +475,62 @@ class _AdaptiveCardBody extends ConsumerWidget {
         children: items,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
+      ),
+    );
+  }
+}
+
+/// Sign-in affordance shown when root card JSON defines `authentication`.
+///
+/// Renders the optional prompt text and one button per
+/// [AuthenticationConfig.buttons] entry.
+class _AuthenticationRegion extends StatelessWidget {
+  const _AuthenticationRegion({
+    required this.config,
+    required this.onSignin,
+  });
+
+  final AuthenticationConfig config;
+  final void Function(AuthCardButton button) onSignin;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = config.text;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (text != null && text.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(text),
+            ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final button in config.buttons)
+                Semantics(
+                  button: true,
+                  label: button.title ?? button.type,
+                  child: ElevatedButton.icon(
+                    icon: (button.image != null && button.image!.isNotEmpty)
+                        ? Image.network(
+                            button.image!,
+                            width: 18,
+                            height: 18,
+                            errorBuilder: (_, _, _) =>
+                                const SizedBox.shrink(),
+                          )
+                        : const SizedBox.shrink(),
+                    label: Text(button.title ?? 'Sign in'),
+                    onPressed: () => onSignin(button),
+                  ),
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }

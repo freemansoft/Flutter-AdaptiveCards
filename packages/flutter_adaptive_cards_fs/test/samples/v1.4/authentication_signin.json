@@ -1,0 +1,22 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "This content requires sign-in.",
+      "wrap": true
+    }
+  ],
+  "authentication": {
+    "text": "Please sign in to continue",
+    "connectionName": "myConnection",
+    "buttons": [
+      {
+        "type": "signin",
+        "title": "Sign in",
+        "value": "https://login.example.com/oauth"
+      }
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
+import 'package:flutter_adaptive_cards_fs/src/models/authentication_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/data_query.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/input_substitution.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -266,6 +267,42 @@ class HttpActionInvoke {
   final Map<String, dynamic> inputValues;
 
   /// Author-defined action `id` from card JSON, when present.
+  final String? actionId;
+}
+
+/// Payload delivered to the host `onSignin` callback for a card
+/// `authentication` sign-in button.
+///
+/// [value] is the sign-in URL the host opens; [connectionName] is the OAuth
+/// connection the host uses to complete sign-in. When no `onSignin` handler is
+/// installed, the library falls back to `onOpenUrl` for an http(s) [value].
+class SigninActionInvoke {
+  /// Creates a sign-in callback payload.
+  const SigninActionInvoke({
+    required this.value,
+    this.connectionName,
+    this.actionId,
+  });
+
+  /// Builds from an [AuthCardButton] and the parent
+  /// [AuthenticationConfig.connectionName].
+  factory SigninActionInvoke.fromButton(
+    AuthCardButton button, {
+    String? connectionName,
+  }) {
+    return SigninActionInvoke(
+      value: button.value ?? '',
+      connectionName: connectionName,
+    );
+  }
+
+  /// Sign-in URL / action value from the button JSON.
+  final String value;
+
+  /// OAuth connection name from the parent `authentication` object.
+  final String? connectionName;
+
+  /// Author-defined action `id`, when present. Reserved for future use.
   final String? actionId;
 }
 

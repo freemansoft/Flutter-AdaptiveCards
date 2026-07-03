@@ -21,6 +21,7 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
     required this.onChange,
     this.onRefresh,
     this.onHttp,
+    this.onSignin,
     required super.child,
   });
 
@@ -64,6 +65,13 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
   /// the action does nothing beyond a debug-mode notice; wire a host handler
   /// (for example `flutter_adaptive_cards_host_fs`) to perform the request.
   final void Function(HttpActionInvoke invoke)? onHttp;
+
+  /// Called when a card `authentication` sign-in button is pressed.
+  ///
+  /// `invoke.value` is the sign-in URL and `invoke.connectionName` is the OAuth
+  /// connection. When null, a button with an http(s) `value` falls back to
+  /// [onOpenUrl]; a non-URL value is a no-op.
+  final void Function(SigninActionInvoke invoke)? onSignin;
 
   /// Lookup for host callbacks installed above the card.
   ///

@@ -99,6 +99,30 @@ The library does not perform bot round-trips; the host replaces card JSON when r
 
 Implemented in [workstream B](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-b--refresh-property-v14) of the June 2026 plan. **Example (widgetbook sample):** **AdaptiveCard → Refresh** (`widgetbook/lib/refresh_demo_page.dart`).
 
+## Root card `authentication` sign-in (`onSignin` / `SigninActionInvoke`)
+
+When the root card JSON defines an **`authentication`** object (v1.4+), the library parses it into an **`AuthenticationConfig`** (see `lib/src/models/authentication_config.dart`) and renders a **`_AuthenticationRegion`** below the card body.
+
+### Tap → `onSignin` handoff
+
+For each button in `authentication.buttons` where `type == "signin"`:
+
+1. Build **`SigninActionInvoke`** from the button (`value` = sign-in URL, `connectionName` = `authentication.connectionName`).
+2. Call **`InheritedAdaptiveCardHandlers.onSignin(invoke)`** when set.
+3. **Fallback:** when `onSignin` is null and `invoke.value` starts with `http`, call **`onOpenUrl`** with the sign-in URL.  A non-URL value with no handler is a debug-logged no-op.
+
+### `onOpenUrl` fallback
+
+```
+button tap
+  → _triggerSignin(button)
+      onSignin != null → onSignin(SigninActionInvoke)
+      onSignin == null && value.startsWith('http') → onOpenUrl(OpenUrlActionInvoke(url: value))
+      otherwise → debug log, no-op
+```
+
+The library does not perform SSO token exchange; `tokenExchangeResource` is parsed and preserved on `AuthenticationConfig` for host use. The host package `flutter_adaptive_cards_host_fs` provides `completeSignin(state:)` for the full Bot Framework round-trip (Phase 2).
+
 ## Backend invoke round-trips (optional host package)
 
 When the host POSTs invoke payloads to a flow-service and applies server-driven patches, use optional **`flutter_adaptive_cards_host_fs`** instead of hand-wiring each callback:
