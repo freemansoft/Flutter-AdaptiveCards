@@ -68,6 +68,13 @@ class AdaptiveProgressBarState extends ConsumerState<AdaptiveProgressBar>
 
   @override
   Widget build(BuildContext context) {
+    // Name the indicator and spell out its percentage for screen readers; a
+    // bare LinearProgressIndicator carries a value but no label, and an
+    // indeterminate bar (no value) is otherwise announced without context.
+    final String? semanticsValue = percent != null
+        ? '${(percent! * 100).round()}%'
+        : null;
+
     Widget progressBar;
     if (percent != null) {
       progressBar = LinearProgressIndicator(
@@ -76,6 +83,8 @@ class AdaptiveProgressBarState extends ConsumerState<AdaptiveProgressBar>
         backgroundColor: styleResolver.resolveProgressBackgroundColor(),
         minHeight: 10,
         borderRadius: BorderRadius.circular(5),
+        semanticsLabel: 'Progress',
+        semanticsValue: semanticsValue,
       );
     } else {
       // Indeterminate Indeterminate LinearProgressIndicator in Material default
@@ -87,6 +96,7 @@ class AdaptiveProgressBarState extends ConsumerState<AdaptiveProgressBar>
         backgroundColor: styleResolver.resolveProgressBackgroundColor(),
         minHeight: 10,
         borderRadius: BorderRadius.circular(5),
+        semanticsLabel: 'Progress',
       );
     }
 

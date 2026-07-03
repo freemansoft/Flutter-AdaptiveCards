@@ -99,6 +99,11 @@ class AdaptiveProgressRingState extends ConsumerState<AdaptiveProgressRing>
     double stroke = sizePx / 10.0;
     if (stroke < 2) stroke = 2;
 
+    final bool hasLabel = label != null && label!.isNotEmpty;
+
+    // Expose the percentage (and the author label, when present) on the
+    // indicator's own semantics node; the visible label below is excluded so a
+    // screen reader does not announce it a second time as a separate node.
     final Widget ring = SizedBox(
       width: sizePx,
       height: sizePx,
@@ -107,13 +112,15 @@ class AdaptiveProgressRingState extends ConsumerState<AdaptiveProgressRing>
         color: progressColor,
         backgroundColor: styleResolver.resolveProgressBackgroundColor(),
         strokeWidth: stroke,
+        semanticsLabel: hasLabel ? label : null,
+        semanticsValue: percent != null ? '${(percent! * 100).round()}%' : null,
       ),
     );
 
     Widget content = ring;
 
-    if (label != null && label!.isNotEmpty) {
-      final Widget labelWidget = Text(label!);
+    if (hasLabel) {
+      final Widget labelWidget = ExcludeSemantics(child: Text(label!));
 
       if (labelPosition == 'above') {
         content = Column(

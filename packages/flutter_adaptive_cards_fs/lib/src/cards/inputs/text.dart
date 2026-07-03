@@ -141,96 +141,110 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            loadLabel(
-              context: context,
+            ExcludeSemantics(
+              child: loadLabel(
+                context: context,
+                label: input.label,
+                isRequired: input.isRequired,
+              ),
+            ),
+            labelInputSemantics(
               label: input.label,
               isRequired: input.isRequired,
-            ),
-            SizedBox(
-              height: 40,
-              child: TextFormField(
-                key: generateWidgetKey(adaptiveMap),
-                focusNode: _focusNode,
-                style: const TextStyle(),
-                controller: controller,
-                // maxLength: maxLength,
-                inputFormatters: [
-                  if (effectiveMaxLength != null && effectiveMaxLength > 0)
-                    LengthLimitingTextInputFormatter(effectiveMaxLength),
-                ],
-                keyboardType: inputStyle,
-                obscureText: isPassword && _obscure,
-                enableSuggestions: !isPassword,
-                autocorrect: !isPassword,
-                maxLines: (isMultiline && !isPassword) ? null : 1,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
+              field: SizedBox(
+                height: 40,
+                child: TextFormField(
+                  key: generateWidgetKey(adaptiveMap),
+                  focusNode: _focusNode,
+                  style: const TextStyle(),
+                  controller: controller,
+                  // maxLength: maxLength,
+                  inputFormatters: [
+                    if (effectiveMaxLength != null && effectiveMaxLength > 0)
+                      LengthLimitingTextInputFormatter(effectiveMaxLength),
+                  ],
+                  keyboardType: inputStyle,
+                  obscureText: isPassword && _obscure,
+                  enableSuggestions: !isPassword,
+                  autocorrect: !isPassword,
+                  maxLines: (isMultiline && !isPassword) ? null : 1,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 8,
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(),
+                    ),
+                    errorBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      borderSide: BorderSide(width: 1),
+                    ),
+                    focusedErrorBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      borderSide: BorderSide(width: 1),
+                    ),
+                    filled: true,
+                    fillColor: styleResolver.resolveInputBackgroundColor(
+                      context: context,
+                      style: null,
+                    ),
+                    hintText: input.placeholder,
+                    // required or box will exist even though field is hidden or
+                    // half height
+                    hintStyle: const TextStyle(),
+                    suffixIcon: (isPassword && revealEnabled)
+                        ? IconButton(
+                            padding: EdgeInsets.zero,
+                            iconSize: 20,
+                            constraints: const BoxConstraints(
+                              maxHeight: 36,
+                              maxWidth: 36,
+                            ),
+                            icon: Icon(
+                              _obscure
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            // Library has no l10n/arb setup (intl is date-only),
+                            // so these accessibility labels are plain strings,
+                            // consistent with the rest of the package.
+                            tooltip: _obscure
+                                ? 'Show password'
+                                : 'Hide password',
+                            onPressed: () =>
+                                setState(() => _obscure = !_obscure),
+                          )
+                        : null,
+                    suffixIconConstraints: const BoxConstraints(
+                      maxHeight: 36,
+                      maxWidth: 36,
+                    ),
+                    errorStyle: const TextStyle(height: 0),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 8,
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
-                  errorBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1),
-                  ),
-                  focusedErrorBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
-                    borderSide: BorderSide(width: 1),
-                  ),
-                  filled: true,
-                  fillColor: styleResolver.resolveInputBackgroundColor(
-                    context: context,
-                    style: null,
-                  ),
-                  hintText: input.placeholder,
-                  // required or box will exist even though field is hidden or
-                  // half height
-                  hintStyle: const TextStyle(),
-                  suffixIcon: (isPassword && revealEnabled)
-                      ? IconButton(
-                          padding: EdgeInsets.zero,
-                          iconSize: 20,
-                          constraints: const BoxConstraints(
-                            maxHeight: 36,
-                            maxWidth: 36,
-                          ),
-                          icon: Icon(
-                            _obscure ? Icons.visibility : Icons.visibility_off,
-                          ),
-                          // Library has no l10n/arb setup (intl is date-only),
-                          // so these accessibility labels are plain strings,
-                          // consistent with the rest of the package.
-                          tooltip: _obscure ? 'Show password' : 'Hide password',
-                          onPressed: () => setState(() => _obscure = !_obscure),
-                        )
-                      : null,
-                  suffixIconConstraints: const BoxConstraints(
-                    maxHeight: 36,
-                    maxWidth: 36,
-                  ),
-                  errorStyle: const TextStyle(height: 0),
+                  validator: (value) {
+                    final regexPattern = adaptiveMap['regex'] as String?;
+                    if (!textInputValueIsValid(
+                      value: value,
+                      isRequired: input.isRequired,
+                      regexPattern: regexPattern,
+                    )) {
+                      setLocalValidationError();
+                      return '';
+                    }
+                    clearLocalValidationError();
+                    return null;
+                  },
+                  onEditingComplete: () {
+                    notifyUserInputValueChanged(
+                      controller.text,
+                      committed: true,
+                    );
+                  },
                 ),
-                validator: (value) {
-                  final regexPattern = adaptiveMap['regex'] as String?;
-                  if (!textInputValueIsValid(
-                    value: value,
-                    isRequired: input.isRequired,
-                    regexPattern: regexPattern,
-                  )) {
-                    setLocalValidationError();
-                    return '';
-                  }
-                  clearLocalValidationError();
-                  return null;
-                },
-                onEditingComplete: () {
-                  notifyUserInputValueChanged(controller.text, committed: true);
-                },
               ),
             ),
             loadErrorMessage(

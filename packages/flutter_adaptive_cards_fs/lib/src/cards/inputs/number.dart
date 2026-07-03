@@ -116,63 +116,72 @@ class AdaptiveNumberInputState extends ConsumerState<AdaptiveNumberInput>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            loadLabel(
-              context: context,
+            ExcludeSemantics(
+              child: loadLabel(
+                context: context,
+                label: input.label,
+                isRequired: input.isRequired,
+              ),
+            ),
+            labelInputSemantics(
               label: input.label,
               isRequired: input.isRequired,
-            ),
-            SizedBox(
-              height: 40,
-              child: TextFormField(
-                key: generateWidgetKey(adaptiveMap),
-                focusNode: _focusNode,
-                style: const TextStyle(),
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  TextInputFormatter.withFunction((oldVal, newVal) {
-                    if (newVal.text == '') return newVal;
-                    final int newNumber = int.parse(newVal.text);
-                    if (newNumber >= min && newNumber <= max) return newVal;
-                    return oldVal;
-                  }),
-                ],
-                controller: controller,
-                decoration: InputDecoration(
-                  // labelText: placeholder,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
+              field: SizedBox(
+                height: 40,
+                child: TextFormField(
+                  key: generateWidgetKey(adaptiveMap),
+                  focusNode: _focusNode,
+                  style: const TextStyle(),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    TextInputFormatter.withFunction((oldVal, newVal) {
+                      if (newVal.text == '') return newVal;
+                      final int newNumber = int.parse(newVal.text);
+                      if (newNumber >= min && newNumber <= max) return newVal;
+                      return oldVal;
+                    }),
+                  ],
+                  controller: controller,
+                  decoration: InputDecoration(
+                    // labelText: placeholder,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 8,
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      // width: 0.0 produces a thin "hairline" border
+                      borderSide: const BorderSide(),
+                    ),
+                    filled: true,
+                    fillColor: styleResolver.resolveInputBackgroundColor(
+                      context: context,
+                      style: null,
+                    ),
+                    hintText: input.placeholder,
+                    // required or box will exist even though field is hidden or
+                    // half height
+                    hintStyle: const TextStyle(),
+                    errorStyle: const TextStyle(height: 0),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 8,
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    // width: 0.0 produces a thin "hairline" border
-                    borderSide: const BorderSide(),
-                  ),
-                  filled: true,
-                  fillColor: styleResolver.resolveInputBackgroundColor(
-                    context: context,
-                    style: null,
-                  ),
-                  hintText: input.placeholder,
-                  // required or box will exist even though field is hidden or
-                  // half height
-                  hintStyle: const TextStyle(),
-                  errorStyle: const TextStyle(height: 0),
+                  validator: (value) {
+                    if (!input.isRequired) return null;
+                    if (value == null || value.isEmpty) {
+                      setLocalValidationError();
+                      return '';
+                    }
+                    clearLocalValidationError();
+                    return null;
+                  },
+                  onEditingComplete: () {
+                    notifyUserInputValueChanged(
+                      controller.text,
+                      committed: true,
+                    );
+                  },
                 ),
-                validator: (value) {
-                  if (!input.isRequired) return null;
-                  if (value == null || value.isEmpty) {
-                    setLocalValidationError();
-                    return '';
-                  }
-                  clearLocalValidationError();
-                  return null;
-                },
-                onEditingComplete: () {
-                  notifyUserInputValueChanged(controller.text, committed: true);
-                },
               ),
             ),
             loadErrorMessage(
