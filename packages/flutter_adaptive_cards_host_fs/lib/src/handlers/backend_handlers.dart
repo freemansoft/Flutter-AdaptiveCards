@@ -31,6 +31,8 @@ class AdaptiveCardBackendHandlers {
     this.onOpenUrl,
     this.onOpenUrlDialog,
     this.httpExecutor,
+    this.urlOpener,
+    this.onSignin,
   }) : requestAdapter = requestAdapter ?? PlainJsonInvokeAdapter.toMap,
        responseParser = responseParser ?? PlainJsonInvokeResponseParser.parse;
 
@@ -66,6 +68,18 @@ class AdaptiveCardBackendHandlers {
   /// Optional override for `Action.OpenUrlDialog` (defaults to no-op).
   final void Function(OpenUrlDialogActionInvoke invoke)? onOpenUrlDialog;
 
+  /// Opens the sign-in URL from a card `authentication` button.
+  ///
+  /// The app owns the browser/redirect; when null, sign-in taps are ignored.
+  final Future<void> Function(String url)? urlOpener;
+
+  /// Optional override for the sign-in handoff (defaults to [urlOpener]).
+  final void Function(SigninActionInvoke invoke)? onSignin;
+
+  SigninActionInvoke? _pendingSignin;
+  void Function(Map<String, dynamic> card)? _onCardReplaced;
+  AdaptiveCardValidator? _cardValidator;
+
   /// Wraps [child] with backend-connected [InheritedAdaptiveCardHandlers].
   ///
   /// Provide [onCardReplaced] when the backend may return a full card JSON
@@ -76,6 +90,8 @@ class AdaptiveCardBackendHandlers {
     void Function(Map<String, dynamic> card)? onCardReplaced,
     AdaptiveCardValidator? cardValidator,
   }) {
+    _onCardReplaced = onCardReplaced;
+    _cardValidator = cardValidator;
     return InheritedAdaptiveCardHandlers(
       onSubmit: (invoke) => unawaited(
         _handle(
@@ -114,6 +130,18 @@ class AdaptiveCardBackendHandlers {
       ),
       onOpenUrl: onOpenUrl ?? (_) {},
       onOpenUrlDialog: onOpenUrlDialog ?? (_) {},
+      onSignin: (invoke) {
+        _pendingSignin = invoke;
+        final override = onSignin;
+        if (override != null) {
+          override(invoke);
+          return;
+        }
+        final opener = urlOpener;
+        if (opener != null && invoke.value.isNotEmpty) {
+          unawaited(opener(invoke.value));
+        }
+      },
       onHttp: httpExecutor == null
           ? null
           : (invoke) => unawaited(
@@ -125,6 +153,31 @@ class AdaptiveCardBackendHandlers {
             ),
       child: child,
     );
+  }
+
+  /// Completes a card sign-in after the app captures the OAuth redirect.
+  ///
+  /// POSTs a sign-in invoke (built from the last `onSignin` payload plus
+  /// [state]) and applies the response — a `replaceCard` effect swaps in the
+  /// real card. Call after [urlOpener]'s flow returns.
+  Future<void> completeSignin({
+    required String state,
+    void Function(Map<String, dynamic> card)? onCardReplaced,
+    AdaptiveCardValidator? cardValidator,
+  }) async {
+    final pending = _pendingSignin;
+    if (pending == null) {
+      onError?.call(
+        StateError('completeSignin called with no pending sign-in'),
+      );
+      return;
+    }
+    await _handle(
+      AdaptiveCardInvokeRequest.fromSignin(pending, state: state),
+      onCardReplaced: onCardReplaced ?? _onCardReplaced,
+      cardValidator: cardValidator ?? _cardValidator,
+    );
+    _pendingSignin = null;
   }
 
   Future<void> _handleHttp(

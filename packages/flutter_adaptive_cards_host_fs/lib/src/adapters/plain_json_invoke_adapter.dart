@@ -25,6 +25,8 @@ class PlainJsonInvokeAdapter {
       if (request.value != null) 'value': request.value,
       if (request.dataQuery != null) 'dataQuery': request.dataQuery!.toJson(),
       if (request.url != null) 'url': request.url,
+      if (request.connectionName != null)
+        'connectionName': request.connectionName,
     };
   }
 
@@ -47,6 +49,7 @@ class PlainJsonInvokeAdapter {
       value: map['value'],
       dataQuery: dataQuery,
       url: map['url'] as String?,
+      connectionName: map['connectionName'] as String?,
     );
   }
 
