@@ -112,9 +112,11 @@ All flagged violations now have a Phase-1 pass. **Every governed doc is tagged.*
 ### Remaining (not yet done)
 
 - **Tutorial gap:** author a "render your first Adaptive Card" tutorial (`doc_type: tutorial`).
-- **Phase 2 (optional):**
+- **Phase 2:**
+  - ✅ **Done:** moved `actions-architecture.md` payload sections into a dedicated reference doc
+    ([`action-payloads-reference.md`](../action-payloads-reference.md)); repointed the three
+    `#root-card-refresh-payload` linkers (incl. the package README).
   - Trim residual explanation prose in the tagged reference docs.
-  - Consider moving `actions-architecture.md` payload tables into a dedicated reference doc.
   - **Reconcile `adaptive-template-design.md` against the `flutter_adaptive_template_fs` README**
     (which owns feature coverage per `AGENTS.md`) — dedup the language reference, possibly archive
     the C# design samples.

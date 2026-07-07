@@ -62,9 +62,15 @@ Install and update commands for the vendored agent skills (Dart / Flutter / Supe
 
 ### [actions-architecture.md](./actions-architecture.md)
 
-**Status**: ✅ Current | **Category**: Architecture
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-Describes the action system architecture using Generic interfaces, Default implementations, and ActionTypeRegistry pattern. Essential reading for understanding action handling.
+Describes the action system architecture using Generic interfaces, Default implementations, and ActionTypeRegistry pattern. Essential reading for understanding action handling. Per-action invoke payloads: [action-payloads-reference.md](./action-payloads-reference.md).
+
+### [action-payloads-reference.md](./action-payloads-reference.md)
+
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
+
+The invoke payload each action builds (Submit/Execute/OpenUrl/OpenUrlDialog/Http/onChange/refresh) and the host callback it targets. Extracted from [actions-architecture.md](./actions-architecture.md).
 
 ### [adaptive-style.md](./adaptive-style.md)
 

@@ -29,7 +29,7 @@ See [Dependent ChoiceSet](form-inputs.md#dependent-choiceset-country--city).
 | omitted or `"auto"` | Merge all input values into action `data` |
 | `"none"`            | Action JSON `data` only                   |
 
-Root **`refresh.action`** uses the same Execute-shaped payload; see [refresh callback](actions-architecture.md#root-card-refresh-payload).
+Root **`refresh.action`** uses the same Execute-shaped payload; see [refresh callback](action-payloads-reference.md#root-card-refresh-payload).
 
 **MVP limitation:** Card-wide `auto` collection. Container-scoped `associatedInputs` is a documented follow-up.
 
