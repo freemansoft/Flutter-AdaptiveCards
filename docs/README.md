@@ -178,9 +178,15 @@ Specification for base64 encoded inline image support using `Image.memory`. Incl
 
 ### [hostconfig.md](./hostconfig.md)
 
-**Status**: ✅ Current | **Category**: Architecture & Testing
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-HostConfig architecture: JSON model parsing, theme-derived color fallbacks (`ThemeColorFallbacks`), `ReferenceResolver` pipeline, brightness selection, Widgetbook notes, and serialization test conventions. Style inheritance diagrams: [adaptive-style.md](./adaptive-style.md).
+HostConfig architecture: JSON model parsing, theme-derived color fallbacks (`ThemeColorFallbacks`), `ReferenceResolver` pipeline, brightness selection, Widgetbook notes. Style inheritance diagrams: [adaptive-style.md](./adaptive-style.md). Serialization testing: [hostconfig-testing.md](./hostconfig-testing.md).
+
+### [hostconfig-testing.md](./hostconfig-testing.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+How to write/run HostConfig serialization tests (one fixture per entity, conventions) and the theme-fallback verification checklist. Extracted from [hostconfig.md](./hostconfig.md).
 
 ### Overlay / document notifier tests
 

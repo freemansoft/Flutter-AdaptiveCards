@@ -93,11 +93,15 @@ instead:
   repointed the one `#effect-types-and-apply-order` anchor link; tagged the guide `how-to`.
   Architecture and sign-in sections stay in place (anchor-linked from `Architecture-Overview.md`
   and the host README).
+- **`hostconfig.md`, Phase 1:** extracted the serialization-test requirements + theme-fallback
+  verification checklist → new [`hostconfig-testing.md`](../hostconfig-testing.md)
+  (`doc_type: how-to`); repointed the one `#serialization-test-requirements` anchor link
+  (`adaptive-style.md`); tagged the doc `explanation`. The non-standard extension specs remain
+  inline as embedded reference (Phase-2 candidate).
 
 ### Remaining (not yet done)
 
-- **Violations to address next:** `hostconfig.md`, `adaptive-template-design.md`,
-  `AI-Agent-Support.md`.
+- **Violations to address next:** `adaptive-template-design.md`, `AI-Agent-Support.md`.
 - **Tutorial gap:** author a "render your first Adaptive Card" tutorial (`doc_type: tutorial`).
 - **Phase 2 (optional):** trim residual explanation prose in the tagged reference docs; consider
   moving `actions-architecture.md` payload tables into a dedicated reference doc.

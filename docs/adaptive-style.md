@@ -24,7 +24,7 @@ Microsoft's `"default"` blocks in the schema define per-context defaults when a 
 
 **Sample HostConfig JSON:** [Microsoft HostConfig samples](https://github.com/microsoft/AdaptiveCards/tree/main/samples/HostConfig)
 
-**Serialization tests:** one fixture file per entity under `test/hostconfig/` — see [hostconfig.md — Serialization test requirements](./hostconfig.md#serialization-test-requirements).
+**Serialization tests:** one fixture file per entity under `test/hostconfig/` — see [hostconfig-testing.md — Serialization test requirements](./hostconfig-testing.md#serialization-test-requirements).
 
 ---
 
