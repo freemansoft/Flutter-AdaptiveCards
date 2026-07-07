@@ -4,14 +4,14 @@ doc_type: reference
 
 # Design for Microsoft AdaptiveCard Template Engine
 
-> Primarily a **templating-language reference** (binding, `$data`, `$when`, expressions, custom
-> functions). Retains its original design framing and C# API samples as historical context.
-> How to write templating tests: [templating-testing.md](templating-testing.md). Feature coverage
-> status lives in the [`flutter_adaptive_template_fs` README](../packages/flutter_adaptive_template_fs/README.md).
+> **Templating-language reference** (binding, `$data`, `$when`, expressions, custom functions) for
+> the Dart engine in `packages/flutter_adaptive_template_fs`. How to write templating tests:
+> [templating-testing.md](templating-testing.md). Feature-coverage status lives in the
+> [`flutter_adaptive_template_fs` README](../packages/flutter_adaptive_template_fs/README.md).
 
-This is the initial design document for a Dart based templating engine located in `packages/flutter_adaptive_template_fs` to be used in conjuction with the flutter adpaptive cards library located in `packages/flutter_adaptive_cards_fs` in this repository. There is no cross package dependencies. Both flutter_adaptive_template_fs and flutter_adaptive_cards_fs can be used independently. The purpose of this engine is to separate the data in an adaptive card from the layout. The template service applies the data json to the template json creating a renderable adaptive card json. This page describes the templating language <https://learn.microsoft.com/en-us/adaptive-cards/templating/language> and should be used as the source.
+The `flutter_adaptive_template_fs` engine separates an adaptive card's data from its layout: the template service applies the data JSON to the template JSON to produce renderable card JSON. It has no dependency on `flutter_adaptive_cards_fs` — either package can be used independently. This page is the [Microsoft templating language](https://learn.microsoft.com/en-us/adaptive-cards/templating/language) reference for the implemented behavior.
 
-This design supports separate template an data json but the standard also supports the data being part of the data in a "$data" field on the root of the JSON. You can see this in the examples.
+Data may be supplied as a separate data JSON, or embedded in a `"$data"` field on the root of the template JSON (as in the examples below).
 
 ## Binding features
 
@@ -273,79 +273,11 @@ Resulting card json
 }
 ```
 
-## AdaptiveCardTemplate - Dart Class
+## AdaptiveCardTemplate — Dart class
 
-The template library initializes with the JSON template. Then later calls apply data to to the template.
+`AdaptiveCardTemplate` is constructed with the JSON template; `expand(data)` then applies a data map and returns the merged card JSON. For a runnable Dart usage example, see the [`flutter_adaptive_template_fs` README — Usage](../packages/flutter_adaptive_template_fs/README.md#usage).
 
-### Sample C# interface
-
-The following contains the C# API. The samples came from <https://learn.microsoft.com/en-us/adaptive-cards/templating/sdk>. The Dart API shouild be similiar.
-
-```csharp
-// Create a Template instance from the template payload
-AdaptiveCardTemplate template = new AdaptiveCardTemplate(templateJson);
-
-// You can use any serializable object as your data
-var myData = new
-{
-    Name = "Matt Hidinger"
-};
-
-// "Expand" the template - this generates the final Adaptive Card payload
-string cardJson = template.Expand(myData);
-```
-
-### Sample Custom Fucntions
-
-```csharp
-string jsonTemplate = @"{
-    ""type"": ""AdaptiveCard"",
-    ""version"": ""1.0"",
-    ""body"": [{
-        ""type"": ""TextBlock"",
-        ""text"": ""${stringFormat(strings.myName, person.firstName, person.lastName)}""
-    }]
-}";
-
-string jsonData = @"{
-    ""strings"": {
-        ""myName"": ""My name is {0} {1}""
-    },
-    ""person"": {
-        ""firstName"": ""Andrew"",
-        ""lastName"": ""Leader""
-    }
-}";
-
-AdaptiveCardTemplate template = new AdaptiveCardTemplate(jsonTemplate);
-
-var context = new EvaluationContext
-{
-    Root = jsonData
-};
-
-// a custom function is added
-AdaptiveExpressions.Expression.Functions.Add("stringFormat", (args) =>
-{
-    string formattedString = "";
-
-    // argument is packed in sequential order as defined in the template
-    // For example, suppose we have "${stringFormat(strings.myName, person.firstName, person.lastName)}"
-    // args will have following entries
-    // args[0]: strings.myName
-    // args[1]: person.firstName
-    // args[2]: strings.lastName
-    if (args[0] != null && args[1] != null && args[2] != null)
-    {
-        string formatString = args[0];
-        string[] stringArguments = {args[1], args[2] };
-        formattedString = string.Format(formatString, stringArguments);
-    }
-    return formattedString;
-});
-
-string cardJson = template.Expand(context);
-```
+The original C# SDK API samples that guided this design (template expansion and custom-function registration) are archived at [`archive/specs/templating-csharp-design-samples.md`](archive/specs/templating-csharp-design-samples.md).
 
 ## Testing
 
