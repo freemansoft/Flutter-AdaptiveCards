@@ -86,11 +86,18 @@ instead:
 - **`actions-architecture.md`, Phase 1:** extracted "How to implement a custom action" → new
   [`custom-action-recipe.md`](../custom-action-recipe.md) (`doc_type: how-to`); collapsed the
   duplicated backend section; tagged the doc `explanation`.
+- **`backend-host-integration.md`, Phase 1:** this doc is an integration **how-to** that had
+  swallowed the wire-protocol reference. Extracted the request payloads, adapters, response
+  contract, effect apply order, and error table → new
+  [`backend-invoke-reference.md`](../backend-invoke-reference.md) (`doc_type: reference`);
+  repointed the one `#effect-types-and-apply-order` anchor link; tagged the guide `how-to`.
+  Architecture and sign-in sections stay in place (anchor-linked from `Architecture-Overview.md`
+  and the host README).
 
 ### Remaining (not yet done)
 
-- **Violations to address next:** `backend-host-integration.md`, `hostconfig.md`,
-  `adaptive-template-design.md`, `AI-Agent-Support.md`.
+- **Violations to address next:** `hostconfig.md`, `adaptive-template-design.md`,
+  `AI-Agent-Support.md`.
 - **Tutorial gap:** author a "render your first Adaptive Card" tutorial (`doc_type: tutorial`).
 - **Phase 2 (optional):** trim residual explanation prose in the tagged reference docs; consider
   moving `actions-architecture.md` payload tables into a dedicated reference doc.

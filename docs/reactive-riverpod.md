@@ -278,7 +278,7 @@ When using optional **`flutter_adaptive_cards_host_fs`**, backend responses appl
 | `setInputErrors` | `applyUpdates` with `errorMessage` + `isInvalid: true` | `errorMessage`, `isInvalid` on each input id                                         |
 | `replaceCard`    | Host **`onCardReplaced`** callback                     | Replaces baseline JSON; overlays re-seed from new map                                |
 
-**Apply order:** patches → input errors → full card replacement (see [backend-host-integration.md](backend-host-integration.md#effect-types-and-apply-order)).
+**Apply order:** patches → input errors → full card replacement (see [backend-invoke-reference.md](backend-invoke-reference.md#effect-types-and-apply-order)).
 
 Manual **`onSubmit` validation** (without the host package) still uses the same overlay fields — see [Host-driven validation](form-inputs.md#host-driven-validation-and-bulk-updates).
 

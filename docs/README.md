@@ -80,9 +80,15 @@ Why charts, templating, and **backend invoke** are separate packages, how to opt
 
 ### [backend-host-integration.md](./backend-host-integration.md)
 
-**Status**: ✅ Current | **Category**: Feature Spec
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
 
-Invoke round-trips with **`flutter_adaptive_cards_host_fs`** — request/response contract, effect ordering, Teams adapter, and consumer checklist.
+Integration guide for **`flutter_adaptive_cards_host_fs`** — wiring `AdaptiveCardBackendHandlers`, quick start, refresh, sign-in, custom transport, consumer checklist. Wire protocol details: [backend-invoke-reference.md](./backend-invoke-reference.md).
+
+### [backend-invoke-reference.md](./backend-invoke-reference.md)
+
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
+
+Wire-level reference: `associatedInputs` request payloads, PlainJson/Teams adapters, the `adaptiveCard.invokeResponse` contract, effect apply order, and the error table. Extracted from [backend-host-integration.md](./backend-host-integration.md).
 
 ### [reactive-riverpod.md](./reactive-riverpod.md)
 
@@ -138,9 +144,9 @@ Describes support for `backgroundImage` in both string (URL) and object (URL + f
 
 ### [backend-host-integration.md](./backend-host-integration.md)
 
-**Status**: ✅ Current | **Category**: Feature Spec
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
 
-Canonical guide for optional **`flutter_adaptive_cards_host_fs`**: invoke serialization, PlainJson/Teams adapters, response effects, `AdaptiveCardBackendHandlers`, error handling, and refresh round-trips.
+Integration guide for optional **`flutter_adaptive_cards_host_fs`**: `AdaptiveCardBackendHandlers`, quick start, refresh, and sign-in round-trips. Wire protocol (serialization, adapters, response effects, error table): [backend-invoke-reference.md](./backend-invoke-reference.md).
 
 ### [adaptive-template-design.md](./adaptive-template-design.md)
 
