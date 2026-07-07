@@ -110,13 +110,21 @@ Widget key generation pattern using `generateWidgetKey()` for all AdaptiveElemen
 
 ### [form-inputs.md](./form-inputs.md)
 
-**Status**: ✅ Current | **Category**: Implementation Guide
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
-Guide for Flutter Form-based input implementation. Documents runtime **baseline + overlay** value flow ([input overlay architecture diagram](./form-inputs.md#input-overlay-architecture)), key naming conventions:
+Reference for Flutter Form-based inputs and the input hub. Documents runtime **baseline + overlay** value flow ([input overlay architecture diagram](./form-inputs.md#input-overlay-architecture)), reset semantics, ChoiceSet styles, dependent ChoiceSet, host validation APIs, and test requirements. Widget key generation: [AdaptiveWidget-Key-Generation.md](./AdaptiveWidget-Key-Generation.md).
 
-- Card widget: `{id}_adaptive`
-- Input field: `{id}`
-- Test requirements for validation, JSON loading, value changes
+### [input-text-recipes.md](./input-text-recipes.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+Task recipes for `Input.Text`: phone-style character filtering and password masking / reveal toggle. Extracted from [form-inputs.md](./form-inputs.md).
+
+### [custom-action-recipe.md](./custom-action-recipe.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+Step-by-step recipe for implementing a custom action (`Generic*` interface + custom `ActionTypeRegistry`). Extracted from [actions-architecture.md](./actions-architecture.md).
 
 ### [backgroundImage.md](./backgroundImage.md)
 
@@ -178,11 +186,11 @@ Riverpod document **overlay** tests (notifier unit tests + widget integration) a
 
 ## Known Issues & Future Work
 
-### [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md)
+### [Column-ColumnSet-Fill-Vertical-Height.md](./archive/specs/Column-ColumnSet-Fill-Vertical-Height.md) _(archived)_
 
-**Status**: ✅ Current (documents fixed bug) | **Category**: Known Issue (historical)
+**Status**: 🗄️ Historical (documents fixed bug) | **Category**: Known Issue (historical)
 
-Documents a now-**fixed** bug where AdaptiveColumns in an AdaptiveColumnSet had inconsistent heights instead of matching the tallest column. Fix (`IntrinsicHeight` + `CrossAxisAlignment.stretch`) verified by `test/column_height_test.dart`; kept for historical reference.
+Documents a now-**fixed** bug where AdaptiveColumns in an AdaptiveColumnSet had inconsistent heights instead of matching the tallest column. Fix (`IntrinsicHeight` + `CrossAxisAlignment.stretch`) verified by `test/column_height_test.dart`; kept for historical reference in [`archive/specs/`](./archive/specs/).
 
 ---
 

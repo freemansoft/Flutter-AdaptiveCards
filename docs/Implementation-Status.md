@@ -219,7 +219,7 @@ See [backend-host-integration.md](./backend-host-integration.md) and [archived d
 
 ### ColumnSet height (fixed before 2026-02-13)
 
-- **`IntrinsicHeight`** + **`CrossAxisAlignment.stretch`** — see [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md).
+- **`IntrinsicHeight`** + **`CrossAxisAlignment.stretch`** — see [Column-ColumnSet-Fill-Vertical-Height.md](./archive/specs/Column-ColumnSet-Fill-Vertical-Height.md) _(archived)_.
 
 ### Public API documentation (2026-06-08, updated 2026-06-11)
 

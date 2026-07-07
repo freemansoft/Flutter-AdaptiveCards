@@ -1,3 +1,7 @@
+---
+doc_type: explanation
+---
+
 # Actions Architecture & Flow 🔧
 
 ## Overview ✅
@@ -195,12 +199,7 @@ The library does not perform SSO token exchange; `tokenExchangeResource` is pars
 
 ## Backend invoke round-trips (optional host package)
 
-When the host POSTs invoke payloads to a flow-service and applies server-driven patches, use optional **`flutter_adaptive_cards_host_fs`** instead of hand-wiring each callback:
-
-- **`AdaptiveCardBackendHandlers`** connects `onSubmit`, `onExecute`, `onRefresh`, and `onChange` to **`AdaptiveCardBackendClient.post`**
-- Responses may **`applyPatches`** (overlays), **`setInputErrors`**, or **`replaceCard`** (full JSON via host callback)
-
-See [optional-packages-and-extensions.md](./optional-packages-and-extensions.md#why-backend-invoke-is-a-separate-package), [backend-host-integration.md](./backend-host-integration.md), and the [package README](../packages/flutter_adaptive_cards_host_fs/README.md).
+When the host POSTs invoke payloads to a flow-service and applies server-driven patches, wrap the card with optional **`flutter_adaptive_cards_host_fs`** (`AdaptiveCardBackendHandlers`) instead of hand-wiring each callback. Full detail: [backend-host-integration.md](./backend-host-integration.md); why it is a separate package: [optional-packages-and-extensions.md](./optional-packages-and-extensions.md#why-backend-invoke-is-a-separate-package).
 
 ---
 
@@ -214,25 +213,10 @@ See [optional-packages-and-extensions.md](./optional-packages-and-extensions.md#
 
 ## How to implement a custom action ✍️
 
-1. Implement the abstract `Generic*` interface you need:
-
-```dart
-class MySubmitAction implements GenericSubmitAction {
-  const MySubmitAction();
-
-  @override
-  void tap({
-    required BuildContext context,
-    required RawAdaptiveCardState rawAdaptiveCardState,
-    required Map<String, dynamic> adaptiveMap,
-  }) {
-    // custom behavior
-  }
-}
-```
-
-2. Provide a custom `ActionTypeRegistry` that returns instances of your custom action when appropriate.
-3. Register your `ActionTypeRegistry` in the place the app uses (e.g., via provider or by passing to the card builder API).
+Step-by-step recipe (implement a `Generic*` interface, provide a custom `ActionTypeRegistry`,
+register it) now lives in [`custom-action-recipe.md`](custom-action-recipe.md) (**how-to**). The
+**Design Rationale** section above explains why the `Generic*` / `Default*` split makes custom
+actions pluggable.
 
 ---
 

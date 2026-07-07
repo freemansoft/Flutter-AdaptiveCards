@@ -1,3 +1,7 @@
+---
+doc_type: reference
+---
+
 # The backgroundImage implementation needs to support both string and object versions
 
 BackgroundImage can be specified as a string or an object. Everywhere a backgroundImage is specified, it can be a string or an object.  The string version is a URL to the image.  The object version has a URL and a fillMode.  The fillMode is an enum of 'cover', 'repeatHorizontally', 'repeatVertically', 'repeat'.

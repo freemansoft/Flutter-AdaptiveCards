@@ -1,3 +1,7 @@
+---
+doc_type: reference
+---
+
 # Adding inline encoded images support
 
 Adaptive cards support in line images. Usage should be limited because it can increase the card json size enough to impact performance.
