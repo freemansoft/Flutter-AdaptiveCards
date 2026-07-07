@@ -102,11 +102,20 @@ instead:
   [`ai-agent-skills-install.md`](../ai-agent-skills-install.md) (`doc_type: how-to`); tagged the
   doc `explanation` (overview, skill sources, how agents load skills). No anchor fixups (zero
   external deep-links).
+- **`adaptive-template-design.md`, Phase 1:** legacy design doc now serving as the
+  templating-language reference. Extracted the "Testing" section → new
+  [`templating-testing.md`](../templating-testing.md) (`doc_type: how-to`); tagged the doc
+  `reference`; kept the C# API samples inline as historical design context.
+
+All flagged violations now have a Phase-1 pass. **Every governed doc is tagged.**
 
 ### Remaining (not yet done)
 
-- **Violations to address next:** `adaptive-template-design.md`.
 - **Tutorial gap:** author a "render your first Adaptive Card" tutorial (`doc_type: tutorial`).
-- **Phase 2 (optional):** trim residual explanation prose in the tagged reference docs; consider
-  moving `actions-architecture.md` payload tables into a dedicated reference doc.
+- **Phase 2 (optional):**
+  - Trim residual explanation prose in the tagged reference docs.
+  - Consider moving `actions-architecture.md` payload tables into a dedicated reference doc.
+  - **Reconcile `adaptive-template-design.md` against the `flutter_adaptive_template_fs` README**
+    (which owns feature coverage per `AGENTS.md`) — dedup the language reference, possibly archive
+    the C# design samples.
 - **Process:** wire the Diátaxis check into the `code-review` skill's "Documentation impact" gate.

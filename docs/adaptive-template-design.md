@@ -1,4 +1,13 @@
+---
+doc_type: reference
+---
+
 # Design for Microsoft AdaptiveCard Template Engine
+
+> Primarily a **templating-language reference** (binding, `$data`, `$when`, expressions, custom
+> functions). Retains its original design framing and C# API samples as historical context.
+> How to write templating tests: [templating-testing.md](templating-testing.md). Feature coverage
+> status lives in the [`flutter_adaptive_template_fs` README](../packages/flutter_adaptive_template_fs/README.md).
 
 This is the initial design document for a Dart based templating engine located in `packages/flutter_adaptive_template_fs` to be used in conjuction with the flutter adpaptive cards library located in `packages/flutter_adaptive_cards_fs` in this repository. There is no cross package dependencies. Both flutter_adaptive_template_fs and flutter_adaptive_cards_fs can be used independently. The purpose of this engine is to separate the data in an adaptive card from the layout. The template service applies the data json to the template json creating a renderable adaptive card json. This page describes the templating language <https://learn.microsoft.com/en-us/adaptive-cards/templating/language> and should be used as the source.
 
@@ -340,12 +349,9 @@ string cardJson = template.Expand(context);
 
 ## Testing
 
-Each of the features and capabilities described above must have unit tests to validate and prevent regression. The unit tests should use json template and json data files that should be part of the testing directory. in `packages/flutter_adaptive_template_fs/test`. We want the unit test JSON to be in json files and not embedded in the tests themselves for future usage and analysis.
-
-Testing template and data JSON can be found in the adaptive card templating service [on GitHub](https://github.com/microsoft/adaptivecards-templates/tree/master/templates). The project can copy over. The team should prioritize templates and data in separate files but an also pull in JSON that has a $data section and then the template to be filed with the $data.  Some of the examples have a "$SampleData" section in the template that can be used to validate the template. For testing, if we find that in a copied example then the $SampleData can be removed from the json and then be passed as the data json along with the modified template when executing the test.
-
-1. Copy sample json from https://github.com/microsoft/adaptivecards-templates/tree/master/templates to use in the test. The examples in this document should also be made into tests with the json being put in json files and read by the tests
-1. Create a unit test that loads the sample template/data json pair and merges them. The developer should create an expected output json file and verify the merged template/data with the expected output.
+How to build the templating test fixtures (JSON template/data pairs, expected-output validation,
+sourcing samples from the Microsoft templates repo) is documented in the how-to companion:
+[templating-testing.md](templating-testing.md).
 
 ## Data and Time Formatting
 

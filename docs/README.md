@@ -156,15 +156,23 @@ Integration guide for optional **`flutter_adaptive_cards_host_fs`**: `AdaptiveCa
 
 ### [adaptive-template-design.md](./adaptive-template-design.md)
 
-**Status**: ✅ Current | **Category**: Feature Spec
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
-Design specification for the Dart templating engine in `flutter_adaptive_template_fs` package. Documents:
+Templating-language reference for `flutter_adaptive_template_fs` (retains its original design framing). Documents:
 
 - `$data`, `$root`, `$index` scoping
 - Array binding
 - Conditional rendering with `$when`
 - `json()` function for embedded JSON
 - Based on [Microsoft Templating Language](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)
+
+Writing templating tests: [templating-testing.md](./templating-testing.md).
+
+### [templating-testing.md](./templating-testing.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+How to build `flutter_adaptive_template_fs` test fixtures (JSON template/data pairs, expected-output validation, sourcing Microsoft sample templates). Extracted from [adaptive-template-design.md](./adaptive-template-design.md).
 
 ### [2026-06-08-rich-text-and-text-features-design.md](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md)
 
