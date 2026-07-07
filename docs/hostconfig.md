@@ -1,8 +1,12 @@
+---
+doc_type: explanation
+---
+
 # HostConfig
 
-**Status**: ✅ Current | **Category**: Architecture & Testing
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-HostConfig is the Adaptive Cards platform contract for colors, typography, spacing, and layout defaults. This document covers **JSON model parsing**, **runtime color fallbacks** (theme-derived), the **resolution pipeline**, and **serialization test requirements**.
+HostConfig is the Adaptive Cards platform contract for colors, typography, spacing, and layout defaults. This document covers **JSON model parsing**, **runtime color fallbacks** (theme-derived), and the **resolution pipeline**. How to write and run the serialization tests: [hostconfig-testing.md](hostconfig-testing.md).
 
 Related docs:
 
@@ -20,7 +24,7 @@ This project occasionally adds HostConfig properties that are **not part of the 
 
 Convention: every non-standard property is flagged with a **Non-standard** callout in both its Dart `///` doc comment and in this section.
 
-### `inputs.text.revealPasswordEnabled` *(Non-standard)*
+### `inputs.text.revealPasswordEnabled` _(Non-standard)_
 
 **Type:** `bool` | **Default:** `true` (`FallbackConfigs.inputsConfig.text.revealPasswordEnabled`)
 
@@ -42,13 +46,13 @@ Resolution precedence (highest wins):
 
 Source files: `lib/src/hostconfig/inputs_config.dart`, `lib/src/hostconfig/text_input_config.dart`, `lib/src/hostconfig/fallback_configs.dart`.
 
-### `inputs.choiceSet.enableSearch` *(Non-standard)*
+### `inputs.choiceSet.enableSearch` _(Non-standard)_
 
 **Type:** `bool` | **Default:** `true` (`FallbackConfigs.inputsConfig.choiceSet.enableSearch`)
 
-Controls the compact single-select `Input.ChoiceSet` dropdown (Material 3 `DropdownMenu`). When `true`, typing a character *jumps to / highlights* the matching entry while keeping the full list visible — the closest analog to a native HTML `<select>`. When `false`, type-ahead jump is disabled. Maps to `DropdownMenu.enableSearch`.
+Controls the compact single-select `Input.ChoiceSet` dropdown (Material 3 `DropdownMenu`). When `true`, typing a character _jumps to / highlights_ the matching entry while keeping the full list visible — the closest analog to a native HTML `<select>`. When `false`, type-ahead jump is disabled. Maps to `DropdownMenu.enableSearch`.
 
-### `inputs.choiceSet.requestFocusOnTap` *(Non-standard)*
+### `inputs.choiceSet.requestFocusOnTap` _(Non-standard)_
 
 **Type:** `bool?` | **Default:** `null` → platform-aware (`DropdownMenu`'s own default)
 
@@ -211,52 +215,8 @@ The Widgetbook `appBuilder` must forward the Theme addon selection to `MaterialA
 
 ---
 
-## Serialization test requirements
+## Testing
 
-Verify JSON deserialization for every HostConfig entity and that objects conform to `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_config_schema.json`.
-
-### Scope
-
-- **Source classes**: `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/` (excluding `host_config.dart` aggregator-only tests where entity tests suffice)
-- **Test directory**: `packages/flutter_adaptive_cards_fs/test/hostconfig/`
-
-### Conventions
-
-One test file per entity, mirroring the Dart file name:
-
-| Entity                         | Test file                           | JSON fixture                   |
-| ------------------------------ | ----------------------------------- | ------------------------------ |
-| `font_color_config.dart`       | `font_color_config_test.dart`       | `font_color_config.json`       |
-| `container_styles_config.dart` | `container_styles_config_test.dart` | `container_styles_config.json` |
-| …                              | `{entity}_test.dart`                | `{entity}.json`                |
-
-Each entity test should:
-
-1. Load the associated JSON file from disk (not an inline map/string in the test body)
-2. Deserialize into the HostConfig type via `fromJson`
-3. Assert individual properties in the same test
-
-Additional checks:
-
-- JSON fixtures produce valid HostConfig objects
-- Property values match the fixture
-- Empty `{}` fixtures resolve to **theme-derived** color defaults (see `ThemeColorFallbacks` tests in `fallback_configs_test.dart`)
-
-### Running tests
-
-From `packages/flutter_adaptive_cards_fs`:
-
-```bash
-fvm flutter test test/hostconfig/
-fvm flutter test --exclude-tags=golden
-```
-
----
-
-## Verification checklist (theme fallback change)
-
-- [ ] Empty `HostConfigs()` card background matches `Theme.of(context).colorScheme.surface` in light and dark
-- [ ] Explicit HostConfig JSON colors override theme fallbacks
-- [ ] `HostConfig.fromJson(..., theme: ThemeData.dark())` empty container styles use dark scheme defaults
-- [ ] `ReferenceResolver` tests pass `colorFallbacks: ThemeColorFallbacks(ThemeData.light())` (or appropriate theme)
-- [ ] Progress/badge/chart/separator resolution uses resolver fallbacks, not removed static color fields
+Serialization test requirements (one fixture per HostConfig entity, conventions, running the
+tests) and the theme-fallback verification checklist live in the how-to companion:
+[hostconfig-testing.md](hostconfig-testing.md).

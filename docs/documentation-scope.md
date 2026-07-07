@@ -8,21 +8,21 @@ Rules for what belongs in `docs/`, how published packages are documented, and ho
 
 Canonical design and implementation documentation in `docs/` describes the **published library packages**:
 
-| Package | Role |
-| ------- | ---- |
-| [`flutter_adaptive_cards_fs`](../packages/flutter_adaptive_cards_fs/) | Core renderer, overlays, actions, HostConfig |
-| [`flutter_adaptive_charts_fs`](../packages/flutter_adaptive_charts_fs/) | `Chart.*` extension elements |
-| [`flutter_adaptive_template_fs`](../packages/flutter_adaptive_template_fs/) | Adaptive Cards templating |
-| [`flutter_adaptive_cards_host_fs`](../packages/flutter_adaptive_cards_host_fs/) | Optional backend invoke bridge |
+| Package                                                                         | Role                                         |
+| ------------------------------------------------------------------------------- | -------------------------------------------- |
+| [`flutter_adaptive_cards_fs`](../packages/flutter_adaptive_cards_fs/)           | Core renderer, overlays, actions, HostConfig |
+| [`flutter_adaptive_charts_fs`](../packages/flutter_adaptive_charts_fs/)         | `Chart.*` extension elements                 |
+| [`flutter_adaptive_template_fs`](../packages/flutter_adaptive_template_fs/)     | Adaptive Cards templating                    |
+| [`flutter_adaptive_cards_host_fs`](../packages/flutter_adaptive_cards_host_fs/) | Optional backend invoke bridge               |
 
 Package READMEs, [`Architecture-Overview.md`](Architecture-Overview.md), [`reactive-riverpod.md`](reactive-riverpod.md), [`overlay-properties-by-type.md`](overlay-properties-by-type.md), [`form-inputs.md`](form-inputs.md), and related guides document **library contracts** (APIs, overlay merge, theming, actions).
 
 ## Sample apps (not package architecture)
 
-| App | Role in docs |
-| --- | ------------ |
-| **`widgetbook/`** | **Demonstration / sample program** — interactive gallery of card JSON and host-callback demos. Illustrates usage; does not define package behavior. |
-| **`adaptive_explorer/`** | Template + card editor sample (desktop). |
+| App                      | Role in docs                                                                                                                                        |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`widgetbook/`**        | **Demonstration / sample program** — interactive gallery of card JSON and host-callback demos. Illustrates usage; does not define package behavior. |
+| **`adaptive_explorer/`** | Template + card editor sample (desktop).                                                                                                            |
 
 When a canonical doc mentions widgetbook paths, knobs, or use cases, label that material as an **example** (see [Tagging examples](#tagging-examples-in-canonical-docs)).
 
@@ -37,7 +37,7 @@ When a canonical doc mentions widgetbook paths, knobs, or use cases, label that 
 In package-focused docs (`form-inputs.md`, `reactive-riverpod.md`, `actions-architecture.md`, specs under `docs/superpowers/specs/`, …):
 
 1. **Section titles** that rely on widgetbook → prefix or suffix with **Example (widgetbook sample)**.
-2. **Diagrams** that include widgetbook participants → note in prose: *Example flow; widgetbook sample implements the host `onChange` handler.*
+2. **Diagrams** that include widgetbook participants → note in prose: _Example flow; widgetbook sample implements the host `onChange` handler._
 3. **Manual verification** → **Example (widgetbook sample):** manual verification — not a substitute for package tests.
 4. **Tables** listing widgetbook use cases → column or section header **Example (widgetbook)**.
 

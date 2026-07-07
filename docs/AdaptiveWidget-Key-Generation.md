@@ -9,10 +9,10 @@ content widget.
 
 ## Two Key Functions
 
-| Function | Key format | Used for |
-| --- | --- | --- |
-| `generateAdaptiveWidgetKey(Map)` | `ValueKey('${id}_adaptive')` | The outer `StatefulWidget` (the card wrapper) |
-| `generateWidgetKey(Map, {String? suffix})` | `ValueKey(id)` or `ValueKey('${id}_suffix')` | The inner input/content widget |
+| Function                                   | Key format                                   | Used for                                      |
+| ------------------------------------------ | -------------------------------------------- | --------------------------------------------- |
+| `generateAdaptiveWidgetKey(Map)`           | `ValueKey('${id}_adaptive')`                 | The outer `StatefulWidget` (the card wrapper) |
+| `generateWidgetKey(Map, {String? suffix})` | `ValueKey(id)` or `ValueKey('${id}_suffix')` | The inner input/content widget                |
 
 Key formats in adaptive card layouts are deterministic to ease integration testing and state tracking, particularly with form inputs as detailed in [form-inputs.md](./form-inputs.md).
 
@@ -126,11 +126,11 @@ from the cell's positional key (`generateTableCellKey(tableKey, row, col)`).
 Table key formats live in `utils.dart` and are the single source both production
 and tests use:
 
-| Function | Key format |
-| --- | --- |
-| `generateTableWrapperKey(tableKey)` | `ValueKey('${tableKey}_column')` |
-| `generateTableColumnKey(tableKey, col)` | `ValueKey('${tableKey}_col_$col')` |
-| `generateTableRowKey(tableKey, row)` | `ValueKey('${tableKey}_row_$row')` |
+| Function                                   | Key format                            |
+| ------------------------------------------ | ------------------------------------- |
+| `generateTableWrapperKey(tableKey)`        | `ValueKey('${tableKey}_column')`      |
+| `generateTableColumnKey(tableKey, col)`    | `ValueKey('${tableKey}_col_$col')`    |
+| `generateTableRowKey(tableKey, row)`       | `ValueKey('${tableKey}_row_$row')`    |
 | `generateTableCellKey(tableKey, row, col)` | `ValueKey('${tableKey}_${row}_$col')` |
 
 The `AdaptiveTable.cellKey` / `columnKey` / `rowKey` / `tableColumnKey` static

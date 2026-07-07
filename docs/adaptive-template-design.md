@@ -1,8 +1,17 @@
+---
+doc_type: reference
+---
+
 # Design for Microsoft AdaptiveCard Template Engine
 
-This is the initial design document for a Dart based templating engine located in `packages/flutter_adaptive_template_fs` to be used in conjuction with the flutter adpaptive cards library located in `packages/flutter_adaptive_cards_fs` in this repository. There is no cross package dependencies. Both flutter_adaptive_template_fs and flutter_adaptive_cards_fs can be used independently. The purpose of this engine is to separate the data in an adaptive card from the layout. The template service applies the data json to the template json creating a renderable adaptive card json. This page describes the templating language <https://learn.microsoft.com/en-us/adaptive-cards/templating/language> and should be used as the source.
+> **Templating-language reference** (binding, `$data`, `$when`, expressions, custom functions) for
+> the Dart engine in `packages/flutter_adaptive_template_fs`. How to write templating tests:
+> [templating-testing.md](templating-testing.md). Feature-coverage status lives in the
+> [`flutter_adaptive_template_fs` README](../packages/flutter_adaptive_template_fs/README.md).
 
-This design supports separate template an data json but the standard also supports the data being part of the data in a "$data" field on the root of the JSON. You can see this in the examples.
+The `flutter_adaptive_template_fs` engine separates an adaptive card's data from its layout: the template service applies the data JSON to the template JSON to produce renderable card JSON. It has no dependency on `flutter_adaptive_cards_fs` — either package can be used independently. This page is the [Microsoft templating language](https://learn.microsoft.com/en-us/adaptive-cards/templating/language) reference for the implemented behavior.
+
+Data may be supplied as a separate data JSON, or embedded in a `"$data"` field on the root of the template JSON (as in the examples below).
 
 ## Binding features
 
@@ -264,88 +273,17 @@ Resulting card json
 }
 ```
 
-## AdaptiveCardTemplate - Dart Class
+## AdaptiveCardTemplate — Dart class
 
-The template library initializes with the JSON template. Then later calls apply data to to the template.
+`AdaptiveCardTemplate` is constructed with the JSON template; `expand(data)` then applies a data map and returns the merged card JSON. For a runnable Dart usage example, see the [`flutter_adaptive_template_fs` README — Usage](../packages/flutter_adaptive_template_fs/README.md#usage).
 
-### Sample C# interface
-
-The following contains the C# API. The samples came from <https://learn.microsoft.com/en-us/adaptive-cards/templating/sdk>. The Dart API shouild be similiar.
-
-```csharp
-// Create a Template instance from the template payload
-AdaptiveCardTemplate template = new AdaptiveCardTemplate(templateJson);
-
-// You can use any serializable object as your data
-var myData = new
-{
-    Name = "Matt Hidinger"
-};
-
-// "Expand" the template - this generates the final Adaptive Card payload
-string cardJson = template.Expand(myData);
-```
-
-### Sample Custom Fucntions
-
-```csharp
-string jsonTemplate = @"{
-    ""type"": ""AdaptiveCard"",
-    ""version"": ""1.0"",
-    ""body"": [{
-        ""type"": ""TextBlock"",
-        ""text"": ""${stringFormat(strings.myName, person.firstName, person.lastName)}""
-    }]
-}";
-
-string jsonData = @"{
-    ""strings"": {
-        ""myName"": ""My name is {0} {1}""
-    },
-    ""person"": {
-        ""firstName"": ""Andrew"",
-        ""lastName"": ""Leader""
-    }
-}";
-
-AdaptiveCardTemplate template = new AdaptiveCardTemplate(jsonTemplate);
-
-var context = new EvaluationContext
-{
-    Root = jsonData
-};
-
-// a custom function is added
-AdaptiveExpressions.Expression.Functions.Add("stringFormat", (args) =>
-{
-    string formattedString = "";
-
-    // argument is packed in sequential order as defined in the template
-    // For example, suppose we have "${stringFormat(strings.myName, person.firstName, person.lastName)}"
-    // args will have following entries
-    // args[0]: strings.myName
-    // args[1]: person.firstName
-    // args[2]: strings.lastName
-    if (args[0] != null && args[1] != null && args[2] != null)
-    {
-        string formatString = args[0];
-        string[] stringArguments = {args[1], args[2] };
-        formattedString = string.Format(formatString, stringArguments);
-    }
-    return formattedString;
-});
-
-string cardJson = template.Expand(context);
-```
+The original C# SDK API samples that guided this design (template expansion and custom-function registration) are archived at [`archive/specs/templating-csharp-design-samples.md`](archive/specs/templating-csharp-design-samples.md).
 
 ## Testing
 
-Each of the features and capabilities described above must have unit tests to validate and prevent regression. The unit tests should use json template and json data files that should be part of the testing directory. in `packages/flutter_adaptive_template_fs/test`. We want the unit test JSON to be in json files and not embedded in the tests themselves for future usage and analysis.
-
-Testing template and data JSON can be found in the adaptive card templating service [on GitHub](https://github.com/microsoft/adaptivecards-templates/tree/master/templates). The project can copy over. The team should prioritize templates and data in separate files but an also pull in JSON that has a $data section and then the template to be filed with the $data.  Some of the examples have a "$SampleData" section in the template that can be used to validate the template. For testing, if we find that in a copied example then the $SampleData can be removed from the json and then be passed as the data json along with the modified template when executing the test.
-
-1. Copy sample json from https://github.com/microsoft/adaptivecards-templates/tree/master/templates to use in the test. The examples in this document should also be made into tests with the json being put in json files and read by the tests
-1. Create a unit test that loads the sample template/data json pair and merges them. The developer should create an expected output json file and verify the merged template/data with the expected output.
+How to build the templating test fixtures (JSON template/data pairs, expected-output validation,
+sourcing samples from the Microsoft templates repo) is documented in the how-to companion:
+[templating-testing.md](templating-testing.md).
 
 ## Data and Time Formatting
 

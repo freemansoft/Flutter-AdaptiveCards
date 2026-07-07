@@ -1,3 +1,7 @@
+---
+doc_type: reference
+---
+
 # This project uses Flutter form for all AdaptiveCard Input types
 
 All input types have a choice of using basic flutter widgets or using flutter form widgets. This project is standardizing on flutter forms.
@@ -203,33 +207,9 @@ Tests: `test/inputs/cascade_choice_set_test.dart`, `test/inputs/value_changed_ac
 
 ## Backend invoke round-trips (optional host package)
 
-When the server returns dynamic choices, validation errors, or a full card replacement, use **`flutter_adaptive_cards_host_fs`** instead of hand-wiring every callback:
+When the server returns dynamic choices, validation errors, or a full card replacement, wrap the card with **`flutter_adaptive_cards_host_fs`** (`AdaptiveCardBackendHandlers`) instead of hand-wiring every callback. **`associatedInputs`** on the card JSON ensures **`InputChangeInvoke.dataQuery.parameters`** already includes sibling values (e.g. `country`) before serialization — so the backend does not need a separate client-side merge.
 
-```dart
-AdaptiveCardBackendHandlers(
-  client: HttpAdaptiveCardBackendClient(endpoint: uri),
-  cardKey: cardKey,
-  onError: (e) => showError(e),
-).wrap(
-  RawAdaptiveCard.fromMap(key: cardKey, map: cardJson, hostConfigs: hostConfigs),
-  onCardReplaced: (map) => setState(() => cardJson = map),
-);
-```
-
-**What the host package handles:**
-
-| Callback    | Serialized as                                                          | Typical server response                |
-| ----------- | ---------------------------------------------------------------------- | -------------------------------------- |
-| `onSubmit`  | `kind: submit` + merged `data`                                         | `setInputErrors` or `replaceCard`      |
-| `onExecute` | `kind: execute` + `verb` + `data`                                      | `applyPatches` (e.g. new `choices`)    |
-| `onRefresh` | same as execute                                                        | `replaceCard` with refreshed JSON      |
-| `onChange`  | `kind: inputChange` + `dataQuery` with **`associatedInputs`** siblings | `applyPatches` for dependent ChoiceSet |
-
-**`associatedInputs`** on the card JSON ensures **`InputChangeInvoke.dataQuery.parameters`** already includes sibling values (e.g. `country`) before serialization — the backend does not need a separate client-side merge.
-
-For response effect ordering, error handling, and Teams adapters, see [backend-host-integration.md](backend-host-integration.md). Overlay mapping: [reactive-riverpod.md — Server-driven patches](reactive-riverpod.md#server-driven-patches-host-package).
-
-Tests: `packages/flutter_adaptive_cards_host_fs/test/`.
+Full setup (`.wrap` usage, `onSubmit` / `onExecute` / `onRefresh` / `onChange` serialization, response-effect ordering, error handling, and Teams adapters): [backend-host-integration.md](backend-host-integration.md). Overlay mapping: [reactive-riverpod.md — Server-driven patches](reactive-riverpod.md#server-driven-patches-host-package).
 
 ## Compact ChoiceSet style (`style: "compact"`, single-select)
 
@@ -273,60 +253,13 @@ See [Overlay test coverage](reactive-riverpod.md#overlay-test-coverage) for the 
 
 - AdaptiveCard inputs are located in `flutter_adaptive_cards_fs/lib/src/cards/inputs`. Each class there should have its own associated unit test class in `flutter_adaptive_cards_fs/test/inputs`.
 
-## Input.Text — phone style and character filtering
+## Input.Text recipes (phone filtering, password reveal)
 
-`Input.Text` with `style: "tel"` sets `keyboardType: TextInputType.phone` on the underlying `TextFormField`. This only controls which virtual keyboard appears on iOS/Android; it does **not** filter characters. On desktop or in widget tests (`tester.enterText` bypasses the keyboard entirely), any character can be typed regardless of keyboard type.
-
-There has never been a `FilteringTextInputFormatter` for phone inputs in this codebase. The only formatter applied to all `Input.Text` fields is `LengthLimitingTextInputFormatter(maxLength)`.
-
-**Validation is submit-time only.** The `regex` field in the card JSON is checked inside `TextFormField.validator`, which runs when `Form.validate()` is called at submit. It is not checked keystroke-by-keystroke. The sequence for a phone field with `regex: "^\(\d{3}\) \d{3}-\d{4}$"`:
-
-1. User types `AAA` → accepted into the field, no error shown
-2. User submits → `Form.validate()` → regex fails → error message rendered
-3. User resumes typing → validation overlays cleared (see [Edit phase above](#input-overlay-architecture))
-
-This matches the Adaptive Cards spec, which specifies `regex` as a validation rule, not an input filter.
-
-**If you want to block non-phone characters at entry time**, add a conditional `FilteringTextInputFormatter` in `text.dart` alongside the existing length formatter:
-
-```dart
-inputFormatters: [
-  LengthLimitingTextInputFormatter(maxLength),
-  if (inputStyle == TextInputType.phone)
-    FilteringTextInputFormatter.allow(RegExp(r'[\d\+\-\(\)\. ]')),
-],
-```
-
-This silently drops any character not matching the allowlist as it is typed. Be aware that `style: "tel"` is optional in the card JSON — a field can carry a phone `regex` without `style: "tel"`, in which case `inputStyle` would be `null` and this guard would not fire. The guard would need to also inspect the `regex` pattern, or be applied unconditionally for fields with any `regex`.
-
-## Input.Text — password masking and reveal toggle
-
-`Input.Text` with `"style": "password"` obscures typed characters using Flutter's `obscureText: true`. This is **client-side only**: the submitted value is always the clear-text string (the overlay `inputValue` / baseline `value` are never encoded). Password fields are forced single-line regardless of `isMultiline`; autocorrect and suggestions are disabled; the system keyboard type is set to `TextInputType.visiblePassword`.
-
-### Eye-icon reveal toggle
-
-An optional eye-icon button in the field suffix lets users temporarily reveal what they typed. Whether the toggle is shown follows a **three-source precedence** (highest wins):
-
-| Priority | Source | Symbol |
-| -------- | ------ | ------ |
-| 1 (highest) | Per-element runtime overlay | `ElementOverlay.revealPasswordEnabled` (bool?) via `ResolvedInputState.revealPasswordEnabledOverride` |
-| 2 | HostConfig `inputs.text.revealPasswordEnabled` | `TextInputConfig.revealPasswordEnabled` on `InputsConfig.text` |
-| 3 (fallback) | `FallbackConfigs.inputsConfig` | `FallbackConfigs.inputsConfig.text.revealPasswordEnabled` (defaults `true`) |
-
-The widget resolves effective availability as:
-`(getInputsConfig() ?? FallbackConfigs.inputsConfig).text.revealPasswordEnabled`
-with the overlay checked first by `ResolvedInputState.revealPasswordEnabledOverride`.
-
-The HostConfig field `inputs.text.revealPasswordEnabled` is **non-standard** (not in the Microsoft spec); it lives on the new `TextInputConfig` class nested under `InputsConfig.text`. By default the reveal toggle is enabled for all password fields.
-
-### Overlay and reset behavior
-
-The per-element reveal toggle can be set or cleared at runtime:
-
-- **Set:** `AdaptiveCardDocumentNotifier.setRevealPasswordEnabled(id, enabled)` / `RawAdaptiveCardState.setRevealPasswordEnabled(id, enabled)`
-- **Clear:** `AdaptiveCardDocumentNotifier.clearRevealPasswordEnabled(id)` / `RawAdaptiveCardState.clearRevealPasswordEnabled(id)`
-
-Unlike value and validation overlays, `revealPasswordEnabled` is **preserved** (not cleared) by `Action.ResetInputs` / `resetInput` / `resetAllInputs` — the same preservation policy as `isVisible` and typeahead session fields. See [Reset semantics in reactive-riverpod.md](reactive-riverpod.md#reset-semantics).
+Task recipes for `Input.Text` — phone-style character filtering and the password
+masking / reveal toggle — now live in [`input-text-recipes.md`](input-text-recipes.md)
+(**how-to**). The password reveal toggle's runtime overlay APIs
+(`setRevealPasswordEnabled` / `clearRevealPasswordEnabled`) and its
+`Action.ResetInputs` preservation policy are documented there.
 
 ## Accessibility (screen readers)
 
@@ -380,26 +313,9 @@ Input unit tests should be created for all input components and include the foll
 - Adaptive component widget keys should be validated along with the input field widget keys.
 - IDs in the json should be validated against the actual form input ids.
 
-## Key naming changes 2026 Jan 30
+## Widget key naming
 
-Keys should match the following.
-
-- An adaptive card's widget key is the id geven for the adaptive card plus `_adaptive` using the function `generateAdaptiveWidgetKey()`
-- The widget key for the actual input field is the id given to the adaptive card using `generateWidgetKey()`
-- The widget key for the actual value/display widget for any non-input widgets should be generated using `generateAdaptiveWidgetKey()`
-
-Example:
-
-- An DateInput field map in the JSON has an `id` of `lastname`.
-- The Adaptive input card widget Key would be `lastName_adaptive`
-- The actual input field inside the card would have a lastname of `lastName` so that when the field is submitted the key for the fields value would be `lastname`.
-- Selectors inside field bound to possible selections would have a widget key name of `lastName_<item_key>` or `lastName_<item_value`>
-
-### Previous conventions
-
-This key naming scheme was previously soething like the following
-
-- An DateInput the field map in the JSON has an `id` of `lastname`.
-- The Adaptive input card widget Key would be `lastName_adaptive`
-- The actual input field inside the card would have a lastname of `lastName`
-- Selectors inside field bound to possible selections would have a widget key name of `lastName_<item_key>` or `lastName_<item_value`>
+Input widget-key generation (adaptive wrapper key, inner field key, selector keys) is
+documented in [`AdaptiveWidget-Key-Generation.md`](AdaptiveWidget-Key-Generation.md).
+Historical pre-2026-01-30 key-naming notes are archived at
+[`archive/specs/form-inputs-key-naming-2026-01-30.md`](archive/specs/form-inputs-key-naming-2026-01-30.md).

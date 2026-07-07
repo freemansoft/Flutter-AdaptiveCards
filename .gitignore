@@ -117,3 +117,5 @@ migrate_working_dir/
 **/linux/flutter/generated_plugin_registrant.cc
 **/linux/flutter/generated_plugin_registrant.h
 **/linux/flutter/generated_plugins.cmake
+# Node (markdown tooling only — Prettier)
+node_modules/

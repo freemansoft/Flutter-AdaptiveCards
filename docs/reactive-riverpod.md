@@ -128,7 +128,7 @@ Changes go **only** into overlays via the document notifier:
 | Submit / Execute                  | `collectInputValues()` + validation via `validateInputs()`                                                                                    | reads overlay ?? baseline `"value"`; marks failing inputs with `setInputError(isInvalid: true)` (required + `Input.Text` regex) |
 | Host loadInput API                | `RawAdaptiveCardState.loadInput(id, map)`                                                                                                     | delegates to `setChoices`                                                                                                       |
 | Enable/disable actions            | `setActionEnabled(id, enabled:)` / `setActionsEnabled(map)`                                                                                   | `ActionOverlay.isEnabled`                                                                                                       |
-| Password reveal toggle            | `setRevealPasswordEnabled(id, enabled)` / `clearRevealPasswordEnabled(id)`; `RawAdaptiveCardState` exposes the same names as facade             | `ElementOverlay.revealPasswordEnabled`; read via `ResolvedInputState.revealPasswordEnabledOverride`                              |
+| Password reveal toggle            | `setRevealPasswordEnabled(id, enabled)` / `clearRevealPasswordEnabled(id)`; `RawAdaptiveCardState` exposes the same names as facade           | `ElementOverlay.revealPasswordEnabled`; read via `ResolvedInputState.revealPasswordEnabledOverride`                             |
 | Replace TextBlock text            | `setText(id, text)` / `clearText(id)`                                                                                                         | `text`                                                                                                                          |
 | Replace FactSet facts             | `setFacts(id, facts)` / `clearFacts(id)` / `applyUpdates` (`facts` / `clearFacts` on `AdaptiveElementUpdate` or patch `{ clearFacts: true }`) | `facts`                                                                                                                         |
 | Host helpers                      | `RawAdaptiveCardState.setInputError` / `setActionEnabled` / `setText` / `clearText` / `setFacts` / `clearFacts` / `applyUpdates`              | delegates to document notifier                                                                                                  |
@@ -278,7 +278,7 @@ When using optional **`flutter_adaptive_cards_host_fs`**, backend responses appl
 | `setInputErrors` | `applyUpdates` with `errorMessage` + `isInvalid: true` | `errorMessage`, `isInvalid` on each input id                                         |
 | `replaceCard`    | Host **`onCardReplaced`** callback                     | Replaces baseline JSON; overlays re-seed from new map                                |
 
-**Apply order:** patches → input errors → full card replacement (see [backend-host-integration.md](backend-host-integration.md#effect-types-and-apply-order)).
+**Apply order:** patches → input errors → full card replacement (see [backend-invoke-reference.md](backend-invoke-reference.md#effect-types-and-apply-order)).
 
 Manual **`onSubmit` validation** (without the host package) still uses the same overlay fields — see [Host-driven validation](form-inputs.md#host-driven-validation-and-bulk-updates).
 
@@ -288,10 +288,10 @@ Tests: `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_t
 
 Per-type patch keys and contract tests: [`overlay-properties-by-type.md`](overlay-properties-by-type.md). Programmatic lookup: `CardTypeRegistry.overlayCapabilities` (`OverlayCapabilityRegistry`).
 
-| Layer | Confidence |
-| ----- | ---------- |
+| Layer                      | Confidence                                                       |
+| -------------------------- | ---------------------------------------------------------------- |
 | Notifier + merge providers | High — `test/riverpod/adaptive_card_document_notifier_test.dart` |
-| Widget tests per type | Partial — representative `*_overlay_test.dart` files only |
+| Widget tests per type      | Partial — representative `*_overlay_test.dart` files only        |
 
 Adding a new overlay field requires notifier tests plus a widget test for each consuming type. Implementer checklist: [adaptive-cards-element-registry skill](../.agents/skills/adaptive-cards-element-registry/SKILL.md#overlay-test-coverage).
 

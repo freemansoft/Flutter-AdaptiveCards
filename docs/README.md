@@ -46,9 +46,15 @@ Defines what `docs/` describes (published packages under `packages/`) vs sample 
 
 ### [AI-Agent-Support.md](./AI-Agent-Support.md)
 
-**Status**: ✅ Current | **Category**: Reference
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-Describes how LLM agents are configured for this repo: `AGENTS.md`, `.agents/skills/`, `skills-lock.json`, installation commands for [dart-lang/skills](https://github.com/dart-lang/skills), [flutter/skills](https://github.com/flutter/skills), and [obra/superpowers](https://github.com/obra/superpowers), plus project-specific skills and update procedures.
+Explains how LLM agents are configured for this repo: `AGENTS.md`, the two-layer `.agents/skills/` model, skill sources ([dart-lang/skills](https://github.com/dart-lang/skills), [flutter/skills](https://github.com/flutter/skills), [obra/superpowers](https://github.com/obra/superpowers)), and how agents load skills. Install / update commands: [ai-agent-skills-install.md](./ai-agent-skills-install.md).
+
+### [ai-agent-skills-install.md](./ai-agent-skills-install.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+Install and update commands for the vendored agent skills (Dart / Flutter / Superpowers, project + user-level, Cursor plugin, restore-from-lock). Extracted from [AI-Agent-Support.md](./AI-Agent-Support.md).
 
 ---
 
@@ -56,9 +62,15 @@ Describes how LLM agents are configured for this repo: `AGENTS.md`, `.agents/ski
 
 ### [actions-architecture.md](./actions-architecture.md)
 
-**Status**: ✅ Current | **Category**: Architecture
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-Describes the action system architecture using Generic interfaces, Default implementations, and ActionTypeRegistry pattern. Essential reading for understanding action handling.
+Describes the action system architecture using Generic interfaces, Default implementations, and ActionTypeRegistry pattern. Essential reading for understanding action handling. Per-action invoke payloads: [action-payloads-reference.md](./action-payloads-reference.md).
+
+### [action-payloads-reference.md](./action-payloads-reference.md)
+
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
+
+The invoke payload each action builds (Submit/Execute/OpenUrl/OpenUrlDialog/Http/onChange/refresh) and the host callback it targets. Extracted from [actions-architecture.md](./actions-architecture.md).
 
 ### [adaptive-style.md](./adaptive-style.md)
 
@@ -80,9 +92,15 @@ Why charts, templating, and **backend invoke** are separate packages, how to opt
 
 ### [backend-host-integration.md](./backend-host-integration.md)
 
-**Status**: ✅ Current | **Category**: Feature Spec
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
 
-Invoke round-trips with **`flutter_adaptive_cards_host_fs`** — request/response contract, effect ordering, Teams adapter, and consumer checklist.
+Integration guide for **`flutter_adaptive_cards_host_fs`** — wiring `AdaptiveCardBackendHandlers`, quick start, refresh, sign-in, custom transport, consumer checklist. Wire protocol details: [backend-invoke-reference.md](./backend-invoke-reference.md).
+
+### [backend-invoke-reference.md](./backend-invoke-reference.md)
+
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
+
+Wire-level reference: `associatedInputs` request payloads, PlainJson/Teams adapters, the `adaptiveCard.invokeResponse` contract, effect apply order, and the error table. Extracted from [backend-host-integration.md](./backend-host-integration.md).
 
 ### [reactive-riverpod.md](./reactive-riverpod.md)
 
@@ -110,13 +128,21 @@ Widget key generation pattern using `generateWidgetKey()` for all AdaptiveElemen
 
 ### [form-inputs.md](./form-inputs.md)
 
-**Status**: ✅ Current | **Category**: Implementation Guide
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
-Guide for Flutter Form-based input implementation. Documents runtime **baseline + overlay** value flow ([input overlay architecture diagram](./form-inputs.md#input-overlay-architecture)), key naming conventions:
+Reference for Flutter Form-based inputs and the input hub. Documents runtime **baseline + overlay** value flow ([input overlay architecture diagram](./form-inputs.md#input-overlay-architecture)), reset semantics, ChoiceSet styles, dependent ChoiceSet, host validation APIs, and test requirements. Widget key generation: [AdaptiveWidget-Key-Generation.md](./AdaptiveWidget-Key-Generation.md).
 
-- Card widget: `{id}_adaptive`
-- Input field: `{id}`
-- Test requirements for validation, JSON loading, value changes
+### [input-text-recipes.md](./input-text-recipes.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+Task recipes for `Input.Text`: phone-style character filtering and password masking / reveal toggle. Extracted from [form-inputs.md](./form-inputs.md).
+
+### [custom-action-recipe.md](./custom-action-recipe.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+Step-by-step recipe for implementing a custom action (`Generic*` interface + custom `ActionTypeRegistry`). Extracted from [actions-architecture.md](./actions-architecture.md).
 
 ### [backgroundImage.md](./backgroundImage.md)
 
@@ -130,21 +156,29 @@ Describes support for `backgroundImage` in both string (URL) and object (URL + f
 
 ### [backend-host-integration.md](./backend-host-integration.md)
 
-**Status**: ✅ Current | **Category**: Feature Spec
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
 
-Canonical guide for optional **`flutter_adaptive_cards_host_fs`**: invoke serialization, PlainJson/Teams adapters, response effects, `AdaptiveCardBackendHandlers`, error handling, and refresh round-trips.
+Integration guide for optional **`flutter_adaptive_cards_host_fs`**: `AdaptiveCardBackendHandlers`, quick start, refresh, and sign-in round-trips. Wire protocol (serialization, adapters, response effects, error table): [backend-invoke-reference.md](./backend-invoke-reference.md).
 
 ### [adaptive-template-design.md](./adaptive-template-design.md)
 
-**Status**: ✅ Current | **Category**: Feature Spec
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
-Design specification for the Dart templating engine in `flutter_adaptive_template_fs` package. Documents:
+Templating-language reference for `flutter_adaptive_template_fs` (retains its original design framing). Documents:
 
 - `$data`, `$root`, `$index` scoping
 - Array binding
 - Conditional rendering with `$when`
 - `json()` function for embedded JSON
 - Based on [Microsoft Templating Language](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)
+
+Writing templating tests: [templating-testing.md](./templating-testing.md).
+
+### [templating-testing.md](./templating-testing.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+How to build `flutter_adaptive_template_fs` test fixtures (JSON template/data pairs, expected-output validation, sourcing Microsoft sample templates). Extracted from [adaptive-template-design.md](./adaptive-template-design.md).
 
 ### [2026-06-08-rich-text-and-text-features-design.md](./superpowers/specs/2026-06-08-rich-text-and-text-features-design.md)
 
@@ -164,9 +198,15 @@ Specification for base64 encoded inline image support using `Image.memory`. Incl
 
 ### [hostconfig.md](./hostconfig.md)
 
-**Status**: ✅ Current | **Category**: Architecture & Testing
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-HostConfig architecture: JSON model parsing, theme-derived color fallbacks (`ThemeColorFallbacks`), `ReferenceResolver` pipeline, brightness selection, Widgetbook notes, and serialization test conventions. Style inheritance diagrams: [adaptive-style.md](./adaptive-style.md).
+HostConfig architecture: JSON model parsing, theme-derived color fallbacks (`ThemeColorFallbacks`), `ReferenceResolver` pipeline, brightness selection, Widgetbook notes. Style inheritance diagrams: [adaptive-style.md](./adaptive-style.md). Serialization testing: [hostconfig-testing.md](./hostconfig-testing.md).
+
+### [hostconfig-testing.md](./hostconfig-testing.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+How to write/run HostConfig serialization tests (one fixture per entity, conventions) and the theme-fallback verification checklist. Extracted from [hostconfig.md](./hostconfig.md).
 
 ### Overlay / document notifier tests
 
@@ -178,11 +218,11 @@ Riverpod document **overlay** tests (notifier unit tests + widget integration) a
 
 ## Known Issues & Future Work
 
-### [Column-ColumnSet-Fill-Vertical-Height.md](./Column-ColumnSet-Fill-Vertical-Height.md)
+### [Column-ColumnSet-Fill-Vertical-Height.md](./archive/specs/Column-ColumnSet-Fill-Vertical-Height.md) _(archived)_
 
-**Status**: ✅ Current (documents fixed bug) | **Category**: Known Issue (historical)
+**Status**: 🗄️ Historical (documents fixed bug) | **Category**: Known Issue (historical)
 
-Documents a now-**fixed** bug where AdaptiveColumns in an AdaptiveColumnSet had inconsistent heights instead of matching the tallest column. Fix (`IntrinsicHeight` + `CrossAxisAlignment.stretch`) verified by `test/column_height_test.dart`; kept for historical reference.
+Documents a now-**fixed** bug where AdaptiveColumns in an AdaptiveColumnSet had inconsistent heights instead of matching the tallest column. Fix (`IntrinsicHeight` + `CrossAxisAlignment.stretch`) verified by `test/column_height_test.dart`; kept for historical reference in [`archive/specs/`](./archive/specs/).
 
 ---
 
