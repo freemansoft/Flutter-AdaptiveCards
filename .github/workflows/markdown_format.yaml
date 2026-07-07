@@ -1,0 +1,29 @@
+# Validates that the published Markdown docs are Prettier-formatted.
+# Mirrors the local VS Code "format on save" (esbenp.prettier-vscode + .prettierrc.yaml)
+# so a save locally and the CI check use the same pinned Prettier and config.
+#
+# Scope: docs/**/*.md, minus the process/vendored dirs in .prettierignore
+# (docs/plans, docs/superpowers, docs/reviews, docs/archive, .agents, ...).
+# To fix locally: `npm ci && npm run format:md`.
+#
+# Scoped `push` to main to avoid duplicate runs on branches with an open PR
+# (matches test.yml).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  markdown-format:
+    name: Markdown format (Prettier)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Check Markdown formatting
+        run: npm run check:md

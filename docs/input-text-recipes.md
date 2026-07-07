@@ -43,11 +43,11 @@ This silently drops any character not matching the allowlist as it is typed. Be 
 
 An optional eye-icon button in the field suffix lets users temporarily reveal what they typed. Whether the toggle is shown follows a **three-source precedence** (highest wins):
 
-| Priority | Source | Symbol |
-| -------- | ------ | ------ |
-| 1 (highest) | Per-element runtime overlay | `ElementOverlay.revealPasswordEnabled` (bool?) via `ResolvedInputState.revealPasswordEnabledOverride` |
-| 2 | HostConfig `inputs.text.revealPasswordEnabled` | `TextInputConfig.revealPasswordEnabled` on `InputsConfig.text` |
-| 3 (fallback) | `FallbackConfigs.inputsConfig` | `FallbackConfigs.inputsConfig.text.revealPasswordEnabled` (defaults `true`) |
+| Priority     | Source                                         | Symbol                                                                                                |
+| ------------ | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 1 (highest)  | Per-element runtime overlay                    | `ElementOverlay.revealPasswordEnabled` (bool?) via `ResolvedInputState.revealPasswordEnabledOverride` |
+| 2            | HostConfig `inputs.text.revealPasswordEnabled` | `TextInputConfig.revealPasswordEnabled` on `InputsConfig.text`                                        |
+| 3 (fallback) | `FallbackConfigs.inputsConfig`                 | `FallbackConfigs.inputsConfig.text.revealPasswordEnabled` (defaults `true`)                           |
 
 The widget resolves effective availability as:
 `(getInputsConfig() ?? FallbackConfigs.inputsConfig).text.revealPasswordEnabled`

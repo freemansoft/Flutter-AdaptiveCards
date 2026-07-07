@@ -1,0 +1,13 @@
+{
+  "name": "flutter-adaptivecards-docs-tooling",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Markdown tooling (Prettier) for the Flutter-AdaptiveCards docs. Not a runtime dependency of any published package.",
+  "scripts": {
+    "format:md": "prettier --write \"docs/**/*.md\"",
+    "check:md": "prettier --check \"docs/**/*.md\""
+  },
+  "devDependencies": {
+    "prettier": "3.4.2"
+  }
+}

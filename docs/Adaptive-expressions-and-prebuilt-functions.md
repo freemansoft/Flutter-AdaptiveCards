@@ -1,7 +1,6 @@
 # Azure Bot Service Adaptive Expressions - Future Reference
 
-> [!NOTE]
-> **This document is for FUTURE REFERENCE ONLY** - Not part of standard Adaptive Cards specification.
+> [!NOTE] > **This document is for FUTURE REFERENCE ONLY** - Not part of standard Adaptive Cards specification.
 >
 > This describes the Azure AI Bot Service expression language and prebuilt functions, which are **separate from** the core Adaptive Cards specification. These expressions were designed specifically for Azure Bot Framework conversational AI scenarios.
 >

@@ -25,5 +25,10 @@
     "xuất"
   ],
   "dart.flutterSdkPath": ".fvm/versions/3.44.0",
-  "cmake.sourceDirectory": "/Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards/adaptive_explorer/windows/runner"
+  "cmake.sourceDirectory": "/Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards/adaptive_explorer/windows/runner",
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "prettier.requireConfig": true
 }

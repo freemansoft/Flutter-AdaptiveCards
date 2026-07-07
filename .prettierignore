@@ -1,0 +1,26 @@
+# Vendored upstream agent skills (managed by `npx skills`; keep upstream formatting)
+.agents/
+.claude/
+.cursor/
+
+# Process / decision-record artifacts — frozen, not formatted
+# (mirrors the Diátaxis governance scope: published docs only)
+docs/plans/
+docs/superpowers/
+docs/reviews/
+docs/archive/
+
+# Build / tooling output
+**/build/
+**/.dart_tool/
+.fvm/
+**/.fvm/
+coverage/
+**/coverage/
+node_modules/
+
+# Generated platform assets (e.g. Xcode LaunchImage READMEs)
+**/Assets.xcassets/
+
+# Generated
+**/*.g.dart

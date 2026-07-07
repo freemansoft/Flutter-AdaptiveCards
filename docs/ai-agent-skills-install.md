@@ -51,7 +51,7 @@ Skills are copied to `~/.agents/skills/`.
 
 #### Optional: Cursor plugin (hooks and commands)
 
-Cursor *** support will eventually be removed with the purchase of xAI **
+Cursor **\* support will eventually be removed with the purchase of xAI **
 
 For automatic skill activation via Cursor hooks (recommended when using Cursor Agent):
 

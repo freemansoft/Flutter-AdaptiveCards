@@ -24,7 +24,7 @@ This project occasionally adds HostConfig properties that are **not part of the 
 
 Convention: every non-standard property is flagged with a **Non-standard** callout in both its Dart `///` doc comment and in this section.
 
-### `inputs.text.revealPasswordEnabled` *(Non-standard)*
+### `inputs.text.revealPasswordEnabled` _(Non-standard)_
 
 **Type:** `bool` | **Default:** `true` (`FallbackConfigs.inputsConfig.text.revealPasswordEnabled`)
 
@@ -46,13 +46,13 @@ Resolution precedence (highest wins):
 
 Source files: `lib/src/hostconfig/inputs_config.dart`, `lib/src/hostconfig/text_input_config.dart`, `lib/src/hostconfig/fallback_configs.dart`.
 
-### `inputs.choiceSet.enableSearch` *(Non-standard)*
+### `inputs.choiceSet.enableSearch` _(Non-standard)_
 
 **Type:** `bool` | **Default:** `true` (`FallbackConfigs.inputsConfig.choiceSet.enableSearch`)
 
-Controls the compact single-select `Input.ChoiceSet` dropdown (Material 3 `DropdownMenu`). When `true`, typing a character *jumps to / highlights* the matching entry while keeping the full list visible — the closest analog to a native HTML `<select>`. When `false`, type-ahead jump is disabled. Maps to `DropdownMenu.enableSearch`.
+Controls the compact single-select `Input.ChoiceSet` dropdown (Material 3 `DropdownMenu`). When `true`, typing a character _jumps to / highlights_ the matching entry while keeping the full list visible — the closest analog to a native HTML `<select>`. When `false`, type-ahead jump is disabled. Maps to `DropdownMenu.enableSearch`.
 
-### `inputs.choiceSet.requestFocusOnTap` *(Non-standard)*
+### `inputs.choiceSet.requestFocusOnTap` _(Non-standard)_
 
 **Type:** `bool?` | **Default:** `null` → platform-aware (`DropdownMenu`'s own default)
 

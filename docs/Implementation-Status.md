@@ -58,8 +58,7 @@ Templating lives in a **separate opt-in package**. Core binding (`${...}`, `$dat
 
 ## Priority Recommendations
 
-> [!NOTE]
-> **Prioritization updated 2026-06-28.** Responsive `Layout.Flow`, **`Layout.AreaGrid`**, and block **`height: "stretch"`** have all shipped (Container, root, Column, TableCell). Responsive layout is now **feature-complete except `Layout.Flow` `itemFit: "Fill"`** (see Low priority). Two items remain **deprioritized by maintainer decision** — see **Deferred** below: `requires` + action `fallback` + version gating, and all `rtl` rendering.
+> [!NOTE] > **Prioritization updated 2026-06-28.** Responsive `Layout.Flow`, **`Layout.AreaGrid`**, and block **`height: "stretch"`** have all shipped (Container, root, Column, TableCell). Responsive layout is now **feature-complete except `Layout.Flow` `itemFit: "Fill"`** (see Low priority). Two items remain **deprioritized by maintainer decision** — see **Deferred** below: `requires` + action `fallback` + version gating, and all `rtl` rendering.
 
 ### High priority — standard cards
 
