@@ -117,7 +117,11 @@ All flagged violations now have a Phase-1 pass. **Every governed doc is tagged.*
     ([`action-payloads-reference.md`](../action-payloads-reference.md)); repointed the three
     `#root-card-refresh-payload` linkers (incl. the package README).
   - Trim residual explanation prose in the tagged reference docs.
-  - **Reconcile `adaptive-template-design.md` against the `flutter_adaptive_template_fs` README**
-    (which owns feature coverage per `AGENTS.md`) — dedup the language reference, possibly archive
-    the C# design samples.
-- **Process:** wire the Diátaxis check into the `code-review` skill's "Documentation impact" gate.
+  - ~~Reconcile `adaptive-template-design.md` against the `flutter_adaptive_template_fs` README~~ —
+    **investigated, no action needed.** The README owns **status/coverage** (implemented features,
+    tests, gaps) and already links to the design doc as its "Documentation" column; the design doc
+    owns **language semantics**. They are properly separated per `AGENTS.md`, not duplicated. Only
+    residue: the legacy C# API samples in the design doc (minor archival question, left as
+    historical context).
+- **Process:** ✅ **Done** — wired the Diátaxis one-quadrant / `doc_type` check into the
+  `code-review` skill's "Documentation impact" gate.
