@@ -98,10 +98,14 @@ instead:
   (`doc_type: how-to`); repointed the one `#serialization-test-requirements` anchor link
   (`adaptive-style.md`); tagged the doc `explanation`. The non-standard extension specs remain
   inline as embedded reference (Phase-2 candidate).
+- **`AI-Agent-Support.md`, Phase 1:** extracted the install + update commands → new
+  [`ai-agent-skills-install.md`](../ai-agent-skills-install.md) (`doc_type: how-to`); tagged the
+  doc `explanation` (overview, skill sources, how agents load skills). No anchor fixups (zero
+  external deep-links).
 
 ### Remaining (not yet done)
 
-- **Violations to address next:** `adaptive-template-design.md`, `AI-Agent-Support.md`.
+- **Violations to address next:** `adaptive-template-design.md`.
 - **Tutorial gap:** author a "render your first Adaptive Card" tutorial (`doc_type: tutorial`).
 - **Phase 2 (optional):** trim residual explanation prose in the tagged reference docs; consider
   moving `actions-architecture.md` payload tables into a dedicated reference doc.

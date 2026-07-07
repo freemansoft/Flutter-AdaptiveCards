@@ -46,9 +46,15 @@ Defines what `docs/` describes (published packages under `packages/`) vs sample 
 
 ### [AI-Agent-Support.md](./AI-Agent-Support.md)
 
-**Status**: ✅ Current | **Category**: Reference
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-Describes how LLM agents are configured for this repo: `AGENTS.md`, `.agents/skills/`, `skills-lock.json`, installation commands for [dart-lang/skills](https://github.com/dart-lang/skills), [flutter/skills](https://github.com/flutter/skills), and [obra/superpowers](https://github.com/obra/superpowers), plus project-specific skills and update procedures.
+Explains how LLM agents are configured for this repo: `AGENTS.md`, the two-layer `.agents/skills/` model, skill sources ([dart-lang/skills](https://github.com/dart-lang/skills), [flutter/skills](https://github.com/flutter/skills), [obra/superpowers](https://github.com/obra/superpowers)), and how agents load skills. Install / update commands: [ai-agent-skills-install.md](./ai-agent-skills-install.md).
+
+### [ai-agent-skills-install.md](./ai-agent-skills-install.md)
+
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
+
+Install and update commands for the vendored agent skills (Dart / Flutter / Superpowers, project + user-level, Cursor plugin, restore-from-lock). Extracted from [AI-Agent-Support.md](./AI-Agent-Support.md).
 
 ---
 
