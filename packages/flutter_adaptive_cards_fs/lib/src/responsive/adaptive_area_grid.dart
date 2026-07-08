@@ -1,6 +1,7 @@
 // RenderObject fields are private with public getters/setters (the Flutter
 // idiom), so their constructor params cannot be initializing formals (named
 // params cannot be private).
+// ignore_for_file: prefer_initializing_formals
 
 import 'dart:developer' as developer;
 
