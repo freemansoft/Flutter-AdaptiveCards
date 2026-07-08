@@ -1,5 +1,5 @@
 ---
-name: flutter-upgrade-sdk
+name: adaptive-cards-release-flutter-upgrade-sdk
 description: >
   Procedure for upgrading the Flutter and Dart SDK versions across the monorepo.
   Covers FVM config, GitHub actions, pubspec.yaml constraints, and changelogs.

@@ -15,7 +15,7 @@ description: >
 Diátaxis (by Daniele Procida, [diataxis.fr](https://diataxis.fr)) sorts documentation into four
 types by **user need**. A doc that tries to be two of them at once serves neither well. This skill
 encodes the framework for *this repo's* published documentation and plugs into the
-`code-review` "Documentation impact" gate.
+`adaptive-cards-code-review` "Documentation impact" gate.
 
 ## Scope — what this skill governs
 
@@ -115,7 +115,7 @@ tag; do not restructure the directory tree without an explicit, separately-scope
 
 ## Integration with the review gate
 
-The `code-review` skill's "Documentation impact" check should also ask: **does each touched in-scope
+The `adaptive-cards-code-review` skill's "Documentation impact" check should also ask: **does each touched in-scope
 doc stay within one Diátaxis quadrant, and is its `doc_type:` correct?** A mixed-mode doc is a review
 comment, not a blocker on its own — but a *newly introduced* mode-mix in a doc that was previously
 pure is drift worth fixing in the same change.
@@ -125,7 +125,7 @@ pure is drift worth fixing in the same change.
 - Does not invent documentation strategy or information architecture.
 - Does not move, split, or rewrite files without confirmation.
 - Does not touch out-of-scope process/archive docs.
-- Does not override repo style rules (`AGENTS.md`, `dart-public-api-docs`) — it composes with them.
+- Does not override repo style rules (`AGENTS.md`, `adaptive-cards-public-api-docs`) — it composes with them.
 
 ## Attribution
 

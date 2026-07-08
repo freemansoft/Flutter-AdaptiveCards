@@ -14,7 +14,7 @@ Pages that call **`RawAdaptiveCardState`** document overlay APIs from knobs. Pri
 ## Workflow
 
 1. Load **`docs/widgetbook-overlay-demos.md`** — shared checklist, apply-lifecycle strategies, and **registry**.
-2. Load skill **`.agents/skills/widgetbook-overlay-demos/SKILL.md`** if you need the condensed checklist.
+2. Load skill **`.agents/skills/adaptive-cards-widgetbook-overlay-demos/SKILL.md`** if you need the condensed checklist.
 3. **Target selection:**
    - If the user names a page or element (e.g. FactSet, TextBlock), review that registry row and file only.
    - If unspecified, glob `widgetbook/lib/*_overlay_page.dart` and audit every registry row (flag unregistered files).

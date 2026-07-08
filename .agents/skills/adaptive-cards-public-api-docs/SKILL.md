@@ -1,5 +1,5 @@
 ---
-name: dart-public-api-docs
+name: adaptive-cards-public-api-docs
 description: >
   Write public `///` documentation for exported Dart APIs. Use when adding or
   editing public classes, methods, getters, or fields in library packages
@@ -161,5 +161,5 @@ When reviewing or authoring public API docs:
 - [ ] No comment would become wrong if the implementation were refactored
       (sign of narrating "how" instead of "why/how to use").
 
-See also **`code-review`** (Exports / public API section) and root **`AGENTS.md`**
+See also **`adaptive-cards-code-review`** (Exports / public API section) and root **`AGENTS.md`**
 (Documentation Philosophy).

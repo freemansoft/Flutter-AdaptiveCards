@@ -222,7 +222,7 @@ See [backend-host-integration.md](./backend-host-integration.md) and [archived d
 
 ### Public API documentation (2026-06-08, updated 2026-06-11)
 
-- **`public_member_api_docs`** — `///` on exported APIs follows the **`dart-public-api-docs`** standard (why/how for callers, not implementation narration). Remediation plan: [`docs/superpowers/plans/2026-06-11-public-api-docs-remediation.plan.md`](./superpowers/plans/2026-06-11-public-api-docs-remediation.plan.md).
+- **`public_member_api_docs`** — `///` on exported APIs follows the **`adaptive-cards-public-api-docs`** standard (why/how for callers, not implementation narration). Remediation plan: [`docs/superpowers/plans/2026-06-11-public-api-docs-remediation.plan.md`](./superpowers/plans/2026-06-11-public-api-docs-remediation.plan.md).
 - **`flutter_adaptive_cards_fs`** — `public_member_api_docs: error` in `analysis_options.yaml`; `fvm dart analyze lib` is clean for missing public docs (2026-06-11).
 - **`flutter_adaptive_charts_fs`** — docs present; lint not yet promoted to error (separate task).
 

@@ -55,4 +55,4 @@ Core **`associatedInputs`** tests remain in `packages/flutter_adaptive_cards_fs/
 
 - **`adaptive-cards-monorepo-workspace`** — workspace layout and `fvm` working directories
 - **`adaptive-cards-testing`** — core widget/notifier test patterns
-- **`release-engineer`** — sync `version:` and `flutter_adaptive_cards_fs: ^<version>` on post-release bump
+- **`adaptive-cards-release-engineer`** — sync `version:` and `flutter_adaptive_cards_fs: ^<version>` on post-release bump

@@ -1,5 +1,5 @@
 ---
-name: flutter-standard-practices
+name: adaptive-cards-flutter-standard-practices
 description: >
   Standard patterns and best practices for Flutter development in the FlutterAdaptiveCards project.
   Covers Theming (Material 3) and JSON Serialization using code-generation.

@@ -4,7 +4,7 @@
 
 Interactive Widgetbook use cases that call **`RawAdaptiveCardState`** document overlay APIs (`setText`, `setFacts`, `clearFacts`, …) from knob-driven demo pages. Static JSON-only use cases do not need this pattern.
 
-**Related skill:** [`.agents/skills/widgetbook-overlay-demos/SKILL.md`](../.agents/skills/widgetbook-overlay-demos/SKILL.md)
+**Related skill:** [`.agents/skills/adaptive-cards-widgetbook-overlay-demos/SKILL.md`](../.agents/skills/adaptive-cards-widgetbook-overlay-demos/SKILL.md)
 
 ## Why a stable page `GlobalKey` is required
 

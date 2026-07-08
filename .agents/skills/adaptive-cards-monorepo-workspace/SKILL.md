@@ -1,5 +1,5 @@
 ---
-name: dart-monorepo-workspace
+name: adaptive-cards-monorepo-workspace
 description: >
   Workspace layout, fvm usage, correct working directories for commands,
   and inter-package dependency relationships for the Flutter-AdaptiveCards
@@ -220,7 +220,7 @@ Whenever you make changes to a package or app:
 1. **Always** document changes under the current top `## [<version>]` section in that package's `CHANGELOG.md` (and in `adaptive_explorer` / `widgetbook` changelogs when those apps change).
 2. During a development cycle, edit the existing top section; do not add a second heading for the same version.
 
-After a release is published to pub.dev, follow the **`release-engineer`** skill §6: minor version bump across all `pubspec.yaml` files, new `## [<version>]` sections in all **six** changelogs, and `flutter_adaptive_cards_fs: ^<version>` in `flutter_adaptive_charts_fs` and `flutter_adaptive_cards_host_fs`.
+After a release is published to pub.dev, follow the **`adaptive-cards-release-engineer`** skill §6: minor version bump across all `pubspec.yaml` files, new `## [<version>]` sections in all **six** changelogs, and `flutter_adaptive_cards_fs: ^<version>` in `flutter_adaptive_charts_fs` and `flutter_adaptive_cards_host_fs`.
 
 ---
 
