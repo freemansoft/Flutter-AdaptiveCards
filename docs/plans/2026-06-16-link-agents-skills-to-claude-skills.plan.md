@@ -54,7 +54,7 @@ Place alongside the existing `launch.json` and `settings.json`. Uses
       "type": "shell",
       "command": "sh scripts/setup-claude.sh",
       "windows": {
-        "command": "pwsh scripts/setup-claude.ps1"
+        "command": "powershell scripts/setup-claude.ps1"
       },
       "runOptions": {
         "runOn": "folderOpen"
@@ -108,7 +108,7 @@ convention (`YYYY-MM-DD-description.plan.md`).
 
 1. **Mac/Linux**: Run `sh scripts/setup-claude.sh` from repo root → confirm
    `.claude/skills` is a symlink pointing at `.agents/skills/` (`ls -la .claude/`).
-2. **Windows**: Run `pwsh scripts/setup-claude.ps1` → confirm `.claude\skills` is a
+2. **Windows**: Run `powershell scripts/setup-claude.ps1` → confirm `.claude\skills` is a
    junction (`Get-Item .claude\skills | Select-Object LinkType, Target`).
 3. **Cursor/VS Code**: Close and reopen the workspace → confirm the "Setup Claude
    Skills Link" task runs (check Terminal > Tasks output panel).

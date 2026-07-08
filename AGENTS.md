@@ -40,7 +40,8 @@ The project's AI instructions are organized into two layers to keep context effi
 
 ## Package Management
 
-- **FVM:** Always prefix commands with `fvm` (e.g. `fvm flutter pub get`).
+- **FVM:** Always prefix every `flutter` and `dart` command with `fvm` (e.g. `fvm flutter pub get`, `fvm dart run …`) — the repo pins its SDK via FVM and the bare `flutter`/`dart` aliases may not point at it.
+- **Bare commands in vendored skills:** The vendored `dart-*`/`flutter-*` skills under `.agents/skills/` show bare `flutter`/`dart` commands and are kept verbatim so they diff cleanly against upstream. **Do not** rewrite those files to add `fvm`; instead translate to the `fvm`-prefixed form when you actually run the command. See the `adaptive-cards-dart-flutter-fvm` skill.
 - **Dev Dependencies:** Use `fvm flutter pub add dev:<package>`.
 - **Changelog:** Whenever any file under a `packages/<name>/` directory changes, add a bullet to the `## [Unreleased]` section of that package's `CHANGELOG.md` before marking work complete. See `adaptive-cards-monorepo-workspace` skill for format details.
 

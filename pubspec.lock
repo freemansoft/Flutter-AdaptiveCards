@@ -173,10 +173,10 @@ packages:
     dependency: transitive
     description:
       name: cross_file
-      sha256: "28bb3ae56f117b5aec029d702a90f57d285cd975c3c5c281eaca38dbc47c5937"
+      sha256: "92c9c43c383bfa1c32079d3bc492d55d6d4318044b7b47edaff8971cbb555c51"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.5+2"
+    version: "0.3.5+4"
   crypto:
     dependency: transitive
     description:
@@ -229,10 +229,10 @@ packages:
     dependency: transitive
     description:
       name: equatable
-      sha256: "3e0141505477fd8ad55d6eb4e7776d3fe8430be8e497ccb1521370c3f21a3e2b"
+      sha256: "3bce007a596ff8b3119c45d68aaef631272537c03d30e5d4534dd24bf4c5eaa2"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.8"
+    version: "2.1.0"
   fake_async:
     dependency: transitive
     description:
@@ -295,10 +295,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_markdown_plus
-      sha256: "039177906850278e8fb1cd364115ee0a46281135932fa8ecea8455522166d2de"
+      sha256: "2e4b667a75c08e5710866ae010da392acf5af475f9ad0be9bf406525e9751b0c"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.7"
+    version: "1.0.11"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -902,10 +902,10 @@ packages:
     dependency: transitive
     description:
       name: video_player_android
-      sha256: "8401adac6f33e78a0f255a75a7e7c9e2f9713ffcd87ff4e6c00d9bd92b5d99db"
+      sha256: "15bfd0598f8d8946bf0e2d50e2ca1a0db9491589a8bb7f6f9a388c0b48aef764"
       url: "https://pub.dev"
     source: hosted
-    version: "2.9.7"
+    version: "2.10.0"
   video_player_avfoundation:
     dependency: transitive
     description:
@@ -918,10 +918,10 @@ packages:
     dependency: transitive
     description:
       name: video_player_platform_interface
-      sha256: e4ae5bc934b528e5b95c5e47be2812860186260cd3eed3ac62f5ed380fdd1613
+      sha256: "92c0fbabe20c788e71fd10d26cea998d0d253282e65d145aed0818731cf593ce"
       url: "https://pub.dev"
     source: hosted
-    version: "6.8.0"
+    version: "6.9.0"
   video_player_web:
     dependency: transitive
     description:

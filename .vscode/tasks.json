@@ -6,7 +6,7 @@
       "type": "shell",
       "command": "sh scripts/setup-claude.sh",
       "windows": {
-        "command": "pwsh scripts/setup-claude.ps1"
+        "command": "powershell scripts/setup-claude.ps1"
       },
       "runOptions": {
         "runOn": "folderOpen"
