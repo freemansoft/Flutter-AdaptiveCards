@@ -136,7 +136,7 @@ Procedure:
 1. `git grep -n '<old-or-new-symbol>' docs/` (also grep the human name, e.g. `CardWidthScope`, `cardWidthBucketProvider`, `targetWidth`).
 2. Update the matching canonical docs — most commonly [`docs/reactive-riverpod.md`](docs/reactive-riverpod.md) (provider scopes, overlay merge, visibility), [`docs/Architecture-Overview.md`](docs/Architecture-Overview.md) (scope diagram), and [`docs/hostconfig.md`](docs/hostconfig.md) (HostConfig sections). Keep mermaid diagrams in sync.
    - **Component status (element/input/action/container/HostConfig implemented-tests-notes) now lives in the owning package's README**, not the central matrix — update the `## Implementation status` table in [`packages/flutter_adaptive_cards_fs/README.md`](packages/flutter_adaptive_cards_fs/README.md#implementation-status) (charts → [`flutter_adaptive_charts_fs`](packages/flutter_adaptive_charts_fs/README.md#implementation-status), templating → [`flutter_adaptive_template_fs`](packages/flutter_adaptive_template_fs/README.md#feature-coverage)) so it publishes to pub.dev. Each of those READMEs owns its own status **legend** and **`### Known gaps`** too. [`docs/Implementation-Status.md`](docs/Implementation-Status.md) is now an **index**; edit it only for the project-level roadmap (Priority Recommendations), history (Recently completed), or pointers.
-3. A stale doc reference (e.g. a deleted class still named in `docs/`) is a blocker, not a nice-to-have. The **`code-review`** skill's "Documentation impact" check enforces this at the review gate.
+3. A stale doc reference (e.g. a deleted class still named in `docs/`) is a blocker, not a nice-to-have. The **`adaptive-cards-code-review`** skill's "Documentation impact" check enforces this at the review gate.
 
 ## Documentation Philosophy
 
@@ -145,7 +145,7 @@ Procedure:
 - **Why, not What:** When behavior is non-obvious, explain rationale and caller contract — not the implementation algorithm.
 - **Localization:** Use the `intl` package. All UI strings must be localized in `.arb` files.
 
-For examples and a review checklist, see the **`dart-public-api-docs`** skill.
+For examples and a review checklist, see the **`adaptive-cards-public-api-docs`** skill.
 
 ## Analysis Options
 
@@ -162,8 +162,8 @@ linter:
 
 ---
 > [!NOTE]
-> **Public API `///` comments** — purpose, usage, and anti-patterns are in the `dart-public-api-docs` skill.
-> **Theming** and **Serialization (code-gen)** guidelines are in the `flutter-standard-practices` skill.
+> **Public API `///` comments** — purpose, usage, and anti-patterns are in the `adaptive-cards-public-api-docs` skill.
+> **Theming** and **Serialization (code-gen)** guidelines are in the `adaptive-cards-flutter-standard-practices` skill.
 > **Layout** guidance is in the `flutter-build-responsive-layout` and `flutter-fix-layout-issues` skills.
 > **Routing** guidance is in the `flutter-setup-declarative-routing` skill.
 >

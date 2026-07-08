@@ -7,7 +7,7 @@ description: Deprecated alias — use widgetbook-overlay-page-review. FactSet de
 
 When reviewing FactSet specifically:
 
-1. Invoke **`widgetbook-overlay-page-review`** (or follow `.agents/skills/widgetbook-overlay-demos/SKILL.md`).
+1. Invoke **`widgetbook-overlay-page-review`** (or follow `.agents/skills/adaptive-cards-widgetbook-overlay-demos/SKILL.md`).
 2. Target **`widgetbook/lib/fact_set_overlay_page.dart`** and the **FactSet** registry row in [`docs/widgetbook-overlay-demos.md`](../../docs/widgetbook-overlay-demos.md).
 3. For package overlay semantics, see [`docs/reactive-riverpod.md`](../../docs/reactive-riverpod.md). For the widgetbook example section, see [FactSet overlay spec](../../docs/superpowers/specs/2026-06-06-factset-facts-overlay-design.md#example-widgetbook-sample-factset-overlay-knob) and [plan Task 8](../../docs/superpowers/plans/2026-06-06-factset-facts-overlay.plan.md).
 

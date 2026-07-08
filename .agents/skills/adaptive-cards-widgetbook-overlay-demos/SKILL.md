@@ -1,5 +1,5 @@
 ---
-name: widgetbook-overlay-demos
+name: adaptive-cards-widgetbook-overlay-demos
 description: >
   Example/sample program only: patterns and registry for widgetbook host-overlay demo
   pages (widgetbook/lib/*_overlay_page.dart). Use when adding or reviewing widgetbook

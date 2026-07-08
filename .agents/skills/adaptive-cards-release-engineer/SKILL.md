@@ -1,5 +1,5 @@
 ---
-name: release-engineer
+name: adaptive-cards-release-engineer
 description: >
   Release engineering protocol for the Flutter-AdaptiveCards monorepo.
   Covers versioning, tagging, pushing packages to pub.dev, post-release minor

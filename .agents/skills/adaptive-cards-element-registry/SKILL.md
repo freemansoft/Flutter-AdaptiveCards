@@ -413,7 +413,7 @@ If the element reads runtime state via `resolvedElementProvider` (visibility, in
    });
    ```
 
-3. **Add a golden test** (see `flutter-adaptive-cards-testing` skill).
+3. **Add a golden test** (see `adaptive-cards-testing` skill).
 
 4. **Run tests** from the package directory:
 

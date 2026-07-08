@@ -161,9 +161,9 @@ Modular skills loaded when a task matches. Vendored upstream skills are tracked 
 | Dart team        | [dart-lang/skills](https://github.com/dart-lang/skills) | 9     |
 | Flutter team     | [flutter/skills](https://github.com/flutter/skills)     | 10    |
 | Superpowers      | [obra/superpowers](https://github.com/obra/superpowers) | 14    |
-| Project-specific | (authored in-repo)                                      | 11    |
+| Project-specific | (authored in-repo)                                      | 15    |
 
-**Project-specific skills:** `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-testing`, `code-review`, `release-engineer`, `release-flutter-upgrade-sdk`.
+**Project-specific skills:** `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-backend-host`, `adaptive-cards-testing`, `adaptive-cards-public-api-docs`, `adaptive-cards-diataxis-docs`, `adaptive-cards-widgetbook-overlay-demos`, `adaptive-cards-code-review`, `adaptive-cards-release-engineer`, `adaptive-cards-release-flutter-upgrade-sdk`.
 
 **Superpowers highlights:** `brainstorming`, `writing-plans`, `test-driven-development`, `systematic-debugging`, `subagent-driven-development`, and related collaboration workflows.
 

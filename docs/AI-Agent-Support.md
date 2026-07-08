@@ -48,21 +48,23 @@ Agentic development methodology: brainstorming before coding, implementation pla
 
 Authored for this monorepo (Adaptive Cards spec, HostConfig theming, element registry, testing patterns, release engineering, FVM wrapper):
 
-| Skill                                       | Focus                                            |
-| ------------------------------------------- | ------------------------------------------------ |
-| `adaptive-cards-dart-flutter-fvm`           | Prefix all `flutter`/`dart` commands with `fvm`  |
-| `adaptive-cards-monorepo-workspace`         | Package layout and working directories           |
-| `adaptive-cards-element-registry`           | Implementing new element types                   |
-| `adaptive-cards-flutter-standard-practices` | Theming and JSON serialization in this repo      |
-| `adaptive-cards-hostconfig-theme`           | HostConfig → Flutter theme mapping               |
-| `adaptive-cards-spec-compliance`            | Microsoft Adaptive Cards spec parity             |
-| `adaptive-cards-templating`                 | `flutter_adaptive_template_fs` templating engine |
-| `adaptive-cards-backend-host`               | `flutter_adaptive_cards_host_fs` invoke bridge   |
-| `adaptive-cards-testing`                    | Library test and golden image conventions        |
-| `widgetbook-overlay-demos`                  | **Sample app:** widgetbook overlay knob demos    |
-| `code-review`                               | Pre-merge quality checklist                      |
-| `release-engineer`                          | Versioning, pub.dev, changelogs                  |
-| `release-flutter-upgrade-sdk`               | Flutter SDK upgrade procedure                    |
+| Skill                                        | Focus                                            |
+| -------------------------------------------- | ------------------------------------------------ |
+| `adaptive-cards-dart-flutter-fvm`            | Prefix all `flutter`/`dart` commands with `fvm`  |
+| `adaptive-cards-monorepo-workspace`          | Package layout and working directories           |
+| `adaptive-cards-element-registry`            | Implementing new element types                   |
+| `adaptive-cards-flutter-standard-practices`  | Theming and JSON serialization in this repo      |
+| `adaptive-cards-hostconfig-theme`            | HostConfig → Flutter theme mapping               |
+| `adaptive-cards-spec-compliance`             | Microsoft Adaptive Cards spec parity             |
+| `adaptive-cards-templating`                  | `flutter_adaptive_template_fs` templating engine |
+| `adaptive-cards-backend-host`                | `flutter_adaptive_cards_host_fs` invoke bridge   |
+| `adaptive-cards-testing`                     | Library test and golden image conventions        |
+| `adaptive-cards-diataxis-docs`               | Diátaxis doc-mode classification/audit           |
+| `adaptive-cards-public-api-docs`             | Public `///` API doc standard (why/how)          |
+| `adaptive-cards-widgetbook-overlay-demos`    | **Sample app:** widgetbook overlay knob demos    |
+| `adaptive-cards-code-review`                 | Pre-merge quality checklist                      |
+| `adaptive-cards-release-engineer`            | Versioning, pub.dev, changelogs                  |
+| `adaptive-cards-release-flutter-upgrade-sdk` | Flutter SDK upgrade procedure                    |
 
 Project-specific skills are **not** listed in `skills-lock.json`; edit them directly under `.agents/skills/`.
 
