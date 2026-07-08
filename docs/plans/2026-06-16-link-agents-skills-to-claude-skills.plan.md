@@ -98,7 +98,7 @@ convention (`YYYY-MM-DD-description.plan.md`).
 
 ## Existing Patterns to Follow
 
-- `scripts/publish.ps1` — precedent for PowerShell scripts in `scripts/`
+- ~~`scripts/publish.ps1` — precedent for PowerShell scripts in `scripts/`~~ (deleted; see `scripts/setup-claude.ps1` for the PowerShell-script precedent)
 - `docs/plans/` — 15+ existing plans confirm this is the right home for the plan copy
 - `.agents/brain/` in `.gitignore` — precedent for ignoring generated AI-agent paths
 
