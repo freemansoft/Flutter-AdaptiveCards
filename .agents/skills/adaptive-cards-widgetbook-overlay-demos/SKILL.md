@@ -68,22 +68,38 @@ Follow **Adding a new overlay demo** in [`docs/widgetbook-overlay-demos.md`](../
 
 ```markdown
 ## Summary
-Does `<page>.dart` match shared patterns and its registry entry?
+One paragraph per reviewed page (or one for a full audit): does `<page>.dart`
+match shared patterns and its registry entry?
 
 ## Shared pattern compliance
-GlobalKey, knobs-before-early-return, queue/retry/dedup, imports, use case.
+
+| Page | GlobalKey | Queue/retry | Knobs before early return | Dedup | Imports | Use case + key |
+| ---- | --------- | ----------- | ------------------------- | ----- | ------- | -------------- |
 
 ## Page-specific behavior
-Host API, target id, knob type(s), lifecycle strategy, baseline/clear semantics.
+Per page: host API, target id, knob label(s), lifecycle strategy, baseline/clear semantics.
 
 ## vs sibling pages
-Justify lifecycle differences.
+Justify lifecycle differences (per-build queue vs change-only sync).
 
 ## Spec / plan alignment
-Only if registry lists doc paths.
+Per page — only when registry lists doc paths; otherwise "checklist only."
+
+## Registry hygiene
+Missing rows for existing `*_overlay_page.dart` files, or rows with a wrong
+GlobalKey, asset path, or use case name.
+
+## Risk assessment
+
+| Item | Risk | Notes |
+| ---- | ---- | ----- |
 
 ## Verdict
-Matches / regression / registry update needed.
+- **Matches** — code aligns with doc + registry (+ spec/plan if applicable), or
+- **Regression** — describe drift, or
+- **Registry update needed** — new/changed page not reflected in docs.
 ```
 
-Do not propose refactors unless the user asks to change implementation.
+Be precise: quote knob labels and API names exactly, reference file paths, and
+re-read live files before asserting state. Do not propose refactors unless the
+user asks to change implementation.

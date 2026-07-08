@@ -1,7 +1,6 @@
 # Vendored upstream agent skills (managed by `npx skills`; keep upstream formatting)
 .agents/
 .claude/
-.cursor/
 
 # Process / decision-record artifacts — frozen, not formatted
 # (mirrors the Diátaxis governance scope: published docs only)
