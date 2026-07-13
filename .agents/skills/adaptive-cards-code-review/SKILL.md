@@ -60,8 +60,14 @@ Architecture docs drift silently. If this change touches any of the triggers bel
 
 ### Accessibility
 
-- [ ] **Semantics**: Does the widget use `Semantics` or `semanticLabel` where appropriate?
-- [ ] **Alt-text**: For images or icons, is the `altText` (if provided in JSON) used as a semantic label?
+Full contract and testing patterns: **`adaptive-cards-accessibility`**.
+
+- [ ] **Alt-text**: Is author `altText` used as the accessible name — and is an **absent** `altText` passed through as `null` (decorative) rather than a placeholder string?
+- [ ] **Input labels**: Is the control wrapped with `labelInputSemantics()` **and** the visible label wrapped in `ExcludeSemantics`? (Both, or the name is announced twice.)
+- [ ] **Live regions**: Is transient validation/status text wrapped in `Semantics(liveRegion: true)`?
+- [ ] **Roles**: Do headings use `header: true` + `headingLevel`, and do interactive targets expose both a name and a role?
+- [ ] **Test**: Is there a semantics test, and does it call `tester.ensureSemantics()`?
+- [ ] **New strings**: No new hardcoded user-visible string — **including `semanticsLabel:`** (see **`adaptive-cards-localization`**).
 
 ### Exports
 

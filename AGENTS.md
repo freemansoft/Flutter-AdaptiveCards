@@ -35,8 +35,19 @@ The project's AI instructions are organized into two layers to keep context effi
 
 ## Semantic Labels and Widget Keys
 
-- **Semantic labels:** Apply semantic labels for accessibility (for example, use `altText` from card JSON for images and icons).
+- **Semantic labels:** Author text is the accessible name — use `altText` from card JSON for images, icons, and media. An **absent `altText` means decorative**: pass `null` so the element is excluded from the semantics tree; never substitute a placeholder string.
+- **Inputs:** Link the visible label to its control with `labelInputSemantics()` **and** wrap the visible label in `ExcludeSemantics` — both, or the name is announced twice. See the **`adaptive-cards-accessibility`** skill for the full contract (live regions, heading levels, `tester.ensureSemantics()` testing, known gaps).
 - **Widget keys:** Use deterministic keys via `generateAdaptiveWidgetKey()` and `generateWidgetKey()` — see [`docs/AdaptiveWidget-Key-Generation.md`](docs/AdaptiveWidget-Key-Generation.md) and [`docs/form-inputs.md`](docs/form-inputs.md).
+
+## Localization
+
+Three kinds of text, only one of which is ours: **card content** (author-owned — render verbatim, never translate), **formatted values** (dates/numbers — format locale-correctly via `intl`), and **library chrome** (~10 strings we own).
+
+- **Packages ship no `.arb` files** and must not depend on `flutter_localizations`. `intl` is a dependency for **date/number formatting only** — it is not evidence that strings are localized.
+- **Do not add a new hardcoded user-visible string** to a package under `packages/` — including a `semanticsLabel:`, which is text a screen reader speaks. Library chrome is host-overridable via an injected `AdaptiveStrings` object (agreed design; **not yet implemented**).
+- **Sample apps are different.** `widgetbook/` and the examples are ordinary Flutter apps — use `flutter_localizations` + `.arb` there per **`flutter-setup-localization`**.
+
+See the **`adaptive-cards-localization`** skill for the rationale, the existing debt, and the review checklist.
 
 ## Package Management
 
@@ -143,7 +154,6 @@ Procedure:
 - **Public APIs:** ALWAYS document public classes and methods with `///`.
 - **Why and how to use:** Public API comments should explain why an API exists and how callers use it. They should not reiterate the steps the code is taking.
 - **Why, not What:** When behavior is non-obvious, explain rationale and caller contract — not the implementation algorithm.
-- **Localization:** Use the `intl` package. All UI strings must be localized in `.arb` files.
 
 For examples and a review checklist, see the **`adaptive-cards-public-api-docs`** skill.
 

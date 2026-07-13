@@ -121,6 +121,8 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
         i: mapColumnWidth(i < columns.length ? columns[i]['width'] : null),
     };
 
+    final List<String?> columnHeaders = _columnHeaderLabels(columnCount);
+
     final List<TableRow> tableRows = [
       for (int i = 0; i < rows.length; i++)
         _buildTableRow(
@@ -132,6 +134,7 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
           tableKey: tableKey,
           columnCount: columnCount,
           spacing: spacing,
+          columnHeaders: columnHeaders,
         ),
     ];
 
@@ -151,6 +154,40 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
         child: tableContent,
       ),
     );
+  }
+
+  /// The spoken column-header text for each column, or `null` where there is
+  /// none.
+  ///
+  /// Flutter's [Table] exposes no row/column association to assistive
+  /// technology, so a body cell would otherwise be announced as a bare value
+  /// ("Delayed") with no hint of which column it belongs to. Naming each body
+  /// cell with its header restores that context. Only `TextBlock` header
+  /// content yields a label — a header cell built from an image or a chart has
+  /// no text to speak, and an empty label must stay `null` so the cell is not
+  /// annotated at all.
+  List<String?> _columnHeaderLabels(int columnCount) {
+    if (!firstRowAsHeader || rows.isEmpty) {
+      return List<String?>.filled(columnCount, null);
+    }
+    final headerCells =
+        (rows.first['cells'] as List<dynamic>?)
+            ?.cast<Map<String, dynamic>>() ??
+        const <Map<String, dynamic>>[];
+
+    return List<String?>.generate(columnCount, (col) {
+      if (col >= headerCells.length) return null;
+      final items =
+          (headerCells[col]['items'] as List<dynamic>?)
+              ?.cast<Map<String, dynamic>>() ??
+          const <Map<String, dynamic>>[];
+      final text = items
+          .where((item) => item['type'] == 'TextBlock')
+          .map((item) => item['text']?.toString().trim() ?? '')
+          .where((t) => t.isNotEmpty)
+          .join(' ');
+      return text.isEmpty ? null : text;
+    });
   }
 
   /// Number of columns: the larger of the `columns` definition length and the
@@ -175,6 +212,7 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
     required String tableKey,
     required int columnCount,
     required double spacing,
+    required List<String?> columnHeaders,
   }) {
     final List<TableCellModel> rowTableCells =
         ((row['cells'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
@@ -199,6 +237,7 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
             col: col,
             tableKey: tableKey,
             spacing: spacing,
+            columnHeader: columnHeaders[col],
           ),
     ];
 
@@ -210,7 +249,8 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
 
   /// Builds a single cell: background decoration (fills the row height via
   /// `intrinsicHeight`), optional `minHeight`, content alignment, header
-  /// styling, `selectAction`, and gutter padding when grid lines are disabled.
+  /// styling, `selectAction`, cell semantics, and gutter padding when grid
+  /// lines are disabled.
   Widget _buildCell(
     TableCellModel cellModel,
     ReferenceResolver resolver, {
@@ -222,6 +262,7 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
     required int col,
     required String tableKey,
     required double spacing,
+    required String? columnHeader,
   }) {
     final effectiveStyle = cellModel.style ?? rowStyle;
     final backgroundColor = resolver.resolveContainerBackgroundColor(
@@ -282,6 +323,18 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
         idSeed: generateTableCellKey(tableKey, rowIndex, col).value,
         child: cell,
       );
+    }
+
+    // Annotate rather than merge. The annotation is absorbed into the same
+    // semantics node as the cell's own text, so a body cell is announced as
+    // "Status Delayed" instead of a context-free "Delayed" — but any
+    // interactive descendant (an Input, a selectAction) still forms its own
+    // node and stays independently focusable, which MergeSemantics would
+    // destroy.
+    if (isHeaderRow) {
+      cell = Semantics(header: true, child: cell);
+    } else if (columnHeader != null) {
+      cell = Semantics(label: columnHeader, child: cell);
     }
 
     // When grid lines are off, a Table cannot hold spacer children, so create
