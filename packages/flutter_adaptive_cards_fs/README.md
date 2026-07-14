@@ -77,11 +77,14 @@ Legend: ✅ complete · ⚠️ partial · ❌ missing · 📝 planned. Each row 
 
 Implemented: `columns`, `rows` with all column `width` modes (`auto`, `stretch`, numeric weight, `Npx`), `showGridLines`, `gridStyle`, `firstRowAsHeader`, cell alignment, header styling, `selectAction` on cells, cell `minHeight`, cell `backgroundImage`.
 
+Accessibility: with `firstRowAsHeader`, header cells are exposed to assistive technology as headers and each body cell is announced with its column header ("Status Delayed" rather than a context-free "Delayed").
+
 Not implemented or incomplete:
 
 - Cell-level `rtl` (parsed in `TableCellModel` but not applied in rendering)
 - Block `height: stretch` on the table element
 - `bleed` on cells or the table
+- Screen readers cannot report true table geometry ("row 3 of 12") or navigate cell-by-cell as a grid — Flutter's `Table` exposes no row/column association to build on
 
 Sample reference: [FlightUpdateTable.json](https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json)
 

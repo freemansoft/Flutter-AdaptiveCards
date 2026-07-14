@@ -23,7 +23,8 @@ height-stretch design for in-cell stretch.
 
 ## Goals / non-goals
 
-**Goals**
+### Goals
+
 - Authors place elements into a named grid via `grid.area`; the grid supports `%`
   and `px` columns, implied (equal-share) columns, `columnSpan`/`rowSpan`, and
   `columnSpacing`/`rowSpacing`.
@@ -32,7 +33,8 @@ height-stretch design for in-cell stretch.
 - `grid.area` is honored on any element; `height: "stretch"` fills its area cell.
 - **Zero behavior change** for cards without `Layout.AreaGrid`.
 
-**Non-goals**
+### Non-goals
+
 - `Layout.Flow`/`Stack` (already shipped) and chart stretch (deferred).
 - CSS-grid features beyond the AC spec (gap shorthands, line names, `minmax`, etc.).
 - Auto-flow of elements with no `grid.area` into empty cells — unplaced elements get

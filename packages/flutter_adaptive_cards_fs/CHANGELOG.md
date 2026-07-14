@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.15.0]
 
-- no changes yet
+### Added 0.15.0
+
+- `Table` accessibility: header-row cells are now exposed to assistive technology
+  as headers (`Semantics(header: true)`), and body cells are announced with their
+  column header ("Status Delayed" rather than a context-free "Delayed"). Flutter's
+  `Table` provides no row/column association, so cells previously carried no
+  semantics at all. Cells are annotated, not merged, so a cell's `selectAction` or
+  nested `Input.*` stays independently focusable. Columns whose header cell has no
+  text (image-only) are left unlabeled rather than given a placeholder name.
 
 ## [0.14.0]
 
