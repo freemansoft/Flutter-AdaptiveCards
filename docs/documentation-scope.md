@@ -58,4 +58,11 @@ When authoring or updating documentation or skills:
 - Point **widgetbook demo plumbing** to [`widgetbook-overlay-demos.md`](widgetbook-overlay-demos.md) and the **`adaptive-cards-widgetbook-overlay-demos`** skill.
 - New widgetbook-only guides → `docs/<topic>-widgetbook.md` or `docs/widgetbook-<topic>.md`.
 
-See also [AI-Agent-Support.md](AI-Agent-Support.md) and [`.agents/skills/writing-skills/anthropic-best-practices.md`](../.agents/skills/writing-skills/anthropic-best-practices.md#flutter-adaptivecards-project-conventions-this-monorepo).
+### Authoring checklist
+
+- [ ] Package behavior sourced from `packages/*/lib` and tests, not from widgetbook pages alone
+- [ ] Widgetbook references tagged as examples in canonical docs
+- [ ] New widgetbook-specific guide uses `widgetbook` in the path or filename
+- [ ] Cross-links to this document when scope is ambiguous
+
+See also [AI-Agent-Support.md](AI-Agent-Support.md).

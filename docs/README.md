@@ -48,7 +48,7 @@ Defines what `docs/` describes (published packages under `packages/`) vs sample 
 
 **Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-Explains how LLM agents are configured for this repo: `AGENTS.md`, the two-layer `.agents/skills/` model, skill sources ([dart-lang/skills](https://github.com/dart-lang/skills), [flutter/skills](https://github.com/flutter/skills), [obra/superpowers](https://github.com/obra/superpowers)), and how agents load skills. Install / update commands: [ai-agent-skills-install.md](./ai-agent-skills-install.md).
+Explains how LLM agents are configured for this repo: `AGENTS.md`, the two-layer `.agents/skills/` model, vendored skill sources ([dart-lang/skills](https://github.com/dart-lang/skills), [flutter/skills](https://github.com/flutter/skills)), the [Superpowers](https://github.com/obra/superpowers) Claude Code plugin, and how agents load skills. Install / update commands: [ai-agent-skills-install.md](./ai-agent-skills-install.md).
 
 ### [ai-agent-skills-install.md](./ai-agent-skills-install.md)
 

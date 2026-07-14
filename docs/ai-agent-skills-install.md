@@ -29,15 +29,19 @@ npx skills add flutter/skills --skill '*' --agent universal --yes
 
 Source: [github.com/flutter/skills](https://github.com/flutter/skills)
 
-### Superpowers (project — shared with the repo)
+### Superpowers (Claude Code — plugin, not vendored)
+
+Superpowers is **not** installed with `npx skills` and is **not** in `skills-lock.json`. It ships as a Claude Code plugin that this repo enables at **project scope** in [`.claude/settings.json`](../.claude/settings.json), so Claude Code offers to install it when you trust the repo folder.
+
+If it did not install automatically:
 
 ```bash
-npx skills add obra/superpowers --skill '*' --agent universal --yes
+claude plugin install superpowers@claude-plugins-official --scope project
 ```
 
-Source: [github.com/obra/superpowers](https://github.com/obra/superpowers)
+Then `/reload-plugins` (or restart). Verify with `/plugin` → **Installed**. Skills are namespaced — `superpowers:brainstorming`, not `brainstorming`.
 
-This installs 14 skills (brainstorming, writing-plans, test-driven-development, systematic-debugging, …) into `.agents/skills/` and updates `skills-lock.json`.
+Source: [github.com/obra/superpowers](https://github.com/obra/superpowers)
 
 ### Superpowers (everyone but Claude — user-level)
 
@@ -85,7 +89,7 @@ npx skills update
 Or update a single upstream repo:
 
 ```bash
-npx skills update dart-add-unit-test flutter-add-widget-test brainstorming
+npx skills update dart-add-unit-test flutter-add-widget-test
 ```
 
 Review diffs under `.agents/skills/` after updating. Reconcile project-specific overrides (for example `adaptive-cards-dart-flutter-fvm` wrapping bare `flutter` commands from upstream skills).

@@ -28,7 +28,7 @@ Supporting files:
 
 ## Skill sources
 
-Skills in `.agents/skills/` come from four sources:
+Skills in `.agents/skills/` come from three sources:
 
 ### 1. Dart team — [dart-lang/skills](https://github.com/dart-lang/skills)
 
@@ -40,11 +40,7 @@ Flutter app workflows (widget tests, integration tests, responsive layout, local
 
 > **Conflict note:** The `flutter-implement-json-serialization` skill teaches manual `dart:convert`. This repo uses `json_serializable` code generation — follow [`adaptive-cards-flutter-standard-practices`](../.agents/skills/adaptive-cards-flutter-standard-practices/SKILL.md) instead for model classes.
 
-### 3. Superpowers — [obra/superpowers](https://github.com/obra/superpowers)
-
-Agentic development methodology: brainstorming before coding, implementation plans, TDD, systematic debugging, code review, git worktrees, and subagent-driven execution.
-
-### 4. Project-specific skills
+### 3. Project-specific skills
 
 Authored for this monorepo (Adaptive Cards spec, HostConfig theming, element registry, testing patterns, release engineering, FVM wrapper):
 
@@ -75,6 +71,31 @@ Project-specific skills are **not** listed in `skills-lock.json`; edit them dire
 
 ---
 
+## Superpowers — Claude Code plugin (not vendored)
+
+[Superpowers](https://github.com/obra/superpowers) supplies the agentic development methodology: brainstorming before coding, implementation plans, TDD, systematic debugging, code review, git worktrees, and subagent-driven execution.
+
+It is **not** vendored into `.agents/skills/` and is **not** in `skills-lock.json`. It is installed as a Claude Code plugin, enabled for this project in [`.claude/settings.json`](../.claude/settings.json):
+
+```json
+{
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
+  }
+}
+```
+
+Because it is enabled at **project scope**, Claude Code prompts each collaborator to install it the first time they trust the repository folder — no manual setup, but also no silent install (plugins can execute arbitrary code). If it has not been installed yet, Claude Code reports the plugin as not installed and prints the `claude plugin install` command to run.
+
+Two consequences:
+
+- **Skills are namespaced.** Invoke `superpowers:brainstorming`, not `brainstorming`.
+- **Claude Code only.** Cursor, Antigravity, and other agents do not read Claude Code plugins. They still get the Dart, Flutter, and project-specific skills from `.agents/skills/`, but not Superpowers. Cursor users who want it can install it at user level — see [ai-agent-skills-install.md](ai-agent-skills-install.md).
+
+Rationale for un-vendoring: the vendored copies drifted out of date against upstream and were loaded _alongside_ the plugin, so every session paid for both.
+
+---
+
 ### Token usage tweaking
 
 #### Cursor
@@ -83,8 +104,8 @@ Project-specific skills are **not** listed in `skills-lock.json`; edit them dire
 
 ## Installing and updating skills
 
-Install commands (Dart / Flutter / Superpowers, project and user-level, plus the optional Cursor
-plugin) and the update / restore-from-lock commands live in the how-to companion:
+Install commands (Dart / Flutter vendored skills, the Superpowers plugin, and user-level Superpowers
+for Cursor) and the update / restore-from-lock commands live in the how-to companion:
 [ai-agent-skills-install.md](ai-agent-skills-install.md).
 
 ---
@@ -93,7 +114,7 @@ plugin) and the update / restore-from-lock commands live in the how-to companion
 
 1. **Always-on:** `AGENTS.md` is injected every session (FVM, naming, Riverpod document overlays, lint rules).
 2. **On demand:** Agents read `SKILL.md` when the task matches the skill description (e.g. “add a widget test” → `flutter-add-widget-test`).
-3. **Superpowers workflow:** For new features, Superpowers skills encourage design → plan → TDD implementation → review before merge. Start with `using-superpowers` or `brainstorming` when kicking off substantial work.
+3. **Superpowers workflow:** For new features, Superpowers skills encourage design → plan → TDD implementation → review before merge. Start with `superpowers:brainstorming` when kicking off substantial work. These come from the [Claude Code plugin](#superpowers--claude-code-plugin-not-vendored), so they are namespaced and available in Claude Code only.
 
 List installed skills:
 
