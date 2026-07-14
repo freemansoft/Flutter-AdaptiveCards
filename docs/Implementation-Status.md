@@ -122,7 +122,7 @@ fvm flutter test --exclude-tags=golden
 
 ### `Media` poster fix (2026-07-14)
 
-- The `poster` image is now the **click-to-play surface** the spec describes, rather than a loading placeholder that disappeared once the player initialized. `Media` shows the poster with a play button and creates the `VideoPlayerController` only when the user taps it, so a card no longer opens a network video player per `Media` element on load. Chewie's own `placeholder` is not usable for this — it renders *underneath* an already-initialized `VideoPlayer` and is always covered.
+- The `poster` image is now the **click-to-play surface** the spec describes, rather than a loading placeholder that disappeared once the player initialized. `Media` shows the poster with a play button and creates the `VideoPlayerController` only when the user taps it, so a card no longer opens a network video player per `Media` element on load. Chewie's own `placeholder` is not usable for this — it renders _underneath_ an already-initialized `VideoPlayer` and is always covered.
 
 ### Root `authentication` sign-in (2026-07-02)
 
