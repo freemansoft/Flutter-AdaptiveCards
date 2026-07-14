@@ -62,10 +62,9 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
   /// Rendering onto the video surface is host-dependent and not yet wired.
   late List<CaptionSource> captionSources;
 
-  /// Placeholder fade animation shown before the player is ready.
-  FadeAnimation imageFadeAnim = const FadeAnimation(
-    child: Icon(Icons.play_arrow, size: 100),
-  );
+  /// Whether the user has asked to play, which is what gates creating the
+  /// network player. False until the poster is tapped.
+  bool playbackRequested = false;
 
   @override
   void initState() {
@@ -96,10 +95,9 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
       }());
     }
 
-    // We could use mediaConfig.allowInlinePlayback to decide whether to
-    // initialize player but for now we'll respect it as a hint for the UI if
-    // needed.
-    unawaited(initializePlayer());
+    // The player is created lazily: the poster is the click-to-play surface, so
+    // no network player is opened until the user asks for playback. See
+    // [startPlayback].
   }
 
   /// URI policy for [sourceUrl]; defaults to the safe standard policy until an
@@ -118,6 +116,14 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
 
     postUrl = adaptiveMap['poster']?.toString() ?? mediaConfig?.defaultPoster;
     if (postUrl != null && postUrl!.isEmpty) postUrl = null;
+  }
+
+  /// Handles the user tapping the poster: the card's `poster` is the
+  /// click-to-play surface, so this is the only path that opens the player.
+  Future<void> startPlayback() async {
+    if (playbackRequested) return;
+    setState(() => playbackRequested = true);
+    await initializePlayer();
   }
 
   /// Initializes [videoPlayerController] and [controller] from [sourceUrl].
@@ -165,7 +171,9 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
 
     controller = ChewieController(
       aspectRatio: 3 / 2,
-      autoPlay: false,
+      // The player only exists because the user pressed play on the poster, so
+      // playback starts as soon as it is ready.
+      autoPlay: true,
       looping: true,
       videoPlayerController: player,
     );
@@ -183,6 +191,13 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
       await previousPlayer.dispose();
     }
     if (!mounted) return;
+    // A host swapping the source (e.g. a signed URL) on a card the user has not
+    // played yet must not open a player behind their back; the new url is
+    // picked up when they press play.
+    if (!playbackRequested) {
+      setState(() {});
+      return;
+    }
     await initializePlayer();
   }
 
@@ -212,10 +227,30 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
       return Chewie(controller: controller!);
     }
 
-    Widget getPlaceholder() {
-      return postUrl != null
-          ? AdaptiveImageUtils.getImage(postUrl!, semanticsLabel: altText)
-          : Container();
+    // The poster is the click-to-play surface shown until the user starts
+    // playback, per the Media spec — not a loading spinner. It also covers the
+    // cases where there is no player at all (unsupported platform, or a source
+    // the URI policy denied), where it stays put.
+    Widget getPoster() {
+      return Semantics(
+        button: true,
+        // The author's altText is the accessible name; the library owns no
+        // strings, so an unlabeled poster stays unlabeled rather than
+        // announcing an untranslated 'Play'.
+        label: altText.isEmpty ? null : altText,
+        child: GestureDetector(
+          onTap: startPlayback,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Already named by the Semantics button above; labeling the image
+              // too would announce the name twice.
+              if (postUrl != null) AdaptiveImageUtils.getImage(postUrl!),
+              const Center(child: Icon(Icons.play_arrow, size: 100)),
+            ],
+          ),
+        ),
+      );
     }
 
     return Visibility(
@@ -226,7 +261,7 @@ class AdaptiveMediaState extends ConsumerState<AdaptiveMedia>
           width: MediaQuery.of(context).size.width,
           child: AspectRatio(
             aspectRatio: 3 / 2,
-            child: controller == null ? getPlaceholder() : getVideoPlayer(),
+            child: controller == null ? getPoster() : getVideoPlayer(),
           ),
         ),
       ),

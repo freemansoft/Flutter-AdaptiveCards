@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   nested `Input.*` stays independently focusable. Columns whose header cell has no
   text (image-only) are left unlabeled rather than given a placeholder name.
 
+### Fixed 0.15.0
+
+- **`Media` `poster` is now visible until the user starts playback.** The poster was only rendered while the player was initializing, so it vanished a moment after the card appeared and authors effectively never saw it. The poster is now the click-to-play surface described by the spec: it shows a play button, and the `VideoPlayerController` is created only when the user taps it (no network player is opened for every `Media` element on card load). A poster-less `Media` still renders the play affordance so the video remains playable.
+
 ## [0.14.0]
 
 ### Added 0.14.0

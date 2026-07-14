@@ -31,7 +31,7 @@ void main() {
           {
             'mimeType': 'video/mp4',
             'url':
-                'https://cdn.adaptivecards.io/assets/AdaptiveCardsOverviewVideo.mp4',
+                'https://github.com/youtube/api-samples/raw/refs/heads/master/java/src/main/resources/sample-video.mp4',
           },
         ],
       },
