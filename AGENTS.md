@@ -112,8 +112,8 @@ This rule applies even when the overall task description appears to authorize th
 When executing an implementation plan (`docs/superpowers/plans/`) or claiming work is complete:
 
 - **Do** run the plan's final verification section (`Final Task: Full verification` or `## Verification (full suite)`) — not only per-task or targeted tests.
-- **Do** invoke **`verification-before-completion`** and paste command output (exit code, pass/fail counts) before any success claim.
-- **Do not** invoke **`finishing-a-development-branch`** or report "plan complete" until the full suite passes.
+- **Do** invoke **`superpowers:verification-before-completion`** and paste command output (exit code, pass/fail counts) before any success claim.
+- **Do not** invoke **`superpowers:finishing-a-development-branch`** or report "plan complete" until the full suite passes.
 - **Do not** skip the full suite because per-task tests already passed.
 
 **Minimum verification commands** (run from affected package directories; at minimum the main library):

@@ -160,22 +160,20 @@ Modular skills loaded when a task matches. Vendored upstream skills are tracked 
 | ---------------- | ------------------------------------------------------- | ----- |
 | Dart team        | [dart-lang/skills](https://github.com/dart-lang/skills) | 9     |
 | Flutter team     | [flutter/skills](https://github.com/flutter/skills)     | 10    |
-| Superpowers      | [obra/superpowers](https://github.com/obra/superpowers) | 14    |
-| Project-specific | (authored in-repo)                                      | 15    |
+| Project-specific | (authored in-repo)                                      | 17    |
 
-**Project-specific skills:** `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-backend-host`, `adaptive-cards-testing`, `adaptive-cards-public-api-docs`, `adaptive-cards-diataxis-docs`, `adaptive-cards-widgetbook-overlay-demos`, `adaptive-cards-code-review`, `adaptive-cards-release-engineer`, `adaptive-cards-release-flutter-upgrade-sdk`.
+**Project-specific skills:** `adaptive-cards-accessibility`, `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-localization`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-backend-host`, `adaptive-cards-testing`, `adaptive-cards-public-api-docs`, `adaptive-cards-diataxis-docs`, `adaptive-cards-widgetbook-overlay-demos`, `adaptive-cards-code-review`, `adaptive-cards-release-engineer`, `adaptive-cards-release-flutter-upgrade-sdk`.
 
-**Superpowers highlights:** `brainstorming`, `writing-plans`, `test-driven-development`, `systematic-debugging`, `subagent-driven-development`, and related collaboration workflows.
+**Superpowers** (`brainstorming`, `writing-plans`, `test-driven-development`, `systematic-debugging`, `subagent-driven-development`, …) is **no longer vendored**. It ships as a Claude Code plugin enabled for this project in [`.claude/settings.json`](.claude/settings.json); Claude Code prompts you to install it when you trust the repo folder. Its skills are namespaced (`superpowers:brainstorming`). See [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md).
 
 ### Quick install (from repo root)
 
 ```bash
 npx skills add dart-lang/skills --skill '*' --agent universal --yes
 npx skills add flutter/skills --skill '*' --agent universal --yes
-npx skills add obra/superpowers --skill '*' --agent universal --yes
 ```
 
-Update vendored skills: `npx skills update`. For user-level Superpowers and the optional `/add-plugin superpowers` hook, see [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md).
+Update vendored skills: `npx skills update`.
 
 ## More about adaptive cards and available SDKs
 
