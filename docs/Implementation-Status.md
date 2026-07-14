@@ -68,7 +68,6 @@ _None currently — the prior top priorities (`Layout.AreaGrid` + `grid.area` an
 
 1. **Complete `Table`**: `bleed`. (`auto`/`stretch` column widths ✅ and cell `minHeight` ✅ — 2026-06-30; cell `rtl` rendering → **Deferred**.)
 2. **AdaptiveCard root features**: `fallbackText`, `minHeight`, root `verticalContentAlignment` (`refresh` ✅, `selectAction` ✅ — see [plan workstream B](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md#workstream-b--refresh-property-v14)). (Root `rtl` → **Deferred**.)
-3. **Media poster fix**: Resolve poster attribute display issue.
 
 ### Low priority
 
@@ -120,6 +119,10 @@ fvm flutter test --exclude-tags=golden
 ---
 
 ## Recently completed
+
+### `Media` poster fix (2026-07-14)
+
+- The `poster` image is now the **click-to-play surface** the spec describes, rather than a loading placeholder that disappeared once the player initialized. `Media` shows the poster with a play button and creates the `VideoPlayerController` only when the user taps it, so a card no longer opens a network video player per `Media` element on load. Chewie's own `placeholder` is not usable for this — it renders _underneath_ an already-initialized `VideoPlayer` and is always covered.
 
 ### Root `authentication` sign-in (2026-07-02)
 
