@@ -37,6 +37,7 @@ git remote set-head origin -a
 1. Adaptive Card Charting is an extension that adds charting capabilities and is implemented in its own package so that its third party dependencies are isolated from the core library. [packages/flutter_adaptive_charts_fs](/packages/flutter_adaptive_charts_fs/README.md)
    1. The Adaptive Card Charting library CHANGELOG is in [packages/flutter_adaptive_charts_fs/CHANGELOG.md](/packages/flutter_adaptive_charts_fs/CHANGELOG.md)
 1. The Adaptive Card Template library supports merging json data into an Adaptive Card template. It is implemented in its own package [packages/flutter_adaptive_template_fs](/packages/flutter_adaptive_template_fs/README.md)
+
    1. The Adaptive Card Template library CHANGELOG is in [packages/flutter_adaptive_template_fs/CHANGELOG.md](/packages/flutter_adaptive_template_fs/CHANGELOG.md)
    1. [Adaptive Cards Template specification](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/card-templates)
 
@@ -162,9 +163,22 @@ Modular skills loaded when a task matches. Vendored upstream skills are tracked 
 | Flutter team     | [flutter/skills](https://github.com/flutter/skills)     | 10    |
 | Project-specific | (authored in-repo)                                      | 17    |
 
-**Project-specific skills:** `adaptive-cards-accessibility`, `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-localization`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-backend-host`, `adaptive-cards-testing`, `adaptive-cards-public-api-docs`, `adaptive-cards-diataxis-docs`, `adaptive-cards-widgetbook-overlay-demos`, `adaptive-cards-code-review`, `adaptive-cards-release-engineer`, `adaptive-cards-release-flutter-upgrade-sdk`.
+#### Project-specific skills:
 
-**Superpowers** (`brainstorming`, `writing-plans`, `test-driven-development`, `systematic-debugging`, `subagent-driven-development`, …) is **no longer vendored**. It ships as a Claude Code plugin enabled for this project in [`.claude/settings.json`](.claude/settings.json); Claude Code prompts you to install it when you trust the repo folder. Its skills are namespaced (`superpowers:brainstorming`). See [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md).
+`adaptive-cards-accessibility`, `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-localization`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-backend-host`, `adaptive-cards-testing`, `adaptive-cards-public-api-docs`, `adaptive-cards-diataxis-docs`, `adaptive-cards-widgetbook-overlay-demos`, `adaptive-cards-code-review`, `adaptive-cards-release-engineer`, `adaptive-cards-release-flutter-upgrade-sdk`.
+
+#### Superpowers
+
+`superpowers` plugins are auto configured and loaded in the workspace for `cursor` and `claude`.
+
+| Tool              | Project-level plugin declaration | Config file                                                                           |
+| ----------------- | -------------------------------- | ------------------------------------------------------------------------------------- |
+| Claude Code       | ✅ Yes                           | .claude/settings.json → enabledPlugins                                                |
+| Cursor            | ✅ Yes                           | .cursor/settings.json → plugins                                                       |
+| GitHub Copilot    | ❌ No                            | No project-scoped config exists                                                       |
+| Antigravity (agy) | ❌ No                            | No project-scoped config exists; all plugin state lives in ~/.gemini/antigravity-cli/ |
+
+See [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md).
 
 ### Quick install (from repo root)
 
