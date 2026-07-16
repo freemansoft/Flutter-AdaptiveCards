@@ -173,9 +173,8 @@ linter:
 ---
 > [!NOTE]
 > **Public API `///` comments** — purpose, usage, and anti-patterns are in the `adaptive-cards-public-api-docs` skill.
-> **Theming** and **Serialization (code-gen)** guidelines are in the `adaptive-cards-flutter-standard-practices` skill.
+> **Serialization** (hand-written `fromJson`/`toJson`, no code-gen) and **theming** divergences are in the `adaptive-cards-flutter-standard-practices` skill; element theming detail is in `adaptive-cards-hostconfig-theme`.
 > **Layout** guidance is in the `flutter-build-responsive-layout` and `flutter-fix-layout-issues` skills.
 > **Routing** guidance is in the `flutter-setup-declarative-routing` skill.
 >
-> **Serialization conflict:** This project uses `json_serializable` code-gen. The `flutter-implement-json-serialization`
-> skill (installed from flutter/skills) teaches manual `dart:convert` — do **not** follow it for model classes in this repo.
+> **Serialization:** Models are **hand-written** — `factory X.fromJson(Map<String, dynamic>)` + manual `toJson()`, no `json_serializable`/`json_annotation`, no `@JsonSerializable`, no `.g.dart`. The generic `flutter-implement-json-serialization` skill's manual `dart:convert` approach is directionally right, but follow this repo's conventions (Adaptive Cards camelCase keys, null-safe defaults, immutable value types) per `adaptive-cards-flutter-standard-practices`. Do **not** introduce code-gen serialization for models.

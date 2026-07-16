@@ -1,10 +1,10 @@
 ---
 name: adaptive-cards-element-registry
 description: >
-  How to implement, register, and test a new Adaptive Card element type
-  in this project. Covers the StatefulWidget + mixin pattern, CardTypeRegistry
-  registration, extension API, and optional packages (charts). Use this before
-  adding any new card element.
+  Use before adding a new Adaptive Card element type — implementing its widget,
+  registering it, or testing it. Covers the StatefulWidget + mixin pattern,
+  CardTypeRegistry registration, the extension API, and optional packages
+  (charts).
 ---
 
 # Adaptive Card Element Registry Skill

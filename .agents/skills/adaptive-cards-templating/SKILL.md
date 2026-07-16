@@ -1,6 +1,10 @@
 ---
 name: adaptive-cards-templating
-description: How the flutter_adaptive_template_fs package implements Adaptive Card templating, its architecture, and its missing features or shortcomings.
+description: >
+  Use when implementing, using, or debugging Adaptive Card templating via
+  flutter_adaptive_template_fs, or when a template feature seems missing or
+  unsupported. Explains how the package implements templating, its architecture,
+  and its known shortcomings versus the Templating spec.
 ---
 
 # Adaptive Card Templating

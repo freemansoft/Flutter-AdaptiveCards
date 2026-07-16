@@ -1,9 +1,10 @@
 ---
 name: adaptive-cards-code-review
 description: >
-  Quality gate and checklist for reviewing changes in the Flutter-AdaptiveCards monorepo.
-  Covers monorepo hygiene, AC spec compliance, theming, keys, accessibility, and testing.
-  Use this for both manual and AI-assisted final reviews before proposing changes.
+  Use when finalizing a change in the Flutter-AdaptiveCards monorepo — before
+  you propose, commit, or merge — as the manual or AI-assisted review gate.
+  Checks monorepo hygiene, Adaptive Cards spec compliance, theming, widget keys,
+  accessibility, and testing.
 ---
 
 # Code Review Protocol

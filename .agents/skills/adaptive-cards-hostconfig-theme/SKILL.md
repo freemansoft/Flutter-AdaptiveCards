@@ -1,10 +1,10 @@
 ---
 name: adaptive-cards-hostconfig-theme
 description: >
-  How AdaptiveCards HostConfig maps to Flutter rendering, how ReferenceResolver
-  bridges the two, how light/dark themes are structured, and how elements read
-  theme-aware colors, fonts, and spacing. Use this before modifying styling,
-  colors, spacing, or HostConfig parsing in any element.
+  Use before modifying styling, colors, spacing, fonts, or HostConfig parsing in
+  any element. Explains how Adaptive Cards HostConfig maps to Flutter rendering,
+  how ReferenceResolver bridges the two, and how light/dark themes are
+  structured.
 ---
 
 # HostConfig / Theme Integration Skill

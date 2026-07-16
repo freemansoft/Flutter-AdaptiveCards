@@ -1,11 +1,10 @@
 ---
 name: adaptive-cards-spec-compliance
 description: >
-  Advisor skill for implementing the Adaptive Cards and Templating specifications.
-  Provides spec references, cross-SDK behavior notes (JavaScript, Android, iOS, .NET),
-  element/action coverage guidance, and templating language rules.
-  Use this before implementing or reviewing any new element, action, template feature,
-  or HostConfig behavior to ensure parity with the official specification and other SDKs.
+  Use before implementing or reviewing any new element, action, template
+  feature, or HostConfig behavior, to check parity with the official spec and
+  other SDKs. Provides Adaptive Cards + Templating spec references and cross-SDK
+  behavior notes (JavaScript, Android, iOS, .NET).
 ---
 
 # Adaptive Cards Spec Compliance Advisor

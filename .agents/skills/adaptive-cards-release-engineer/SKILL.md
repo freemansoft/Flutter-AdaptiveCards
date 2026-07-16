@@ -1,9 +1,9 @@
 ---
 name: adaptive-cards-release-engineer
 description: >
-  Release engineering protocol for the Flutter-AdaptiveCards monorepo.
-  Covers versioning, tagging, pushing packages to pub.dev, post-release minor
-  bumps, changelog updates, and pubspec.yaml dependency sync.
+  Use when cutting a release of the Flutter-AdaptiveCards packages — versioning,
+  tagging, publishing to pub.dev, post-release minor bumps, changelog updates, or
+  syncing pubspec.yaml dependency versions.
 ---
 
 # Release Engineer Protocol

@@ -1,66 +1,98 @@
 ---
 name: adaptive-cards-flutter-standard-practices
 description: >
-  Standard patterns and best practices for Flutter development in the FlutterAdaptiveCards project.
-  Covers Theming (Material 3) and JSON Serialization using code-generation.
-  Load this skill when performing detailed UI or infrastructure work.
+  Use when writing or reviewing model (de)serialization or theming in this repo,
+  or before adding a `fromJson`/`toJson`. The library packages diverge from two
+  things generic Flutter skills assume: they hand-write serialization (no
+  `json_serializable` / code-gen) and style elements from HostConfig (not
+  app-level `ThemeData`/`GoogleFonts`). Read this when a generic skill or habit
+  points you at `@JsonSerializable`, `build_runner` for models, or `ColorScheme`
+  app theming inside `packages/`.
 ---
 
-# Flutter Standard Practices
+# Flutter Standard Practices (this repo)
 
-Use these guidelines to maintain a consistent high-quality UI and infrastructure across the monorepo.
+Two conventions here differ from generic Flutter guidance. Applying the generic
+pattern produces code that does not match the codebase — this skill records the
+divergence so you follow the repo's actual approach.
 
 ---
 
-## 1. Visual Design & Theming (Material 3)
+## 1. Serialization — hand-written `fromJson`/`toJson`, **no code-gen**
 
-- **Visual Design:** Build beautiful and intuitive user interfaces that follow modern design guidelines.
-- **Typography:** Stress and emphasize font sizes to ease understanding, e.g., hero text, section headlines.
-- **Background:** Apply subtle noise texture to the main background to add a premium, tactile feel.
-- **Shadows:** Multi-layered drop shadows create a strong sense of depth; cards have a soft, deep shadow to look "lifted."
-- **Icons:** Incorporate icons to enhance the user’s understanding and the logical navigation of the app.
-- **Interactive Elements:** Buttons, checkboxes, sliders, lists, charts, graphs, and other interactive elements have a shadow with elegant use of color to create a "glow" effect.
-- **Centralized Theme:** Define a centralized `ThemeData` object to ensure a consistent application-wide style.
-- **Light and Dark Themes:** Implement support for both light and dark themes using `theme` and `darkTheme`.
-- **Color Scheme Generation:** Generate harmonious color palettes from a single color using `ColorScheme.fromSeed`.
+The packages do **not** use `json_serializable`/`json_annotation`. There is no
+`@JsonSerializable` annotation and no `.g.dart` model file anywhere under
+`packages/` — every model is parsed and emitted by hand
+(`flutter_adaptive_cards_fs` alone has ~39 hand-written `fromJson` factories).
+
+Follow these conventions:
+
+- **Manual factory + method.** `factory X.fromJson(Map<String, dynamic> json)`
+  and `Map<String, dynamic> toJson()`. Do **not** add `json_serializable`,
+  `json_annotation`, or a `build_runner` code-gen step for models.
+- **Read Adaptive Cards keys verbatim.** Card JSON keys are the spec's
+  **camelCase** names (`isVisible`, `backgroundImage`, `associatedInputs`). Read
+  them as-is — never `FieldRename.snake`.
+- **Null-safe reads with typed casts and defaults:**
+  `json['title'] as String? ?? ''`, `json['value']?.toString() ?? ''`.
+- **Immutable value types.** `@immutable`, `const` constructor, and value
+  equality (`==` / `hashCode`).
+- **Parse arrays with a small top-level helper** that guards bad entries rather
+  than assuming the list is well-formed.
 
 ```dart
-final ThemeData lightTheme = ThemeData(
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.deepPurple,
-    brightness: Brightness.light,
-  ),
-  textTheme: GoogleFonts.outfitTextTheme(),
-);
-```
+@immutable
+class Choice {
+  const Choice({required this.title, required this.value});
 
----
+  /// Parses an Adaptive Cards `Input.Choice` object from card JSON.
+  factory Choice.fromJson(Map<String, dynamic> json) {
+    return Choice(
+      title: json['title'] as String? ?? '',
+      value: json['value']?.toString() ?? '',
+    );
+  }
 
-## 2. Data Handling & Serialization
+  final String title;
+  final String value;
 
-> [!IMPORTANT]
-> This project uses **code-generation** (`json_serializable` + `json_annotation`) for JSON serialization.
-> Do **not** use the manual `dart:convert` approach shown in the `flutter-implement-json-serialization`
-> skill — that skill is a generic Flutter reference and conflicts with the pattern used here.
+  Map<String, dynamic> toJson() => {'title': title, 'value': value};
+}
 
-- **JSON:** Use `json_serializable` and `json_annotation` (never manual `fromJson`/`toJson` maps).
-- **Naming:** Use `fieldRename: FieldRename.snake` so JSON `snake_case` keys map to Dart `camelCase` fields automatically.
-- **Code-gen:** Run `fvm flutter pub run build_runner build --delete-conflicting-outputs` to regenerate after any model change.
-- **`toJson` opt-in:** Add `includeIfNull: false` to omit null fields from serialized output.
-
-```dart
-import 'package:json_annotation/json_annotation.dart';
-
-part 'user.g.dart';
-
-@JsonSerializable(fieldRename: FieldRename.snake)
-class User {
-  const User({required this.firstName, required this.lastName});
-
-  final String firstName;
-  final String lastName;
-
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+/// List helper: guards non-map entries instead of trusting the array.
+List<Choice> choicesFromJsonList(Object? raw) {
+  if (raw is! List) return const [];
+  return raw
+      .whereType<Map>()
+      .map((e) => Choice.fromJson(Map<String, dynamic>.from(e)))
+      .toList();
 }
 ```
+
+> The generic `flutter-implement-json-serialization` skill's manual
+> `dart:convert` approach is **directionally correct** here — but follow the
+> conventions above, and do **not** reach for `json_serializable`.
+
+---
+
+## 2. Theming — HostConfig-driven in packages, not app `ThemeData`
+
+Element styling under `packages/` comes from Adaptive Cards **HostConfig**,
+resolved through `ReferenceResolver` — not from a `MaterialApp` `ThemeData`,
+`ColorScheme.fromSeed`, or `GoogleFonts`. Before changing colors, spacing, or
+fonts in an element, use **`adaptive-cards-hostconfig-theme`**.
+
+The sample apps are different: `widgetbook/` and `adaptive_explorer/` are
+ordinary Flutter apps and legitimately set a `MaterialApp` theme
+(`ThemeData.light()`/`dark()`, `ColorScheme.fromSeed`). That is **sample-app
+scope only** — it is never how library elements pick up style.
+
+---
+
+## Related skills
+
+| Skill | Role |
+| --- | --- |
+| `adaptive-cards-hostconfig-theme` | How elements resolve theme-aware color/font/spacing from HostConfig |
+| `adaptive-cards-element-registry` | Implementing a new element (where `fromJson` lives) |
+| `adaptive-cards-public-api-docs` | `///` docs for the public model/factory APIs |

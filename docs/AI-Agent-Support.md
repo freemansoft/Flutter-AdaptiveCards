@@ -38,7 +38,7 @@ General Dart development workflows (unit tests, static analysis, mocks, pattern 
 
 Flutter app workflows (widget tests, integration tests, responsive layout, localization, routing, …).
 
-> **Conflict note:** The `flutter-implement-json-serialization` skill teaches manual `dart:convert`. This repo uses `json_serializable` code generation — follow [`adaptive-cards-flutter-standard-practices`](../.agents/skills/adaptive-cards-flutter-standard-practices/SKILL.md) instead for model classes.
+> **Serialization note:** Models here are **hand-written** (`fromJson`/`toJson` factories, no `json_serializable` code-gen). The generic `flutter-implement-json-serialization` skill's manual `dart:convert` approach is directionally right, but follow this repo's conventions in [`adaptive-cards-flutter-standard-practices`](../.agents/skills/adaptive-cards-flutter-standard-practices/SKILL.md) for model classes.
 
 ### 3. Project-specific skills
 
@@ -49,7 +49,7 @@ Authored for this monorepo (Adaptive Cards spec, HostConfig theming, element reg
 | `adaptive-cards-dart-flutter-fvm`            | Prefix all `flutter`/`dart` commands with `fvm`  |
 | `adaptive-cards-monorepo-workspace`          | Package layout and working directories           |
 | `adaptive-cards-element-registry`            | Implementing new element types                   |
-| `adaptive-cards-flutter-standard-practices`  | Theming and JSON serialization in this repo      |
+| `adaptive-cards-flutter-standard-practices`  | Hand-written serialization + theming divergences |
 | `adaptive-cards-hostconfig-theme`            | HostConfig → Flutter theme mapping               |
 | `adaptive-cards-spec-compliance`             | Microsoft Adaptive Cards spec parity             |
 | `adaptive-cards-templating`                  | `flutter_adaptive_template_fs` templating engine |
