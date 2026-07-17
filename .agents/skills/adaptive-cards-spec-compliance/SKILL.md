@@ -61,29 +61,43 @@ implemented or reviewed:
 
 ## Element Coverage Checklist
 
-Use this as the canonical list when implementing or auditing element support.
-Cross-check each item against `lib/src/registry.dart` in `flutter_adaptive_cards_fs`.
+This is a **spec-URL quick reference** — the set of AC types and where each is
+documented — for auditing whether a type exists in the spec and jumping to its
+page. It is **not** the source of truth for what this library implements.
+
+> **Implementation / tests / per-component gaps are owned by the package READMEs**,
+> not this skill (see the "Architecture documentation sync gate" in `AGENTS.md`).
+> Read status there, and update it there:
+>
+> - Core elements, containers, inputs, actions, HostConfig →
+>   [`packages/flutter_adaptive_cards_fs/README.md` § Implementation status](../../../packages/flutter_adaptive_cards_fs/README.md#implementation-status)
+> - Charts → [`packages/flutter_adaptive_charts_fs/README.md`](../../../packages/flutter_adaptive_charts_fs/README.md#implementation-status)
+> - Templating → [`packages/flutter_adaptive_template_fs/README.md`](../../../packages/flutter_adaptive_template_fs/README.md#feature-coverage)
+> - Cross-cutting roadmap / history → [`docs/Implementation-Status.md`](../../../docs/Implementation-Status.md)
+>
+> When auditing, cross-check the live registry (`lib/src/registry.dart`) against
+> the spec, then reconcile the README table — do not restate status here.
 
 ### Body Elements
 
-| AC Type            | Spec Page                                                        | Status Notes                                                   |
-| ------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------- |
-| `AdaptiveCard`     | [explorer](https://adaptivecards.io/explorer/AdaptiveCard.html)  | Root element — implemented                                     |
-| `TextBlock`        | [explorer](https://adaptivecards.io/explorer/TextBlock.html)     | Implemented; text features (markdown subset) may be incomplete |
-| `RichTextBlock`    | [explorer](https://adaptivecards.io/explorer/RichTextBlock.html) | Check inline text run support                                  |
-| `TextRun`          | [explorer](https://adaptivecards.io/explorer/TextRun.html)       | Used inside `RichTextBlock`                                    |
-| `Image`            | [explorer](https://adaptivecards.io/explorer/Image.html)         | Implemented; check `selectAction` support                      |
-| `ImageSet`         | [explorer](https://adaptivecards.io/explorer/ImageSet.html)      | Implemented                                                    |
-| `Media`            | [explorer](https://adaptivecards.io/explorer/Media.html)         | Video — Windows noted as unsupported in README                 |
-| `Container`        | [explorer](https://adaptivecards.io/explorer/Container.html)     | Implemented; verify `bleed`, `minHeight`                       |
-| `ColumnSet`        | [explorer](https://adaptivecards.io/explorer/ColumnSet.html)     | Implemented                                                    |
-| `Column`           | [explorer](https://adaptivecards.io/explorer/Column.html)        | Implemented                                                    |
-| `FactSet`          | [explorer](https://adaptivecards.io/explorer/FactSet.html)       | Implemented                                                    |
-| `Fact`             | [explorer](https://adaptivecards.io/explorer/Fact.html)          | Used inside `FactSet`                                          |
-| `ActionSet`        | [explorer](https://adaptivecards.io/explorer/ActionSet.html)     | Implemented                                                    |
-| `Table` (v1.5)     | [explorer](https://adaptivecards.io/explorer/Table.html)         | Check implementation status                                    |
-| `TableRow` (v1.5)  | [explorer](https://adaptivecards.io/explorer/TableRow.html)      | Paired with `Table`                                            |
-| `TableCell` (v1.5) | [explorer](https://adaptivecards.io/explorer/TableCell.html)     | Paired with `Table`                                            |
+| AC Type            | Spec Page                                                        |
+| ------------------ | ---------------------------------------------------------------- |
+| `AdaptiveCard`     | [explorer](https://adaptivecards.io/explorer/AdaptiveCard.html)  |
+| `TextBlock`        | [explorer](https://adaptivecards.io/explorer/TextBlock.html)     |
+| `RichTextBlock`    | [explorer](https://adaptivecards.io/explorer/RichTextBlock.html) |
+| `TextRun`          | [explorer](https://adaptivecards.io/explorer/TextRun.html)       |
+| `Image`            | [explorer](https://adaptivecards.io/explorer/Image.html)         |
+| `ImageSet`         | [explorer](https://adaptivecards.io/explorer/ImageSet.html)      |
+| `Media`            | [explorer](https://adaptivecards.io/explorer/Media.html)         |
+| `Container`        | [explorer](https://adaptivecards.io/explorer/Container.html)     |
+| `ColumnSet`        | [explorer](https://adaptivecards.io/explorer/ColumnSet.html)     |
+| `Column`           | [explorer](https://adaptivecards.io/explorer/Column.html)        |
+| `FactSet`          | [explorer](https://adaptivecards.io/explorer/FactSet.html)       |
+| `Fact`             | [explorer](https://adaptivecards.io/explorer/Fact.html)          |
+| `ActionSet`        | [explorer](https://adaptivecards.io/explorer/ActionSet.html)     |
+| `Table` (v1.5)     | [explorer](https://adaptivecards.io/explorer/Table.html)         |
+| `TableRow` (v1.5)  | [explorer](https://adaptivecards.io/explorer/TableRow.html)      |
+| `TableCell` (v1.5) | [explorer](https://adaptivecards.io/explorer/TableCell.html)     |
 
 ### Badge Element (project extension)
 
@@ -92,59 +106,65 @@ registered in `CardTypeRegistry` and uses `BadgeStylesConfig` from HostConfig.
 
 ### Input Elements
 
-| AC Type           | Spec Page                                                          | Status Notes                        |
-| ----------------- | ------------------------------------------------------------------ | ----------------------------------- |
-| `Input.Text`      | [explorer](https://adaptivecards.io/explorer/Input.Text.html)      | Implemented                         |
-| `Input.Number`    | [explorer](https://adaptivecards.io/explorer/Input.Number.html)    | Implemented                         |
-| `Input.Date`      | [explorer](https://adaptivecards.io/explorer/Input.Date.html)      | Implemented; platform picker varies |
-| `Input.Time`      | [explorer](https://adaptivecards.io/explorer/Input.Time.html)      | Implemented; platform picker varies |
-| `Input.Toggle`    | [explorer](https://adaptivecards.io/explorer/Input.Toggle.html)    | Implemented                         |
-| `Input.ChoiceSet` | [explorer](https://adaptivecards.io/explorer/Input.ChoiceSet.html) | Implemented; data query supported   |
+| AC Type           | Spec Page                                                          |
+| ----------------- | ------------------------------------------------------------------ |
+| `Input.Text`      | [explorer](https://adaptivecards.io/explorer/Input.Text.html)      |
+| `Input.Number`    | [explorer](https://adaptivecards.io/explorer/Input.Number.html)    |
+| `Input.Date`      | [explorer](https://adaptivecards.io/explorer/Input.Date.html)      |
+| `Input.Time`      | [explorer](https://adaptivecards.io/explorer/Input.Time.html)      |
+| `Input.Toggle`    | [explorer](https://adaptivecards.io/explorer/Input.Toggle.html)    |
+| `Input.ChoiceSet` | [explorer](https://adaptivecards.io/explorer/Input.ChoiceSet.html) |
 
 ### Action Types
 
-| AC Type                   | Spec Page                                                                  | JS Class                 | Status Notes                |
-| ------------------------- | -------------------------------------------------------------------------- | ------------------------ | --------------------------- |
-| `Action.OpenUrl`          | [explorer](https://adaptivecards.io/explorer/Action.OpenUrl.html)          | `OpenUrlAction`          | Implemented                 |
-| `Action.Submit`           | [explorer](https://adaptivecards.io/explorer/Action.Submit.html)           | `SubmitAction`           | Implemented                 |
-| `Action.ShowCard`         | [explorer](https://adaptivecards.io/explorer/Action.ShowCard.html)         | `ShowCardAction`         | Implemented                 |
-| `Action.ToggleVisibility` | [explorer](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) | `ToggleVisibilityAction` | Implemented                 |
-| `Action.Execute` (v1.4)   | [explorer](https://adaptivecards.io/explorer/Action.Execute.html)          | —                        | Implemented (`verb`, `data`, `associatedInputs`) |
+The **JS Class** column is the cross-SDK reference implementation to consult when
+behavior is disputed — that reference role is this skill's job, unlike status.
+
+| AC Type                   | Spec Page                                                                  | JS Class                 |
+| ------------------------- | -------------------------------------------------------------------------- | ------------------------ |
+| `Action.OpenUrl`          | [explorer](https://adaptivecards.io/explorer/Action.OpenUrl.html)          | `OpenUrlAction`          |
+| `Action.Submit`           | [explorer](https://adaptivecards.io/explorer/Action.Submit.html)           | `SubmitAction`           |
+| `Action.ShowCard`         | [explorer](https://adaptivecards.io/explorer/Action.ShowCard.html)         | `ShowCardAction`         |
+| `Action.ToggleVisibility` | [explorer](https://adaptivecards.io/explorer/Action.ToggleVisibility.html) | `ToggleVisibilityAction` |
+| `Action.Execute` (v1.4)   | [explorer](https://adaptivecards.io/explorer/Action.Execute.html)          | —                        |
 
 ---
 
 ## Spec Compliance Rules
 
+These describe what the **spec requires** — the contract to implement against.
+For whether this library currently satisfies each rule, read the README
+**[Known gaps](../../../packages/flutter_adaptive_cards_fs/README.md#known-gaps)**
+(the owner of that status); don't rely on a status verdict restated here.
+
 ### Unknown / Unsupported Types
 
 The spec requires that **unknown element types be silently ignored** (not crash),
-with the `fallback` property rendered instead if present. In this library:
-
-- Unknown types return `AdaptiveUnknown` (an error display) from `CardTypeRegistry._getBaseElement()` unless a `fallback` is provided.
-- **Implemented:** The `fallback` property is processed in `CardTypeRegistry` for unknown or unsupported element types.
+with the `fallback` property rendered instead if present. In this library unknown
+types return `AdaptiveUnknown` (an error display) from
+`CardTypeRegistry._getBaseElement()` unless a `fallback` resolves first.
 
 ### `requires` Property
 
-The `requires` property allows a card to declare minimum SDK feature requirements.
-The host SDK should skip rendering elements whose `requires` are not met.
-This is **not currently validated** in the Flutter library — it is a known gap.
+The `requires` property lets a card declare minimum SDK feature requirements; a
+conformant host skips rendering elements whose `requires` are not met, falling
+back to `fallbackText`. Confirm current support in the README Known gaps
+(**`requires` + version gating**) before relying on it.
 
 ### Fallback Property
 
-Every element and action can declare a `fallback` property. In this library:
-
-- **Elements:** Fully supported. If an element type is unknown or registration fails, the renderer checks `fallback`:
-  - `"drop"` — element is silently dropped (rendered as `SizedBox.shrink()`)
-  - Another element object — that element is rendered instead (recursive lookup)
-- **Actions:** **Not currently implemented**. Fallback properties on actions are ignored; unknown actions will trigger an assertion or return `AdaptiveUnknown`.
-
-Verify `fallback` behavior when implementing any new element type.
+Every element and action can declare a `fallback` — either `"drop"` (render
+nothing) or a replacement element/action object resolved recursively. Element and
+action fallback are at **different** levels of completeness in this library, so
+verify `fallback` behavior against the README (**Action `fallback`** row) when
+implementing any new element or action type.
 
 ### versioning
 
-Cards declare `"version": "1.x"`. The renderer should gracefully degrade for
-cards that declare a higher version than the renderer supports. Currently the
-library does not enforce version-gating on individual elements.
+Cards declare `"version": "1.x"`. The spec expects a renderer to gracefully
+degrade for cards declaring a higher version than it supports. Whether
+per-element version-gating is enforced is tracked in the README Known gaps
+(**`requires` + version gating**).
 
 ---
 
@@ -274,16 +294,22 @@ takes the root data map directly and automatically scopes it as `$root`.
 
 ---
 
-## Known Gaps (as of this documentation)
+## Known Gaps
 
-| Area                           | Gap                                                                                                             | Spec Reference                                                                                                                       |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `requires` property            | Not validated — elements are not gated on SDK capability declarations                                           | All elements                                                                                                                         |
-| Adaptive Expressions           | Robust subset implemented (operators, string, math, logic, `formatDateTime`); other date functions (`utcNow`, `addDays`, `formatEpoch`) and collection functions (`select`, `where`, `join`) missing | [Expressions spec](https://learn.microsoft.com/en-us/azure/bot-service/adaptive-expressions/adaptive-expressions-prebuilt-functions) |
-| Text features                  | Markdown subset / rich text features may be incomplete                                                          | [Text features](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/text-features)                                      |
-| `Table`/`TableRow`/`TableCell` | Partial — `bleed` and cell-level `rtl` rendering missing (`auto`/`stretch` column widths and cell `minHeight` implemented)                                 | [explorer](https://adaptivecards.io/explorer/Table.html)                                                                             |
-| `fallback` (actions)           | Not implemented — unknown actions `assert(false)` then return `AdaptiveUnknown`/`null`; no fallback chain        | All actions                                                                                                                          |
-| Version gating                 | Cards declaring `"version": "1.x"` are not version-checked                                                      | `AdaptiveCard` root                                                                                                                  |
+The catalog of what this library does **not** yet implement is owned by the
+package READMEs, so it stays in one place and cannot drift against a second copy:
+
+- Core elements/inputs/actions/HostConfig and cross-cutting gaps (`requires` +
+  version gating, action `fallback`, `Table` completeness, text features, …) →
+  [`flutter_adaptive_cards_fs` README § Known gaps](../../../packages/flutter_adaptive_cards_fs/README.md#known-gaps).
+- Templating / Adaptive Expressions coverage (which functions are implemented) →
+  [`flutter_adaptive_template_fs` README](../../../packages/flutter_adaptive_template_fs/README.md#feature-coverage)
+  and the **`adaptive-cards-templating`** skill.
+- Project-level roadmap and history →
+  [`docs/Implementation-Status.md`](../../../docs/Implementation-Status.md).
+
+When a gap here touches your feature, cite the README row in your plan rather than
+copying its text — this skill's job is the spec contract, not the gap ledger.
 
 ---
 
@@ -303,8 +329,8 @@ When asked to implement or audit a feature:
 
 5. **Check `fallback_configs.dart`** to confirm sensible defaults are in place.
 
-6. **Verify the Known Gaps list above** — if the feature touches a gap area,
-   note it explicitly in your implementation plan.
+6. **Check the README [Known gaps](../../../packages/flutter_adaptive_cards_fs/README.md#known-gaps)** — if the feature
+   touches a gap area, cite that row explicitly in your implementation plan.
 
 7. **For templating features**, verify against the
    [Templating Language spec](https://learn.microsoft.com/en-us/adaptive-cards/templating/language)
