@@ -126,19 +126,22 @@ non-English locale. Do not stand up gen-l10n in a package on your own initiative
 
 ## Existing debt
 
-The hardcoded chrome to route through the seam when it lands. Verified
-2026-07-13, all in `packages/flutter_adaptive_cards_fs/lib/src/`:
+The hardcoded chrome to route through the seam when it lands, all under
+`packages/flutter_adaptive_cards_fs/lib/src/`. The **string** is the anchor —
+`git grep` it to find the current line, since line numbers drift:
 
-| String | Location |
+| String | File |
 | --- | --- |
-| `'Progress'` (×2, a `semanticsLabel`) | `cards/elements/progress_bar.dart:86,99` |
-| `'OK'` (×2), `'Debug show the JSON'` | `flutter_raw_adaptive_card.dart:464,573,624` |
-| `'Close'` (×2), `'Opening in browser...'`, `'Error loading content: …'` | `action/open_url_dialog_executor.dart:134,138,160,178` |
-| `'URL blocked: …'`, `'Action.Http URL blocked: …'` | `action/default_actions.dart:246,314` |
-| `'must be after … and before …'` (validation) | `cards/inputs/time.dart:116` |
+| `'Progress'` (×2, a `semanticsLabel`) | `cards/elements/progress_bar.dart` |
+| `'OK'` (×2), `'Debug show the JSON'` | `flutter_raw_adaptive_card.dart` |
+| `'Close'` (×2), `'Opening in browser...'`, `'Error loading content: …'` | `action/open_url_dialog_executor.dart` |
+| `'URL blocked: …'`, `'Action.Http URL blocked: …'` | `action/default_actions.dart` |
+| `'must be after … and before …'` (validation) | `cards/inputs/time.dart` |
 
-Note the last one is also **rule 4** debt: it is an interpolated sentence, so it
-needs restructuring, not just extraction.
+This list is a starting point, not a guarantee of completeness — grep for a new
+hardcoded string before adding one, and treat anything this table misses the same
+way. Note the last row is also **rule 4** debt: it is an interpolated sentence, so
+it needs restructuring, not just extraction.
 
 ---
 
