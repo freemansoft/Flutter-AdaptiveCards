@@ -295,7 +295,12 @@ Fallback spacing values (from `FallbackConfigs.spacingsConfig`):
 ### Separators
 
 ```dart
+// Divider drawn when an element sets "separator": true (see SeparatorElement)
+double thickness = resolver.resolveSeparatorThickness();
+Color color = resolver.resolveSeparatorColor();
 
+// Raw HostConfig section, if a caller needs both at once
+SeparatorConfig? config = resolver.getSeparatorConfig();
 ```
 
 ### Charts

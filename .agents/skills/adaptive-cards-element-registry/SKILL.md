@@ -198,16 +198,16 @@ Full detail: [`overlay-properties-by-type.md`](../../../docs/overlay-properties-
 
 ## Overlay test coverage
 
-Host-facing **patch keys by JSON `type`**: [`docs/overlay-properties-by-type.md`](../../../docs/overlay-properties-by-type.md). **Programmatic lookup:** `CardTypeRegistry.overlayCapabilities` ([`overlay_capability_registry.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart)).
+Host-facing **patch keys by JSON `type`**: [`docs/overlay-properties-by-type.md`](../../../docs/overlay-properties-by-type.md). **Programmatic lookup:** `CardTypeRegistry.overlayCapabilities` ([`overlay_capability_registry.dart`](../../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart)).
 
 ### Verdict
 
 | Layer                                                               | Confidence                                                                                                                                                                                             |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Notifier + `resolvedElementProvider` / `resolvedActionProvider`** | High — [`adaptive_card_document_notifier_test.dart`](../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart) covers most `AdaptiveCardDocumentNotifier` APIs |
+| **Notifier + `resolvedElementProvider` / `resolvedActionProvider`** | High — [`adaptive_card_document_notifier_test.dart`](../../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart) covers most `AdaptiveCardDocumentNotifier` APIs |
 | **Widget / host API per element or action type**                    | Partial — representative paths only; not every `Input.*` or `Action.*` has overlay-specific widget tests                                                                                               |
 
-Overlay fields: [`adaptive_card_document.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart). Merge: [`providers.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart).
+Overlay fields: [`adaptive_card_document.dart`](../../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart). Merge: [`providers.dart`](../../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart).
 
 ### Field-level notifier coverage
 
@@ -224,7 +224,7 @@ Overlay fields: [`adaptive_card_document.dart`](../../packages/flutter_adaptive_
 Reactive wiring:
 
 - **Elements:** `AdaptiveVisibilityMixin`, `AdaptiveInputMixin`, `AdaptiveTextBlock` → `resolvedElementProvider`
-- **Actions:** `AdaptiveActionStateMixin` on [`icon_button.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/cards/actions/icon_button.dart); [`show_card.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/cards/actions/show_card.dart) watches `resolvedActionProvider` directly
+- **Actions:** `AdaptiveActionStateMixin` on [`icon_button.dart`](../../../packages/flutter_adaptive_cards_fs/lib/src/cards/actions/icon_button.dart); [`show_card.dart`](../../../packages/flutter_adaptive_cards_fs/lib/src/cards/actions/show_card.dart) watches `resolvedActionProvider` directly
 
 ### Cross-cutting
 
@@ -245,10 +245,10 @@ Optional follow-up if tightening regressions:
 
 ### How to add tests for a new overlay field
 
-1. **Notifier first** — extend [`adaptive_card_document_notifier_test.dart`](../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart): `ProviderContainer` + `baselineMapProvider.overrideWithValue`, assert `overlaysById` and `resolvedElementProvider` / `resolvedActionProvider`.
+1. **Notifier first** — extend [`adaptive_card_document_notifier_test.dart`](../../../packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart): `ProviderContainer` + `baselineMapProvider.overrideWithValue`, assert `overlaysById` and `resolvedElementProvider` / `resolvedActionProvider`.
 2. **Widget test** — sample JSON under `test/samples/`, `getTestWidgetFromMap` / `getTestWidgetFromPath`, key-first finders per [`adaptive-cards-testing`](../adaptive-cards-testing/SKILL.md).
 3. **Host API** — if exposed on `RawAdaptiveCardState`, add a delegate test mirroring `setText` / `setInputError` patterns.
-4. **Docs** — update [`docs/overlay-properties-by-type.md`](../../../docs/overlay-properties-by-type.md) and [`overlay_capability_registry.dart`](../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart).
+4. **Docs** — update [`docs/overlay-properties-by-type.md`](../../../docs/overlay-properties-by-type.md) and [`overlay_capability_registry.dart`](../../../packages/flutter_adaptive_cards_fs/lib/src/riverpod/overlay_capability_registry.dart).
 
 Full test file catalog: [`adaptive-cards-testing` skill — Reactive document tests](../adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
 

@@ -172,7 +172,7 @@ expect(find.byKey(generateWidgetKey(fieldMap)), findsOneWidget);          // inp
 await tester.enterText(find.byKey(generateWidgetKey(fieldMap)), 'hello');
 ```
 
-> **Reference**: See [AdaptiveWidget-Key-Generation.md](../../../../doc/AdaptiveWidget-Key-Generation.md)
+> **Reference**: See [AdaptiveWidget-Key-Generation.md](../../../docs/AdaptiveWidget-Key-Generation.md)
 > for the full key contract and automatic ID injection rules.
 
 ---
@@ -189,7 +189,7 @@ await tester.enterText(find.byKey(generateWidgetKey(fieldMap)), 'hello');
 >
 > Use `getGoldenPath(filename)` to resolve the path for the current platform.
 
-Full workflow: [`packages/flutter_adaptive_cards_fs/test/gold_files/README.md`](../../packages/flutter_adaptive_cards_fs/test/gold_files/README.md) (same rules for `flutter_adaptive_charts_fs/test/gold_files/`).
+Full workflow: [`packages/flutter_adaptive_cards_fs/test/gold_files/README.md`](../../../packages/flutter_adaptive_cards_fs/test/gold_files/README.md) (same rules for `flutter_adaptive_charts_fs/test/gold_files/`).
 
 ### Standard Golden Pattern
 
