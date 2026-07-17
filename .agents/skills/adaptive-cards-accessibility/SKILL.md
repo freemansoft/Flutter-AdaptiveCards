@@ -171,8 +171,10 @@ It is the only way these regressions get caught — they are invisible in golden
 
 ## Known gaps
 
-Verified as of 2026-07-13. Do not treat as a backlog you must fix in passing, but
-**do not add to it**, and prefer fixing the one you are already touching.
+These are the known holes at the time of writing — confirm each against the
+current widget before acting, since one may already be fixed. Do not treat the
+list as a backlog you must clear in passing, but **do not add to it**, and prefer
+fixing the one you are already touching.
 
 - **`flutter_adaptive_charts_fs` — no semantics anywhere.** A chart is a picture
   of data with no text alternative. It needs at least a summary label
