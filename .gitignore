@@ -117,6 +117,9 @@ migrate_working_dir/
 **/linux/flutter/generated_plugin_registrant.cc
 **/linux/flutter/generated_plugin_registrant.h
 **/linux/flutter/generated_plugins.cmake
+# Python virtual environments
+adaptive_chat_server/.venv/
+
 # Node (markdown tooling only — Prettier)
 node_modules/
 
