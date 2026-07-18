@@ -62,3 +62,13 @@ async def send_interaction(
         Interaction(interaction_id=x_interaction_id, text=message, messages=messages),
     )
     return envelope(cid, x_interaction_id, messages)
+
+
+@app.get("/conversations/{cid}/interactions/{iid}")
+def replay_interaction(cid: str, iid: str) -> dict:
+    if store.get(cid) is None:
+        raise HTTPException(status_code=404, detail="unknown conversation")
+    interaction = store.get_interaction(cid, iid)
+    if interaction is None:
+        raise HTTPException(status_code=404, detail="unknown interaction")
+    return envelope(cid, iid, interaction.messages)

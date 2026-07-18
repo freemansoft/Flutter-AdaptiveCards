@@ -70,3 +70,17 @@ def test_send_missing_message_is_400():
 def test_send_unknown_conversation_is_404():
     resp = _send("c_missing", "i_0001", "hi")
     assert resp.status_code == 404
+
+
+def test_replay_returns_stored_envelope():
+    cid = _start()
+    sent = _send(cid, "i_0009", "replay me").json()
+    resp = client.get(f"/conversations/{cid}/interactions/i_0009")
+    assert resp.status_code == 200
+    assert resp.json() == sent
+
+
+def test_replay_unknown_interaction_is_404():
+    cid = _start()
+    resp = client.get(f"/conversations/{cid}/interactions/i_missing")
+    assert resp.status_code == 404
