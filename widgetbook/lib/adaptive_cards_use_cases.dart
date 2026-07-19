@@ -13,6 +13,7 @@ import 'package:widgetbook_workspace/rating_input_overlay_page.dart';
 import 'package:widgetbook_workspace/rating_overlay_page.dart';
 import 'package:widgetbook_workspace/refresh_demo_page.dart';
 import 'package:widgetbook_workspace/responsive_flow_page.dart';
+import 'package:widgetbook_workspace/rounded_corners_knobs_page.dart';
 import 'package:widgetbook_workspace/table_knobs_page.dart';
 import 'package:widgetbook_workspace/text_block_overlay_page.dart';
 import 'package:widgetbook_workspace/widget_types.dart' as widget_types;
@@ -962,6 +963,18 @@ Widget _tableKnobsUseCase(String assetPath) {
 Widget buildTableWidthsKnobs(BuildContext context) {
   return _tableKnobsUseCase('lib/samples/table/table_widths_demo.json');
 }
+
+// =============================================================================
+// ROUNDED CORNERS Component (Teams `roundedCorners` + `cornerRadius`)
+// =============================================================================
+
+@widgetbook.UseCase(
+  name: 'Rounded corners (knobs)',
+  type: widget_types.RoundedCorners,
+  path: '[Components]',
+)
+Widget buildRoundedCornersKnobs(BuildContext context) =>
+    const RoundedCornersKnobsPage();
 
 // =============================================================================
 // V1.5 Hub - Icon
