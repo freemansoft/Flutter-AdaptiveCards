@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:adaptive_chat/src/chat_backend_client.dart';
+import 'package:adaptive_chat/src/chat_host_config.dart';
 import 'package:adaptive_chat/src/chat_page.dart';
 import 'package:adaptive_chat/src/conversation_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
 void main() => runApp(const AdaptiveChatApp());
 
@@ -43,7 +43,7 @@ class _AdaptiveChatAppState extends State<AdaptiveChatApp> {
     return MaterialApp(
       title: 'Adaptive Chat',
       theme: ThemeData(useMaterial3: true),
-      home: ChatPage(controller: _controller, hostConfigs: HostConfigs()),
+      home: ChatPage(controller: _controller, hostConfigs: chatHostConfigs()),
     );
   }
 }
