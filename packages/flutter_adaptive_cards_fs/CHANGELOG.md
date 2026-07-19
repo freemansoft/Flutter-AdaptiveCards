@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   text (image-only) are left unlabeled rather than given a placeholder name.
 - test: add golden verifying HostConfig container-style `backgroundColor` and ColumnSet `stretch`/`auto` alignment render as expected.
 - feat: `Container` supports the Microsoft Teams [`roundedCorners`](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format) property (rounds the style fill + clips children), opt-in via `"roundedCorners": true`. The radius is resolved via a new HostConfig `cornerRadius` field (default 8, `HostConfig.fromJson` / `ReferenceResolver.resolveCornerRadius()`) rather than fixed. `ColumnSet`/`Column`/`Table`/`Image` are not wired yet.
+- feat: `ColumnSet` and `Column` support the Teams `roundedCorners` property (radius via HostConfig, default 8), mirroring the `Container` implementation. `Table`/`Image` are not wired yet.
 
 ### Fixed 0.15.0
 

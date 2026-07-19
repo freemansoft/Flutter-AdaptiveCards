@@ -81,7 +81,7 @@ Unlike the [Non-standard HostConfig extensions](#non-standard-hostconfig-extensi
 
 **Type:** `double?` | **Default:** `8` (`FallbackConfigs.cornerRadius`)
 
-`roundedCorners` is a Teams Adaptive Cards element property (`"roundedCorners": true`), documented as supported on `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. This package currently wires it on **`Container` only**; the other element types are tracked separately. The corner radius applied when `roundedCorners` is set is a single HostConfig-wide default — `cornerRadius` is a top-level scalar, not a per-element or per-style value.
+`roundedCorners` is a Teams Adaptive Cards element property (`"roundedCorners": true`), documented as supported on `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. This package currently wires it on **`Container`, `ColumnSet`, and `Column`**; `Table` and `Image` are tracked separately. The corner radius applied when `roundedCorners` is set is a single HostConfig-wide default — `cornerRadius` is a top-level scalar, not a per-element or per-style value.
 
 Example JSON:
 
@@ -98,7 +98,7 @@ Resolution precedence (highest wins):
 1. `HostConfig` value (`cornerRadius` in JSON, top-level)
 2. `FallbackConfigs.cornerRadius` (`8`)
 
-Source files: `lib/src/hostconfig/host_config.dart` (`HostConfig.cornerRadius`, parsed in `HostConfig.fromJson`), `lib/src/hostconfig/fallback_configs.dart` (`FallbackConfigs.cornerRadius`), `lib/src/reference_resolver.dart` (`ReferenceResolver.resolveCornerRadius()`), `lib/src/cards/containers/container.dart` (`AdaptiveContainerState.build`).
+Source files: `lib/src/hostconfig/host_config.dart` (`HostConfig.cornerRadius`, parsed in `HostConfig.fromJson`), `lib/src/hostconfig/fallback_configs.dart` (`FallbackConfigs.cornerRadius`), `lib/src/reference_resolver.dart` (`ReferenceResolver.resolveCornerRadius()`), `lib/src/cards/containers/container.dart` (`AdaptiveContainerState.build`), `lib/src/cards/containers/column_set.dart` (`AdaptiveColumnSetState.build`), `lib/src/cards/containers/column.dart` (`AdaptiveColumnState.build`).
 
 ---
 

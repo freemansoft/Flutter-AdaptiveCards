@@ -172,8 +172,9 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   /// JSON; corner radius is caller-supplied.
   ///
   /// [borderRadius] is caller-supplied (not read from [element] here) so
-  /// each element decides whether it honors a `roundedCorners` flag — see
-  /// `AdaptiveContainer`, which is currently the only caller that passes one.
+  /// each element decides whether it honors a `roundedCorners` flag —
+  /// container-family elements (`AdaptiveContainer`, `AdaptiveColumnSet`,
+  /// `AdaptiveColumn`) opt in by passing one.
   BoxDecoration getDecorationFromMap(
     Map element, {
     Color? backgroundColor,
