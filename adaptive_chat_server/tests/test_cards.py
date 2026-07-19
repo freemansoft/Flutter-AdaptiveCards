@@ -14,6 +14,7 @@ def test_user_bubble_is_right_aligned_accent():
     assert cols[1]["width"] == "auto"
     container = cols[1]["items"][0]
     assert container["style"] == "accent"
+    assert container["roundedCorners"] is True
     assert container["items"][0]["text"] == "hello"
 
 
@@ -24,6 +25,7 @@ def test_assistant_bubble_is_left_aligned_emphasis():
     assert cols[1]["width"] == "stretch"
     container = cols[0]["items"][0]
     assert container["style"] == "emphasis"
+    assert container["roundedCorners"] is True
     assert container["items"][0]["text"] == "Did you just say: hi"
 
 

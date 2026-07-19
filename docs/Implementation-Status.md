@@ -120,6 +120,10 @@ fvm flutter test --exclude-tags=golden
 
 ## Recently completed
 
+### Teams `roundedCorners` on all five elements (2026-07-19)
+
+- `Container`, `ColumnSet`, `Column`, `Table`, and `Image` all support the Microsoft Teams [`roundedCorners`](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format) extension, radius resolved via HostConfig `cornerRadius` (default 8). See [`docs/hostconfig.md` → Microsoft Teams HostConfig extensions](./hostconfig.md#microsoft-teams-hostconfig-extensions) and the [`flutter_adaptive_cards_fs` README → Known gaps](../packages/flutter_adaptive_cards_fs/README.md#known-gaps) for the per-element notes. The `adaptive_chat` sample opts a bubble `Container` in with `roundedCorners: true` server-side and sets `HostConfig.cornerRadius: 16` client-side for a chat-bubble radius.
+
 ### `Media` poster fix (2026-07-14)
 
 - The `poster` image is now the **click-to-play surface** the spec describes, rather than a loading placeholder that disappeared once the player initialized. `Media` shows the poster with a play button and creates the `VideoPlayerController` only when the user taps it, so a card no longer opens a network video player per `Media` element on load. Chewie's own `placeholder` is not usable for this — it renders _underneath_ an already-initialized `VideoPlayer` and is always covered.

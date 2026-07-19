@@ -14,6 +14,7 @@ def _text_container(text: str, style: str) -> dict:
     return {
         "type": "Container",
         "style": style,
+        "roundedCorners": True,
         "items": [{"type": "TextBlock", "text": text, "wrap": True}],
     }
 

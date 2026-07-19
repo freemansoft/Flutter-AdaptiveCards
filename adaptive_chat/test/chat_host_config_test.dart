@@ -7,5 +7,7 @@ void main() {
     final configs = chatHostConfigs();
     expect(configs, isA<HostConfigs>());
     expect(configs.current, same(configs.light));
+    expect(configs.light.cornerRadius, 16);
+    expect(configs.dark.cornerRadius, 16);
   });
 }
