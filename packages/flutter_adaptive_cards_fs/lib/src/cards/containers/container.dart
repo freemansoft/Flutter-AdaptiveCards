@@ -132,8 +132,8 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
     // the base Adaptive Cards schema), documented as supported on Container,
     // ColumnSet, Column, Table, and Image — see
     // https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
-    // This package wires the flag on `Container`, `ColumnSet`, and `Column`
-    // so far (Table, Image tracked separately); the radius is HostConfig-
+    // This package wires the flag on all five elements (`Container`,
+    // `ColumnSet`, `Column`, `Table`, `Image`); the radius is HostConfig-
     // resolved via `styleResolver.resolveCornerRadius()` (default 8, see
     // `FallbackConfigs.cornerRadius`), not fixed.
     final bool roundedCorners = adaptiveMap['roundedCorners'] == true;

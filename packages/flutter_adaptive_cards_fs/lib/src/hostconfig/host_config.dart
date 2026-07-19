@@ -257,8 +257,7 @@ class HostConfig {
   /// Adaptive Cards schema) supported on Container, ColumnSet, Column,
   /// Table, and Image — see
   /// https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
-  /// This package currently wires the flag on `Container` only; other
-  /// elements are tracked separately. Falls back to
+  /// This package wires the flag on all five elements. Falls back to
   /// `FallbackConfigs.cornerRadius` (8) when unset — see
   /// `ReferenceResolver.resolveCornerRadius()`.
   final double? cornerRadius;

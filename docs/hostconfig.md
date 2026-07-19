@@ -81,7 +81,7 @@ Unlike the [Non-standard HostConfig extensions](#non-standard-hostconfig-extensi
 
 **Type:** `double?` | **Default:** `8` (`FallbackConfigs.cornerRadius`)
 
-`roundedCorners` is a Teams Adaptive Cards element property (`"roundedCorners": true`), documented as supported on `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. This package currently wires it on **`Container`, `ColumnSet`, `Column`, and `Table`**; `Image` is tracked separately. `Table` renders via a bespoke Flutter `Table` (not the `getDecorationFromMap` path the other elements use), so rounding there is a `ClipRRect` around the table plus a `TableBorder.borderRadius` on the grid border, rather than a `BoxDecoration.borderRadius`. The corner radius applied when `roundedCorners` is set is a single HostConfig-wide default — `cornerRadius` is a top-level scalar, not a per-element or per-style value.
+`roundedCorners` is a Teams Adaptive Cards element property (`"roundedCorners": true`), documented as supported on `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. This package wires it on **all five**: `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. `Table` renders via a bespoke Flutter `Table` (not the `getDecorationFromMap` path the other elements use), so rounding there is a `ClipRRect` around the table plus a `TableBorder.borderRadius` on the grid border, rather than a `BoxDecoration.borderRadius`. `Image` rounding is a `ClipRRect` around the image widget; `style: person` (a circle via `ClipOval`) takes precedence over `roundedCorners` — if both are set, the circle wins. The corner radius applied when `roundedCorners` is set is a single HostConfig-wide default — `cornerRadius` is a top-level scalar, not a per-element or per-style value.
 
 Example JSON:
 
@@ -98,7 +98,7 @@ Resolution precedence (highest wins):
 1. `HostConfig` value (`cornerRadius` in JSON, top-level)
 2. `FallbackConfigs.cornerRadius` (`8`)
 
-Source files: `lib/src/hostconfig/host_config.dart` (`HostConfig.cornerRadius`, parsed in `HostConfig.fromJson`), `lib/src/hostconfig/fallback_configs.dart` (`FallbackConfigs.cornerRadius`), `lib/src/reference_resolver.dart` (`ReferenceResolver.resolveCornerRadius()`), `lib/src/cards/containers/container.dart` (`AdaptiveContainerState.build`), `lib/src/cards/containers/column_set.dart` (`AdaptiveColumnSetState.build`), `lib/src/cards/containers/column.dart` (`AdaptiveColumnState.build`).
+Source files: `lib/src/hostconfig/host_config.dart` (`HostConfig.cornerRadius`, parsed in `HostConfig.fromJson`), `lib/src/hostconfig/fallback_configs.dart` (`FallbackConfigs.cornerRadius`), `lib/src/reference_resolver.dart` (`ReferenceResolver.resolveCornerRadius()`), `lib/src/cards/containers/container.dart` (`AdaptiveContainerState.build`), `lib/src/cards/containers/column_set.dart` (`AdaptiveColumnSetState.build`), `lib/src/cards/containers/column.dart` (`AdaptiveColumnState.build`), `lib/src/cards/containers/table.dart` (`AdaptiveTableState.build`), `lib/src/cards/elements/image.dart` (`AdaptiveImageState.build`).
 
 ---
 

@@ -97,8 +97,25 @@ class AdaptiveImageState extends ConsumerState<AdaptiveImage>
       image = ColoredBox(color: bgColor, child: image);
     }
 
+    // `roundedCorners` is a Microsoft Teams Adaptive Cards property (beyond
+    // the base Adaptive Cards schema), documented as supported on Container,
+    // ColumnSet, Column, Table, and Image — see
+    // https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
+    // The radius is HostConfig-resolved via
+    // `styleResolver.resolveCornerRadius()` (default 8, see
+    // `FallbackConfigs.cornerRadius`), not fixed. `style: person` (a circle
+    // via `ClipOval`) takes precedence over `roundedCorners`: if both are
+    // set, the circle wins and no `ClipRRect` is applied.
+    final bool roundedCorners = adaptiveMap['roundedCorners'] == true;
     if (isPerson) {
       image = ClipOval(clipper: FullCircleClipper(), child: image);
+    } else if (roundedCorners) {
+      image = ClipRRect(
+        borderRadius: BorderRadius.circular(
+          styleResolver.resolveCornerRadius(),
+        ),
+        child: image,
+      );
     }
 
     Widget child;
