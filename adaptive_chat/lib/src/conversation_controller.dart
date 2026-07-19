@@ -33,6 +33,13 @@ class ConversationController extends ChangeNotifier {
   /// Bumped after each send so the compose card rebuilds empty.
   int composeEpoch = 0;
 
+  /// True while a `startConversation()` call is in flight.
+  bool starting = false;
+
+  /// The error from the most recent failed `startConversation()` call, if
+  /// any. Cleared at the start of each new attempt.
+  Object? startError;
+
   String? _conversationId;
   String? _postNext;
   int _counter = 0;
@@ -44,12 +51,25 @@ class ConversationController extends ChangeNotifier {
   String? get conversationId => _conversationId;
 
   /// Starts a new conversation and clears the log.
+  ///
+  /// Never throws: failures are recorded in [startError] so callers (and the
+  /// UI) can react to state rather than catching exceptions. On failure,
+  /// [ready] remains false.
   Future<void> startConversation() async {
-    final start = await client.startConversation();
-    _conversationId = start.conversationId;
-    _postNext = start.postNext;
-    messages.clear();
+    starting = true;
+    startError = null;
     notifyListeners();
+    try {
+      final start = await client.startConversation();
+      _conversationId = start.conversationId;
+      _postNext = start.postNext;
+      messages.clear();
+    } on Object catch (e) {
+      startError = e;
+    } finally {
+      starting = false;
+      notifyListeners();
+    }
   }
 
   String _nextInteractionId() => 'i_${(++_counter).toString().padLeft(4, '0')}';

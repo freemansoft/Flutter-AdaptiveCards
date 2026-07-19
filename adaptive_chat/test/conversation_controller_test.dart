@@ -80,4 +80,26 @@ void main() {
     await c.send('hello');
     expect(c.messages, isEmpty);
   });
+
+  test(
+    'a failed startConversation records startError without throwing and '
+    'leaves ready false',
+    () async {
+      final mock = MockClient((req) async {
+        return http.Response('server error', 500);
+      });
+      final c = ConversationController(
+        client: ChatBackendClient(
+          baseUrl: Uri.parse('http://localhost:8000'),
+          client: mock,
+        ),
+      );
+
+      await c.startConversation();
+
+      expect(c.ready, isFalse);
+      expect(c.startError, isNotNull);
+      expect(c.starting, isFalse);
+    },
+  );
 }
