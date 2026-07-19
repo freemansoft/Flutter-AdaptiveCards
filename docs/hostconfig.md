@@ -81,7 +81,7 @@ Unlike the [Non-standard HostConfig extensions](#non-standard-hostconfig-extensi
 
 **Type:** `double?` | **Default:** `8` (`FallbackConfigs.cornerRadius`)
 
-`roundedCorners` is a Teams Adaptive Cards element property (`"roundedCorners": true`), documented as supported on `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. This package currently wires it on **`Container`, `ColumnSet`, and `Column`**; `Table` and `Image` are tracked separately. The corner radius applied when `roundedCorners` is set is a single HostConfig-wide default — `cornerRadius` is a top-level scalar, not a per-element or per-style value.
+`roundedCorners` is a Teams Adaptive Cards element property (`"roundedCorners": true`), documented as supported on `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. This package currently wires it on **`Container`, `ColumnSet`, `Column`, and `Table`**; `Image` is tracked separately. `Table` renders via a bespoke Flutter `Table` (not the `getDecorationFromMap` path the other elements use), so rounding there is a `ClipRRect` around the table plus a `TableBorder.borderRadius` on the grid border, rather than a `BoxDecoration.borderRadius`. The corner radius applied when `roundedCorners` is set is a single HostConfig-wide default — `cornerRadius` is a top-level scalar, not a per-element or per-style value.
 
 Example JSON:
 

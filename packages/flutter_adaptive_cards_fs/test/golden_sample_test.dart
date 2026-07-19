@@ -276,4 +276,19 @@ void main() {
       matchesGoldenFile(getGoldenPath('table3_widths-base.png')),
     );
   }, tags: ['golden']);
+
+  testWidgets('Golden Table Rounded Corners', (tester) async {
+    configureTestView();
+
+    const ValueKey key = ValueKey('paint');
+    final Widget sample = getSampleForGoldenTest(key, 'table_rounded_corners');
+
+    await tester.pumpWidget(sample);
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byKey(key),
+      matchesGoldenFile(getGoldenPath('table_rounded_corners-base.png')),
+    );
+  }, tags: ['golden']);
 }
