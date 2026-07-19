@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   semantics at all. Cells are annotated, not merged, so a cell's `selectAction` or
   nested `Input.*` stays independently focusable. Columns whose header cell has no
   text (image-only) are left unlabeled rather than given a placeholder name.
+- test: add golden verifying HostConfig container-style `backgroundColor` and ColumnSet `stretch`/`auto` alignment render as expected.
 
 ### Fixed 0.15.0
 
