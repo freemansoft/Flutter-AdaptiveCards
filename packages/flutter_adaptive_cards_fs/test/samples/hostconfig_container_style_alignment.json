@@ -13,6 +13,7 @@
             {
               "type": "Container",
               "style": "accent",
+              "roundedCorners": true,
               "items": [
                 { "type": "TextBlock", "text": "Right / accent", "wrap": true }
               ]
@@ -31,6 +32,7 @@
             {
               "type": "Container",
               "style": "emphasis",
+              "roundedCorners": true,
               "items": [
                 {
                   "type": "TextBlock",

@@ -4,14 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'utils/test_utils.dart';
 
-/// General golden proving two renderer capabilities together: a container's
+/// General golden proving three renderer capabilities together: a container's
 /// fill comes from HostConfig `containerStyles.<style>.backgroundColor`
-/// (not a hardcoded color), and a ColumnSet with `stretch` + `auto` columns
+/// (not a hardcoded color), a ColumnSet with `stretch` + `auto` columns
 /// produces a content-hugging container pushed to whichever side the
-/// `stretch` spacer is not on.
+/// `stretch` spacer is not on, and `roundedCorners: true` (a Teams Adaptive
+/// Cards property) rounds both bubbles' fills with radius resolved via
+/// HostConfig (default 8) — the shape this sample models is a chat bubble.
 void main() {
   testWidgets(
-    'HostConfig container-style backgroundColor + ColumnSet alignment golden',
+    'HostConfig container-style backgroundColor + ColumnSet alignment + '
+    'roundedCorners golden',
     (tester) async {
       configureTestView(size: const Size(420, 240));
 

@@ -73,6 +73,35 @@ Source files: `lib/src/hostconfig/inputs_config.dart`, `lib/src/hostconfig/choic
 
 ---
 
+## Microsoft Teams HostConfig extensions
+
+Unlike the [Non-standard HostConfig extensions](#non-standard-hostconfig-extensions) above (custom behaviors this project invented), these properties are documented by Microsoft Teams as Adaptive Cards extensions beyond the base schema — see [Cards format reference](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format?tabs=adaptive-md%2Cdesktop%2Cdesktop1%2Cdesktop2%2Cconnector-html).
+
+### `cornerRadius` (`roundedCorners` element property)
+
+**Type:** `double?` | **Default:** `8` (`FallbackConfigs.cornerRadius`)
+
+`roundedCorners` is a Teams Adaptive Cards element property (`"roundedCorners": true`), documented as supported on `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. This package currently wires it on **`Container` only**; the other element types are tracked separately. The corner radius applied when `roundedCorners` is set is a single HostConfig-wide default — `cornerRadius` is a top-level scalar, not a per-element or per-style value.
+
+Example JSON:
+
+```json
+{ "cornerRadius": 12 }
+```
+
+```json
+{ "type": "Container", "roundedCorners": true, "items": [] }
+```
+
+Resolution precedence (highest wins):
+
+1. `HostConfig` value (`cornerRadius` in JSON, top-level)
+2. `FallbackConfigs.cornerRadius` (`8`)
+
+Source files: `lib/src/hostconfig/host_config.dart` (`HostConfig.cornerRadius`, parsed in `HostConfig.fromJson`), `lib/src/hostconfig/fallback_configs.dart` (`FallbackConfigs.cornerRadius`), `lib/src/reference_resolver.dart` (`ReferenceResolver.resolveCornerRadius()`), `lib/src/cards/containers/container.dart` (`AdaptiveContainerState.build`).
+
+---
+
 ## Architecture overview
 
 HostConfig JSON is parsed into typed Dart classes under `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/`. At render time, `ReferenceResolver` bridges HostConfig values to Flutter widgets.

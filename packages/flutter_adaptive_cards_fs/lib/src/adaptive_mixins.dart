@@ -169,10 +169,22 @@ mixin AdaptiveElementMixin<T extends AdaptiveElementWidgetMixin> on State<T> {
   }
 
   /// [BoxDecoration] with optional background color and image from element
-  /// JSON.
-  BoxDecoration getDecorationFromMap(Map element, {Color? backgroundColor}) {
+  /// JSON; corner radius is caller-supplied.
+  ///
+  /// [borderRadius] is caller-supplied (not read from [element] here) so
+  /// each element decides whether it honors a `roundedCorners` flag — see
+  /// `AdaptiveContainer`, which is currently the only caller that passes one.
+  BoxDecoration getDecorationFromMap(
+    Map element, {
+    Color? backgroundColor,
+    BorderRadius? borderRadius,
+  }) {
     final decorationImage = getDecorationImageFromMap(element);
-    return BoxDecoration(image: decorationImage, color: backgroundColor);
+    return BoxDecoration(
+      image: decorationImage,
+      color: backgroundColor,
+      borderRadius: borderRadius,
+    );
   }
 
   /// [DecorationImage] from element JSON `backgroundImage`.

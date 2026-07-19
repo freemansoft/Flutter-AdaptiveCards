@@ -41,6 +41,15 @@ class FallbackConfigs {
     padding: 20,
   );
 
+  /// Default `Container` corner radius in logical pixels when HostConfig
+  /// omits `cornerRadius`.
+  ///
+  /// `cornerRadius` backs the Microsoft Teams `roundedCorners` extension
+  /// (Container/ColumnSet/Column/Table/Image — this package currently wires
+  /// `Container` only). See
+  /// https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format
+  static const double cornerRadius = 8;
+
   /// Default responsive width breakpoints (Adaptive Cards spec defaults).
   static final HostWidthsConfig hostWidthsConfig = HostWidthsConfig(
     veryNarrowMax: 165,

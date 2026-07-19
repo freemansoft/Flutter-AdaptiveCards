@@ -136,5 +136,17 @@ void main() {
       expect(config.chartsLayout?.bar.barWidth, 18);
       expect(config.chartsLayout?.pie.sectionRadius, 100);
     });
+
+    test(
+      'cornerRadius (Teams roundedCorners extension) is null on a bare '
+      'HostConfig and round-trips from JSON',
+      () {
+        expect(const HostConfig().cornerRadius, isNull);
+        expect(HostConfig.fromJson({}).cornerRadius, isNull);
+
+        final config = HostConfig.fromJson({'cornerRadius': 12});
+        expect(config.cornerRadius, 12.0);
+      },
+    );
   });
 }

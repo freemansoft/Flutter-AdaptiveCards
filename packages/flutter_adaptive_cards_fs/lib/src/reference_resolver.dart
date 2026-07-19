@@ -805,6 +805,19 @@ class ReferenceResolver {
         colorFallbacks.progressBackgroundColor;
   }
 
+  /// Corner radius (logical pixels) for the Microsoft Teams `roundedCorners`
+  /// extension, from HostConfig `cornerRadius`.
+  ///
+  /// `roundedCorners` is a Teams Adaptive Cards property (Container,
+  /// ColumnSet, Column, Table, Image — this package wires `Container` only
+  /// so far), not part of the base Adaptive Cards schema. See
+  /// https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
+  /// Falls back to `FallbackConfigs.cornerRadius` (8) when HostConfig
+  /// doesn't specify one.
+  double resolveCornerRadius() {
+    return hostConfigs.current.cornerRadius ?? FallbackConfigs.cornerRadius;
+  }
+
   /// Get border color based on grid style
   Color resolveGridStyleColor(String style) {
     switch (style.toLowerCase()) {
