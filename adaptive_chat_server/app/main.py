@@ -24,13 +24,20 @@ app.add_middleware(
 )
 
 
-def build_responder(ollama_url: str | None, model: str) -> Responder:
+def build_responder(
+    ollama_url: str | None, model: str, system_prompt_file: str | None = None
+) -> Responder:
     """Selects the responder for this process: Ollama if a URL is set, else echo."""
     if ollama_url:
         logger.info(
-            "Responder: OllamaResponder (url=%s, model=%s)", ollama_url, model
+            "Responder: OllamaResponder (url=%s, model=%s, system_prompt=%s)",
+            ollama_url,
+            model,
+            system_prompt_file or "default",
         )
-        return OllamaResponder(ollama_url, model)
+        return OllamaResponder(
+            ollama_url, model, system_prompt_file=system_prompt_file
+        )
     logger.info("Responder: EchoResponder (no --ollama-url / OLLAMA_URL set)")
     return EchoResponder()
 
@@ -41,6 +48,7 @@ store = ConversationStore()
 responder = build_responder(
     os.environ.get("OLLAMA_URL"),
     os.environ.get("OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL),
+    os.environ.get("OLLAMA_SYSTEM_PROMPT_FILE"),
 )
 
 

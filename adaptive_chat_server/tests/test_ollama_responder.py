@@ -16,13 +16,16 @@ def _client(handler):
     return httpx.Client(transport=httpx.MockTransport(handler))
 
 
-def _responder(handler):
-    return OllamaResponder(OLLAMA_URL, model=OLLAMA_MODEL, client=_client(handler))
+def _responder(handler, system_prompt_file=None):
+    return OllamaResponder(
+        OLLAMA_URL,
+        model=OLLAMA_MODEL,
+        client=_client(handler),
+        system_prompt_file=system_prompt_file,
+    )
 
 
-def test_reply_posts_history_and_new_turn_to_chat_endpoint():
-    captured = {}
-
+def _ok_capturing_handler(captured):
     def handler(request: httpx.Request) -> httpx.Response:
         captured["url"] = str(request.url)
         captured["body"] = json.loads(request.content)
@@ -31,8 +34,19 @@ def test_reply_posts_history_and_new_turn_to_chat_endpoint():
             json={"message": {"role": "assistant", "content": "hi from ollama"}},
         )
 
+    return handler
+
+
+def test_reply_posts_history_and_new_turn_to_chat_endpoint(tmp_path):
+    # Point at a nonexistent prompt file so no system message is injected —
+    # this keeps the exact-body assertion decoupled from the default prompt.
+    missing = tmp_path / "no_such_prompt.txt"
+    captured = {}
+
     history = [("user", "earlier question"), ("assistant", "earlier answer")]
-    result = _responder(handler).reply("new question", history)
+    result = _responder(
+        _ok_capturing_handler(captured), system_prompt_file=str(missing)
+    ).reply("new question", history)
 
     assert result == "hi from ollama"
     assert captured["url"] == f"{OLLAMA_URL}/api/chat"
@@ -44,6 +58,72 @@ def test_reply_posts_history_and_new_turn_to_chat_endpoint():
             {"role": "user", "content": "new question"},
         ],
         "stream": False,
+    }
+
+
+def test_reply_prepends_system_prompt_from_file(tmp_path):
+    prompt_file = tmp_path / "system.txt"
+    prompt_file.write_text("  You are a terse assistant.\n", encoding="utf-8")
+    captured = {}
+
+    _responder(
+        _ok_capturing_handler(captured), system_prompt_file=str(prompt_file)
+    ).reply("hello", [("user", "hi"), ("assistant", "hey")])
+
+    # System message is first and whitespace-stripped; history + turn follow.
+    assert captured["body"]["messages"] == [
+        {"role": "system", "content": "You are a terse assistant."},
+        {"role": "user", "content": "hi"},
+        {"role": "assistant", "content": "hey"},
+        {"role": "user", "content": "hello"},
+    ]
+
+
+def test_reply_skips_system_message_when_prompt_file_missing(tmp_path):
+    missing = tmp_path / "gone.txt"
+    captured = {}
+
+    result = _responder(
+        _ok_capturing_handler(captured), system_prompt_file=str(missing)
+    ).reply("hello", [])
+
+    # A bad path is not fatal: reply still succeeds and no system message is sent.
+    assert result == "hi from ollama"
+    assert captured["body"]["messages"] == [{"role": "user", "content": "hello"}]
+
+
+def test_reply_skips_system_message_when_prompt_file_empty(tmp_path):
+    empty = tmp_path / "empty.txt"
+    empty.write_text("   \n", encoding="utf-8")
+    captured = {}
+
+    _responder(
+        _ok_capturing_handler(captured), system_prompt_file=str(empty)
+    ).reply("hello", [])
+
+    assert captured["body"]["messages"] == [{"role": "user", "content": "hello"}]
+
+
+def test_reply_rereads_prompt_file_each_request(tmp_path):
+    prompt_file = tmp_path / "live.txt"
+    prompt_file.write_text("first prompt", encoding="utf-8")
+    captured = {}
+    responder = _responder(
+        _ok_capturing_handler(captured), system_prompt_file=str(prompt_file)
+    )
+
+    responder.reply("q1", [])
+    assert captured["body"]["messages"][0] == {
+        "role": "system",
+        "content": "first prompt",
+    }
+
+    # Edit the file between requests; the change must apply without a new instance.
+    prompt_file.write_text("second prompt", encoding="utf-8")
+    responder.reply("q2", [])
+    assert captured["body"]["messages"][0] == {
+        "role": "system",
+        "content": "second prompt",
     }
 
 

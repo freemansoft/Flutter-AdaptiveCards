@@ -26,6 +26,13 @@ def main() -> None:
         default=DEFAULT_OLLAMA_MODEL,
         help=f"Ollama model name (default: {DEFAULT_OLLAMA_MODEL}).",
     )
+    parser.add_argument(
+        "--system-prompt-file",
+        default=None,
+        help="Path to a text file whose contents are sent as the system prompt "
+        "on every Ollama request. Re-read per request, so edits apply without a "
+        "restart. Omit to use the bundled default prompt.",
+    )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
@@ -33,6 +40,8 @@ def main() -> None:
     if args.ollama_url:
         os.environ["OLLAMA_URL"] = args.ollama_url
     os.environ["OLLAMA_MODEL"] = args.ollama_model
+    if args.system_prompt_file:
+        os.environ["OLLAMA_SYSTEM_PROMPT_FILE"] = args.system_prompt_file
 
     import uvicorn
 

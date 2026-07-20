@@ -9,6 +9,7 @@ a request.
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 import httpx
 
@@ -20,6 +21,12 @@ logger = logging.getLogger("uvicorn.error")
 # and env (`OLLAMA_MODEL`) override it.
 DEFAULT_OLLAMA_MODEL = "llama3.2"
 
+# System prompt injected as the first message on every chat request. Resolved
+# relative to this file (not the process cwd) so it is found no matter where the
+# server is launched from; overridden by `--system-prompt-file` / the
+# `OLLAMA_SYSTEM_PROMPT_FILE` env var. See README "System prompt".
+DEFAULT_SYSTEM_PROMPT_PATH = Path(__file__).with_name("default_system_prompt.txt")
+
 
 class OllamaResponder:
     """Calls `POST {ollama_url}/api/chat` with the conversation history."""
@@ -29,13 +36,53 @@ class OllamaResponder:
         ollama_url: str,
         model: str = DEFAULT_OLLAMA_MODEL,
         client: httpx.Client | None = None,
+        system_prompt_file: str | None = None,
     ) -> None:
         self._ollama_url = ollama_url
         self._model = model
         self._client = client or httpx.Client(timeout=60)
+        # Store the path, not the content: the file is re-read on every request
+        # so edits take effect without restarting the server.
+        self._system_prompt_path = (
+            Path(system_prompt_file)
+            if system_prompt_file
+            else DEFAULT_SYSTEM_PROMPT_PATH
+        )
+
+    def _load_system_prompt(self) -> str | None:
+        """Read the active system-prompt file, or None if unusable.
+
+        Read per request so live edits apply without a restart. A missing,
+        unreadable, or empty file is not fatal — we log and return None so the
+        request proceeds with no system message (never raises to the caller).
+        """
+        try:
+            prompt = self._system_prompt_path.read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            logger.warning(
+                "System prompt file unreadable (%s: %s) at %s — sending no "
+                "system message.",
+                type(exc).__name__,
+                exc,
+                self._system_prompt_path,
+            )
+            return None
+        if not prompt:
+            logger.warning(
+                "System prompt file is empty at %s — sending no system message.",
+                self._system_prompt_path,
+            )
+            return None
+        return prompt
 
     def reply(self, text: str, history: list[tuple[str, str]]) -> str:
-        messages = [{"role": role, "content": content} for (role, content) in history]
+        messages: list[dict[str, str]] = []
+        system_prompt = self._load_system_prompt()
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.extend(
+            {"role": role, "content": content} for (role, content) in history
+        )
         messages.append({"role": "user", "content": text})
         endpoint = f"{self._ollama_url}/api/chat"
         payload = {"model": self._model, "messages": messages, "stream": False}
