@@ -118,6 +118,32 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
     _isUpdatingFromDocument = false;
   }
 
+  /// Triggers the input's inline action when one is configured so keyboard
+  /// submission behaves like pressing the visible action button.
+  void _triggerInlineActionIfPresent() {
+    final inlineAction = adaptiveMap['inlineAction'];
+    if (inlineAction is! Map) {
+      return;
+    }
+
+    final inlineActionMap = Map<String, dynamic>.from(inlineAction);
+    final action = actionTypeRegistry.getActionForType(map: inlineActionMap);
+    if (action == null) {
+      return;
+    }
+
+    final text = controller.text;
+    setDocumentInputValue(text);
+    rawRootCardWidgetState.changeValue(id, text);
+    notifyUserInputValueChanged(text, committed: true);
+
+    action.tap(
+      context: context,
+      rawAdaptiveCardState: rawRootCardWidgetState,
+      adaptiveMap: inlineActionMap,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     listenForResolvedValueChanges();
@@ -136,92 +162,100 @@ class AdaptiveTextInputState extends ConsumerState<AdaptiveTextInput>
 
     final fieldBox = SizedBox(
       height: 40,
-      child: TextFormField(
-        key: generateWidgetKey(adaptiveMap),
-        focusNode: _focusNode,
-        style: const TextStyle(),
-        controller: controller,
-        // maxLength: maxLength,
-        inputFormatters: [
-          if (effectiveMaxLength != null && effectiveMaxLength > 0)
-            LengthLimitingTextInputFormatter(effectiveMaxLength),
-        ],
-        keyboardType: inputStyle,
-        obscureText: isPassword && _obscure,
-        enableSuggestions: !isPassword,
-        autocorrect: !isPassword,
-        maxLines: (isMultiline && !isPassword) ? null : 1,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4),
+      child: CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.enter, control: true):
+              _triggerInlineActionIfPresent,
+          const SingleActivator(LogicalKeyboardKey.enter, meta: true):
+              _triggerInlineActionIfPresent,
+        },
+        child: TextFormField(
+          key: generateWidgetKey(adaptiveMap),
+          focusNode: _focusNode,
+          style: const TextStyle(),
+          controller: controller,
+          // maxLength: maxLength,
+          inputFormatters: [
+            if (effectiveMaxLength != null && effectiveMaxLength > 0)
+              LengthLimitingTextInputFormatter(effectiveMaxLength),
+          ],
+          keyboardType: inputStyle,
+          obscureText: isPassword && _obscure,
+          enableSuggestions: !isPassword,
+          autocorrect: !isPassword,
+          maxLines: (isMultiline && !isPassword) ? null : 1,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 8,
+              horizontal: 8,
+            ),
+            enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(),
+            ),
+            errorBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(width: 1),
+            ),
+            focusedErrorBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(4)),
+              borderSide: BorderSide(width: 1),
+            ),
+            filled: true,
+            fillColor: styleResolver.resolveInputBackgroundColor(
+              context: context,
+              style: null,
+            ),
+            hintText: input.placeholder,
+            // required or box will exist even though field is hidden or
+            // half height
+            hintStyle: const TextStyle(),
+            suffixIcon: (isPassword && revealEnabled)
+                ? IconButton(
+                    padding: EdgeInsets.zero,
+                    iconSize: 20,
+                    constraints: const BoxConstraints(
+                      maxHeight: 36,
+                      maxWidth: 36,
+                    ),
+                    icon: Icon(
+                      _obscure ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    // Library has no l10n/arb setup (intl is date-only),
+                    // so these accessibility labels are plain strings,
+                    // consistent with the rest of the package.
+                    tooltip: _obscure ? 'Show password' : 'Hide password',
+                    onPressed: () => setState(() => _obscure = !_obscure),
+                  )
+                : null,
+            suffixIconConstraints: const BoxConstraints(
+              maxHeight: 36,
+              maxWidth: 36,
+            ),
+            errorStyle: const TextStyle(height: 0),
           ),
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 8,
-            horizontal: 8,
-          ),
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(),
-          ),
-          errorBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(4)),
-            borderSide: BorderSide(width: 1),
-          ),
-          focusedErrorBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(4)),
-            borderSide: BorderSide(width: 1),
-          ),
-          filled: true,
-          fillColor: styleResolver.resolveInputBackgroundColor(
-            context: context,
-            style: null,
-          ),
-          hintText: input.placeholder,
-          // required or box will exist even though field is hidden or
-          // half height
-          hintStyle: const TextStyle(),
-          suffixIcon: (isPassword && revealEnabled)
-              ? IconButton(
-                  padding: EdgeInsets.zero,
-                  iconSize: 20,
-                  constraints: const BoxConstraints(
-                    maxHeight: 36,
-                    maxWidth: 36,
-                  ),
-                  icon: Icon(
-                    _obscure ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  // Library has no l10n/arb setup (intl is date-only),
-                  // so these accessibility labels are plain strings,
-                  // consistent with the rest of the package.
-                  tooltip: _obscure ? 'Show password' : 'Hide password',
-                  onPressed: () => setState(() => _obscure = !_obscure),
-                )
-              : null,
-          suffixIconConstraints: const BoxConstraints(
-            maxHeight: 36,
-            maxWidth: 36,
-          ),
-          errorStyle: const TextStyle(height: 0),
+          validator: (value) {
+            final regexPattern = adaptiveMap['regex'] as String?;
+            if (!textInputValueIsValid(
+              value: value,
+              isRequired: input.isRequired,
+              regexPattern: regexPattern,
+            )) {
+              setLocalValidationError();
+              return '';
+            }
+            clearLocalValidationError();
+            return null;
+          },
+          onEditingComplete: () {
+            notifyUserInputValueChanged(
+              controller.text,
+              committed: true,
+            );
+          },
         ),
-        validator: (value) {
-          final regexPattern = adaptiveMap['regex'] as String?;
-          if (!textInputValueIsValid(
-            value: value,
-            isRequired: input.isRequired,
-            regexPattern: regexPattern,
-          )) {
-            setLocalValidationError();
-            return '';
-          }
-          clearLocalValidationError();
-          return null;
-        },
-        onEditingComplete: () {
-          notifyUserInputValueChanged(
-            controller.text,
-            committed: true,
-          );
-        },
       ),
     );
 

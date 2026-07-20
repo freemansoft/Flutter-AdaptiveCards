@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -101,6 +102,37 @@ void main() {
         captured!.data['message'],
         'hello from inline action',
       );
+    },
+  );
+
+  testWidgets(
+    'ctrl-enter on the inline-action field triggers the same submit pipeline',
+    (WidgetTester tester) async {
+      SubmitActionInvoke? captured;
+      final map = _cardWithInlineAction();
+      final textMap = map['body'][0] as Map<String, dynamic>;
+
+      await tester.pumpWidget(
+        getTestWidgetFromMap(
+          map: map,
+          title: 'inlineAction ctrl-enter submits',
+          onSubmit: (invoke) => captured = invoke,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final fieldFinder = find.byKey(generateWidgetKey(textMap));
+      await tester.enterText(fieldFinder, 'hello from ctrl-enter');
+      await tester.pump();
+      await tester.showKeyboard(fieldFinder);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
+      await tester.pumpAndSettle();
+
+      expect(captured, isNotNull);
+      expect(captured!.data['message'], 'hello from ctrl-enter');
     },
   );
 
