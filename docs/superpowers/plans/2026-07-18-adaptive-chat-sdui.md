@@ -1749,6 +1749,50 @@ git commit -m "feat(chat): host config for bubble theming"
 
 ---
 
+## Phase 3 — VS Code run targets
+
+Adds run/debug configurations to the existing `.vscode/launch.json` (which already has Widgetbook + Adaptive Explorer entries) and, where useful, `.vscode/tasks.json`. Config-only; no automated tests — verified by the targets appearing in the VS Code Run menu and launching.
+
+### Task 19: VS Code launch configs for the chat app + server
+
+**Files:**
+- Modify: `.vscode/launch.json`
+- Modify (optional): `.vscode/tasks.json`
+
+- Add Flutter launch configs (type `dart`) for `adaptive_chat`, mirroring the existing Adaptive Explorer / Widgetbook entries:
+  - `Adaptive Chat - Current` — `cwd: ${workspaceFolder}/adaptive_chat`, `program: lib/main.dart`.
+  - `Adaptive Chat - Web` — adds `-d chrome`, `--web-port 3000`, `--web-browser-flag=--disable-web-security` (local CORS during dev, same pattern as `Widgetbook - Web`).
+- Add a Python launch config for the FastAPI server (type `debugpy`): `python` = `${workspaceFolder}/adaptive_chat_server/.venv/bin/python`, `module` = `uvicorn`, `args` = `["app.main:app","--reload","--port","8000"]`, `cwd` = `${workspaceFolder}/adaptive_chat_server`.
+- Add a `compounds` entry `Adaptive Chat (server + web)` launching the server config + the web app config together.
+- Optionally add a `tasks.json` shell task `Run Adaptive Chat Server` (`.venv/bin/uvicorn app.main:app --reload --port 8000`, cwd `adaptive_chat_server`) as a non-debug alternative.
+- Verify: `.vscode/launch.json` is valid JSON (`python -c "import json;json.load(open('.vscode/launch.json'))"`); the new configs appear in the Run menu (full launch is a manual VS Code step).
+- **When Phase 4 lands**, add an `Adaptive Chat Server (Ollama)` config that passes `--ollama-url`.
+
+---
+
+## Phase 4 — Local Ollama integration (opt-in via CLI)
+
+The original design anticipated this: `OllamaResponder` drops in behind the existing `Responder` interface. The server chooses its responder at startup from a command-line parameter; with no Ollama URL it stays the echo demo (existing behavior preserved).
+
+### Task 20: OllamaResponder + CLI wiring
+
+**Files:**
+- Create: `adaptive_chat_server/app/ollama_responder.py`
+- Create: `adaptive_chat_server/app/__main__.py` (CLI entrypoint + responder selection)
+- Modify: `adaptive_chat_server/app/responder.py` (interface), `app/main.py` (responder injection seam), `app/store.py` (persist assistant reply text for history)
+- Test: `adaptive_chat_server/tests/test_ollama_responder.py`, extend `tests/test_api.py`
+- Docs: `adaptive_chat_server/README.md`
+
+- **Responder interface:** extend `reply()` to receive prior conversation turns so a chat model has context — `reply(text: str, history: list[tuple[str, str]]) -> str`, each tuple `(role, text)` for a prior turn (`role` in `user`/`assistant`). `EchoResponder` ignores `history` (still returns `Did you just say: {text}`); adjust the `send_interaction` call site to pass history and keep the existing echo tests green.
+- **Store:** persist the plain assistant reply text per interaction (alongside the user `text`) so the send route can rebuild `(user, assistant)` history for the responder — add a `reply_text` field to `Interaction` (or derive it).
+- **OllamaResponder:** constructed with `ollama_url` + `model` (default e.g. `llama3.2`). `reply()` POSTs to `{ollama_url}/api/chat` with the history + current user text mapped to Ollama's `messages` (`{role, content}`, `stream: false`), returns the assistant `message.content`. Handle Ollama-unreachable gracefully (clear error or a short fallback string — decide at implementation).
+- **CLI selection:** `python -m app --ollama-url http://localhost:11434 [--ollama-model llama3.2] [--port 8000]` parses args, builds the chosen responder (Ollama when `--ollama-url` is given, else `EchoResponder`), injects it into the app (module-level setter or `app.state`), and runs uvicorn. Without `--ollama-url`, the server is the echo demo. (Because `uvicorn app.main:app` can't take app args directly, the CLI entrypoint owns responder selection.)
+- **Tests:** `OllamaResponder.reply()` with a mocked HTTP client (assert the POST body's `messages` shape to `{url}/api/chat` and that it returns the parsed content); responder-selection logic (URL present → OllamaResponder, absent → EchoResponder); echo path unchanged. Do NOT require a live Ollama in tests.
+- **Docs:** `adaptive_chat_server/README.md` gains the `--ollama-url` usage, the model default, and the note that Ollama must be running locally.
+- Verify: `cd adaptive_chat_server && .venv/bin/python -m pytest -v` all pass; a manual `python -m app --ollama-url http://localhost:11434` smoke against a real local Ollama is a human step.
+
+---
+
 ## Final Task: Full verification
 
 - [ ] **Step 1: Backend suite**
