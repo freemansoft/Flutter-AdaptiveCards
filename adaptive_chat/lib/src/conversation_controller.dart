@@ -43,6 +43,7 @@ class ConversationController extends ChangeNotifier {
   String? _conversationId;
   String? _postNext;
   int _counter = 0;
+  bool _disposed = false;
 
   /// True once a conversation exists and sends are allowed.
   bool get ready => _postNext != null;
@@ -68,7 +69,7 @@ class ConversationController extends ChangeNotifier {
       startError = e;
     } finally {
       starting = false;
-      notifyListeners();
+      if (!_disposed) notifyListeners();
     }
   }
 
@@ -96,7 +97,7 @@ class ConversationController extends ChangeNotifier {
       messages.addAll(envelope.messages);
     } finally {
       pending = false;
-      notifyListeners();
+      if (!_disposed) notifyListeners();
     }
   }
 
@@ -110,5 +111,11 @@ class ConversationController extends ChangeNotifier {
   void clear() {
     messages.clear();
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }

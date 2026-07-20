@@ -100,6 +100,8 @@ Resolution precedence (highest wins):
 
 Source files: `lib/src/hostconfig/host_config.dart` (`HostConfig.cornerRadius`, parsed in `HostConfig.fromJson`), `lib/src/hostconfig/fallback_configs.dart` (`FallbackConfigs.cornerRadius`), `lib/src/reference_resolver.dart` (`ReferenceResolver.resolveCornerRadius()`), `lib/src/cards/containers/container.dart` (`AdaptiveContainerState.build`), `lib/src/cards/containers/column_set.dart` (`AdaptiveColumnSetState.build`), `lib/src/cards/containers/column.dart` (`AdaptiveColumnState.build`), `lib/src/cards/containers/table.dart` (`AdaptiveTableState.build`), `lib/src/cards/elements/image.dart` (`AdaptiveImageState.build`).
 
+**Known gap / follow-up:** `Carousel` (`lib/src/cards/elements/carousel.dart`) also honors `roundedCorners`, but it does not go through `ReferenceResolver.resolveCornerRadius()` — its radius is hardcoded to a fixed 8px (`BorderRadius.circular(8)`), so it ignores a custom HostConfig `cornerRadius`. Wiring `Carousel` to `resolveCornerRadius()` is tracked as follow-up work.
+
 ---
 
 ## Architecture overview

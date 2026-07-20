@@ -808,9 +808,10 @@ class ReferenceResolver {
   /// Corner radius (logical pixels) for the Microsoft Teams `roundedCorners`
   /// extension, from HostConfig `cornerRadius`.
   ///
-  /// `roundedCorners` is a Teams Adaptive Cards property (Container,
-  /// ColumnSet, Column, Table, Image — this package wires `Container` only
-  /// so far), not part of the base Adaptive Cards schema. See
+  /// `roundedCorners` is a Microsoft Teams Adaptive Cards property (beyond
+  /// the base Adaptive Cards schema), wired on all five elements that
+  /// support it — `Container`, `ColumnSet`, `Column`, `Table`, and `Image`.
+  /// See
   /// https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
   /// Falls back to `FallbackConfigs.cornerRadius` (8) when HostConfig
   /// doesn't specify one.
