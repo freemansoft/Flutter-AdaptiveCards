@@ -79,16 +79,24 @@ lost on restart (fine for a demo; not shared across worker processes).
 **How history reaches the model.** On each `POST …/interactions`, the send route
 rebuilds the conversation's history from the store — walking `conversation.order` and
 emitting a `("user", text)` / `("assistant", reply_text)` pair per prior interaction —
-and passes it to `responder.reply(text, history)`. `OllamaResponder` then sends
-**system prompt + full history + current turn** to `/api/chat` (see the diagram and
-**System prompt** below). Because history is built from one conversation's `order`,
-each `conversationId` gets an independent context.
+and passes it to `responder.reply(text, history)` with the **full** history.
+`OllamaResponder` then sends **system prompt + history + current turn** to
+`/api/chat` (see the diagram and **System prompt** below) — trimmed to a
+recent window as described next. Because history is built from one
+conversation's `order`, each `conversationId` gets an independent context.
 
-**No truncation.** Every request replays the **entire** conversation from its first
-turn — there is no sliding window, token budget, or summarization. History therefore
-grows unbounded and a long conversation will eventually exceed the model's context
-window. That is deliberate for a demo; a production server would cap it. (`EchoResponder`
-ignores `history` entirely — it only echoes the current turn.)
+**Retained in full; trimmed only on send.** The store keeps the **entire**
+conversation (durable log + idempotent replay). What is bounded is only the
+prompt **sent to Ollama**: `OllamaResponder` replays just the last
+`--history-turns` exchanges (default 10). Nothing is pruned from the store, so
+raising `--history-turns` or `--num-ctx` later needs no data migration.
+
+**Context-fill logging.** The server sends an explicit `options.num_ctx`
+(default 4096) and, after each reply, logs the actual prompt tokens
+(`prompt_eval_count`) against that window: an `INFO` line at ≥ 50% fill and a
+`WARNING` at ≥ 76% (leaving headroom for the generated reply). This surfaces the
+otherwise-silent truncation Ollama performs once a prompt exceeds `num_ctx`.
+(`EchoResponder` ignores history entirely — it only echoes the current turn.)
 
 ### System prompt
 
@@ -172,6 +180,20 @@ text file:
 The file is re-read on every request, so you can edit `my_prompt.txt` and see the
 change on the next turn without restarting. Omit `--system-prompt-file` to use the
 bundled default.
+
+**Context window & history.** Two knobs bound and observe the prompt sent to
+Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`):
+
+```bash
+.venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
+  --num-ctx 4096 --history-turns 10
+```
+
+- `--num-ctx` (default 4096) — context window sent as `options.num_ctx`. Prompt
+  fill is logged against it (INFO ≥ 50%, WARNING ≥ 76%). Ollama silently drops
+  the oldest tokens once a prompt exceeds `num_ctx`; the warning surfaces that.
+- `--history-turns` (default 10) — how many prior exchanges are replayed to the
+  model. Bounds only the outbound prompt; the server retains full history.
 
 Omit `--ollama-url` (or run `uvicorn app.main:app` directly, as in **Run** above) to
 keep the echo demo. `--ollama-model` defaults to `llama3.2`. `--host`/`--port` are
