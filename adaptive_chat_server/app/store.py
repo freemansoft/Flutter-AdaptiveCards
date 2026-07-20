@@ -20,6 +20,7 @@ class Interaction:
     interaction_id: str
     text: str
     messages: list[Message]
+    reply_text: str = ""
 
 
 @dataclass

@@ -73,12 +73,35 @@
       "args": ["app.main:app", "--reload", "--port", "8000"],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
       "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+    },
+    {
+      // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
+      // from --ollama-url. Requires a local Ollama (`ollama serve`) with the
+      // model pulled (`ollama pull llama3.2`).
+      "name": "Adaptive Chat Server (Ollama)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "app",
+      "args": [
+        "--ollama-url",
+        "http://localhost:11434",
+        "--ollama-model",
+        "llama3.2",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}/adaptive_chat_server",
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
     }
   ],
   "compounds": [
     {
       "name": "Adaptive Chat (server + web)",
       "configurations": ["Adaptive Chat Server", "Adaptive Chat - Web"]
+    },
+    {
+      "name": "Adaptive Chat (Ollama server + web)",
+      "configurations": ["Adaptive Chat Server (Ollama)", "Adaptive Chat - Web"]
     }
   ]
 }

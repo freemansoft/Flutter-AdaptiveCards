@@ -1,11 +1,14 @@
 """FastAPI entrypoint for the Adaptive Chat echo backend."""
 from __future__ import annotations
 
+import os
+
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.cards import assistant_bubble, envelope, user_bubble
-from app.responder import EchoResponder
+from app.ollama_responder import OllamaResponder
+from app.responder import EchoResponder, Responder
 from app.store import ConversationStore, Interaction, Message
 
 app = FastAPI(title="Adaptive Chat Server")
@@ -17,8 +20,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def build_responder(ollama_url: str | None, model: str) -> Responder:
+    """Selects the responder for this process: Ollama if a URL is set, else echo."""
+    if ollama_url:
+        return OllamaResponder(ollama_url, model)
+    return EchoResponder()
+
+
 store = ConversationStore()
-responder = EchoResponder()
+# Built from env vars (not CLI args directly) so the choice survives uvicorn
+# `--reload`, which re-imports this module in a fresh subprocess.
+responder = build_responder(
+    os.environ.get("OLLAMA_URL"), os.environ.get("OLLAMA_MODEL", "llama3.2")
+)
 
 
 @app.post("/conversations")
@@ -52,14 +67,26 @@ async def send_interaction(
     if not message:
         raise HTTPException(status_code=400, detail="data.message required")
 
-    reply_text = responder.reply(message)
+    conversation = store.get(cid)
+    history: list[tuple[str, str]] = []
+    for prior_iid in conversation.order:
+        prior = conversation.interactions[prior_iid]
+        history.append(("user", prior.text))
+        history.append(("assistant", prior.reply_text))
+
+    reply_text = responder.reply(message, history)
     messages = [
         Message(role="user", card=user_bubble(message)),
         Message(role="assistant", card=assistant_bubble(reply_text)),
     ]
     store.add_interaction(
         cid,
-        Interaction(interaction_id=x_interaction_id, text=message, messages=messages),
+        Interaction(
+            interaction_id=x_interaction_id,
+            text=message,
+            messages=messages,
+            reply_text=reply_text,
+        ),
     )
     return envelope(cid, x_interaction_id, messages)
 

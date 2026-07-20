@@ -5,13 +5,13 @@ from typing import Protocol
 
 
 class Responder(Protocol):
-    """Turns a user message into a reply string."""
+    """Turns a user message (plus prior conversation turns) into a reply string."""
 
-    def reply(self, text: str) -> str: ...
+    def reply(self, text: str, history: list[tuple[str, str]]) -> str: ...
 
 
 class EchoResponder:
-    """v1 responder: echoes the user's text back."""
+    """v1 responder: echoes the user's text back. Ignores history."""
 
-    def reply(self, text: str) -> str:
+    def reply(self, text: str, history: list[tuple[str, str]]) -> str:
         return f"Did you just say: {text}"

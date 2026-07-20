@@ -40,6 +40,21 @@ def test_send_returns_two_bubbles_and_links():
     assert body["links"]["postNext"] == f"/conversations/{cid}/interactions"
 
 
+def test_send_second_turn_still_echoes_correctly():
+    # EchoResponder ignores history, so building it in the send route must
+    # not change the reply for either turn.
+    cid = _start()
+    first = _send(cid, "i_0001", "first message").json()
+    second = _send(cid, "i_0002", "second message").json()
+
+    first_reply = first["messages"][1]["body"][0]["columns"][0]["items"][0]["items"][0]["text"]
+    second_reply = second["messages"][1]["body"][0]["columns"][0]["items"][0]["items"][0][
+        "text"
+    ]
+    assert first_reply == "Did you just say: first message"
+    assert second_reply == "Did you just say: second message"
+
+
 def test_send_is_idempotent_by_interaction_id():
     cid = _start()
     first = _send(cid, "i_0007", "same").json()
