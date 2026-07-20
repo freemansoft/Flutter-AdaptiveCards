@@ -1,5 +1,5 @@
 from app.main import build_responder
-from app.ollama_responder import OllamaResponder
+from app.ollama_responder import DEFAULT_OLLAMA_MODEL, OllamaResponder
 from app.responder import EchoResponder
 
 
@@ -13,9 +13,9 @@ def test_echo_ignores_history():
 
 
 def test_build_responder_defaults_to_echo_without_url():
-    assert isinstance(build_responder(None, "llama3.2"), EchoResponder)
+    assert isinstance(build_responder(None, DEFAULT_OLLAMA_MODEL), EchoResponder)
 
 
 def test_build_responder_selects_ollama_when_url_given():
-    responder = build_responder("http://x", "llama3.2")
+    responder = build_responder("http://x", DEFAULT_OLLAMA_MODEL)
     assert isinstance(responder, OllamaResponder)

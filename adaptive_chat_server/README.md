@@ -93,14 +93,25 @@ server via the CLI entrypoint with `--ollama-url`:
 ollama pull llama3.2   # once, if you haven't already
 ollama serve           # if it isn't already running
 
-.venv/bin/python -m app --ollama-url http://localhost:11434 [--ollama-model llama3.2]
+.venv/bin/python -m app --ollama-url http://127.0.0.1:11434 [--ollama-model llama3.2]
 ```
 
 Ollama must already be running locally and the model must be pulled — the server
-does not start or manage Ollama itself. If Ollama is unreachable when a message is
-sent, the reply falls back to a short `"(Ollama unreachable at ...)"` message
-instead of failing the request. Prior turns of the conversation are sent as chat
-history so the model has context.
+does not start or manage Ollama itself. Prior turns of the conversation are sent as
+chat history so the model has context.
+
+**Use `127.0.0.1`, not `localhost`.** With Ollama's "expose to the network" setting
+off, Ollama binds IPv4 `127.0.0.1` only; on macOS `localhost` often resolves to IPv6
+`::1` first, so `http://localhost:11434` fails to connect even though Ollama is
+running.
+
+**Diagnostics.** Every reply logs to the server console (the uvicorn logger): the
+selected responder at startup, each outgoing `POST …/api/chat`, and — on failure —
+the full exception with a stack trace. Failures are reported distinctly rather than
+all as "unreachable": a connection failure returns
+`"(Ollama unreachable at … — <ExceptionType>: …)"`, an HTTP error (e.g. the model
+isn't pulled → 404) returns `"(Ollama error HTTP 404 at …: <body>)"`, and an
+unexpected 2xx body returns `"(Ollama returned an unexpected response: …)"`.
 
 Omit `--ollama-url` (or run `uvicorn app.main:app` directly, as in **Run** above) to
 keep the echo demo. `--ollama-model` defaults to `llama3.2`. `--host`/`--port` are

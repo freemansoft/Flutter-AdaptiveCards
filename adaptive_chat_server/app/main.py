@@ -1,15 +1,18 @@
 """FastAPI entrypoint for the Adaptive Chat echo backend."""
 from __future__ import annotations
 
+import logging
 import os
 
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.cards import assistant_bubble, envelope, user_bubble
-from app.ollama_responder import OllamaResponder
+from app.ollama_responder import DEFAULT_OLLAMA_MODEL, OllamaResponder
 from app.responder import EchoResponder, Responder
 from app.store import ConversationStore, Interaction, Message
+
+logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI(title="Adaptive Chat Server")
 
@@ -24,7 +27,11 @@ app.add_middleware(
 def build_responder(ollama_url: str | None, model: str) -> Responder:
     """Selects the responder for this process: Ollama if a URL is set, else echo."""
     if ollama_url:
+        logger.info(
+            "Responder: OllamaResponder (url=%s, model=%s)", ollama_url, model
+        )
         return OllamaResponder(ollama_url, model)
+    logger.info("Responder: EchoResponder (no --ollama-url / OLLAMA_URL set)")
     return EchoResponder()
 
 
@@ -32,7 +39,8 @@ store = ConversationStore()
 # Built from env vars (not CLI args directly) so the choice survives uvicorn
 # `--reload`, which re-imports this module in a fresh subprocess.
 responder = build_responder(
-    os.environ.get("OLLAMA_URL"), os.environ.get("OLLAMA_MODEL", "llama3.2")
+    os.environ.get("OLLAMA_URL"),
+    os.environ.get("OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL),
 )
 
 

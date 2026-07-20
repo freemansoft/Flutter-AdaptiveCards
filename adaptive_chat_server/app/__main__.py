@@ -10,19 +10,21 @@ from __future__ import annotations
 import argparse
 import os
 
+from app.ollama_responder import DEFAULT_OLLAMA_MODEL
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(prog="python -m app")
     parser.add_argument(
         "--ollama-url",
         default=None,
-        help="Base URL of a running Ollama server, e.g. http://localhost:11434. "
+        help="Base URL of a running Ollama server, e.g. http://127.0.0.1:11434. "
         "Omit to run the echo demo.",
     )
     parser.add_argument(
         "--ollama-model",
-        default="llama3.2",
-        help="Ollama model name (default: llama3.2).",
+        default=DEFAULT_OLLAMA_MODEL,
+        help=f"Ollama model name (default: {DEFAULT_OLLAMA_MODEL}).",
     )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)

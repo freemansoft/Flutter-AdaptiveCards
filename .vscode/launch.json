@@ -77,16 +77,16 @@
     {
       // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
       // from --ollama-url. Requires a local Ollama (`ollama serve`) with the
-      // model pulled (`ollama pull llama3.2`).
+      // model pulled (`ollama pull gpt-oss:20b`).
       "name": "Adaptive Chat Server (Ollama)",
       "type": "debugpy",
       "request": "launch",
       "module": "app",
       "args": [
         "--ollama-url",
-        "http://localhost:11434",
+        "http://127.0.0.1:11434",
         "--ollama-model",
-        "llama3.2",
+        "gpt-oss:20b",
         "--port",
         "8000"
       ],
