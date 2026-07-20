@@ -66,7 +66,7 @@
       // Uses the project's Python venv; run `python3 -m venv .venv &&
       // .venv/bin/pip install -r requirements.txt` in adaptive_chat_server
       // first. On Windows use .venv/Scripts/python.exe.
-      "name": "Adaptive Chat Server",
+      "name": "Adaptive Chat Server (echo)",
       "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
@@ -78,7 +78,7 @@
       // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
       // from --ollama-url. Requires a local Ollama (`ollama serve`) with the
       // model pulled (`ollama pull gpt-oss:20b`).
-      "name": "Adaptive Chat Server (Ollama)",
+      "name": "Adaptive Chat Server (Ollama gpt-oss:20b)",
       "type": "debugpy",
       "request": "launch",
       "module": "app",
