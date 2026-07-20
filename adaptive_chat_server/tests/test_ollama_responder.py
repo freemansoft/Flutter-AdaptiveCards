@@ -16,12 +16,13 @@ def _client(handler):
     return httpx.Client(transport=httpx.MockTransport(handler))
 
 
-def _responder(handler, system_prompt_file=None):
+def _responder(handler, system_prompt_file=None, history_turns=10):
     return OllamaResponder(
         OLLAMA_URL,
         model=OLLAMA_MODEL,
         client=_client(handler),
         system_prompt_file=system_prompt_file,
+        history_turns=history_turns,
     )
 
 
@@ -158,3 +159,54 @@ def test_reply_reports_unexpected_response_body():
     result = _responder(handler).reply("hello", [])
 
     assert result == "(Ollama returned an unexpected response: KeyError)"
+
+
+def test_reply_trims_history_to_last_n_turns(tmp_path):
+    missing = tmp_path / "no_prompt.txt"  # no system message, keep body exact
+    captured = {}
+    history = [
+        ("user", "u1"), ("assistant", "a1"),
+        ("user", "u2"), ("assistant", "a2"),
+        ("user", "u3"), ("assistant", "a3"),
+    ]
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        history_turns=2,
+    ).reply("now", history)
+
+    # Only the last 2 exchanges survive, then the current turn.
+    assert captured["body"]["messages"] == [
+        {"role": "user", "content": "u2"},
+        {"role": "assistant", "content": "a2"},
+        {"role": "user", "content": "u3"},
+        {"role": "assistant", "content": "a3"},
+        {"role": "user", "content": "now"},
+    ]
+
+
+def test_reply_sends_no_prior_history_when_turns_zero(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    history = [("user", "u1"), ("assistant", "a1")]
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        history_turns=0,
+    ).reply("now", history)
+
+    assert captured["body"]["messages"] == [{"role": "user", "content": "now"}]
+
+
+def test_reply_does_not_mutate_caller_history(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    history = [("user", "u1"), ("assistant", "a1"), ("user", "u2"), ("assistant", "a2")]
+    original = list(history)
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        history_turns=1,
+    ).reply("now", history)
+
+    assert history == original  # trim is send-only

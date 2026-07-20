@@ -21,6 +21,10 @@ logger = logging.getLogger("uvicorn.error")
 # and env (`OLLAMA_MODEL`) override it.
 DEFAULT_OLLAMA_MODEL = "llama3.2"
 
+# Default number of prior interactions (user+assistant exchanges) replayed to
+# Ollama. Bounds only the outbound prompt — the server store keeps full history.
+DEFAULT_HISTORY_TURNS = 10
+
 # System prompt injected as the first message on every chat request. Resolved
 # relative to this file (not the process cwd) so it is found no matter where the
 # server is launched from; overridden by `--system-prompt-file` / the
@@ -37,10 +41,12 @@ class OllamaResponder:
         model: str = DEFAULT_OLLAMA_MODEL,
         client: httpx.Client | None = None,
         system_prompt_file: str | None = None,
+        history_turns: int = DEFAULT_HISTORY_TURNS,
     ) -> None:
         self._ollama_url = ollama_url
         self._model = model
         self._client = client or httpx.Client(timeout=60)
+        self._history_turns = history_turns
         # Store the path, not the content: the file is re-read on every request
         # so edits take effect without restarting the server.
         self._system_prompt_path = (
@@ -75,13 +81,27 @@ class OllamaResponder:
             return None
         return prompt
 
+    def _trim_history(
+        self, history: list[tuple[str, str]]
+    ) -> list[tuple[str, str]]:
+        """Return only the last ``history_turns`` interactions to send to Ollama.
+
+        Send-only: operates on a slice, never mutates the caller's list or the
+        store. ``history`` has two entries (user, assistant) per interaction, so
+        we keep ``2 * history_turns`` entries. ``history_turns <= 0`` sends none.
+        """
+        if self._history_turns <= 0:
+            return []
+        return history[-2 * self._history_turns :]
+
     def reply(self, text: str, history: list[tuple[str, str]]) -> str:
         messages: list[dict[str, str]] = []
         system_prompt = self._load_system_prompt()
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
         messages.extend(
-            {"role": role, "content": content} for (role, content) in history
+            {"role": role, "content": content}
+            for (role, content) in self._trim_history(history)
         )
         messages.append({"role": "user", "content": text})
         endpoint = f"{self._ollama_url}/api/chat"
