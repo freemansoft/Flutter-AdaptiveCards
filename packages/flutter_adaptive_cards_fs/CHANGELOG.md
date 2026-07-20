@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - feat: `ColumnSet` and `Column` support the Teams `roundedCorners` property (radius via HostConfig, default 8), mirroring the `Container` implementation. `Table`/`Image` are not wired yet.
 - feat: `Table` supports the Teams `roundedCorners` property (clips the table + rounds the grid border; radius via HostConfig). `Table` renders via a bespoke Flutter `Table` rather than the `getDecorationFromMap` path used by `Container`/`ColumnSet`/`Column`, so rounding is a `ClipRRect` wrapper plus a `TableBorder.borderRadius`. `Image` is not wired yet.
 - feat: `Image` supports the Teams `roundedCorners` property (`style: person` circle takes precedence); completes `roundedCorners` on all five Teams elements (`Container`/`ColumnSet`/`Column`/`Table`/`Image`).
+- feat: `Input.Text` supports `inlineAction` (standard, Adaptive Cards v1.2+) — renders the action beside the field via `cardTypeRegistry.getAction`, wired to the full submit/execute pipeline.
+- feat: an action `iconUrl` may reference a Fluent icon with `icon:<name>` (e.g. `icon:Send`), resolved via the same map the `Icon` element uses; any other value is loaded as an image URL / data URI. Icon-only rendering (icon _instead of_ the title, per the `inlineAction` spec) is a follow-up.
 
 ### Fixed 0.15.0
 

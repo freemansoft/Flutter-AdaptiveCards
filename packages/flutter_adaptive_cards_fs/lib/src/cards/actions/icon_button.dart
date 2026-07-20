@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/adaptive_image_utils.dart';
+import 'package:flutter_adaptive_cards_fs/src/utils/fluent_icon_map.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -74,11 +75,7 @@ class IconButtonActionState extends ConsumerState<IconButtonAction>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AdaptiveImageUtils.getImage(
-              resolvedIconUrl,
-              height: 24,
-              semanticsLabel: title,
-            ),
+            _iconWidget(resolvedIconUrl, 24),
             const SizedBox(height: 4),
             Text(title),
           ],
@@ -88,11 +85,7 @@ class IconButtonActionState extends ConsumerState<IconButtonAction>
       theButton = ElevatedButton.icon(
         onPressed: onPressed,
         style: buttonStyle,
-        icon: AdaptiveImageUtils.getImage(
-          resolvedIconUrl,
-          height: 36,
-          semanticsLabel: title,
-        ),
+        icon: _iconWidget(resolvedIconUrl, 36),
         label: Text(title),
       );
     }
@@ -113,5 +106,28 @@ class IconButtonActionState extends ConsumerState<IconButtonAction>
     );
 
     return result;
+  }
+
+  /// Resolves an action `iconUrl` to an icon widget.
+  ///
+  /// Supports the Adaptive Cards 1.6 Fluent-icon reference `icon:<name>`
+  /// (e.g. `icon:Send`), resolved via the same [resolveFluentIcon] map the
+  /// `Icon` element uses; any other value is loaded as an image URL / data URI.
+  Widget _iconWidget(String url, double size) {
+    const fluentPrefix = 'icon:';
+    if (url.startsWith(fluentPrefix)) {
+      final data = resolveFluentIcon(
+        url.substring(fluentPrefix.length),
+        filled: false,
+      );
+      if (data != null) {
+        return Icon(data, size: size, semanticLabel: title);
+      }
+    }
+    return AdaptiveImageUtils.getImage(
+      url,
+      height: size,
+      semanticsLabel: title,
+    );
   }
 }
