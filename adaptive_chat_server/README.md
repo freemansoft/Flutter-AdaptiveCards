@@ -22,15 +22,17 @@ flowchart TB
     RESP["responder.py · Responder(reply(text, history))"]
     ECHO["EchoResponder\n'Did you just say: ...'"]
     OLLAMA["ollama_responder.py · OllamaResponder\nPOST {url}/api/chat"]
+    PROMPT["default_system_prompt.txt\n(or --system-prompt-file)\nre-read per request"]
     ROUTES --> STORE
     ROUTES --> CARDS
     ROUTES --> RESP
     RESP -. build_responder(--ollama-url) .-> ECHO
     RESP -. build_responder(--ollama-url) .-> OLLAMA
+    PROMPT -. system message .-> OLLAMA
   end
   CLIENT["adaptive_chat (Flutter)"] -->|"POST interaction (X-Interaction-Id, PlainJson body)"| ROUTES
   ROUTES -->|"envelope: messages[] + links"| CLIENT
-  OLLAMA -->|"messages (history + turn)"| LLM["local Ollama\n/api/chat"]
+  OLLAMA -->|"messages (system + history + turn)"| LLM["local Ollama\n/api/chat"]
 ```
 
 ### Wire contract
@@ -54,14 +56,68 @@ returns the stored envelope without re-running the responder.
 | `store.py` | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `reply_text` (so chat **history** can be rebuilt for Ollama). Lost on restart — fine for a demo. |
 | `cards.py` | Bubble authoring: a `ColumnSet` with a `stretch` spacer for alignment + a styled, `roundedCorners: true` `Container`; `user_bubble` (accent, right), `assistant_bubble` (emphasis, left), and `envelope(...)`. |
 | `responder.py` | `Responder` protocol — `reply(text, history) -> str` — and `EchoResponder`. The seam that lets the reply strategy swap without touching routes. |
-| `ollama_responder.py` | `OllamaResponder`: maps history + current turn to Ollama `messages` and POSTs `{url}/api/chat` (`stream: false`); returns `message.content`; falls back to a short message if Ollama is unreachable. |
+| `ollama_responder.py` | `OllamaResponder`: prepends the **system prompt** (see below), maps history + current turn to Ollama `messages`, and POSTs `{url}/api/chat` (`stream: false`); returns `message.content`; falls back to a short message if Ollama is unreachable. |
+| `default_system_prompt.txt` | Bundled default system prompt, used when no `--system-prompt-file` is given. Resolved relative to the package (not the process cwd). |
 | `__main__.py` | CLI entrypoint (`python -m app ...`) that selects the responder from `--ollama-url` and runs uvicorn. |
 
 ### Responder selection
 
-`build_responder(ollama_url, model)` returns an `OllamaResponder` when an Ollama URL
-is present (from `--ollama-url`, bridged via the `OLLAMA_URL`/`OLLAMA_MODEL`
-environment so it survives uvicorn `--reload`), otherwise an `EchoResponder`.
+`build_responder(ollama_url, model, system_prompt_file)` returns an
+`OllamaResponder` when an Ollama URL is present (from `--ollama-url`, bridged via
+the `OLLAMA_URL`/`OLLAMA_MODEL`/`OLLAMA_SYSTEM_PROMPT_FILE` environment so it
+survives uvicorn `--reload`), otherwise an `EchoResponder`.
+
+### Conversation context
+
+Server state is **keyed by `conversationId`** — the top level of `ConversationStore`
+is `dict[cid, Conversation]`, and each `Conversation` holds its `Interaction`s keyed
+by `interactionId`. So it is a **two-level key** (`cid` → `iid`): the client-supplied
+`X-Interaction-Id` namespace is scoped **inside** one conversation, and the same
+`i_0001` can exist in two conversations without collision. All state is in-memory and
+lost on restart (fine for a demo; not shared across worker processes).
+
+**How history reaches the model.** On each `POST …/interactions`, the send route
+rebuilds the conversation's history from the store — walking `conversation.order` and
+emitting a `("user", text)` / `("assistant", reply_text)` pair per prior interaction —
+and passes it to `responder.reply(text, history)` with the **full** history.
+`OllamaResponder` then sends **system prompt + history + current turn** to
+`/api/chat` (see the diagram and **System prompt** below) — trimmed to a
+recent window as described next. Because history is built from one
+conversation's `order`, each `conversationId` gets an independent context.
+
+**Retained in full; trimmed only on send.** The store keeps the **entire**
+conversation (durable log + idempotent replay). What is bounded is only the
+prompt **sent to Ollama**: `OllamaResponder` replays just the last
+`--history-turns` exchanges (default 10). Nothing is pruned from the store, so
+raising `--history-turns` or `--num-ctx` later needs no data migration.
+
+**Context-fill logging.** The server sends an explicit `options.num_ctx`
+(default 4096) and, after each reply, logs the actual prompt tokens
+(`prompt_eval_count`) against that window: an `INFO` line at ≥ 50% fill and a
+`WARNING` at ≥ 76% (leaving headroom for the generated reply). This surfaces the
+otherwise-silent truncation Ollama performs once a prompt exceeds `num_ctx`.
+(`EchoResponder` ignores history entirely — it only echoes the current turn.)
+
+### System prompt
+
+Every Ollama request is prefixed with a `{"role": "system", ...}` message so the
+model's behavior and output formatting can be tuned without code changes. The
+prompt text comes from a file:
+
+- **Source.** `--system-prompt-file <path>` (bridged to `OLLAMA_SYSTEM_PROMPT_FILE`).
+  When omitted, the bundled [`app/default_system_prompt.txt`](app/default_system_prompt.txt)
+  is used.
+- **Live reload.** The file is re-read on **every request**, so editing the active
+  prompt file takes effect on the next turn without restarting the server.
+- **Missing / empty is not fatal.** If the file is unreadable or blank, the server
+  logs a warning and sends the request with **no** system message (the original
+  behavior) rather than failing the chat.
+- **Formatting guidance.** Replies render inside an Adaptive Cards `TextBlock`,
+  which supports GitHub-flavored Markdown (headings, bold/italic, links, lists,
+  blockquotes, inline/fenced code, and tables). The default prompt tells the model
+  to keep replies concise and to use tables sparingly, since bubbles are narrow.
+- **Echo mode ignores it.** The system prompt only applies to `OllamaResponder`;
+  `EchoResponder` never sends anything to a model.
 
 ## Run
 
@@ -112,6 +168,32 @@ all as "unreachable": a connection failure returns
 `"(Ollama unreachable at … — <ExceptionType>: …)"`, an HTTP error (e.g. the model
 isn't pulled → 404) returns `"(Ollama error HTTP 404 at …: <body>)"`, and an
 unexpected 2xx body returns `"(Ollama returned an unexpected response: …)"`.
+
+To override the system prompt (see **System prompt** above), point the server at a
+text file:
+
+```bash
+.venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
+  --system-prompt-file ./my_prompt.txt
+```
+
+The file is re-read on every request, so you can edit `my_prompt.txt` and see the
+change on the next turn without restarting. Omit `--system-prompt-file` to use the
+bundled default.
+
+**Context window & history.** Two knobs bound and observe the prompt sent to
+Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`):
+
+```bash
+.venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
+  --num-ctx 4096 --history-turns 10
+```
+
+- `--num-ctx` (default 4096) — context window sent as `options.num_ctx`. Prompt
+  fill is logged against it (INFO ≥ 50%, WARNING ≥ 76%). Ollama silently drops
+  the oldest tokens once a prompt exceeds `num_ctx`; the warning surfaces that.
+- `--history-turns` (default 10) — how many prior exchanges are replayed to the
+  model. Bounds only the outbound prompt; the server retains full history.
 
 Omit `--ollama-url` (or run `uvicorn app.main:app` directly, as in **Run** above) to
 keep the echo demo. `--ollama-model` defaults to `llama3.2`. `--host`/`--port` are

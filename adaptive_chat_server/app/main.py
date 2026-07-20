@@ -8,11 +8,33 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.cards import assistant_bubble, envelope, user_bubble
-from app.ollama_responder import DEFAULT_OLLAMA_MODEL, OllamaResponder
+from app.ollama_responder import (
+    DEFAULT_HISTORY_TURNS,
+    DEFAULT_NUM_CTX,
+    DEFAULT_OLLAMA_MODEL,
+    OllamaResponder,
+)
 from app.responder import EchoResponder, Responder
 from app.store import ConversationStore, Interaction, Message
 
 logger = logging.getLogger("uvicorn.error")
+
+
+def _int_env(name: str, default: int) -> int:
+    """Read an int env var, falling back to ``default`` on absence or bad value.
+
+    Never raises — a malformed value logs a warning and uses the default so a
+    typo in configuration cannot crash the server at import time.
+    """
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        logger.warning("Invalid %s=%r; using default %d.", name, raw, default)
+        return default
+
 
 app = FastAPI(title="Adaptive Chat Server")
 
@@ -24,13 +46,31 @@ app.add_middleware(
 )
 
 
-def build_responder(ollama_url: str | None, model: str) -> Responder:
+def build_responder(
+    ollama_url: str | None,
+    model: str,
+    system_prompt_file: str | None = None,
+    num_ctx: int = DEFAULT_NUM_CTX,
+    history_turns: int = DEFAULT_HISTORY_TURNS,
+) -> Responder:
     """Selects the responder for this process: Ollama if a URL is set, else echo."""
     if ollama_url:
         logger.info(
-            "Responder: OllamaResponder (url=%s, model=%s)", ollama_url, model
+            "Responder: OllamaResponder (url=%s, model=%s, system_prompt=%s, "
+            "num_ctx=%d, history_turns=%d)",
+            ollama_url,
+            model,
+            system_prompt_file or "default",
+            num_ctx,
+            history_turns,
         )
-        return OllamaResponder(ollama_url, model)
+        return OllamaResponder(
+            ollama_url,
+            model,
+            system_prompt_file=system_prompt_file,
+            num_ctx=num_ctx,
+            history_turns=history_turns,
+        )
     logger.info("Responder: EchoResponder (no --ollama-url / OLLAMA_URL set)")
     return EchoResponder()
 
@@ -41,6 +81,9 @@ store = ConversationStore()
 responder = build_responder(
     os.environ.get("OLLAMA_URL"),
     os.environ.get("OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL),
+    os.environ.get("OLLAMA_SYSTEM_PROMPT_FILE"),
+    num_ctx=_int_env("OLLAMA_NUM_CTX", DEFAULT_NUM_CTX),
+    history_turns=_int_env("OLLAMA_HISTORY_TURNS", DEFAULT_HISTORY_TURNS),
 )
 
 

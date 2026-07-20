@@ -87,6 +87,10 @@
         "http://127.0.0.1:11434",
         "--ollama-model",
         "llama3.2",
+        "--num-ctx",
+        "4096",
+        "--history-turns",
+        "10",
         "--port",
         "8000"
       ],
@@ -106,6 +110,10 @@
         "http://127.0.0.1:11434",
         "--ollama-model",
         "gpt-oss:20b",
+        "--num-ctx",
+        "4096",
+        "--history-turns",
+        "10",
         "--port",
         "8000"
       ],
