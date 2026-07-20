@@ -40,7 +40,8 @@ alignment and styling, entirely in Adaptive Card JSON.
 - **In-card forms** posting back to their `self` URL. The envelope and
   per-card-`self` link are designed so this is a later, additive step.
 - **Ollama integration.** v1 ships an `EchoResponder`; `OllamaResponder` drops in
-  behind the same interface with no route or protocol change.
+  behind the same interface with no route or protocol change. **(Built in Phase 4 —
+  see "Post-design additions" below.)**
 - **Markdown/HTML-table → Adaptive `Table` conversion** and richer structured
   cards (movies, tables). Future server-side card authoring.
 - **Persistent storage.** v1 state is in-memory and lost on server restart.
@@ -214,3 +215,50 @@ compose Submit
   host package's invoke-response effects, reuse is on the **request** side plus a
   custom response path — not the package's overlay applier. This is intended, but
   worth confirming during implementation that no host-package change is required.
+
+## Post-design additions (built)
+
+The demo shipped with scope added after this design. The full, current
+architecture lives in the app READMEs — treat those as the composite reference:
+
+- **[`adaptive_chat/README.md`](../../../adaptive_chat/README.md)** — client architecture (SDUI model, compose-as-Adaptive-Card, `ChatBackendClient` / `ConversationController` / `ChatPage`, the wire contract, rounded bubbles).
+- **[`adaptive_chat_server/README.md`](../../../adaptive_chat_server/README.md)** — server architecture (bubble authoring, envelope + idempotency, in-memory store, responder seam, Ollama).
+
+Additions beyond the original chat design:
+
+1. **Rounded bubbles → core-library feature.** The "Open questions" item on rounded corners was resolved by adding Teams **`roundedCorners`** support to `flutter_adaptive_cards_fs` across **Container, ColumnSet, Column, Table, Image**, with the radius resolved via a new `HostConfig.cornerRadius` (default 8) / `ReferenceResolver.resolveCornerRadius()`. The chat bubbles opt in server-side (`roundedCorners: true`) and the client uses a 16 px radius. See [`docs/hostconfig.md`](../../hostconfig.md) (Microsoft Teams HostConfig extensions) and the package README status rows. A widgetbook knob demo (`roundedCorners` toggle + `cornerRadius` slider) showcases it.
+2. **Local Ollama integration (opt-in).** `python -m app --ollama-url …` selects an `OllamaResponder` (conversation history → `/api/chat`) behind the existing `Responder` seam; no URL → the echo demo. See the server README.
+3. **VS Code run targets** for the app (Current/Web), the echo server, the Ollama server, and server+web compounds (`.vscode/launch.json`).
+4. **Generated Flutter platform folders** for `adaptive_chat` (checked in, matching `adaptive_explorer`).
+
+Implementation phases for (2) and (3) are in the plan: [`docs/superpowers/plans/2026-07-18-adaptive-chat-sdui.md`](../plans/2026-07-18-adaptive-chat-sdui.md) (Phase 3 — VS Code run targets, Phase 4 — Ollama).
+
+### Ollama integration (Phase 4) — design
+
+Opt-in, behind the `Responder` seam the original design anticipated. The echo demo
+is preserved byte-for-byte when no Ollama URL is supplied.
+
+- **History-aware responder.** `Responder.reply` becomes
+  `reply(text: str, history: list[tuple[str, str]]) -> str`, where `history` is the
+  ordered prior turns as `(role, content)` (`role` in `user`/`assistant`).
+  `EchoResponder` ignores `history`. The send route builds `history` from the
+  conversation's stored interactions before calling the responder; the idempotent
+  replay short-circuit stays **before** that call, so a duplicate interaction never
+  re-invokes the model.
+- **Store keeps reply text.** `Interaction` gains a plain `reply_text` field
+  (alongside the user `text`) so `(user, assistant)` history can be rebuilt — the
+  role-tagged bubble cards alone aren't a convenient history source.
+- **`OllamaResponder(ollama_url, model="llama3.2", client=None)`.** Maps
+  `history + current turn` to Ollama `messages` (`[{role, content}, …]`) and POSTs
+  `{ollama_url}/api/chat` with `stream: false`, returning `message.content`. On any
+  `httpx.HTTPError` (connection refused / timeout / non-2xx) it returns a short
+  `"(Ollama unreachable at {url})"` string rather than failing the request. The
+  `httpx` client is injectable so tests use `httpx.MockTransport` — no live Ollama.
+- **Selection + CLI.** `build_responder(ollama_url, model)` returns an
+  `OllamaResponder` when a URL is present, else `EchoResponder`. `main.py` builds the
+  responder at import from `OLLAMA_URL` / `OLLAMA_MODEL`. `python -m app`
+  (`app/__main__.py`) parses `--ollama-url` / `--ollama-model` / `--host` / `--port`,
+  sets those env vars (which survive uvicorn's `--reload` subprocess re-import), and
+  runs uvicorn. No new dependencies (`httpx` was already present).
+- **Non-goals (still).** No streaming responses, no tool/function calling, no model
+  management (the operator runs `ollama serve` + `ollama pull`), no auth.
