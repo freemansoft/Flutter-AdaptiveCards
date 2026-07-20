@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
 /// The chat screen: a scrolling log of server bubbles plus a compose card.
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   /// Creates the page bound to [controller].
   const ChatPage({
     required this.controller,
@@ -21,9 +21,66 @@ class ChatPage extends StatelessWidget {
   final HostConfigs hostConfigs;
 
   @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final ScrollController _scrollController = ScrollController();
+  int _lastItemCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_onControllerChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onControllerChanged);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  int get _itemCount =>
+      widget.controller.messages.length + (widget.controller.pending ? 1 : 0);
+
+  /// Keep the latest server response in view: whenever a new item (a message
+  /// or the pending bubble) is added, scroll to the very bottom.
+  void _onControllerChanged() {
+    final count = _itemCount;
+    if (count > _lastItemCount) {
+      // Scroll after this frame lays out the new item...
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+      // ...and once more after the card's content settles (AdaptiveCardsCanvas
+      // loads its content asynchronously, so its full height arrives a frame
+      // or two later), snapping to the true bottom.
+      unawaited(
+        Future<void>.delayed(const Duration(milliseconds: 320), _snapToBottom),
+      );
+    }
+    _lastItemCount = count;
+  }
+
+  void _scrollToBottom() {
+    if (!_scrollController.hasClients) return;
+    unawaited(
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      ),
+    );
+  }
+
+  void _snapToBottom() {
+    if (!mounted || !_scrollController.hasClients) return;
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: controller,
+      listenable: widget.controller,
       builder: (context, _) {
         return Scaffold(
           appBar: AppBar(
@@ -33,15 +90,15 @@ class ChatPage extends StatelessWidget {
                 key: const ValueKey('new-conversation'),
                 tooltip: 'New conversation',
                 icon: const Icon(Icons.add_comment_outlined),
-                onPressed: controller.startConversation,
+                onPressed: widget.controller.startConversation,
               ),
               Row(
                 children: [
                   const Text('Replace'),
                   Switch(
                     key: const ValueKey('mode-toggle'),
-                    value: controller.mode == ChatMode.replace,
-                    onChanged: (_) => controller.toggleMode(),
+                    value: widget.controller.mode == ChatMode.replace,
+                    onChanged: (_) => widget.controller.toggleMode(),
                   ),
                 ],
               ),
@@ -61,9 +118,9 @@ class ChatPage extends StatelessWidget {
   }
 
   bool get _showStartError =>
-      !controller.ready &&
-      !controller.starting &&
-      controller.startError != null;
+      !widget.controller.ready &&
+      !widget.controller.starting &&
+      widget.controller.startError != null;
 
   Widget _buildStartError(BuildContext context) {
     return Material(
@@ -83,7 +140,7 @@ class ChatPage extends StatelessWidget {
             ),
             TextButton(
               key: const ValueKey('start-error-retry'),
-              onPressed: controller.startConversation,
+              onPressed: widget.controller.startConversation,
               child: const Text('Retry'),
             ),
           ],
@@ -93,15 +150,18 @@ class ChatPage extends StatelessWidget {
   }
 
   Widget _buildLog(BuildContext context) {
-    final itemCount = controller.messages.length + (controller.pending ? 1 : 0);
+    final messages = widget.controller.messages;
+    final itemCount = messages.length + (widget.controller.pending ? 1 : 0);
     return ListView.builder(
+      key: const ValueKey('chat-log'),
+      controller: _scrollController,
       padding: const EdgeInsets.all(12),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        if (index >= controller.messages.length) {
+        if (index >= messages.length) {
           return const _PendingBubble(key: ValueKey('pending-bubble'));
         }
-        final card = controller.messages[index];
+        final card = messages[index];
         return Padding(
           // Keyed by the card's own identity (not index): in replace mode a
           // new message can land at the same list index as the old one, and
@@ -115,7 +175,7 @@ class ChatPage extends StatelessWidget {
             builder: (context, t, child) => Opacity(opacity: t, child: child),
             child: AdaptiveCardsCanvas.map(
               content: card,
-              hostConfigs: hostConfigs,
+              hostConfigs: widget.hostConfigs,
               showDebugJson: false,
             ),
           ),
@@ -130,7 +190,7 @@ class ChatPage extends StatelessWidget {
       child: InheritedAdaptiveCardHandlers(
         onSubmit: (invoke) {
           final text = invoke.data['message'] as String? ?? '';
-          unawaited(controller.send(text));
+          unawaited(widget.controller.send(text));
         },
         onExecute: (_) {},
         onOpenUrl: (_) {},
@@ -138,9 +198,9 @@ class ChatPage extends StatelessWidget {
         onChange: (_) {},
         child: AdaptiveCardsCanvas.map(
           // Rebuild empty after each send.
-          key: ValueKey('compose-${controller.composeEpoch}'),
+          key: ValueKey('compose-${widget.controller.composeEpoch}'),
           content: composeCard(),
-          hostConfigs: hostConfigs,
+          hostConfigs: widget.hostConfigs,
           showDebugJson: false,
         ),
       ),

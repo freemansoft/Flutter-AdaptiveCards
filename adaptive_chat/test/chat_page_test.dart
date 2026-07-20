@@ -200,4 +200,31 @@ void main() {
 
     expect(find.byKey(const ValueKey('start-error')), findsNothing);
   });
+
+  testWidgets('log auto-scrolls to the bottom as messages are added', (
+    tester,
+  ) async {
+    final c = ConversationController(client: _client());
+    await c.startConversation();
+    await _pumpPage(tester, c);
+
+    // Send enough messages to overflow the viewport.
+    for (var i = 0; i < 20; i++) {
+      await c.send('message $i');
+      await tester.pumpAndSettle();
+    }
+
+    final logScrollable = find.descendant(
+      of: find.byKey(const ValueKey('chat-log')),
+      matching: find.byType(Scrollable),
+    );
+    final position = tester
+        .state<ScrollableState>(logScrollable.first)
+        .position;
+
+    // The log overflowed (there is somewhere to scroll)...
+    expect(position.maxScrollExtent, greaterThan(0));
+    // ...and it is pinned to the very bottom, so the latest message is visible.
+    expect(position.pixels, closeTo(position.maxScrollExtent, 1));
+  });
 }
