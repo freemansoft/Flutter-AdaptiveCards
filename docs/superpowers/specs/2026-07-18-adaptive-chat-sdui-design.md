@@ -61,7 +61,7 @@ alignment and styling, entirely in Adaptive Card JSON.
 
 ## Repo layout
 
-```
+```text
 adaptive_chat/            # Flutter sample app (peer of adaptive_explorer/)
 adaptive_chat_server/     # Python FastAPI service (NOT in the Dart workspace)
 ```
@@ -182,7 +182,7 @@ the sample app owns.
 
 ## Data flow (one send)
 
-```
+```text
 compose Submit
   → controller.send(text)
   → chat_backend_client POST {postNext} (+ X-Interaction-Id, PlainJson body)
