@@ -168,6 +168,22 @@ void main() {
     });
   });
 
+  group('resolveCornerRadius (Teams roundedCorners extension)', () {
+    test('falls back to the default (8) with a bare HostConfig', () {
+      expect(_resolver().resolveCornerRadius(), 8.0);
+    });
+
+    test('uses a custom HostConfig `cornerRadius` value when set', () {
+      final resolver = ReferenceResolver(
+        hostConfigs: HostConfigs(
+          light: HostConfig.fromJson(<String, dynamic>{'cornerRadius': 12}),
+        ),
+        colorFallbacks: ThemeColorFallbacks(ThemeData.light()),
+      );
+      expect(resolver.resolveCornerRadius(), 12.0);
+    });
+  });
+
   group('context-dependent resolvers', () {
     testWidgets('button/input/font resolvers use the theme', (tester) async {
       late BuildContext context;

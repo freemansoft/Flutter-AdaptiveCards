@@ -138,12 +138,30 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
         ),
     ];
 
+    // `roundedCorners` is a Microsoft Teams Adaptive Cards property (beyond
+    // the base Adaptive Cards schema), documented as supported on Container,
+    // ColumnSet, Column, Table, and Image — see
+    // https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
+    // Table renders via a bespoke Flutter `Table` (not `getDecorationFromMap`),
+    // so rounding is wired here rather than through `borderRadius` on a
+    // `BoxDecoration`: the grid border gets a `BorderRadius` and the whole
+    // table is clipped so cell fills round with it. The radius is
+    // HostConfig-resolved via `resolver.resolveCornerRadius()` (default 8,
+    // see `FallbackConfigs.cornerRadius`), not fixed.
+    final bool roundedCorners = adaptiveMap['roundedCorners'] == true;
+    final double radius = resolver.resolveCornerRadius();
+    final BorderRadius tableBorderRadius = roundedCorners
+        ? BorderRadius.circular(radius)
+        : BorderRadius.zero;
+
     final Widget tableContent = Table(
       key: AdaptiveTable.tableColumnKey(tableKey),
       columnWidths: columnWidths,
       defaultColumnWidth: const FlexColumnWidth(),
       defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
-      border: showGridLines ? TableBorder.all(color: borderColor) : null,
+      border: showGridLines
+          ? TableBorder.all(color: borderColor, borderRadius: tableBorderRadius)
+          : null,
       children: tableRows,
     );
 
@@ -151,7 +169,12 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: tableContent,
+        child: roundedCorners
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(radius),
+                child: tableContent,
+              )
+            : tableContent,
       ),
     );
   }
@@ -171,8 +194,7 @@ class AdaptiveTableState extends ConsumerState<AdaptiveTable>
       return List<String?>.filled(columnCount, null);
     }
     final headerCells =
-        (rows.first['cells'] as List<dynamic>?)
-            ?.cast<Map<String, dynamic>>() ??
+        (rows.first['cells'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
         const <Map<String, dynamic>>[];
 
     return List<String?>.generate(columnCount, (col) {

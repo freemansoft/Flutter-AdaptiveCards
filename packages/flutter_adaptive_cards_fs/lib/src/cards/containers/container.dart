@@ -128,12 +128,26 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
       );
     }
 
+    // `roundedCorners` is a Microsoft Teams Adaptive Cards property (beyond
+    // the base Adaptive Cards schema), documented as supported on Container,
+    // ColumnSet, Column, Table, and Image — see
+    // https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
+    // This package wires the flag on all five elements (`Container`,
+    // `ColumnSet`, `Column`, `Table`, `Image`); the radius is HostConfig-
+    // resolved via `styleResolver.resolveCornerRadius()` (default 8, see
+    // `FallbackConfigs.cornerRadius`), not fixed.
+    final bool roundedCorners = adaptiveMap['roundedCorners'] == true;
+    final BorderRadius? borderRadius = roundedCorners
+        ? BorderRadius.circular(styleResolver.resolveCornerRadius())
+        : null;
+
     final decoration = hasChildren
         ? getDecorationFromMap(
             adaptiveMap,
             backgroundColor: backgroundColor,
+            borderRadius: borderRadius,
           )
-        : BoxDecoration(color: backgroundColor);
+        : BoxDecoration(color: backgroundColor, borderRadius: borderRadius);
 
     return Visibility(
       visible: isVisible,
@@ -148,6 +162,7 @@ class AdaptiveContainerState extends ConsumerState<AdaptiveContainer>
                   ? BoxConstraints(minHeight: minHeight!)
                   : null,
               decoration: decoration,
+              clipBehavior: roundedCorners ? Clip.antiAlias : Clip.none,
               child: containerChild,
             ),
           ),

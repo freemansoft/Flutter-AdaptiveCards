@@ -1,0 +1,84 @@
+{
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.5",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Rounded Table",
+            "wrap": true,
+            "style": "heading"
+        },
+        {
+            "type": "Table",
+            "roundedCorners": true,
+            "showGridLines": true,
+            "gridStyle": "accent",
+            "columns": [
+                {
+                    "width": 1
+                },
+                {
+                    "width": 1
+                }
+            ],
+            "rows": [
+                {
+                    "type": "TableRow",
+                    "style": "accent",
+                    "cells": [
+                        {
+                            "type": "TableCell",
+                            "style": "accent",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Header A",
+                                    "weight": "bolder",
+                                    "wrap": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "TableCell",
+                            "style": "accent",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Header B",
+                                    "weight": "bolder",
+                                    "wrap": true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "TableRow",
+                    "cells": [
+                        {
+                            "type": "TableCell",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Cell A",
+                                    "wrap": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "TableCell",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Cell B",
+                                    "wrap": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

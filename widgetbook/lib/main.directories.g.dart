@@ -579,6 +579,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
+        name: 'RoundedCorners',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Rounded corners (knobs)',
+            builder: _widgetbook_workspace_adaptive_cards_use_cases
+                .buildRoundedCornersKnobs,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
         name: 'Table',
         useCases: [
           _widgetbook.WidgetbookUseCase(

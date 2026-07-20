@@ -1,0 +1,19 @@
+{
+  // Markdown in this repo is formatted with Prettier (see package.json:
+  // `npm run check:md` -> `prettier --check "docs/**/*.md"`). The rules below
+  // are turned off because Prettier already owns them (line wrapping,
+  // blank-line spacing, emphasis/HTML style) or actively conflicts with
+  // Prettier's output. Disabling them makes markdownlint (e.g. the VS Code
+  // extension) agree with the committed Prettier formatting instead of
+  // fighting it. Rules Prettier does NOT handle (e.g. MD040 fenced-code
+  // language) stay enabled.
+  "default": true,
+
+  "MD013": false, // line-length — Prettier uses proseWrap: preserve (no hard wrap)
+  "MD031": false, // blanks-around-fences — Prettier controls fence spacing
+  "MD032": false, // blanks-around-lists — Prettier controls list spacing
+  "MD033": false, // inline HTML — used intentionally (mermaid <pre>, <br>, etc.)
+  "MD036": false, // emphasis-as-heading — the "_Design spec — DATE_" subtitle pattern
+  "MD041": false, // first-line-h1 — some docs start with other content
+  "MD049": false // emphasis-style — Prettier normalizes emphasis markers
+}

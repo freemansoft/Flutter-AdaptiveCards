@@ -89,6 +89,7 @@ class HostConfig {
     this.chartColors,
     this.chartsLayout,
     this.hostWidthBreakpoints,
+    this.cornerRadius,
   });
 
   /// Load HostConfig from card host JSON; optional [theme] supplies Material
@@ -173,6 +174,7 @@ class HostConfig {
               json['hostWidthBreakpoints'] as Map<String, dynamic>,
             )
           : null,
+      cornerRadius: (json['cornerRadius'] as num?)?.toDouble(),
     );
   }
 
@@ -247,4 +249,16 @@ class HostConfig {
 
   /// Responsive width breakpoints separating veryNarrow/narrow/standard/wide.
   final HostWidthsConfig? hostWidthBreakpoints;
+
+  /// Default corner radius in logical pixels for the Microsoft Teams
+  /// `roundedCorners` extension (`cornerRadius` in HostConfig JSON).
+  ///
+  /// `roundedCorners` is a Teams Adaptive Cards property (not in the base
+  /// Adaptive Cards schema) supported on Container, ColumnSet, Column,
+  /// Table, and Image — see
+  /// https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
+  /// This package wires the flag on all five elements. Falls back to
+  /// `FallbackConfigs.cornerRadius` (8) when unset — see
+  /// `ReferenceResolver.resolveCornerRadius()`.
+  final double? cornerRadius;
 }

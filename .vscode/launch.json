@@ -35,6 +35,92 @@
       "cwd": "${workspaceFolder}/adaptive_explorer",
       "program": "lib/main.dart",
       "args": []
+    },
+    {
+      "name": "Adaptive Chat - Current",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "cwd": "${workspaceFolder}/adaptive_chat",
+      "program": "lib/main.dart",
+      "args": []
+    },
+    {
+      // Talks to the FastAPI server on :8000. --disable-web-security avoids
+      // local CORS friction when running the app in Chrome during development.
+      "name": "Adaptive Chat - Web",
+      "type": "dart",
+      "request": "launch",
+      "flutterMode": "debug",
+      "cwd": "${workspaceFolder}/adaptive_chat",
+      "program": "lib/main.dart",
+      "args": [
+        "--web-browser-flag=--disable-web-security",
+        "-d",
+        "chrome",
+        "--web-port",
+        "3000"
+      ]
+    },
+    {
+      // Uses the project's Python venv; run `python3 -m venv .venv &&
+      // .venv/bin/pip install -r requirements.txt` in adaptive_chat_server
+      // first. On Windows use .venv/Scripts/python.exe.
+      "name": "Adaptive Chat Server (echo)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload", "--port", "8000"],
+      "cwd": "${workspaceFolder}/adaptive_chat_server",
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+    },
+    {
+      // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
+      // from --ollama-url. Requires a local Ollama (`ollama serve`) with the
+      // model pulled (`ollama pull gpt-oss:20b`).
+      "name": "Adaptive Chat Server (Ollama llama3.2)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "app",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--ollama-model",
+        "llama3.2",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}/adaptive_chat_server",
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+    },
+    {
+      // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
+      // from --ollama-url. Requires a local Ollama (`ollama serve`) with the
+      // model pulled (`ollama pull gpt-oss:20b`).
+      "name": "Adaptive Chat Server (Ollama gpt-oss:20b)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "app",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--ollama-model",
+        "gpt-oss:20b",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}/adaptive_chat_server",
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Adaptive Chat (server + web)",
+      "configurations": ["Adaptive Chat Server (echo)", "Adaptive Chat - Web"]
+    },
+    {
+      "name": "Adaptive Chat (Ollama server + web)",
+      "configurations": ["Adaptive Chat Server (Ollama gpt-oss:20b)", "Adaptive Chat - Web"]
     }
   ]
 }

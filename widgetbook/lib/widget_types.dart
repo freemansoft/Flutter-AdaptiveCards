@@ -235,3 +235,11 @@ class Responsive extends StatelessWidget {
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
+
+/// Stub for the Teams `roundedCorners` demo (Container, ColumnSet, Column,
+/// Table, Image)
+class RoundedCorners extends StatelessWidget {
+  const RoundedCorners({super.key});
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
