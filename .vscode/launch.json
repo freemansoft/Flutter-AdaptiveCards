@@ -97,11 +97,11 @@
   "compounds": [
     {
       "name": "Adaptive Chat (server + web)",
-      "configurations": ["Adaptive Chat Server", "Adaptive Chat - Web"]
+      "configurations": ["Adaptive Chat Server (echo)", "Adaptive Chat - Web"]
     },
     {
       "name": "Adaptive Chat (Ollama server + web)",
-      "configurations": ["Adaptive Chat Server (Ollama)", "Adaptive Chat - Web"]
+      "configurations": ["Adaptive Chat Server (Ollama gpt-oss:20b)", "Adaptive Chat - Web"]
     }
   ]
 }
