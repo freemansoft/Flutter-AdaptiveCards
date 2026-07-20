@@ -1,4 +1,5 @@
 import json
+import logging
 
 import httpx
 
@@ -16,13 +17,14 @@ def _client(handler):
     return httpx.Client(transport=httpx.MockTransport(handler))
 
 
-def _responder(handler, system_prompt_file=None, history_turns=10):
+def _responder(handler, system_prompt_file=None, history_turns=10, num_ctx=4096):
     return OllamaResponder(
         OLLAMA_URL,
         model=OLLAMA_MODEL,
         client=_client(handler),
         system_prompt_file=system_prompt_file,
         history_turns=history_turns,
+        num_ctx=num_ctx,
     )
 
 
@@ -33,6 +35,20 @@ def _ok_capturing_handler(captured):
         return httpx.Response(
             200,
             json={"message": {"role": "assistant", "content": "hi from ollama"}},
+        )
+
+    return handler
+
+
+def _handler_with_prompt_tokens(captured, prompt_eval_count):
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "message": {"role": "assistant", "content": "ok"},
+                "prompt_eval_count": prompt_eval_count,
+            },
         )
 
     return handler
@@ -59,6 +75,7 @@ def test_reply_posts_history_and_new_turn_to_chat_endpoint(tmp_path):
             {"role": "user", "content": "new question"},
         ],
         "stream": False,
+        "options": {"num_ctx": 4096},
     }
 
 
@@ -210,3 +227,68 @@ def test_reply_does_not_mutate_caller_history(tmp_path):
     ).reply("now", history)
 
     assert history == original  # trim is send-only
+
+
+def test_reply_sends_num_ctx_option(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _handler_with_prompt_tokens(captured, 10),
+        system_prompt_file=str(missing),
+        num_ctx=2048,
+    ).reply("hi", [])
+
+    assert captured["body"]["options"] == {"num_ctx": 2048}
+
+
+def test_fill_below_50pct_logs_nothing(tmp_path, caplog):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        _responder(
+            _handler_with_prompt_tokens(captured, 400),  # 40% of 1000
+            system_prompt_file=str(missing),
+            num_ctx=1000,
+        ).reply("hi", [])
+    assert "context filling" not in caplog.text
+    assert "context near limit" not in caplog.text
+
+
+def test_fill_between_50_and_76pct_logs_info(tmp_path, caplog):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        _responder(
+            _handler_with_prompt_tokens(captured, 600),  # 60% of 1000
+            system_prompt_file=str(missing),
+            num_ctx=1000,
+        ).reply("hi", [])
+    assert "context filling" in caplog.text
+    assert "context near limit" not in caplog.text
+
+
+def test_fill_at_or_above_76pct_logs_warning(tmp_path, caplog):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        _responder(
+            _handler_with_prompt_tokens(captured, 800),  # 80% of 1000
+            system_prompt_file=str(missing),
+            num_ctx=1000,
+        ).reply("hi", [])
+    assert "context near limit" in caplog.text
+    assert any(r.levelname == "WARNING" for r in caplog.records)
+
+
+def test_fill_logging_skipped_when_prompt_eval_count_absent(tmp_path, caplog):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        result = _responder(
+            _ok_capturing_handler(captured),  # response has no prompt_eval_count
+            system_prompt_file=str(missing),
+            num_ctx=1000,
+        ).reply("hi", [])
+    assert result == "hi from ollama"
+    assert "context filling" not in caplog.text
+    assert "context near limit" not in caplog.text
