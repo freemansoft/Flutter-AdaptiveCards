@@ -131,21 +131,6 @@ void main() {
     expect(find.byKey(const ValueKey('pending-bubble')), findsNothing);
   });
 
-  testWidgets('replace mode shows only the latest message', (tester) async {
-    final c = ConversationController(client: _client())
-      ..mode = ChatMode.replace;
-    await c.startConversation();
-    await _pumpPage(tester, c);
-
-    await c.send('one');
-    await tester.pumpAndSettle();
-    await c.send('two');
-    await tester.pumpAndSettle();
-
-    expect(find.text('you: one'), findsNothing);
-    expect(find.text('you: two'), findsOneWidget);
-  });
-
   testWidgets('new-conversation button clears the log', (tester) async {
     final c = ConversationController(client: _client());
     await c.startConversation();

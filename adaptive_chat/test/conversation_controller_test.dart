@@ -63,18 +63,6 @@ void main() {
     expect(c.pending, isFalse);
   });
 
-  test('replace mode keeps only the latest interaction', () async {
-    final c = ConversationController(
-      client: _clientReturning([
-        {'type': 'AdaptiveCard', 'body': <dynamic>[]},
-      ]),
-    )..mode = ChatMode.replace;
-    await c.startConversation();
-    await c.send('one');
-    await c.send('two');
-    expect(c.messages.length, 1);
-  });
-
   test('send does nothing before startConversation', () async {
     final c = ConversationController(client: _clientReturning([]));
     await c.send('hello');

@@ -31,8 +31,8 @@ and the plan [`docs/superpowers/plans/2026-07-18-adaptive-chat-sdui.md`](../docs
 ```mermaid
 flowchart TB
   subgraph app["adaptive_chat (Flutter)"]
-    CP["ChatPage\napp bar (New / Append⇄Replace) · log · pending · start-error retry"]
-    CC["ConversationController (ChangeNotifier)\nmessages · pending · mode · composeEpoch · startError"]
+    CP["ChatPage\napp bar (New conversation) · log · pending · start-error retry"]
+    CC["ConversationController (ChangeNotifier)\nmessages · pending · composeEpoch · startError"]
     COMP["Compose card (Adaptive Card)\nInput.Text(message) + Action.Submit(send)\nwrapped in InheritedAdaptiveCardHandlers"]
     CBC["ChatBackendClient\nstartConversation() · sendInteraction()"]
     HC["chatHostConfigs()\nHostConfig(cornerRadius: 16)"]
@@ -50,14 +50,14 @@ flowchart TB
 
 ### Components (`lib/src/`)
 
-| File | Responsibility |
-| --- | --- |
-| `chat_models.dart` | `ChatStart`, `ChatEnvelope` (`messages[]` + `links{self, postNext}`), `ChatBackendException` — wire types + `fromJson`. |
-| `chat_backend_client.dart` | Transport. Reuses the host package's **request** serialization (`AdaptiveCardInvokeRequest.fromSubmit` + `PlainJsonInvokeAdapter.toMap`) to POST the compose submit, then parses the **chat envelope itself** (the response is cards to append, not an invoke-effect patch). |
-| `conversation_controller.dart` | `ChangeNotifier` state: rendered `messages`, `pending`, `mode` (append/replace), `composeEpoch` (resets the compose input), `starting`/`startError` (start-failure surfacing), `ready`. Client-generated interaction ids; follows `postNext`. |
-| `chat_page.dart` | The screen: app bar (New conversation, Append⇄Replace `Switch`), the `ListView.builder` bubble log (`ObjectKey(card)` + fade entrance), the pending indicator, the keyed `start-error` retry banner, and the compose card wrapped in `InheritedAdaptiveCardHandlers`. |
-| `compose_card.dart` | The compose Adaptive Card map (`Input.Text id=message`, multiline; `Action.Submit id=send`). |
-| `chat_host_config.dart` | `chatHostConfigs()` — light/dark `HostConfig(cornerRadius: 16)` so bubbles read as rounded chat bubbles. |
+| File                           | Responsibility                                                                                                                                                                                                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `chat_models.dart`             | `ChatStart`, `ChatEnvelope` (`messages[]` + `links{self, postNext}`), `ChatBackendException` — wire types + `fromJson`.                                                                                                                                                                    |
+| `chat_backend_client.dart`     | Transport. Reuses the host package's **request** serialization (`AdaptiveCardInvokeRequest.fromSubmit` + `PlainJsonInvokeAdapter.toMap`) to POST the compose submit, then parses the **chat envelope itself** (the response is cards to append, not an invoke-effect patch).               |
+| `conversation_controller.dart` | `ChangeNotifier` state: rendered `messages`, `pending`, `composeEpoch` (resets the compose input), `starting`/`startError` (start-failure surfacing), `ready`. Client-generated interaction ids; follows `postNext`.                                                                       |
+| `chat_page.dart`               | The screen: app bar (New conversation), the `ListView.builder` bubble log (`ObjectKey(card)` + fade entrance, auto-scrolled to the bottom on each new card), the pending indicator, the keyed `start-error` retry banner, and the compose card wrapped in `InheritedAdaptiveCardHandlers`. |
+| `compose_card.dart`            | The compose Adaptive Card map (`Input.Text id=message`, multiline; `Action.Submit id=send`).                                                                                                                                                                                               |
+| `chat_host_config.dart`        | `chatHostConfigs()` — light/dark `HostConfig(cornerRadius: 16)` so bubbles read as rounded chat bubbles.                                                                                                                                                                                   |
 
 ### The wire contract (client view)
 
@@ -67,7 +67,7 @@ flowchart TB
    → `POST {postNext}` with header `X-Interaction-Id: <client id>` and a PlainJson
    invoke body (`{ kind, actionId, data: { message } }`).
 3. Response is an **envelope** `{ conversationId, interactionId, messages[], links{self, postNext} }`.
-   The controller appends `messages[]` to the log (or replaces, in Replace mode) and
+   The controller appends `messages[]` to the log and
    follows the new `postNext` for the next send.
 4. Reposting the **same** `X-Interaction-Id` returns the stored envelope
    (idempotent) — protects against double-submit.
@@ -96,11 +96,11 @@ fvm flutter test
 ```
 
 Widget/unit tests cover the backend client (mocked HTTP), the controller state
-machine (append/replace/pending/start-error), and the page (bubble append, pending,
-Replace, New-conversation, retry).
+machine (pending/start-error), and the page (bubble append, pending,
+auto-scroll-to-bottom, New-conversation, retry).
 
 ## Not covered here (by design)
 
 In-card **form** submits (a returned card carrying its own inputs/actions posting
-back to its `self` URL) are *designed for* but not built — the envelope's per-card
+back to its `self` URL) are _designed for_ but not built — the envelope's per-card
 `self` link is the hook. See the design doc's "Non-goals".

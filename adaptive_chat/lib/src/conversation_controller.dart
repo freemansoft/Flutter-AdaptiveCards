@@ -2,15 +2,6 @@ import 'package:adaptive_chat/src/chat_backend_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
-/// Whether new interactions append to the log or replace it.
-enum ChatMode {
-  /// Keep the full history.
-  append,
-
-  /// Show only the latest interaction.
-  replace,
-}
-
 /// Holds chat state and drives the [ChatBackendClient].
 ///
 /// Ordinary Flutter state — Riverpod is reserved for the core library.
@@ -26,9 +17,6 @@ class ConversationController extends ChangeNotifier {
 
   /// True while a send is in flight (drives the pending indicator).
   bool pending = false;
-
-  /// Append vs replace behavior.
-  ChatMode mode = ChatMode.append;
 
   /// Bumped after each send so the compose card rebuilds empty.
   int composeEpoch = 0;
@@ -75,7 +63,7 @@ class ConversationController extends ChangeNotifier {
 
   String _nextInteractionId() => 'i_${(++_counter).toString().padLeft(4, '0')}';
 
-  /// Sends [text] and appends (or replaces with) the returned cards.
+  /// Sends [text] and appends the returned cards to the log.
   Future<void> send(String text) async {
     final postNext = _postNext;
     if (postNext == null || text.trim().isEmpty || pending) {
@@ -91,20 +79,11 @@ class ConversationController extends ChangeNotifier {
         invoke: SubmitActionInvoke(data: {'message': text}),
       );
       _postNext = envelope.postNext;
-      if (mode == ChatMode.replace) {
-        messages.clear();
-      }
       messages.addAll(envelope.messages);
     } finally {
       pending = false;
       if (!_disposed) notifyListeners();
     }
-  }
-
-  /// Flips between append and replace.
-  void toggleMode() {
-    mode = mode == ChatMode.append ? ChatMode.replace : ChatMode.append;
-    notifyListeners();
   }
 
   /// Clears the visible log (keeps the conversation).

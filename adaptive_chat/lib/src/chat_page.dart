@@ -92,16 +92,6 @@ class _ChatPageState extends State<ChatPage> {
                 icon: const Icon(Icons.add_comment_outlined),
                 onPressed: widget.controller.startConversation,
               ),
-              Row(
-                children: [
-                  const Text('Replace'),
-                  Switch(
-                    key: const ValueKey('mode-toggle'),
-                    value: widget.controller.mode == ChatMode.replace,
-                    onChanged: (_) => widget.controller.toggleMode(),
-                  ),
-                ],
-              ),
             ],
           ),
           body: Column(
@@ -163,10 +153,11 @@ class _ChatPageState extends State<ChatPage> {
         }
         final card = messages[index];
         return Padding(
-          // Keyed by the card's own identity (not index): in replace mode a
-          // new message can land at the same list index as the old one, and
-          // AdaptiveCardsCanvas only loads its content in initState, so an
-          // unkeyed rebuild would keep showing the stale card.
+          // Keyed by the card's own identity (not index): after New
+          // conversation / clear() a new message can land at the same list
+          // index as a previous (different) card, and AdaptiveCardsCanvas only
+          // loads its content in initState, so an unkeyed rebuild would keep
+          // showing the stale card.
           key: ObjectKey(card),
           padding: const EdgeInsets.only(bottom: 8),
           child: TweenAnimationBuilder<double>(
