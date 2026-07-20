@@ -9,6 +9,12 @@ from app.store import Message
 
 _VERSION = "1.5"
 
+# Chat bubbles span ~75% of the row: weighted columns 3:1 (= 75% / 25%). The
+# empty spacer column pushes the bubble to one side, so a send bubble sits in
+# the right 75% and a receive bubble in the left 75% (non-overlapping per row).
+_BUBBLE_WEIGHT = 3
+_SPACER_WEIGHT = 1
+
 
 def _text_container(text: str, style: str) -> dict:
     return {
@@ -20,8 +26,12 @@ def _text_container(text: str, style: str) -> dict:
 
 
 def _bubble(text: str, *, style: str, align_right: bool) -> dict:
-    content = {"type": "Column", "width": "auto", "items": [_text_container(text, style)]}
-    spacer = {"type": "Column", "width": "stretch", "items": []}
+    content = {
+        "type": "Column",
+        "width": _BUBBLE_WEIGHT,
+        "items": [_text_container(text, style)],
+    }
+    spacer = {"type": "Column", "width": _SPACER_WEIGHT, "items": []}
     columns = [spacer, content] if align_right else [content, spacer]
     return {
         "type": "AdaptiveCard",
