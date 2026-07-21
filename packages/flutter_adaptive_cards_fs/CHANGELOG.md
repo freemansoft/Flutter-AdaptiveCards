@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- **Carousel:** replaced the fixed 400px height with the spec height model — `height` (`auto`/`stretch`) and `heightInPixels` — and, for the default `auto` case, size the carousel to its tallest page. Orientation stays independent of `heightInPixels`.
+
 ## [0.15.0]
 
 ### Added 0.15.0
