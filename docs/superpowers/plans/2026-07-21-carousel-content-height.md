@@ -527,6 +527,30 @@ git commit -m "docs(carousel): changelog + status sync for content-sized height"
 
 ---
 
+### Task 4: Regenerate the carousel golden (do NOT commit the image)
+
+The v1.6 carousel golden (`test/gold_files/<platform>/v1_6_carousel.png`) rendered at the old fixed 400px. With content-sizing it now renders at the tallest-page height, so its master image must be regenerated. **The regenerated `.png` is left uncommitted for the user to review before it lands.** Note: `--update-goldens` only rewrites the current platform's master (macOS here); the Linux master is regenerated separately in CI / a Linux container.
+
+**Files:**
+- Regenerate (do not commit): `test/gold_files/macos/v1_6_carousel.png` (and, on CI/Linux, `test/gold_files/linux/v1_6_carousel.png`).
+
+- [ ] **Step 1: Regenerate the carousel golden only**
+
+Run (from `packages/flutter_adaptive_cards_fs/`):
+`fvm flutter test test/golden_v1_6_test.dart --update-goldens --name 'Golden Carousel'`
+Expected: PASS; `git status` shows `test/gold_files/macos/v1_6_carousel.png` modified.
+
+- [ ] **Step 2: Confirm the golden now passes without updating**
+
+Run: `fvm flutter test test/golden_v1_6_test.dart --name 'Golden Carousel'`
+Expected: PASS against the regenerated master.
+
+- [ ] **Step 3: Hand the image to the user for review — DO NOT commit**
+
+Show the regenerated `v1_6_carousel.png` to the user. Leave it unstaged/uncommitted. Only the user decides when (and whether) the image is committed. Do not run `git add`/`git commit` on any `*.png`.
+
+---
+
 ## Verification (full suite)
 
 Run from `packages/flutter_adaptive_cards_fs/` unless noted. Paste exit codes / pass-fail counts before claiming completion (per `superpowers:verification-before-completion`).
