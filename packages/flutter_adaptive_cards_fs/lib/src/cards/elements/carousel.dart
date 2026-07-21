@@ -288,3 +288,20 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
     );
   }
 }
+
+/// Resolves the pixel height for the carousel's page container.
+///
+/// Precedence: an explicit `heightInPixels` wins; otherwise a `stretch` height
+/// fills the parent when it supplies a finite height; otherwise the measured
+/// tallest page is used; before any measurement the [fallback] applies.
+double resolveCarouselHeight({
+  required double? heightInPixels,
+  required bool isStretch,
+  required double maxAvailableHeight,
+  required double? measuredMaxHeight,
+  required double fallback,
+}) {
+  if (heightInPixels != null) return heightInPixels;
+  if (isStretch && maxAvailableHeight.isFinite) return maxAvailableHeight;
+  return measuredMaxHeight ?? fallback;
+}
