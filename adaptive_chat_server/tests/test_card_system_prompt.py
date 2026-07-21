@@ -34,6 +34,19 @@ def test_card_prompt_documents_markdown_fallback():
         assert token in text
 
 
+def test_card_prompt_requires_complete_json():
+    # Local models copy "..." straight out of schema examples, producing invalid
+    # JSON that renders as text. The prompt must (a) tell the model to write
+    # complete JSON without abbreviating, and (b) not itself contain a bare "..."
+    # ellipsis token that the model could echo.
+    text = PROMPT.read_text(encoding="utf-8")
+    lowered = text.lower()
+    assert "complete" in lowered
+    assert "abbreviat" in lowered
+    # No bare ellipsis token (three dots) anywhere in the prompt examples.
+    assert "..." not in text
+
+
 def test_card_prompt_forbids_actions():
     # Display-only: the prompt must steer the model away from action buttons.
     assert "Action" in PROMPT.read_text(encoding="utf-8")  # mentioned in a "do not use" sense
