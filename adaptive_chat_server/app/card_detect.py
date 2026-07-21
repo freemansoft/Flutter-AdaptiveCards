@@ -10,6 +10,11 @@ Three fragment shapes are accepted, because local models emit all three:
   2. a bare array          ``[ {...}, {...} ]``                           -> as-is
   3. a single element      ``{"type": "Input.ChoiceSet", ...}``          -> ``[element]``
 A dict with no ``type`` string, a scalar, or an empty/mixed array is treated as text.
+
+Leading/trailing decoration a model wraps around the JSON — surrounding
+whitespace, a code fence, or delimiter runs like ``=== `` / ``---`` / ``###`` —
+is stripped before parsing. Surrounding *prose* is not: a reply with words
+before or after the JSON is still treated as text.
 """
 from __future__ import annotations
 
@@ -19,10 +24,21 @@ import re
 # Matches a whole reply wrapped in a ```json ... ``` (or bare ```) fence.
 _FENCE = re.compile(r"^\s*```(?:json)?\s*(.*?)\s*```\s*$", re.DOTALL | re.IGNORECASE)
 
+# Leading/trailing DECORATION a local model wraps around the JSON: whitespace and
+# runs of section/Markdown delimiters (===, ---, ###, ***, ___, ~~~). Stripped
+# from both ends only; the pattern halts at the first content char (e.g. { or [),
+# so JSON is never clipped. Real prose words carry none of these chars at the very
+# edge, so a prose-wrapped reply is left intact and still fails JSON parsing.
+_DECORATION = re.compile(r"^[\s=\-#*_~]+|[\s=\-#*_~]+$")
+
 
 def _strip_fence(raw: str) -> str:
     match = _FENCE.match(raw)
     return match.group(1) if match else raw.strip()
+
+
+def _strip_decoration(text: str) -> str:
+    return _DECORATION.sub("", text)
 
 
 def try_parse_card_body(raw: str) -> list | None:
@@ -31,11 +47,12 @@ def try_parse_card_body(raw: str) -> list | None:
     Accepts a full ``{"type": "AdaptiveCard", "body": [...]}`` object (returns its
     body), a bare non-empty JSON array of objects (returned as-is), or a single
     body-element object such as ``{"type": "Input.ChoiceSet", ...}`` (wrapped as a
-    one-item body). Surrounding prose, invalid JSON, a dict with no ``type``, a
-    scalar, an empty array, or an array with non-objects all yield None so the
-    caller falls back to a text reply.
+    one-item body). Leading/trailing decoration (whitespace, a code fence, or
+    delimiter runs such as ``=== ``) is stripped first. Surrounding prose, invalid
+    JSON, a dict with no ``type``, a scalar, an empty array, or an array with
+    non-objects all yield None so the caller falls back to a text reply.
     """
-    text = _strip_fence(raw)
+    text = _strip_decoration(_strip_fence(raw))
     try:
         parsed = json.loads(text)
     except ValueError:
