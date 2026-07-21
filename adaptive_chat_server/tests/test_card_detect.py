@@ -87,6 +87,32 @@ def test_leading_delimiter_before_single_element_returns_body():
     ]
 
 
+def test_reported_sample_choiceset_with_leaked_delimiter_returns_body():
+    # The verbatim reply that first surfaced this bug: a "=== " prefix leaked
+    # ahead of a full Input.ChoiceSet element. Must parse to a one-item body.
+    raw = (
+        '=== \n{"type":"Input.ChoiceSet","id":"states","style":"compact",'
+        '"choices":[{"title":"California","value":"1"},'
+        '{"title":"Texas","value":"2"},{"title":"New York","value":"3"},'
+        '{"title":"Florida","value":"4"},'
+        '{"title":"Pennsylvania","value":"5"}]}'
+    )
+    assert try_parse_card_body(raw) == [
+        {
+            "type": "Input.ChoiceSet",
+            "id": "states",
+            "style": "compact",
+            "choices": [
+                {"title": "California", "value": "1"},
+                {"title": "Texas", "value": "2"},
+                {"title": "New York", "value": "3"},
+                {"title": "Florida", "value": "4"},
+                {"title": "Pennsylvania", "value": "5"},
+            ],
+        }
+    ]
+
+
 def test_leading_and_trailing_decoration_around_array_returns_array():
     raw = '===\n[{"type": "TextBlock", "text": "hi"}]\n==='
     assert try_parse_card_body(raw) == [{"type": "TextBlock", "text": "hi"}]
