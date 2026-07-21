@@ -50,3 +50,17 @@ def test_card_prompt_requires_complete_json():
 def test_card_prompt_forbids_actions():
     # Display-only: the prompt must steer the model away from action buttons.
     assert "Action" in PROMPT.read_text(encoding="utf-8")  # mentioned in a "do not use" sense
+
+
+def test_card_prompt_has_no_equals_delimiter_headers():
+    # The model mimics "=== ... ===" section headers and leaks "=== " before the
+    # JSON, breaking card detection. The prompt must not use that decoration.
+    text = PROMPT.read_text(encoding="utf-8")
+    assert "===" not in text
+
+
+def test_card_prompt_forbids_output_around_the_json():
+    # Reinforce that the whole card message is raw JSON with nothing wrapped
+    # around it, so a leaked prefix/suffix cannot happen.
+    text = PROMPT.read_text(encoding="utf-8").lower()
+    assert "nothing before" in text
