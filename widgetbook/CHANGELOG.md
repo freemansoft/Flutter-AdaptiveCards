@@ -2,7 +2,8 @@
 
 ## [0.15.0]
 
-- no changes yet
+- Added a **Rounded corners (knobs)** demo use case (Components → Rounded corners): [`RoundedCornersKnobsPage`](lib/rounded_corners_knobs_page.dart) exercises the Teams `roundedCorners` property with a `cornerRadius` knob across `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. New `RoundedCorners` stub in `widget_types.dart` and use-case wiring in `adaptive_cards_use_cases.dart`.
+- Fixed the `Media` sample video sources in `lib/samples/media/example1.json` and `lib/samples/examples/example15.json` — the dead `cdn.adaptivecards.io` MP4 URL is replaced with a working GitHub-hosted sample video so the poster / click-to-play demo actually plays.
 
 ## [0.14.0]
 
