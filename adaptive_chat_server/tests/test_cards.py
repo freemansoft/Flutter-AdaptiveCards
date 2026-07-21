@@ -2,6 +2,7 @@ from app.cards import (
     _BUBBLE_WEIGHT,
     _SPACER_WEIGHT,
     assistant_bubble,
+    assistant_card_bubble,
     envelope,
     user_bubble,
 )
@@ -53,3 +54,20 @@ def test_envelope_shape():
     assert env["messages"][0] == msgs[0].card
     assert env["links"]["self"] == "/conversations/c_1/interactions/i_0001"
     assert env["links"]["postNext"] == "/conversations/c_1/interactions"
+
+
+def test_assistant_card_bubble_embeds_fragment_in_left_emphasis_container():
+    fragment = [
+        {"type": "TextBlock", "text": "Pick a date"},
+        {"type": "Input.Date", "id": "when"},
+    ]
+    card = assistant_card_bubble(fragment)
+    cols = _first_columnset(card)["columns"]
+    # content (75%) first, spacer (25%) second -> left-aligned like a text reply
+    assert cols[0]["width"] == _BUBBLE_WEIGHT
+    assert cols[1]["width"] == _SPACER_WEIGHT
+    container = cols[0]["items"][0]
+    assert container["style"] == "emphasis"
+    assert container["roundedCorners"] is True
+    # the model's fragment is the container's items verbatim
+    assert container["items"] == fragment
