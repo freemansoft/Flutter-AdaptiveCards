@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/providers.dart';
@@ -58,7 +59,13 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
         : factsFromJsonList(adaptiveMap['facts']);
 
     final ReferenceResolver resolver = styleResolver;
-    final FactSetConfig? factSetConfig = resolver.getFactSetConfig();
+    // A HostConfig without a `factSet` section yields a null config. Fall back
+    // to the shared FallbackConfigs.factSetConfig so the spec defaults apply —
+    // most importantly the "bolder" title weight — instead of rendering titles
+    // at the same weight as values. Mirrors how every other HostConfig section
+    // falls back to its FallbackConfigs entry.
+    final FactSetConfig factSetConfig =
+        resolver.getFactSetConfig() ?? FallbackConfigs.factSetConfig;
 
     return Visibility(
       visible: isVisible,
@@ -75,9 +82,7 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
                     .map(
                       (fact) => ConstrainedBox(
                         constraints: BoxConstraints(
-                          maxWidth:
-                              factSetConfig?.title.maxWidth != null &&
-                                  factSetConfig!.title.maxWidth > 0
+                          maxWidth: factSetConfig.title.maxWidth > 0
                               ? factSetConfig.title.maxWidth.toDouble()
                               : double.infinity,
                         ),
@@ -92,19 +97,18 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
                           child: ExcludeSemantics(
                             child: Text(
                               fact.title,
-                              softWrap: factSetConfig?.title.wrap ?? true,
+                              softWrap: factSetConfig.title.wrap,
                               style: TextStyle(
                                 fontWeight: resolver.resolveFontWeight(
-                                  factSetConfig?.title.weight ?? 'default',
+                                  factSetConfig.title.weight,
                                 ),
                                 fontSize: resolver.resolveFontSize(
                                   context: context,
-                                  sizeString:
-                                      factSetConfig?.title.size ?? 'normal',
+                                  sizeString: factSetConfig.title.size,
                                 ),
                                 color: resolver.resolveContainerForegroundColor(
-                                  style: factSetConfig?.title.color,
-                                  isSubtle: factSetConfig?.title.isSubtle,
+                                  style: factSetConfig.title.color,
+                                  isSubtle: factSetConfig.title.isSubtle,
                                 ),
                               ),
                             ),
@@ -114,7 +118,7 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
                     )
                     .toList(),
               ),
-              SizedBox(width: factSetConfig?.spacing.toDouble() ?? 10),
+              SizedBox(width: factSetConfig.spacing.toDouble()),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,9 +126,7 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
                       .map(
                         (fact) => ConstrainedBox(
                           constraints: BoxConstraints(
-                            maxWidth:
-                                factSetConfig?.value.maxWidth != null &&
-                                    factSetConfig!.value.maxWidth > 0
+                            maxWidth: factSetConfig.value.maxWidth > 0
                                 ? factSetConfig.value.maxWidth.toDouble()
                                 : double.infinity,
                           ),
@@ -137,7 +139,7 @@ class AdaptiveFactSetState extends ConsumerState<AdaptiveFactSet>
                               styleSheet: loadMarkdownStyleSheet(
                                 resolver: resolver,
                                 context: context,
-                                factSetTextConfig: factSetConfig?.value,
+                                factSetTextConfig: factSetConfig.value,
                               ),
                             ),
                           ),

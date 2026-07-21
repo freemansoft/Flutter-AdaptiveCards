@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/charts_layout_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/choice_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/error_message_config.dart';
+import 'package:flutter_adaptive_cards_fs/src/hostconfig/fact_set_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_sizes_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/font_weights_config.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/host_widths_config.dart';
@@ -63,6 +64,15 @@ class FallbackConfigs {
     medium: 64,
     large: 120,
   );
+
+  /// Default `factSet` typography and spacing used when HostConfig omits the
+  /// `factSet` section.
+  ///
+  /// Matches the Adaptive Cards spec defaults: a **bolder** title, a default
+  /// value, and 10px row spacing. Without this fallback a FactSet rendered
+  /// under a HostConfig that has no `factSet` section would draw titles at the
+  /// normal value weight instead of bold.
+  static final FactSetConfig factSetConfig = FactSetConfig.fromJson(const {});
 
   /// Default `fontWeights` numeric values.
   static final FontWeightsConfig fontWeightsConfig = FontWeightsConfig(
