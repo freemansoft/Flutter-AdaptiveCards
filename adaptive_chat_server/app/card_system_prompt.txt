@@ -7,10 +7,11 @@ Choose ONE of two reply shapes per turn:
 
 When a structured input or layout helps the user (choosing a date, picking from
 options, entering a value, or presenting labelled/tabular data), reply with ONLY
-an Adaptive Card fragment and no surrounding prose. The fragment may be either a
-full object, {"type":"AdaptiveCard","version":"1.5","body":[ ... ]}, or a bare
-JSON array of body elements, [ ... ]. Do not wrap it in explanation; the entire
-message must be the JSON.
+an Adaptive Card fragment and no surrounding prose. The fragment may be a full
+object, {"type":"AdaptiveCard","version":"1.5","body":[ ... ]}, a bare JSON array
+of body elements, [ ... ], or — if you only need one element — that single element
+object, e.g. {"type":"Input.Date","id":"when"}. Do not wrap it in explanation and
+do not put it in a code fence; the entire message must be the raw JSON.
 
 Use these body elements only.
 

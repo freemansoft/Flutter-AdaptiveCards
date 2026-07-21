@@ -2,8 +2,14 @@
 
 The Ollama model answers either in plain markdown (rendered in a TextBlock bubble)
 or, when the card system prompt is active, with an Adaptive Card fragment we embed
-in the assistant bubble. This module decides which — strictly: the *entire* reply
-(after stripping an optional code fence) must be the card, or it is treated as text.
+in the assistant bubble. This module decides which: the *entire* reply (after
+stripping an optional code fence) must be the card, or it is treated as text.
+
+Three fragment shapes are accepted, because local models emit all three:
+  1. a full card object   ``{"type": "AdaptiveCard", "body": [ ... ]}``  -> its body
+  2. a bare array          ``[ {...}, {...} ]``                           -> as-is
+  3. a single element      ``{"type": "Input.ChoiceSet", ...}``          -> ``[element]``
+A dict with no ``type`` string, a scalar, or an empty/mixed array is treated as text.
 """
 from __future__ import annotations
 
@@ -22,10 +28,12 @@ def _strip_fence(raw: str) -> str:
 def try_parse_card_body(raw: str) -> list | None:
     """Return Adaptive Card body items if ``raw`` is *only* a card, else None.
 
-    Accepts either a full ``{"type": "AdaptiveCard", "body": [...]}`` object or a
-    bare, non-empty JSON array of objects (a body fragment). Surrounding prose,
-    invalid JSON, a non-card object, a scalar, or an array containing non-objects
-    all yield None so the caller falls back to a text reply.
+    Accepts a full ``{"type": "AdaptiveCard", "body": [...]}`` object (returns its
+    body), a bare non-empty JSON array of objects (returned as-is), or a single
+    body-element object such as ``{"type": "Input.ChoiceSet", ...}`` (wrapped as a
+    one-item body). Surrounding prose, invalid JSON, a dict with no ``type``, a
+    scalar, an empty array, or an array with non-objects all yield None so the
+    caller falls back to a text reply.
     """
     text = _strip_fence(raw)
     try:
@@ -36,10 +44,16 @@ def try_parse_card_body(raw: str) -> list | None:
         if parsed and all(isinstance(item, dict) for item in parsed):
             return parsed
         return None
-    if (
-        isinstance(parsed, dict)
-        and parsed.get("type") == "AdaptiveCard"
-        and isinstance(parsed.get("body"), list)
-    ):
-        return parsed["body"]
+    if isinstance(parsed, dict):
+        if parsed.get("type") == "AdaptiveCard":
+            body = parsed.get("body")
+            # A full card must carry a non-empty body list; an empty/absent body
+            # is nothing to render, so fall through to a text reply.
+            return body if isinstance(body, list) and body else None
+        # A single body element (e.g. the model emitted just an Input.ChoiceSet
+        # or a TextBlock). Any object with a non-empty string ``type`` is a valid
+        # element; wrap it as a one-item body fragment.
+        element_type = parsed.get("type")
+        if isinstance(element_type, str) and element_type:
+            return [parsed]
     return None

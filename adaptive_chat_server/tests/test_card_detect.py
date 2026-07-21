@@ -24,8 +24,40 @@ def test_prose_wrapped_json_returns_none():
     assert try_parse_card_body('Here you go: {"type": "AdaptiveCard", "body": []}') is None
 
 
-def test_non_card_object_returns_none():
-    assert try_parse_card_body('{"type": "TextBlock", "text": "hi"}') is None
+def test_single_element_object_becomes_one_item_body():
+    # Local models often emit just the one element, not a full card or an array.
+    assert try_parse_card_body('{"type": "TextBlock", "text": "hi"}') == [
+        {"type": "TextBlock", "text": "hi"}
+    ]
+
+
+def test_fenced_single_element_returns_body():
+    # The exact shape a local model returned: a bare ``` fence wrapping a lone
+    # Input.ChoiceSet element (no full card, no array).
+    raw = (
+        "```\n"
+        '{\n  "type": "Input.ChoiceSet",\n  "style": "compact",\n'
+        '  "choices": [{"title": "GMT+0:00", "value": "+0000"}]\n}\n'
+        "```"
+    )
+    assert try_parse_card_body(raw) == [
+        {
+            "type": "Input.ChoiceSet",
+            "style": "compact",
+            "choices": [{"title": "GMT+0:00", "value": "+0000"}],
+        }
+    ]
+
+
+def test_dict_without_type_returns_none():
+    # A JSON object that isn't an element (no "type") is not a card fragment.
+    assert try_parse_card_body('{"foo": "bar"}') is None
+
+
+def test_empty_body_card_returns_none():
+    # A full card with an empty/absent body has nothing to render -> text.
+    assert try_parse_card_body('{"type": "AdaptiveCard", "body": []}') is None
+    assert try_parse_card_body('{"type": "AdaptiveCard"}') is None
 
 
 def test_json_scalar_returns_none():
