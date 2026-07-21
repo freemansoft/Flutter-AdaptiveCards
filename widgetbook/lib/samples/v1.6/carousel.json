@@ -18,7 +18,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "PAGE 1 Click to activeate the selectAction!",
+              "text": "PAGE 1 Click to activate the selectAction!",
               "wrap": true,
               "size": "Large"
             },
