@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - **Carousel:** replaced the fixed 400px height with the spec height model — `height` (`auto`/`stretch`) and `heightInPixels` — and, for the default `auto` case, size the carousel to its tallest page. Orientation stays independent of `heightInPixels`.
+- **Carousel:** guard `heightInPixels` against non-positive values (`"-50px"`, `"0px"`) — they now fall back to the measured/auto height instead of collapsing or crashing the `SizedBox`.
 
 ## [0.15.0]
 

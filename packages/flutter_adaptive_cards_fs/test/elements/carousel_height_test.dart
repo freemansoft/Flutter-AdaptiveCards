@@ -177,5 +177,61 @@ void main() {
       );
       expect(_carouselHeight(tester), greaterThan(0));
     });
+
+    testWidgets(
+      'negative heightInPixels is ignored and falls back to content height',
+      (tester) async {
+        await tester.pumpWidget(
+          getTestWidgetFromMap(
+            map: _carouselCard(
+              heightInPixels: '-50px',
+              pages: <Map<String, dynamic>>[_page('a', 1), _page('b', 8)],
+            ),
+            title: 'negative px',
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // A negative heightInPixels must not be honored (it would crash
+        // SizedBox(height: -50)); it should fall back to the measured
+        // tallest-page height instead, which is content-sized (well under
+        // the old fixed 400 fallback).
+        expect(_carouselHeight(tester), greaterThan(0));
+        expect(_carouselHeight(tester), lessThan(400));
+      },
+    );
+
+    testWidgets(
+      'height "stretch" under an unbounded parent behaves like auto',
+      (tester) async {
+        final short = _page('short', 1);
+        final tall = _page('tall', 8);
+
+        await tester.pumpWidget(
+          getTestWidgetFromMap(
+            map: _carouselCard(pages: <Map<String, dynamic>>[tall]),
+            title: 'tall reference',
+          ),
+        );
+        await tester.pumpAndSettle();
+        final hTall = _carouselHeight(tester);
+
+        // Unmount so the stretch build re-inits fresh (see the auto test's
+        // note above about content only loading once in initState).
+        await tester.pumpWidget(const SizedBox());
+        await tester.pumpWidget(
+          getTestWidgetFromMap(
+            map: _carouselCard(
+              heightProp: 'stretch',
+              pages: <Map<String, dynamic>>[short, tall],
+            ),
+            title: 'stretch',
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(_carouselHeight(tester), closeTo(hTall, 0.5));
+      },
+    );
   });
 }

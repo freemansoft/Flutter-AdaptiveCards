@@ -101,7 +101,8 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
         .toLowerCase()
         .replaceAll('px', '')
         .trim();
-    return double.tryParse(cleaned);
+    final double? value = double.tryParse(cleaned);
+    return (value != null && value > 0) ? value : null;
   }
 
   double? _measuredMaxHeight() {
@@ -209,6 +210,9 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
 
   /// Off-stage layer that lays out every page at the carousel width so each
   /// page's natural height can be measured; dropped once all pages are known.
+  // Building each page here in addition to the PageView is safe: the spec
+  // forbids Input.* and Media inside CarouselPages, so there's no
+  // input/document state to double-register.
   Widget _buildMeasurementLayer(double width) {
     return Offstage(
       child: Column(
