@@ -18,9 +18,19 @@ def test_card_prompt_documents_input_palette():
 
 def test_card_prompt_documents_display_elements():
     # Display-only elements the core library registers by default (registry.dart):
-    # FactSet, Badge, Carousel — safe to render in a chat bubble without handlers.
+    # FactSet, Badge, Carousel, Table — safe to render in a chat bubble without
+    # handlers. Table cells hold arbitrary items (multi-line / mixed-type cells).
     text = PROMPT.read_text(encoding="utf-8")
-    for token in ("FactSet", "Badge", "Carousel"):
+    for token in ("FactSet", "Badge", "Carousel", "Table", "TableRow", "TableCell"):
+        assert token in text
+
+
+def test_card_prompt_documents_markdown_fallback():
+    # The TextBlock renders GitHub-flavored Markdown both inside a card and as the
+    # plain (no-structured-input) reply, so the prompt must document the Markdown
+    # palette the default_system_prompt.txt describes.
+    text = PROMPT.read_text(encoding="utf-8")
+    for token in ("Markdown", "Headings", "Bold", "Links", "code"):
         assert token in text
 
 
