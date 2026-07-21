@@ -275,12 +275,15 @@ class AdaptiveCarouselPageState extends State<AdaptiveCarouselPage>
       );
     }
 
-    return Container(
-      decoration: decoration,
-      padding: const EdgeInsets.all(12), // Some padding for the page content
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
+    return AdaptiveTappable(
+      adaptiveMap: adaptiveMap,
+      child: Container(
+        decoration: decoration,
+        padding: const EdgeInsets.all(12), // Some padding for the page content
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        ),
       ),
     );
   }
