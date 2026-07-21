@@ -1,0 +1,26 @@
+name: adaptive_chat_client
+description: SDUI chat demo for flutter_adaptive_cards_fs.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.12.0
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_adaptive_cards_fs:
+    path: ../packages/flutter_adaptive_cards_fs
+  flutter_adaptive_cards_host_fs:
+    path: ../packages/flutter_adaptive_cards_host_fs
+  http: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.3.0
+
+flutter:
+  uses-material-design: true

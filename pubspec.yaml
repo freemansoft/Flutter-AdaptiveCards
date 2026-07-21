@@ -10,4 +10,4 @@ workspace:
   - packages/flutter_adaptive_template_fs
   - widgetbook
   - adaptive_explorer
-  - adaptive_chat
+  - adaptive_chat_client
