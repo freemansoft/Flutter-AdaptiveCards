@@ -318,3 +318,25 @@ def test_reply_plain_text_has_no_card_body(tmp_path):
 
     assert result.text == "hi from ollama"
     assert result.card_body is None
+
+
+def test_reply_logs_raw_content_at_debug_level(tmp_path, caplog):
+    # Opt-in content diagnostics: at DEBUG the verbatim model output and the
+    # detection result are logged so a text-instead-of-card reply is diagnosable.
+    missing = tmp_path / "no_prompt.txt"
+    with caplog.at_level(logging.DEBUG, logger="uvicorn.error"):
+        _responder(
+            _ok_capturing_handler({}), system_prompt_file=str(missing)
+        ).reply("hi", [])
+    assert "detected_card" in caplog.text
+    assert "hi from ollama" in caplog.text
+
+
+def test_reply_does_not_log_raw_content_at_info_level(tmp_path, caplog):
+    # Off by default: nothing content-level is emitted at the normal INFO level.
+    missing = tmp_path / "no_prompt.txt"
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        _responder(
+            _ok_capturing_handler({}), system_prompt_file=str(missing)
+        ).reply("hi", [])
+    assert "detected_card" not in caplog.text

@@ -231,4 +231,18 @@ class OllamaResponder:
                 text=f"(Ollama returned an unexpected response: {type(exc).__name__})"
             )
         self._log_context_fill(data)
-        return Reply(text=content, card_body=try_parse_card_body(content))
+        card_body = try_parse_card_body(content)
+        # Content-level diagnostics: logged at DEBUG so they are off in normal
+        # operation but available for testing without a code change. Enable DEBUG
+        # logging (e.g. `uvicorn --log-level debug`, or set the "uvicorn.error"
+        # logger to DEBUG) to see the verbatim model output and whether it was
+        # accepted as a card — the quickest way to diagnose a reply that renders
+        # as text instead of a card. logger.debug skips formatting when disabled,
+        # so this costs nothing at the default INFO level.
+        logger.debug(
+            "Ollama content (%d chars, detected_card=%s):\n%r",
+            len(content),
+            card_body is not None,
+            content,
+        )
+        return Reply(text=content, card_body=card_body)
