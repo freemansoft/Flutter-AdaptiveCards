@@ -4,7 +4,6 @@ import logging
 import httpx
 
 from app.ollama_responder import OllamaResponder
-from app.responder import Reply
 
 # Single source of truth for these tests — change the model/host/port here, not
 # in each test. (These drive the mocked transport; no live Ollama is contacted.)
