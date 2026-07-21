@@ -85,6 +85,8 @@
       "args": [
         "--ollama-url",
         "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
         "--ollama-model",
         "llama3.2",
         "--num-ctx",
@@ -108,6 +110,8 @@
       "args": [
         "--ollama-url",
         "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
         "--ollama-model",
         "gpt-oss:20b",
         "--num-ctx",
@@ -133,6 +137,8 @@
       "args": [
         "--ollama-url",
         "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
         "--ollama-model",
         "llama3.2",
         "--system-prompt-file",
@@ -161,6 +167,8 @@
       "args": [
         "--ollama-url",
         "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
         "--ollama-model",
         "gpt-oss:20b",
         "--system-prompt-file",

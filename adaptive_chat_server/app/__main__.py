@@ -54,6 +54,14 @@ def main() -> None:
     )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument(
+        "--log-level",
+        default="info",
+        choices=["critical", "error", "warning", "info", "debug", "trace"],
+        help="uvicorn log level (default: info). Use 'debug' to surface the "
+        "OllamaResponder debug log of the raw model response content and "
+        "card-detection result.",
+    )
     args = parser.parse_args()
 
     if args.ollama_url:
@@ -66,7 +74,13 @@ def main() -> None:
 
     import uvicorn
 
-    uvicorn.run("app.main:app", host=args.host, port=args.port, reload=False)
+    uvicorn.run(
+        "app.main:app",
+        host=args.host,
+        port=args.port,
+        reload=False,
+        log_level=args.log_level,
+    )
 
 
 if __name__ == "__main__":
