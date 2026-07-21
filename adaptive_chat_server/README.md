@@ -165,6 +165,13 @@ connection until Chrome is enabled under **System Settings → Privacy &
 Security → Local Network**. If the app loads but every send fails with a
 connection error, toggle **Google Chrome** on there.
 
+**macOS native client** (`adaptive_chat` run with `-d macos`) hits the same
+"unable to connect" symptom for a *different* reason: its App Sandbox needs the
+`com.apple.security.network.client` entitlement to make outbound calls. That is
+enabled in the client's `macos/Runner/*.entitlements`; see the client's
+[`README`](../adaptive_chat/README.md#run) — it requires a full rebuild, not the
+system-settings toggle above.
+
 ## Test
 
 ```bash

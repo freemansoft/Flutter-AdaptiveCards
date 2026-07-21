@@ -94,6 +94,16 @@ macOS may block it until you enable **Google Chrome** under **System Settings �
 Privacy & Security → Local Network**. Symptom: the app loads but every send
 fails with a connection error.
 
+**macOS (native app):** the desktop build runs in the App Sandbox, which blocks
+**outbound** connections unless the app carries the network-client entitlement.
+This repo enables `com.apple.security.network.client` in
+[`macos/Runner/DebugProfile.entitlements`](macos/Runner/DebugProfile.entitlements)
+and [`macos/Runner/Release.entitlements`](macos/Runner/Release.entitlements); if
+you see "unable to connect," confirm those keys are present and do a **full
+rebuild** (`fvm flutter run -d macos`) — entitlements are applied at build/sign
+time, so a hot reload/restart won't pick them up. (This is a build entitlement,
+not the Local Network system-settings toggle the web client needs.)
+
 ## Test
 
 ```bash
