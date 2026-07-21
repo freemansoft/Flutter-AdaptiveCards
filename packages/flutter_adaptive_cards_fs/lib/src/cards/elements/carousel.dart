@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_adaptive_cards_fs/src/adaptive_mixins.dart';
 import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/reference_resolver.dart';
@@ -50,6 +51,19 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
   /// Whether to wrap past the last page from `loop`.
   bool loop = false;
 
+  /// Fixed pixel height from `heightInPixels` (e.g. `"100px"`); null when
+  /// unset.
+  double? heightInPixels;
+
+  /// Whether `height` is `stretch` (fill parent) rather than the default auto.
+  bool isStretchHeight = false;
+
+  /// Fallback height used before the pages have been measured.
+  static const double _fallbackHeight = 400;
+
+  /// Measured natural height of each page, keyed by page index.
+  final Map<int, double> _pageHeights = <int, double>{};
+
   Timer? _autoAdvanceTimer;
 
   int _currentIndex = 0;
@@ -74,7 +88,34 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
         ? Axis.vertical
         : Axis.horizontal;
     loop = adaptiveMap['loop'] == true;
+    heightInPixels = _parsePixelHeight(adaptiveMap['heightInPixels']);
+    isStretchHeight =
+        adaptiveMap['height']?.toString().toLowerCase() == 'stretch';
     _startAutoAdvance();
+  }
+
+  double? _parsePixelHeight(Object? raw) {
+    if (raw == null) return null;
+    final String cleaned = raw
+        .toString()
+        .toLowerCase()
+        .replaceAll('px', '')
+        .trim();
+    return double.tryParse(cleaned);
+  }
+
+  double? _measuredMaxHeight() {
+    if (_pageHeights.length < pages.length) return null;
+    return _pageHeights.values.fold<double>(
+      0,
+      (double m, double h) => h > m ? h : m,
+    );
+  }
+
+  void _recordPageHeight(int index, double height) {
+    if (!mounted) return;
+    if (_pageHeights[index] == height) return;
+    setState(() => _pageHeights[index] = height);
   }
 
   void _startAutoAdvance() {
@@ -121,44 +162,66 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
   Widget build(BuildContext context) {
     if (pages.isEmpty) return const SizedBox.shrink();
 
-    // The implementation needs to render the pages AND the controls. The
-    // previous implementation used a SeparatorElement. We should probably keep
-    // that.
-
     return Visibility(
       visible: isVisible,
       child: SeparatorElement(
         adaptiveMap: adaptiveMap,
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Wrap content
-          children: [
-            // Carousel Content
-            SizedBox(
-              height:
-                  400, // Still fixed height for now as pages might be flexible
-              child: PageView.builder(
-                controller: pageController,
-                scrollDirection: scrollAxis,
-                onPageChanged: _onPageChanged,
-                itemCount: pages.length,
-                itemBuilder: (context, index) {
-                  final pageContent = pages[index];
-                  // We expect pageContent to likely be type: CarouselPage But
-                  // it could be any element if the JSON is weak. If it is
-                  // CarouselPage, the Registry will pick it up (if we register
-                  // it).
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double? measuredMax = _measuredMaxHeight();
+            final double height = resolveCarouselHeight(
+              heightInPixels: heightInPixels,
+              isStretch: isStretchHeight,
+              maxAvailableHeight: constraints.maxHeight,
+              measuredMaxHeight: measuredMax,
+              fallback: _fallbackHeight,
+            );
+            final bool needsMeasure =
+                heightInPixels == null &&
+                !(isStretchHeight && constraints.maxHeight.isFinite) &&
+                measuredMax == null;
 
-                  return cardTypeRegistry.getElement(
-                    map: pageContent,
-                  );
-                },
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (needsMeasure) _buildMeasurementLayer(constraints.maxWidth),
+                SizedBox(
+                  height: height,
+                  child: PageView.builder(
+                    controller: pageController,
+                    scrollDirection: scrollAxis,
+                    onPageChanged: _onPageChanged,
+                    itemCount: pages.length,
+                    itemBuilder: (context, index) {
+                      return cardTypeRegistry.getElement(map: pages[index]);
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _buildControls(styleResolver),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Off-stage layer that lays out every page at the carousel width so each
+  /// page's natural height can be measured; dropped once all pages are known.
+  Widget _buildMeasurementLayer(double width) {
+    return Offstage(
+      child: Column(
+        children: [
+          for (int i = 0; i < pages.length; i++)
+            _MeasureSize(
+              onChange: (Size size) => _recordPageHeight(i, size.height),
+              child: SizedBox(
+                width: width.isFinite ? width : null,
+                child: cardTypeRegistry.getElement(map: pages[i]),
               ),
             ),
-            const SizedBox(height: 8),
-            // Carousel Controls
-            _buildControls(styleResolver),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -304,4 +367,44 @@ double resolveCarouselHeight({
   if (heightInPixels != null) return heightInPixels;
   if (isStretch && maxAvailableHeight.isFinite) return maxAvailableHeight;
   return measuredMaxHeight ?? fallback;
+}
+
+typedef _SizeCallback = void Function(Size size);
+
+/// Reports its child's laid-out [Size] after each layout, off the paint path.
+///
+/// Used by [AdaptiveCarousel] to measure each page's natural height so the
+/// carousel can size itself to the tallest page.
+class _MeasureSize extends SingleChildRenderObjectWidget {
+  const _MeasureSize({required this.onChange, required Widget super.child});
+
+  final _SizeCallback onChange;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) =>
+      _MeasureSizeRenderObject(onChange);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _MeasureSizeRenderObject renderObject,
+  ) {
+    renderObject.onChange = onChange;
+  }
+}
+
+class _MeasureSizeRenderObject extends RenderProxyBox {
+  _MeasureSizeRenderObject(this.onChange);
+
+  _SizeCallback onChange;
+  Size? _oldSize;
+
+  @override
+  void performLayout() {
+    super.performLayout();
+    final Size newSize = child?.size ?? Size.zero;
+    if (_oldSize == newSize) return;
+    _oldSize = newSize;
+    WidgetsBinding.instance.addPostFrameCallback((_) => onChange(newSize));
+  }
 }
