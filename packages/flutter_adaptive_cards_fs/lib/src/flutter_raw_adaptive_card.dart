@@ -93,6 +93,9 @@ class RawAdaptiveCard extends StatefulWidget {
 /// Host-facing card state: runtime overlays, validation, and imperative updates
 /// without mutating baseline JSON.
 class RawAdaptiveCardState extends State<RawAdaptiveCard> {
+  /// Creates raw-card state; obtain via [GlobalKey] when calling host APIs.
+  RawAdaptiveCardState();
+
   ///.  Wrapper around the host config
   late ReferenceResolver _resolver;
 

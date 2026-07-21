@@ -18,6 +18,9 @@ import 'package:http/http.dart' as http;
 ///
 /// Implement or use a built-in provider (memory, JSON string, asset, network).
 abstract class AdaptiveCardContentProvider {
+  /// Creates a content provider; subclasses supply load behavior.
+  AdaptiveCardContentProvider();
+
   /// Called by the canvas on first build; return the parsed root `AdaptiveCard`
   /// map.
   Future<Map<String, dynamic>> loadAdaptiveCardContent();
@@ -257,6 +260,9 @@ class AdaptiveCardsCanvas extends StatefulWidget {
 /// Holds loaded card JSON and resolved [onChange] while [AdaptiveCardsCanvas]
 /// builds [RawAdaptiveCard].
 class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
+  /// Creates canvas state; hosts should not construct this directly.
+  AdaptiveCardsCanvasState();
+
   /// Loaded root card JSON after the content provider completes.
   Map<String, dynamic>? map;
 

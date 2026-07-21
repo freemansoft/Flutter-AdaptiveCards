@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart';
 /// surface as `CardTypeRegistry.addedElements`).
 @immutable
 abstract class ElementOverlayExtension {
+  /// Creates an overlay extension for `CardTypeRegistry.overlayExtensions`.
+  const ElementOverlayExtension();
+
   /// Stable extension id used as the key in extension payload maps.
   String get id;
 

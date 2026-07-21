@@ -5,6 +5,7 @@
 /// allowed and denied cases before a card-controlled URL is launched or
 /// fetched.
 sealed class AdaptiveUriValidationResult {
+  /// Shared constructor for allowed/denied validation outcomes.
   const AdaptiveUriValidationResult();
 }
 

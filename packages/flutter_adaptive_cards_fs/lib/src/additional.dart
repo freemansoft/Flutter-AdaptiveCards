@@ -118,6 +118,9 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
 /// State for [AdaptiveTappable] that resolves and invokes `selectAction`.
 class AdaptiveTappableState extends State<AdaptiveTappable>
     with AdaptiveElementMixin, ProviderScopeMixin {
+  /// Creates tap-wrapper state; hosts should not construct this directly.
+  AdaptiveTappableState();
+
   /// Resolved handler for `selectAction`, if present in [adaptiveMap].
   GenericAction? action;
 
