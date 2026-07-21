@@ -149,6 +149,166 @@ fragment carries no submit button of its own, and any values a user enters
 into its inputs do not post back to the server — the fragment is render-only
 for now.
 
+### Request flow
+
+#### Components (all local)
+
+Three processes run on the same machine. The **client** renders whatever cards
+the **server** sends; the server owns conversation state and card authoring and,
+in Ollama mode, calls a **local Ollama** process it neither starts nor manages.
+
+```mermaid
+---
+title: "Adaptive Chat — local components"
+---
+flowchart LR
+    subgraph client["adaptive_chat (Flutter client)"]
+        UI["Chat UI\nrenders server Adaptive Cards verbatim"]
+    end
+    subgraph server["adaptive_chat_server (FastAPI)"]
+        ROUTES["Routes (main.py)\nstart / send / replay"]
+        STORE["ConversationStore + models (store.py)\nin-memory history"]
+        CARDS["cards.py\nbubble + envelope authoring"]
+        RESP["Responder\nEchoResponder or OllamaResponder"]
+    end
+    subgraph ollama["local Ollama (separate process, not managed by the server)"]
+        LLM["chat model e.g. llama3.2\nPOST /api/chat"]
+    end
+
+    UI -->|"POST interaction (X-Interaction-Id, PlainJson)"| ROUTES
+    ROUTES -->|"envelope: Adaptive Cards + links"| UI
+    ROUTES --> RESP
+    ROUTES --> STORE
+    ROUTES --> CARDS
+    RESP -->|"POST /api/chat (Ollama mode only)"| LLM
+    LLM -->|"message.content"| RESP
+```
+
+**Echo mode (no diagram).** When the server starts **without** `--ollama-url`,
+`build_responder` returns an `EchoResponder`. The route (`send_interaction`)
+runs exactly as in the first diagram below — validate the header, 404 an unknown
+conversation, short-circuit an already-seen `X-Interaction-Id`, then call
+`responder.reply(message, history)` — but `EchoResponder.reply` **ignores
+`history`, reads no file, and makes no network call**. It returns
+`Reply(text="Did you just say: {message}", card_body=None)` synchronously, so the
+assistant reply is always a left-aligned Markdown text bubble. None of the
+Ollama-specific steps (system-prompt load, history trim, `POST /api/chat`,
+card-vs-text detection) run. The two diagrams below therefore cover only the
+**Ollama** path.
+
+#### Ollama interaction: route → envelope
+
+The send route validates and de-duplicates the request, rebuilds the
+conversation's history from the store, delegates to `OllamaResponder` — which
+calls the local **Ollama** service over HTTP — then authors the two chat bubbles
+via `cards.py`. `store.py` holds the state models (`Conversation` /
+`Interaction` / `Message`); `cards.py` is the server-side card authoring (the
+"view"), not a model. The `OllamaResponder.reply` internals — system-prompt
+load, history trim, and the card-vs-text decision — are expanded in the
+[next diagram](#ollamaresponderreply-system-prompt-history-card-detection).
+
+```mermaid
+---
+title: "Ollama interaction — route to envelope"
+---
+sequenceDiagram
+    autonumber
+    participant C as adaptive_chat (client)
+    participant R as Route send_interaction (main.py)
+    participant S as ConversationStore + models (store.py)
+    participant O as OllamaResponder
+    participant L as local Ollama service /api/chat
+    participant K as cards.py (bubble + envelope authoring)
+
+    C->>R: POST /conversations/{cid}/interactions<br/>X-Interaction-Id + body.data.message
+    alt missing X-Interaction-Id
+        R-->>C: 400 header required
+    else missing conversation
+        R->>S: get(cid)
+        S-->>R: None
+        R-->>C: 404 unknown conversation
+    else already-seen id (idempotent replay)
+        R->>S: get_interaction(cid, iid)
+        S-->>R: stored Interaction
+        R->>K: envelope(cid, iid, stored.messages)
+        R-->>C: 200 envelope (responder NOT re-run)
+    else new interaction
+        R->>R: read body.data.message (else 400)
+        R->>S: walk conversation.order
+        S-->>R: prior (user, assistant) pairs = full history
+        R->>O: reply(message, history)
+        O->>O: load system prompt (per request) + trim history
+        O->>L: POST /api/chat<br/>{system + history + turn, options.num_ctx}
+        L-->>O: message.content (or failure → diagnostic text)
+        Note over O: card-vs-text detection — see next diagram
+        O-->>R: Reply(text, card_body)
+        alt card_body is not None
+            R->>K: assistant_card_bubble(card_body)
+        else plain text reply
+            R->>K: assistant_bubble(text)
+        end
+        R->>K: user_bubble(message)
+        R->>S: add_interaction(text, messages, reply_text)
+        R->>K: envelope(cid, iid, messages)
+        R-->>C: 200 envelope (user + assistant bubbles)
+    end
+```
+
+#### `OllamaResponder.reply`: system prompt, history, card detection
+
+The responder re-reads the system-prompt **file on every request** (so edits
+apply on the next turn without a restart), trims history to the outbound window,
+POSTs `/api/chat`, and only then decides whether the reply is a card or text. It
+**never raises** to the route: transport, HTTP-status, and bad-body failures all
+return a short diagnostic `Reply` with `card_body=None`.
+
+```mermaid
+---
+title: "OllamaResponder.reply — system prompt, history, card detection"
+---
+sequenceDiagram
+    autonumber
+    participant R as Route
+    participant O as OllamaResponder
+    participant F as system-prompt file<br/>default_system_prompt.txt or --system-prompt-file
+    participant L as local Ollama /api/chat
+    participant D as card_detect.try_parse_card_body
+
+    R->>O: reply(text, history)
+    O->>F: _load_system_prompt() — read file (per request)
+    alt readable and non-empty
+        F-->>O: prompt text
+        O->>O: messages = [ {role: system, content: prompt} ]
+    else missing / unreadable / empty
+        F-->>O: OSError or ""
+        O->>O: log warning, send NO system message
+    end
+    O->>O: _trim_history() — keep last history_turns exchanges
+    O->>O: messages += history + {role: user, content: text}
+    O->>L: POST /api/chat<br/>{model, messages, stream:false, options.num_ctx}
+    alt transport failure (connection / DNS / timeout)
+        L--xO: httpx.HTTPError
+        O-->>R: Reply("(Ollama unreachable …)", card_body=None)
+    else HTTP status >= 400 (e.g. 404 model not pulled)
+        L-->>O: error status + body
+        O-->>R: Reply("(Ollama error HTTP …)", card_body=None)
+    else 2xx but unexpected body
+        L-->>O: JSON without message.content
+        O-->>R: Reply("(unexpected response)", card_body=None)
+    else 2xx success
+        L-->>O: {message.content, prompt_eval_count}
+        O->>O: _log_context_fill() — INFO >= 50%, WARNING >= 76%
+        O->>D: try_parse_card_body(content)
+        alt whole reply is a card fragment
+            D-->>O: body items (list)
+            O-->>R: Reply(text=content, card_body=items)
+        else prose / not a card
+            D-->>O: None
+            O-->>R: Reply(text=content, card_body=None)
+        end
+    end
+```
+
 ## Run
 
 ```bash

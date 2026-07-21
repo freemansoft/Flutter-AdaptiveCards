@@ -75,6 +75,66 @@ flowchart TB
 A polished pending indicator + fade-in cover the round-trip (the model is
 server-authoritative, so nothing renders until the server replies).
 
+### Sequence (start on launch, then a send)
+
+The controller is the hub: it never throws to the UI (start failures land in
+`startError`), it flips `pending`/`composeEpoch` around each send, and it
+`notifyListeners()` at every state change so the `ListenableBuilder` in
+`ChatPage` re-renders. The compose box is itself an Adaptive Card, so a Submit
+arrives through `InheritedAdaptiveCardHandlers.onSubmit` — the same host-invoke
+path an in-card form would use.
+
+```mermaid
+---
+title: "adaptive_chat — start conversation, then send a message"
+---
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant P as ChatPage (Flutter UI)
+    participant K as Compose card<br/>Input.Text + Action.Submit
+    participant C as ConversationController
+    participant B as ChatBackendClient
+    participant S as adaptive_chat_server
+
+    Note over P,S: App launch — start a conversation (from initState)
+    P->>C: startConversation()
+    C->>C: starting = true, notifyListeners()
+    C->>B: startConversation()
+    B->>S: POST /conversations
+    alt 200 OK
+        S-->>B: { conversationId, links.postNext }
+        B-->>C: ChatStart
+        C->>C: store conversationId + postNext, clear messages (ready = true)
+    else non-200 / no connection
+        S-->>B: error
+        B-->>C: throw ChatBackendException
+        C->>C: startError = e (ready stays false)
+    end
+    C->>C: starting = false, notifyListeners()
+    C-->>P: rebuild — bubble log, or start-error retry banner
+
+    Note over U,S: Send a message
+    U->>K: type text, tap Submit
+    K->>P: onSubmit(invoke.data.message)<br/>via InheritedAdaptiveCardHandlers
+    P->>C: send(text)
+    alt not ready / empty text / already pending
+        C-->>P: ignored (no-op)
+    else send
+        C->>C: pending = true, composeEpoch++, notifyListeners()
+        C-->>P: rebuild — pending bubble + empty compose card
+        C->>B: sendInteraction(postNext, interactionId = i_000N, invoke)
+        B->>B: AdaptiveCardInvokeRequest.fromSubmit + PlainJsonInvokeAdapter.toMap
+        B->>S: POST {postNext}<br/>X-Interaction-Id + PlainJson body {data.message}
+        Note over B,S: reposting the same X-Interaction-Id returns the stored envelope (idempotent)
+        S-->>B: envelope { messages[], links.postNext }
+        B-->>C: ChatEnvelope
+        C->>C: messages.addAll(...), postNext = new, pending = false, notifyListeners()
+        C-->>P: rebuild
+        P->>P: render each card via AdaptiveCardsCanvas.map + auto-scroll to bottom
+    end
+```
+
 ## Run
 
 Start the backend first (see [`../adaptive_chat_server`](../adaptive_chat_server)),
