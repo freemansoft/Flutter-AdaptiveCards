@@ -1,4 +1,4 @@
-"""FastAPI entrypoint for the Adaptive Chat echo backend."""
+"""FastAPI entrypoint for the Adaptive Chat backend (echo or Ollama responder)."""
 from __future__ import annotations
 
 import logging
@@ -89,6 +89,7 @@ responder = build_responder(
 
 @app.post("/conversations")
 def start_conversation() -> dict:
+    """Start a conversation and return its id plus the URL to post the first turn to."""
     conv = store.create()
     cid = conv.conversation_id
     return {
@@ -103,6 +104,13 @@ async def send_interaction(
     request: Request,
     x_interaction_id: str | None = Header(default=None),
 ) -> dict:
+    """Run one chat turn and return the envelope of rendered bubbles.
+
+    Appends the user bubble and the responder's reply (a Markdown text bubble or
+    an embedded Adaptive Card fragment). Idempotent by ``X-Interaction-Id``:
+    reposting the same id returns the stored envelope without re-running the
+    responder.
+    """
     if not x_interaction_id:
         raise HTTPException(status_code=400, detail="X-Interaction-Id header required")
     if store.get(cid) is None:
@@ -149,6 +157,7 @@ async def send_interaction(
 
 @app.get("/conversations/{cid}/interactions/{iid}")
 def replay_interaction(cid: str, iid: str) -> dict:
+    """Return the stored envelope for a past interaction (idempotent replay)."""
     if store.get(cid) is None:
         raise HTTPException(status_code=404, detail="unknown conversation")
     interaction = store.get_interaction(cid, iid)

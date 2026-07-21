@@ -52,6 +52,11 @@ class OllamaResponder:
         history_turns: int = DEFAULT_HISTORY_TURNS,
         num_ctx: int = DEFAULT_NUM_CTX,
     ) -> None:
+        """Configure the responder.
+
+        The system-prompt file *path* is stored (not its contents) so edits to the
+        file take effect on the next request without restarting the server.
+        """
         self._ollama_url = ollama_url
         self._model = model
         self._client = client or httpx.Client(timeout=60)
@@ -134,6 +139,14 @@ class OllamaResponder:
             )
 
     def reply(self, text: str, history: list[tuple[str, str]]) -> Reply:
+        """Send system prompt + trimmed history + this turn to Ollama, return a Reply.
+
+        The returned ``Reply.text`` is always the raw model output (so it threads
+        into conversation history), and ``card_body`` is set when the model
+        answered with an Adaptive Card fragment (see ``try_parse_card_body``).
+        Never raises: transport, HTTP-status, and unexpected-body failures are
+        logged and returned as a short diagnostic ``text`` with ``card_body=None``.
+        """
         messages: list[dict[str, str]] = []
         system_prompt = self._load_system_prompt()
         if system_prompt:
