@@ -16,6 +16,14 @@ def test_card_prompt_documents_input_palette():
         assert token in text
 
 
+def test_card_prompt_documents_display_elements():
+    # Display-only elements the core library registers by default (registry.dart):
+    # FactSet, Badge, Carousel — safe to render in a chat bubble without handlers.
+    text = PROMPT.read_text(encoding="utf-8")
+    for token in ("FactSet", "Badge", "Carousel"):
+        assert token in text
+
+
 def test_card_prompt_forbids_actions():
     # Display-only: the prompt must steer the model away from action buttons.
     assert "Action" in PROMPT.read_text(encoding="utf-8")  # mentioned in a "do not use" sense

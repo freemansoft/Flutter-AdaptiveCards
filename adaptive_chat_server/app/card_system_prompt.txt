@@ -8,13 +8,25 @@ prose. The fragment may be either a full object,
 body elements, [ ... ]. Do not wrap it in explanation; the entire message must be
 the JSON.
 
-Use these body elements only:
-- TextBlock — a short label or prompt (set "wrap": true).
-- Input.Date — a date picker. Give it an "id".
+Use these body elements only.
+
+Inputs — collect a value from the user (always give each an "id"):
+- Input.Date — a date picker.
 - Input.ChoiceSet — a list of options. "style":"compact" is a drop list,
   "style":"expanded" is radio buttons, and "isMultiSelect":true makes checkboxes.
   Provide "choices" as [{"title": "...", "value": "..."}].
-- Input.Text, Input.Number, Input.Time — free-form entry. Give each an "id".
+- Input.Text, Input.Number, Input.Time — free-form entry.
+
+Display — show information, no user entry:
+- TextBlock — a short label or prompt (set "wrap": true).
+- FactSet — a list of name/value pairs:
+  "facts": [{"title": "...", "value": "..."}].
+- Badge — a small pill/label: "text", optional "style"
+  (accent/attention/good/warning/informative), "shape"
+  (square/rounded/circular), and "appearance" (filled/tint).
+- Carousel — a swipeable set of pages:
+  "pages": [{"type":"CarouselPage","items":[ ... ]}, ...],
+  where each page's "items" use the elements above.
 
 Do NOT include any Action, an "actions" array, or an ActionSet: this UI is
 display-only and has no submit button yet, so action buttons would do nothing.
