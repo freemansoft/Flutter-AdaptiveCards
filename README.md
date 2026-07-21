@@ -134,6 +134,27 @@ More detail: [adaptive_explorer/README.md](adaptive_explorer/README.md).
 - Flutter versions are managed using fvm.
 - This repository is managed using flutter workspaces via the `pubspec.yaml`
 
+### First-time setup (fresh clone)
+
+The pinned Flutter SDK version lives in `.fvmrc`, but the generated `.fvm/`
+symlinks are gitignored — so a fresh clone has no `.fvm/versions/<version>` yet.
+The committed VS Code setting `dart.flutterSdkPath` points there, so until you
+run fvm once the Dart/Flutter extension can't find an SDK. Run the setup script
+from the repo root to create the links (offline if the SDK is already in your
+global fvm cache):
+
+```bash
+# macOS / Linux
+./scripts/setup-workspace.sh
+
+# Windows (PowerShell)
+./scripts/setup-workspace.ps1
+```
+
+Then reload the VS Code window so the extension picks up the SDK. This wraps
+`fvm install`; see the `adaptive-cards-dart-flutter-fvm` skill for switching the
+pinned version.
+
 ## Defects
 
 Many!
