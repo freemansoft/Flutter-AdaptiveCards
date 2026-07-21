@@ -2,16 +2,21 @@ import logging
 
 from app.main import _int_env, build_responder
 from app.ollama_responder import DEFAULT_OLLAMA_MODEL, OllamaResponder
-from app.responder import EchoResponder
+from app.responder import EchoResponder, Reply
 
 
 def test_echo_wraps_the_input():
-    assert EchoResponder().reply("hello", []) == "Did you just say: hello"
+    result = EchoResponder().reply("hello", [])
+    assert result == Reply(text="Did you just say: hello", card_body=None)
 
 
 def test_echo_ignores_history():
     history = [("user", "earlier"), ("assistant", "reply")]
-    assert EchoResponder().reply("hello", history) == "Did you just say: hello"
+    assert EchoResponder().reply("hello", history).text == "Did you just say: hello"
+
+
+def test_echo_never_returns_a_card():
+    assert EchoResponder().reply("hello", []).card_body is None
 
 
 def test_build_responder_defaults_to_echo_without_url():

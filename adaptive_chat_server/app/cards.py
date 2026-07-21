@@ -43,7 +43,11 @@ def user_bubble(text: str) -> dict:
 
 
 def assistant_bubble(text: str) -> dict:
-    """Left-aligned emphasis bubble for a plain-text assistant reply."""
+    """Left-aligned emphasis bubble for a Markdown text assistant reply.
+
+    The ``TextBlock`` renders GitHub-flavored Markdown, so this is the
+    default reply shape used before the card path existed.
+    """
     return _bubble(_text_items(text), style="emphasis", align_right=False)
 
 

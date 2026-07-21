@@ -7,7 +7,7 @@ import os
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.cards import assistant_bubble, envelope, user_bubble
+from app.cards import assistant_bubble, assistant_card_bubble, envelope, user_bubble
 from app.ollama_responder import (
     DEFAULT_HISTORY_TURNS,
     DEFAULT_NUM_CTX,
@@ -125,10 +125,15 @@ async def send_interaction(
         history.append(("user", prior.text))
         history.append(("assistant", prior.reply_text))
 
-    reply_text = responder.reply(message, history)
+    reply = responder.reply(message, history)
+    assistant_card = (
+        assistant_card_bubble(reply.card_body)
+        if reply.card_body is not None
+        else assistant_bubble(reply.text)
+    )
     messages = [
         Message(role="user", card=user_bubble(message)),
-        Message(role="assistant", card=assistant_bubble(reply_text)),
+        Message(role="assistant", card=assistant_card),
     ]
     store.add_interaction(
         cid,
@@ -136,7 +141,7 @@ async def send_interaction(
             interaction_id=x_interaction_id,
             text=message,
             messages=messages,
-            reply_text=reply_text,
+            reply_text=reply.text,
         ),
     )
     return envelope(cid, x_interaction_id, messages)
