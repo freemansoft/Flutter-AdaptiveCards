@@ -14,7 +14,7 @@
 
 - **Display-only.** Returned inputs render but never post back. No handler wiring in the log.
 - **Inputs only.** The card prompt covers inputs (`Input.Date`, `Input.ChoiceSet`, `Input.Text/Number/Time`); **no** `Action.*` / `actions` / `ActionSet`.
-- **Server detects, client unchanged.** No edits to `adaptive_chat/lib/`. Envelope contract unchanged (`messages[]` are pre-styled cards).
+- **Server detects, client unchanged.** No edits to `adaptive_chat_client/lib/`. Envelope contract unchanged (`messages[]` are pre-styled cards).
 - **Echo stays text-only** (`card_body=None`).
 - **History unchanged:** `Interaction.reply_text` = `reply.text` (the raw model string).
 - **These are sample apps** — no `packages/` CHANGELOG or coverage-floor gates apply.
@@ -612,22 +612,22 @@ git commit -m "feat(adaptive_chat_server): bundled card_system_prompt.txt (input
 ### Task 6: Client widget test — a card reply renders its inputs
 
 **Files:**
-- Test: `adaptive_chat/test/card_reply_render_test.dart` (create)
+- Test: `adaptive_chat_client/test/card_reply_render_test.dart` (create)
 
 **Interfaces:**
 - Consumes: `assistant_card_bubble`-shaped JSON (Task 2), the client's existing `AdaptiveCardsCanvas.map` render path. No client `lib/` change.
 
 - [ ] **Step 1: Inspect an existing client test for setup**
 
-Run: `ls adaptive_chat/test && sed -n '1,40p' adaptive_chat/test/*_test.dart | head -60`
+Run: `ls adaptive_chat_client/test && sed -n '1,40p' adaptive_chat_client/test/*_test.dart | head -60`
 Purpose: copy the existing pump/hostConfig setup pattern (imports, `chatHostConfigs()` usage, `pumpWidget` wrapping) used by the current widget tests, so the new test matches repo conventions.
 
 - [ ] **Step 2: Write the failing test**
 
-Create `adaptive_chat/test/card_reply_render_test.dart`. Build the same card an assistant card bubble produces (a left `ColumnSet` → `Column` → `emphasis` `Container` whose items are the fragment) and pump it through the same `AdaptiveCardsCanvas.map` + `chatHostConfigs()` the page uses. Assert an `Input.Date` field renders:
+Create `adaptive_chat_client/test/card_reply_render_test.dart`. Build the same card an assistant card bubble produces (a left `ColumnSet` → `Column` → `emphasis` `Container` whose items are the fragment) and pump it through the same `AdaptiveCardsCanvas.map` + `chatHostConfigs()` the page uses. Assert an `Input.Date` field renders:
 
 ```dart
-import 'package:adaptive_chat/src/chat_host_config.dart';
+import 'package:adaptive_chat_client/src/chat_host_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -688,19 +688,19 @@ Note: if Step 1 shows the existing tests import `chatHostConfigs` from a differe
 
 - [ ] **Step 3: Run test to verify it fails (or passes) meaningfully**
 
-Run: `cd adaptive_chat && fvm flutter test test/card_reply_render_test.dart`
+Run: `cd adaptive_chat_client && fvm flutter test test/card_reply_render_test.dart`
 Expected: If the finder is wrong it FAILs with a clear "found 0 widgets" — adjust the finder to what `Input.Date` actually renders, then it PASSES. The label assertion (`find.text('Pick a date')`) must pass regardless.
 
 - [ ] **Step 4: Run the full client suite**
 
-Run: `cd adaptive_chat && fvm flutter test`
+Run: `cd adaptive_chat_client && fvm flutter test`
 Expected: PASS (existing tests + the new one).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add adaptive_chat/test/card_reply_render_test.dart
-git commit -m "test(adaptive_chat): assistant card bubble renders its inputs"
+git add adaptive_chat_client/test/card_reply_render_test.dart
+git commit -m "test(adaptive_chat_client): assistant card bubble renders its inputs"
 ```
 
 ---
@@ -709,7 +709,7 @@ git commit -m "test(adaptive_chat): assistant card bubble renders its inputs"
 
 **Files:**
 - Modify: `adaptive_chat_server/README.md`
-- Modify: `adaptive_chat/README.md`
+- Modify: `adaptive_chat_client/README.md`
 
 **Interfaces:**
 - Consumes: everything above. No code.
@@ -724,7 +724,7 @@ In `adaptive_chat_server/README.md`:
 
 - [ ] **Step 2: Update the client README**
 
-In `adaptive_chat/README.md`, under "Not covered here (by design)" (or a new note), state that assistant bubbles may now contain rich **inputs** (date pickers, choice sets) authored by the server, but this is **display-only** — the returned inputs do not post back yet (same gap as in-card form submits).
+In `adaptive_chat_client/README.md`, under "Not covered here (by design)" (or a new note), state that assistant bubbles may now contain rich **inputs** (date pickers, choice sets) authored by the server, but this is **display-only** — the returned inputs do not post back yet (same gap as in-card form submits).
 
 - [ ] **Step 3: Verify no stale references**
 
@@ -734,8 +734,8 @@ Expected: the route uses `reply = responder.reply(...)`; all `reply(...)` signat
 - [ ] **Step 4: Commit**
 
 ```bash
-git add adaptive_chat_server/README.md adaptive_chat/README.md
-git commit -m "docs(adaptive_chat): document display-only card replies"
+git add adaptive_chat_server/README.md adaptive_chat_client/README.md
+git commit -m "docs(adaptive_chat_client): document display-only card replies"
 ```
 
 ---
@@ -749,12 +749,12 @@ Expected: PASS (all files, including the new `test_card_detect.py`, `test_card_s
 
 - [ ] **Step 2: Client suite**
 
-Run: `cd adaptive_chat && fvm flutter test`
+Run: `cd adaptive_chat_client && fvm flutter test`
 Expected: PASS. Paste the summary line.
 
 - [ ] **Step 3: Analyzer (client)**
 
-Run: `cd adaptive_chat && fvm flutter analyze`
+Run: `cd adaptive_chat_client && fvm flutter analyze`
 Expected: No new issues.
 
 - [ ] **Step 4: Report**

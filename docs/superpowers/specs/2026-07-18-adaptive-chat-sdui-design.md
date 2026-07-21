@@ -7,7 +7,7 @@ _Design spec — 2026-07-18_
 Build an SDUI (server-driven UI) chat demo consisting of two new top-level
 siblings in the repo, joined by a small HTTP contract:
 
-- **`adaptive_chat/`** — a Flutter sample app (peer of `adaptive_explorer/`). A
+- **`adaptive_chat_client/`** — a Flutter sample app (peer of `adaptive_explorer/`). A
   scrolling log of server-returned Adaptive Cards rendered as messenger bubbles,
   with a **compose box that is itself an Adaptive Card** (`Input.Text` +
   `Action.Submit`) wired through `flutter_adaptive_cards_host_fs`.
@@ -62,11 +62,11 @@ alignment and styling, entirely in Adaptive Card JSON.
 ## Repo layout
 
 ```text
-adaptive_chat/            # Flutter sample app (peer of adaptive_explorer/)
+adaptive_chat_client/            # Flutter sample app (peer of adaptive_explorer/)
 adaptive_chat_server/     # Python FastAPI service (NOT in the Dart workspace)
 ```
 
-`adaptive_chat/` is an ordinary Flutter app, so `flutter_localizations` + `.arb`
+`adaptive_chat_client/` is an ordinary Flutter app, so `flutter_localizations` + `.arb`
 are allowed there (it is not a published package). `adaptive_chat_server/` has its
 own `requirements.txt` / `pyproject.toml` and README.
 
@@ -154,7 +154,7 @@ the sample app owns.
   (read `X-Interaction-Id`, parse PlainJson `data.message`, idempotency check,
   build bubbles, store, return envelope); `GET /conversations/{cid}/interactions/{iid}`.
 
-### Client — `adaptive_chat/lib/`
+### Client — `adaptive_chat_client/lib/`
 
 - **`main.dart`** — MaterialApp, light/dark `HostConfig` (bubble colors + corner
   tuning).
@@ -221,7 +221,7 @@ compose Submit
 The demo shipped with scope added after this design. The full, current
 architecture lives in the app READMEs — treat those as the composite reference:
 
-- **[`adaptive_chat/README.md`](../../../adaptive_chat/README.md)** — client architecture (SDUI model, compose-as-Adaptive-Card, `ChatBackendClient` / `ConversationController` / `ChatPage`, the wire contract, rounded bubbles).
+- **[`adaptive_chat_client/README.md`](../../../adaptive_chat_client/README.md)** — client architecture (SDUI model, compose-as-Adaptive-Card, `ChatBackendClient` / `ConversationController` / `ChatPage`, the wire contract, rounded bubbles).
 - **[`adaptive_chat_server/README.md`](../../../adaptive_chat_server/README.md)** — server architecture (bubble authoring, envelope + idempotency, in-memory store, responder seam, Ollama).
 
 Additions beyond the original chat design:
@@ -229,7 +229,7 @@ Additions beyond the original chat design:
 1. **Rounded bubbles → core-library feature.** The "Open questions" item on rounded corners was resolved by adding Teams **`roundedCorners`** support to `flutter_adaptive_cards_fs` across **Container, ColumnSet, Column, Table, Image**, with the radius resolved via a new `HostConfig.cornerRadius` (default 8) / `ReferenceResolver.resolveCornerRadius()`. The chat bubbles opt in server-side (`roundedCorners: true`) and the client uses a 16 px radius. See [`docs/hostconfig.md`](../../hostconfig.md) (Microsoft Teams HostConfig extensions) and the package README status rows. A widgetbook knob demo (`roundedCorners` toggle + `cornerRadius` slider) showcases it.
 2. **Local Ollama integration (opt-in).** `python -m app --ollama-url …` selects an `OllamaResponder` (conversation history → `/api/chat`) behind the existing `Responder` seam; no URL → the echo demo. See the server README.
 3. **VS Code run targets** for the app (Current/Web), the echo server, the Ollama server, and server+web compounds (`.vscode/launch.json`).
-4. **Generated Flutter platform folders** for `adaptive_chat` (checked in, matching `adaptive_explorer`).
+4. **Generated Flutter platform folders** for `adaptive_chat_client` (checked in, matching `adaptive_explorer`).
 
 Implementation phases for (2) and (3) are in the plan: [`docs/superpowers/plans/2026-07-18-adaptive-chat-sdui.md`](../plans/2026-07-18-adaptive-chat-sdui.md) (Phase 3 — VS Code run targets, Phase 4 — Ollama).
 

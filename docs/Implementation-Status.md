@@ -122,7 +122,7 @@ fvm flutter test --exclude-tags=golden
 
 ### Teams `roundedCorners` on all five elements (2026-07-19)
 
-- `Container`, `ColumnSet`, `Column`, `Table`, and `Image` all support the Microsoft Teams [`roundedCorners`](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format) extension, radius resolved via HostConfig `cornerRadius` (default 8). See [`docs/hostconfig.md` → Microsoft Teams HostConfig extensions](./hostconfig.md#microsoft-teams-hostconfig-extensions) and the [`flutter_adaptive_cards_fs` README → Known gaps](../packages/flutter_adaptive_cards_fs/README.md#known-gaps) for the per-element notes. The `adaptive_chat` sample opts a bubble `Container` in with `roundedCorners: true` server-side and sets `HostConfig.cornerRadius: 16` client-side for a chat-bubble radius.
+- `Container`, `ColumnSet`, `Column`, `Table`, and `Image` all support the Microsoft Teams [`roundedCorners`](https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format) extension, radius resolved via HostConfig `cornerRadius` (default 8). See [`docs/hostconfig.md` → Microsoft Teams HostConfig extensions](./hostconfig.md#microsoft-teams-hostconfig-extensions) and the [`flutter_adaptive_cards_fs` README → Known gaps](../packages/flutter_adaptive_cards_fs/README.md#known-gaps) for the per-element notes. The `adaptive_chat_client` sample opts a bubble `Container` in with `roundedCorners: true` server-side and sets `HostConfig.cornerRadius: 16` client-side for a chat-bubble radius.
 
 ### `Media` poster fix (2026-07-14)
 

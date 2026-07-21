@@ -12,9 +12,9 @@
 
 - **FVM:** Prefix every `flutter`/`dart` command with `fvm` (e.g. `fvm flutter test`). Pinned Flutter is `3.44.0`; Dart SDK constraint `^3.12.0`.
 - **Commit gate:** This repo forbids committing without explicit user confirmation. The `Commit` step in each task means "stage the listed files and propose the commit"; the executor must show the diff and wait for the user before running `git commit`.
-- **Lint (`very_good_analysis`):** single quotes only; `always_use_package_imports` (import sibling files as `package:adaptive_chat/...`, never relative); `const` constructors where possible.
-- **No published-package changes:** touch nothing under `packages/`. The client only *uses* `flutter_adaptive_cards_host_fs` via its public exports. `adaptive_chat/` and `adaptive_chat_server/` are outside `packages/`, so the per-package coverage floor and `CHANGELOG.md` gate do not apply.
-- **Workspace:** `adaptive_chat` is a Dart pub-workspace member (add it to root `pubspec.yaml` `workspace:` list; its pubspec uses `resolution: workspace`). `adaptive_chat_server/` is Python and is **not** in the Dart workspace.
+- **Lint (`very_good_analysis`):** single quotes only; `always_use_package_imports` (import sibling files as `package:adaptive_chat_client/...`, never relative); `const` constructors where possible.
+- **No published-package changes:** touch nothing under `packages/`. The client only *uses* `flutter_adaptive_cards_host_fs` via its public exports. `adaptive_chat_client/` and `adaptive_chat_server/` are outside `packages/`, so the per-package coverage floor and `CHANGELOG.md` gate do not apply.
+- **Workspace:** `adaptive_chat_client` is a Dart pub-workspace member (add it to root `pubspec.yaml` `workspace:` list; its pubspec uses `resolution: workspace`). `adaptive_chat_server/` is Python and is **not** in the Dart workspace.
 - **Branch:** do all work on a feature branch (e.g. `feat/adaptive-chat-sdui`), not `main`.
 
 ## File Structure
@@ -29,7 +29,7 @@
 - `app/main.py` — FastAPI app, CORS, routes, DI
 - `tests/test_store.py`, `tests/test_cards.py`, `tests/test_responder.py`, `tests/test_api.py`
 
-**Client — `adaptive_chat/`**
+**Client — `adaptive_chat_client/`**
 - `pubspec.yaml`, `analysis_options.yaml`
 - `lib/main.dart` — app entry, `HostConfigs`, `ChatPage` host
 - `lib/src/chat_models.dart` — `ChatStart`, `ChatEnvelope`, `ChatBackendException`
@@ -691,22 +691,22 @@ git commit -m "feat(chat-server): add replay (GET interaction) route"
 
 ## Phase 2 — Client (Flutter)
 
-### Task 7: Scaffold the `adaptive_chat` app
+### Task 7: Scaffold the `adaptive_chat_client` app
 
 **Files:**
-- Create: `adaptive_chat/pubspec.yaml`
-- Create: `adaptive_chat/analysis_options.yaml`
-- Create: `adaptive_chat/lib/main.dart`
-- Modify: `pubspec.yaml` (repo root — add `adaptive_chat` to `workspace:`)
-- Test: `adaptive_chat/test/smoke_test.dart`
+- Create: `adaptive_chat_client/pubspec.yaml`
+- Create: `adaptive_chat_client/analysis_options.yaml`
+- Create: `adaptive_chat_client/lib/main.dart`
+- Modify: `pubspec.yaml` (repo root — add `adaptive_chat_client` to `workspace:`)
+- Test: `adaptive_chat_client/test/smoke_test.dart`
 
 **Interfaces:**
 - Produces: a runnable app whose home is a `Scaffold` titled "Adaptive Chat".
 
-- [ ] **Step 1: Create `adaptive_chat/pubspec.yaml`**
+- [ ] **Step 1: Create `adaptive_chat_client/pubspec.yaml`**
 
 ```yaml
-name: adaptive_chat
+name: adaptive_chat_client
 description: SDUI chat demo for flutter_adaptive_cards_fs.
 publish_to: none
 version: 0.1.0
@@ -734,7 +734,7 @@ flutter:
   uses-material-design: true
 ```
 
-- [ ] **Step 2: Create `adaptive_chat/analysis_options.yaml`**
+- [ ] **Step 2: Create `adaptive_chat_client/analysis_options.yaml`**
 
 ```yaml
 include: package:very_good_analysis/analysis_options.yaml
@@ -745,14 +745,14 @@ linter:
     always_use_package_imports: true
 ```
 
-- [ ] **Step 3: Add `adaptive_chat` to the root workspace**
+- [ ] **Step 3: Add `adaptive_chat_client` to the root workspace**
 
 In repo-root `pubspec.yaml`, add a final list item under `workspace:`:
 ```yaml
-  - adaptive_chat
+  - adaptive_chat_client
 ```
 
-- [ ] **Step 4: Create minimal `adaptive_chat/lib/main.dart`**
+- [ ] **Step 4: Create minimal `adaptive_chat_client/lib/main.dart`**
 
 ```dart
 import 'package:flutter/material.dart';
@@ -778,10 +778,10 @@ class AdaptiveChatApp extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 5: Write the smoke test** — `adaptive_chat/test/smoke_test.dart`
+- [ ] **Step 5: Write the smoke test** — `adaptive_chat_client/test/smoke_test.dart`
 
 ```dart
-import 'package:adaptive_chat/main.dart';
+import 'package:adaptive_chat_client/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -796,16 +796,16 @@ void main() {
 
 Run:
 ```bash
-cd adaptive_chat && fvm flutter pub get && fvm flutter test test/smoke_test.dart
+cd adaptive_chat_client && fvm flutter pub get && fvm flutter test test/smoke_test.dart
 ```
 Expected: PASS (1 test). If `pub get` reports workspace errors, run `fvm flutter pub get` from the repo root once, then retry.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add adaptive_chat/pubspec.yaml adaptive_chat/analysis_options.yaml \
-        adaptive_chat/lib/main.dart adaptive_chat/test/smoke_test.dart pubspec.yaml
-git commit -m "feat(chat): scaffold adaptive_chat Flutter sample app"
+git add adaptive_chat_client/pubspec.yaml adaptive_chat_client/analysis_options.yaml \
+        adaptive_chat_client/lib/main.dart adaptive_chat_client/test/smoke_test.dart pubspec.yaml
+git commit -m "feat(chat): scaffold adaptive_chat_client Flutter sample app"
 ```
 
 ---
@@ -813,9 +813,9 @@ git commit -m "feat(chat): scaffold adaptive_chat Flutter sample app"
 ### Task 8: Wire models + backend client
 
 **Files:**
-- Create: `adaptive_chat/lib/src/chat_models.dart`
-- Create: `adaptive_chat/lib/src/chat_backend_client.dart`
-- Test: `adaptive_chat/test/chat_backend_client_test.dart`
+- Create: `adaptive_chat_client/lib/src/chat_models.dart`
+- Create: `adaptive_chat_client/lib/src/chat_backend_client.dart`
+- Test: `adaptive_chat_client/test/chat_backend_client_test.dart`
 
 **Interfaces:**
 - Consumes: `AdaptiveCardInvokeRequest`, `PlainJsonInvokeAdapter` (from `flutter_adaptive_cards_host_fs`); `SubmitActionInvoke` (from `flutter_adaptive_cards_fs`); `package:http`.
@@ -825,12 +825,12 @@ git commit -m "feat(chat): scaffold adaptive_chat Flutter sample app"
   - `ChatBackendException(String message)`.
   - `ChatBackendClient({required Uri baseUrl, http.Client? client})` with `Future<ChatStart> startConversation()` and `Future<ChatEnvelope> sendInteraction({required String postNext, required String interactionId, required SubmitActionInvoke invoke})`.
 
-- [ ] **Step 1: Write the failing client test** — `adaptive_chat/test/chat_backend_client_test.dart`
+- [ ] **Step 1: Write the failing client test** — `adaptive_chat_client/test/chat_backend_client_test.dart`
 
 ```dart
 import 'dart:convert';
 
-import 'package:adaptive_chat/src/chat_backend_client.dart';
+import 'package:adaptive_chat_client/src/chat_backend_client.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -912,7 +912,7 @@ void main() {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd adaptive_chat && fvm flutter test test/chat_backend_client_test.dart`
+Run: `cd adaptive_chat_client && fvm flutter test test/chat_backend_client_test.dart`
 Expected: FAIL — `chat_backend_client.dart` does not exist.
 
 - [ ] **Step 3: Implement `lib/src/chat_models.dart`**
@@ -1002,7 +1002,7 @@ class ChatBackendException implements Exception {
 ```dart
 import 'dart:convert';
 
-import 'package:adaptive_chat/src/chat_models.dart';
+import 'package:adaptive_chat_client/src/chat_models.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_adaptive_cards_host_fs/flutter_adaptive_cards_host_fs.dart';
 import 'package:http/http.dart' as http;
@@ -1062,15 +1062,15 @@ class ChatBackendClient {
 
 - [ ] **Step 5: Run test to verify it passes**
 
-Run: `cd adaptive_chat && fvm flutter test test/chat_backend_client_test.dart`
+Run: `cd adaptive_chat_client && fvm flutter test test/chat_backend_client_test.dart`
 Expected: PASS (3 tests).
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add adaptive_chat/lib/src/chat_models.dart \
-        adaptive_chat/lib/src/chat_backend_client.dart \
-        adaptive_chat/test/chat_backend_client_test.dart
+git add adaptive_chat_client/lib/src/chat_models.dart \
+        adaptive_chat_client/lib/src/chat_backend_client.dart \
+        adaptive_chat_client/test/chat_backend_client_test.dart
 git commit -m "feat(chat): add wire models and backend client"
 ```
 
@@ -1079,20 +1079,20 @@ git commit -m "feat(chat): add wire models and backend client"
 ### Task 9: Conversation controller
 
 **Files:**
-- Create: `adaptive_chat/lib/src/conversation_controller.dart`
-- Test: `adaptive_chat/test/conversation_controller_test.dart`
+- Create: `adaptive_chat_client/lib/src/conversation_controller.dart`
+- Test: `adaptive_chat_client/test/conversation_controller_test.dart`
 
 **Interfaces:**
 - Consumes: `ChatBackendClient`, `ChatEnvelope`, `ChatStart` (Task 8); `SubmitActionInvoke` (core).
 - Produces: `ChatMode { append, replace }`; `ConversationController extends ChangeNotifier` with fields `List<Map<String,dynamic>> messages`, `bool pending`, `ChatMode mode`, `int composeEpoch`, getter `bool ready`; methods `Future<void> startConversation()`, `Future<void> send(String text)`, `void toggleMode()`, `void clear()`.
 
-- [ ] **Step 1: Write the failing controller test** — `adaptive_chat/test/conversation_controller_test.dart`
+- [ ] **Step 1: Write the failing controller test** — `adaptive_chat_client/test/conversation_controller_test.dart`
 
 ```dart
 import 'dart:convert';
 
-import 'package:adaptive_chat/src/chat_backend_client.dart';
-import 'package:adaptive_chat/src/conversation_controller.dart';
+import 'package:adaptive_chat_client/src/chat_backend_client.dart';
+import 'package:adaptive_chat_client/src/conversation_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -1170,13 +1170,13 @@ void main() {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd adaptive_chat && fvm flutter test test/conversation_controller_test.dart`
+Run: `cd adaptive_chat_client && fvm flutter test test/conversation_controller_test.dart`
 Expected: FAIL — `conversation_controller.dart` does not exist.
 
 - [ ] **Step 3: Implement `lib/src/conversation_controller.dart`**
 
 ```dart
-import 'package:adaptive_chat/src/chat_backend_client.dart';
+import 'package:adaptive_chat_client/src/chat_backend_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
@@ -1275,14 +1275,14 @@ class ConversationController extends ChangeNotifier {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd adaptive_chat && fvm flutter test test/conversation_controller_test.dart`
+Run: `cd adaptive_chat_client && fvm flutter test test/conversation_controller_test.dart`
 Expected: PASS (4 tests).
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add adaptive_chat/lib/src/conversation_controller.dart \
-        adaptive_chat/test/conversation_controller_test.dart
+git add adaptive_chat_client/lib/src/conversation_controller.dart \
+        adaptive_chat_client/test/conversation_controller_test.dart
 git commit -m "feat(chat): add conversation controller"
 ```
 
@@ -1291,24 +1291,24 @@ git commit -m "feat(chat): add conversation controller"
 ### Task 10: Chat page UI (compose card, log, pending)
 
 **Files:**
-- Create: `adaptive_chat/lib/src/compose_card.dart`
-- Create: `adaptive_chat/lib/src/chat_page.dart`
-- Modify: `adaptive_chat/lib/main.dart`
-- Test: `adaptive_chat/test/chat_page_test.dart`
+- Create: `adaptive_chat_client/lib/src/compose_card.dart`
+- Create: `adaptive_chat_client/lib/src/chat_page.dart`
+- Modify: `adaptive_chat_client/lib/main.dart`
+- Test: `adaptive_chat_client/test/chat_page_test.dart`
 
 **Interfaces:**
 - Consumes: `ConversationController`, `ChatMode` (Task 9); `AdaptiveCardsCanvas`, `HostConfigs`, `InheritedAdaptiveCardHandlers`, `SubmitActionInvoke` (core).
 - Produces: `composeCard` (a `Map<String,dynamic>` Adaptive Card with `Input.Text id="message"` + `Action.Submit id="send"`); `ChatPage({required ConversationController controller, required HostConfigs hostConfigs})`.
 
-- [ ] **Step 1: Write the failing widget test** — `adaptive_chat/test/chat_page_test.dart`
+- [ ] **Step 1: Write the failing widget test** — `adaptive_chat_client/test/chat_page_test.dart`
 
 ```dart
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:adaptive_chat/src/chat_backend_client.dart';
-import 'package:adaptive_chat/src/chat_page.dart';
-import 'package:adaptive_chat/src/conversation_controller.dart';
+import 'package:adaptive_chat_client/src/chat_backend_client.dart';
+import 'package:adaptive_chat_client/src/chat_page.dart';
+import 'package:adaptive_chat_client/src/conversation_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1426,7 +1426,7 @@ void main() {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd adaptive_chat && fvm flutter test test/chat_page_test.dart`
+Run: `cd adaptive_chat_client && fvm flutter test test/chat_page_test.dart`
 Expected: FAIL — `chat_page.dart` does not exist.
 
 - [ ] **Step 3: Implement `lib/src/compose_card.dart`**
@@ -1454,8 +1454,8 @@ Map<String, dynamic> composeCard() => {
 - [ ] **Step 4: Implement `lib/src/chat_page.dart`**
 
 ```dart
-import 'package:adaptive_chat/src/compose_card.dart';
-import 'package:adaptive_chat/src/conversation_controller.dart';
+import 'package:adaptive_chat_client/src/compose_card.dart';
+import 'package:adaptive_chat_client/src/conversation_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
@@ -1588,9 +1588,9 @@ class _PendingBubble extends StatelessWidget {
 - [ ] **Step 5: Rewrite `lib/main.dart` to host `ChatPage`**
 
 ```dart
-import 'package:adaptive_chat/src/chat_backend_client.dart';
-import 'package:adaptive_chat/src/chat_page.dart';
-import 'package:adaptive_chat/src/conversation_controller.dart';
+import 'package:adaptive_chat_client/src/chat_backend_client.dart';
+import 'package:adaptive_chat_client/src/chat_page.dart';
+import 'package:adaptive_chat_client/src/conversation_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
@@ -1634,11 +1634,11 @@ class _AdaptiveChatAppState extends State<AdaptiveChatApp> {
 }
 ```
 
-- [ ] **Step 6: Update the smoke test** — `adaptive_chat/test/smoke_test.dart`
+- [ ] **Step 6: Update the smoke test** — `adaptive_chat_client/test/smoke_test.dart`
 
 The app now starts a network call on launch; assert the app bar title without settling network I/O:
 ```dart
-import 'package:adaptive_chat/main.dart';
+import 'package:adaptive_chat_client/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -1653,15 +1653,15 @@ void main() {
 
 - [ ] **Step 7: Run the page + smoke tests**
 
-Run: `cd adaptive_chat && fvm flutter test test/chat_page_test.dart test/smoke_test.dart`
+Run: `cd adaptive_chat_client && fvm flutter test test/chat_page_test.dart test/smoke_test.dart`
 Expected: PASS (4 page tests + 1 smoke test).
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add adaptive_chat/lib/src/compose_card.dart adaptive_chat/lib/src/chat_page.dart \
-        adaptive_chat/lib/main.dart adaptive_chat/test/chat_page_test.dart \
-        adaptive_chat/test/smoke_test.dart
+git add adaptive_chat_client/lib/src/compose_card.dart adaptive_chat_client/lib/src/chat_page.dart \
+        adaptive_chat_client/lib/main.dart adaptive_chat_client/test/chat_page_test.dart \
+        adaptive_chat_client/test/smoke_test.dart
 git commit -m "feat(chat): chat page with compose card, log, and pending indicator"
 ```
 
@@ -1670,9 +1670,9 @@ git commit -m "feat(chat): chat page with compose card, log, and pending indicat
 ### Task 11: HostConfig theming + bubble polish
 
 **Files:**
-- Create: `adaptive_chat/lib/src/chat_host_config.dart`
-- Modify: `adaptive_chat/lib/main.dart`
-- Test: `adaptive_chat/test/chat_host_config_test.dart`
+- Create: `adaptive_chat_client/lib/src/chat_host_config.dart`
+- Modify: `adaptive_chat_client/lib/main.dart`
+- Test: `adaptive_chat_client/test/chat_host_config_test.dart`
 
 **Interfaces:**
 - Consumes: `HostConfig`, `HostConfigs` (core).
@@ -1683,10 +1683,10 @@ git commit -m "feat(chat): chat page with compose card, log, and pending indicat
 Run: `grep -rn "class ContainerStylesConfig\|accent\|emphasis" packages/flutter_adaptive_cards_fs/lib/src/hostconfig/ | head`
 Read the matching config classes so the next step uses real field names. (If the default `HostConfig()` already renders distinguishable accent/emphasis containers, keep this task minimal — a passing "constructs without throwing and current==light" test plus using `chatHostConfigs()` in `main.dart` is sufficient; deeper color overrides are optional polish.)
 
-- [ ] **Step 2: Write the failing test** — `adaptive_chat/test/chat_host_config_test.dart`
+- [ ] **Step 2: Write the failing test** — `adaptive_chat_client/test/chat_host_config_test.dart`
 
 ```dart
-import 'package:adaptive_chat/src/chat_host_config.dart';
+import 'package:adaptive_chat_client/src/chat_host_config.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -1701,7 +1701,7 @@ void main() {
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `cd adaptive_chat && fvm flutter test test/chat_host_config_test.dart`
+Run: `cd adaptive_chat_client && fvm flutter test test/chat_host_config_test.dart`
 Expected: FAIL — `chat_host_config.dart` does not exist.
 
 - [ ] **Step 4: Implement `lib/src/chat_host_config.dart`**
@@ -1727,7 +1727,7 @@ HostConfigs chatHostConfigs() {
 
 Replace `HostConfigs()` in `lib/main.dart` with `chatHostConfigs()` and add:
 ```dart
-import 'package:adaptive_chat/src/chat_host_config.dart';
+import 'package:adaptive_chat_client/src/chat_host_config.dart';
 ```
 so the home line reads:
 ```dart
@@ -1736,14 +1736,14 @@ so the home line reads:
 
 - [ ] **Step 6: Run test to verify it passes**
 
-Run: `cd adaptive_chat && fvm flutter test test/chat_host_config_test.dart`
+Run: `cd adaptive_chat_client && fvm flutter test test/chat_host_config_test.dart`
 Expected: PASS (1 test).
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add adaptive_chat/lib/src/chat_host_config.dart adaptive_chat/lib/main.dart \
-        adaptive_chat/test/chat_host_config_test.dart
+git add adaptive_chat_client/lib/src/chat_host_config.dart adaptive_chat_client/lib/main.dart \
+        adaptive_chat_client/test/chat_host_config_test.dart
 git commit -m "feat(chat): host config for bubble theming"
 ```
 
@@ -1759,8 +1759,8 @@ Adds run/debug configurations to the existing `.vscode/launch.json` (which alrea
 - Modify: `.vscode/launch.json`
 - Modify (optional): `.vscode/tasks.json`
 
-- Add Flutter launch configs (type `dart`) for `adaptive_chat`, mirroring the existing Adaptive Explorer / Widgetbook entries:
-  - `Adaptive Chat - Current` — `cwd: ${workspaceFolder}/adaptive_chat`, `program: lib/main.dart`.
+- Add Flutter launch configs (type `dart`) for `adaptive_chat_client`, mirroring the existing Adaptive Explorer / Widgetbook entries:
+  - `Adaptive Chat - Current` — `cwd: ${workspaceFolder}/adaptive_chat_client`, `program: lib/main.dart`.
   - `Adaptive Chat - Web` — adds `-d chrome`, `--web-port 3000`, `--web-browser-flag=--disable-web-security` (local CORS during dev, same pattern as `Widgetbook - Web`).
 - Add a Python launch config for the FastAPI server (type `debugpy`): `python` = `${workspaceFolder}/adaptive_chat_server/.venv/bin/python`, `module` = `uvicorn`, `args` = `["app.main:app","--reload","--port","8000"]`, `cwd` = `${workspaceFolder}/adaptive_chat_server`.
 - Add a `compounds` entry `Adaptive Chat (server + web)` launching the server config + the web app config together.
@@ -1803,11 +1803,11 @@ Expected: all tests PASS. Record the pass count.
 - [ ] **Step 2: Client analyze (from repo root)**
 
 Run: `fvm flutter analyze`
-Expected: `No issues found!` (or only pre-existing warnings unrelated to `adaptive_chat/`).
+Expected: `No issues found!` (or only pre-existing warnings unrelated to `adaptive_chat_client/`).
 
 - [ ] **Step 3: Client test suite**
 
-Run: `cd adaptive_chat && fvm flutter test`
+Run: `cd adaptive_chat_client && fvm flutter test`
 Expected: all tests PASS. Record the pass count.
 
 - [ ] **Step 4: Manual end-to-end smoke (document the result)**
@@ -1818,7 +1818,7 @@ cd adaptive_chat_server && .venv/bin/uvicorn app.main:app --port 8000
 ```
 Terminal 2:
 ```bash
-cd adaptive_chat && fvm flutter run -d macos   # or -d chrome
+cd adaptive_chat_client && fvm flutter run -d macos   # or -d chrome
 ```
 Type a message, press Send, confirm a right-aligned "you" bubble and a left-aligned "Did you just say: …" reply appear, and the pending indicator shows during the round-trip. Toggle Replace and confirm only the latest interaction remains. Tap New conversation and confirm the log clears.
 

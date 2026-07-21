@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-20
 **Status:** Approved (design)
-**Applies to:** `adaptive_chat` (Flutter client) and `adaptive_chat_server` (FastAPI backend)
+**Applies to:** `adaptive_chat_client` (Flutter client) and `adaptive_chat_server` (FastAPI backend)
 **Pairs with:** [`2026-07-18-adaptive-chat-sdui-design.md`](2026-07-18-adaptive-chat-sdui-design.md)
 
 ## Goal
@@ -153,7 +153,7 @@ store.add_interaction(cid, Interaction(..., reply_text=reply.text))
   `--system-prompt-file app/card_system_prompt.txt` (bridged through
   `OLLAMA_SYSTEM_PROMPT_FILE`, surviving `--reload`).
 
-## Client design (`adaptive_chat`)
+## Client design (`adaptive_chat_client`)
 
 **No code change.** Log cards are already rendered verbatim via
 `AdaptiveCardsCanvas.map`, and Adaptive Card **inputs render without**
@@ -180,7 +180,7 @@ submit/execute/open-url). The existing tests keep passing.
   still use `reply.text`.
 - **Echo** path unchanged: `Reply.card_body is None` → text bubble.
 
-### Client (`adaptive_chat/test`) — optional
+### Client (`adaptive_chat_client/test`) — optional
 
 - A widget test that a server card message containing `Input.Date` and
   `Input.ChoiceSet` renders the corresponding fields (no handler wiring needed).
@@ -190,11 +190,11 @@ submit/execute/open-url). The existing tests keep passing.
 - **`adaptive_chat_server/README.md`**: document the text-or-card reply path,
   the `Reply` contract, `try_parse_card_body` detection, `assistant_card_bubble`,
   and how to select `card_system_prompt.txt`.
-- **`adaptive_chat/README.md`**: note that assistant bubbles may now contain
+- **`adaptive_chat_client/README.md`**: note that assistant bubbles may now contain
   rich inputs and that this is **display-only** (ties to the existing "in-card
   form submits — not built" note).
 - This spec is the canonical design record.
 
-> Note: `adaptive_chat` / `adaptive_chat_server` are **sample apps**, not
+> Note: `adaptive_chat_client` / `adaptive_chat_server` are **sample apps**, not
 > published packages under `packages/`, so the package `CHANGELOG.md` /
 > coverage-floor gates do not apply here.
