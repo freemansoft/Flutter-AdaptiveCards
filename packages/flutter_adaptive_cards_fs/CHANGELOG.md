@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - feat: `Input.Text` supports `inlineAction` (standard, Adaptive Cards v1.2+) — renders the action beside the field via `cardTypeRegistry.getAction`, wired to the full submit/execute pipeline.
 - feat: `Input.Text` now triggers its `inlineAction` on Ctrl/Cmd+Enter when the field has focus, using the same submit/execute pipeline as the visible action button and doing nothing when no inline action is present.
 - feat: an action `iconUrl` may reference a Fluent icon with `icon:<name>` (e.g. `icon:Send`), resolved via the same map the `Icon` element uses; any other value is loaded as an image URL / data URI. Icon-only rendering (icon _instead of_ the title, per the `inlineAction` spec) is a follow-up.
+- feat: `CarouselPage` supports `selectAction` (standard, per the Adaptive Cards spec) — tapping a page invokes the action via the shared `AdaptiveTappable` wrapper, exposed to screen readers as a button. `selectAction` is scoped to the page only, not the `Carousel` element itself, matching the spec. The `v1.6/carousel.json` sample (test + widgetbook) now demonstrates it with an `Action.OpenUrl` on the first page.
 
 ### Fixed 0.15.0
 

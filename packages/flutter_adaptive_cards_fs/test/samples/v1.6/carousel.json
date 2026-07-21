@@ -10,6 +10,11 @@
           "style": "emphasis",
           "showBorder": true,
           "roundedCorners": true,
+          "selectAction": {
+            "type": "Action.OpenUrl",
+            "title": "Click for more information about the first carousel page!",
+            "url": "https://adaptivecards.io/"
+          },
           "items": [
             {
               "type": "TextBlock",
