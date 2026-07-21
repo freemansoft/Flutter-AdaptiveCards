@@ -16,21 +16,14 @@ _BUBBLE_WEIGHT = 3
 _SPACER_WEIGHT = 1
 
 
-def _text_container(text: str, style: str) -> dict:
-    return {
+def _bubble(items: list, *, style: str, align_right: bool) -> dict:
+    container = {
         "type": "Container",
         "style": style,
         "roundedCorners": True,
-        "items": [{"type": "TextBlock", "text": text, "wrap": True}],
+        "items": items,
     }
-
-
-def _bubble(text: str, *, style: str, align_right: bool) -> dict:
-    content = {
-        "type": "Column",
-        "width": _BUBBLE_WEIGHT,
-        "items": [_text_container(text, style)],
-    }
+    content = {"type": "Column", "width": _BUBBLE_WEIGHT, "items": [container]}
     spacer = {"type": "Column", "width": _SPACER_WEIGHT, "items": []}
     columns = [spacer, content] if align_right else [content, spacer]
     return {
@@ -40,14 +33,32 @@ def _bubble(text: str, *, style: str, align_right: bool) -> dict:
     }
 
 
+def _text_items(text: str) -> list:
+    return [{"type": "TextBlock", "text": text, "wrap": True}]
+
+
 def user_bubble(text: str) -> dict:
     """Right-aligned accent bubble for the user's message."""
-    return _bubble(text, style="accent", align_right=True)
+    return _bubble(_text_items(text), style="accent", align_right=True)
 
 
 def assistant_bubble(text: str) -> dict:
-    """Left-aligned emphasis bubble for the assistant's reply."""
-    return _bubble(text, style="emphasis", align_right=False)
+    """Left-aligned emphasis bubble for a Markdown text assistant reply.
+
+    The ``TextBlock`` renders GitHub-flavored Markdown, so this is the
+    default reply shape used before the card path existed.
+    """
+    return _bubble(_text_items(text), style="emphasis", align_right=False)
+
+
+def assistant_card_bubble(body_items: list) -> dict:
+    """Left-aligned emphasis bubble whose container holds a model card fragment.
+
+    Same chrome as a text reply (alignment, rounded corners, emphasis fill); the
+    detected Adaptive Card body items become the container's contents, so a
+    returned date picker / choice set reads as living inside a chat bubble.
+    """
+    return _bubble(body_items, style="emphasis", align_right=False)
 
 
 def envelope(cid: str, iid: str, messages: list[Message]) -> dict:

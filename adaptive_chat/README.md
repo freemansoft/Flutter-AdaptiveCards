@@ -89,6 +89,21 @@ The client points at `http://localhost:8000` by default. In VS Code use the
 **Adaptive Chat (server + web)** / **Adaptive Chat (Ollama server + web)**
 compounds to launch server + app together.
 
+**macOS + Chrome (web):** the first time the web build calls the local server,
+macOS may block it until you enable **Google Chrome** under **System Settings →
+Privacy & Security → Local Network**. Symptom: the app loads but every send
+fails with a connection error.
+
+**macOS (native app):** the desktop build runs in the App Sandbox, which blocks
+**outbound** connections unless the app carries the network-client entitlement.
+This repo enables `com.apple.security.network.client` in
+[`macos/Runner/DebugProfile.entitlements`](macos/Runner/DebugProfile.entitlements)
+and [`macos/Runner/Release.entitlements`](macos/Runner/Release.entitlements); if
+you see "unable to connect," confirm those keys are present and do a **full
+rebuild** (`fvm flutter run -d macos`) — entitlements are applied at build/sign
+time, so a hot reload/restart won't pick them up. (This is a build entitlement,
+not the Local Network system-settings toggle the web client needs.)
+
 ## Test
 
 ```bash
@@ -104,3 +119,9 @@ auto-scroll-to-bottom, New-conversation, retry).
 In-card **form** submits (a returned card carrying its own inputs/actions posting
 back to its `self` URL) are _designed for_ but not built — the envelope's per-card
 `self` link is the hook. See the design doc's "Non-goals".
+
+An assistant bubble may now carry rich **inputs and display elements** authored by
+the server (date pickers, choice sets, FactSets, badges, carousels) instead of
+Markdown text — the client renders whatever card the server sends, no code change
+needed. This is **display-only**: the same gap as in-card form submits above,
+returned input values do not post back anywhere yet.

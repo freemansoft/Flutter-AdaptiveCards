@@ -65,7 +65,7 @@ def test_reply_posts_history_and_new_turn_to_chat_endpoint(tmp_path):
         _ok_capturing_handler(captured), system_prompt_file=str(missing)
     ).reply("new question", history)
 
-    assert result == "hi from ollama"
+    assert result.text == "hi from ollama"
     assert captured["url"] == f"{OLLAMA_URL}/api/chat"
     assert captured["body"] == {
         "model": OLLAMA_MODEL,
@@ -106,7 +106,7 @@ def test_reply_skips_system_message_when_prompt_file_missing(tmp_path):
     ).reply("hello", [])
 
     # A bad path is not fatal: reply still succeeds and no system message is sent.
-    assert result == "hi from ollama"
+    assert result.text == "hi from ollama"
     assert captured["body"]["messages"] == [{"role": "user", "content": "hello"}]
 
 
@@ -153,9 +153,9 @@ def test_reply_reports_connection_failure_with_exception_detail():
 
     # Still identifies the endpoint, but now surfaces the exception type/detail
     # instead of hiding it behind a generic "unreachable".
-    assert result.startswith(f"(Ollama unreachable at {OLLAMA_URL}")
-    assert "ConnectError" in result
-    assert "connection refused" in result
+    assert result.text.startswith(f"(Ollama unreachable at {OLLAMA_URL}")
+    assert "ConnectError" in result.text
+    assert "connection refused" in result.text
 
 
 def test_reply_reports_http_error_status_and_body():
@@ -165,8 +165,8 @@ def test_reply_reports_http_error_status_and_body():
     result = _responder(handler).reply("hello", [])
 
     # A reachable-but-erroring Ollama (e.g. model not pulled) is NOT "unreachable".
-    assert result.startswith(f"(Ollama error HTTP 404 at {OLLAMA_URL}")
-    assert "not found" in result
+    assert result.text.startswith(f"(Ollama error HTTP 404 at {OLLAMA_URL}")
+    assert "not found" in result.text
 
 
 def test_reply_reports_unexpected_response_body():
@@ -175,7 +175,7 @@ def test_reply_reports_unexpected_response_body():
 
     result = _responder(handler).reply("hello", [])
 
-    assert result == "(Ollama returned an unexpected response: KeyError)"
+    assert result.text == "(Ollama returned an unexpected response: KeyError)"
 
 
 def test_reply_trims_history_to_last_n_turns(tmp_path):
@@ -289,6 +289,54 @@ def test_fill_logging_skipped_when_prompt_eval_count_absent(tmp_path, caplog):
             system_prompt_file=str(missing),
             num_ctx=1000,
         ).reply("hi", [])
-    assert result == "hi from ollama"
+    assert result.text == "hi from ollama"
     assert "context filling" not in caplog.text
     assert "context near limit" not in caplog.text
+
+
+def test_reply_detects_card_output_as_card_body(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["body"] = json.loads(request.content)
+        card = '{"type": "AdaptiveCard", "body": [{"type": "Input.Date", "id": "d"}]}'
+        return httpx.Response(200, json={"message": {"role": "assistant", "content": card}})
+
+    result = _responder(handler, system_prompt_file=str(missing)).reply("date?", [])
+
+    assert result.card_body == [{"type": "Input.Date", "id": "d"}]
+    # raw text is preserved for history
+    assert '"AdaptiveCard"' in result.text
+
+
+def test_reply_plain_text_has_no_card_body(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    result = _responder(
+        _ok_capturing_handler({}), system_prompt_file=str(missing)
+    ).reply("hi", [])
+
+    assert result.text == "hi from ollama"
+    assert result.card_body is None
+
+
+def test_reply_logs_raw_content_at_debug_level(tmp_path, caplog):
+    # Opt-in content diagnostics: at DEBUG the verbatim model output and the
+    # detection result are logged so a text-instead-of-card reply is diagnosable.
+    missing = tmp_path / "no_prompt.txt"
+    with caplog.at_level(logging.DEBUG, logger="uvicorn.error"):
+        _responder(
+            _ok_capturing_handler({}), system_prompt_file=str(missing)
+        ).reply("hi", [])
+    assert "detected_card" in caplog.text
+    assert "hi from ollama" in caplog.text
+
+
+def test_reply_does_not_log_raw_content_at_info_level(tmp_path, caplog):
+    # Off by default: nothing content-level is emitted at the normal INFO level.
+    missing = tmp_path / "no_prompt.txt"
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        _responder(
+            _ok_capturing_handler({}), system_prompt_file=str(missing)
+        ).reply("hi", [])
+    assert "detected_card" not in caplog.text

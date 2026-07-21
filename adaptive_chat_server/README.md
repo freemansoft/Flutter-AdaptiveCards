@@ -54,10 +54,12 @@ returns the stored envelope without re-running the responder.
 | --- | --- |
 | `main.py` | FastAPI app, CORS, routes, the `store`/`responder` singletons, `build_responder(url, model)`, and history threading in the send route. |
 | `store.py` | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `reply_text` (so chat **history** can be rebuilt for Ollama). Lost on restart — fine for a demo. |
-| `cards.py` | Bubble authoring: a `ColumnSet` with a `stretch` spacer for alignment + a styled, `roundedCorners: true` `Container`; `user_bubble` (accent, right), `assistant_bubble` (emphasis, left), and `envelope(...)`. |
-| `responder.py` | `Responder` protocol — `reply(text, history) -> str` — and `EchoResponder`. The seam that lets the reply strategy swap without touching routes. |
-| `ollama_responder.py` | `OllamaResponder`: prepends the **system prompt** (see below), maps history + current turn to Ollama `messages`, and POSTs `{url}/api/chat` (`stream: false`); returns `message.content`; falls back to a short message if Ollama is unreachable. |
+| `cards.py` | Bubble authoring: a `ColumnSet` with a `stretch` spacer for alignment + a styled, `roundedCorners: true` `Container`; `user_bubble` (accent, right), `assistant_bubble` (emphasis, left, Markdown text), `assistant_card_bubble` (emphasis, left, embeds a detected Adaptive Card fragment instead of text), and `envelope(...)`. |
+| `responder.py` | `Reply(text, card_body)` — a frozen dataclass: `text` is always the raw model output (threaded into Ollama history); `card_body` is the parsed card body items, or `None` for a plain Markdown reply. `Responder` protocol — `reply(text, history) -> Reply` — and `EchoResponder` (always returns `card_body=None`). The seam that lets the reply strategy swap without touching routes. |
+| `card_detect.py` | `try_parse_card_body(raw) -> list \| None` — strict text-vs-card detection: the **whole** reply (after stripping an optional code fence) must be a full `{"type": "AdaptiveCard", "body": [...]}` object or a bare, non-empty JSON array of objects, else it's `None` and the caller falls back to a text reply. |
+| `ollama_responder.py` | `OllamaResponder`: prepends the **system prompt** (see below), maps history + current turn to Ollama `messages`, and POSTs `{url}/api/chat` (`stream: false`); runs `try_parse_card_body` on `message.content` and returns a `Reply(text=content, card_body=...)`; falls back to a short message if Ollama is unreachable (always `card_body=None` in that case). |
 | `default_system_prompt.txt` | Bundled default system prompt, used when no `--system-prompt-file` is given. Resolved relative to the package (not the process cwd). |
+| `card_system_prompt.txt` | Bundled **card** system prompt — selected the same way, via `--system-prompt-file app/card_system_prompt.txt`. Instructs the model to reply with an Adaptive Card fragment (display-only: no actions). See **Card replies (display-only)** below. |
 | `__main__.py` | CLI entrypoint (`python -m app ...`) that selects the responder from `--ollama-url` and runs uvicorn. |
 
 ### Responder selection
@@ -119,6 +121,34 @@ prompt text comes from a file:
 - **Echo mode ignores it.** The system prompt only applies to `OllamaResponder`;
   `EchoResponder` never sends anything to a model.
 
+### Card replies (display-only)
+
+Instead of Markdown text, the model may answer with an Adaptive Card fragment
+that gets embedded directly in the assistant bubble (`assistant_card_bubble`),
+using the same alignment/fill/rounded-corner chrome as a text reply. Which
+shape wins is decided per reply by `card_detect.try_parse_card_body`: the
+**entire** message must be a full `{"type": "AdaptiveCard", "body": [...]}`
+object or a bare, non-empty JSON array of objects, or it's rendered as
+Markdown text instead.
+
+To opt in, select the bundled card system prompt:
+
+```bash
+.venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
+  --system-prompt-file app/card_system_prompt.txt
+```
+
+The card prompt's palette is intentionally small:
+
+- **Inputs** — `Input.Date`, `Input.ChoiceSet` (`style: compact` / `expanded`,
+  `isMultiSelect`), `Input.Text`, `Input.Number`, `Input.Time`.
+- **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`.
+
+**Display-only.** The prompt forbids `Action`/`ActionSet` elements, so the card
+fragment carries no submit button of its own, and any values a user enters
+into its inputs do not post back to the server — the fragment is render-only
+for now.
+
 ## Run
 
 ```bash
@@ -128,6 +158,19 @@ python3 -m venv .venv
 ```
 
 CORS is enabled for local dev so the Flutter web client can reach it.
+
+**macOS: allow Chrome on the local network.** The first time the Flutter web
+client (running in Chrome) calls this server, macOS may silently block the
+connection until Chrome is enabled under **System Settings → Privacy &
+Security → Local Network**. If the app loads but every send fails with a
+connection error, toggle **Google Chrome** on there.
+
+**macOS native client** (`adaptive_chat` run with `-d macos`) hits the same
+"unable to connect" symptom for a *different* reason: its App Sandbox needs the
+`com.apple.security.network.client` entitlement to make outbound calls. That is
+enabled in the client's `macos/Runner/*.entitlements`; see the client's
+[`README`](../adaptive_chat/README.md#run) — it requires a full rebuild, not the
+system-settings toggle above.
 
 ## Test
 

@@ -184,7 +184,7 @@ Modular skills loaded when a task matches. Vendored upstream skills are tracked 
 | Flutter team     | [flutter/skills](https://github.com/flutter/skills)     | 10    |
 | Project-specific | (authored in-repo)                                      | 17    |
 
-#### Project-specific skills:
+#### Project-specific skills
 
 `adaptive-cards-accessibility`, `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-localization`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-backend-host`, `adaptive-cards-testing`, `adaptive-cards-public-api-docs`, `adaptive-cards-diataxis-docs`, `adaptive-cards-widgetbook-overlay-demos`, `adaptive-cards-code-review`, `adaptive-cards-release-engineer`, `adaptive-cards-release-flutter-upgrade-sdk`.
 

@@ -1,8 +1,17 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.responder import Reply
 
 client = TestClient(app)
+
+
+class _CardStubResponder:
+    def reply(self, text, history):
+        return Reply(
+            text='{"type":"AdaptiveCard"}',
+            card_body=[{"type": "Input.Date", "id": "when"}],
+        )
 
 
 def test_start_conversation_returns_id_and_post_next():
@@ -53,6 +62,17 @@ def test_send_second_turn_still_echoes_correctly():
     ]
     assert first_reply == "Did you just say: first message"
     assert second_reply == "Did you just say: second message"
+
+
+def test_send_renders_card_reply_in_assistant_bubble(monkeypatch):
+    monkeypatch.setattr("app.main.responder", _CardStubResponder())
+    cid = _start()
+    resp = _send(cid, "i_card1", "book me")
+    assert resp.status_code == 200
+    body = resp.json()
+    container = body["messages"][1]["body"][0]["columns"][0]["items"][0]
+    assert container["style"] == "emphasis"
+    assert container["items"] == [{"type": "Input.Date", "id": "when"}]
 
 
 def test_send_is_idempotent_by_interaction_id():

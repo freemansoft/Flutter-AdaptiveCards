@@ -13,6 +13,9 @@ from pathlib import Path
 
 import httpx
 
+from app.card_detect import try_parse_card_body
+from app.responder import Reply
+
 # uvicorn installs a handler on the "uvicorn.error" logger, so these messages
 # appear in the server console when running via `python -m app` / uvicorn.
 logger = logging.getLogger("uvicorn.error")
@@ -49,6 +52,11 @@ class OllamaResponder:
         history_turns: int = DEFAULT_HISTORY_TURNS,
         num_ctx: int = DEFAULT_NUM_CTX,
     ) -> None:
+        """Configure the responder.
+
+        The system-prompt file *path* is stored (not its contents) so edits to the
+        file take effect on the next request without restarting the server.
+        """
         self._ollama_url = ollama_url
         self._model = model
         self._client = client or httpx.Client(timeout=60)
@@ -130,7 +138,15 @@ class OllamaResponder:
                 pct * 100,
             )
 
-    def reply(self, text: str, history: list[tuple[str, str]]) -> str:
+    def reply(self, text: str, history: list[tuple[str, str]]) -> Reply:
+        """Send system prompt + trimmed history + this turn to Ollama, return a Reply.
+
+        The returned ``Reply.text`` is always the raw model output (so it threads
+        into conversation history), and ``card_body`` is set when the model
+        answered with an Adaptive Card fragment (see ``try_parse_card_body``).
+        Never raises: transport, HTTP-status, and unexpected-body failures are
+        logged and returned as a short diagnostic ``text`` with ``card_body=None``.
+        """
         messages: list[dict[str, str]] = []
         system_prompt = self._load_system_prompt()
         if system_prompt:
@@ -171,9 +187,11 @@ class OllamaResponder:
                 self._model,
                 exc_info=True,
             )
-            return (
-                f"(Ollama unreachable at {self._ollama_url} — "
-                f"{type(exc).__name__}: {exc})"
+            return Reply(
+                text=(
+                    f"(Ollama unreachable at {self._ollama_url} — "
+                    f"{type(exc).__name__}: {exc})"
+                )
             )
 
         # 2. Reached Ollama but it returned an error status (e.g. 404 when the
@@ -190,9 +208,11 @@ class OllamaResponder:
                 body,
                 self._model,
             )
-            return (
-                f"(Ollama error HTTP {response.status_code} at "
-                f"{self._ollama_url}: {body})"
+            return Reply(
+                text=(
+                    f"(Ollama error HTTP {response.status_code} at "
+                    f"{self._ollama_url}: {body})"
+                )
             )
 
         # 3. 2xx but an unexpected body shape.
@@ -207,6 +227,22 @@ class OllamaResponder:
                 response.text[:1000],
                 exc_info=True,
             )
-            return f"(Ollama returned an unexpected response: {type(exc).__name__})"
+            return Reply(
+                text=f"(Ollama returned an unexpected response: {type(exc).__name__})"
+            )
         self._log_context_fill(data)
-        return content
+        card_body = try_parse_card_body(content)
+        # Content-level diagnostics: logged at DEBUG so they are off in normal
+        # operation but available for testing without a code change. Enable DEBUG
+        # logging (e.g. `uvicorn --log-level debug`, or set the "uvicorn.error"
+        # logger to DEBUG) to see the verbatim model output and whether it was
+        # accepted as a card — the quickest way to diagnose a reply that renders
+        # as text instead of a card. logger.debug skips formatting when disabled,
+        # so this costs nothing at the default INFO level.
+        logger.debug(
+            "Ollama content (%d chars, detected_card=%s):\n%r",
+            len(content),
+            card_body is not None,
+            content,
+        )
+        return Reply(text=content, card_body=card_body)
