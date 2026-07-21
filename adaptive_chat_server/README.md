@@ -159,6 +159,12 @@ python3 -m venv .venv
 
 CORS is enabled for local dev so the Flutter web client can reach it.
 
+**macOS: allow Chrome on the local network.** The first time the Flutter web
+client (running in Chrome) calls this server, macOS may silently block the
+connection until Chrome is enabled under **System Settings → Privacy &
+Security → Local Network**. If the app loads but every send fails with a
+connection error, toggle **Google Chrome** on there.
+
 ## Test
 
 ```bash

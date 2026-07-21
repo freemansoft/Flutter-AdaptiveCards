@@ -89,6 +89,11 @@ The client points at `http://localhost:8000` by default. In VS Code use the
 **Adaptive Chat (server + web)** / **Adaptive Chat (Ollama server + web)**
 compounds to launch server + app together.
 
+**macOS + Chrome (web):** the first time the web build calls the local server,
+macOS may block it until you enable **Google Chrome** under **System Settings →
+Privacy & Security → Local Network**. Symptom: the app loads but every send
+fails with a connection error.
+
 ## Test
 
 ```bash
