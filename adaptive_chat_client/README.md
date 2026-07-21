@@ -86,7 +86,7 @@ path an in-card form would use.
 
 ```mermaid
 ---
-title: "adaptive_chat — start conversation, then send a message"
+title: "adaptive_chat_client — start conversation, then send a message"
 ---
 sequenceDiagram
     autonumber

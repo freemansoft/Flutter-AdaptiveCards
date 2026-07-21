@@ -3,7 +3,7 @@
 FastAPI backend for the **Adaptive Chat** SDUI demo. It authors the chat bubbles
 as Adaptive Cards, keeps conversation state in memory, and answers either with a
 simple **echo** (default) or a local **Ollama** chat model. Pairs with the Flutter
-client in [`../adaptive_chat`](../adaptive_chat).
+client in [`../adaptive_chat_client`](../adaptive_chat_client).
 
 Design notes: [`docs/superpowers/specs/2026-07-18-adaptive-chat-sdui-design.md`](../docs/superpowers/specs/2026-07-18-adaptive-chat-sdui-design.md).
 
@@ -30,7 +30,7 @@ flowchart TB
     RESP -. build_responder(--ollama-url) .-> OLLAMA
     PROMPT -. system message .-> OLLAMA
   end
-  CLIENT["adaptive_chat (Flutter)"] -->|"POST interaction (X-Interaction-Id, PlainJson body)"| ROUTES
+  CLIENT["adaptive_chat_client (Flutter)"] -->|"POST interaction (X-Interaction-Id, PlainJson body)"| ROUTES
   ROUTES -->|"envelope: messages[] + links"| CLIENT
   OLLAMA -->|"messages (system + history + turn)"| LLM["local Ollama\n/api/chat"]
 ```
@@ -162,7 +162,7 @@ in Ollama mode, calls a **local Ollama** process it neither starts nor manages.
 title: "Adaptive Chat — local components"
 ---
 flowchart LR
-    subgraph client["adaptive_chat (Flutter client)"]
+    subgraph client["adaptive_chat_client (Flutter)"]
         UI["Chat UI\nrenders server Adaptive Cards verbatim"]
     end
     subgraph server["adaptive_chat_server (FastAPI)"]
@@ -213,7 +213,7 @@ title: "Ollama interaction — route to envelope"
 ---
 sequenceDiagram
     autonumber
-    participant C as adaptive_chat (client)
+    participant C as adaptive_chat_client (Flutter)
     participant R as Route send_interaction (main.py)
     participant S as ConversationStore + models (store.py)
     participant O as OllamaResponder
@@ -325,11 +325,11 @@ connection until Chrome is enabled under **System Settings → Privacy &
 Security → Local Network**. If the app loads but every send fails with a
 connection error, toggle **Google Chrome** on there.
 
-**macOS native client** (`adaptive_chat` run with `-d macos`) hits the same
+**macOS native client** (`adaptive_chat_client` run with `-d macos`) hits the same
 "unable to connect" symptom for a *different* reason: its App Sandbox needs the
 `com.apple.security.network.client` entitlement to make outbound calls. That is
 enabled in the client's `macos/Runner/*.entitlements`; see the client's
-[`README`](../adaptive_chat/README.md#run) — it requires a full rebuild, not the
+[`README`](../adaptive_chat_client/README.md#run) — it requires a full rebuild, not the
 system-settings toggle above.
 
 ## Test
