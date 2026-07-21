@@ -26,9 +26,10 @@ _FENCE = re.compile(r"^\s*```(?:json)?\s*(.*?)\s*```\s*$", re.DOTALL | re.IGNORE
 
 # Leading/trailing DECORATION a local model wraps around the JSON: whitespace and
 # runs of section/Markdown delimiters (===, ---, ###, ***, ___, ~~~). Stripped
-# from both ends only; the pattern halts at the first content char (e.g. { or [),
-# so JSON is never clipped. Real prose words carry none of these chars at the very
-# edge, so a prose-wrapped reply is left intact and still fails JSON parsing.
+# from both ends only; the pattern halts at the first content char (`{`, `[`, `"`,
+# or a digit), so JSON objects, arrays, and strings are never clipped. Real prose
+# words carry none of these delimiter chars at the very edge, so a prose-wrapped
+# reply is left intact and still fails JSON parsing.
 _DECORATION = re.compile(r"^[\s=\-#*_~]+|[\s=\-#*_~]+$")
 
 

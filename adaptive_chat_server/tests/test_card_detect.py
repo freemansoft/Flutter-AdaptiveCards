@@ -101,6 +101,14 @@ def test_hash_and_dash_delimiters_are_stripped():
     ]
 
 
+def test_trailing_only_decoration_returns_body():
+    # Isolate the regex's trailing branch (no leading decoration): JSON followed
+    # immediately by a delimiter run must still parse to a card.
+    assert try_parse_card_body('{"type": "TextBlock", "text": "hi"}\n===') == [
+        {"type": "TextBlock", "text": "hi"}
+    ]
+
+
 def test_prose_before_nonempty_card_still_returns_none():
     # Locks the NARROW contract: real prose words are not decoration, so a card
     # embedded after prose stays text. (The existing prose test uses an empty
