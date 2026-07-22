@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.16.0]
+
+- no changes yet
+
 ## [0.15.0]
 
 - Added a **Rounded corners (knobs)** demo use case (Components → Rounded corners): [`RoundedCornersKnobsPage`](lib/rounded_corners_knobs_page.dart) exercises the Teams `roundedCorners` property with a `cornerRadius` knob across `Container`, `ColumnSet`, `Column`, `Table`, and `Image`. New `RoundedCorners` stub in `widget_types.dart` and use-case wiring in `adaptive_cards_use_cases.dart`.
