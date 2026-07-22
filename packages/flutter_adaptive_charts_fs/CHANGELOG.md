@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Make `ChartElementOverlayExtension` / `CardChartsRegistry.overlayExtensions`
+  `const` now that `ElementOverlayExtension` has a documented `const`
+  constructor.
+
 ## [0.15.0]
 
 - no changes yet

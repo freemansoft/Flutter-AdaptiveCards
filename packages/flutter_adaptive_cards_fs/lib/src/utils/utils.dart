@@ -28,6 +28,9 @@ class FadeAnimation extends StatefulWidget {
 /// State object for [FadeAnimation]; not intended for direct host use.
 class FadeAnimationState extends State<FadeAnimation>
     with SingleTickerProviderStateMixin {
+  /// Creates fade-animation state; hosts should not construct this directly.
+  FadeAnimationState();
+
   /// Opacity animation used by [FadeAnimation]; not for host use.
   late AnimationController animationController;
 
@@ -92,6 +95,9 @@ class Tuple<A, B> {
 
 /// Rectangular clipper used for person-style image masks in card elements.
 class FullCircleClipper extends CustomClipper<Rect> {
+  /// Creates a clipper that fills the child's layout bounds.
+  FullCircleClipper();
+
   /// Returns full-bounds clip rect for the child.
   @override
   Rect getClip(Size size) {

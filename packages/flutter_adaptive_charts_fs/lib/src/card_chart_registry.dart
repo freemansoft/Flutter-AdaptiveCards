@@ -52,7 +52,7 @@ class CardChartsRegistry {
   };
 
   /// Chart overlay merge hooks; pass to `CardTypeRegistry.overlayExtensions`.
-  static final CardOverlayExtensionRegistry overlayExtensions =
+  static const CardOverlayExtensionRegistry overlayExtensions =
       CardOverlayExtensionRegistry(
         extensions: [ChartElementOverlayExtension.instance],
       );

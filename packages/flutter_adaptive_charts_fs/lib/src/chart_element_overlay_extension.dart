@@ -22,10 +22,10 @@ const chartPropertyKeys = {
 /// Overlay merge hook for `Chart.*` element types.
 class ChartElementOverlayExtension extends ElementOverlayExtension {
   /// Creates the chart overlay extension hook.
-  ChartElementOverlayExtension();
+  const ChartElementOverlayExtension();
 
   /// Shared chart overlay extension instance for registry injection.
-  static final instance = ChartElementOverlayExtension();
+  static const instance = ChartElementOverlayExtension();
 
   @override
   String get id => chartOverlayExtensionId;
