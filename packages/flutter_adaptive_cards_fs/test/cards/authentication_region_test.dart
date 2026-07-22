@@ -52,8 +52,9 @@ void main() {
     expect(find.text('Sign in'), findsOneWidget);
   });
 
-  testWidgets('tapping sign-in fires onSignin with value + connectionName',
-      (tester) async {
+  testWidgets('tapping sign-in fires onSignin with value + connectionName', (
+    tester,
+  ) async {
     SigninActionInvoke? captured;
     await tester.pumpWidget(wrap(onSignin: (i) => captured = i));
     await tester.pumpAndSettle();
@@ -78,8 +79,9 @@ void main() {
     expect(opened!.url, 'https://login.example.com/oauth');
   });
 
-  testWidgets('sign-in region renders between body and the action strip',
-      (tester) async {
+  testWidgets('sign-in region renders between body and the action strip', (
+    tester,
+  ) async {
     final cardWithAction = <String, dynamic>{
       'type': 'AdaptiveCard',
       'version': '1.4',

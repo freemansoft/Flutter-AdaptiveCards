@@ -55,9 +55,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final data = tester
-        .getSemantics(find.text('Just text'))
-        .getSemanticsData();
+    final data = tester.getSemantics(find.text('Just text')).getSemanticsData();
     expect(data.flagsCollection.isHeader, isFalse);
     expect(data.headingLevel, 0);
     handle.dispose();

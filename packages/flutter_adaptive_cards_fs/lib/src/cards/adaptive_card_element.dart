@@ -520,8 +520,7 @@ class _AuthenticationRegion extends StatelessWidget {
                             button.image!,
                             width: 18,
                             height: 18,
-                            errorBuilder: (_, _, _) =>
-                                const SizedBox.shrink(),
+                            errorBuilder: (_, _, _) => const SizedBox.shrink(),
                           )
                         : const SizedBox.shrink(),
                     label: Text(button.title ?? 'Sign in'),

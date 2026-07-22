@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed 0.15.0
 
 - `FullCircleClipper` now has a `const` constructor, and the `style: person` image path (`ClipOval(clipper: const FullCircleClipper())`) uses a canonical const instance instead of heap-allocating a fresh clipper on every rebuild.
+- **Internal cleanup (no behavior change)** — applied `dart format` across the package (`lib/` + `test/`), fixing drift in four files. `lib/src/cards/adaptive_card_element.dart` was the one that mattered beyond tidiness: pana scores formatting as part of its static-analysis section and only inspects `lib/`, so that single over-wrapped line cost the package 10 of its 50 static-analysis points. No API or runtime changes.
 
 ### Removed 0.15.0
 

@@ -51,8 +51,7 @@ void main() {
     'rows': [
       {
         'type': 'TableRow',
-        'cells':
-            headerCells ?? [textCell('Flight'), textCell('Status')],
+        'cells': headerCells ?? [textCell('Flight'), textCell('Status')],
       },
       {
         'type': 'TableRow',
@@ -67,14 +66,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      tester.getSemantics(find.text('Status')).getSemanticsData()
+      tester
+          .getSemantics(find.text('Status'))
+          .getSemanticsData()
           .flagsCollection
           .isHeader,
       isTrue,
     );
     // A body cell must not be mistaken for a header.
     expect(
-      tester.getSemantics(find.text('Delayed')).getSemanticsData()
+      tester
+          .getSemantics(find.text('Delayed'))
+          .getSemanticsData()
           .flagsCollection
           .isHeader,
       isFalse,
