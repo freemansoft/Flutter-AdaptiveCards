@@ -11,7 +11,7 @@ PR #24 has since **merged**, so the remediation below lands on `main`, not on th
 
 | Finding | Status | Where |
 | ------- | ------ | ----- |
-| 1. State classes documented instead of privatized | OPEN | still free to fix while 0.15.0 is unpublished |
+| 1. State classes documented instead of privatized | **FIXED** | `fix/pr24-review-findings-2-3` |
 | 2. `const` constructor misfiled in changelog | **FIXED** | `18c96e7` on `fix/pr24-review-findings-2-3` |
 | 3. `FullCircleClipper()` left non-const | **FIXED** | `18c96e7` on `fix/pr24-review-findings-2-3` |
 | 4. `AdaptiveUriValidationResult` ctor doc | OPEN | PLAUSIBLE, not actioned |
@@ -19,7 +19,7 @@ PR #24 has since **merged**, so the remediation below lands on `main`, not on th
 
 ## Findings (most severe first)
 
-### 1. CONFIRMED — Two State classes documented "do not construct" instead of made non-public
+### 1. FIXED — Two State classes documented "do not construct" instead of made non-public
 
 **File:** `packages/flutter_adaptive_cards_fs/lib/src/adaptive_cards_canvas.dart:264` (also `lib/src/utils/utils.dart` `FadeAnimationState`)
 **Category:** api-design
@@ -34,6 +34,16 @@ PR #24 has since **merged**, so the remediation below lands on `main`, not on th
 By contrast, `RawAdaptiveCardState` **is** genuinely public API (`GlobalKey<RawAdaptiveCardState>` access across host_fs, charts_fs, widgetbook, and tests) — documenting it was the correct fix. `AdaptiveTappableState` has one test consumer (`test/select_action_tappable_key_test.dart` via `tester.state<AdaptiveTappableState>`), which could type against `State<AdaptiveTappable>` instead if privatization is ever wanted there too.
 
 **Suggested fix:** privatize the two zero-reference State classes (or add `show`/`hide` to the barrel exports) instead of documenting them; keep the doc-comment approach for `RawAdaptiveCardState`.
+
+**Resolution:** took the privatize option rather than narrowing the barrel exports — it is the stronger of the two, since a private class also removes reach to `AdaptiveCardsCanvasState`'s mutable `map` / `initData` / `onChange` fields, which a `show` clause would leave reachable through any other path. `AdaptiveCardsCanvasState` → `_AdaptiveCardsCanvasState`, `FadeAnimationState` → `_FadeAnimationState`, with both `createState()` signatures widened to `State<T>` (a private return type on a public method is not expressible). The explicit constructors PR #24 added are deleted, not privatized: pana only inspects public API, so the implicit default constructor is enough, and the "hosts should not construct this directly" doc lines would have contradicted the new private class.
+
+Three follow-on edits the finding did not call out:
+
+- `docs/action-payloads-reference.md:13` named `AdaptiveCardsCanvasState` in host-facing prose; the name is dropped (the surrounding claim — that action callbacks go through `InheritedAdaptiveCardHandlers`, not the canvas — is unchanged and still correct). Other `docs/` hits are frozen plan/review artifacts and historical changelog entries, correctly left alone.
+- The 0.15.0 `### Fixed` pana bullet listed both classes among those that gained `///` docs. That is no longer true for the release being cut, so both names are removed from it.
+- Added a `### Removed 0.15.0` section marking this **BREAKING (internal-only)**. Pre-1.0, the 0.14.0 → 0.15.0 minor bump legitimately carries it; no extra version bump is needed, but it must not ship silently.
+
+**Verified:** `fvm flutter analyze` → `No issues found!` across the workspace, which includes widgetbook and adaptive_explorer and so proves no consumer referenced either class. Tests: cards 814 non-golden + 31 golden, charts 30, host 37, template 103 — all pass.
 
 ### 2. FIXED — New `const` API constructor misfiled in changelog as docs-only "Fixed"
 

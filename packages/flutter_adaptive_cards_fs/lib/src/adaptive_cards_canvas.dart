@@ -254,15 +254,12 @@ class AdaptiveCardsCanvas extends StatefulWidget {
   final HostConfigs hostConfigs;
 
   @override
-  AdaptiveCardsCanvasState createState() => AdaptiveCardsCanvasState();
+  State<AdaptiveCardsCanvas> createState() => _AdaptiveCardsCanvasState();
 }
 
 /// Holds loaded card JSON and resolved [onChange] while [AdaptiveCardsCanvas]
 /// builds [RawAdaptiveCard].
-class AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
-  /// Creates canvas state; hosts should not construct this directly.
-  AdaptiveCardsCanvasState();
-
+class _AdaptiveCardsCanvasState extends State<AdaptiveCardsCanvas> {
   /// Loaded root card JSON after the content provider completes.
   Map<String, dynamic>? map;
 

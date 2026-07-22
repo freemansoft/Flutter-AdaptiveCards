@@ -22,16 +22,13 @@ class FadeAnimation extends StatefulWidget {
   final Duration duration;
 
   @override
-  FadeAnimationState createState() => FadeAnimationState();
+  State<FadeAnimation> createState() => _FadeAnimationState();
 }
 
-/// State object for [FadeAnimation]; not intended for direct host use.
-class FadeAnimationState extends State<FadeAnimation>
+/// Drives the one-shot fade for [FadeAnimation] and disposes its controller.
+class _FadeAnimationState extends State<FadeAnimation>
     with SingleTickerProviderStateMixin {
-  /// Creates fade-animation state; hosts should not construct this directly.
-  FadeAnimationState();
-
-  /// Opacity animation used by [FadeAnimation]; not for host use.
+  /// Opacity animation replayed whenever [FadeAnimation.child] changes.
   late AnimationController animationController;
 
   @override
