@@ -34,12 +34,12 @@ void main() {
     });
 
     test('FullCircleClipper clips to full bounds and never reclips', () {
-      final clipper = FullCircleClipper();
+      const clipper = FullCircleClipper();
       expect(
         clipper.getClip(const Size(10, 20)),
         const Rect.fromLTWH(0, 0, 10, 20),
       );
-      expect(clipper.shouldReclip(FullCircleClipper()), isFalse);
+      expect(clipper.shouldReclip(const FullCircleClipper()), isFalse);
     });
 
     test('parseMinHeight parses a plain numeric string', () {

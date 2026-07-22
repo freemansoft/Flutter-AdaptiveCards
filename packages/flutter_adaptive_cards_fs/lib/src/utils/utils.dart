@@ -96,7 +96,7 @@ class Tuple<A, B> {
 /// Rectangular clipper used for person-style image masks in card elements.
 class FullCircleClipper extends CustomClipper<Rect> {
   /// Creates a clipper that fills the child's layout bounds.
-  FullCircleClipper();
+  const FullCircleClipper();
 
   /// Returns full-bounds clip rect for the child.
   @override

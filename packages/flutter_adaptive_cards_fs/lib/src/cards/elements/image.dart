@@ -108,7 +108,7 @@ class AdaptiveImageState extends ConsumerState<AdaptiveImage>
     // set, the circle wins and no `ClipRRect` is applied.
     final bool roundedCorners = adaptiveMap['roundedCorners'] == true;
     if (isPerson) {
-      image = ClipOval(clipper: FullCircleClipper(), child: image);
+      image = ClipOval(clipper: const FullCircleClipper(), child: image);
     } else if (roundedCorners) {
       image = ClipRRect(
         borderRadius: BorderRadius.circular(
