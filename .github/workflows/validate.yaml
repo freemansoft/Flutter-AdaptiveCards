@@ -1,4 +1,6 @@
-# Validates that the published Markdown docs are Prettier-formatted.
+# Repo-wide validation checks that are not the test suite:
+#   - markdown-format: the published Markdown docs are Prettier-formatted.
+#   - pana: the four published packages meet their pub.dev score floors.
 # Mirrors the local VS Code "format on save" (esbenp.prettier-vscode + .prettierrc.json)
 # so a save locally and the CI check use the same pinned Prettier and config.
 #
@@ -34,3 +36,35 @@ jobs:
 
       - name: Check Markdown formatting
         run: npm run check:md
+
+  pana:
+    name: Pub score (pana)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: 3.44.0 # should sync with fvm version
+          cache: true
+
+      - run: flutter pub get
+
+      # Pinned so the score is reproducible. Bump deliberately, in its own
+      # commit, and re-measure tool/pana_floors.yaml when you do -- a new pana
+      # release can change how points are awarded.
+      - name: Activate pana
+        run: dart pub global activate pana 0.23.14
+
+      - name: Verify the gate's own parsers
+        run: dart run tool/pana/check_pana.dart --self-test
+
+      # Report-only for now (prints the table, never fails the build) while the
+      # CI plumbing is validated -- same rollout the coverage gate used. Drop
+      # --report-only to make it enforcing. See docs/pub-score-pana.md.
+      - name: Pub-score gate (report-only)
+        run: dart run tool/pana/check_pana.dart --report-only
