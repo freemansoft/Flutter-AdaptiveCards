@@ -242,7 +242,8 @@ class OllamaResponder:
             if reason is not None:
                 logger.warning(
                     "Model reply looked like an Adaptive Card but was not usable "
-                    "(%d chars) — rendered as text instead. Reason: %s",
+                    "(model=%s, %d chars) — rendered as text instead. Reason: %s",
+                    self._model,
                     len(content),
                     reason,
                 )
@@ -254,7 +255,8 @@ class OllamaResponder:
         # as text instead of a card. logger.debug skips formatting when disabled,
         # so this costs nothing at the default INFO level.
         logger.debug(
-            "Ollama content (%d chars, detected_card=%s):\n%r",
+            "Ollama content (model=%s, %d chars, detected_card=%s):\n%r",
+            self._model,
             len(content),
             card_body is not None,
             content,

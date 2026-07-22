@@ -330,6 +330,8 @@ def test_reply_logs_raw_content_at_debug_level(tmp_path, caplog):
         ).reply("hi", [])
     assert "detected_card" in caplog.text
     assert "hi from ollama" in caplog.text
+    # The active model is logged so each captured reply is attributable.
+    assert OLLAMA_MODEL in caplog.text
 
 
 def test_reply_does_not_log_raw_content_at_info_level(tmp_path, caplog):
@@ -364,6 +366,8 @@ def test_reply_warns_when_reply_looked_like_a_card_but_was_malformed(tmp_path, c
     assert any(r.levelname == "WARNING" for r in caplog.records)
     assert "not usable" in caplog.text
     assert "invalid JSON" in caplog.text
+    # The warning names the model that produced the malformed reply.
+    assert OLLAMA_MODEL in caplog.text
 
 
 def test_reply_does_not_warn_for_plain_text_reply(tmp_path, caplog):
