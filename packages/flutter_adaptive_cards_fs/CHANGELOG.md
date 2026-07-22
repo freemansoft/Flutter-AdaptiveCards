@@ -5,16 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Fixed
-
-- docs: add missing `///` on public default constructors reported by pana
-  (`AdaptiveCardContentProvider`, `AdaptiveCardsCanvasState`,
-  `RawAdaptiveCardState`, `AdaptiveTappableState`, `FadeAnimationState`,
-  `FullCircleClipper`, `AdaptiveUriValidationResult`,
-  `ElementOverlayExtension`).
-
 ## [0.15.0]
 
 ### Added 0.15.0
@@ -37,9 +27,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - feat: `CarouselPage` supports `selectAction` (standard, per the Adaptive Cards spec) — tapping a page invokes the action via the shared `AdaptiveTappable` wrapper, exposed to screen readers as a button. `selectAction` is scoped to the page only, not the `Carousel` element itself, matching the spec. The `v1.6/carousel.json` sample (test + widgetbook) now demonstrates it with an `Action.OpenUrl` on the first page.
 - **Carousel:** replaced the fixed 400px height with the spec height model — `height` (`auto`/`stretch`) and `heightInPixels` — and, for the default `auto` case, size the carousel to its tallest page. Orientation stays independent of `heightInPixels`.
 - **Carousel:** guard `heightInPixels` against non-positive values (`"-50px"`, `"0px"`) — they now fall back to the measured/auto height instead of collapsing or crashing the `SizedBox`.
+- `ElementOverlayExtension` now declares an explicit `const` constructor. It previously had no explicit constructor at all, so subclasses could not be `const`; extension packages can now define canonical const instances (see the matching `flutter_adaptive_charts_fs` entry).
+
+### Changed 0.15.0
+
+- `FullCircleClipper` now has a `const` constructor, and the `style: person` image path (`ClipOval(clipper: const FullCircleClipper())`) uses a canonical const instance instead of heap-allocating a fresh clipper on every rebuild.
+
+### Removed 0.15.0
+
+- **BREAKING (internal-only):** `AdaptiveCardsCanvasState` and `FadeAnimationState` are now private (`_AdaptiveCardsCanvasState` / `_FadeAnimationState`). They were never part of the intended public API — they leaked out because `flutter_adaptive_cards_fs.dart` exports `adaptive_cards_canvas.dart` and `flutter_adaptive_cards_extend_fs.dart` re-exports `utils/utils.dart` without `show` clauses — and had zero references anywhere in the repo, including widgetbook, examples, and tests. `AdaptiveCardsCanvasState` additionally exposed mutable `map` / `initData` / `onChange` fields; making the class private enforces structurally what its doc comment could only advise. `RawAdaptiveCardState` remains public and supported: it is the type argument for `GlobalKey<RawAdaptiveCardState>`, used across `flutter_adaptive_cards_host_fs`, `flutter_adaptive_charts_fs`, widgetbook, and tests.
 
 ### Fixed 0.15.0
 
+- docs: add missing `///` on public default constructors reported by pana (`AdaptiveCardContentProvider`, `RawAdaptiveCardState`, `AdaptiveTappableState`, `FullCircleClipper`, `AdaptiveUriValidationResult`, `ElementOverlayExtension`).
 - docs: `ReferenceResolver.resolveCornerRadius()` and `FallbackConfigs.cornerRadius` doc comments no longer say `roundedCorners` is wired for "Container only" — that was stale once `ColumnSet`/`Column`/`Table`/`Image` shipped; both now match the accurate wording already in `container.dart` (wired on all five elements).
 - **`Media` `poster` is now visible until the user starts playback.** The poster was only rendered while the player was initializing, so it vanished a moment after the card appeared and authors effectively never saw it. The poster is now the click-to-play surface described by the spec: it shows a play button, and the `VideoPlayerController` is created only when the user taps it (no network player is opened for every `Media` element on card load). A poster-less `Media` still renders the play affordance so the video remains playable.
 - **`FactSet` titles are bold again when the HostConfig omits a `factSet` section.** The `factSet.title.weight` spec default of `bolder` lives in `FactSetConfig.fromJson`, but that only runs when the JSON actually contains a `factSet` object; a HostConfig without one (including the default `const HostConfig()`) left `getFactSetConfig()` null, and the widget's own `?? 'default'` fallback rendered titles at the normal value weight. Added `FallbackConfigs.factSetConfig` (mirroring `fontWeightsConfig`/`fontSizesConfig`/etc.) and use it as the null fallback, so titles bold correctly under any HostConfig.

@@ -10,7 +10,7 @@ from JSON to execution (dispatch, rationale, custom actions, per-action behavior
 
 ## Host action callbacks
 
-Submit, Execute, and OpenUrl are **not** configured on `AdaptiveCardsCanvas` or `AdaptiveCardsCanvasState`. Wrap the card with **`InheritedAdaptiveCardHandlers`**.
+Submit, Execute, and OpenUrl are **not** configured on `AdaptiveCardsCanvas`. Wrap the card with **`InheritedAdaptiveCardHandlers`**.
 
 ## Action.Submit payload
 
