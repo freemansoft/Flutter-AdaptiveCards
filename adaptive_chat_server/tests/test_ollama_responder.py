@@ -3,7 +3,7 @@ import logging
 
 import httpx
 
-from app.ollama_responder import OllamaResponder
+from app.ollama_responder import DEFAULT_NUM_CTX, OllamaResponder
 
 # Single source of truth for these tests — change the model/host/port here, not
 # in each test. (These drive the mocked transport; no live Ollama is contacted.)
@@ -229,6 +229,23 @@ def test_reply_does_not_mutate_caller_history(tmp_path):
     assert history == original  # trim is send-only
 
 
+def test_default_context_window_is_16k(tmp_path):
+    # The default context window is 16K tokens — large enough for multi-page card
+    # replies without Ollama silently dropping the oldest tokens.
+    assert DEFAULT_NUM_CTX == 16384
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    # Construct directly (not via _responder, which pins num_ctx) so the DEFAULT
+    # flows through to the request payload.
+    OllamaResponder(
+        OLLAMA_URL,
+        model=OLLAMA_MODEL,
+        client=_client(_ok_capturing_handler(captured)),
+        system_prompt_file=str(missing),
+    ).reply("hi", [])
+    assert captured["body"]["options"]["num_ctx"] == DEFAULT_NUM_CTX
+
+
 def test_reply_sends_num_ctx_option(tmp_path):
     missing = tmp_path / "no_prompt.txt"
     captured = {}
@@ -330,6 +347,8 @@ def test_reply_logs_raw_content_at_debug_level(tmp_path, caplog):
         ).reply("hi", [])
     assert "detected_card" in caplog.text
     assert "hi from ollama" in caplog.text
+    # The active model is logged so each captured reply is attributable.
+    assert OLLAMA_MODEL in caplog.text
 
 
 def test_reply_does_not_log_raw_content_at_info_level(tmp_path, caplog):
@@ -340,3 +359,43 @@ def test_reply_does_not_log_raw_content_at_info_level(tmp_path, caplog):
             _ok_capturing_handler({}), system_prompt_file=str(missing)
         ).reply("hi", [])
     assert "detected_card" not in caplog.text
+
+
+def _handler_returning_content(content):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200, json={"message": {"role": "assistant", "content": content}}
+        )
+
+    return handler
+
+
+def test_reply_warns_when_reply_looked_like_a_card_but_was_malformed(tmp_path, caplog):
+    # A reply that begins like JSON but is truncated/invalid renders as text; the
+    # server logs a WARNING with the reason so this is diagnosable at INFO level.
+    missing = tmp_path / "no_prompt.txt"
+    malformed = '{"type": "Carousel", "pages": ['  # unclosed -> invalid JSON
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        result = _responder(
+            _handler_returning_content(malformed), system_prompt_file=str(missing)
+        ).reply("states?", [])
+    assert result.card_body is None  # correctly fell back to text
+    assert any(r.levelname == "WARNING" for r in caplog.records)
+    assert "not usable" in caplog.text
+    assert "invalid JSON" in caplog.text
+    # The warning names the model that produced the malformed reply.
+    assert OLLAMA_MODEL in caplog.text
+
+
+def test_reply_does_not_warn_for_plain_text_reply(tmp_path, caplog):
+    # Prose is an intentional text reply, not a botched card -> no card warning.
+    # (Point at an existing empty prompt file so the missing-file warning, which
+    # is unrelated to card parsing, does not confound the assertion.)
+    empty = tmp_path / "empty.txt"
+    empty.write_text("   \n", encoding="utf-8")
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        _responder(
+            _ok_capturing_handler({}), system_prompt_file=str(empty)
+        ).reply("hi", [])
+    assert "not usable" not in caplog.text
+    assert "looked like an Adaptive Card" not in caplog.text

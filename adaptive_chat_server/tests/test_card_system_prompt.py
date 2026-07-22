@@ -50,3 +50,27 @@ def test_card_prompt_requires_complete_json():
 def test_card_prompt_forbids_actions():
     # Display-only: the prompt must steer the model away from action buttons.
     assert "Action" in PROMPT.read_text(encoding="utf-8")  # mentioned in a "do not use" sense
+
+
+def test_card_prompt_has_no_equals_delimiter_headers():
+    # The model mimics "=== ... ===" section headers and leaks "=== " before the
+    # JSON, breaking card detection. The prompt must not use that decoration.
+    text = PROMPT.read_text(encoding="utf-8")
+    assert "===" not in text
+
+
+def test_card_prompt_forbids_output_around_the_json():
+    # Reinforce that the whole card message is raw JSON with nothing wrapped
+    # around it, so a leaked prefix/suffix cannot happen.
+    text = PROMPT.read_text(encoding="utf-8").lower()
+    assert "nothing before" in text
+
+
+def test_card_prompt_bounds_size_and_nesting():
+    # Big, deeply nested cards (e.g. a multi-page Carousel of Tables) are where a
+    # local model most often emits malformed/truncated JSON that renders as raw
+    # text. The prompt must steer toward small, shallow cards and away from
+    # nesting heavy elements inside a Carousel.
+    text = PROMPT.read_text(encoding="utf-8").lower()
+    assert "shallow" in text
+    assert "inside a carousel" in text

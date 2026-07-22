@@ -1,4 +1,4 @@
-from app.card_detect import try_parse_card_body
+from app.card_detect import card_parse_failure_reason, try_parse_card_body
 
 
 def test_full_card_object_returns_body():
@@ -71,3 +71,149 @@ def test_array_of_scalars_returns_none():
 
 def test_empty_array_returns_none():
     assert try_parse_card_body("[]") is None
+
+
+def test_leading_delimiter_before_full_card_returns_body():
+    # The observed failure: the model prefixes "=== " (mimicking the prompt's
+    # section headers) before an otherwise-valid card.
+    raw = '=== \n{"type": "AdaptiveCard", "body": [{"type": "Input.Date", "id": "d"}]}'
+    assert try_parse_card_body(raw) == [{"type": "Input.Date", "id": "d"}]
+
+
+def test_leading_delimiter_before_single_element_returns_body():
+    raw = '=== \n{"type": "Input.ChoiceSet", "id": "s", "choices": []}'
+    assert try_parse_card_body(raw) == [
+        {"type": "Input.ChoiceSet", "id": "s", "choices": []}
+    ]
+
+
+def test_reported_sample_choiceset_with_leaked_delimiter_returns_body():
+    # The verbatim reply that first surfaced this bug: a "=== " prefix leaked
+    # ahead of a full Input.ChoiceSet element. Must parse to a one-item body.
+    raw = (
+        '=== \n{"type":"Input.ChoiceSet","id":"states","style":"compact",'
+        '"choices":[{"title":"California","value":"1"},'
+        '{"title":"Texas","value":"2"},{"title":"New York","value":"3"},'
+        '{"title":"Florida","value":"4"},'
+        '{"title":"Pennsylvania","value":"5"}]}'
+    )
+    assert try_parse_card_body(raw) == [
+        {
+            "type": "Input.ChoiceSet",
+            "id": "states",
+            "style": "compact",
+            "choices": [
+                {"title": "California", "value": "1"},
+                {"title": "Texas", "value": "2"},
+                {"title": "New York", "value": "3"},
+                {"title": "Florida", "value": "4"},
+                {"title": "Pennsylvania", "value": "5"},
+            ],
+        }
+    ]
+
+
+def test_leading_and_trailing_decoration_around_array_returns_array():
+    raw = '===\n[{"type": "TextBlock", "text": "hi"}]\n==='
+    assert try_parse_card_body(raw) == [{"type": "TextBlock", "text": "hi"}]
+
+
+def test_hash_and_dash_delimiters_are_stripped():
+    assert try_parse_card_body('###\n{"type": "TextBlock", "text": "hi"}') == [
+        {"type": "TextBlock", "text": "hi"}
+    ]
+    assert try_parse_card_body('---\n{"type": "TextBlock", "text": "hi"}') == [
+        {"type": "TextBlock", "text": "hi"}
+    ]
+
+
+def test_trailing_only_decoration_returns_body():
+    # Isolate the regex's trailing branch (no leading decoration): JSON followed
+    # immediately by a delimiter run must still parse to a card.
+    assert try_parse_card_body('{"type": "TextBlock", "text": "hi"}\n===') == [
+        {"type": "TextBlock", "text": "hi"}
+    ]
+
+
+def test_prose_before_nonempty_card_still_returns_none():
+    # Locks the NARROW contract: real prose words are not decoration, so a card
+    # embedded after prose stays text. (The existing prose test uses an empty
+    # body and would pass regardless; this one uses a renderable body.)
+    raw = 'Here is a card: {"type": "AdaptiveCard", "body": [{"type": "TextBlock", "text": "hi"}]}'
+    assert try_parse_card_body(raw) is None
+
+
+def test_unterminated_opening_fence_returns_body():
+    # The model opened a ``` fence but never wrote the closing ```; the card
+    # inside is still valid JSON and must be recovered.
+    raw = '```\n{"type": "Input.ChoiceSet", "id": "s", "choices": []}'
+    assert try_parse_card_body(raw) == [
+        {"type": "Input.ChoiceSet", "id": "s", "choices": []}
+    ]
+
+
+def test_unterminated_opening_json_fence_returns_body():
+    # Same, with a language tag on the opener.
+    raw = '```json\n{"type": "TextBlock", "text": "hi"}'
+    assert try_parse_card_body(raw) == [{"type": "TextBlock", "text": "hi"}]
+
+
+def test_trailing_only_fence_returns_body():
+    # A closing ``` with no opener is also stripped.
+    raw = '{"type": "TextBlock", "text": "hi"}\n```'
+    assert try_parse_card_body(raw) == [{"type": "TextBlock", "text": "hi"}]
+
+
+def test_reported_choiceset_with_unterminated_fence_returns_body():
+    # The verbatim llama3.2 reply that surfaced the bug: a full Input.ChoiceSet
+    # wrapped in a lone opening ``` fence (no close).
+    raw = (
+        '```\n{"type":"Input.ChoiceSet","id":"states","style":"compact",'
+        '"choices":[{"title":"California","value":"ca"},'
+        '{"title":"Texas","value":"tx"},{"title":"Florida","value":"fl"}]}'
+    )
+    body = try_parse_card_body(raw)
+    assert body is not None
+    assert body[0]["type"] == "Input.ChoiceSet"
+    assert body[0]["id"] == "states"
+
+
+# --- card_parse_failure_reason (diagnostic; never affects rendering) ---
+
+
+def test_failure_reason_none_for_valid_card():
+    assert card_parse_failure_reason('{"type": "TextBlock", "text": "hi"}') is None
+
+
+def test_failure_reason_none_for_plain_prose():
+    # Prose does not begin with { or [, so it is a text reply, not a botched card.
+    assert card_parse_failure_reason("Here is your answer in words.") is None
+
+
+def test_failure_reason_reports_invalid_json_when_it_looked_like_a_card():
+    # Begins like JSON but is truncated -> a botched card, not prose.
+    reason = card_parse_failure_reason('{"type": "Carousel", "pages": [')
+    assert reason is not None
+    assert "invalid json" in reason.lower()
+
+
+def test_failure_reason_reports_wrong_shape_for_valid_but_unrenderable_json():
+    # Valid JSON, but an empty-body AdaptiveCard is not renderable.
+    reason = card_parse_failure_reason('{"type": "AdaptiveCard", "body": []}')
+    assert reason is not None
+    assert "not a renderable card" in reason.lower()
+
+
+def test_failure_reason_reports_invalid_json_for_reported_truncated_carousel():
+    # The verbatim failure the user reported: a huge Carousel that the model
+    # left structurally malformed (an "items" array closed then a stray ", {...}",
+    # and the outer object never closed). Must be flagged as invalid JSON.
+    raw = (
+        '{"type":"Carousel","pages":[{"type":"CarouselPage","items":[{"type":'
+        '"Table","rows":[{"type":"TableRow","cells":[{"type":"TableCell",'
+        '"items":[{"type":"TextBlock","text":"x"}]},{"type":"Badge","text":"y"}]'
+        # ^ outer object intentionally left unclosed, as in the reported log
+    )
+    reason = card_parse_failure_reason(raw)
+    assert reason is not None
+    assert "invalid json" in reason.lower()

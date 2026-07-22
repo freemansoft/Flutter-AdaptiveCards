@@ -56,18 +56,25 @@ def test_envelope_shape():
     assert env["links"]["postNext"] == "/conversations/c_1/interactions"
 
 
-def test_assistant_card_bubble_embeds_fragment_in_left_emphasis_container():
+def test_assistant_card_bubble_is_full_width_container_without_columnset():
+    # Workaround: a card reply may contain a Carousel, and the library's ColumnSet
+    # wraps its columns in IntrinsicHeight, which the Carousel's LayoutBuilder
+    # cannot satisfy (the card renders blank / asserts "RenderBox was not laid
+    # out"). So card replies render full-width in a plain Container — no ColumnSet
+    # — until the core Carousel fix lands. Text bubbles keep the 75% alignment.
     fragment = [
         {"type": "TextBlock", "text": "Pick a date"},
         {"type": "Input.Date", "id": "when"},
     ]
     card = assistant_card_bubble(fragment)
-    cols = _first_columnset(card)["columns"]
-    # content (75%) first, spacer (25%) second -> left-aligned like a text reply
-    assert cols[0]["width"] == _BUBBLE_WEIGHT
-    assert cols[1]["width"] == _SPACER_WEIGHT
-    container = cols[0]["items"][0]
+    body = card["body"]
+    # The fragment lives directly in a single full-width emphasis container.
+    assert len(body) == 1
+    container = body[0]
+    assert container["type"] == "Container"
     assert container["style"] == "emphasis"
     assert container["roundedCorners"] is True
     # the model's fragment is the container's items verbatim
     assert container["items"] == fragment
+    # Crucially: NO ColumnSet anywhere — that is what breaks a nested Carousel.
+    assert not any(el.get("type") == "ColumnSet" for el in body)

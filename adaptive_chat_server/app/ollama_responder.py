@@ -13,7 +13,7 @@ from pathlib import Path
 
 import httpx
 
-from app.card_detect import try_parse_card_body
+from app.card_detect import card_parse_failure_reason, try_parse_card_body
 from app.responder import Reply
 
 # uvicorn installs a handler on the "uvicorn.error" logger, so these messages
@@ -30,8 +30,9 @@ DEFAULT_HISTORY_TURNS = 10
 
 # Context window (in tokens) requested from Ollama via options.num_ctx. Making it
 # explicit means the window is a known value we can measure prompt fill against,
-# rather than a per-model default we are blind to.
-DEFAULT_NUM_CTX = 4096
+# rather than a per-model default we are blind to. 16K leaves ample room for a
+# multi-page card reply plus history, so Ollama does not silently drop tokens.
+DEFAULT_NUM_CTX = 16384
 
 # System prompt injected as the first message on every chat request. Resolved
 # relative to this file (not the process cwd) so it is found no matter where the
@@ -232,6 +233,21 @@ class OllamaResponder:
             )
         self._log_context_fill(data)
         card_body = try_parse_card_body(content)
+        # When a reply *looked like* a card (began with JSON) but could not be
+        # used, surface WHY at WARNING so it is diagnosable at the default INFO
+        # level — the common cause is the model emitting malformed/truncated JSON
+        # for a large, deeply nested card. Plain-prose replies return None here
+        # and are not warned about (they are intentional text answers).
+        if card_body is None:
+            reason = card_parse_failure_reason(content)
+            if reason is not None:
+                logger.warning(
+                    "Model reply looked like an Adaptive Card but was not usable "
+                    "(model=%s, %d chars) — rendered as text instead. Reason: %s",
+                    self._model,
+                    len(content),
+                    reason,
+                )
         # Content-level diagnostics: logged at DEBUG so they are off in normal
         # operation but available for testing without a code change. Enable DEBUG
         # logging (e.g. `uvicorn --log-level debug`, or set the "uvicorn.error"
@@ -240,7 +256,8 @@ class OllamaResponder:
         # as text instead of a card. logger.debug skips formatting when disabled,
         # so this costs nothing at the default INFO level.
         logger.debug(
-            "Ollama content (%d chars, detected_card=%s):\n%r",
+            "Ollama content (model=%s, %d chars, detected_card=%s):\n%r",
+            self._model,
             len(content),
             card_body is not None,
             content,

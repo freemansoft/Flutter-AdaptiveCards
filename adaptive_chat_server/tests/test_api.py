@@ -70,7 +70,9 @@ def test_send_renders_card_reply_in_assistant_bubble(monkeypatch):
     resp = _send(cid, "i_card1", "book me")
     assert resp.status_code == 200
     body = resp.json()
-    container = body["messages"][1]["body"][0]["columns"][0]["items"][0]
+    # Card replies render full-width (no ColumnSet) so a nested Carousel lays out.
+    container = body["messages"][1]["body"][0]
+    assert container["type"] == "Container"
     assert container["style"] == "emphasis"
     assert container["items"] == [{"type": "Input.Date", "id": "when"}]
 

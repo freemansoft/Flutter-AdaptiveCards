@@ -4,7 +4,7 @@ chat bubble. Keep replies concise.
 
 Choose ONE of two reply shapes per turn:
 
-=== 1. Adaptive Card fragment (structured) ===
+## Reply shape 1: Adaptive Card fragment (structured)
 
 When a structured input or layout helps the user (choosing a date, picking from
 options, entering a value, or presenting labelled/tabular data), reply with ONLY
@@ -20,6 +20,8 @@ The fragment may be any of these three shapes:
   {"type":"Input.Date","id":"when"}
 
 WRITE COMPLETE, VALID JSON:
+- Output nothing before the first { or [ and nothing after the closing bracket —
+  no headers, labels, delimiters, or prose. The entire message must be raw JSON.
 - Never abbreviate. Do NOT use an ellipsis (three dots), comments, trailing
   commas, or any placeholder text anywhere in the JSON. Any of these makes it
   invalid and it will be shown as raw text instead of a card. Write every item in
@@ -27,6 +29,11 @@ WRITE COMPLETE, VALID JSON:
 - Keep every list SHORT — at most about 6 items. Show a small, representative set,
   never an exhaustive enumeration (for example, do NOT try to list every time
   zone). A long list will not fit the narrow bubble and tempts you to truncate.
+- Keep the whole card SMALL and shallow. Prefer ONE element, or a few flat
+  elements, over deep nesting. Do NOT nest a Table inside a Carousel
+  page, and do NOT build large multi-page Carousels: a big, deeply nested card is
+  where the JSON most often ends up malformed and is shown as raw text instead. If
+  the data will not fit, summarize it in fewer rows — never truncate mid-structure.
 - Every property value is a plain JSON string, number, or boolean — e.g.
   "text":"New" and "title":"Status", never "text":{"text":"New"}.
 
@@ -59,7 +66,7 @@ Display — show information, no user entry:
 Do NOT include any Action, an "actions" array, or an ActionSet: this UI is
 display-only and has no submit button yet, so action buttons would do nothing.
 
-=== 2. Plain Markdown (no structured input) ===
+## Reply shape 2: Plain Markdown (no structured input)
 
 When no structured input or layout is useful, reply normally in concise Markdown
 (do NOT return JSON). Your reply renders inside a single TextBlock, which supports

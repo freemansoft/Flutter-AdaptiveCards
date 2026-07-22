@@ -10,19 +10,51 @@ Three fragment shapes are accepted, because local models emit all three:
   2. a bare array          ``[ {...}, {...} ]``                           -> as-is
   3. a single element      ``{"type": "Input.ChoiceSet", ...}``          -> ``[element]``
 A dict with no ``type`` string, a scalar, or an empty/mixed array is treated as text.
+
+Leading/trailing decoration a model wraps around the JSON — surrounding
+whitespace, a code fence (including an *unterminated* one — a lone opening or
+closing ```` ``` ````), or delimiter runs like ``=== `` / ``---`` / ``###`` — is
+stripped before parsing. Surrounding *prose* is not: a reply with words before
+or after the JSON is still treated as text.
 """
 from __future__ import annotations
 
 import json
 import re
 
-# Matches a whole reply wrapped in a ```json ... ``` (or bare ```) fence.
+# Matches a whole reply wrapped in a balanced ```json ... ``` (or bare ```) fence.
 _FENCE = re.compile(r"^\s*```(?:json)?\s*(.*?)\s*```\s*$", re.DOTALL | re.IGNORECASE)
+
+# UNBALANCED fence markers a model leaves when it opens a fence but never closes
+# it (or vice versa): a leading opener (```, ```json, …) up to the first newline
+# or content char, and a trailing closer. Stripped independently so a card wrapped
+# in a lone opening fence still parses. Both halt before ``{``/``[``.
+_OPEN_FENCE = re.compile(r"^```[^\n{[]*\r?\n?")
+_CLOSE_FENCE = re.compile(r"\r?\n?```[^\n]*$")
+
+# Leading/trailing DECORATION a local model wraps around the JSON: whitespace and
+# runs of section/Markdown delimiters (===, ---, ###, ***, ___, ~~~). Stripped
+# from both ends only; the pattern halts at the first content char (`{`, `[`, `"`,
+# or a digit), so JSON objects, arrays, and strings are never clipped. Real prose
+# words carry none of these delimiter chars at the very edge, so a prose-wrapped
+# reply is left intact and still fails JSON parsing.
+_DECORATION = re.compile(r"^[\s=\-#*_~]+|[\s=\-#*_~]+$")
 
 
 def _strip_fence(raw: str) -> str:
-    match = _FENCE.match(raw)
-    return match.group(1) if match else raw.strip()
+    text = raw.strip()
+    match = _FENCE.match(text)
+    if match:
+        return match.group(1)
+    # No balanced fence — strip a leftover opener line and/or trailing closer so
+    # a card the model wrapped in an unterminated fence still parses.
+    text = _OPEN_FENCE.sub("", text, count=1)
+    text = _CLOSE_FENCE.sub("", text, count=1)
+    return text.strip()
+
+
+def _strip_decoration(text: str) -> str:
+    return _DECORATION.sub("", text)
 
 
 def try_parse_card_body(raw: str) -> list | None:
@@ -31,11 +63,12 @@ def try_parse_card_body(raw: str) -> list | None:
     Accepts a full ``{"type": "AdaptiveCard", "body": [...]}`` object (returns its
     body), a bare non-empty JSON array of objects (returned as-is), or a single
     body-element object such as ``{"type": "Input.ChoiceSet", ...}`` (wrapped as a
-    one-item body). Surrounding prose, invalid JSON, a dict with no ``type``, a
-    scalar, an empty array, or an array with non-objects all yield None so the
-    caller falls back to a text reply.
+    one-item body). Leading/trailing decoration (whitespace, a code fence, or
+    delimiter runs such as ``=== ``) is stripped first. Surrounding prose, invalid
+    JSON, a dict with no ``type``, a scalar, an empty array, or an array with
+    non-objects all yield None so the caller falls back to a text reply.
     """
-    text = _strip_fence(raw)
+    text = _strip_decoration(_strip_fence(raw))
     try:
         parsed = json.loads(text)
     except ValueError:
@@ -57,3 +90,31 @@ def try_parse_card_body(raw: str) -> list | None:
         if isinstance(element_type, str) and element_type:
             return [parsed]
     return None
+
+
+def card_parse_failure_reason(raw: str) -> str | None:
+    """Explain why a reply that *looked like* a card was not rendered as one.
+
+    Diagnostic/logging aid only — it never affects rendering. Returns None when
+    ``raw`` is a valid card (:func:`try_parse_card_body` accepts it) or is plainly
+    prose: after decoration stripping it does not begin with ``{`` or ``[``, so the
+    model answered in text, not a botched card. Returns a short human-readable
+    reason only when the reply *began* like JSON but could not be used — invalid or
+    truncated JSON, or valid JSON in a shape this module does not render (an
+    empty-body ``AdaptiveCard``, an object with no ``type``, an empty/mixed array).
+    This lets a caller distinguish "the model tried to send a card and botched it"
+    (worth a warning) from "the model sent prose" (normal).
+    """
+    text = _strip_decoration(_strip_fence(raw))
+    if not text or text[0] not in "{[":
+        return None
+    try:
+        json.loads(text)
+    except ValueError as exc:
+        return f"invalid JSON: {exc}"
+    if try_parse_card_body(raw) is not None:
+        return None
+    return (
+        "valid JSON but not a renderable card "
+        "(empty body, missing 'type', or empty/mixed array)"
+    )

@@ -37,11 +37,11 @@ flowchart TB
 
 ### Wire contract
 
-| Method & path | Purpose | In | Out |
-| --- | --- | --- | --- |
-| `POST /conversations` | Start a session | — | `{ conversationId, links: { postNext } }` |
-| `POST /conversations/{cid}/interactions` | Send one interaction | header `X-Interaction-Id`; PlainJson invoke body (`data.message`) | `200` + **envelope** |
-| `GET /conversations/{cid}/interactions/{iid}` | Replay one interaction | — | **envelope** |
+| Method & path                                 | Purpose                | In                                                                | Out                                       |
+| --------------------------------------------- | ---------------------- | ----------------------------------------------------------------- | ----------------------------------------- |
+| `POST /conversations`                         | Start a session        | —                                                                 | `{ conversationId, links: { postNext } }` |
+| `POST /conversations/{cid}/interactions`      | Send one interaction   | header `X-Interaction-Id`; PlainJson invoke body (`data.message`) | `200` + **envelope**                      |
+| `GET /conversations/{cid}/interactions/{iid}` | Replay one interaction | —                                                                 | **envelope**                              |
 
 **Envelope:** `{ conversationId, interactionId, messages: [<AdaptiveCard>, ...], links: { self, postNext } }`.
 `messages` is an ordered list of pre-styled cards (a right-aligned "you" bubble and
@@ -50,17 +50,17 @@ returns the stored envelope without re-running the responder.
 
 ### Components (`app/`)
 
-| File | Responsibility |
-| --- | --- |
-| `main.py` | FastAPI app, CORS, routes, the `store`/`responder` singletons, `build_responder(url, model)`, and history threading in the send route. |
-| `store.py` | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `reply_text` (so chat **history** can be rebuilt for Ollama). Lost on restart — fine for a demo. |
-| `cards.py` | Bubble authoring: a `ColumnSet` with a `stretch` spacer for alignment + a styled, `roundedCorners: true` `Container`; `user_bubble` (accent, right), `assistant_bubble` (emphasis, left, Markdown text), `assistant_card_bubble` (emphasis, left, embeds a detected Adaptive Card fragment instead of text), and `envelope(...)`. |
-| `responder.py` | `Reply(text, card_body)` — a frozen dataclass: `text` is always the raw model output (threaded into Ollama history); `card_body` is the parsed card body items, or `None` for a plain Markdown reply. `Responder` protocol — `reply(text, history) -> Reply` — and `EchoResponder` (always returns `card_body=None`). The seam that lets the reply strategy swap without touching routes. |
-| `card_detect.py` | `try_parse_card_body(raw) -> list \| None` — strict text-vs-card detection: the **whole** reply (after stripping an optional code fence) must be a full `{"type": "AdaptiveCard", "body": [...]}` object or a bare, non-empty JSON array of objects, else it's `None` and the caller falls back to a text reply. |
-| `ollama_responder.py` | `OllamaResponder`: prepends the **system prompt** (see below), maps history + current turn to Ollama `messages`, and POSTs `{url}/api/chat` (`stream: false`); runs `try_parse_card_body` on `message.content` and returns a `Reply(text=content, card_body=...)`; falls back to a short message if Ollama is unreachable (always `card_body=None` in that case). |
-| `default_system_prompt.txt` | Bundled default system prompt, used when no `--system-prompt-file` is given. Resolved relative to the package (not the process cwd). |
-| `card_system_prompt.txt` | Bundled **card** system prompt — selected the same way, via `--system-prompt-file app/card_system_prompt.txt`. Instructs the model to reply with an Adaptive Card fragment (display-only: no actions). See **Card replies (display-only)** below. |
-| `__main__.py` | CLI entrypoint (`python -m app ...`) that selects the responder from `--ollama-url` and runs uvicorn. |
+| File                        | Responsibility                                                                                                                                                                                                                                                                                                                                                                            |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `main.py`                   | FastAPI app, CORS, routes, the `store`/`responder` singletons, `build_responder(url, model)`, and history threading in the send route.                                                                                                                                                                                                                                                    |
+| `store.py`                  | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `reply_text` (so chat **history** can be rebuilt for Ollama). Lost on restart — fine for a demo.                                                                                                                                                                               |
+| `cards.py`                  | Bubble authoring: a `ColumnSet` with a `stretch` spacer for alignment + a styled, `roundedCorners: true` `Container`; `user_bubble` (accent, right), `assistant_bubble` (emphasis, left, Markdown text), `assistant_card_bubble` (emphasis, left, embeds a detected Adaptive Card fragment instead of text), and `envelope(...)`.                                                         |
+| `responder.py`              | `Reply(text, card_body)` — a frozen dataclass: `text` is always the raw model output (threaded into Ollama history); `card_body` is the parsed card body items, or `None` for a plain Markdown reply. `Responder` protocol — `reply(text, history) -> Reply` — and `EchoResponder` (always returns `card_body=None`). The seam that lets the reply strategy swap without touching routes. |
+| `card_detect.py`            | `try_parse_card_body(raw) -> list \| None` — strict text-vs-card detection: the **whole** reply (after stripping an optional code fence) must be a full `{"type": "AdaptiveCard", "body": [...]}` object or a bare, non-empty JSON array of objects, else it's `None` and the caller falls back to a text reply.                                                                          |
+| `ollama_responder.py`       | `OllamaResponder`: prepends the **system prompt** (see below), maps history + current turn to Ollama `messages`, and POSTs `{url}/api/chat` (`stream: false`); runs `try_parse_card_body` on `message.content` and returns a `Reply(text=content, card_body=...)`; falls back to a short message if Ollama is unreachable (always `card_body=None` in that case).                         |
+| `default_system_prompt.txt` | Bundled default system prompt, used when no `--system-prompt-file` is given. Resolved relative to the package (not the process cwd).                                                                                                                                                                                                                                                      |
+| `card_system_prompt.txt`    | Bundled **card** system prompt — selected the same way, via `--system-prompt-file app/card_system_prompt.txt`. Instructs the model to reply with an Adaptive Card fragment (display-only: no actions). See **Card replies (display-only)** below.                                                                                                                                         |
+| `__main__.py`               | CLI entrypoint (`python -m app ...`) that selects the responder from `--ollama-url` and runs uvicorn.                                                                                                                                                                                                                                                                                     |
 
 ### Responder selection
 
@@ -94,7 +94,7 @@ prompt **sent to Ollama**: `OllamaResponder` replays just the last
 raising `--history-turns` or `--num-ctx` later needs no data migration.
 
 **Context-fill logging.** The server sends an explicit `options.num_ctx`
-(default 4096) and, after each reply, logs the actual prompt tokens
+(default 16384) and, after each reply, logs the actual prompt tokens
 (`prompt_eval_count`) against that window: an `INFO` line at ≥ 50% fill and a
 `WARNING` at ≥ 76% (leaving headroom for the generated reply). This surfaces the
 otherwise-silent truncation Ollama performs once a prompt exceeds `num_ctx`.
@@ -326,7 +326,7 @@ Security → Local Network**. If the app loads but every send fails with a
 connection error, toggle **Google Chrome** on there.
 
 **macOS native client** (`adaptive_chat_client` run with `-d macos`) hits the same
-"unable to connect" symptom for a *different* reason: its App Sandbox needs the
+"unable to connect" symptom for a _different_ reason: its App Sandbox needs the
 `com.apple.security.network.client` entitlement to make outbound calls. That is
 enabled in the client's `macos/Runner/*.entitlements`; see the client's
 [`README`](../adaptive_chat_client/README.md#run) — it requires a full rebuild, not the
@@ -389,10 +389,10 @@ Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`):
 
 ```bash
 .venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
-  --num-ctx 4096 --history-turns 10
+  --num-ctx 16384 --history-turns 10
 ```
 
-- `--num-ctx` (default 4096) — context window sent as `options.num_ctx`. Prompt
+- `--num-ctx` (default 16384) — context window sent as `options.num_ctx`. Prompt
   fill is logged against it (INFO ≥ 50%, WARNING ≥ 76%). Ollama silently drops
   the oldest tokens once a prompt exceeds `num_ctx`; the warning surfaces that.
 - `--history-turns` (default 10) — how many prior exchanges are replayed to the
