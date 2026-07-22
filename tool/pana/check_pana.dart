@@ -24,16 +24,163 @@
 import 'dart:convert';
 import 'dart:io';
 
-// ignore: unused_element
 const String _floorsPath = 'tool/pana_floors.yaml';
 
-void main(List<String> args) {
+Future<void> main(List<String> args) async {
   if (args.contains('--self-test')) {
     _selfTest();
     return;
   }
-  stderr.writeln('not implemented yet');
+  final reportOnly = args.contains('--report-only');
+
+  final onlyIndex = args.indexOf('--only');
+  final only = onlyIndex >= 0 && onlyIndex + 1 < args.length
+      ? args[onlyIndex + 1]
+      : null;
+
+  final floorsFile = File(_floorsPath);
+  if (!floorsFile.existsSync()) {
+    stderr.writeln('Floors file not found: $_floorsPath (run from repo root).');
+    exitCode = 1;
+    return;
+  }
+
+  var floors = parseFloors(floorsFile.readAsStringSync());
+  if (only != null) {
+    floors = {
+      for (final e in floors.entries)
+        if (e.key == only) e.key: e.value,
+    };
+    if (floors.isEmpty) {
+      stderr.writeln(
+        'Unknown package "$only". Known: '
+        '${parseFloors(floorsFile.readAsStringSync()).keys.join(', ')}',
+      );
+      exitCode = 1;
+      return;
+    }
+  }
+  if (floors.isEmpty) {
+    stderr.writeln('No floors defined in $_floorsPath.');
+    exitCode = 1;
+    return;
+  }
+
+  final rows = <_Row>[];
+  for (final entry in floors.entries) {
+    final dir = 'packages/${entry.key}';
+    if (!Directory(dir).existsSync()) {
+      rows.add(
+        _Row(entry.key, null, entry.value, missingReason: 'missing $dir'),
+      );
+      continue;
+    }
+    stdout.writeln('Running pana on $dir ...');
+    final result = await _runPana(dir);
+    final stdoutText = result.stdout as String;
+    if (stdoutText.trim().isEmpty) {
+      final stderrText = (result.stderr as String).trim();
+      final hint = stderrText.contains('No active package pana')
+          ? 'pana not activated - run: dart pub global activate pana'
+          : 'pana produced no JSON (exit ${result.exitCode})';
+      rows.add(_Row(entry.key, null, entry.value, missingReason: hint));
+      continue;
+    }
+    try {
+      rows.add(_Row(entry.key, parsePanaJson(stdoutText), entry.value));
+    } on FormatException catch (e) {
+      rows.add(
+        _Row(
+          entry.key,
+          null,
+          entry.value,
+          missingReason: 'unparseable pana JSON: ${e.message}',
+        ),
+      );
+    }
+  }
+
+  _printTable(rows);
+
+  for (final r in rows) {
+    final failed = r.score?.failedSections ?? const <String>[];
+    if (failed.isNotEmpty) {
+      stdout.writeln('  ${r.package}: lost points in ${failed.join(', ')}');
+    }
+  }
+
+  final failures = rows.where((r) => !r.passes).toList();
+  if (failures.isEmpty) {
+    stdout.writeln('\nPub-score gate: PASS');
+    return;
+  }
+
+  for (final r in failures) {
+    stdout.writeln(
+      'Pub-score gate: ${r.package} '
+      '${r.missingReason ?? 'below floor '
+              '(${r.score!.granted} < ${r.floor})'}',
+    );
+  }
+  if (reportOnly) {
+    stdout.writeln('\nPub-score gate: REPORT-ONLY (not failing the build)');
+    return;
+  }
+  stdout.writeln('\nPub-score gate: FAIL');
   exitCode = 1;
+}
+
+/// Runs pana on [packageDir] with the same Dart SDK that runs this script.
+///
+/// `--no-dartdoc` keeps the run fast; it drops the 10 dartdoc-coverage points,
+/// so the maximum becomes 150.
+Future<ProcessResult> _runPana(String packageDir) {
+  return Process.run(Platform.resolvedExecutable, [
+    'pub',
+    'global',
+    'run',
+    'pana',
+    '--json',
+    '--no-dartdoc',
+    packageDir,
+  ]);
+}
+
+class _Row {
+  _Row(this.package, this.score, this.floor, {this.missingReason});
+
+  final String package;
+  final PanaScore? score;
+  final int floor;
+  final String? missingReason;
+
+  bool get passes => missingReason == null && score!.granted >= floor;
+}
+
+void _printTable(List<_Row> rows) {
+  final nameWidth = rows
+      .map((r) => r.package.length)
+      .fold<int>('Package'.length, (a, b) => a > b ? a : b);
+  String pad(String s, int w) => s.padRight(w);
+
+  stdout.writeln(
+    '\n${pad('Package', nameWidth)}  '
+    '${'Points'.padLeft(6)}  ${'Max'.padLeft(5)}  '
+    '${'Floor'.padLeft(5)}  Status',
+  );
+  for (final r in rows) {
+    final points = r.score == null ? 'n/a' : '${r.score!.granted}';
+    final max = r.score == null ? 'n/a' : '${r.score!.max}';
+    final status = r.passes ? 'PASS' : 'FAIL';
+    stdout.writeln(
+      '${pad(r.package, nameWidth)}  '
+      '${points.padLeft(6)}  ${max.padLeft(5)}  '
+      '${'${r.floor}'.padLeft(5)}  $status',
+    );
+    if (r.missingReason != null) {
+      stdout.writeln('${pad('', nameWidth)}  ${r.missingReason}');
+    }
+  }
 }
 
 /// Parses a flat `name: <int>` map. Lines that are blank or start with `#`
