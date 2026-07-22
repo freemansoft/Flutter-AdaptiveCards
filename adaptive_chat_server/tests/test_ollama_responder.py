@@ -3,7 +3,7 @@ import logging
 
 import httpx
 
-from app.ollama_responder import OllamaResponder
+from app.ollama_responder import DEFAULT_NUM_CTX, OllamaResponder
 
 # Single source of truth for these tests — change the model/host/port here, not
 # in each test. (These drive the mocked transport; no live Ollama is contacted.)
@@ -227,6 +227,23 @@ def test_reply_does_not_mutate_caller_history(tmp_path):
     ).reply("now", history)
 
     assert history == original  # trim is send-only
+
+
+def test_default_context_window_is_16k(tmp_path):
+    # The default context window is 16K tokens — large enough for multi-page card
+    # replies without Ollama silently dropping the oldest tokens.
+    assert DEFAULT_NUM_CTX == 16384
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    # Construct directly (not via _responder, which pins num_ctx) so the DEFAULT
+    # flows through to the request payload.
+    OllamaResponder(
+        OLLAMA_URL,
+        model=OLLAMA_MODEL,
+        client=_client(_ok_capturing_handler(captured)),
+        system_prompt_file=str(missing),
+    ).reply("hi", [])
+    assert captured["body"]["options"]["num_ctx"] == DEFAULT_NUM_CTX
 
 
 def test_reply_sends_num_ctx_option(tmp_path):

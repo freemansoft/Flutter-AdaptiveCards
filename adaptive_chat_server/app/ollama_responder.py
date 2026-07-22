@@ -30,8 +30,9 @@ DEFAULT_HISTORY_TURNS = 10
 
 # Context window (in tokens) requested from Ollama via options.num_ctx. Making it
 # explicit means the window is a known value we can measure prompt fill against,
-# rather than a per-model default we are blind to.
-DEFAULT_NUM_CTX = 4096
+# rather than a per-model default we are blind to. 16K leaves ample room for a
+# multi-page card reply plus history, so Ollama does not silently drop tokens.
+DEFAULT_NUM_CTX = 16384
 
 # System prompt injected as the first message on every chat request. Resolved
 # relative to this file (not the process cwd) so it is found no matter where the
