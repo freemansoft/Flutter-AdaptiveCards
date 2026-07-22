@@ -340,3 +340,41 @@ def test_reply_does_not_log_raw_content_at_info_level(tmp_path, caplog):
             _ok_capturing_handler({}), system_prompt_file=str(missing)
         ).reply("hi", [])
     assert "detected_card" not in caplog.text
+
+
+def _handler_returning_content(content):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200, json={"message": {"role": "assistant", "content": content}}
+        )
+
+    return handler
+
+
+def test_reply_warns_when_reply_looked_like_a_card_but_was_malformed(tmp_path, caplog):
+    # A reply that begins like JSON but is truncated/invalid renders as text; the
+    # server logs a WARNING with the reason so this is diagnosable at INFO level.
+    missing = tmp_path / "no_prompt.txt"
+    malformed = '{"type": "Carousel", "pages": ['  # unclosed -> invalid JSON
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        result = _responder(
+            _handler_returning_content(malformed), system_prompt_file=str(missing)
+        ).reply("states?", [])
+    assert result.card_body is None  # correctly fell back to text
+    assert any(r.levelname == "WARNING" for r in caplog.records)
+    assert "not usable" in caplog.text
+    assert "invalid JSON" in caplog.text
+
+
+def test_reply_does_not_warn_for_plain_text_reply(tmp_path, caplog):
+    # Prose is an intentional text reply, not a botched card -> no card warning.
+    # (Point at an existing empty prompt file so the missing-file warning, which
+    # is unrelated to card parsing, does not confound the assertion.)
+    empty = tmp_path / "empty.txt"
+    empty.write_text("   \n", encoding="utf-8")
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        _responder(
+            _ok_capturing_handler({}), system_prompt_file=str(empty)
+        ).reply("hi", [])
+    assert "not usable" not in caplog.text
+    assert "looked like an Adaptive Card" not in caplog.text

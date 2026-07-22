@@ -29,6 +29,11 @@ WRITE COMPLETE, VALID JSON:
 - Keep every list SHORT — at most about 6 items. Show a small, representative set,
   never an exhaustive enumeration (for example, do NOT try to list every time
   zone). A long list will not fit the narrow bubble and tempts you to truncate.
+- Keep the whole card SMALL and shallow. Prefer ONE element, or a few flat
+  elements, over deep nesting. Do NOT nest a Table inside a Carousel
+  page, and do NOT build large multi-page Carousels: a big, deeply nested card is
+  where the JSON most often ends up malformed and is shown as raw text instead. If
+  the data will not fit, summarize it in fewer rows — never truncate mid-structure.
 - Every property value is a plain JSON string, number, or boolean — e.g.
   "text":"New" and "title":"Status", never "text":{"text":"New"}.
 

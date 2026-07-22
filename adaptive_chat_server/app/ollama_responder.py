@@ -13,7 +13,7 @@ from pathlib import Path
 
 import httpx
 
-from app.card_detect import try_parse_card_body
+from app.card_detect import card_parse_failure_reason, try_parse_card_body
 from app.responder import Reply
 
 # uvicorn installs a handler on the "uvicorn.error" logger, so these messages
@@ -232,6 +232,20 @@ class OllamaResponder:
             )
         self._log_context_fill(data)
         card_body = try_parse_card_body(content)
+        # When a reply *looked like* a card (began with JSON) but could not be
+        # used, surface WHY at WARNING so it is diagnosable at the default INFO
+        # level — the common cause is the model emitting malformed/truncated JSON
+        # for a large, deeply nested card. Plain-prose replies return None here
+        # and are not warned about (they are intentional text answers).
+        if card_body is None:
+            reason = card_parse_failure_reason(content)
+            if reason is not None:
+                logger.warning(
+                    "Model reply looked like an Adaptive Card but was not usable "
+                    "(%d chars) — rendered as text instead. Reason: %s",
+                    len(content),
+                    reason,
+                )
         # Content-level diagnostics: logged at DEBUG so they are off in normal
         # operation but available for testing without a code change. Enable DEBUG
         # logging (e.g. `uvicorn --log-level debug`, or set the "uvicorn.error"

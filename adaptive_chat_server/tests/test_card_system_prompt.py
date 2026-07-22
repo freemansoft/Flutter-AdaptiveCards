@@ -64,3 +64,13 @@ def test_card_prompt_forbids_output_around_the_json():
     # around it, so a leaked prefix/suffix cannot happen.
     text = PROMPT.read_text(encoding="utf-8").lower()
     assert "nothing before" in text
+
+
+def test_card_prompt_bounds_size_and_nesting():
+    # Big, deeply nested cards (e.g. a multi-page Carousel of Tables) are where a
+    # local model most often emits malformed/truncated JSON that renders as raw
+    # text. The prompt must steer toward small, shallow cards and away from
+    # nesting heavy elements inside a Carousel.
+    text = PROMPT.read_text(encoding="utf-8").lower()
+    assert "shallow" in text
+    assert "inside a carousel" in text

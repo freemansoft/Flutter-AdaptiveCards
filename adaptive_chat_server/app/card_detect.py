@@ -75,3 +75,31 @@ def try_parse_card_body(raw: str) -> list | None:
         if isinstance(element_type, str) and element_type:
             return [parsed]
     return None
+
+
+def card_parse_failure_reason(raw: str) -> str | None:
+    """Explain why a reply that *looked like* a card was not rendered as one.
+
+    Diagnostic/logging aid only — it never affects rendering. Returns None when
+    ``raw`` is a valid card (:func:`try_parse_card_body` accepts it) or is plainly
+    prose: after decoration stripping it does not begin with ``{`` or ``[``, so the
+    model answered in text, not a botched card. Returns a short human-readable
+    reason only when the reply *began* like JSON but could not be used — invalid or
+    truncated JSON, or valid JSON in a shape this module does not render (an
+    empty-body ``AdaptiveCard``, an object with no ``type``, an empty/mixed array).
+    This lets a caller distinguish "the model tried to send a card and botched it"
+    (worth a warning) from "the model sent prose" (normal).
+    """
+    text = _strip_decoration(_strip_fence(raw))
+    if not text or text[0] not in "{[":
+        return None
+    try:
+        json.loads(text)
+    except ValueError as exc:
+        return f"invalid JSON: {exc}"
+    if try_parse_card_body(raw) is not None:
+        return None
+    return (
+        "valid JSON but not a renderable card "
+        "(empty body, missing 'type', or empty/mixed array)"
+    )
