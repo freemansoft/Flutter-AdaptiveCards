@@ -12,17 +12,25 @@ Three fragment shapes are accepted, because local models emit all three:
 A dict with no ``type`` string, a scalar, or an empty/mixed array is treated as text.
 
 Leading/trailing decoration a model wraps around the JSON — surrounding
-whitespace, a code fence, or delimiter runs like ``=== `` / ``---`` / ``###`` —
-is stripped before parsing. Surrounding *prose* is not: a reply with words
-before or after the JSON is still treated as text.
+whitespace, a code fence (including an *unterminated* one — a lone opening or
+closing ```` ``` ````), or delimiter runs like ``=== `` / ``---`` / ``###`` — is
+stripped before parsing. Surrounding *prose* is not: a reply with words before
+or after the JSON is still treated as text.
 """
 from __future__ import annotations
 
 import json
 import re
 
-# Matches a whole reply wrapped in a ```json ... ``` (or bare ```) fence.
+# Matches a whole reply wrapped in a balanced ```json ... ``` (or bare ```) fence.
 _FENCE = re.compile(r"^\s*```(?:json)?\s*(.*?)\s*```\s*$", re.DOTALL | re.IGNORECASE)
+
+# UNBALANCED fence markers a model leaves when it opens a fence but never closes
+# it (or vice versa): a leading opener (```, ```json, …) up to the first newline
+# or content char, and a trailing closer. Stripped independently so a card wrapped
+# in a lone opening fence still parses. Both halt before ``{``/``[``.
+_OPEN_FENCE = re.compile(r"^```[^\n{[]*\r?\n?")
+_CLOSE_FENCE = re.compile(r"\r?\n?```[^\n]*$")
 
 # Leading/trailing DECORATION a local model wraps around the JSON: whitespace and
 # runs of section/Markdown delimiters (===, ---, ###, ***, ___, ~~~). Stripped
@@ -34,8 +42,15 @@ _DECORATION = re.compile(r"^[\s=\-#*_~]+|[\s=\-#*_~]+$")
 
 
 def _strip_fence(raw: str) -> str:
-    match = _FENCE.match(raw)
-    return match.group(1) if match else raw.strip()
+    text = raw.strip()
+    match = _FENCE.match(text)
+    if match:
+        return match.group(1)
+    # No balanced fence — strip a leftover opener line and/or trailing closer so
+    # a card the model wrapped in an unterminated fence still parses.
+    text = _OPEN_FENCE.sub("", text, count=1)
+    text = _CLOSE_FENCE.sub("", text, count=1)
+    return text.strip()
 
 
 def _strip_decoration(text: str) -> str:

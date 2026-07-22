@@ -143,6 +143,41 @@ def test_prose_before_nonempty_card_still_returns_none():
     assert try_parse_card_body(raw) is None
 
 
+def test_unterminated_opening_fence_returns_body():
+    # The model opened a ``` fence but never wrote the closing ```; the card
+    # inside is still valid JSON and must be recovered.
+    raw = '```\n{"type": "Input.ChoiceSet", "id": "s", "choices": []}'
+    assert try_parse_card_body(raw) == [
+        {"type": "Input.ChoiceSet", "id": "s", "choices": []}
+    ]
+
+
+def test_unterminated_opening_json_fence_returns_body():
+    # Same, with a language tag on the opener.
+    raw = '```json\n{"type": "TextBlock", "text": "hi"}'
+    assert try_parse_card_body(raw) == [{"type": "TextBlock", "text": "hi"}]
+
+
+def test_trailing_only_fence_returns_body():
+    # A closing ``` with no opener is also stripped.
+    raw = '{"type": "TextBlock", "text": "hi"}\n```'
+    assert try_parse_card_body(raw) == [{"type": "TextBlock", "text": "hi"}]
+
+
+def test_reported_choiceset_with_unterminated_fence_returns_body():
+    # The verbatim llama3.2 reply that surfaced the bug: a full Input.ChoiceSet
+    # wrapped in a lone opening ``` fence (no close).
+    raw = (
+        '```\n{"type":"Input.ChoiceSet","id":"states","style":"compact",'
+        '"choices":[{"title":"California","value":"ca"},'
+        '{"title":"Texas","value":"tx"},{"title":"Florida","value":"fl"}]}'
+    )
+    body = try_parse_card_body(raw)
+    assert body is not None
+    assert body[0]["type"] == "Input.ChoiceSet"
+    assert body[0]["id"] == "states"
+
+
 # --- card_parse_failure_reason (diagnostic; never affects rendering) ---
 
 
