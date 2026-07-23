@@ -20,3 +20,6 @@ fi
 echo "setup-workspace: installing pinned Flutter SDK from .fvmrc"
 fvm install
 echo "setup-workspace: .fvm/ links created — reload the VS Code window to pick up dart.flutterSdkPath"
+
+echo "setup-workspace: activating pana (pub-score gate)"
+fvm dart pub global activate pana 0.23.14
