@@ -8,6 +8,7 @@ a request.
 """
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 
@@ -39,6 +40,40 @@ DEFAULT_NUM_CTX = 16384
 # server is launched from; overridden by `--system-prompt-file` / the
 # `OLLAMA_SYSTEM_PROMPT_FILE` env var. See README "System prompt".
 DEFAULT_SYSTEM_PROMPT_PATH = Path(__file__).with_name("default_system_prompt.txt")
+
+# Bundled schema for "schema" mode (see DEFAULT_JSON_FORMAT below), resolved
+# relative to this file, not the process cwd.
+CARD_SCHEMA_PATH = Path(__file__).with_name("card_schema.json")
+
+
+def _load_card_schema(path: Path) -> dict | None:
+    """Load and sanity-check the card-reply JSON Schema; None on any problem.
+
+    Only a syntax/shape guard (valid JSON, has the expected top-level keys) —
+    Ollama performs the actual grammar-constrained decoding against this
+    schema, so this is not a full JSON-Schema-spec validation. Never raises:
+    a missing, unreadable, or malformed file is logged and returns None so the
+    caller can fall back to a less-strict json_format instead of crashing.
+    """
+    try:
+        schema = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        logger.error(
+            "Card schema unusable (%s: %s) at %s — falling back to "
+            "json_format=none for this process.",
+            type(exc).__name__,
+            exc,
+            path,
+        )
+        return None
+    if not isinstance(schema, dict) or "oneOf" not in schema or "$defs" not in schema:
+        logger.error(
+            "Card schema at %s missing expected 'oneOf'/'$defs' keys — "
+            "falling back to json_format=none for this process.",
+            path,
+        )
+        return None
+    return schema
 
 
 class OllamaResponder:

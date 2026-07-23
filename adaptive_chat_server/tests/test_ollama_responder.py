@@ -3,7 +3,7 @@ import logging
 
 import httpx
 
-from app.ollama_responder import DEFAULT_NUM_CTX, OllamaResponder
+from app.ollama_responder import CARD_SCHEMA_PATH, DEFAULT_NUM_CTX, OllamaResponder, _load_card_schema
 
 # Single source of truth for these tests — change the model/host/port here, not
 # in each test. (These drive the mocked transport; no live Ollama is contacted.)
@@ -52,6 +52,44 @@ def _handler_with_prompt_tokens(captured, prompt_eval_count):
         )
 
     return handler
+
+
+def test_load_card_schema_returns_dict_for_valid_file(tmp_path):
+    schema_file = tmp_path / "card_schema.json"
+    schema_file.write_text(
+        json.dumps({"$defs": {"Element": {}}, "oneOf": []}), encoding="utf-8"
+    )
+    assert _load_card_schema(schema_file) == {"$defs": {"Element": {}}, "oneOf": []}
+
+
+def test_load_card_schema_returns_none_for_missing_file(tmp_path, caplog):
+    missing = tmp_path / "no_such_schema.json"
+    with caplog.at_level(logging.ERROR, logger="uvicorn.error"):
+        assert _load_card_schema(missing) is None
+    assert "unusable" in caplog.text
+
+
+def test_load_card_schema_returns_none_for_invalid_json(tmp_path, caplog):
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not valid json", encoding="utf-8")
+    with caplog.at_level(logging.ERROR, logger="uvicorn.error"):
+        assert _load_card_schema(bad) is None
+    assert "unusable" in caplog.text
+
+
+def test_load_card_schema_returns_none_when_missing_expected_keys(tmp_path, caplog):
+    incomplete = tmp_path / "incomplete.json"
+    incomplete.write_text(json.dumps({"type": "object"}), encoding="utf-8")
+    with caplog.at_level(logging.ERROR, logger="uvicorn.error"):
+        assert _load_card_schema(incomplete) is None
+    assert "oneOf" in caplog.text
+
+
+def test_bundled_card_schema_loads_successfully():
+    # The real shipped file must itself pass the loader's own sanity check.
+    schema = _load_card_schema(CARD_SCHEMA_PATH)
+    assert schema is not None
+    assert schema["oneOf"]
 
 
 def test_reply_posts_history_and_new_turn_to_chat_endpoint(tmp_path):

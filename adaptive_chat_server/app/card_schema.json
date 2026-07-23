@@ -1,0 +1,35 @@
+{
+  "$defs": {
+    "Element": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 }
+      }
+    },
+    "CardObject": {
+      "type": "object",
+      "required": ["type", "body"],
+      "properties": {
+        "type": { "const": "AdaptiveCard" },
+        "version": { "type": "string" },
+        "body": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/Element" }
+        }
+      }
+    },
+    "ElementArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Element" }
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/CardObject" },
+    { "$ref": "#/$defs/ElementArray" },
+    { "$ref": "#/$defs/Element" },
+    { "type": "string" }
+  ]
+}
