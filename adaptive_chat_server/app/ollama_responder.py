@@ -284,12 +284,31 @@ class OllamaResponder:
                 text=f"(Ollama returned an unexpected response: {type(exc).__name__})"
             )
         self._log_context_fill(data)
-        card_body = try_parse_card_body(content)
+
+        reply_text = content
+        card_body: list | None = None
+        used_format_path = False
+        if self._json_format != "none":
+            try:
+                parsed = json.loads(content)
+            except ValueError:
+                pass  # unexpected: format guarantee failed; fall through below
+            else:
+                used_format_path = True
+                if isinstance(parsed, str):
+                    reply_text = parsed
+                else:
+                    card_body = try_parse_card_body(json.dumps(parsed))
+        if not used_format_path:
+            card_body = try_parse_card_body(content)
+
         # When a reply *looked like* a card (began with JSON) but could not be
         # used, surface WHY at WARNING so it is diagnosable at the default INFO
         # level — the common cause is the model emitting malformed/truncated JSON
         # for a large, deeply nested card. Plain-prose replies return None here
-        # and are not warned about (they are intentional text answers).
+        # and are not warned about (they are intentional text answers). Always
+        # evaluated against the raw wire `content`, not `reply_text`, so the
+        # diagnosis reflects exactly what Ollama sent.
         if card_body is None:
             reason = card_parse_failure_reason(content)
             if reason is not None:
@@ -314,4 +333,4 @@ class OllamaResponder:
             card_body is not None,
             content,
         )
-        return Reply(text=content, card_body=card_body)
+        return Reply(text=reply_text, card_body=card_body)

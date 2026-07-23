@@ -503,3 +503,70 @@ def test_schema_mode_downgrades_to_none_when_schema_file_missing(
         ).reply("hi", [])
     assert "format" not in captured["body"]
     assert "unusable" in caplog.text
+
+
+def test_reply_unwraps_json_string_for_plain_text_reply(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    plain = "Here's the answer:\n\n- Option one\n- Option two"
+    content = json.dumps(plain)
+    result = _responder(
+        _handler_returning_content(content),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("what are my options?", [])
+    assert result.text == plain
+    assert result.card_body is None
+
+
+def test_reply_detects_card_through_schema_format(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    content = json.dumps(
+        {"type": "AdaptiveCard", "body": [{"type": "Input.Date", "id": "d"}]}
+    )
+    result = _responder(
+        _handler_returning_content(content),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("date?", [])
+    assert result.card_body == [{"type": "Input.Date", "id": "d"}]
+    assert result.text == content  # raw JSON preserved for history, as before
+
+
+def test_reply_falls_back_to_heuristic_path_when_format_guarantee_violated(tmp_path):
+    # Simulates an old Ollama that ignores `format` and returns non-JSON text
+    # despite json_format != "none" -- must not crash, falls back to legacy parsing.
+    missing = tmp_path / "no_prompt.txt"
+    result = _responder(
+        _handler_returning_content("plain non-JSON reply"),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("hi", [])
+    assert result.text == "plain non-JSON reply"
+    assert result.card_body is None
+
+
+def test_reply_json_mode_renders_non_card_json_value_as_raw_text(tmp_path):
+    # "json" mode's generic grammar allows shapes "schema" mode would exclude
+    # (e.g. a bare number) -- must still render safely as text, not crash.
+    missing = tmp_path / "no_prompt.txt"
+    result = _responder(
+        _handler_returning_content("42"),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("how many?", [])
+    assert result.text == "42"
+    assert result.card_body is None
+
+
+def test_reply_schema_mode_does_not_warn_for_plain_text_json_string(tmp_path, caplog):
+    # A JSON-string plain-text reply is intentional (Reply shape 2), not a
+    # botched card -- must not trigger the "looked like a card" warning.
+    missing = tmp_path / "no_prompt.txt"
+    content = json.dumps("just chatting")
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        _responder(
+            _handler_returning_content(content),
+            system_prompt_file=str(missing),
+            json_format="schema",
+        ).reply("hi", [])
+    assert "not usable" not in caplog.text
