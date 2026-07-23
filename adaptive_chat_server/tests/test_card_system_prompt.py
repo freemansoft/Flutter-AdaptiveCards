@@ -84,3 +84,18 @@ def test_card_prompt_documents_structured_output_mode():
     text = PROMPT.read_text(encoding="utf-8")
     assert "--json-format" in text
     assert "JSON string" in text
+
+
+def test_card_prompt_forbids_fake_radiobutton_checkbox_types():
+    # Observed failure: the model sometimes invents non-existent
+    # "Input.RadioButtons" / "Input.Checkboxes" element types instead of the
+    # real Input.ChoiceSet with the right style/isMultiSelect combination.
+    # card_schema.json's "type" field is a free-form string (any non-empty
+    # string passes), so nothing at the JSON-format layer catches a fake type
+    # name -- the prompt must explicitly name and forbid this pattern, and
+    # show the correct radio-button and checkbox configurations.
+    text = PROMPT.read_text(encoding="utf-8")
+    assert "Input.RadioButtons" in text
+    assert "Input.Checkboxes" in text
+    assert '"isMultiSelect":false' in text
+    assert '"isMultiSelect":true' in text
