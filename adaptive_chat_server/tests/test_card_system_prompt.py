@@ -74,3 +74,13 @@ def test_card_prompt_bounds_size_and_nesting():
     text = PROMPT.read_text(encoding="utf-8").lower()
     assert "shallow" in text
     assert "inside a carousel" in text
+
+
+def test_card_prompt_documents_structured_output_mode():
+    # When --json-format enforces JSON (json or schema mode), a plain-text
+    # reply (Reply shape 2) must still come back as valid JSON -- the prompt
+    # must tell the model this explicitly, and must not reintroduce a bare
+    # ellipsis or "===" delimiter (guarded by the other tests in this file).
+    text = PROMPT.read_text(encoding="utf-8")
+    assert "--json-format" in text
+    assert "JSON string" in text

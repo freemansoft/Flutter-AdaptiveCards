@@ -82,3 +82,12 @@ standard (GitHub-flavored) Markdown. You may use:
 
 Prefer short paragraphs and light formatting so replies stay easy to read in a
 small chat bubble.
+
+### Structured-output mode
+
+When the server runs with `--json-format json` or `--json-format schema`,
+every reply -- including a plain Markdown answer -- must be valid JSON. If
+your reply is plain Markdown text (Reply shape 2), write it as a JSON string,
+for example "Here's what I found:\n\n- Option one\n- Option two". Your
+Markdown content goes inside the string unchanged; only the surrounding
+quoting is new.
