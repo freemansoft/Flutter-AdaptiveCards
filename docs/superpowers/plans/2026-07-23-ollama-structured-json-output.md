@@ -911,3 +911,59 @@ performed). Do not invoke `superpowers:finishing-a-development-branch` unless
 the user asks — this repo's `AGENTS.md` plan-completion gate requires the
 full verification above before any "complete" claim, which this task
 satisfies.
+
+---
+
+### Task 8 (addendum, post-PR): `.vscode/launch.json` card-mode targets
+
+**Gap identified after PR #31 was opened:** Tasks 1-7 never touched
+`.vscode/launch.json`, even though it is a git-tracked file with two launch
+configs whose entire purpose is exercising card replies —
+`"Adaptive Chat Server (Ollama llama3.2, card prompt)"` and
+`"Adaptive Chat Server (Ollama gpt-oss:20b, card prompt)"` — both passing
+`--system-prompt-file app/card_system_prompt.txt`. They relied silently on
+the `schema` default rather than naming `--json-format` explicitly, which
+made the connection between "this target asks for cards" and "this feature
+constrains the JSON" invisible to anyone reading the file.
+
+**Files:**
+- Modify: `.vscode/launch.json` (both card-prompt configs' `args` arrays and
+  their explanatory comments)
+
+**Change:** add `"--json-format", "schema"` to both configs' `args` (no
+behavior change — `schema` was already the default — purely making it
+explicit and self-documenting), plus a comment line pointing at
+`docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md`.
+
+**No test coverage applies** — `.vscode/launch.json` is IDE configuration,
+not code under test; verification is visual inspection that the JSON/JSONC
+structure remains valid (matched braces, comma placement) after the edit.
+
+- [x] **Step 1: Edit both card-prompt configs in `.vscode/launch.json`**
+
+For `"Adaptive Chat Server (Ollama llama3.2, card prompt)"`, insert
+`"--json-format", "schema"` immediately after `"app/card_system_prompt.txt"`
+in its `args` array, and add this line to its leading comment block:
+
+```
+// --json-format schema is the default (docs/superpowers/specs/2026-07-23-
+// ollama-structured-json-output-design.md) but named explicitly here since
+// this target's whole purpose is exercising reliable card JSON.
+```
+
+Repeat identically for `"Adaptive Chat Server (Ollama gpt-oss:20b, card
+prompt)"`.
+
+- [x] **Step 2: Verify the file is still well-formed**
+
+Read the edited regions back and confirm brace/comma structure is intact
+(no automated linter for VS Code's JSONC `launch.json` in this repo).
+
+- [ ] **Step 3: Show the diff and commit (after user confirmation)**
+
+```bash
+git diff -- .vscode/launch.json docs/superpowers/plans/2026-07-23-ollama-structured-json-output.md
+```
+
+Show the diff, wait for explicit confirmation, then commit and push to the
+already-open PR's branch (`feat/ollama-structured-json-output`) — not `main`.

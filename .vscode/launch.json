@@ -130,6 +130,9 @@
       // instead of the default, so the model replies with Adaptive Card fragments
       // rendered inside the chat bubble. Prompt re-read per request; path is
       // relative to cwd. Echo mode ignores the system prompt, so Ollama-only.
+      // --json-format schema is the default (docs/superpowers/specs/2026-07-23-
+      // ollama-structured-json-output-design.md) but named explicitly here since
+      // this target's whole purpose is exercising reliable card JSON.
       "name": "Adaptive Chat Server (Ollama llama3.2, card prompt)",
       "type": "debugpy",
       "request": "launch",
@@ -143,6 +146,8 @@
         "llama3.2",
         "--system-prompt-file",
         "app/card_system_prompt.txt",
+        "--json-format",
+        "schema",
         "--num-ctx",
         "16384",
         "--history-turns",
@@ -160,6 +165,9 @@
       // pickers, choice sets, FactSet/Badge/Carousel) rendered inside the chat
       // bubble. The prompt file is re-read per request and its path is relative
       // to cwd. Echo mode ignores the system prompt, so this is Ollama-only.
+      // --json-format schema is the default (docs/superpowers/specs/2026-07-23-
+      // ollama-structured-json-output-design.md) but named explicitly here since
+      // this target's whole purpose is exercising reliable card JSON.
       "name": "Adaptive Chat Server (Ollama gpt-oss:20b, card prompt)",
       "type": "debugpy",
       "request": "launch",
@@ -173,6 +181,8 @@
         "gpt-oss:20b",
         "--system-prompt-file",
         "app/card_system_prompt.txt",
+        "--json-format",
+        "schema",
         "--num-ctx",
         "16384",
         "--history-turns",
