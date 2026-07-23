@@ -58,7 +58,7 @@ package into a temp directory, ignores the pub workspace, and strips
 entire development cycle — the core package at that version is not on pub.dev yet:
 
 ```text
-Because flutter_adaptive_cards_host_fs depends on flutter_adaptive_cards_fs ^0.15.0
+Because flutter_adaptive_cards_host_fs depends on flutter_adaptive_cards_fs ^<version>
 which doesn't match any versions, version solving failed.
 ```
 
