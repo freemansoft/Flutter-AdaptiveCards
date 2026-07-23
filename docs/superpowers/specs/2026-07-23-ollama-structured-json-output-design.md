@@ -282,6 +282,153 @@ cd adaptive_chat_server
 .venv/bin/python -m pytest tests/test_ollama_responder.py tests/test_card_system_prompt.py tests/test_card_detect.py
 ```
 
+## Addendum (2026-07-23): duplicate-key data loss in `Carousel.pages` / `Table.rows`
+
+Manual testing against a real Ollama (`0.32.3`, `llama3.2:latest`) after PR #31
+merged Tasks 1-7 found a real gap: `schema` mode's grammar constraint
+guarantees *syntactic* JSON validity but not *semantic* correctness, and one
+semantic failure mode is dangerous enough to need its own fix.
+
+### What was found
+
+Direct `/api/chat` testing (bypassing the server, isolating Ollama's actual
+behavior) with a schema that **explicitly and correctly** models
+`Carousel.pages` / `Table.rows` as typed arrays (not the generic
+envelope-only `Element`) still produced responses like:
+
+```
+{"type":"Carousel","pages":[{...page 1...}],"pages":[{...page 2...}]}
+```
+
+This is **legal JSON syntax** — object keys may legally repeat — but
+`json.loads` (both Python's default and `card_detect.py`'s usage of it)
+silently keeps only the **last** occurrence of a repeated key, so a 5-page
+carousel silently collapses to 1 page with no error, no warning, and no
+visible sign anything went wrong. This is worse than a visible parse
+failure: the model repeating an object-property key instead of extending
+one array, under grammar-constrained decoding, is a genuine limitation of
+this small model (llama3.2) combined with Ollama's schema-to-grammar
+compilation — not something fixable by better schema authoring, confirmed
+by testing an explicit, correctly-typed schema and still observing the
+failure.
+
+**Measured failure rate** (repeated identical requests against the real
+model): `Carousel.pages` failed 5/5 times; `Table.rows` failed 1/4 times.
+Flat elements and *top-level* bare arrays (not nested as an object
+property) were reliable in every test — the failure is specific to
+"multi-item array required as an object property."
+
+**Important correction — the corruption is not one pattern, it's a family.**
+Inspecting all 7 non-clean captures from testing found the model corrupts
+these structures in at least four distinct ways, only one of which is a
+literal duplicate key:
+
+1. **Literal duplicate key** — `"pages":[...],"pages":[...]`. The pattern
+   above; the guard below catches exactly this.
+2. **Misplaced sibling key** — the second item's content lands as a *new,
+   different* key directly on the parent object instead of properly nested
+   (observed: a second Carousel page's items appeared as a bare `"items"`
+   property sitting alongside `"pages"` on the `Carousel` object itself,
+   rather than inside a second `CarouselPage`). Not a repeated key, so the
+   guard does **not** catch this.
+3. **Trailing garbage appended after a structurally-complete object** —
+   e.g. a valid `Carousel` object followed by a stray duplicate `"type"` key
+   fragment and disconnected empty-object noise, all still inside the
+   *same* JSON object due to how the garbage was tokenized. Legal JSON;
+   the guard does not catch this either since no key is literally repeated.
+4. **Wrong nesting depth** — e.g. a `TableCell` nested directly inside
+   another `TableCell` instead of forming a second `TableRow`, silently
+   losing an entire row. Also not a duplicate key.
+
+All four are variations on the same root cause (the model cannot reliably
+extend a required multi-item array property under grammar-constrained
+decoding) but only pattern 1 is mechanically detectable by checking for a
+repeated object key. Patterns 2-4 require actual per-element structural
+validation (e.g. "a `Carousel` object may only have `type`/`version`/
+`pages`") to catch — which is exactly the per-element property schema
+work this design's Non-goals section explicitly ruled out, and which
+`jsonschema`-style validation would be needed for (a new dependency,
+also ruled out).
+
+### Decision
+
+1. **Ship a duplicate-key guard** (Task 9 below) for pattern 1 specifically.
+   This is a **narrow, honest mitigation** — it converts the single most
+   mechanically-detectable corruption signature from silent data loss into
+   a visible fallback. It does **not** make `Carousel`/`Table` reliable
+   under `schema` mode; patterns 2-4 above still pass through undetected
+   and may still render as a broken or incomplete card. It is still worth
+   shipping: it is general-purpose (protects any element with this shape,
+   not just these two), zero-risk to well-formed content, and closes the
+   most-likely-to-recur single pattern for free.
+2. **Do not** attempt a deeper architectural fix (e.g. having the model
+   emit pages/rows as reliable top-level arrays with server-side
+   reassembly into the proper nested shape) at this time. That would touch
+   `card_detect.py` (previously "unchanged, reused as-is") and is real new
+   scope. Carousel/Table remain a known lower-reliability case under
+   `schema` mode for small local models; documented here rather than
+   silently shipped.
+3. **Do not** attempt a prompt-wording nudge ("never repeat the pages/rows
+   key") as a mitigation — deferred; it would at best help pattern 1 (and
+   is unproven for a 3B model), while patterns 2-4 are unrelated to key
+   repetition and wouldn't be touched by prompt wording at all.
+
+### Design: the guard
+
+**Where:** `app/ollama_responder.py` only — `card_detect.py` stays
+untouched, per the original constraint. The guard is needed precisely
+*because* `card_detect.py`'s own `json.loads` usage has the same blind
+spot, so falling back to it after detecting a duplicate key would silently
+reproduce the exact bug being fixed.
+
+```python
+class _DuplicateJsonKeyError(ValueError):
+    """A JSON object had a repeated key -- legal JSON, but json.loads silently
+    keeps only the last value, silently dropping data (observed for
+    Carousel.pages / Table.rows under Ollama's schema-constrained decoding:
+    the model sometimes re-emits the same property key once per item instead
+    of appending items to one array)."""
+
+
+def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
+    seen: set[str] = set()
+    for key, _ in pairs:
+        if key in seen:
+            raise _DuplicateJsonKeyError(f"duplicate key {key!r}")
+        seen.add(key)
+    return dict(pairs)
+```
+
+`reply()`'s response-handling block passes `object_pairs_hook=
+_reject_duplicate_keys` to its `json.loads(content, ...)` call. A new
+`except _DuplicateJsonKeyError:` branch (checked *before* the existing
+generic `except ValueError:`, since `_DuplicateJsonKeyError` subclasses it)
+sets a `duplicate_key_detected` flag. When set: skip the legacy
+`try_parse_card_body(content)` fallback entirely (same blind spot), skip
+`card_parse_failure_reason` (same blind spot — it also calls
+`try_parse_card_body` internally and would report "no failure, this is a
+valid card"), and log a new dedicated warning naming the actual cause
+instead. `card_body` stays `None`, `reply_text` stays `content` — renders
+as visible raw text, the same safe outcome as any other detected failure.
+
+### Testing
+
+- A duplicate-key `Carousel` response (`{"pages":[...],"pages":[...]}`)
+  renders as text (`card_body is None`), with a WARNING logged naming the
+  duplicate-key cause specifically (not the generic "not usable" message).
+- A regression check that a normal, non-duplicate nested card (e.g. the
+  existing `test_reply_detects_card_through_schema_format` case) is
+  unaffected — the hook must not change behavior for well-formed JSON.
+- No test is added for patterns 2-4 above — by design, the guard does not
+  claim to catch them, so there is nothing to assert.
+
+### Verification
+
+```bash
+cd adaptive_chat_server
+.venv/bin/python -m pytest
+```
+
 Expect all existing tests to keep passing, plus new cases for the three
 `json_format` modes and schema-loading failure handling.
 

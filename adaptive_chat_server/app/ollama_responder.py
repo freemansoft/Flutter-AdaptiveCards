@@ -82,6 +82,34 @@ def _load_card_schema(path: Path) -> dict | None:
     return schema
 
 
+class _DuplicateJsonKeyError(ValueError):
+    """A JSON object had a repeated key.
+
+    Legal JSON syntax, but ``json.loads`` silently keeps only the last value
+    for a repeated key, silently dropping data. Observed against a real
+    Ollama under schema-constrained decoding: the model sometimes re-emits an
+    object property key (e.g. Carousel's ``pages``, Table's ``rows``) once
+    per item instead of appending items to one array. Subclasses
+    ``ValueError`` so it is caught distinctly from — and checked before — the
+    existing generic ``except ValueError`` fallback in ``reply()``.
+    """
+
+
+def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
+    """``object_pairs_hook`` for ``json.loads`` that rejects a repeated key.
+
+    Passed to every ``json.loads`` call on model-controlled content in the
+    format-guaranteed response path, so a duplicate-key object is detected
+    (raises) instead of silently collapsing to its last value.
+    """
+    seen: set[str] = set()
+    for key, _ in pairs:
+        if key in seen:
+            raise _DuplicateJsonKeyError(f"duplicate key {key!r}")
+        seen.add(key)
+    return dict(pairs)
+
+
 class OllamaResponder:
     """Calls `POST {ollama_url}/api/chat` with the conversation history."""
 
@@ -288,9 +316,18 @@ class OllamaResponder:
         reply_text = content
         card_body: list | None = None
         used_format_path = False
+        duplicate_key_detected = False
         if self._json_format != "none":
             try:
-                parsed = json.loads(content)
+                parsed = json.loads(content, object_pairs_hook=_reject_duplicate_keys)
+            except _DuplicateJsonKeyError:
+                # A repeated object key (e.g. two "pages" keys on a Carousel) is
+                # legal JSON, but card_detect.py's own json.loads has the same
+                # blind spot (silently keeps the last value) — falling back to
+                # it here would silently reproduce the exact data loss this
+                # guard exists to catch. Skip straight to "render as text"
+                # instead of the generic fallback path below.
+                duplicate_key_detected = True
             except ValueError:
                 pass  # unexpected: format guarantee failed; fall through below
             else:
@@ -299,7 +336,7 @@ class OllamaResponder:
                     reply_text = parsed
                 else:
                     card_body = try_parse_card_body(json.dumps(parsed))
-        if not used_format_path:
+        if not used_format_path and not duplicate_key_detected:
             card_body = try_parse_card_body(content)
 
         # When a reply *looked like* a card (began with JSON) but could not be
@@ -309,7 +346,17 @@ class OllamaResponder:
         # and are not warned about (they are intentional text answers). Always
         # evaluated against the raw wire `content`, not `reply_text`, so the
         # diagnosis reflects exactly what Ollama sent.
-        if card_body is None:
+        if duplicate_key_detected:
+            logger.warning(
+                "Model reply had a duplicate JSON object key (model=%s, %d "
+                "chars) — rendered as text instead, since a repeated key "
+                "silently drops all but its last value (observed for "
+                "Carousel.pages / Table.rows). Reason: duplicate key in JSON "
+                "object",
+                self._model,
+                len(content),
+            )
+        elif card_body is None:
             reason = card_parse_failure_reason(content)
             if reason is not None:
                 logger.warning(

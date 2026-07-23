@@ -570,3 +570,66 @@ def test_reply_schema_mode_does_not_warn_for_plain_text_json_string(tmp_path, ca
             json_format="schema",
         ).reply("hi", [])
     assert "not usable" not in caplog.text
+
+
+def test_reply_rejects_duplicate_key_carousel_instead_of_silently_dropping_pages(
+    tmp_path, caplog
+):
+    # Observed against a real Ollama (0.32.3, llama3.2): under schema-constrained
+    # decoding the model sometimes re-emits an object property key once per item
+    # instead of appending items to one array -- legal JSON syntax, but plain
+    # json.loads silently keeps only the LAST occurrence, silently dropping every
+    # other page. This must be detected and rendered as text, not accepted as a
+    # valid (but data-lossy) card.
+    missing = tmp_path / "no_prompt.txt"
+    content = (
+        '{"type":"Carousel",'
+        '"pages":[{"type":"CarouselPage","items":[{"type":"TextBlock","text":"California","wrap":true}]}],'
+        '"pages":[{"type":"CarouselPage","items":[{"type":"TextBlock","text":"Texas","wrap":true}]}]}'
+    )
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        result = _responder(
+            _handler_returning_content(content),
+            system_prompt_file=str(missing),
+            json_format="schema",
+        ).reply("carousel of states?", [])
+
+    assert result.card_body is None  # not silently accepted as a 1-page card
+    assert result.text == content  # raw content preserved, rendered as text
+    assert any(r.levelname == "WARNING" for r in caplog.records)
+    assert "duplicate" in caplog.text
+
+
+def test_reply_still_detects_well_formed_nested_card_without_duplicate_keys(tmp_path):
+    # Regression guard: the duplicate-key hook must not change behavior for
+    # ordinary, well-formed nested JSON.
+    missing = tmp_path / "no_prompt.txt"
+    content = json.dumps(
+        {
+            "type": "AdaptiveCard",
+            "body": [
+                {
+                    "type": "Carousel",
+                    "pages": [
+                        {"type": "CarouselPage", "items": [{"type": "TextBlock", "text": "a"}]},
+                        {"type": "CarouselPage", "items": [{"type": "TextBlock", "text": "b"}]},
+                    ],
+                }
+            ],
+        }
+    )
+    result = _responder(
+        _handler_returning_content(content),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("carousel?", [])
+
+    assert result.card_body == [
+        {
+            "type": "Carousel",
+            "pages": [
+                {"type": "CarouselPage", "items": [{"type": "TextBlock", "text": "a"}]},
+                {"type": "CarouselPage", "items": [{"type": "TextBlock", "text": "b"}]},
+            ],
+        }
+    ]
