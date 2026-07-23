@@ -1,15 +1,7 @@
 # Repo-wide validation checks that are not the test suite:
 #   - markdown-format: the published Markdown docs are Prettier-formatted.
 #   - pana: the four published packages meet their pub.dev score floors.
-# Mirrors the local VS Code "format on save" (esbenp.prettier-vscode + .prettierrc.json)
-# so a save locally and the CI check use the same pinned Prettier and config.
-#
-# Scope: docs/**/*.md, minus the process/vendored dirs in .prettierignore
-# (docs/plans, docs/superpowers, docs/reviews, docs/archive, .agents, ...).
-# To fix locally: `npm ci && npm run format:md`.
-#
-# Scoped `push` to main to avoid duplicate runs on branches with an open PR
-# (matches test.yml).
+#   - dart-format: Dart sources under packages/ and tool/ are dart format-clean.
 on:
   push:
     branches: [main]
@@ -68,3 +60,26 @@ jobs:
       # --report-only to make it enforcing. See docs/pub-score-pana.md.
       - name: Pub-score gate (report-only)
         run: dart run tool/pana/check_pana.dart --report-only
+
+  dart-format:
+    name: Dart format
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: 3.44.0 # should sync with fvm version
+          cache: true
+
+      # Enforcing from day one, unlike the pana gate: this check is fast,
+      # deterministic, and mechanically fixable with `dart format .`. Formatting
+      # is not a lint, so `flutter analyze` passes on a drifted tree -- this is
+      # the only job that catches it. pana also scores lib/ formatting as part
+      # of its static-analysis section, but report-only and 5-8 minutes slower.
+      - name: Check Dart formatting
+        run: dart format --output=none --set-exit-if-changed packages/ tool/
