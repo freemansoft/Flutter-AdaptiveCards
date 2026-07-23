@@ -35,6 +35,12 @@ DEFAULT_HISTORY_TURNS = 10
 # multi-page card reply plus history, so Ollama does not silently drop tokens.
 DEFAULT_NUM_CTX = 16384
 
+# Values: "none" (no format constraint — today's prompt-only behavior), "json"
+# (Ollama's generic valid-JSON grammar), "schema" (grammar-constrained against
+# CARD_SCHEMA_PATH). See docs/superpowers/specs/2026-07-23-ollama-structured-
+# json-output-design.md for the rationale and the "none|json|schema" tradeoffs.
+DEFAULT_JSON_FORMAT = "schema"
+
 # System prompt injected as the first message on every chat request. Resolved
 # relative to this file (not the process cwd) so it is found no matter where the
 # server is launched from; overridden by `--system-prompt-file` / the
@@ -87,6 +93,7 @@ class OllamaResponder:
         system_prompt_file: str | None = None,
         history_turns: int = DEFAULT_HISTORY_TURNS,
         num_ctx: int = DEFAULT_NUM_CTX,
+        json_format: str = DEFAULT_JSON_FORMAT,
     ) -> None:
         """Configure the responder.
 
@@ -105,6 +112,12 @@ class OllamaResponder:
             if system_prompt_file
             else DEFAULT_SYSTEM_PROMPT_PATH
         )
+        self._json_format = json_format
+        self._card_schema: dict | None = None
+        if self._json_format == "schema":
+            self._card_schema = _load_card_schema(CARD_SCHEMA_PATH)
+            if self._card_schema is None:
+                self._json_format = "none"
 
     def _load_system_prompt(self) -> str | None:
         """Read the active system-prompt file, or None if unusable.
@@ -199,6 +212,10 @@ class OllamaResponder:
             "stream": False,
             "options": {"num_ctx": self._num_ctx},
         }
+        if self._json_format == "json":
+            payload["format"] = "json"
+        elif self._json_format == "schema":
+            payload["format"] = self._card_schema
         logger.info(
             "Ollama request: POST %s (model=%s, %d messages)",
             endpoint,

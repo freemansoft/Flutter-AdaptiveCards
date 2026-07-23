@@ -4,6 +4,7 @@ import logging
 import httpx
 
 from app.ollama_responder import CARD_SCHEMA_PATH, DEFAULT_NUM_CTX, OllamaResponder, _load_card_schema
+from app.ollama_responder import DEFAULT_JSON_FORMAT
 
 # Single source of truth for these tests — change the model/host/port here, not
 # in each test. (These drive the mocked transport; no live Ollama is contacted.)
@@ -17,7 +18,13 @@ def _client(handler):
     return httpx.Client(transport=httpx.MockTransport(handler))
 
 
-def _responder(handler, system_prompt_file=None, history_turns=10, num_ctx=4096):
+def _responder(
+    handler,
+    system_prompt_file=None,
+    history_turns=10,
+    num_ctx=4096,
+    json_format="none",
+):
     return OllamaResponder(
         OLLAMA_URL,
         model=OLLAMA_MODEL,
@@ -25,6 +32,7 @@ def _responder(handler, system_prompt_file=None, history_turns=10, num_ctx=4096)
         system_prompt_file=system_prompt_file,
         history_turns=history_turns,
         num_ctx=num_ctx,
+        json_format=json_format,
     )
 
 
@@ -437,3 +445,61 @@ def test_reply_does_not_warn_for_plain_text_reply(tmp_path, caplog):
         ).reply("hi", [])
     assert "not usable" not in caplog.text
     assert "looked like an Adaptive Card" not in caplog.text
+
+
+def test_json_format_defaults_to_schema():
+    assert DEFAULT_JSON_FORMAT == "schema"
+
+
+def test_reply_sends_no_format_field_in_none_mode(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="none",
+    ).reply("hi", [])
+    assert "format" not in captured["body"]
+
+
+def test_reply_sends_format_json_string(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("hi", [])
+    assert captured["body"]["format"] == "json"
+
+
+def test_reply_sends_format_schema_dict(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("hi", [])
+    assert captured["body"]["format"]["oneOf"]  # the loaded card_schema.json
+
+
+def test_schema_mode_downgrades_to_none_when_schema_file_missing(
+    monkeypatch, tmp_path, caplog
+):
+    # A broken bundled schema file must not crash startup or a request — it
+    # downgrades to json_format=none for the process, same as a bad
+    # system-prompt path degrades gracefully today.
+    import app.ollama_responder as mod
+
+    monkeypatch.setattr(mod, "CARD_SCHEMA_PATH", tmp_path / "missing.json")
+    missing_prompt = tmp_path / "no_prompt.txt"
+    captured = {}
+    with caplog.at_level(logging.ERROR, logger="uvicorn.error"):
+        _responder(
+            _ok_capturing_handler(captured),
+            system_prompt_file=str(missing_prompt),
+            json_format="schema",
+        ).reply("hi", [])
+    assert "format" not in captured["body"]
+    assert "unusable" in caplog.text
