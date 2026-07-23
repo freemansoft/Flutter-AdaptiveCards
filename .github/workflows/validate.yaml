@@ -76,6 +76,15 @@ jobs:
           flutter-version: 3.44.0 # should sync with fvm version
           cache: true
 
+      # Required so `dart format` can resolve the `package:very_good_analysis/...`
+      # include in each package's analysis_options.yaml (dart format reads the
+      # formatter config from analysis_options.yaml, same as `dart analyze`).
+      # Without this, a fresh checkout has no .dart_tool/package_config.json,
+      # the include fails to resolve, and dart format silently falls back to
+      # its own defaults -- reporting unrelated files as "changed" instead of
+      # failing cleanly on real drift.
+      - run: flutter pub get
+
       # Enforcing from day one, unlike the pana gate: this check is fast,
       # deterministic, and mechanically fixable with `dart format .`. Formatting
       # is not a lint, so `flutter analyze` passes on a drifted tree -- this is
