@@ -129,3 +129,6 @@ widgetbook/widgetbook_screenshot.png
 
 # superpowers scratch: brainstorm mockups + SDD ledger/briefs (transient)
 .superpowers/
+
+# git worktree fallback location (superpowers:using-git-worktrees)
+.worktrees/
