@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.cards import assistant_bubble, assistant_card_bubble, envelope, user_bubble
 from app.ollama_responder import (
     DEFAULT_HISTORY_TURNS,
+    DEFAULT_JSON_FORMAT,
     DEFAULT_NUM_CTX,
     DEFAULT_OLLAMA_MODEL,
     OllamaResponder,
@@ -52,17 +53,19 @@ def build_responder(
     system_prompt_file: str | None = None,
     num_ctx: int = DEFAULT_NUM_CTX,
     history_turns: int = DEFAULT_HISTORY_TURNS,
+    json_format: str = DEFAULT_JSON_FORMAT,
 ) -> Responder:
     """Selects the responder for this process: Ollama if a URL is set, else echo."""
     if ollama_url:
         logger.info(
             "Responder: OllamaResponder (url=%s, model=%s, system_prompt=%s, "
-            "num_ctx=%d, history_turns=%d)",
+            "num_ctx=%d, history_turns=%d, json_format=%s)",
             ollama_url,
             model,
             system_prompt_file or "default",
             num_ctx,
             history_turns,
+            json_format,
         )
         return OllamaResponder(
             ollama_url,
@@ -70,6 +73,7 @@ def build_responder(
             system_prompt_file=system_prompt_file,
             num_ctx=num_ctx,
             history_turns=history_turns,
+            json_format=json_format,
         )
     logger.info("Responder: EchoResponder (no --ollama-url / OLLAMA_URL set)")
     return EchoResponder()
@@ -84,6 +88,7 @@ responder = build_responder(
     os.environ.get("OLLAMA_SYSTEM_PROMPT_FILE"),
     num_ctx=_int_env("OLLAMA_NUM_CTX", DEFAULT_NUM_CTX),
     history_turns=_int_env("OLLAMA_HISTORY_TURNS", DEFAULT_HISTORY_TURNS),
+    json_format=os.environ.get("OLLAMA_JSON_FORMAT", DEFAULT_JSON_FORMAT),
 )
 
 

@@ -43,3 +43,8 @@ def test_int_env_falls_back_and_warns_on_bad_value(monkeypatch, caplog):
     with caplog.at_level(logging.WARNING, logger="uvicorn.error"):
         assert _int_env("SOME_INT", 4096) == 4096
     assert "SOME_INT" in caplog.text
+
+
+def test_build_responder_forwards_json_format():
+    responder = build_responder("http://x", DEFAULT_OLLAMA_MODEL, json_format="none")
+    assert isinstance(responder, OllamaResponder)
