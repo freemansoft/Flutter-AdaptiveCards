@@ -149,6 +149,28 @@ fragment carries no submit button of its own, and any values a user enters
 into its inputs do not post back to the server — the fragment is render-only
 for now.
 
+### Structured output (`--json-format`)
+
+By default (`--json-format schema`), every Ollama reply is constrained via
+Ollama's `format` field against `app/card_schema.json` — a small schema
+covering exactly the shapes `card_detect.try_parse_card_body` accepts (a full
+card object, a bare element array, a single element, or a plain string for
+Markdown replies) so the model cannot emit invalid or leaked-prefix JSON.
+
+```bash
+.venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
+  --json-format schema   # default; try --json-format json or --json-format none
+```
+
+- `schema` (default) — constrains both syntax and the outer reply shape.
+- `json` — constrains syntax only (any valid JSON value); shape is still
+  checked by `card_detect.py` after parsing.
+- `none` — today's prompt-only behavior, no `format` field sent.
+
+See
+[docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md](../docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md)
+for the design rationale.
+
 ### Request flow
 
 #### Components (all local)
@@ -397,6 +419,8 @@ Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`):
   the oldest tokens once a prompt exceeds `num_ctx`; the warning surfaces that.
 - `--history-turns` (default 10) — how many prior exchanges are replayed to the
   model. Bounds only the outbound prompt; the server retains full history.
+- `--json-format` (default `schema`) — `none`/`json`/`schema`; see **Structured
+  output** above.
 
 Omit `--ollama-url` (or run `uvicorn app.main:app` directly, as in **Run** above) to
 keep the echo demo. `--ollama-model` defaults to `llama3.2`. `--host`/`--port` are
