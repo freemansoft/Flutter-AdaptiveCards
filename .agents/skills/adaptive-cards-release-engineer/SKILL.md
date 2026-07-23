@@ -128,6 +128,21 @@ flutter pub publish             # requires pub.dev credentials / token
 
 Repeat for `flutter_adaptive_template_fs`, `flutter_adaptive_charts_fs`, and `flutter_adaptive_cards_host_fs`.
 
+**Re-score charts and host after core publishes.** `flutter_adaptive_charts_fs`
+and `flutter_adaptive_cards_host_fs` score 40/150 in CI for the whole
+development cycle, because pana resolves them as published packages and their
+`flutter_adaptive_cards_fs: ^<version>` constraint has nothing to match yet. The
+window right after core lands on pub.dev is the only time their score is real:
+
+```bash
+fvm dart run tool/pana/check_pana.dart --only flutter_adaptive_charts_fs
+fvm dart run tool/pana/check_pana.dart --only flutter_adaptive_cards_host_fs
+```
+
+Fix anything that surfaces **before** publishing those two, then restore their
+floors in `tool/pana_floors.yaml` to the low baseline for the next cycle. See
+[`docs/pub-score-pana.md`](../../../docs/pub-score-pana.md).
+
 ## 6. Post-Release Version Bump (Required)
 
 **CRITICAL**: Run this only after all target packages are successfully published and verified on pub.dev.

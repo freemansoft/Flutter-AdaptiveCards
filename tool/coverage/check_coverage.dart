@@ -44,13 +44,22 @@ void main(List<String> args) {
     final lcovPath = 'packages/${entry.key}/coverage/lcov.info';
     final lcov = File(lcovPath);
     if (!lcov.existsSync()) {
-      rows.add(_Row(entry.key, null, 0, 0, entry.value,
-          missingReason: 'missing $lcovPath'));
+      rows.add(
+        _Row(
+          entry.key,
+          null,
+          0,
+          0,
+          entry.value,
+          missingReason: 'missing $lcovPath',
+        ),
+      );
       continue;
     }
     final stats = lineCoverage(lcov.readAsStringSync());
-    rows.add(_Row(entry.key, stats.percent, stats.hit, stats.found,
-        entry.value));
+    rows.add(
+      _Row(entry.key, stats.percent, stats.hit, stats.found, entry.value),
+    );
   }
 
   _printTable(rows);
@@ -63,8 +72,9 @@ void main(List<String> args) {
 
   for (final r in failures) {
     stdout.writeln(
-        'Coverage gate: ${r.package} ${r.missingReason ?? 'below floor '
-            '(${r.percent!.toStringAsFixed(1)}% < ${r.floor}%)'}');
+      'Coverage gate: ${r.package} ${r.missingReason ?? 'below floor '
+              '(${r.percent!.toStringAsFixed(1)}% < ${r.floor}%)'}',
+    );
   }
   if (reportOnly) {
     stdout.writeln('\nCoverage gate: REPORT-ONLY (not failing the build)');
@@ -120,8 +130,14 @@ class LineStats {
 }
 
 class _Row {
-  _Row(this.package, this.percent, this.hit, this.found, this.floor,
-      {this.missingReason});
+  _Row(
+    this.package,
+    this.percent,
+    this.hit,
+    this.found,
+    this.floor, {
+    this.missingReason,
+  });
 
   final String package;
   final double? percent;
@@ -139,16 +155,20 @@ void _printTable(List<_Row> rows) {
       .fold<int>('Package'.length, (a, b) => a > b ? a : b);
   String pad(String s, int w) => s.padRight(w);
 
-  stdout.writeln('${pad('Package', nameWidth)}  '
-      '${'Cov%'.padLeft(6)}  ${'Hit/Found'.padLeft(12)}  '
-      '${'Floor'.padLeft(5)}  Status');
+  stdout.writeln(
+    '${pad('Package', nameWidth)}  '
+    '${'Cov%'.padLeft(6)}  ${'Hit/Found'.padLeft(12)}  '
+    '${'Floor'.padLeft(5)}  Status',
+  );
   for (final r in rows) {
     final cov = r.percent == null ? '  n/a' : r.percent!.toStringAsFixed(1);
     final hitFound = r.missingReason ?? '${r.hit}/${r.found}';
     final status = r.passes ? 'PASS' : 'FAIL';
-    stdout.writeln('${pad(r.package, nameWidth)}  '
-        '${cov.padLeft(6)}  ${hitFound.padLeft(12)}  '
-        '${'${r.floor}%'.padLeft(5)}  $status');
+    stdout.writeln(
+      '${pad(r.package, nameWidth)}  '
+      '${cov.padLeft(6)}  ${hitFound.padLeft(12)}  '
+      '${'${r.floor}%'.padLeft(5)}  $status',
+    );
   }
 }
 
@@ -176,7 +196,10 @@ not-a-pair
 ''');
   check(floors.length == 2, 'parseFloors keeps two valid pairs');
   check(floors['flutter_adaptive_cards_fs'] == 85, 'parseFloors reads value');
-  check(floors['flutter_adaptive_charts_fs'] == 71, 'parseFloors strips inline comment');
+  check(
+    floors['flutter_adaptive_charts_fs'] == 71,
+    'parseFloors strips inline comment',
+  );
 
   final stats = lineCoverage('''
 SF:lib/a.dart

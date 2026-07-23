@@ -21,3 +21,6 @@ setup-workspace: fvm not found on PATH.
 Write-Host "setup-workspace: installing pinned Flutter SDK from .fvmrc"
 fvm install
 Write-Host "setup-workspace: .fvm\ links created - reload the VS Code window to pick up dart.flutterSdkPath"
+
+Write-Host "setup-workspace: activating pana (pub-score gate)"
+fvm dart pub global activate pana 0.23.14

@@ -30,6 +30,55 @@
         "reveal": "silent",
         "panel": "shared"
       }
+    },
+    {
+      "label": "Setup pana",
+      "detail": "Activates the pinned pana CLI used by the pub-score gate.",
+      "type": "shell",
+      "command": "fvm dart pub global activate pana 0.23.14",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "pana: all packages",
+      "detail": "Scores all four published packages and prints the table (never fails).",
+      "type": "shell",
+      "command": "fvm dart run tool/pana/check_pana.dart --report-only",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "pana: one package",
+      "detail": "Scores a single published package.",
+      "type": "shell",
+      "command": "fvm dart run tool/pana/check_pana.dart --only ${input:panaPackage}",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "panaPackage",
+      "type": "pickString",
+      "description": "Which published package should pana score?",
+      "options": [
+        "flutter_adaptive_cards_fs",
+        "flutter_adaptive_template_fs",
+        "flutter_adaptive_charts_fs",
+        "flutter_adaptive_cards_host_fs"
+      ],
+      "default": "flutter_adaptive_cards_fs"
     }
   ]
 }

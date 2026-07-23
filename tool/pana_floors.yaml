@@ -1,0 +1,24 @@
+# Per-package minimum pana points, enforced by tool/pana/check_pana.dart.
+#
+# Ratchet floors: each value is a lower bound the CI pub-score gate will not let a
+# package drop below. Raise a floor (in its own commit) after you land a change that
+# lifts a package's score -- never lower one to make a red build pass.
+#
+# Format: a flat `package_name: <int points>` map. Comments start with '#'.
+#
+# Values are measured with `--no-dartdoc`, so the maximum is 150, not pana's usual
+# 160 -- the 10 dartdoc-coverage points are never scored in CI. See docs/pub-score-pana.md.
+#
+# flutter_adaptive_cards_test_support is intentionally omitted: it is publish_to: none.
+#
+# flutter_adaptive_charts_fs and flutter_adaptive_cards_host_fs have LOW floors on
+# purpose. pana resolves every package as if already published, so their dependency
+# on `flutter_adaptive_cards_fs: ^<unreleased version>` fails version solving for the
+# whole development cycle and costs them 110 points. Their score only becomes
+# meaningful right after the core package is published at the matching version --
+# see docs/pub-score-pana.md and the adaptive-cards-release-engineer skill.
+
+flutter_adaptive_cards_fs: 140
+flutter_adaptive_template_fs: 140
+flutter_adaptive_charts_fs: 40
+flutter_adaptive_cards_host_fs: 40
