@@ -33,5 +33,21 @@ void main() {
       final Image image = widget as Image;
       expect(image.image, isA<NetworkImage>());
     });
+
+    test('getImage wires an errorBuilder for raster network urls', () {
+      const String imageUrl = 'https://example.com/image.png';
+
+      final widget = AdaptiveImageUtils.getImage(imageUrl) as Image;
+
+      expect(widget.errorBuilder, isNotNull);
+    });
+
+    test('getImage wires an errorBuilder for svg network urls', () {
+      const String svgUrl = 'https://example.com/image.svg';
+
+      final widget = AdaptiveImageUtils.getImage(svgUrl) as SvgPicture;
+
+      expect(widget.errorBuilder, isNotNull);
+    });
   });
 }

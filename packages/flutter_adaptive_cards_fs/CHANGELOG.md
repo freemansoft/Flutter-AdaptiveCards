@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.16.0]
 
-- no changes yet
+- fix: an unrecognized/removed element or action type now renders a visible `AdaptiveErrorPlaceholder` (broken-image icon + error text, announced as a live region) in every build mode, replacing the debug-only `ErrorWidget` that showed nothing in release builds.
+- fix: `Image` elements now show the `AdaptiveErrorPlaceholder` (with the failing URL) when a permitted network URL fails to fetch or decode, instead of silently rendering nothing. Previously only URLs denied by `AdaptiveUriPolicy` got a visible broken-image icon (with no text); genuine 404/network/decode failures on an allowed URL had no `errorBuilder` and produced no visible feedback.
 
 ## [0.15.0]
 
