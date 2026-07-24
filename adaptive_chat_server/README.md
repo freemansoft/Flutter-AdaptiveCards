@@ -408,7 +408,8 @@ change on the next turn without restarting. Omit `--system-prompt-file` to use t
 bundled default.
 
 **Context window & history.** Two knobs bound and observe the prompt sent to
-Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`):
+Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`; `--json-format`
+below is likewise bridged via `OLLAMA_JSON_FORMAT`):
 
 ```bash
 .venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \

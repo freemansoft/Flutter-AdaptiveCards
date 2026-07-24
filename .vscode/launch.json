@@ -191,8 +191,8 @@
     {
       // Card mode: same as the gpt-oss:20b target but points the responder at
       // the bundled card system prompt (app/card_system_prompt.txt) instead of
-      // the default, so the model replies with Adaptive Card fragments (date
-      // pickers, choice sets, FactSet/Badge/Carousel) rendered inside the chat
+      // the default, so the model replies with Adaptive Card fragments (see
+      // that file for the current element palette) rendered inside the chat
       // bubble. The prompt file is re-read per request and its path is relative
       // to cwd. Echo mode ignores the system prompt, so this is Ollama-only.
       // --json-format schema is the default (docs/superpowers/specs/2026-07-23-
