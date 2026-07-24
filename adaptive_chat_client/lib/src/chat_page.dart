@@ -142,36 +142,38 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildLog(BuildContext context) {
     final messages = widget.controller.messages;
     final itemCount = messages.length + (widget.controller.pending ? 1 : 0);
-    return ListView.builder(
-      key: const ValueKey('chat-log'),
-      controller: _scrollController,
-      padding: const EdgeInsets.all(12),
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        if (index >= messages.length) {
-          return const _PendingBubble(key: ValueKey('pending-bubble'));
-        }
-        final card = messages[index];
-        return Padding(
-          // Keyed by the card's own identity (not index): after New
-          // conversation / clear() a new message can land at the same list
-          // index as a previous (different) card, and AdaptiveCardsCanvas only
-          // loads its content in initState, so an unkeyed rebuild would keep
-          // showing the stale card.
-          key: ObjectKey(card),
-          padding: const EdgeInsets.only(bottom: 8),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: 1),
-            duration: const Duration(milliseconds: 220),
-            builder: (context, t, child) => Opacity(opacity: t, child: child),
-            child: AdaptiveCardsCanvas.map(
-              content: card,
-              hostConfigs: widget.hostConfigs,
-              showDebugJson: false,
+    return SelectionArea(
+      child: ListView.builder(
+        key: const ValueKey('chat-log'),
+        controller: _scrollController,
+        padding: const EdgeInsets.all(12),
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          if (index >= messages.length) {
+            return const _PendingBubble(key: ValueKey('pending-bubble'));
+          }
+          final card = messages[index];
+          return Padding(
+            // Keyed by the card's own identity (not index): after New
+            // conversation / clear() a new message can land at the same list
+            // index as a previous (different) card, and AdaptiveCardsCanvas
+            // only loads its content in initState, so an unkeyed rebuild
+            // would keep showing the stale card.
+            key: ObjectKey(card),
+            padding: const EdgeInsets.only(bottom: 8),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: 1),
+              duration: const Duration(milliseconds: 220),
+              builder: (context, t, child) => Opacity(opacity: t, child: child),
+              child: AdaptiveCardsCanvas.map(
+                content: card,
+                hostConfigs: widget.hostConfigs,
+                showDebugJson: false,
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
