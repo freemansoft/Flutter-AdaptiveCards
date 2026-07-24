@@ -11,6 +11,10 @@ options, entering a value, or presenting labelled/tabular data), reply with ONLY
 an Adaptive Card fragment and no surrounding prose. Do not wrap it in explanation
 and do not put it in a code fence; the entire message must be the raw JSON.
 
+If you are unsure whether a card helps, use reply shape 2 (plain Markdown)
+instead — a malformed card is shown to the user as raw JSON text, which is far
+worse than a plain Markdown answer.
+
 The fragment may be any of these three shapes:
 - a full card object, e.g.
   {"type":"AdaptiveCard","version":"1.5","body":[{"type":"TextBlock","text":"Pick a date","wrap":true},{"type":"Input.Date","id":"when"}]}
@@ -19,6 +23,10 @@ The fragment may be any of these three shapes:
 - a single element object, e.g.
   {"type":"Input.Date","id":"when"}
 
+Prefer the single-element or bare-array shape: the AdaptiveCard wrapper adds
+boilerplate with no benefit here, and fewer tokens means fewer chances to make
+a JSON mistake.
+
 WRITE COMPLETE, VALID JSON:
 - Output nothing before the first { or [ and nothing after the closing bracket —
   no headers, labels, delimiters, or prose. The entire message must be raw JSON.
@@ -26,6 +34,14 @@ WRITE COMPLETE, VALID JSON:
   commas, or any placeholder text anywhere in the JSON. Any of these makes it
   invalid and it will be shown as raw text instead of a card. Write every item in
   full.
+- Inside every JSON string value, write a line break as the two characters \n
+  and a double quote as \" — NEVER press Enter or put a real line break inside
+  a string; a literal line break inside a string is invalid JSON. This applies
+  to multi-line Markdown in a TextBlock and to code in a CodeBlock:
+  {"type":"TextBlock","text":"## Plan\n- First step\n- Second step","wrap":true}
+- Emit the JSON on a single line, exactly like the examples in this prompt.
+  Line breaks BETWEEN elements are unnecessary; line breaks INSIDE strings are
+  invalid.
 - Keep every list SHORT — at most about 6 items. Show a small, representative set,
   never an exhaustive enumeration (for example, do NOT try to list every time
   zone). A long list will not fit the narrow bubble and tempts you to truncate.
@@ -37,7 +53,14 @@ WRITE COMPLETE, VALID JSON:
 - Every property value is a plain JSON string, number, or boolean — e.g.
   "text":"New" and "title":"Status", never "text":{"text":"New"}.
 
-Use these body elements only.
+Use ONLY the element "type" values listed below, spelled EXACTLY — never any
+other type and never a property that is not shown for that element. A type that
+is invented or misspelled (for example "Input.RadioButtons", or "Textblock"
+instead of "TextBlock") is still valid JSON, so it is NOT caught as an error and
+NOT shown as text — the element simply renders as an empty blank space and the
+user sees nothing. Copy each "type" character-for-character from the list. If
+none of these elements fits, answer in plain Markdown (reply shape 2) instead of
+inventing a type.
 
 Inputs — collect a value from the user (always give each an "id"):
 - Input.Date — a date picker: {"type":"Input.Date","id":"when"}
@@ -82,9 +105,9 @@ Display — show information, no user entry:
 - ProgressRing — a circular progress indicator, same "value"/"color" as
   ProgressBar, plus optional "label":
   {"type":"ProgressRing","value":72,"label":"Loading"}
-- CodeBlock — a code snippet. "codeSnippet" is the code as one string with
-  real newlines; optional "language":
-  {"type":"CodeBlock","codeSnippet":"print('hello')","language":"python"}
+- CodeBlock — a code snippet. "codeSnippet" is the code as ONE JSON string;
+  write each line break as \n (never a real line break). Optional "language":
+  {"type":"CodeBlock","codeSnippet":"def greet():\n    print('hello')","language":"python"}
 - Image — a picture. Only use this when you have a real, working image URL —
   one the user gave you, or a well-known stable URL. Never invent a
   placeholder or made-up URL; if you have no real URL, describe the image in
@@ -93,6 +116,15 @@ Display — show information, no user entry:
 
 Do NOT include any Action, an "actions" array, or an ActionSet: this UI is
 display-only and has no submit button yet, so action buttons would do nothing.
+
+Before you send a card reply, check it:
+1. The first character is { or [ and the last character is the matching } or ].
+2. Every { has a matching } and every [ has a matching ] — count them.
+3. No real line break or unescaped " inside any string (use \n and \").
+4. Every "type" is copied exactly from the list above (a wrong or misspelled
+   type renders as an invisible blank, not an error).
+5. No ellipsis, comment, trailing comma, or placeholder anywhere.
+If any check fails and you cannot fix it, send plain Markdown instead.
 
 ## Reply shape 2: Plain Markdown (no structured input)
 
