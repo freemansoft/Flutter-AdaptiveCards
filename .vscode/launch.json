@@ -70,14 +70,19 @@
       "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
-      "args": ["app.main:app", "--reload", "--port", "8000"],
+      "args": [
+        "app.main:app",
+        "--reload",
+        "--port",
+        "8000"
+      ],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
       "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
     },
     {
       // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
       // from --ollama-url. Requires a local Ollama (`ollama serve`) with the
-      // model pulled (`ollama pull gpt-oss:20b`).
+      // model pulled (`ollama pull llama3.2`).
       "name": "Adaptive Chat Server (Ollama llama3.2)",
       "type": "debugpy",
       "request": "launch",
@@ -124,13 +129,38 @@
       "cwd": "${workspaceFolder}/adaptive_chat_server",
       "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
     },
-       {
+    {
+      // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
+      // from --ollama-url. Requires a local Ollama (`ollama serve`) with the
+      // model pulled (`ollama pull qwen3.5:9b`).
+      "name": "Adaptive Chat Server (Ollama qwen3.5:9b)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "app",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen3.5:9b",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}/adaptive_chat_server",
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+    },
+    {
       // Card mode with llama3.2: same as the llama3.2 target but points the
       // responder at the bundled card system prompt (app/card_system_prompt.txt)
       // instead of the default, so the model replies with Adaptive Card fragments
       // rendered inside the chat bubble. Prompt re-read per request; path is
       // relative to cwd. Echo mode ignores the system prompt, so Ollama-only.
-      "name": "Adaptive Chat Server (Ollama llama3.2, card prompt)",
+       "name": "Adaptive Chat Server (Ollama llama3.2, card prompt)",
       "type": "debugpy",
       "request": "launch",
       "module": "app",
@@ -182,26 +212,62 @@
       ],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
       "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+    },
+    {
+      // Card mode: same as the gpt-oss:20b target but points the responder at
+      // the bundled card system prompt (app/card_system_prompt.txt) instead of
+      // the default, so the model replies with Adaptive Card fragments (date
+      // pickers, choice sets, FactSet/Badge/Carousel) rendered inside the chat
+      // bubble. The prompt file is re-read per request and its path is relative
+      // to cwd. Echo mode ignores the system prompt, so this is Ollama-only.
+      "name": "Adaptive Chat Server (Ollama qwen3.5:9b, card prompt)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "app",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen3.5:9b",
+        "--system-prompt-file",
+        "app/card_system_prompt.txt",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}/adaptive_chat_server",
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
     }
   ],
   "compounds": [
     {
       "name": "Adaptive Chat (server + web)",
-      "configurations": ["Adaptive Chat Server (echo)", "Adaptive Chat Client - Web"]
+      "configurations": [
+        "Adaptive Chat Server (echo)",
+        "Adaptive Chat Client - Web"
+      ]
     },
     {
-      "name": "Adaptive Chat (Ollama server + web)",
-      "configurations": ["Adaptive Chat Server (Ollama gpt-oss:20b)", "Adaptive Chat Client - Web"]
+      "name": "Adaptive Chat (Ollama gpt-oss + web)",
+      "configurations": [
+        "Adaptive Chat Server (Ollama gpt-oss:20b)",
+        "Adaptive Chat Client - Web"
+      ]
     },
     {
-      "name": "Adaptive Chat (card-mode Ollama server + web)",
+      "name": "Adaptive Chat (card-mode Ollama gpt-oss server + web)",
       "configurations": [
         "Adaptive Chat Server (Ollama gpt-oss:20b, card prompt)",
         "Adaptive Chat Client - Web"
       ]
     },
     {
-      "name": "Adaptive Chat (card-mode llama3.2 server + web)",
+      "name": "Adaptive Chat (card-mode Ollama llama3.2 server + web)",
       "configurations": [
         "Adaptive Chat Server (Ollama llama3.2, card prompt)",
         "Adaptive Chat Client - Web"
