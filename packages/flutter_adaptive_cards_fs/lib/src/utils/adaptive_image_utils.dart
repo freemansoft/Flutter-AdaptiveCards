@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart';
 import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_validation.dart';
+import 'package:flutter_adaptive_cards_fs/src/widgets/adaptive_error_placeholder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 /// 1×1 transparent PNG used as the fallback provider for a denied image URL.
@@ -65,6 +66,12 @@ class AdaptiveImageUtils {
             ? ColorFilter.mode(color, BlendMode.srcIn)
             : null,
         semanticsLabel: resolvedSemanticsLabel,
+        errorBuilder: (context, error, stackTrace) => AdaptiveErrorPlaceholder(
+          message: 'Failed to load image: $url',
+          width: width,
+          height: height,
+          semanticsLabel: resolvedSemanticsLabel,
+        ),
       );
     } else {
       return Image.network(
@@ -74,6 +81,12 @@ class AdaptiveImageUtils {
         fit: fit,
         color: color,
         semanticLabel: resolvedSemanticsLabel,
+        errorBuilder: (context, error, stackTrace) => AdaptiveErrorPlaceholder(
+          message: 'Failed to load image: $url',
+          width: width,
+          height: height,
+          semanticsLabel: resolvedSemanticsLabel,
+        ),
       );
     }
   }
