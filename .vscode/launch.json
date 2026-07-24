@@ -143,7 +143,7 @@
         "--log-level",
         "debug",
         "--ollama-model",
-        "gpt-oss:20b",
+        "qwen3.5:9b",
         "--num-ctx",
         "16384",
         "--history-turns",
@@ -278,13 +278,6 @@
       "name": "Adaptive Chat (card-mode Ollama gpt-oss server + web)",
       "configurations": [
         "Adaptive Chat Server (Ollama gpt-oss:20b, card prompt)",
-        "Adaptive Chat Client - Web"
-      ]
-    },
-    {
-      "name": "Adaptive Chat (card-mode Ollama llama3.2 server + web)",
-      "configurations": [
-        "Adaptive Chat Server (Ollama llama3.2, card prompt)",
         "Adaptive Chat Client - Web"
       ]
     }
