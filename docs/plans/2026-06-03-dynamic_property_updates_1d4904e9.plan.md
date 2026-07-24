@@ -32,14 +32,14 @@ isProject: false
 
 [`flutter_adaptive_cards_fs`](packages/flutter_adaptive_cards_fs) already stores runtime state as **baseline JSON + sparse overlays** ([`doc/reactive-riverpod.md`](doc/reactive-riverpod.md)). Hosts patch individual properties today via scattered methods on [`RawAdaptiveCardState`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart):
 
-| Existing API | Overlay field | Merged into |
-| --- | --- | --- |
-| `setInputValue` / `initInput` / `seedInputValues` | `inputValue` | `"value"` |
-| `setVisibility` / `setIsVisible` | `isVisible` | `"isVisible"` |
-| `setInputError` / `clearInputError` | `errorMessage`, `isInvalid` | same keys |
-| `loadInput` / `setChoices` / `appendChoices` | `choices` | `"choices"` |
-| `setText` / `clearText` | `text` | `"text"` |
-| `setActionEnabled` / `setActionsEnabled` | `ActionOverlay.isEnabled` | `"isEnabled"` |
+| Existing API                                      | Overlay field               | Merged into   |
+| ------------------------------------------------- | --------------------------- | ------------- |
+| `setInputValue` / `initInput` / `seedInputValues` | `inputValue`                | `"value"`     |
+| `setVisibility` / `setIsVisible`                  | `isVisible`                 | `"isVisible"` |
+| `setInputError` / `clearInputError`               | `errorMessage`, `isInvalid` | same keys     |
+| `loadInput` / `setChoices` / `appendChoices`      | `choices`                   | `"choices"`   |
+| `setText` / `clearText`                           | `text`                      | `"text"`      |
+| `setActionEnabled` / `setActionsEnabled`          | `ActionOverlay.isEnabled`   | `"isEnabled"` |
 
 **Gap:** Event handlers (Submit, Execute, onChange cascades, remote validation) and **late-bound host data** (`initData` / `initInput`) often need **many property changes at once**. Hosts must call multiple methods manually; `initData`/`initInput` today only seed **`value`** overlays; some useful properties have **no overlay path** yet; Submit/Execute validation reads **baseline-only** `isRequired`.
 
@@ -47,17 +47,18 @@ isProject: false
 
 Both paths write **only input `value` overlays** — they do not mutate baseline JSON:
 
-| Entry point | When it runs | Implementation today |
-| --- | --- | --- |
+| Entry point                                                 | When it runs                                                                                                                                                                             | Implementation today                                      |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
 | `RawAdaptiveCard.initData` / `AdaptiveCardsCanvas.initData` | Post-frame bootstrap via [`_AdaptiveCardDocumentLifecycle`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart); re-runs when widget `initData` reference changes | `RawAdaptiveCardState.initInput(map)` → `seedInputValues` |
-| `RawAdaptiveCardState.initInput(map)` | Host late-binding after mount (e.g. async fetch completes before user edits) | Same: `seedInputValues` — `{ inputId: value, … }` |
-| Per-input `initInput` on `AdaptiveInputMixin` subclasses | Legacy/widget-level hook; card-level seeding is preferred | Some inputs call `setDocumentInputValue` directly |
+| `RawAdaptiveCardState.initInput(map)`                       | Host late-binding after mount (e.g. async fetch completes before user edits)                                                                                                             | Same: `seedInputValues` — `{ inputId: value, … }`         |
+| Per-input `initInput` on `AdaptiveInputMixin` subclasses    | Legacy/widget-level hook; card-level seeding is preferred                                                                                                                                | Some inputs call `setDocumentInputValue` directly         |
 
 Reactive sync: inputs listen to `resolvedElementProvider(id)` in `AdaptiveInputMixin` — same path as user typing and `setInputValue`. See [`doc/reactive-riverpod.md`](doc/reactive-riverpod.md#why-initinput-does-not-call-setstate-on-the-card) and [`test/inputs/init_data_overlay_test.dart`](packages/flutter_adaptive_cards_fs/test/inputs/init_data_overlay_test.dart).
 
 **Limitation:** `initData`/`initInput` cannot seed `choices`, `errorMessage`, `isVisible`, etc. Hosts needing richer load-time state must call scattered APIs (`loadInput`, `setText`, …) today.
 
 **User decisions (locked in):**
+
 - **Update model:** partial overlay patches only (baseline stays stable)
 - **Handler API:** keep current imperative callbacks; add bulk helper on `RawAdaptiveCardState`
 
@@ -80,11 +81,11 @@ Reactive sync: inputs listen to `resolvedElementProvider(id)` in `AdaptiveInputM
 
 ## Approaches Considered
 
-| Approach | Pros | Cons |
-| --- | --- | --- |
-| **A. Bulk imperative `applyUpdates` (recommended)** | Matches existing host style; no breaking callback changes; composes with current notifier methods | Host still orchestrates async → apply manually |
-| B. Async handler return type | Cleaner for server-driven flows | Breaking change across all sample apps and tests |
-| C. Full baseline replace | Teams parity | Fights overlay model; loses in-flight input state |
+| Approach                                            | Pros                                                                                              | Cons                                              |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| **A. Bulk imperative `applyUpdates` (recommended)** | Matches existing host style; no breaking callback changes; composes with current notifier methods | Host still orchestrates async → apply manually    |
+| B. Async handler return type                        | Cleaner for server-driven flows                                                                   | Breaking change across all sample apps and tests  |
+| C. Full baseline replace                            | Teams parity                                                                                      | Fights overlay model; loses in-flight input state |
 
 **Recommendation:** Approach A — typed patch model + `RawAdaptiveCardState.applyUpdates(...)`.
 
@@ -94,33 +95,33 @@ Reactive sync: inputs listen to `resolvedElementProvider(id)` in `AdaptiveInputM
 
 ### Tier 1 — Already supported (bulk helper wraps existing APIs)
 
-| Property | Element(s) | Host scenarios |
-| --- | --- | --- |
-| `value` | `Input.*` | Prefill, cascade reset dependent field, server-side correction |
-| `errorMessage` | `Input.*` | Remote validation message |
-| `isInvalid` | `Input.*` | Remote validation flag (`hasError` in user terms) |
-| `isVisible` | Any id | Conditional sections after rules/API |
-| `choices` | `Input.ChoiceSet` | Cascaded dropdown, search results |
-| `text` | `TextBlock` | Status / i18n messages |
-| `isEnabled` | `Action.*` | Disable submit while async work runs |
+| Property       | Element(s)        | Host scenarios                                                 |
+| -------------- | ----------------- | -------------------------------------------------------------- |
+| `value`        | `Input.*`         | Prefill, cascade reset dependent field, server-side correction |
+| `errorMessage` | `Input.*`         | Remote validation message                                      |
+| `isInvalid`    | `Input.*`         | Remote validation flag (`hasError` in user terms)              |
+| `isVisible`    | Any id            | Conditional sections after rules/API                           |
+| `choices`      | `Input.ChoiceSet` | Cascaded dropdown, search results                              |
+| `text`         | `TextBlock`       | Status / i18n messages                                         |
+| `isEnabled`    | `Action.*`        | Disable submit while async work runs                           |
 
 **Clear semantics:** patch object supports explicit clears (`clearError`, `clearValue`, `clearChoices`, `clearText`) mirroring existing `clear*` methods.
 
 ### Tier 2 — New overlays (implement with bulk API)
 
-| Property | Element(s) | Rationale | Widget work |
-| --- | --- | --- | --- |
-| `isRequired` | `Input.*` | Conditional required fields after cascade/API | Add `ElementOverlay.isRequired`; merge in [`resolvedElementProvider`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart); extend `AdaptiveInputMixin` + per-input listeners (today `isRequired` is read once in `initState`, e.g. [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart)) |
-| `url` | `Image`, `Media` | Signed URL rotation after auth refresh | Add `ElementOverlay.url`; merge in resolver; `AdaptiveImage` listens to resolved `url` (today reads `adaptiveMap['url']` directly) |
+| Property     | Element(s)       | Rationale                                     | Widget work                                                                                                                                                                                                                                                                                                                                      |
+| ------------ | ---------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `isRequired` | `Input.*`        | Conditional required fields after cascade/API | Add `ElementOverlay.isRequired`; merge in [`resolvedElementProvider`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart); extend `AdaptiveInputMixin` + per-input listeners (today `isRequired` is read once in `initState`, e.g. [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart)) |
+| `url`        | `Image`, `Media` | Signed URL rotation after auth refresh        | Add `ElementOverlay.url`; merge in resolver; `AdaptiveImage` listens to resolved `url` (today reads `adaptiveMap['url']` directly)                                                                                                                                                                                                               |
 
 ### Tier 3 — Deferred (document in backlog, not v1)
 
-| Property | Notes |
-| --- | --- |
-| `label`, `placeholder` | UX copy changes; lower priority |
-| `choices.data.parameters` | Typeahead param binding (distinct from existing `queryCount`/`querySkip`) |
-| Action `title`, `tooltip`, `iconUrl`, `mode`, `style` | Needs `ActionOverlay` expansion + action widget listeners |
-| `Badge.text` | Reuse `ElementOverlay.text` if needed later |
+| Property                                              | Notes                                                                     |
+| ----------------------------------------------------- | ------------------------------------------------------------------------- |
+| `label`, `placeholder`                                | UX copy changes; lower priority                                           |
+| `choices.data.parameters`                             | Typeahead param binding (distinct from existing `queryCount`/`querySkip`) |
+| Action `title`, `tooltip`, `iconUrl`, `mode`, `style` | Needs `ActionOverlay` expansion + action widget listeners                 |
+| `Badge.text`                                          | Reuse `ElementOverlay.text` if needed later                               |
 
 ---
 
@@ -161,6 +162,7 @@ class AdaptiveActionUpdate {
 ```
 
 **Validation rules inside notifier:**
+
 - Ignore unknown ids (or debug-log); never throw in release.
 - Route `Action.*` ids in action updates to `actionOverlaysById`.
 - Reject property/type mismatches silently (e.g. `choices` on non-ChoiceSet) — optional debug assert.
@@ -203,7 +205,11 @@ Maps property names to the same keys as Adaptive Card JSON (`value`, `errorMessa
 ```json
 {
   "country": { "value": "US" },
-  "state": { "choices": [{"title": "CA", "value": "CA"}], "value": "", "clearError": true },
+  "state": {
+    "choices": [{ "title": "CA", "value": "CA" }],
+    "value": "",
+    "clearError": true
+  },
   "statusText": { "text": "Loading states…" },
   "submitAction": { "isEnabled": false }
 }
@@ -229,18 +235,19 @@ flowchart LR
 ```
 
 **Backward compatibility (Phase 1):**
+
 - `initData` widget parameter shape unchanged: `{ "inputId": value, … }` — still calls `seedInputValues` internally.
 - `RawAdaptiveCardState.initInput(map)` unchanged for value-only maps.
 - No breaking change to `AdaptiveCardsCanvas` constructors.
 
 **Recommended host patterns after Phase 1:**
 
-| Scenario | API |
-| --- | --- |
-| Simple prefill at card load | `initData: {'name': 'Jane'}` (unchanged) |
-| Async prefill after mount (values only) | `cardState.initInput({'name': fetchedName})` |
-| Rich load-time state (values + choices + visibility + errors) | `cardState.applyUpdates(...)` once fetch completes |
-| Widget `initData` prop updates (parent rebuild) | Keep value-only re-seed via lifecycle; for richer patches host calls `applyUpdates` in same rebuild |
+| Scenario                                                      | API                                                                                                 |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Simple prefill at card load                                   | `initData: {'name': 'Jane'}` (unchanged)                                                            |
+| Async prefill after mount (values only)                       | `cardState.initInput({'name': fetchedName})`                                                        |
+| Rich load-time state (values + choices + visibility + errors) | `cardState.applyUpdates(...)` once fetch completes                                                  |
+| Widget `initData` prop updates (parent rebuild)               | Keep value-only re-seed via lifecycle; for richer patches host calls `applyUpdates` in same rebuild |
 
 **Optional Phase 1 enhancement — richer `initData` (additive, not required for v1):**
 
@@ -268,6 +275,7 @@ void seedInputValues(Map<String, Object?> values) {
 This guarantees identical semantics (value set clears validation overlays per `setInputValue` rules).
 
 **What initData does NOT do (unchanged):**
+
 - Does not replace baseline JSON when `widget.map` changes — baseline refresh is a separate host concern.
 - `resetAllInputs()` clears input overlays (values, choices, errors) but preserves visibility/text/action overlays — document that re-seeding via `initInput` after reset restores values.
 
@@ -402,12 +410,12 @@ Add focused setters: `setIsRequired`, `clearIsRequired`, `setUrl`, `clearUrl` (b
 
 ## Widget Listener Gaps (required for Tier 2)
 
-| Widget | Change |
-| --- | --- |
-| All `Input.*` using `AdaptiveInputMixin` | Listen for resolved `isRequired`; update validators / label required indicator |
+| Widget                                                                                         | Change                                                                                   |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| All `Input.*` using `AdaptiveInputMixin`                                                       | Listen for resolved `isRequired`; update validators / label required indicator           |
 | [`AdaptiveChoiceSet`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart) | Already listens to choices via separate subscription — ensure `isRequired` in mixin path |
-| [`AdaptiveImage`](packages/flutter_adaptive_cards_fs/lib/src/cards/elements/image.dart) | Subscribe to `resolvedElementProvider(id)` for `url` changes |
-| `Media` (if applicable) | Same `url` overlay pattern |
+| [`AdaptiveImage`](packages/flutter_adaptive_cards_fs/lib/src/cards/elements/image.dart)        | Subscribe to `resolvedElementProvider(id)` for `url` changes                             |
+| `Media` (if applicable)                                                                        | Same `url` overlay pattern                                                               |
 
 Tier 1 properties need **no new listeners** — already wired.
 
@@ -417,18 +425,18 @@ Tier 1 properties need **no new listeners** — already wired.
 
 Follow [`adaptive-cards-testing`](.agents/skills/adaptive-cards-testing/SKILL.md) and existing overlay test patterns:
 
-| Test | File |
-| --- | --- |
-| Notifier bulk merge, clear flags, unknown id ignored, single revision | `test/riverpod/adaptive_card_document_notifier_test.dart` |
-| `applyUpdates` host delegate | new `test/riverpod/apply_updates_test.dart` |
-| `seedInputValues` ≡ `applyUpdates` value-only | extend `test/riverpod/adaptive_card_document_notifier_test.dart` |
-| initData + applyUpdates compose (no double-listener issues) | extend `test/inputs/init_data_overlay_test.dart` |
-| initInput late bind + applyUpdates enrich | new case in `init_data_overlay_test.dart` |
-| Validation batch after mock submit | extend `test/inputs/input_error_overlay_test.dart` |
-| Cascade country→state | new `test/inputs/cascade_choice_set_test.dart` |
-| `isRequired` overlay | new `test/inputs/is_required_overlay_test.dart` |
-| Image `url` overlay | new `test/elements/image_url_overlay_test.dart` |
-| Submit uses resolved `isRequired` | `test/actions/submit_required_overlay_test.dart` |
+| Test                                                                  | File                                                             |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Notifier bulk merge, clear flags, unknown id ignored, single revision | `test/riverpod/adaptive_card_document_notifier_test.dart`        |
+| `applyUpdates` host delegate                                          | new `test/riverpod/apply_updates_test.dart`                      |
+| `seedInputValues` ≡ `applyUpdates` value-only                         | extend `test/riverpod/adaptive_card_document_notifier_test.dart` |
+| initData + applyUpdates compose (no double-listener issues)           | extend `test/inputs/init_data_overlay_test.dart`                 |
+| initInput late bind + applyUpdates enrich                             | new case in `init_data_overlay_test.dart`                        |
+| Validation batch after mock submit                                    | extend `test/inputs/input_error_overlay_test.dart`               |
+| Cascade country→state                                                 | new `test/inputs/cascade_choice_set_test.dart`                   |
+| `isRequired` overlay                                                  | new `test/inputs/is_required_overlay_test.dart`                  |
+| Image `url` overlay                                                   | new `test/elements/image_url_overlay_test.dart`                  |
+| Submit uses resolved `isRequired`                                     | `test/actions/submit_required_overlay_test.dart`                 |
 
 ---
 
@@ -454,6 +462,7 @@ Follow [`adaptive-cards-testing`](.agents/skills/adaptive-cards-testing/SKILL.md
 ## Implementation Phases
 
 **Phase 1 — Bulk API (Tier 1 only)**
+
 - `AdaptiveElementUpdate` / `AdaptiveActionUpdate`
 - `applyUpdates` on notifier + `RawAdaptiveCardState`
 - Optional `applyUpdatesFromMap`
@@ -462,9 +471,11 @@ Follow [`adaptive-cards-testing`](.agents/skills/adaptive-cards-testing/SKILL.md
 - Tests + docs (include `init_data_overlay_test.dart` extensions)
 
 **Phase 2 — Tier 2 overlays**
+
 - `isRequired`, `url` on `ElementOverlay`
 - Widget listeners + Submit/Execute resolved `isRequired`
 - Tests + docs
 
 **Phase 3 — Backlog**
+
 - Action title/tooltip, label/placeholder, `choices.data.parameters` — track in [`reactive-riverpod.md` overlay backlog](doc/reactive-riverpod.md#overlay-backlog)

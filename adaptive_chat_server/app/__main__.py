@@ -12,6 +12,7 @@ import os
 
 from app.ollama_responder import (
     DEFAULT_HISTORY_TURNS,
+    DEFAULT_JSON_FORMAT,
     DEFAULT_NUM_CTX,
     DEFAULT_OLLAMA_MODEL,
 )
@@ -52,6 +53,16 @@ def main() -> None:
         f"{DEFAULT_HISTORY_TURNS}). Bounds only the outbound prompt; the server "
         "keeps full history.",
     )
+    parser.add_argument(
+        "--json-format",
+        default=DEFAULT_JSON_FORMAT,
+        choices=["none", "json", "schema"],
+        help=f"Constrain Ollama's output via its `format` field (default: "
+        f"{DEFAULT_JSON_FORMAT}). 'none' (default) is prompt-only — reliable with "
+        "a capable model at temperature 0; 'json' asks for any syntactically valid "
+        "JSON; 'schema' additionally constrains the outer shape against the bundled "
+        "card_schema.json (a safety net for weaker models, at some latency cost).",
+    )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument(
@@ -71,6 +82,7 @@ def main() -> None:
         os.environ["OLLAMA_SYSTEM_PROMPT_FILE"] = args.system_prompt_file
     os.environ["OLLAMA_NUM_CTX"] = str(args.num_ctx)
     os.environ["OLLAMA_HISTORY_TURNS"] = str(args.history_turns)
+    os.environ["OLLAMA_JSON_FORMAT"] = args.json_format
 
     import uvicorn
 

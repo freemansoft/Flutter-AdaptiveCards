@@ -181,7 +181,10 @@ back to its `self` URL) are _designed for_ but not built — the envelope's per-
 `self` link is the hook. See the design doc's "Non-goals".
 
 An assistant bubble may now carry rich **inputs and display elements** authored by
-the server (date pickers, choice sets, FactSets, badges, carousels) instead of
-Markdown text — the client renders whatever card the server sends, no code change
-needed. This is **display-only**: the same gap as in-card form submits above,
-returned input values do not post back anywhere yet.
+the server (date pickers, choice sets, FactSets, badges, carousels, tables,
+ratings, icons, progress bars/rings, code blocks, images) instead of Markdown
+text — the client renders whatever card the server sends, no code change
+needed. See [`../adaptive_chat_server`](../adaptive_chat_server)'s **Card
+replies (display-only)** section for the current palette. This is
+**display-only**: the same gap as in-card form submits above, returned input
+values do not post back anywhere yet.

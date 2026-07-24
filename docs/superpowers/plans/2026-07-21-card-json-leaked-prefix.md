@@ -4,14 +4,14 @@
 
 **Goal:** Make the chat server render a card even when the local model leaks a leading/trailing delimiter (e.g. `=== \n{json}`) around the JSON, and stop the model leaking it in the first place.
 
-**Architecture:** Two independent server-side changes. (1) Harden `app/card_detect.py:try_parse_card_body` to strip surrounding *decoration* (whitespace + delimiter runs like `===`/`---`/`###`) before parsing — narrowly, so real prose still falls back to text. (2) Remove the `=== N. … ===` section headers from `app/card_system_prompt.txt` (the thing the model mimics) and add an explicit "raw JSON only" instruction. The Flutter client is untouched.
+**Architecture:** Two independent server-side changes. (1) Harden `app/card_detect.py:try_parse_card_body` to strip surrounding _decoration_ (whitespace + delimiter runs like `===`/`---`/`###`) before parsing — narrowly, so real prose still falls back to text. (2) Remove the `=== N. … ===` section headers from `app/card_system_prompt.txt` (the thing the model mimics) and add an explicit "raw JSON only" instruction. The Flutter client is untouched.
 
 **Tech Stack:** Python 3.11, pytest. Server lives in `adaptive_chat_server/`; tests run via the repo virtualenv at `adaptive_chat_server/.venv`.
 
 ## Global Constraints
 
 - **Server only.** No change to `adaptive_chat_client` (Flutter) or any package under `packages/`.
-- **Narrow tolerance.** Strip only *decoration* (whitespace, code fences, pure-delimiter runs). Prose words before/after the JSON must still yield `None` (text). The existing `test_prose_wrapped_json_returns_none` must stay green.
+- **Narrow tolerance.** Strip only _decoration_ (whitespace, code fences, pure-delimiter runs). Prose words before/after the JSON must still yield `None` (text). The existing `test_prose_wrapped_json_returns_none` must stay green.
 - **Preserve the existing shape contract** in `try_parse_card_body`: full `{"type":"AdaptiveCard","body":[…]}` → its body; non-empty array of objects → as-is; single typed element → `[element]`; empty body / scalars / mixed / empty array / `type`-less dict → `None`.
 - **Run commands from `adaptive_chat_server/`** using `.venv/bin/python -m pytest`.
 - **Git gate (repo policy):** every `git commit` requires explicit user confirmation at the moment of action — show the diff and wait. Commit steps below are gated on that approval.
@@ -22,10 +22,12 @@
 ### Task 1: Harden the parser to strip surrounding decoration
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/card_detect.py`
 - Test: `adaptive_chat_server/tests/test_card_detect.py`
 
 **Interfaces:**
+
 - Consumes: nothing new.
 - Produces: `try_parse_card_body(raw: str) -> list | None` — unchanged signature and return contract; now additionally tolerant of leading/trailing decoration. Adds a private helper `_strip_decoration(text: str) -> str`.
 
@@ -73,17 +75,19 @@ def test_prose_before_nonempty_card_still_returns_none():
 - [ ] **Step 2: Run the new tests to verify they fail**
 
 Run:
+
 ```bash
 cd adaptive_chat_server
 .venv/bin/python -m pytest tests/test_card_detect.py -q -k "delimiter or decoration or prose_before"
 ```
+
 Expected: the four decoration tests FAIL (currently return `None` for a leaked prefix). `test_prose_before_nonempty_card_still_returns_none` PASSES already (current code returns `None`).
 
 - [ ] **Step 3: Implement decoration stripping**
 
 In `adaptive_chat_server/app/card_detect.py`, add the `_DECORATION` pattern and `_strip_decoration` helper next to `_FENCE` / `_strip_fence`:
 
-```python
+````python
 # Matches a whole reply wrapped in a ```json ... ``` (or bare ```) fence.
 _FENCE = re.compile(r"^\s*```(?:json)?\s*(.*?)\s*```\s*$", re.DOTALL | re.IGNORECASE)
 
@@ -102,7 +106,7 @@ def _strip_fence(raw: str) -> str:
 
 def _strip_decoration(text: str) -> str:
     return _DECORATION.sub("", text)
-```
+````
 
 Then update the parse entry point (currently `text = _strip_fence(raw)`):
 
@@ -131,10 +135,12 @@ so the caller falls back to a text reply.
 - [ ] **Step 4: Run the full parser suite to verify pass**
 
 Run:
+
 ```bash
 cd adaptive_chat_server
 .venv/bin/python -m pytest tests/test_card_detect.py -q
 ```
+
 Expected: PASS — all prior 12 tests plus the 5 new ones (17 passed). Confirm `test_prose_wrapped_json_returns_none` and `test_prose_before_nonempty_card_still_returns_none` are green (narrow contract intact).
 
 - [ ] **Step 5: Commit** (gated on user confirmation — show the diff first)
@@ -149,10 +155,12 @@ git commit -m "fix(chat-server): tolerate leaked delimiter around card JSON"
 ### Task 2: Remove `=== ` headers from the card prompt and forbid surrounding output
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/card_system_prompt.txt`
 - Test: `adaptive_chat_server/tests/test_card_system_prompt.py`
 
 **Interfaces:**
+
 - Consumes: nothing from Task 1 (independent).
 - Produces: a prompt file with no `=== ` section decoration and an explicit "raw JSON only, nothing before `{`/`[`" instruction.
 
@@ -178,10 +186,12 @@ def test_card_prompt_forbids_output_around_the_json():
 - [ ] **Step 2: Run the new tests to verify they fail**
 
 Run:
+
 ```bash
 cd adaptive_chat_server
 .venv/bin/python -m pytest tests/test_card_system_prompt.py -q -k "no_equals or forbids_output_around"
 ```
+
 Expected: both FAIL — the prompt currently contains `===` and no "nothing before" clause.
 
 - [ ] **Step 3: Edit the prompt**
@@ -189,24 +199,31 @@ Expected: both FAIL — the prompt currently contains `===` and no "nothing befo
 In `adaptive_chat_server/app/card_system_prompt.txt`:
 
 Replace the header on line 7:
+
 ```
 === 1. Adaptive Card fragment (structured) ===
 ```
+
 with:
+
 ```
 ## Reply shape 1: Adaptive Card fragment (structured)
 ```
 
 Replace the header on line 62:
+
 ```
 === 2. Plain Markdown (no structured input) ===
 ```
+
 with:
+
 ```
 ## Reply shape 2: Plain Markdown (no structured input)
 ```
 
 In the `WRITE COMPLETE, VALID JSON:` block (starts line 22), add a new first bullet immediately under that heading, before the existing "Never abbreviate" bullet:
+
 ```
 - Output nothing before the first { or [ and nothing after the closing bracket —
   no headers, labels, delimiters, or prose. The entire message must be raw JSON.
@@ -217,10 +234,12 @@ In the `WRITE COMPLETE, VALID JSON:` block (starts line 22), add a new first bul
 - [ ] **Step 4: Run the full prompt suite to verify pass**
 
 Run:
+
 ```bash
 cd adaptive_chat_server
 .venv/bin/python -m pytest tests/test_card_system_prompt.py -q
 ```
+
 Expected: PASS — the two new tests plus all existing ones (content tokens `AdaptiveCard`, `Input.Date`, `FactSet`, `Markdown`, `complete`, `abbreviat`, `Action`, and the `"..." not in text` guard remain satisfied).
 
 - [ ] **Step 5: Commit** (gated on user confirmation — show the diff first)
@@ -237,19 +256,23 @@ git commit -m "fix(chat-server): drop === headers from card prompt, forbid wrapp
 - [ ] **Step 1: Run the affected server suites**
 
 Run:
+
 ```bash
 cd adaptive_chat_server
 .venv/bin/python -m pytest tests/test_card_detect.py tests/test_card_system_prompt.py tests/test_responder.py -q
 ```
+
 Expected: PASS (no failures). This covers the parser tolerance, the prompt guarantees, and the responder path that calls `try_parse_card_body`.
 
 - [ ] **Step 2: Run the whole server test suite**
 
 Run:
+
 ```bash
 cd adaptive_chat_server
 .venv/bin/python -m pytest -q
 ```
+
 Expected: PASS — confirms no regression in `test_api.py`, `test_cards.py`, `test_store.py`, or `test_ollama_responder.py`.
 
 - [ ] **Step 3: Invoke `superpowers:verification-before-completion`**

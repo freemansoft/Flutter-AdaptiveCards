@@ -42,11 +42,13 @@ This plan implements the `isVisible` property for all adaptive card elements, en
 The implementation uses a mixin pattern to add visibility functionality to all adaptive elements:
 
 1. **Visibility Mixin**: Add `AdaptiveVisibilityMixin` to `adaptive_mixins.dart` that:
+
    - Manages `isVisible` state (initialized from `adaptiveMap['isVisible']`)
    - Provides `setIsVisible(bool visible)` method to update visibility
    - Handles JSON parsing: `'true'`/`'false'` strings, boolean values, and null/absent (defaults to `true`)
 
 2. **Element Updates**: Modify all adaptive element `build()` methods to:
+
    - Apply the `AdaptiveVisibilityMixin` to their State classes
    - Wrap `SeparatorElement` with `Visibility(visible: isVisible, child: SeparatorElement(...))`
 
@@ -98,6 +100,7 @@ mixin AdaptiveVisibilityMixin<T extends AdaptiveElementWidgetMixin> on State<T>
 Apply `AdaptiveVisibilityMixin` to all State classes that use `AdaptiveElementMixin`. This includes:
 
 **Elements** (`packages/flutter_adaptive_cards/lib/src/elements/`):
+
 - `text_block.dart` - `AdaptiveTextBlockState`
 - `image.dart` - `AdaptiveImageState`
 - `action_set.dart` - `ActionSetState`
@@ -114,6 +117,7 @@ Apply `AdaptiveVisibilityMixin` to all State classes that use `AdaptiveElementMi
 - All action states in `actions/` subdirectory
 
 **Containers** (`packages/flutter_adaptive_cards/lib/src/containers/`):
+
 - `container.dart` - `AdaptiveContainerState`
 - `column.dart` - `AdaptiveColumnState`
 - `column_set.dart` - `AdaptiveColumnSetState`
@@ -122,6 +126,7 @@ Apply `AdaptiveVisibilityMixin` to all State classes that use `AdaptiveElementMi
 - `table.dart` - `AdaptiveTableState`
 
 **Inputs** (`packages/flutter_adaptive_cards/lib/src/inputs/`):
+
 - `text.dart` - `AdaptiveTextInputState`
 - `number.dart` - `AdaptiveNumberInputState`
 - `date.dart` - `AdaptiveDateInputState`
@@ -130,9 +135,11 @@ Apply `AdaptiveVisibilityMixin` to all State classes that use `AdaptiveElementMi
 - `choice_set.dart` - `AdaptiveChoiceSetState`
 
 **Cards**:
+
 - `adaptive_card_element.dart` - `AdaptiveCardElementState` (if needed)
 
 For each State class, add the mixin:
+
 ```dart
 class XxxState extends State<Xxx>
     with AdaptiveElementMixin, AdaptiveVisibilityMixin {
@@ -143,6 +150,7 @@ class XxxState extends State<Xxx>
 In each element's `build()` method, wrap the `SeparatorElement` with `Visibility`:
 
 **Pattern** (example from `text_block.dart`):
+
 ```dart
 @override
 Widget build(BuildContext context) {
@@ -166,6 +174,7 @@ Widget build(BuildContext context) {
 **File**: `packages/flutter_adaptive_cards/test/elements/is_visible_test.dart`
 
 Create a test that:
+
 - Creates an adaptive card with two TextBlock elements (`thing1` and `thing2`)
 - `thing1` has `isVisible: true`
 - `thing2` has `isVisible: false`

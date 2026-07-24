@@ -35,10 +35,12 @@ Design spec: `docs/superpowers/specs/2026-07-21-carousel-content-height-design.m
 ### Task 1: Pure height-resolution function
 
 **Files:**
+
 - Modify: `lib/src/cards/elements/carousel.dart` (add one top-level function near the bottom of the file, after `AdaptiveCarouselPageState`).
 - Test: `test/elements/carousel_height_test.dart` (create).
 
 **Interfaces:**
+
 - Produces: `double resolveCarouselHeight({required double? heightInPixels, required bool isStretch, required double maxAvailableHeight, required double? measuredMaxHeight, required double fallback})` — precedence: explicit `heightInPixels` → `stretch` with a finite parent height → measured tallest page → pre-measurement `fallback`.
 
 - [ ] **Step 1: Write the failing test**
@@ -170,10 +172,12 @@ git commit -m "feat(carousel): add resolveCarouselHeight height-precedence helpe
 ### Task 2: Parse height model, measure pages, size the carousel
 
 **Files:**
+
 - Modify: `lib/src/cards/elements/carousel.dart` (fields + `initState` parsing; add `_MeasureSize`/`_MeasureSizeRenderObject`; rewrite `AdaptiveCarouselState.build`).
 - Test: `test/elements/carousel_height_test.dart` (append widget tests).
 
 **Interfaces:**
+
 - Consumes: `resolveCarouselHeight(...)` from Task 1.
 - Produces: carousel renders its `PageView` inside a `SizedBox` whose height is `resolveCarouselHeight(...)`; `heightInPixels` and `height` are parsed from the element JSON; orientation stays independent of `heightInPixels`.
 
@@ -493,6 +497,7 @@ git commit -m "feat(carousel): size to tallest page; honor height and heightInPi
 ### Task 3: Regression check, changelog, docs sync, full verification
 
 **Files:**
+
 - Modify (conditional): `test/elements/carousel_behavior_test.dart`.
 - Modify: `CHANGELOG.md`.
 - Modify (as grep dictates): docs under `docs/` and `README.md`.
@@ -532,6 +537,7 @@ git commit -m "docs(carousel): changelog + status sync for content-sized height"
 The v1.6 carousel golden (`test/gold_files/<platform>/v1_6_carousel.png`) rendered at the old fixed 400px. With content-sizing it now renders at the tallest-page height, so its master image must be regenerated. **The regenerated `.png` is left uncommitted for the user to review before it lands.** Note: `--update-goldens` only rewrites the current platform's master (macOS here); the Linux master is regenerated separately in CI / a Linux container.
 
 **Files:**
+
 - Regenerate (do not commit): `test/gold_files/macos/v1_6_carousel.png` (and, on CI/Linux, `test/gold_files/linux/v1_6_carousel.png`).
 
 - [ ] **Step 1: Regenerate the carousel golden only**

@@ -989,4 +989,3 @@ commit set. Then offer `finishing-a-development-branch`.
 - **HostConfig default of `null` inputs section:** a bare `HostConfig()` has `inputs == null`, so
   `getInputsConfig()?.revealPasswordEnabled` is `null` and the chain falls through to the
   FallbackConfig default (`true`) — eye-icon visible by default, as intended.
-```

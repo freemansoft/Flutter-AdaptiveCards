@@ -44,14 +44,14 @@ height-stretch design for in-cell stretch.
 
 `Layout.AreaGrid` object:
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `type` | `"Layout.AreaGrid"` | |
-| `columns` | `List` of `number` (percent) and/or `"<n>px"` strings | explicit track widths; may be shorter than the area grid (see column resolution) |
-| `areas` | `List<GridArea>` | named areas |
-| `columnSpacing` | spacing token (default `"default"`) | gap between columns |
-| `rowSpacing` | spacing token (default `"default"`) | gap between rows |
-| `targetWidth` | bucket / `atLeast:`/`atMost:` | already handled by `selectLayout` |
+| Field           | Type                                                  | Notes                                                                            |
+| --------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `type`          | `"Layout.AreaGrid"`                                   |                                                                                  |
+| `columns`       | `List` of `number` (percent) and/or `"<n>px"` strings | explicit track widths; may be shorter than the area grid (see column resolution) |
+| `areas`         | `List<GridArea>`                                      | named areas                                                                      |
+| `columnSpacing` | spacing token (default `"default"`)                   | gap between columns                                                              |
+| `rowSpacing`    | spacing token (default `"default"`)                   | gap between rows                                                                 |
+| `targetWidth`   | bucket / `atLeast:`/`atMost:`                         | already handled by `selectLayout`                                                |
 
 `GridArea`: `{ name: String, column: int = 1, columnSpan: int = 1, row: int = 1, rowSpan: int = 1 }` (indices 1-based). Parsed into a typed `GridAreaModel`.
 
@@ -59,13 +59,13 @@ Child elements carry `grid.area: "<name>"` (a top-level key on the element JSON)
 
 ## Architecture
 
-| Piece | Location | Role |
-| --- | --- | --- |
-| `GridAreaModel` + `AreaGridLayout` parse | `lib/src/responsive/area_grid_model.dart` (new) | **Pure** typed parse of `areas`/`columns`/spacing; tolerant of missing/garbage fields (defaults applied). |
-| Column/row resolution | `lib/src/responsive/area_grid_solver.dart` (new) | **Pure** functions: resolve column widths from available width (`px`/`%`/implied-equal, minus spacing); compute the grid dimensions (`rows`, `cols`) from areas. Unit-testable without widgets. |
-| `RenderAdaptiveAreaGrid` + `AdaptiveAreaGrid` widget | `lib/src/responsive/adaptive_area_grid.dart` (new) | `MultiChildRenderObjectWidget` + `RenderBox` performing layout: measure non-stretch children, size rows, place spanning children, stretch `height:stretch` children to their full area height. |
-| `buildLayoutChildren` extension | `lib/src/responsive/layout_children.dart` | Add an optional `childMaps` param; when the selected layout is `Layout.AreaGrid`, build `AdaptiveAreaGrid(layout, childMaps, children, styleResolver)`. Flow/stack paths ignore `childMaps`. |
-| Container build sites | `container.dart`, `column.dart`, `adaptive_card_element.dart`, `table.dart` | Pass `childMaps` (the raw item JSON list, index-aligned with `children`) through `buildLayoutChildren`. |
+| Piece                                                | Location                                                                    | Role                                                                                                                                                                                            |
+| ---------------------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GridAreaModel` + `AreaGridLayout` parse             | `lib/src/responsive/area_grid_model.dart` (new)                             | **Pure** typed parse of `areas`/`columns`/spacing; tolerant of missing/garbage fields (defaults applied).                                                                                       |
+| Column/row resolution                                | `lib/src/responsive/area_grid_solver.dart` (new)                            | **Pure** functions: resolve column widths from available width (`px`/`%`/implied-equal, minus spacing); compute the grid dimensions (`rows`, `cols`) from areas. Unit-testable without widgets. |
+| `RenderAdaptiveAreaGrid` + `AdaptiveAreaGrid` widget | `lib/src/responsive/adaptive_area_grid.dart` (new)                          | `MultiChildRenderObjectWidget` + `RenderBox` performing layout: measure non-stretch children, size rows, place spanning children, stretch `height:stretch` children to their full area height.  |
+| `buildLayoutChildren` extension                      | `lib/src/responsive/layout_children.dart`                                   | Add an optional `childMaps` param; when the selected layout is `Layout.AreaGrid`, build `AdaptiveAreaGrid(layout, childMaps, children, styleResolver)`. Flow/stack paths ignore `childMaps`.    |
+| Container build sites                                | `container.dart`, `column.dart`, `adaptive_card_element.dart`, `table.dart` | Pass `childMaps` (the raw item JSON list, index-aligned with `children`) through `buildLayoutChildren`.                                                                                         |
 
 ### Threading `grid.area`
 
@@ -135,7 +135,7 @@ switch on resize with no extra plumbing.
   a wide width (mirrors the documented AreaGrid responsive example). macOS baselines
   generated; linux baselines regenerated on a Linux runner before merge.
 - **Verification:** `fvm flutter analyze` clean; `fvm flutter test
-  --exclude-tags=golden` green; coverage gate PASS.
+--exclude-tags=golden` green; coverage gate PASS.
 
 ## Documentation impact
 

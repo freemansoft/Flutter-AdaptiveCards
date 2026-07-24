@@ -1126,7 +1126,7 @@ Mock client returns:
 ```json
 {
   "type": "adaptiveCard.invokeResponse",
-  "effects": [{"type": "setInputErrors", "errors": {"email": "Required"}}]
+  "effects": [{ "type": "setInputErrors", "errors": { "email": "Required" } }]
 }
 ```
 

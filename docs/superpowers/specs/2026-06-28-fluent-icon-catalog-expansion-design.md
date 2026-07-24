@@ -14,7 +14,7 @@ to `Icons.help_outline` for unknown names. This change grows that table to
 names render a sensible glyph instead of the fallback.
 
 This is a deliberately **low-risk, data-only** change: the lookup, normalization,
-filled/regular selection, and fallback are unchanged; only the lookup *data*
+filled/regular selection, and fallback are unchanged; only the lookup _data_
 grows.
 
 ### Approach decision (recorded)
@@ -30,6 +30,7 @@ catalog fidelity becomes a priority.
 ## Goals / non-goals
 
 **Goals**
+
 - Raise the Fluent-name hit rate by expanding `kFluentIconMap` to ~150–200 curated
   entries with faithful Material equivalents (filled + regular where available).
 - Resolve common author name-guesses via a small alias set.
@@ -37,6 +38,7 @@ catalog fidelity becomes a priority.
   `help_outline` fallback.
 
 **Non-goals**
+
 - Bundling the real Fluent font or reaching the full ~2000-icon catalog (declined).
 - Any change to `icon.dart` (size/color/style/selectAction handling) or the
   resolver API.
@@ -45,8 +47,8 @@ catalog fidelity becomes a priority.
 ## Current state (for the implementer)
 
 - `kFluentIconMap` (`lib/src/utils/fluent_icon_map.dart`): `const Map<String,
-  FluentIconEntry>` keyed by **normalized** name. `FluentIconEntry{ IconData filled;
-  IconData? regular; }`.
+FluentIconEntry>` keyed by **normalized** name. `FluentIconEntry{ IconData filled;
+IconData? regular; }`.
 - `normalizeFluentIconName(name)` strips spaces/`_`/`-` and lowercases, so
   `AccessTime`, `access_time`, `access-time` collide to one key.
 - `resolveFluentIcon(name, {required bool filled})` looks up the normalized name and
@@ -83,7 +85,7 @@ catalog fidelity becomes a priority.
 - **Mechanism:** add the alias keys directly into `kFluentIconMap` pointing at the
   same `FluentIconEntry` value (simplest; normalization already applies to lookups).
   Aliases live in a clearly-commented `// --- aliases ---` block (or a `const
-  _aliases` sub-map merged into `kFluentIconMap`) so they're visibly distinct from
+_aliases` sub-map merged into `kFluentIconMap`) so they're visibly distinct from
   canonical names.
 
 ### Isolation

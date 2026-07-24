@@ -25,6 +25,7 @@ Sign-in **button** path only (`buttons[].type == "signin"`). SSO `tokenExchangeR
 ## File map
 
 **Phase 1 — `packages/flutter_adaptive_cards_fs/`**
+
 - Create `lib/src/models/authentication_config.dart` — `AuthenticationConfig` + `AuthCardButton` (pure Dart, parsing).
 - Modify `lib/src/models/action_invoke.dart` — add `SigninActionInvoke`.
 - Modify `lib/src/action/action_handler.dart` — add nullable `onSignin` to `InheritedAdaptiveCardHandlers`.
@@ -34,6 +35,7 @@ Sign-in **button** path only (`buttons[].type == "signin"`). SSO `tokenExchangeR
 - Docs: `README.md`, `CHANGELOG.md`; repo `docs/actions-architecture.md`, `docs/Implementation-Status.md`.
 
 **Phase 2 — `packages/flutter_adaptive_cards_host_fs/`**
+
 - Modify `lib/src/models/invoke_kind.dart` — add `signin`.
 - Modify `lib/src/models/invoke_request.dart` — add `connectionName` field + `fromSignin` factory.
 - Modify `lib/src/adapters/plain_json_invoke_adapter.dart` — serialize/parse `connectionName`.
@@ -51,6 +53,7 @@ Run all Phase 1 commands from `packages/flutter_adaptive_cards_fs/` unless noted
 ### Task 1: `AuthenticationConfig` + `AuthCardButton` model
 
 **Files:**
+
 - Create: `packages/flutter_adaptive_cards_fs/lib/src/models/authentication_config.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/models/authentication_config_test.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart`
@@ -241,6 +244,7 @@ git commit -m "feat(cards): parse root authentication object into typed model"
 ### Task 2: `SigninActionInvoke` payload
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/models/signin_action_invoke_test.dart`
 
@@ -344,6 +348,7 @@ git commit -m "feat(cards): add SigninActionInvoke payload"
 ### Task 3: `onSignin` handler field
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart`
 - Test: covered by Task 4's widget test (this task is a pure additive field).
 
@@ -385,6 +390,7 @@ git commit -m "feat(cards): add onSignin host handler"
 ### Task 4: Parse + render the authentication region
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/adaptive_card_element.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/cards/authentication_region_test.dart`
 
@@ -671,6 +677,7 @@ git commit -m "feat(cards): render authentication sign-in region and dispatch on
 ### Task 5: Golden test for the authentication region
 
 **Files:**
+
 - Test: `packages/flutter_adaptive_cards_fs/test/goldens/authentication_signin_test.dart` (match the repo's existing golden test location/pattern)
 - Golden fixture JSON: add under the repo's golden card fixtures directory used by other golden tests.
 
@@ -712,6 +719,7 @@ git commit -m "test(cards): golden for authentication sign-in region"
 ### Task 6: Phase 1 docs + verification
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_fs/README.md`
 - Modify: `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 - Modify: `docs/actions-architecture.md`
@@ -781,6 +789,7 @@ Run all Phase 2 commands from `packages/flutter_adaptive_cards_host_fs/` unless 
 ### Task 7: Invoke request `signin` kind + `fromSignin`
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/models/invoke_kind.dart`
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/models/invoke_request.dart`
 - Test: `packages/flutter_adaptive_cards_host_fs/test/models/invoke_request_signin_test.dart`
@@ -903,6 +912,7 @@ git commit -m "feat(host): add signin invoke kind, fromSignin factory, Teams cas
 ### Task 8: PlainJson adapter — serialize `connectionName`
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/adapters/plain_json_invoke_adapter.dart`
 - Test: `packages/flutter_adaptive_cards_host_fs/test/adapters/plain_json_signin_test.dart`
 
@@ -982,6 +992,7 @@ git commit -m "feat(host): serialize signin connectionName in PlainJson adapter"
 > without the case, add it here (see Task 7 Step 3a) before Step 2.
 
 **Files:**
+
 - Test: `packages/flutter_adaptive_cards_host_fs/test/adapters/teams_signin_test.dart`
 - (Implementation already added in Task 7 Step 3a.)
 
@@ -1031,6 +1042,7 @@ git commit -m "test(host): pin Teams signin/verifyState mapping"
 ### Task 10: `AdaptiveCardBackendHandlers` — `onSignin` wiring + `completeSignin`
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/handlers/backend_handlers.dart`
 - Test: `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_signin_test.dart`
 
@@ -1183,10 +1195,12 @@ Add a public method (after `wrap`, before `_handleHttp`). It reuses the private
 > the instance. Expose them: store `wrap`'s `onCardReplaced` and `cardValidator`
 > in instance fields when `wrap` is called, and have `completeSignin` default its
 > optional params to those fields. Add:
+>
 > ```dart
 >   void Function(Map<String, dynamic> card)? _onCardReplaced;
 >   AdaptiveCardValidator? _cardValidator;
 > ```
+>
 > set them at the top of `wrap`, and in `completeSignin` use
 > `onCardReplaced ?? _onCardReplaced` and `cardValidator ?? _cardValidator`.
 
@@ -1213,6 +1227,7 @@ git commit -m "feat(host): wire onSignin and add completeSignin round-trip"
 ### Task 11: Phase 2 docs + full verification
 
 **Files:**
+
 - Modify: `packages/flutter_adaptive_cards_host_fs/README.md`
 - Modify: `packages/flutter_adaptive_cards_host_fs/CHANGELOG.md`
 - Modify: `docs/backend-host-integration.md`

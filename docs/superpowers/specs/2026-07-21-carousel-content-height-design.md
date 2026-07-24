@@ -24,17 +24,17 @@ Verified against the v1.6 sample JSON and the **shared C++ object model**
 (`source/shared/cpp/ObjectModel/Carousel.cpp`) — the model Android, iOS, UWP, and
 .NET all compile against — with the JavaScript SDK
 (`source/nodejs/adaptivecards/src/carousel.ts`) consulted only as this repo's
-designated tiebreaker for disputed *semantics*. The height model lives on the
+designated tiebreaker for disputed _semantics_. The height model lives on the
 **Carousel** element; **CarouselPage has no height property** (there is no
 `minHeight` anywhere in the Carousel/CarouselPage schema — the originally-suspected
 `carouselPage minHeight` does not exist).
 
-| JSON property | Meaning |
-| --- | --- |
-| `heightInPixels` (e.g. `"100px"`) | Explicit fixed pixel height for the page container. |
-| `height: "stretch"` | Standard block-element stretch — container fills its parent. |
-| `height: "auto"` / absent | Default. Size the carousel to the pages (see decision 1). |
-| `orientation: "vertical"` | Vertical paging. **Independent of `heightInPixels`** — see the "JS reference vs. portable spec" note below. |
+| JSON property                     | Meaning                                                                                                     |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `heightInPixels` (e.g. `"100px"`) | Explicit fixed pixel height for the page container.                                                         |
+| `height: "stretch"`               | Standard block-element stretch — container fills its parent.                                                |
+| `height: "auto"` / absent         | Default. Size the carousel to the pages (see decision 1).                                                   |
+| `orientation: "vertical"`         | Vertical paging. **Independent of `heightInPixels`** — see the "JS reference vs. portable spec" note below. |
 
 ### JS reference vs. portable spec (why we do not follow JS here)
 
@@ -44,7 +44,7 @@ the shared C++ model** — `Carousel.cpp` parses `orientation` and `heightInPixe
 independently. The gate is a JavaScript-renderer quirk: Swiper.js cannot do
 vertical paging without a fixed CSS height. It is not a spec rule, so this design
 **does not** adopt it. Orientation is treated as an independent property. (A
-vertical Flutter `PageView` still needs *some* bounded height, but our
+vertical Flutter `PageView` still needs _some_ bounded height, but our
 measured-max height already provides that — no author-supplied `heightInPixels`
 required.)
 
@@ -90,7 +90,7 @@ risk of double-registering input/document state.
 ### Measuring the tallest page
 
 `PageView` forces every child to the viewport height, so natural page heights
-cannot be measured *inside* it. A hidden measurement layer sits above the
+cannot be measured _inside_ it. A hidden measurement layer sits above the
 `PageView` inside the existing `Column`:
 
 ```

@@ -48,11 +48,11 @@ show/hide **eye-icon reveal toggle**.
 
 The eye-icon's availability is resolved with precedence **Overlay > HostConfig > FallbackConfig**:
 
-| Layer          | Source                                                                                    | Default                                  |
-| -------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------- |
-| FallbackConfig | `FallbackConfigs.inputsConfig` (`InputsConfig` mirror) → `.text.revealPasswordEnabled`     | **`true`** (built-in default)            |
-| HostConfig     | `inputs.text.revealPasswordEnabled` (boolean, on `TextInputConfig`)                        | falls back to FallbackConfig when absent |
-| Overlay        | per-element `revealPasswordEnabled` runtime patch                                          | overrides HostConfig for one field       |
+| Layer          | Source                                                                                 | Default                                  |
+| -------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
+| FallbackConfig | `FallbackConfigs.inputsConfig` (`InputsConfig` mirror) → `.text.revealPasswordEnabled` | **`true`** (built-in default)            |
+| HostConfig     | `inputs.text.revealPasswordEnabled` (boolean, on `TextInputConfig`)                    | falls back to FallbackConfig when absent |
+| Overlay        | per-element `revealPasswordEnabled` runtime patch                                      | overrides HostConfig for one field       |
 
 `inputs.text` is a nested **non-standard** config object (`TextInputConfig`) on `InputsConfig`.
 The widget falls back to the fallback `InputsConfig` when the host provides none, mirroring the

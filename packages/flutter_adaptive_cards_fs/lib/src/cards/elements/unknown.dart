@@ -46,6 +46,11 @@ class AdaptiveUnknownState extends State<AdaptiveUnknown>
         'Because of this, a portion of the tree was dropped: \n'
         '$adaptiveMap',
       );
+      debugPrint(
+        'Type ${widget.type} not found. \n\n'
+        'Because of this, a portion of the tree was dropped: \n'
+        '$adaptiveMap',
+      );
 
       return true;
     }());

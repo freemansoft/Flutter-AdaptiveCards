@@ -25,6 +25,15 @@ def test_card_prompt_documents_display_elements():
         assert token in text
 
 
+def test_card_prompt_documents_readonly_display_elements():
+    # Read-only display primitives added to the palette alongside the core
+    # set above -- flat/scalar properties only (registry.dart-confirmed), no
+    # nested arrays and no interactivity implication.
+    text = PROMPT.read_text(encoding="utf-8")
+    for token in ("Rating", "Icon", "ProgressBar", "ProgressRing", "CodeBlock", "Image"):
+        assert token in text
+
+
 def test_card_prompt_documents_markdown_fallback():
     # The TextBlock renders GitHub-flavored Markdown both inside a card and as the
     # plain (no-structured-input) reply, so the prompt must document the Markdown
@@ -74,3 +83,28 @@ def test_card_prompt_bounds_size_and_nesting():
     text = PROMPT.read_text(encoding="utf-8").lower()
     assert "shallow" in text
     assert "inside a carousel" in text
+
+
+def test_card_prompt_documents_structured_output_mode():
+    # When --json-format enforces JSON (json or schema mode), a plain-text
+    # reply (Reply shape 2) must still come back as valid JSON -- the prompt
+    # must tell the model this explicitly, and must not reintroduce a bare
+    # ellipsis or "===" delimiter (guarded by the other tests in this file).
+    text = PROMPT.read_text(encoding="utf-8")
+    assert "--json-format" in text
+    assert "JSON string" in text
+
+
+def test_card_prompt_forbids_fake_radiobutton_checkbox_types():
+    # Observed failure: the model sometimes invents non-existent
+    # "Input.RadioButtons" / "Input.Checkboxes" element types instead of the
+    # real Input.ChoiceSet with the right style/isMultiSelect combination.
+    # card_schema.json's "type" field is a free-form string (any non-empty
+    # string passes), so nothing at the JSON-format layer catches a fake type
+    # name -- the prompt must explicitly name and forbid this pattern, and
+    # show the correct radio-button and checkbox configurations.
+    text = PROMPT.read_text(encoding="utf-8")
+    assert "Input.RadioButtons" in text
+    assert "Input.Checkboxes" in text
+    assert '"isMultiSelect":false' in text
+    assert '"isMultiSelect":true' in text

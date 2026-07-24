@@ -6,15 +6,15 @@
 
 **Implementation status (validated 2026-06-09):** all workstreams merged to `main` (PRs #19–#20; workstream G on `feat/workstream-g-text-features`).
 
-| Workstream | Status      | Notes                                                                       |
-| ---------- | ----------- | --------------------------------------------------------------------------- |
-| A          | ✅ Complete | Doc + cross-links                                                           |
+| Workstream | Status      | Notes                                                                        |
+| ---------- | ----------- | ---------------------------------------------------------------------------- |
+| A          | ✅ Complete | Doc + cross-links                                                            |
 | B          | ✅ Complete | `RefreshConfig`, `onRefresh`, manual affordance, auto-expire, `userIds` gate |
-| C          | ✅ Complete | ~68 Fluent names; golden `test/golden_icon_test.dart`                       |
-| D          | ✅ Complete | Chart colors merged in `chart_colors_config.dart`; gauge golden added       |
-| E          | ✅ Complete | `ChartOverlayPage` + codegen                                                |
-| F          | ✅ Complete | Gauge via `CustomPainter`; golden in `golden_v1_6_test.dart`                |
-| G          | ✅ Complete | `RichTextBlock`/`TextRun`, TextBlock plain-path fixes, Widgetbook demo      |
+| C          | ✅ Complete | ~68 Fluent names; golden `test/golden_icon_test.dart`                        |
+| D          | ✅ Complete | Chart colors merged in `chart_colors_config.dart`; gauge golden added        |
+| E          | ✅ Complete | `ChartOverlayPage` + codegen                                                 |
+| F          | ✅ Complete | Gauge via `CustomPainter`; golden in `golden_v1_6_test.dart`                 |
+| G          | ✅ Complete | `RichTextBlock`/`TextRun`, TextBlock plain-path fixes, Widgetbook demo       |
 
 **Verification (2026-06-09):** `fvm flutter analyze` — no issues. Core tests **400 passed** (~2 skipped). Charts tests 7 passed. Gauge widget tests 6 passed. Golden: icon + RichTextBlock (`v1_5_icon_demo.png`, `v1_2_rich_text_block_demo.png`) + charts gauge (`v1_6_gauge.png`) pass on macOS; Linux goldens via CI.
 
@@ -36,15 +36,15 @@
 
 ## Workstream map
 
-| ID  | Workstream                                 | Package(s)                                    | Depends on               |
-| --- | ------------------------------------------ | --------------------------------------------- | ------------------------ |
-| A   | Optional-packages documentation (complete) | docs                                          | —                        |
+| ID  | Workstream                                  | Package(s)                                    | Depends on               |
+| --- | ------------------------------------------- | --------------------------------------------- | ------------------------ |
+| A   | Optional-packages documentation (complete)  | docs                                          | —                        |
 | B   | `refresh` on root `AdaptiveCard` (complete) | `flutter_adaptive_cards_fs`                   | —                        |
-| C   | `Icon` element (complete)                  | `flutter_adaptive_cards_fs`                   | —                        |
-| D   | Chart chrome + `colorSet` (complete)       | `flutter_adaptive_charts_fs`, core HostConfig | —                        |
-| E   | Widgetbook chart knobs page (complete)     | `widgetbook`                                  | D                        |
-| F   | `Chart.Gauge` (CustomPainter, complete)    | `flutter_adaptive_charts_fs`                  | D (ChartChrome optional) |
-| G   | Text features (complete)                   | `flutter_adaptive_cards_fs`                   | —                        |
+| C   | `Icon` element (complete)                   | `flutter_adaptive_cards_fs`                   | —                        |
+| D   | Chart chrome + `colorSet` (complete)        | `flutter_adaptive_charts_fs`, core HostConfig | —                        |
+| E   | Widgetbook chart knobs page (complete)      | `widgetbook`                                  | D                        |
+| F   | `Chart.Gauge` (CustomPainter, complete)     | `flutter_adaptive_charts_fs`                  | D (ChartChrome optional) |
+| G   | Text features (complete)                    | `flutter_adaptive_cards_fs`                   | —                        |
 
 Recommended execution order: **A → B, C, G (parallel) → D → E → F**.
 

@@ -70,7 +70,7 @@ needs no change (`Interaction.reply_text` = `reply.text`).
 
 A small, testable helper — `try_parse_card_body(raw: str) -> list | None`:
 
-1. Strip surrounding whitespace and a ```` ```json … ``` ```` (or bare ```` ``` ````)
+1. Strip surrounding whitespace and a ` ```json … ``` ` (or bare ` ``` `)
    fence if present.
 2. `json.loads`; on `ValueError` → `None` (it's text).
 3. Accept **either**:
@@ -80,7 +80,7 @@ A small, testable helper — `try_parse_card_body(raw: str) -> list | None`:
    AdaptiveCard, a JSON string/number) → `None`.
 
 Strict "**only** a JSON card counts": the whole (fence-stripped) reply must be
-the card, matching the user's "recognize if *only* a json adaptive card was
+the card, matching the user's "recognize if _only_ a json adaptive card was
 returned" framing.
 
 Because we ultimately embed only the **body items**, any top-level `actions`

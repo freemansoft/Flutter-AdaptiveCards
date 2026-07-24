@@ -63,10 +63,10 @@ if (overlay?.text != null) merged['text'] = overlay!.text;
 
 ### 1.3 Notifier APIs — [`adaptive_card_document_notifier.dart`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart)
 
-| API | Behavior |
-|-----|----------|
-| `setText(String id, String text)` | Sets overlay `text` |
-| `clearText(String id)` | Clears overlay `text` |
+| API                               | Behavior              |
+| --------------------------------- | --------------------- |
+| `setText(String id, String text)` | Sets overlay `text`   |
+| `clearText(String id)`            | Clears overlay `text` |
 
 **`resetAllInputs()`:** unchanged — only strips overlays on **`Input.*`** ids; **TextBlock text overlays persist** across reset (same as visibility / action overlays).
 
@@ -136,37 +136,37 @@ Run: `fvm flutter test test/riverpod/ test/elements/` + `fvm flutter analyze` in
 
 ### Already implemented
 
-| Target | Overlay / provider |
-|--------|-------------------|
-| Any element with `id` | `isVisible` → `resolvedElementProvider` |
-| `Input.*` | `inputValue`, `errorMessage`, `isInvalid`, `choices`, query session fields |
-| `Action.*` | `isEnabled` → `resolvedActionProvider` |
+| Target                | Overlay / provider                                                         |
+| --------------------- | -------------------------------------------------------------------------- |
+| Any element with `id` | `isVisible` → `resolvedElementProvider`                                    |
+| `Input.*`             | `inputValue`, `errorMessage`, `isInvalid`, `choices`, query session fields |
+| `Action.*`            | `isEnabled` → `resolvedActionProvider`                                     |
 
 ### Recommended future overlays (prioritized)
 
 **Body / display elements**
 
-| Property | Element(s) | Host use case | Priority |
-|----------|------------|---------------|----------|
-| **`text`** | **`TextBlock`** | Dynamic status, i18n, templating refresh | **This task** |
-| `url` | `Image`, `Media` | Signed URL rotation | Medium |
-| `text` | `Badge` (extension) | Dynamic badge label | Low (reuse same overlay field + listener if needed) |
+| Property   | Element(s)          | Host use case                            | Priority                                            |
+| ---------- | ------------------- | ---------------------------------------- | --------------------------------------------------- |
+| **`text`** | **`TextBlock`**     | Dynamic status, i18n, templating refresh | **This task**                                       |
+| `url`      | `Image`, `Media`    | Signed URL rotation                      | Medium                                              |
+| `text`     | `Badge` (extension) | Dynamic badge label                      | Low (reuse same overlay field + listener if needed) |
 
 **Inputs — defer (per user)**
 
-| Property | Notes |
-|----------|--------|
-| `placeholder`, `label` | Hint/label changes without value change |
-| `isRequired` | Conditional validation |
-| `choices.data.parameters` | Typeahead (prior plan deferral) |
+| Property                  | Notes                                   |
+| ------------------------- | --------------------------------------- |
+| `placeholder`, `label`    | Hint/label changes without value change |
+| `isRequired`              | Conditional validation                  |
+| `choices.data.parameters` | Typeahead (prior plan deferral)         |
 
 **Actions — defer**
 
-| Property | Notes |
-|----------|--------|
-| `title` | Button label updates (`AdaptiveActionMixin` reads `adaptiveMap` today) |
-| `tooltip`, `iconUrl` | UX tweaks at runtime |
-| `mode`, `style` | AC 1.5+; lower demand |
+| Property             | Notes                                                                  |
+| -------------------- | ---------------------------------------------------------------------- |
+| `title`              | Button label updates (`AdaptiveActionMixin` reads `adaptiveMap` today) |
+| `tooltip`, `iconUrl` | UX tweaks at runtime                                                   |
+| `mode`, `style`      | AC 1.5+; lower demand                                                  |
 
 **Session-only (stay overlay-only, not merged)**
 

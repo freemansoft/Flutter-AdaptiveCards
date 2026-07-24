@@ -590,7 +590,7 @@ flutter_adaptive_cards_host_fs    40    150     40  PASS
 All four floors are measured values, so **no reconciliation is needed** — do not
 adjust a floor to make this run green. If a package comes in below its floor,
 that is a real regression to report, not a number to lower. If one comes in
-*above* its floor, that is a genuine improvement: raise the floor in its own
+_above_ its floor, that is a genuine improvement: raise the floor in its own
 commit so the gain is locked in.
 
 - [ ] **Step 6: Verify the enforcing path fails on a floor breach**
@@ -650,37 +650,37 @@ Add to the end of `.github/workflows/validate.yaml`, at the same indentation as
 the existing `markdown-format:` job key:
 
 ```yaml
-  pana:
-    name: Pub score (pana)
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
+pana:
+  name: Pub score (pana)
+  runs-on: ubuntu-24.04
+  timeout-minutes: 25
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
 
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          flutter-version: 3.44.0 # should sync with fvm version
-          cache: true
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: "stable"
+        flutter-version: 3.44.0 # should sync with fvm version
+        cache: true
 
-      - run: flutter pub get
+    - run: flutter pub get
 
-      # Pinned so the score is reproducible. Bump deliberately, in its own
-      # commit, and re-measure tool/pana_floors.yaml when you do -- a new pana
-      # release can change how points are awarded.
-      - name: Activate pana
-        run: dart pub global activate pana 0.23.14
+    # Pinned so the score is reproducible. Bump deliberately, in its own
+    # commit, and re-measure tool/pana_floors.yaml when you do -- a new pana
+    # release can change how points are awarded.
+    - name: Activate pana
+      run: dart pub global activate pana 0.23.14
 
-      - name: Verify the gate's own parsers
-        run: dart run tool/pana/check_pana.dart --self-test
+    - name: Verify the gate's own parsers
+      run: dart run tool/pana/check_pana.dart --self-test
 
-      # Report-only for now (prints the table, never fails the build) while the
-      # CI plumbing is validated -- same rollout the coverage gate used. Drop
-      # --report-only to make it enforcing. See docs/pub-score-pana.md.
-      - name: Pub-score gate (report-only)
-        run: dart run tool/pana/check_pana.dart --report-only
+    # Report-only for now (prints the table, never fails the build) while the
+    # CI plumbing is validated -- same rollout the coverage gate used. Drop
+    # --report-only to make it enforcing. See docs/pub-score-pana.md.
+    - name: Pub-score gate (report-only)
+      run: dart run tool/pana/check_pana.dart --report-only
 ```
 
 - [ ] **Step 3: Verify the workflow parses**
@@ -953,12 +953,12 @@ you do not control stops supporting the latest SDK), say so in the commit messag
 
 ## Running it locally
 
-| Goal                          | Command                                                                       |
-| ----------------------------- | ----------------------------------------------------------------------------- |
-| Score everything, never fail  | `fvm dart run tool/pana/check_pana.dart --report-only`                        |
-| Score everything, enforcing   | `fvm dart run tool/pana/check_pana.dart`                                      |
-| Score one package             | `fvm dart run tool/pana/check_pana.dart --only flutter_adaptive_cards_fs`     |
-| Verify the gate's own parsers | `fvm dart run tool/pana/check_pana.dart --self-test`                          |
+| Goal                          | Command                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------- |
+| Score everything, never fail  | `fvm dart run tool/pana/check_pana.dart --report-only`                    |
+| Score everything, enforcing   | `fvm dart run tool/pana/check_pana.dart`                                  |
+| Score one package             | `fvm dart run tool/pana/check_pana.dart --only flutter_adaptive_cards_fs` |
+| Verify the gate's own parsers | `fvm dart run tool/pana/check_pana.dart --self-test`                      |
 
 From VS Code, use **Tasks: Run Task** → **pana: all packages** or
 **pana: one package**. `Setup pana` activates the pinned CLI;
@@ -1086,28 +1086,28 @@ Add to the end of `.github/workflows/validate.yaml`, at the same indentation as
 the existing `markdown-format:` and `pana:` job keys:
 
 ```yaml
-  dart-format:
-    name: Dart format
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
+dart-format:
+  name: Dart format
+  runs-on: ubuntu-24.04
+  timeout-minutes: 10
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
 
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          flutter-version: 3.44.0 # should sync with fvm version
-          cache: true
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: "stable"
+        flutter-version: 3.44.0 # should sync with fvm version
+        cache: true
 
-      # Enforcing from day one, unlike the pana gate: this check is fast,
-      # deterministic, and mechanically fixable with `dart format .`. Formatting
-      # is not a lint, so `flutter analyze` passes on a drifted tree -- this is
-      # the only job that catches it. pana also scores lib/ formatting as part
-      # of its static-analysis section, but report-only and 5-8 minutes slower.
-      - name: Check Dart formatting
-        run: dart format --output=none --set-exit-if-changed packages/ tool/
+    # Enforcing from day one, unlike the pana gate: this check is fast,
+    # deterministic, and mechanically fixable with `dart format .`. Formatting
+    # is not a lint, so `flutter analyze` passes on a drifted tree -- this is
+    # the only job that catches it. pana also scores lib/ formatting as part
+    # of its static-analysis section, but report-only and 5-8 minutes slower.
+    - name: Check Dart formatting
+      run: dart format --output=none --set-exit-if-changed packages/ tool/
 ```
 
 `tool/` is included so `tool/pana/check_pana.dart` from Task 1 stays formatted;

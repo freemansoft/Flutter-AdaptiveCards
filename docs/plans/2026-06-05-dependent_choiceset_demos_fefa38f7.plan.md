@@ -53,12 +53,10 @@ isProject: false
 
 **Phase 1 (this implementation):** Demonstrate the Teams/Bot Framework dependent-input pattern in Widgetbook with **two side-by-side use cases**:
 
-
 | Use case                        | JSON                                                                                                                               | What it teaches                                                                             |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | **Option 1 — host cascade**     | Existing `[value_changed_action_filtered.json](widgetbook/lib/samples/inputs/input_choice_set/value_changed_action_filtered.json)` | Card `valueChangedAction` resets city; **host** repopulates choices via `applyUpdates`      |
 | **Option 2 — Teams Data.Query** | New copy with `choices.data`                                                                                                       | Same reset + host cascade, plus Teams-shaped dynamic city field (`filtered` + `Data.Query`) |
-
 
 Phase 1 is **Widgetbook + host handler** work, plus a **library fix** for filtered ChoiceSet (search/display **titles**, submit/`onChange` **values**) so Option 2 UX matches Teams expectations.
 
@@ -68,16 +66,14 @@ Phase 1 is **Widgetbook + host handler** work, plus a **library fix** for filter
 
 ## Implementation status
 
-
-| Phase                    | Status       | Notes                                                                                                                                                                                                                                                                 |
-| ------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Phase 1 (core)**       | **Complete** | JSON samples, `DependentChoiceSetDemoPage`, two Widgetbook use cases, handler + post-frame `applyUpdates`                                                                                                                                                             |
-| **Phase 1 (follow-ups)** | **Complete** | Package tests, Submit/`isRequired` on samples, filtered title/value fix, docs + sequence diagram in [`form-inputs.md`](docs/form-inputs.md)                                                                                                                         |
-| **Phase 1 docs**         | **Complete** | [Shared handler](#shared-handler-option-1-vs-option-2); dart comments in [`dependent_choice_set_demo_page.dart`](widgetbook/lib/dependent_choice_set_demo_page.dart)                                                                                                  |
-| **Phase 2**              | **Complete** | `associatedInputs` parse + merge; Option 2 handler uses `dataQuery.parameters['country']` ([backend-host plan](../superpowers/plans/2026-06-07-backend-host-integration.plan.md))                                                                                    |
-| **Phase 2b (optional)**  | **Open**     | Typeahead `onChange` on keystroke — deferred per backend-host spec                                                                                                                                                                                                    |
-| **Phase 2b (optional)**  | **Open**     | `onChange` on filtered search keystroke (Teams invoke-on-type parity) — deferred                                                                                                                                                                                      |
-
+| Phase                    | Status       | Notes                                                                                                                                                                             |
+| ------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Phase 1 (core)**       | **Complete** | JSON samples, `DependentChoiceSetDemoPage`, two Widgetbook use cases, handler + post-frame `applyUpdates`                                                                         |
+| **Phase 1 (follow-ups)** | **Complete** | Package tests, Submit/`isRequired` on samples, filtered title/value fix, docs + sequence diagram in [`form-inputs.md`](docs/form-inputs.md)                                       |
+| **Phase 1 docs**         | **Complete** | [Shared handler](#shared-handler-option-1-vs-option-2); dart comments in [`dependent_choice_set_demo_page.dart`](widgetbook/lib/dependent_choice_set_demo_page.dart)              |
+| **Phase 2**              | **Complete** | `associatedInputs` parse + merge; Option 2 handler uses `dataQuery.parameters['country']` ([backend-host plan](../superpowers/plans/2026-06-07-backend-host-integration.plan.md)) |
+| **Phase 2b (optional)**  | **Open**     | Typeahead `onChange` on keystroke — deferred per backend-host spec                                                                                                                |
+| **Phase 2b (optional)**  | **Open**     | `onChange` on filtered search keystroke (Teams invoke-on-type parity) — deferred                                                                                                  |
 
 ---
 
@@ -100,8 +96,6 @@ sequenceDiagram
   Note over Host: Option 2 only: dataQuery.dataset == cities
 ```
 
-
-
 **Card-side (already implemented):** `[valueChangedAction](packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart)` runs embedded `Action.ResetInputs` → city value returns to baseline.
 
 **Host-side (new Widgetbook code):** `onChange` calls `cardState.applyUpdates` with country-specific `Choice` lists (pattern from `[cascade_choice_set_test.dart](packages/flutter_adaptive_cards_fs/test/inputs/cascade_choice_set_test.dart)`).
@@ -112,17 +106,14 @@ sequenceDiagram
 
 Both Widgetbook use cases use the same widget ([`DependentChoiceSetDemoPage`](widgetbook/lib/dependent_choice_set_demo_page.dart)) and the same static handler **`handleDependentChoiceSetChange`**. The only difference is **`assetPath`** (which JSON is loaded):
 
-
 | Use case                                | JSON asset                                  |
 | --------------------------------------- | ------------------------------------------- |
 | Value changed action (host cascade)     | `value_changed_action_filtered.json`        |
 | Value changed action (Teams Data.Query) | `value_changed_action_dependent_query.json` |
 
-
 Both wire `onChange: handleDependentChoiceSetChange` on `AdaptiveCardsCanvas.asset`.
 
 ### What differs in JSON (not in the handler)
-
 
 |                         | Option 1                                | Option 2                                                          |
 | ----------------------- | --------------------------------------- | ----------------------------------------------------------------- |
@@ -130,15 +121,12 @@ Both wire `onChange: handleDependentChoiceSetChange` on `AdaptiveCardsCanvas.ass
 | City baseline `choices` | Static Paris/Lyon (+ empty placeholder) | Empty `[]`                                                        |
 | City `choices.data`     | Absent                                  | `Data.Query` with `dataset: "cities"`, `associatedInputs: "auto"` |
 
-
 ### What each `if` branch does (shared handler)
-
 
 | Branch                                           | When it runs                                         | Option 1                                                                    | Option 2                                                                         |
 | ------------------------------------------------ | ---------------------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | `id == 'country'`                                | User changes country                                 | **Yes** — `applyUpdates` loads `citiesByCountry[country]` into city overlay | **Yes** — same cascade logic                                                     |
 | `id == 'city' && dataQuery?.dataset == 'cities'` | User selects city and ChoiceSet passes a `DataQuery` | **No** — city has no `choices.data`, so `dataQuery` is always `null`        | **Yes** — debug log only in Phase 1; choices already preloaded on country change |
-
 
 **Takeaway:** The cascade (country → repopulate city choices) is identical for both demos. Option 2 additionally exercises the `Data.Query` `onChange` path when the user picks a city; Option 1 never hits the second branch because its city field is a plain compact ChoiceSet without `choices.data`.
 
@@ -150,13 +138,13 @@ Both wire `onChange: handleDependentChoiceSetChange` on `AdaptiveCardsCanvas.ass
 
 Work after the original Phase 1 todos:
 
-| Area | Delivered |
-| --- | --- |
-| **Package tests** | [`test/samples/value_changed_action_*.json`](packages/flutter_adaptive_cards_fs/test/samples/), [`dependent_choice_set_test.dart`](packages/flutter_adaptive_cards_fs/test/inputs/dependent_choice_set_test.dart) (3 widget tests), [`dependent_choice_set_handler.dart`](packages/flutter_adaptive_cards_fs/test/utils/dependent_choice_set_handler.dart) |
-| **Sample polish** | `Action.Submit` + `isRequired` / `errorMessage` on **country** and **city** in all four JSON files (widgetbook + test copies) |
-| **Filtered ChoiceSet** | [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart) + [`choice_filter.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_filter.dart): modal search/list **titles**; stored/submitted **values**; tests in `choice_set_test.dart`, `choice_filter_test.dart` |
-| **Handler ordering** | Post-frame `applyUpdates` in handler so cascade runs after `valueChangedAction` reset |
-| **Docs** | `form-inputs.md` (dependent + filtered + mermaid diagram), `Implementation-Status.md`, package README, CHANGELOG `[0.9.0]`, widgetbook README, testing skill, related plans |
+| Area                   | Delivered                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Package tests**      | [`test/samples/value_changed_action_*.json`](packages/flutter_adaptive_cards_fs/test/samples/), [`dependent_choice_set_test.dart`](packages/flutter_adaptive_cards_fs/test/inputs/dependent_choice_set_test.dart) (3 widget tests), [`dependent_choice_set_handler.dart`](packages/flutter_adaptive_cards_fs/test/utils/dependent_choice_set_handler.dart) |
+| **Sample polish**      | `Action.Submit` + `isRequired` / `errorMessage` on **country** and **city** in all four JSON files (widgetbook + test copies)                                                                                                                                                                                                                              |
+| **Filtered ChoiceSet** | [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart) + [`choice_filter.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_filter.dart): modal search/list **titles**; stored/submitted **values**; tests in `choice_set_test.dart`, `choice_filter_test.dart`                                   |
+| **Handler ordering**   | Post-frame `applyUpdates` in handler so cascade runs after `valueChangedAction` reset                                                                                                                                                                                                                                                                      |
+| **Docs**               | `form-inputs.md` (dependent + filtered + mermaid diagram), `Implementation-Status.md`, package README, CHANGELOG `[0.9.0]`, widgetbook README, testing skill, related plans                                                                                                                                                                                |
 
 ---
 
@@ -248,12 +236,10 @@ static void handleDependentChoiceSetChange(...) {
 
 Update `[widgetbook/lib/adaptive_cards_use_cases.dart](widgetbook/lib/adaptive_cards_use_cases.dart)`:
 
-
 | Use case name                             | Widget                                                                                   | JSON     |
 | ----------------------------------------- | ---------------------------------------------------------------------------------------- | -------- |
 | `Value changed action (host cascade)`     | `DependentChoiceSetDemoPage(assetPath: '.../value_changed_action_filtered.json')`        | Option 1 |
 | `Value changed action (Teams Data.Query)` | `DependentChoiceSetDemoPage(assetPath: '.../value_changed_action_dependent_query.json')` | Option 2 |
-
 
 Rename the existing `@widgetbook.UseCase(name: 'Value changed action', ...)` entry to avoid ambiguity.
 
@@ -328,27 +314,25 @@ Phase 1 works around this by preloading city choices in the **country** `onChang
 
 ### Phase 2 MVP scope
 
-| Step | Work |
-| --- | --- |
-| **Spec** | `docs/superpowers/specs/…-data-query-associated-inputs-design.md` — host API (`DataQuery.parameters`), default when omitted, exclude self, when to merge |
-| **Model** | Parse `associatedInputs` on `DataQuery` (`"auto"` \| `"none"`) |
-| **Merge** | On ChoiceSet `changeValue`, if `associatedInputs == "auto"`, merge other inputs from `collectInputValues()` into `parameters` (exclude firing input id) |
-| **Tests** | Extend `choice_set_data_query_test.dart` / `dependent_choice_set_test.dart`: city `onChange` receives `parameters['country']` |
-| **Demo** | Option 2 handler loads cities from `dataQuery.parameters['country']`; sync [`dependent_choice_set_handler.dart`](packages/flutter_adaptive_cards_fs/test/utils/dependent_choice_set_handler.dart) |
-| **Docs** | Close gap paragraphs in `form-inputs.md`, `Implementation-Status.md`, `reactive-riverpod.md` |
+| Step      | Work                                                                                                                                                                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Spec**  | `docs/superpowers/specs/…-data-query-associated-inputs-design.md` — host API (`DataQuery.parameters`), default when omitted, exclude self, when to merge                                          |
+| **Model** | Parse `associatedInputs` on `DataQuery` (`"auto"` \| `"none"`)                                                                                                                                    |
+| **Merge** | On ChoiceSet `changeValue`, if `associatedInputs == "auto"`, merge other inputs from `collectInputValues()` into `parameters` (exclude firing input id)                                           |
+| **Tests** | Extend `choice_set_data_query_test.dart` / `dependent_choice_set_test.dart`: city `onChange` receives `parameters['country']`                                                                     |
+| **Demo**  | Option 2 handler loads cities from `dataQuery.parameters['country']`; sync [`dependent_choice_set_handler.dart`](packages/flutter_adaptive_cards_fs/test/utils/dependent_choice_set_handler.dart) |
+| **Docs**  | Close gap paragraphs in `form-inputs.md`, `Implementation-Status.md`, `reactive-riverpod.md`                                                                                                      |
 
 ### Phase 2 scope (detail)
 
-
-| Area                     | Work                                                                                                                                                                                                                      |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Model**                | Parse and expose `associatedInputs` on `DataQuery` (`"auto"` | `"none"`; default Teams behavior when omitted TBD in spec)                                                                                                 |
-| **ChoiceSet**            | When building `changeValue(..., dataQuery:)`, if `associatedInputs == "auto"`, merge resolved `inputValue` (or baseline `value`) from all other `Input.`* ids into `DataQuery.parameters` or a documented host-facing map |
-| **Filtered / typeahead** | Phase **2b** (optional todo): fire `onChange` when opening filtered search / on keystroke with query text in `DataQuery.value` |
-| **Tests**                | Extend `[choice_set_data_query_test.dart](packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart)`: country+city card, city `onChange` receives `dataQuery.parameters['country']` (or equivalent) |
-| **Docs**                 | Update `[docs/form-inputs.md](docs/form-inputs.md)`, `[docs/reactive-riverpod.md](docs/reactive-riverpod.md)`, `[Implementation-Status.md](docs/Implementation-Status.md)`; reference Teams dependent-inputs doc          |
-| **Spec**                 | New `docs/superpowers/specs/YYYY-MM-DD-data-query-associated-inputs-design.md` before coding (brainstorming → writing-plans workflow)                                                                                     |
-
+| Area                     | Work                                                                                                                                                                                                                       |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Model**                | Parse and expose `associatedInputs` on `DataQuery` (`"auto"`                                                                                                                                                               | `"none"`; default Teams behavior when omitted TBD in spec) |
+| **ChoiceSet**            | When building `changeValue(..., dataQuery:)`, if `associatedInputs == "auto"`, merge resolved `inputValue` (or baseline `value`) from all other `Input.`\* ids into `DataQuery.parameters` or a documented host-facing map |
+| **Filtered / typeahead** | Phase **2b** (optional todo): fire `onChange` when opening filtered search / on keystroke with query text in `DataQuery.value`                                                                                             |
+| **Tests**                | Extend `[choice_set_data_query_test.dart](packages/flutter_adaptive_cards_fs/test/inputs/choice_set_data_query_test.dart)`: country+city card, city `onChange` receives `dataQuery.parameters['country']` (or equivalent)  |
+| **Docs**                 | Update `[docs/form-inputs.md](docs/form-inputs.md)`, `[docs/reactive-riverpod.md](docs/reactive-riverpod.md)`, `[Implementation-Status.md](docs/Implementation-Status.md)`; reference Teams dependent-inputs doc           |
+| **Spec**                 | New `docs/superpowers/specs/YYYY-MM-DD-data-query-associated-inputs-design.md` before coding (brainstorming → writing-plans workflow)                                                                                      |
 
 ### Phase 2 integration with Widgetbook Option 2 demo
 
@@ -387,21 +371,19 @@ This makes the Option 2 JSON (`associatedInputs: "auto"`) a living regression te
 
 ## Todo list
 
-| ID | Task | Phase | Status |
-| --- | --- | --- | --- |
-| `new-json` | Create `value_changed_action_dependent_query.json` | 1 | completed |
-| `edit-json` | Update TextBlock in `value_changed_action_filtered.json` | 1 | completed |
-| `demo-page` | Add `dependent_choice_set_demo_page.dart` + handler | 1 | completed |
-| `use-cases` | Wire two Widgetbook use cases + `build_runner` | 1 | completed |
-| `verify` | Analyze widgetbook + manual smoke test | 1 | completed |
-| `handler-docs` | Plan shared-handler section + dart branch comments | 1 | completed |
-| `package-tests` | Package sample JSON + `dependent_choice_set_test.dart` + handler util | 1 | completed |
-| `sample-polish` | Submit + isRequired on all four JSON samples | 1 | completed |
-| `filtered-choiceset-titles` | Filtered search/display titles; submit values | 1 | completed |
-| `docs-sync` | form-inputs diagram + filtered section + related docs | 1 | completed |
-| `phase2-spec` | Design spec for `Data.Query associatedInputs` | 2 | pending |
-| `phase2-library` | Parse + merge `associatedInputs` in library + tests | 2 | pending |
-| `phase2-demo` | Simplify Option 2 handler to use `dataQuery.parameters` | 2 | pending |
-| `phase2b-typeahead` | (Optional) onChange on filtered search keystroke | 2b | pending |
-
-
+| ID                          | Task                                                                  | Phase | Status    |
+| --------------------------- | --------------------------------------------------------------------- | ----- | --------- |
+| `new-json`                  | Create `value_changed_action_dependent_query.json`                    | 1     | completed |
+| `edit-json`                 | Update TextBlock in `value_changed_action_filtered.json`              | 1     | completed |
+| `demo-page`                 | Add `dependent_choice_set_demo_page.dart` + handler                   | 1     | completed |
+| `use-cases`                 | Wire two Widgetbook use cases + `build_runner`                        | 1     | completed |
+| `verify`                    | Analyze widgetbook + manual smoke test                                | 1     | completed |
+| `handler-docs`              | Plan shared-handler section + dart branch comments                    | 1     | completed |
+| `package-tests`             | Package sample JSON + `dependent_choice_set_test.dart` + handler util | 1     | completed |
+| `sample-polish`             | Submit + isRequired on all four JSON samples                          | 1     | completed |
+| `filtered-choiceset-titles` | Filtered search/display titles; submit values                         | 1     | completed |
+| `docs-sync`                 | form-inputs diagram + filtered section + related docs                 | 1     | completed |
+| `phase2-spec`               | Design spec for `Data.Query associatedInputs`                         | 2     | pending   |
+| `phase2-library`            | Parse + merge `associatedInputs` in library + tests                   | 2     | pending   |
+| `phase2-demo`               | Simplify Option 2 handler to use `dataQuery.parameters`               | 2     | pending   |
+| `phase2b-typeahead`         | (Optional) onChange on filtered search keystroke                      | 2b    | pending   |

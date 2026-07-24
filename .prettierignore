@@ -4,9 +4,11 @@
 
 # Process / decision-record artifacts — frozen, not formatted
 # (mirrors the Diátaxis governance scope: published docs only)
-docs/plans/
-docs/superpowers/
-docs/reviews/
+#
+# We don't have a way of knowing which plans are in progress which is when they should be formatted, so we just ignore all of them.
+#docs/plans/
+#docs/superpowers/
+#docs/reviews/
 docs/archive/
 
 # Build / tooling output

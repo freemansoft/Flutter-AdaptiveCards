@@ -100,6 +100,7 @@ Apply the same structure as `AdaptiveActionSubmitState`:
 `generateAdaptiveWidgetKey` calls `loadId()`, which falls back to `UUIDGenerator` when no `id` field is present. Because those UUIDs are generated at widget-build time, they are non-deterministic from a test's perspective, making key-based lookup impossible for id-less actions.
 
 **Rule:**
+
 - **Action map has an explicit `id`:** locate by key first, then find `ElevatedButton` as a descendant. Optionally cross-validate with `find.text()` to confirm identity.
 - **Action map has no `id`:** use `find.text('Label')` as the sole locator.
 
@@ -122,12 +123,14 @@ await tester.tap(find.text('Button Label'));
 ```
 
 Files using key-first (action maps have explicit ids):
+
 - `test/actions/popover_overlay_test.dart`
 - `test/actions/submit_overlay_test.dart`
 - `test/actions/execute_overlay_test.dart`
 - `test/actions/open_url_overlay_test.dart`
 
 Files using label-only (action maps have no ids, or ids are test-irrelevant):
+
 - `test/actions/submit_action_invoke_test.dart`
 - `test/actions/execute_verb_test.dart`
 - `test/actions/open_url_action_invoke_test.dart`
@@ -166,18 +169,18 @@ class MyTestHttpOverrides extends HttpOverrides {
 
 ## Files to modify
 
-| File | Change |
-|------|--------|
-| `lib/src/action/generic_action.dart` | Add `GenericPopoverAction` |
-| `lib/src/action/default_actions.dart` | Add `DefaultPopoverAction` |
-| `lib/src/action/action_type_registry.dart` | Register `Action.Popover` |
-| `lib/src/cards/actions/popover.dart` | Refactor state to use registry pattern |
-| `packages/flutter_adaptive_cards_test_support/lib/src/http_overrides.dart` | Add `urlResponder` param to `MyTestHttpOverrides` |
-| `test/actions/submit_action_invoke_test.dart` | Key-first locator + cross-validation |
-| `test/actions/execute_verb_test.dart` | Key-first locator + cross-validation |
-| `test/actions/open_url_action_invoke_test.dart` | Key-first locator + cross-validation |
-| `test/actions/open_url_dialog_action_invoke_test.dart` | Key-first locator + cross-validation |
-| `test/elements/actions/open_url_dialog_test.dart` | Switch to `MyTestHttpOverrides(urlResponder:…)` + key-first locator |
+| File                                                                       | Change                                                              |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `lib/src/action/generic_action.dart`                                       | Add `GenericPopoverAction`                                          |
+| `lib/src/action/default_actions.dart`                                      | Add `DefaultPopoverAction`                                          |
+| `lib/src/action/action_type_registry.dart`                                 | Register `Action.Popover`                                           |
+| `lib/src/cards/actions/popover.dart`                                       | Refactor state to use registry pattern                              |
+| `packages/flutter_adaptive_cards_test_support/lib/src/http_overrides.dart` | Add `urlResponder` param to `MyTestHttpOverrides`                   |
+| `test/actions/submit_action_invoke_test.dart`                              | Key-first locator + cross-validation                                |
+| `test/actions/execute_verb_test.dart`                                      | Key-first locator + cross-validation                                |
+| `test/actions/open_url_action_invoke_test.dart`                            | Key-first locator + cross-validation                                |
+| `test/actions/open_url_dialog_action_invoke_test.dart`                     | Key-first locator + cross-validation                                |
+| `test/elements/actions/open_url_dialog_test.dart`                          | Switch to `MyTestHttpOverrides(urlResponder:…)` + key-first locator |
 
 ---
 
@@ -197,6 +200,7 @@ fvm flutter test
 ```
 
 Manually confirm:
+
 - Tapping the Popover button in a rendered card still opens the dialog.
 - Disabling a Popover action via `setActionEnabled('id', enabled: false)` greys the button (existing overlay tests cover this).
 - `open_url_dialog_test.dart` passes without `MockHttpOverrides`.

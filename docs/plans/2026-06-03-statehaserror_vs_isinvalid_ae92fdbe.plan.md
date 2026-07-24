@@ -71,12 +71,12 @@ flowchart TB
 
 ## Single validation channel
 
-| Concern | Mechanism |
-| --- | --- |
-| **Set invalid** | `setInputError(id, errorMessage:, isInvalid: true)` or mixin helper `setLocalValidationError()` |
-| **Clear invalid** | User edit → `setInputValue` (already clears validation overlays); host → `clearInputError`; **reset** → `resetInput` / `resetAllInputs` factory reset (already clears `errorMessage` + `isInvalid`) |
-| **Show error UI** | `loadErrorMessage(..., showError: input.isInvalid)` with `errorMessage: input.errorMessage` |
-| **No widget-local flag** | Remove `stateHasError`, remove `showValidationErrorFor` |
+| Concern                  | Mechanism                                                                                                                                                                                           |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Set invalid**          | `setInputError(id, errorMessage:, isInvalid: true)` or mixin helper `setLocalValidationError()`                                                                                                     |
+| **Clear invalid**        | User edit → `setInputValue` (already clears validation overlays); host → `clearInputError`; **reset** → `resetInput` / `resetAllInputs` factory reset (already clears `errorMessage` + `isInvalid`) |
+| **Show error UI**        | `loadErrorMessage(..., showError: input.isInvalid)` with `errorMessage: input.errorMessage`                                                                                                         |
+| **No widget-local flag** | Remove `stateHasError`, remove `showValidationErrorFor`                                                                                                                                             |
 
 ## Mixin changes ([`adaptive_mixins.dart`](packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart))
 
@@ -106,14 +106,14 @@ void clearLocalValidationError() {
 
 ## Input widget changes
 
-| File | Change |
-| --- | --- |
-| [`text.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/text.dart) | Validator calls `setLocalValidationError` / `clearLocalValidationError`; `loadErrorMessage(..., showError: input.isInvalid)` |
-| [`number.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/number.dart) | Same |
-| [`date.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/date.dart) | Same |
-| [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart) | `checkRequired` uses notifier helpers; remove `stateHasError` |
-| [`time.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/time.dart) | If required validation added later, same pattern |
-| [`toggle.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/toggle.dart) | No change unless required semantics added |
+| File                                                                                         | Change                                                                                                                       |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| [`text.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/text.dart)             | Validator calls `setLocalValidationError` / `clearLocalValidationError`; `loadErrorMessage(..., showError: input.isInvalid)` |
+| [`number.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/number.dart)         | Same                                                                                                                         |
+| [`date.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/date.dart)             | Same                                                                                                                         |
+| [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart) | `checkRequired` uses notifier helpers; remove `stateHasError`                                                                |
+| [`time.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/time.dart)             | If required validation added later, same pattern                                                                             |
+| [`toggle.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/toggle.dart)         | No change unless required semantics added                                                                                    |
 
 Remove all `stateHasError = false` from `resetInput`, `onDocumentValueChanged` — factory reset + `setInputValue` already clear overlays.
 

@@ -25,18 +25,20 @@
 ### Task 1: Card detection helper
 
 **Files:**
+
 - Create: `adaptive_chat_server/app/card_detect.py`
 - Test: `adaptive_chat_server/tests/test_card_detect.py`
 
 **Interfaces:**
+
 - Consumes: nothing.
-- Produces: `try_parse_card_body(raw: str) -> list | None` — returns the Adaptive Card body items when `raw` is *only* a card (full `{"type":"AdaptiveCard","body":[…]}` object or a bare non-empty JSON array of objects), else `None`.
+- Produces: `try_parse_card_body(raw: str) -> list | None` — returns the Adaptive Card body items when `raw` is _only_ a card (full `{"type":"AdaptiveCard","body":[…]}` object or a bare non-empty JSON array of objects), else `None`.
 
 - [ ] **Step 1: Write the failing test**
 
 Create `adaptive_chat_server/tests/test_card_detect.py`:
 
-```python
+````python
 from app.card_detect import try_parse_card_body
 
 
@@ -78,7 +80,7 @@ def test_array_of_scalars_returns_none():
 
 def test_empty_array_returns_none():
     assert try_parse_card_body("[]") is None
-```
+````
 
 - [ ] **Step 2: Run test to verify it fails**
 
@@ -89,7 +91,7 @@ Expected: FAIL — `ModuleNotFoundError: No module named 'app.card_detect'`.
 
 Create `adaptive_chat_server/app/card_detect.py`:
 
-```python
+````python
 """Decide whether a model reply is *only* an Adaptive Card, and extract its body.
 
 The Ollama model answers either in plain markdown (rendered in a TextBlock bubble)
@@ -135,7 +137,7 @@ def try_parse_card_body(raw: str) -> list | None:
     ):
         return parsed["body"]
     return None
-```
+````
 
 - [ ] **Step 4: Run test to verify it passes**
 
@@ -154,10 +156,12 @@ git commit -m "feat(adaptive_chat_server): strict try_parse_card_body helper"
 ### Task 2: `assistant_card_bubble` + `_bubble` refactor
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/cards.py`
 - Test: `adaptive_chat_server/tests/test_cards.py`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: `assistant_card_bubble(body_items: list) -> dict` — a left-aligned, `emphasis`, `roundedCorners` bubble whose container `items` are exactly `body_items`. `user_bubble(text)` / `assistant_bubble(text)` keep identical output.
 
@@ -264,11 +268,13 @@ git commit -m "feat(adaptive_chat_server): assistant_card_bubble embeds card fra
 ### Task 3: `Reply` value type + responder contract + route wiring
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/responder.py`
 - Modify: `adaptive_chat_server/app/main.py`
 - Test: `adaptive_chat_server/tests/test_responder.py`, `adaptive_chat_server/tests/test_api.py`
 
 **Interfaces:**
+
 - Consumes: `assistant_card_bubble` (Task 2).
 - Produces: `Reply(text: str, card_body: list | None = None)` frozen dataclass; `Responder.reply(...) -> Reply`; `EchoResponder.reply(...) -> Reply(text=..., card_body=None)`. The send route renders `assistant_card_bubble(reply.card_body)` when non-None, else `assistant_bubble(reply.text)`, and stores `reply_text=reply.text`.
 
@@ -412,10 +418,12 @@ git commit -m "feat(adaptive_chat_server): Reply value type; route renders card 
 ### Task 4: `OllamaResponder` returns `Reply` with card parsing
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/ollama_responder.py`
 - Test: `adaptive_chat_server/tests/test_ollama_responder.py`
 
 **Interfaces:**
+
 - Consumes: `Reply` (Task 3), `try_parse_card_body` (Task 1).
 - Produces: `OllamaResponder.reply(...) -> Reply`. Success → `Reply(text=content, card_body=try_parse_card_body(content))`. Every error fallback → `Reply(text=<diagnostic>, card_body=None)`.
 
@@ -487,6 +495,7 @@ from app.responder import Reply
                 )
             )
 ```
+
 ```python
             return Reply(
                 text=(
@@ -495,6 +504,7 @@ from app.responder import Reply
                 )
             )
 ```
+
 ```python
             return Reply(
                 text=f"(Ollama returned an unexpected response: {type(exc).__name__})"
@@ -525,10 +535,12 @@ git commit -m "feat(adaptive_chat_server): OllamaResponder returns Reply, detect
 ### Task 5: Bundled `card_system_prompt.txt`
 
 **Files:**
+
 - Create: `adaptive_chat_server/app/card_system_prompt.txt`
 - Test: `adaptive_chat_server/tests/test_card_system_prompt.py`
 
 **Interfaces:**
+
 - Consumes: nothing (selected at runtime via the existing `--system-prompt-file` flag).
 - Produces: a bundled prompt file next to `default_system_prompt.txt`, resolvable relative to the package.
 
@@ -612,9 +624,11 @@ git commit -m "feat(adaptive_chat_server): bundled card_system_prompt.txt (input
 ### Task 6: Client widget test — a card reply renders its inputs
 
 **Files:**
+
 - Test: `adaptive_chat_client/test/card_reply_render_test.dart` (create)
 
 **Interfaces:**
+
 - Consumes: `assistant_card_bubble`-shaped JSON (Task 2), the client's existing `AdaptiveCardsCanvas.map` render path. No client `lib/` change.
 
 - [ ] **Step 1: Inspect an existing client test for setup**
@@ -708,15 +722,18 @@ git commit -m "test(adaptive_chat_client): assistant card bubble renders its inp
 ### Task 7: Docs — READMEs
 
 **Files:**
+
 - Modify: `adaptive_chat_server/README.md`
 - Modify: `adaptive_chat_client/README.md`
 
 **Interfaces:**
+
 - Consumes: everything above. No code.
 
 - [ ] **Step 1: Update the server README**
 
 In `adaptive_chat_server/README.md`:
+
 - In the `responder.py` / `ollama_responder.py` rows of the Components table, note that `reply(...)` now returns a `Reply(text, card_body)`; `OllamaResponder` runs `try_parse_card_body` on its output.
 - Add a `cards.py` note for `assistant_card_bubble`, and a new `card_detect.py` row: "Strict text-vs-card detection — the whole reply must be an Adaptive Card object or a bare body array, else it's text."
 - Add a short **"Card replies (display-only)"** subsection: the model may answer with an Adaptive Card fragment that is embedded in the assistant bubble; select the card prompt with

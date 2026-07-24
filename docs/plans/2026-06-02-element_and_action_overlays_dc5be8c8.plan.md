@@ -35,13 +35,13 @@ isProject: false
 
 [`ElementOverlay`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart) today:
 
-| Field | Merged into `resolvedElementProvider` |
-|-------|----------------------------------------|
-| `isVisible` | `isVisible` |
-| `inputValue` | `value` |
-| `choices` | `choices` |
-| `queryCount` / `querySkip` | `choices.data.count` / `.skip` |
-| `querySearchText` | *(overlay only, not merged)* |
+| Field                      | Merged into `resolvedElementProvider` |
+| -------------------------- | ------------------------------------- |
+| `isVisible`                | `isVisible`                           |
+| `inputValue`               | `value`                               |
+| `choices`                  | `choices`                             |
+| `queryCount` / `querySkip` | `choices.data.count` / `.skip`        |
+| `querySearchText`          | _(overlay only, not merged)_          |
 
 [`_indexNodesById`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart) already walks the full baseline tree and indexes **any** map with a natural `id`, including **`Action.*`** nodes—not only body elements.
 
@@ -55,20 +55,20 @@ Input `errorMessage` is read once in [`AdaptiveInputMixin.initState`](packages/f
 
 ### Direct (read/write overlay model)
 
-| Location | Role |
-|----------|------|
-| [`adaptive_card_document.dart`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart) | Defines `ElementOverlay` + `AdaptiveCardDocument.overlaysById` |
+| Location                                                                                                                           | Role                                                           |
+| ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| [`adaptive_card_document.dart`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document.dart)                   | Defines `ElementOverlay` + `AdaptiveCardDocument.overlaysById` |
 | [`adaptive_card_document_notifier.dart`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart) | All `_updateOverlay` / `resetAllInputs` / `collectInputValues` |
 
 ### Indirect (consume via `resolvedElementProvider` or notifier)
 
-| Location | Role |
-|----------|------|
-| [`providers.dart`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart) | `resolvedElementProvider` merge logic |
-| [`adaptive_mixins.dart`](packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart) | `AdaptiveInputMixin` (`value`), `AdaptiveVisibilityMixin` (`isVisible`) |
-| [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart) | Listens for `choices` |
-| [`flutter_raw_adaptive_card.dart`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart) | `initInput` → `seedInputValues`; `loadInput` → `setChoices` |
-| [`default_actions.dart`](packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart) | `resetAllInputs`, `toggleVisibility`, reads `nodesById` on submit |
+| Location                                                                                                      | Role                                                                    |
+| ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [`providers.dart`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart)                        | `resolvedElementProvider` merge logic                                   |
+| [`adaptive_mixins.dart`](packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart)                     | `AdaptiveInputMixin` (`value`), `AdaptiveVisibilityMixin` (`isVisible`) |
+| [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart)                  | Listens for `choices`                                                   |
+| [`flutter_raw_adaptive_card.dart`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart) | `initInput` → `seedInputValues`; `loadInput` → `setChoices`             |
+| [`default_actions.dart`](packages/flutter_adaptive_cards_fs/lib/src/action/default_actions.dart)              | `resetAllInputs`, `toggleVisibility`, reads `nodesById` on submit       |
 
 ### Input widgets using `AdaptiveInputMixin` (will gain error overlay listener)
 
@@ -169,12 +169,12 @@ if (overlay?.isInvalid != null) merged['isInvalid'] = overlay!.isInvalid;
 
 ## Phase 2 — Notifier APIs ([`adaptive_card_document_notifier.dart`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/adaptive_card_document_notifier.dart))
 
-| API | Overlay | Notes |
-|-----|---------|-------|
+| API                                                                 | Overlay | Notes                               |
+| ------------------------------------------------------------------- | ------- | ----------------------------------- |
 | `setInputError(String id, {String? errorMessage, bool? isInvalid})` | Element | Host/server validation after submit |
-| `clearInputError(String id)` | Element | Clears both fields |
-| `setActionEnabled(String id, {required bool enabled})` | Action | Runtime enable/disable |
-| `setActionsEnabled(Map<String, bool> states)` | Action | Optional bulk helper for hosts |
+| `clearInputError(String id)`                                        | Element | Clears both fields                  |
+| `setActionEnabled(String id, {required bool enabled})`              | Action  | Runtime enable/disable              |
+| `setActionsEnabled(Map<String, bool> states)`                       | Action  | Optional bulk helper for hosts      |
 
 **`resetAllInputs()`** — extend preservation/clear rules:
 
@@ -228,14 +228,14 @@ Follow patterns in [`.agents/skills/adaptive-cards-testing/SKILL.md`](.agents/sk
 
 ### 4.1 Notifier unit tests — extend [`adaptive_card_document_notifier_test.dart`](packages/flutter_adaptive_cards_fs/test/riverpod/adaptive_card_document_notifier_test.dart)
 
-| Test | Assert |
-|------|--------|
-| `setInputError` merges `errorMessage` + `isInvalid` | `resolvedElementProvider` |
-| `clearInputError` restores baseline | overlay fields null |
-| `resetAllInputs` clears input errors | `isInvalid` / overlay `errorMessage` cleared |
-| `setActionEnabled` merges into `resolvedActionProvider` | `isEnabled: false` |
-| Baseline `isEnabled: false` without overlay | resolved stays false |
-| `resetAllInputs` preserves `actionOverlaysById` | action overlay unchanged |
+| Test                                                    | Assert                                       |
+| ------------------------------------------------------- | -------------------------------------------- |
+| `setInputError` merges `errorMessage` + `isInvalid`     | `resolvedElementProvider`                    |
+| `clearInputError` restores baseline                     | overlay fields null                          |
+| `resetAllInputs` clears input errors                    | `isInvalid` / overlay `errorMessage` cleared |
+| `setActionEnabled` merges into `resolvedActionProvider` | `isEnabled: false`                           |
+| Baseline `isEnabled: false` without overlay             | resolved stays false                         |
+| `resetAllInputs` preserves `actionOverlaysById`         | action overlay unchanged                     |
 
 Use a baseline fixture with `Action.Submit` + `Input.Text` both with natural ids (new `_actionAndInputBaseline()` helper).
 
@@ -273,13 +273,13 @@ Add sample JSON: [`test/samples/v1.5/action_is_enabled.json`](packages/flutter_a
 
 Defer unless requested in same PR:
 
-| Field | Why defer |
-|-------|-----------|
-| `choices.data.parameters` | Typeahead; separate from this task |
-| `querySearchText` merged into resolved JSON | Session-only today |
-| Action `mode`, `tooltip` overlays | AC 1.5; not prioritized |
-| `isEnabled` on **inputs** | Not in AC schema for `Input.*` (1.5 `isEnabled` is **actions only**) |
-| `placeholder` / `label` overlays | Lower host demand |
+| Field                                       | Why defer                                                            |
+| ------------------------------------------- | -------------------------------------------------------------------- |
+| `choices.data.parameters`                   | Typeahead; separate from this task                                   |
+| `querySearchText` merged into resolved JSON | Session-only today                                                   |
+| Action `mode`, `tooltip` overlays           | AC 1.5; not prioritized                                              |
+| `isEnabled` on **inputs**                   | Not in AC schema for `Input.*` (1.5 `isEnabled` is **actions only**) |
+| `placeholder` / `label` overlays            | Lower host demand                                                    |
 
 ---
 

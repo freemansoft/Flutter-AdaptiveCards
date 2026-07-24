@@ -829,12 +829,12 @@ class _FactSetOverlayPageState extends State<FactSetOverlayPage> {
 
 **Knob behavior:**
 
-| Knob value | Host action | Effective facts |
-| ---------- | ----------- | --------------- |
-| `baseline` | `clearFacts('demoFactSet')` | Baseline JSON (4 generic facts) |
-| `colors` | `setFacts('demoFactSet', _colorsFacts)` | 4 color facts |
-| `cities` | `setFacts('demoFactSet', _citiesFacts)` | 4 city facts |
-| `foods` | `setFacts('demoFactSet', _foodsFacts)` | 4 food facts |
+| Knob value | Host action                             | Effective facts                 |
+| ---------- | --------------------------------------- | ------------------------------- |
+| `baseline` | `clearFacts('demoFactSet')`             | Baseline JSON (4 generic facts) |
+| `colors`   | `setFacts('demoFactSet', _colorsFacts)` | 4 color facts                   |
+| `cities`   | `setFacts('demoFactSet', _citiesFacts)` | 4 city facts                    |
+| `foods`    | `setFacts('demoFactSet', _foodsFacts)`  | 4 food facts                    |
 
 - [x] **Step 3: Register use case**
 

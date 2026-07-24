@@ -23,6 +23,7 @@ behave (they stretch within bounded regions only).
 ## Goals / non-goals
 
 **Goals**
+
 - A block element with `height: "stretch"` fills the available main-axis space when
   its container is height-bounded; multiple stretch siblings divide the slack equally.
 - Provide a single reusable helper so `Container`, `Column`, and the card root body
@@ -31,11 +32,12 @@ behave (they stretch within bounded regions only).
 - **Zero behavior change** for cards that do not set `height: "stretch"`.
 
 **Non-goals**
+
 - Stretch in **unbounded** vertical contexts (content-sized card body, scroll views):
   explicitly degrades to `auto` (documented limitation).
 - Chart elements (`flutter_adaptive_charts_fs`) — deferred.
-- `TableCell` *content* stretch — cells already stretch to the row height via the
-  existing `IntrinsicHeight` + `CrossAxisAlignment.stretch`; a stretch child *inside*
+- `TableCell` _content_ stretch — cells already stretch to the row height via the
+  existing `IntrinsicHeight` + `CrossAxisAlignment.stretch`; a stretch child _inside_
   a cell's `Wrap` is out of scope (noted as a limitation).
 - `width` stretch (a separate concern; ColumnSet/Column width modes already exist).
 
@@ -54,11 +56,11 @@ behave (they stretch within bounded regions only).
 
 ## Architecture
 
-| Piece | Location | Role |
-| --- | --- | --- |
-| `isStretchHeight(Map)` + `BlockHeight` parse | `lib/src/utils/block_height.dart` (new) | **Pure** predicate: is an element's resolved `height` == `"stretch"`? (case-insensitive; tolerant of absent/garbage → `false`). Reused by AreaGrid. |
-| `buildStretchableColumn(...)` | `lib/src/cards/stretchable_column.dart` (new) | Wraps the children in a `LayoutBuilder`; when `constraints.maxHeight.isFinite` **and** at least one child is stretch, returns a `Column` with stretch children wrapped in `Expanded` and the others as-is; otherwise a plain `Column` with the caller's alignment. |
-| Container / Column / root stack sites | `container.dart`, `column.dart`, `adaptive_card_element.dart` | Their `buildLayoutChildren` `stackBuilder` calls `buildStretchableColumn(childMaps, children, …)` instead of a raw `Column`. |
+| Piece                                        | Location                                                      | Role                                                                                                                                                                                                                                                               |
+| -------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `isStretchHeight(Map)` + `BlockHeight` parse | `lib/src/utils/block_height.dart` (new)                       | **Pure** predicate: is an element's resolved `height` == `"stretch"`? (case-insensitive; tolerant of absent/garbage → `false`). Reused by AreaGrid.                                                                                                                |
+| `buildStretchableColumn(...)`                | `lib/src/cards/stretchable_column.dart` (new)                 | Wraps the children in a `LayoutBuilder`; when `constraints.maxHeight.isFinite` **and** at least one child is stretch, returns a `Column` with stretch children wrapped in `Expanded` and the others as-is; otherwise a plain `Column` with the caller's alignment. |
+| Container / Column / root stack sites        | `container.dart`, `column.dart`, `adaptive_card_element.dart` | Their `buildLayoutChildren` `stackBuilder` calls `buildStretchableColumn(childMaps, children, …)` instead of a raw `Column`.                                                                                                                                       |
 
 `buildStretchableColumn` signature (illustrative):
 
@@ -107,7 +109,7 @@ container stack site (Container/Column/root)
   stretches a child to the min height; a `ColumnSet` with a `stretch` child in one
   column fills the equal-height row band.
 - **Verification:** `fvm flutter analyze` clean; `fvm flutter test
-  --exclude-tags=golden` green in `flutter_adaptive_cards_fs`.
+--exclude-tags=golden` green in `flutter_adaptive_cards_fs`.
 
 ## Documentation impact
 

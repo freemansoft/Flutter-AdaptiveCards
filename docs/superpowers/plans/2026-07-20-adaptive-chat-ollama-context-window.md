@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Bound the conversation history sent to Ollama to the last *N* turns and make context-window fill observable, without pruning the server's retained history.
+**Goal:** Bound the conversation history sent to Ollama to the last _N_ turns and make context-window fill observable, without pruning the server's retained history.
 
 **Architecture:** All behavior changes live in `OllamaResponder` (`adaptive_chat_server/app/ollama_responder.py`): a send-only history trim, an explicit `num_ctx` on the request, and tiered post-response token-fill logging. Two new settings (`num_ctx`, `history_turns`) are threaded through the existing CLI → env → responder plumbing. `main.py`'s history-building and `EchoResponder` are untouched.
 
@@ -26,10 +26,12 @@
 ### Task 1: History turn-window trim (send-only)
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/ollama_responder.py`
 - Test: `adaptive_chat_server/tests/test_ollama_responder.py`
 
 **Interfaces:**
+
 - Consumes: existing `OllamaResponder.__init__(ollama_url, model, client, system_prompt_file)` and `reply(text, history)`; the test helper `_responder(handler, system_prompt_file=None)` and `_ok_capturing_handler(captured)` already present in the test file.
 - Produces: `OllamaResponder.__init__(..., history_turns: int = DEFAULT_HISTORY_TURNS)`; module constant `DEFAULT_HISTORY_TURNS = 10`; private `_trim_history(self, history: list[tuple[str, str]]) -> list[tuple[str, str]]`. `reply()` now sends only the last `history_turns` interactions.
 
@@ -181,10 +183,12 @@ git commit -m "feat(adaptive_chat_server): trim Ollama history to last N turns (
 ### Task 2: Explicit `num_ctx` + tiered token-fill logging
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/ollama_responder.py`
 - Test: `adaptive_chat_server/tests/test_ollama_responder.py`
 
 **Interfaces:**
+
 - Consumes: `OllamaResponder.__init__(..., history_turns=...)` from Task 1; the `reply()` success block that parses `response.json()`.
 - Produces: `OllamaResponder.__init__(..., num_ctx: int = DEFAULT_NUM_CTX)`; module constant `DEFAULT_NUM_CTX = 4096`; private `_log_context_fill(self, data: dict) -> None`. Request payload now includes `options.num_ctx`.
 
@@ -403,11 +407,13 @@ git commit -m "feat(adaptive_chat_server): set Ollama num_ctx and log tiered con
 ### Task 3: Config plumbing — CLI args, env parsing, startup log
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/main.py`
 - Modify: `adaptive_chat_server/app/__main__.py`
 - Test: `adaptive_chat_server/tests/test_main.py` (create if absent; otherwise add to the existing routes/build-responder test module)
 
 **Interfaces:**
+
 - Consumes: `DEFAULT_NUM_CTX`, `DEFAULT_HISTORY_TURNS` from `ollama_responder.py` (Tasks 1–2); existing `build_responder(ollama_url, model, system_prompt_file=None)`.
 - Produces: `build_responder(..., num_ctx: int = DEFAULT_NUM_CTX, history_turns: int = DEFAULT_HISTORY_TURNS)`; module helper `_int_env(name: str, default: int) -> int` in `main.py`; CLI flags `--num-ctx`, `--history-turns` in `__main__.py`.
 
@@ -583,9 +589,11 @@ git commit -m "feat(adaptive_chat_server): --num-ctx and --history-turns CLI/env
 ### Task 4: Documentation — README
 
 **Files:**
+
 - Modify: `adaptive_chat_server/README.md`
 
 **Interfaces:**
+
 - Consumes: behavior from Tasks 1–3 (the trim, `num_ctx`, tiers, and the two knobs).
 - Produces: no code; documentation only.
 
@@ -612,7 +620,7 @@ otherwise-silent truncation Ollama performs once a prompt exceeds `num_ctx`.
 
 In the **Ollama (optional)** section, after the `--system-prompt-file` guidance, add:
 
-```markdown
+````markdown
 **Context window & history.** Two knobs bound and observe the prompt sent to
 Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`):
 
@@ -620,13 +628,16 @@ Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`):
 .venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
   --num-ctx 4096 --history-turns 10
 ```
+````
 
 - `--num-ctx` (default 4096) — context window sent as `options.num_ctx`. Prompt
   fill is logged against it (INFO ≥ 50%, WARNING ≥ 76%). Ollama silently drops
   the oldest tokens once a prompt exceeds `num_ctx`; the warning surfaces that.
 - `--history-turns` (default 10) — how many prior exchanges are replayed to the
   model. Bounds only the outbound prompt; the server retains full history.
+
 ```
+
 ```
 
 - [ ] **Step 3: Verify the docs render and cross-check values**

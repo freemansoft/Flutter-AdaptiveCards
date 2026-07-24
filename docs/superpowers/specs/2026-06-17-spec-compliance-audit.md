@@ -64,7 +64,7 @@ renderer. These produce broken or dead UI, not merely sub-optimal layout.
     (`lib/src/cards/elements/text_block.dart:184-186`, deliberately commented
     out). The plain (non-markdown) path honors it.
 11. **Chart line datetime axes — broken.** `flutter_adaptive_charts_fs/lib/src/
-    charts/line_chart.dart:99`: a non-numeric `x` (ISO datetime string) collapses
+charts/line_chart.dart:99`: a non-numeric `x` (ISO datetime string) collapses
     to `0.0`. Time-series line charts render incorrectly.
 12. **`CaptionSource` (Media) — not registered.**
 13. **Templating** — missing collection functions (`select`, `where`, `join`,
@@ -78,12 +78,12 @@ renderer. These produce broken or dead UI, not merely sub-optimal layout.
 Places the existing docs disagree with the code. Fixing these keeps the team's
 own status tracking trustworthy.
 
-| Claim | Source | Reality (code) | Verdict |
-| --- | --- | --- | --- |
-| Card-root `selectAction` "❌ Missing — not wired" | `Implementation-Status.md:79` | `adaptive_card_element.dart:275` wraps the card map in `AdaptiveTappable`, which honors `selectAction` (`additional.dart:121,132-136`). | **Under-claim — it works** |
-| Templating "Date/Time functions missing" | matrix:210 + skill | `formatDateTime` is implemented (`flutter_adaptive_template_fs/lib/src/evaluator.dart:407`). Only the _other_ date funcs are missing. | **Under-claim** |
+| Claim                                                           | Source                                                 | Reality (code)                                                                                                                                   | Verdict                       |
+| --------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------- |
+| Card-root `selectAction` "❌ Missing — not wired"               | `Implementation-Status.md:79`                          | `adaptive_card_element.dart:275` wraps the card map in `AdaptiveTappable`, which honors `selectAction` (`additional.dart:121,132-136`).          | **Under-claim — it works**    |
+| Templating "Date/Time functions missing"                        | matrix:210 + skill                                     | `formatDateTime` is implemented (`flutter_adaptive_template_fs/lib/src/evaluator.dart:407`). Only the _other_ date funcs are missing.            | **Under-claim**               |
 | "Dark mode — `HostConfigs.current` always returns light config" | `adaptive-cards-spec-compliance` **skill**, Known Gaps | `lib/src/flutter_raw_adaptive_card.dart:133-145` selects light/dark `HostConfigs`; `AdaptiveCardBrightnessMode.auto` follows `Theme` brightness. | **Skill stale — implemented** |
-| `backgroundImage` "✅ Complete" | matrix:228 | Object form maps `fillMode`→fit/repeat (`adaptive_mixins.dart:147-152`) but ignores `horizontalAlignment` / `verticalAlignment`. | **Minor over-claim** |
+| `backgroundImage` "✅ Complete"                                 | matrix:228                                             | Object form maps `fillMode`→fit/repeat (`adaptive_mixins.dart:147-152`) but ignores `horizontalAlignment` / `verticalAlignment`.                 | **Minor over-claim**          |
 
 The `adaptive-cards-spec-compliance` skill's Known-Gaps table also still flags
 `Action.Execute` and action `fallback` as "verify" — `Action.Execute` is
@@ -113,13 +113,13 @@ sends a card built for a newer schema (the most common real-world interop
 failure). This is the one place this audit's priority order differs from
 `Implementation-Status.md`.
 
-| Priority | Theme | Items |
-| --- | --- | --- |
-| **P0** | Interop / graceful degradation | Action `fallback` (#1), `requires` gating (#2), version gating + `fallbackText` (#3), removed-element fallback (#4) — one coherent workstream |
-| **P1** | Responsive layout | `targetWidth` + `Layout.AreaGrid` / `grid.area` (#5) |
-| **P2** | Layout fidelity | `bleed` (#7), `height: stretch` (#8), card-root `minHeight`/`rtl`/`verticalContentAlignment` (#6), Table widths + cell `rtl` (#9) |
-| **P3** | Content fidelity | Chart datetime axes (#11), markdown `maxLines` (#10), `CaptionSource` (#12), templating collection/date functions (#13) |
-| **P4** | Doc hygiene | Correct the four over/under-claims in §B in `Implementation-Status.md` and the stale `adaptive-cards-spec-compliance` skill |
+| Priority | Theme                          | Items                                                                                                                                         |
+| -------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **P0**   | Interop / graceful degradation | Action `fallback` (#1), `requires` gating (#2), version gating + `fallbackText` (#3), removed-element fallback (#4) — one coherent workstream |
+| **P1**   | Responsive layout              | `targetWidth` + `Layout.AreaGrid` / `grid.area` (#5)                                                                                          |
+| **P2**   | Layout fidelity                | `bleed` (#7), `height: stretch` (#8), card-root `minHeight`/`rtl`/`verticalContentAlignment` (#6), Table widths + cell `rtl` (#9)             |
+| **P3**   | Content fidelity               | Chart datetime axes (#11), markdown `maxLines` (#10), `CaptionSource` (#12), templating collection/date functions (#13)                       |
+| **P4**   | Doc hygiene                    | Correct the four over/under-claims in §B in `Implementation-Status.md` and the stale `adaptive-cards-spec-compliance` skill                   |
 
 ---
 

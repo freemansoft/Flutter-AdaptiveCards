@@ -24,17 +24,17 @@ Re-verified the Riverpod **baseline + overlay** model ([`docs/reactive-riverpod.
 
 ## Implementation status (2026-06-16)
 
-| Phase  | Gap                                        | Status     | Deliverables                                                                   |
-| ------ | ------------------------------------------ | ---------- | ------------------------------------------------------------------------------ |
-| **1**  | `Input.Toggle` label / required / error UI | ✅ Shipped | `toggle_overlay_test.dart`; `watchResolvedInput()` in `AdaptiveToggle`         |
-| **2**  | `Input.Rating` misrouted to display widget | ✅ Shipped | `AdaptiveRatingInput`, `RatingStars`, registry split; widgetbook demo          |
-| **3**  | `Media` URL overlay unwired                | ✅ Shipped | `sources[0].url` merge; player reinit; `media_overlay_test.dart`               |
-| **4**  | `Badge` text unwired                       | ✅ Shipped | Resolved `text` listener; `badge_overlay_test.dart`                            |
-| **5**  | `Rating` display value unwired             | ✅ Shipped | Reactive `AdaptiveRating`; widgetbook `rating_overlay_page.dart`               |
-| **6**  | `RichTextBlock` inlines                    | ✅ Shipped | `setInlines` / `clearInlines`; `rich_text_block_inlines_overlay_test.dart`     |
-| **7**  | `Action.Popover` action overlays           | ✅ Shipped | `popover_overlay_test.dart`; shared action chrome                              |
-| **8**  | Chart overlays + visibility                | ✅ Shipped | `ChartElementOverlayExtension`, `ChartOverlayMixin`; `chart_overlay_page.dart` |
-| **10** | Overlay capability registry                | ✅ Shipped | `OverlayCapabilityRegistry`; debug validation in `applyUpdates`                |
+| Phase  | Gap                                        | Status     | Deliverables                                                                                      |
+| ------ | ------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------- |
+| **1**  | `Input.Toggle` label / required / error UI | ✅ Shipped | `toggle_overlay_test.dart`; `watchResolvedInput()` in `AdaptiveToggle`                            |
+| **2**  | `Input.Rating` misrouted to display widget | ✅ Shipped | `AdaptiveRatingInput`, `RatingStars`, registry split; widgetbook demo                             |
+| **3**  | `Media` URL overlay unwired                | ✅ Shipped | `sources[0].url` merge; player reinit; `media_overlay_test.dart`                                  |
+| **4**  | `Badge` text unwired                       | ✅ Shipped | Resolved `text` listener; `badge_overlay_test.dart`                                               |
+| **5**  | `Rating` display value unwired             | ✅ Shipped | Reactive `AdaptiveRating`; widgetbook `rating_overlay_page.dart`                                  |
+| **6**  | `RichTextBlock` inlines                    | ✅ Shipped | `setInlines` / `clearInlines`; `rich_text_block_inlines_overlay_test.dart`                        |
+| **7**  | `Action.Popover` action overlays           | ✅ Shipped | `popover_overlay_test.dart`; shared action chrome                                                 |
+| **8**  | Chart overlays + visibility                | ✅ Shipped | `ChartElementOverlayExtension`, `ChartOverlayMixin`; `chart_overlay_page.dart`                    |
+| **10** | Overlay capability registry                | ✅ Shipped | `OverlayCapabilityRegistry`; debug validation in `applyUpdates`                                   |
 | **9**  | Action `iconUrl` overlay                   | ✅ Shipped | `ActionOverlay.iconUrl`; `AdaptiveActionStateMixin` listener; `action_icon_url_overlay_test.dart` |
 
 PRs: #24 (Wave 1), #25 (Wave 2); Wave 3 on `feature/wave-3-overlay-gaps-remediation`.
@@ -70,11 +70,11 @@ PRs: #24 (Wave 1), #25 (Wave 2); Wave 3 on `feature/wave-3-overlay-gaps-remediat
 
 ### Actions
 
-| Type                                                                                | `isEnabled` / `title` / `tooltip`                      | Verdict (2026-06-16)                                           |
-| ----------------------------------------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------- |
-| Submit, Execute, OpenUrl, OpenUrlDialog, ResetInputs, ToggleVisibility, InsertImage | ✅ via `IconButtonAction` + `AdaptiveActionStateMixin` | Complete                                                       |
-| `Action.ShowCard`                                                                   | ✅ `AdaptiveActionStateMixin`                          | Complete                                                       |
-| `Action.Popover`                                                                    | ✅ shared action chrome (Phase 7)                      | **Complete**                                                   |
+| Type                                                                                | `isEnabled` / `title` / `tooltip`                      | Verdict (2026-06-16)                                            |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------------- |
+| Submit, Execute, OpenUrl, OpenUrlDialog, ResetInputs, ToggleVisibility, InsertImage | ✅ via `IconButtonAction` + `AdaptiveActionStateMixin` | Complete                                                        |
+| `Action.ShowCard`                                                                   | ✅ `AdaptiveActionStateMixin`                          | Complete                                                        |
+| `Action.Popover`                                                                    | ✅ shared action chrome (Phase 7)                      | **Complete**                                                    |
 | All actions                                                                         | `iconUrl`, `mode`, `style`                             | **`iconUrl` complete (Phase 9)**; `mode` / `style` out of scope |
 
 ### Charts (`flutter_adaptive_charts_fs`)
@@ -110,13 +110,13 @@ None — all phases (1–10) are complete and verified.
 
 ### Optional / follow-up (hygiene only)
 
-| Item                                                        | Priority  | Notes                                                                                                       |
-| ----------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------- |
-| **Badge widgetbook overlay demo**                           | Optional  | Plan marked `badge_overlay_page.dart` optional; not shipped. `badge_overlay_test.dart` covers behavior.     |
-| **Input.Date / Input.Time validation overlay widget tests** | Hygiene   | Notifier/initData tests exist; element-registry skill lists validation overlay widget tests as a remaining gap.                                                                                    |
-| **Action overlay chrome tests**                             | Hygiene   | `Action.ResetInputs`, `Action.OpenUrlDialog`, `Action.InsertImage` — listed in element-registry skill gaps.                                                                                        |
-| **Rebuild survival with input value overlay**               | Hygiene   | Visibility and TextBlock covered; input-value rebuild test not yet added.                                                                                                                          |
-| **`chart_knobs_page.dart` JSON clone**                      | By design | Remains for HostConfig exploration; overlay API demo is `chart_overlay_page.dart`.                                                                                                                 |
+| Item                                                        | Priority  | Notes                                                                                                           |
+| ----------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------- |
+| **Badge widgetbook overlay demo**                           | Optional  | Plan marked `badge_overlay_page.dart` optional; not shipped. `badge_overlay_test.dart` covers behavior.         |
+| **Input.Date / Input.Time validation overlay widget tests** | Hygiene   | Notifier/initData tests exist; element-registry skill lists validation overlay widget tests as a remaining gap. |
+| **Action overlay chrome tests**                             | Hygiene   | `Action.ResetInputs`, `Action.OpenUrlDialog`, `Action.InsertImage` — listed in element-registry skill gaps.     |
+| **Rebuild survival with input value overlay**               | Hygiene   | Visibility and TextBlock covered; input-value rebuild test not yet added.                                       |
+| **`chart_knobs_page.dart` JSON clone**                      | By design | Remains for HostConfig exploration; overlay API demo is `chart_overlay_page.dart`.                              |
 
 ### Out of scope (unchanged)
 

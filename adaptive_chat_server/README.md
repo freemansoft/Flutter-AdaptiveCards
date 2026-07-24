@@ -142,12 +142,41 @@ The card prompt's palette is intentionally small:
 
 - **Inputs** — `Input.Date`, `Input.ChoiceSet` (`style: compact` / `expanded`,
   `isMultiSelect`), `Input.Text`, `Input.Number`, `Input.Time`.
-- **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`.
+- **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`, `Table`, `Rating`,
+  `Icon`, `ProgressBar`, `ProgressRing`, `CodeBlock`, `Image`.
 
 **Display-only.** The prompt forbids `Action`/`ActionSet` elements, so the card
 fragment carries no submit button of its own, and any values a user enters
 into its inputs do not post back to the server — the fragment is render-only
 for now.
+
+### Structured output (`--json-format`)
+
+By default (`--json-format none`), card JSON comes from prompt engineering
+alone. With a capable model (e.g. `qwen2.5-coder:7b`) at temperature 0 — which
+the server sends on every request — the prompt reliably produces valid cards, so
+no `format` constraint is needed. Measured against the documented failure modes,
+`none` matched or beat `schema` at temp 0 while being simpler and faster (see the
+none-vs-schema addendum in the design doc). `schema` mode remains available as a
+safety net for weaker models.
+
+```bash
+.venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
+  --json-format none   # default; try --json-format schema or --json-format json
+```
+
+- `none` (default) — prompt-only, no `format` field sent. Reliable with a
+  capable model at temperature 0.
+- `json` — constrains syntax only (any valid JSON value); shape is still
+  checked by `card_detect.py` after parsing.
+- `schema` — constrains both syntax and the outer reply shape via Ollama's
+  `format` field against `app/card_schema.json` (a small schema covering exactly
+  the shapes `card_detect.try_parse_card_body` accepts). A safety net for
+  weaker/other models, at some latency cost.
+
+See
+[docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md](../docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md)
+for the design rationale.
 
 ### Request flow
 
@@ -172,7 +201,7 @@ flowchart LR
         RESP["Responder\nEchoResponder or OllamaResponder"]
     end
     subgraph ollama["local Ollama (separate process, not managed by the server)"]
-        LLM["chat model e.g. llama3.2\nPOST /api/chat"]
+        LLM["chat model e.g. qwen2.5-coder:7b\nPOST /api/chat"]
     end
 
     UI -->|"POST interaction (X-Interaction-Id, PlainJson)"| ROUTES
@@ -238,7 +267,7 @@ sequenceDiagram
         S-->>R: prior (user, assistant) pairs = full history
         R->>O: reply(message, history)
         O->>O: load system prompt (per request) + trim history
-        O->>L: POST /api/chat<br/>{system + history + turn, options.num_ctx}
+        O->>L: POST /api/chat<br/>{system + history + turn, num_ctx, temperature:0, think:false}
         L-->>O: message.content (or failure → diagnostic text)
         Note over O: card-vs-text detection — see next diagram
         O-->>R: Reply(text, card_body)
@@ -285,7 +314,7 @@ sequenceDiagram
     end
     O->>O: _trim_history() — keep last history_turns exchanges
     O->>O: messages += history + {role: user, content: text}
-    O->>L: POST /api/chat<br/>{model, messages, stream:false, options.num_ctx}
+    O->>L: POST /api/chat<br/>{model, messages, stream:false, num_ctx,<br/>temperature:0, think:false, + format (json/schema modes only)}
     alt transport failure (connection / DNS / timeout)
         L--xO: httpx.HTTPError
         O-->>R: Reply("(Ollama unreachable …)", card_body=None)
@@ -298,13 +327,17 @@ sequenceDiagram
     else 2xx success
         L-->>O: {message.content, prompt_eval_count}
         O->>O: _log_context_fill() — INFO >= 50%, WARNING >= 76%
-        O->>D: try_parse_card_body(content)
+        opt json / schema mode (not the default none)
+            O->>O: json.loads(content) with duplicate-key guard
+            Note over O: plain-string reply → unwrapped prose,<br/>duplicate object key → text reply + warning
+        end
+        O->>D: try_parse_card_body(content, or the format-parsed JSON)
         alt whole reply is a card fragment
             D-->>O: body items (list)
-            O-->>R: Reply(text=content, card_body=items)
-        else prose / not a card
+            O-->>R: Reply(text, card_body=items)
+        else prose / not a card / duplicate-key
             D-->>O: None
-            O-->>R: Reply(text=content, card_body=None)
+            O-->>R: Reply(text, card_body=None)
         end
     end
 ```
@@ -349,10 +382,10 @@ To answer with a local [Ollama](https://ollama.com) chat model instead, start th
 server via the CLI entrypoint with `--ollama-url`:
 
 ```bash
-ollama pull llama3.2   # once, if you haven't already
-ollama serve           # if it isn't already running
+ollama pull qwen2.5-coder:7b   # once, if you haven't already (the default model)
+ollama serve                   # if it isn't already running
 
-.venv/bin/python -m app --ollama-url http://127.0.0.1:11434 [--ollama-model llama3.2]
+.venv/bin/python -m app --ollama-url http://127.0.0.1:11434 [--ollama-model qwen2.5-coder:7b]
 ```
 
 Ollama must already be running locally and the model must be pulled — the server
@@ -385,7 +418,8 @@ change on the next turn without restarting. Omit `--system-prompt-file` to use t
 bundled default.
 
 **Context window & history.** Two knobs bound and observe the prompt sent to
-Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`):
+Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`; `--json-format`
+below is likewise bridged via `OLLAMA_JSON_FORMAT`):
 
 ```bash
 .venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
@@ -397,7 +431,13 @@ Ollama (both also read from `OLLAMA_NUM_CTX` / `OLLAMA_HISTORY_TURNS`):
   the oldest tokens once a prompt exceeds `num_ctx`; the warning surfaces that.
 - `--history-turns` (default 10) — how many prior exchanges are replayed to the
   model. Bounds only the outbound prompt; the server retains full history.
+- `--json-format` (default `none`) — `none`/`json`/`schema`; see **Structured
+  output** above.
 
 Omit `--ollama-url` (or run `uvicorn app.main:app` directly, as in **Run** above) to
-keep the echo demo. `--ollama-model` defaults to `llama3.2`. `--host`/`--port` are
-also available and default to `127.0.0.1`/`8000`.
+keep the echo demo. `--ollama-model` defaults to `qwen2.5-coder:7b` (best card-JSON
+reliability of the models tested, and fits a 16 GB Mac; see the model/settings
+addendum in the design doc). Every Ollama request is sent with `temperature 0`
+and `think:false` for deterministic, non-thinking decoding (in all `--json-format`
+modes) — the highest-leverage reliability setting. `--host`/`--port` are also
+available and default to `127.0.0.1`/`8000`.

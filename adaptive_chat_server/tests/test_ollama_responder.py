@@ -3,7 +3,8 @@ import logging
 
 import httpx
 
-from app.ollama_responder import DEFAULT_NUM_CTX, OllamaResponder
+from app.ollama_responder import CARD_SCHEMA_PATH, DEFAULT_NUM_CTX, OllamaResponder, _load_card_schema
+from app.ollama_responder import DEFAULT_JSON_FORMAT
 
 # Single source of truth for these tests — change the model/host/port here, not
 # in each test. (These drive the mocked transport; no live Ollama is contacted.)
@@ -17,7 +18,13 @@ def _client(handler):
     return httpx.Client(transport=httpx.MockTransport(handler))
 
 
-def _responder(handler, system_prompt_file=None, history_turns=10, num_ctx=4096):
+def _responder(
+    handler,
+    system_prompt_file=None,
+    history_turns=10,
+    num_ctx=4096,
+    json_format="none",
+):
     return OllamaResponder(
         OLLAMA_URL,
         model=OLLAMA_MODEL,
@@ -25,6 +32,7 @@ def _responder(handler, system_prompt_file=None, history_turns=10, num_ctx=4096)
         system_prompt_file=system_prompt_file,
         history_turns=history_turns,
         num_ctx=num_ctx,
+        json_format=json_format,
     )
 
 
@@ -54,6 +62,87 @@ def _handler_with_prompt_tokens(captured, prompt_eval_count):
     return handler
 
 
+def test_load_card_schema_returns_dict_for_valid_file(tmp_path):
+    schema_file = tmp_path / "card_schema.json"
+    schema_file.write_text(
+        json.dumps({"$defs": {"Element": {}}, "oneOf": []}), encoding="utf-8"
+    )
+    assert _load_card_schema(schema_file) == {"$defs": {"Element": {}}, "oneOf": []}
+
+
+def test_load_card_schema_returns_none_for_missing_file(tmp_path, caplog):
+    missing = tmp_path / "no_such_schema.json"
+    with caplog.at_level(logging.ERROR, logger="uvicorn.error"):
+        assert _load_card_schema(missing) is None
+    assert "unusable" in caplog.text
+
+
+def test_load_card_schema_returns_none_for_invalid_json(tmp_path, caplog):
+    bad = tmp_path / "bad.json"
+    bad.write_text("{not valid json", encoding="utf-8")
+    with caplog.at_level(logging.ERROR, logger="uvicorn.error"):
+        assert _load_card_schema(bad) is None
+    assert "unusable" in caplog.text
+
+
+def test_load_card_schema_returns_none_when_missing_expected_keys(tmp_path, caplog):
+    incomplete = tmp_path / "incomplete.json"
+    incomplete.write_text(json.dumps({"type": "object"}), encoding="utf-8")
+    with caplog.at_level(logging.ERROR, logger="uvicorn.error"):
+        assert _load_card_schema(incomplete) is None
+    assert "oneOf" in caplog.text
+
+
+def test_bundled_card_schema_loads_successfully():
+    # The real shipped file must itself pass the loader's own sanity check.
+    schema = _load_card_schema(CARD_SCHEMA_PATH)
+    assert schema is not None
+    assert schema["oneOf"]
+
+
+def test_bundled_card_schema_element_allows_additional_properties():
+    # Regression guard: without "additionalProperties": true, a real Ollama
+    # (0.32.3, llama3.2) under schema-constrained decoding has no legal way to
+    # write id/style/isMultiSelect/choices etc. as real JSON keys on an
+    # Element, so it smuggles them as fake single-quoted pseudo-JSON inside
+    # the "type" string value instead (e.g. observed:
+    # '{"type":"Input.ChoiceSet\',\'id\':\'state\',...'). Verified empirically
+    # that adding this key fixes it (3/3 clean runs vs. 100% reproducible
+    # failure without it) -- see the design-doc addendum.
+    schema = _load_card_schema(CARD_SCHEMA_PATH)
+    assert schema["$defs"]["Element"]["additionalProperties"] is True
+
+
+def test_bundled_card_schema_constrains_type_to_the_prompt_palette():
+    # Regression guard: an unconstrained "type" string let the model return a
+    # non-existent type name (e.g. "Input.RadioButtons" instead of the real
+    # "Input.ChoiceSet") -- legal per the old schema, but unrenderable by the
+    # client. Verified empirically that an enum blocks this structurally, even
+    # with prompt wording that doesn't mention the fake-type problem at all
+    # (3/3 clean runs). The enum must exactly match card_system_prompt.txt's
+    # documented element palette -- every type the prompt teaches the model to
+    # use, and nothing the client can't render.
+    schema = _load_card_schema(CARD_SCHEMA_PATH)
+    assert set(schema["$defs"]["Element"]["properties"]["type"]["enum"]) == {
+        "TextBlock",
+        "FactSet",
+        "Badge",
+        "Carousel",
+        "Table",
+        "Input.Date",
+        "Input.ChoiceSet",
+        "Input.Text",
+        "Input.Number",
+        "Input.Time",
+        "Rating",
+        "Icon",
+        "ProgressBar",
+        "ProgressRing",
+        "CodeBlock",
+        "Image",
+    }
+
+
 def test_reply_posts_history_and_new_turn_to_chat_endpoint(tmp_path):
     # Point at a nonexistent prompt file so no system message is injected —
     # this keeps the exact-body assertion decoupled from the default prompt.
@@ -75,7 +164,10 @@ def test_reply_posts_history_and_new_turn_to_chat_endpoint(tmp_path):
             {"role": "user", "content": "new question"},
         ],
         "stream": False,
-        "options": {"num_ctx": 4096},
+        # temperature 0 + think=False are sent on every request (deterministic,
+        # non-thinking decoding); "none" mode sends no "format" field.
+        "options": {"num_ctx": 4096, "temperature": 0.0},
+        "think": False,
     }
 
 
@@ -255,7 +347,7 @@ def test_reply_sends_num_ctx_option(tmp_path):
         num_ctx=2048,
     ).reply("hi", [])
 
-    assert captured["body"]["options"] == {"num_ctx": 2048}
+    assert captured["body"]["options"]["num_ctx"] == 2048
 
 
 def test_fill_below_50pct_logs_nothing(tmp_path, caplog):
@@ -399,3 +491,280 @@ def test_reply_does_not_warn_for_plain_text_reply(tmp_path, caplog):
         ).reply("hi", [])
     assert "not usable" not in caplog.text
     assert "looked like an Adaptive Card" not in caplog.text
+
+
+def test_json_format_defaults_to_none():
+    # "none" (prompt-only) is the default: with a capable model at temperature 0
+    # the prompt alone produces reliable card JSON, so the schema grammar is not
+    # sent by default (see the none-vs-schema addendum in the design doc).
+    assert DEFAULT_JSON_FORMAT == "none"
+
+
+def test_reply_sends_no_format_field_in_none_mode(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="none",
+    ).reply("hi", [])
+    assert "format" not in captured["body"]
+
+
+def test_reply_sends_format_json_string(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("hi", [])
+    assert captured["body"]["format"] == "json"
+
+
+def test_reply_sends_format_schema_dict(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("hi", [])
+    assert captured["body"]["format"]["oneOf"]  # the loaded card_schema.json
+
+
+def test_card_path_sends_temperature_zero_and_think_false_schema(tmp_path):
+    # Deterministic, non-thinking decoding on the card path (schema mode): the
+    # highest-leverage reliability settings per the design-doc model/settings
+    # addendum. temperature 0 minimizes malformed JSON; think=False stops a
+    # thinking model from polluting the constrained output.
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("hi", [])
+    assert captured["body"]["options"]["temperature"] == 0
+    assert captured["body"]["think"] is False
+
+
+def test_card_path_sends_temperature_zero_and_think_false_json(tmp_path):
+    # Same deterministic settings apply in generic-JSON mode, not just schema.
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("hi", [])
+    assert captured["body"]["options"]["temperature"] == 0
+    assert captured["body"]["think"] is False
+
+
+def test_none_mode_also_sends_temperature_zero_and_think_false(tmp_path):
+    # Deterministic, non-thinking decoding applies in every mode, including the
+    # default "none": empirically these settings — not the schema grammar — are
+    # what make card JSON reliable, so they must not be gated to constrained modes.
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="none",
+    ).reply("hi", [])
+    assert captured["body"]["options"]["temperature"] == 0
+    assert captured["body"]["think"] is False
+    # ...and "none" still sends no format field (that part is unchanged).
+    assert "format" not in captured["body"]
+
+
+def test_schema_mode_downgrades_to_none_when_schema_file_missing(
+    monkeypatch, tmp_path, caplog
+):
+    # A broken bundled schema file must not crash startup or a request — it
+    # downgrades to json_format=none for the process, same as a bad
+    # system-prompt path degrades gracefully today.
+    import app.ollama_responder as mod
+
+    monkeypatch.setattr(mod, "CARD_SCHEMA_PATH", tmp_path / "missing.json")
+    missing_prompt = tmp_path / "no_prompt.txt"
+    captured = {}
+    with caplog.at_level(logging.ERROR, logger="uvicorn.error"):
+        _responder(
+            _ok_capturing_handler(captured),
+            system_prompt_file=str(missing_prompt),
+            json_format="schema",
+        ).reply("hi", [])
+    assert "format" not in captured["body"]
+    assert "unusable" in caplog.text
+
+
+def test_reply_unwraps_json_string_for_plain_text_reply(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    plain = "Here's the answer:\n\n- Option one\n- Option two"
+    content = json.dumps(plain)
+    result = _responder(
+        _handler_returning_content(content),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("what are my options?", [])
+    assert result.text == plain
+    assert result.card_body is None
+
+
+def test_reply_detects_card_through_schema_format(tmp_path):
+    missing = tmp_path / "no_prompt.txt"
+    content = json.dumps(
+        {"type": "AdaptiveCard", "body": [{"type": "Input.Date", "id": "d"}]}
+    )
+    result = _responder(
+        _handler_returning_content(content),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("date?", [])
+    assert result.card_body == [{"type": "Input.Date", "id": "d"}]
+    assert result.text == content  # raw JSON preserved for history, as before
+
+
+def test_reply_detects_choiceset_with_real_properties_through_schema_format(tmp_path):
+    # Regression test tied to a real observed failure: with additionalProperties
+    # unset on Element, Ollama had no legal way to write id/style/isMultiSelect/
+    # choices as real JSON keys and smuggled them as fake single-quoted text
+    # inside the "type" string instead (card_schema.json now sets
+    # additionalProperties: true on Element to fix this -- see the design-doc
+    # addendum). This locks in that a well-formed response with real
+    # properties parses correctly.
+    missing = tmp_path / "no_prompt.txt"
+    content = json.dumps(
+        {
+            "type": "Input.ChoiceSet",
+            "id": "state",
+            "style": "expanded",
+            "isMultiSelect": False,
+            "choices": [
+                {"title": "California", "value": "CA"},
+                {"title": "Texas", "value": "TX"},
+            ],
+        }
+    )
+    result = _responder(
+        _handler_returning_content(content),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("radio buttons of states?", [])
+    assert result.card_body == [
+        {
+            "type": "Input.ChoiceSet",
+            "id": "state",
+            "style": "expanded",
+            "isMultiSelect": False,
+            "choices": [
+                {"title": "California", "value": "CA"},
+                {"title": "Texas", "value": "TX"},
+            ],
+        }
+    ]
+
+
+def test_reply_falls_back_to_heuristic_path_when_format_guarantee_violated(tmp_path):
+    # Simulates an old Ollama that ignores `format` and returns non-JSON text
+    # despite json_format != "none" -- must not crash, falls back to legacy parsing.
+    missing = tmp_path / "no_prompt.txt"
+    result = _responder(
+        _handler_returning_content("plain non-JSON reply"),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("hi", [])
+    assert result.text == "plain non-JSON reply"
+    assert result.card_body is None
+
+
+def test_reply_json_mode_renders_non_card_json_value_as_raw_text(tmp_path):
+    # "json" mode's generic grammar allows shapes "schema" mode would exclude
+    # (e.g. a bare number) -- must still render safely as text, not crash.
+    missing = tmp_path / "no_prompt.txt"
+    result = _responder(
+        _handler_returning_content("42"),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("how many?", [])
+    assert result.text == "42"
+    assert result.card_body is None
+
+
+def test_reply_schema_mode_does_not_warn_for_plain_text_json_string(tmp_path, caplog):
+    # A JSON-string plain-text reply is intentional (Reply shape 2), not a
+    # botched card -- must not trigger the "looked like a card" warning.
+    missing = tmp_path / "no_prompt.txt"
+    content = json.dumps("just chatting")
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        _responder(
+            _handler_returning_content(content),
+            system_prompt_file=str(missing),
+            json_format="schema",
+        ).reply("hi", [])
+    assert "not usable" not in caplog.text
+
+
+def test_reply_rejects_duplicate_key_carousel_instead_of_silently_dropping_pages(
+    tmp_path, caplog
+):
+    # Observed against a real Ollama (0.32.3, llama3.2): under schema-constrained
+    # decoding the model sometimes re-emits an object property key once per item
+    # instead of appending items to one array -- legal JSON syntax, but plain
+    # json.loads silently keeps only the LAST occurrence, silently dropping every
+    # other page. This must be detected and rendered as text, not accepted as a
+    # valid (but data-lossy) card.
+    missing = tmp_path / "no_prompt.txt"
+    content = (
+        '{"type":"Carousel",'
+        '"pages":[{"type":"CarouselPage","items":[{"type":"TextBlock","text":"California","wrap":true}]}],'
+        '"pages":[{"type":"CarouselPage","items":[{"type":"TextBlock","text":"Texas","wrap":true}]}]}'
+    )
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        result = _responder(
+            _handler_returning_content(content),
+            system_prompt_file=str(missing),
+            json_format="schema",
+        ).reply("carousel of states?", [])
+
+    assert result.card_body is None  # not silently accepted as a 1-page card
+    assert result.text == content  # raw content preserved, rendered as text
+    assert any(r.levelname == "WARNING" for r in caplog.records)
+    assert "duplicate" in caplog.text
+
+
+def test_reply_still_detects_well_formed_nested_card_without_duplicate_keys(tmp_path):
+    # Regression guard: the duplicate-key hook must not change behavior for
+    # ordinary, well-formed nested JSON.
+    missing = tmp_path / "no_prompt.txt"
+    content = json.dumps(
+        {
+            "type": "AdaptiveCard",
+            "body": [
+                {
+                    "type": "Carousel",
+                    "pages": [
+                        {"type": "CarouselPage", "items": [{"type": "TextBlock", "text": "a"}]},
+                        {"type": "CarouselPage", "items": [{"type": "TextBlock", "text": "b"}]},
+                    ],
+                }
+            ],
+        }
+    )
+    result = _responder(
+        _handler_returning_content(content),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("carousel?", [])
+
+    assert result.card_body == [
+        {
+            "type": "Carousel",
+            "pages": [
+                {"type": "CarouselPage", "items": [{"type": "TextBlock", "text": "a"}]},
+                {"type": "CarouselPage", "items": [{"type": "TextBlock", "text": "b"}]},
+            ],
+        }
+    ]

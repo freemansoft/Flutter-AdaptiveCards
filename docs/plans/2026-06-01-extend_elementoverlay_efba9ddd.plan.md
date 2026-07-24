@@ -82,8 +82,8 @@ Use `List<Map<String, dynamic>>` (serialized `Input.Choice` shape) to keep overl
 
 In [`providers.dart`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/providers.dart):
 
-| Field | Merge rule |
-|-------|------------|
+| Field     | Merge rule                                                                                  |
+| --------- | ------------------------------------------------------------------------------------------- |
 | `choices` | If overlay `choices != null`, set `merged['choices'] = overlay.choices`. Else use baseline. |
 
 **Replace vs append:** Current [`loadInput`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart) **replaces** the entire choice list. Spec typeahead **appends** dynamic results to static baseline choices. Support both via notifier APIs:
@@ -182,13 +182,13 @@ Only implement when adding typeahead UI that paginates; Phase 1 `choices` overla
 
 ## Explicitly out of scope
 
-| Item | Reason |
-|------|--------|
-| `label`, `placeholder`, `isRequired`, `style`, etc. | Author-time baseline; refresh via new card payload |
-| Body element content (`text`, `items`, `facts`) | Structural; belongs in baseline replacement (`Refresh`) |
-| ShowCard expanded state | Already [`expandedShowCardIdProvider`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/show_card_ui_notifier.dart) |
-| Validation display flag | UX-only; not spec JSON; defer unless requested |
-| Full typeahead / invoke pipeline | Requires host bot contract; Phase 3 prep only |
+| Item                                                | Reason                                                                                                                 |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `label`, `placeholder`, `isRequired`, `style`, etc. | Author-time baseline; refresh via new card payload                                                                     |
+| Body element content (`text`, `items`, `facts`)     | Structural; belongs in baseline replacement (`Refresh`)                                                                |
+| ShowCard expanded state                             | Already [`expandedShowCardIdProvider`](packages/flutter_adaptive_cards_fs/lib/src/riverpod/show_card_ui_notifier.dart) |
+| Validation display flag                             | UX-only; not spec JSON; defer unless requested                                                                         |
+| Full typeahead / invoke pipeline                    | Requires host bot contract; Phase 3 prep only                                                                          |
 
 ---
 

@@ -96,7 +96,7 @@ New/changed files under `lib/src/models/`:
 - **`action_invoke.dart`** — add `SigninActionInvoke`
   (`value` (sign-in URL), `connectionName`, optional `actionId`) alongside the
   existing invoke payloads, with a factory that builds from an `AuthCardButton`
-  + the parent `AuthenticationConfig.connectionName`.
+  - the parent `AuthenticationConfig.connectionName`.
 
 ### Parsing + rendering
 

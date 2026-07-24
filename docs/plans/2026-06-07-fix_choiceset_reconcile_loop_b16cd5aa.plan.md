@@ -55,6 +55,7 @@ Update `_scheduleSelectionReconcile` in [`choice_set.dart`](packages/flutter_ada
    - Always: `onDocumentValueChanged(target)` to sync local `_selectedChoices`
 
 Keep existing guards unchanged:
+
 - `_singleChoiceValueFor` — prevents DropdownButton assertion on the stale frame
 - `_selectionReconcileScheduled` — prevents duplicate callbacks per frame
 
@@ -90,6 +91,6 @@ Manual smoke (optional): Widgetbook **Input.ChoiceSet → Value changed action (
 
 ## Files touched
 
-| File | Change |
-|------|--------|
+| File                                                                                         | Change                                    |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------- |
 | [`choice_set.dart`](packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/choice_set.dart) | Refine `_scheduleSelectionReconcile` only |
