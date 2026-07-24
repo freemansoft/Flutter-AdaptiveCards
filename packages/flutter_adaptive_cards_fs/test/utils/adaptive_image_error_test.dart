@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/widgets/adaptive_error_placeholder.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../utils/test_utils.dart';
+import 'test_utils.dart';
 
 /// A network image URL that passes the URI policy but returns bytes that
 /// fail to decode ends up in `Image.network`'s `errorBuilder`, which must
