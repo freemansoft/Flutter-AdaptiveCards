@@ -4,7 +4,7 @@
 
 **Goal:** Build a server-driven-UI chat demo — a FastAPI echo backend and a Flutter sample app whose compose box is an Adaptive Card and whose scrolling log renders server-authored Adaptive Card "bubbles."
 
-**Architecture:** Two new top-level siblings joined by an HTTP contract. The Flutter client reuses `flutter_adaptive_cards_host_fs` request serialization (`AdaptiveCardInvokeRequest.fromSubmit` + `PlainJsonInvokeAdapter.toMap`) to POST the compose card's `Action.Submit`, then parses a chat *envelope* and **appends** the returned cards to a log (a custom response path — it does **not** run the host package's overlay-applier). The server keeps conversation state in memory and authors all bubble alignment/styling in Adaptive Card JSON.
+**Architecture:** Two new top-level siblings joined by an HTTP contract. The Flutter client reuses `flutter_adaptive_cards_host_fs` request serialization (`AdaptiveCardInvokeRequest.fromSubmit` + `PlainJsonInvokeAdapter.toMap`) to POST the compose card's `Action.Submit`, then parses a chat _envelope_ and **appends** the returned cards to a log (a custom response path — it does **not** run the host package's overlay-applier). The server keeps conversation state in memory and authors all bubble alignment/styling in Adaptive Card JSON.
 
 **Tech Stack:** Python 3.11+, FastAPI, uvicorn, pytest (backend); Flutter 3.44.0 via FVM, `flutter_adaptive_cards_fs` + `flutter_adaptive_cards_host_fs` (path deps), `package:http` + `package:http/testing.dart` (client).
 
@@ -13,13 +13,14 @@
 - **FVM:** Prefix every `flutter`/`dart` command with `fvm` (e.g. `fvm flutter test`). Pinned Flutter is `3.44.0`; Dart SDK constraint `^3.12.0`.
 - **Commit gate:** This repo forbids committing without explicit user confirmation. The `Commit` step in each task means "stage the listed files and propose the commit"; the executor must show the diff and wait for the user before running `git commit`.
 - **Lint (`very_good_analysis`):** single quotes only; `always_use_package_imports` (import sibling files as `package:adaptive_chat_client/...`, never relative); `const` constructors where possible.
-- **No published-package changes:** touch nothing under `packages/`. The client only *uses* `flutter_adaptive_cards_host_fs` via its public exports. `adaptive_chat_client/` and `adaptive_chat_server/` are outside `packages/`, so the per-package coverage floor and `CHANGELOG.md` gate do not apply.
+- **No published-package changes:** touch nothing under `packages/`. The client only _uses_ `flutter_adaptive_cards_host_fs` via its public exports. `adaptive_chat_client/` and `adaptive_chat_server/` are outside `packages/`, so the per-package coverage floor and `CHANGELOG.md` gate do not apply.
 - **Workspace:** `adaptive_chat_client` is a Dart pub-workspace member (add it to root `pubspec.yaml` `workspace:` list; its pubspec uses `resolution: workspace`). `adaptive_chat_server/` is Python and is **not** in the Dart workspace.
 - **Branch:** do all work on a feature branch (e.g. `feat/adaptive-chat-sdui`), not `main`.
 
 ## File Structure
 
 **Backend — `adaptive_chat_server/`**
+
 - `requirements.txt` — runtime + test deps
 - `README.md` — run instructions
 - `app/__init__.py`
@@ -30,6 +31,7 @@
 - `tests/test_store.py`, `tests/test_cards.py`, `tests/test_responder.py`, `tests/test_api.py`
 
 **Client — `adaptive_chat_client/`**
+
 - `pubspec.yaml`, `analysis_options.yaml`
 - `lib/main.dart` — app entry, `HostConfigs`, `ChatPage` host
 - `lib/src/chat_models.dart` — `ChatStart`, `ChatEnvelope`, `ChatBackendException`
@@ -46,6 +48,7 @@
 ### Task 1: Scaffold server + conversation store
 
 **Files:**
+
 - Create: `adaptive_chat_server/requirements.txt`
 - Create: `adaptive_chat_server/README.md`
 - Create: `adaptive_chat_server/app/__init__.py` (empty)
@@ -53,6 +56,7 @@
 - Test: `adaptive_chat_server/tests/test_store.py`
 
 **Interfaces:**
+
 - Produces: `Message(role: str, card: dict)`, `Interaction(interaction_id: str, text: str, messages: list[Message])`, `Conversation(conversation_id: str, interactions: dict[str, Interaction], order: list[str])`, and `ConversationStore` with `create() -> Conversation`, `get(cid) -> Conversation | None`, `has_interaction(cid, iid) -> bool`, `add_interaction(cid, interaction) -> None`, `get_interaction(cid, iid) -> Interaction | None`.
 
 - [ ] **Step 1: Create `requirements.txt`**
@@ -67,11 +71,13 @@ pytest==8.3.4
 - [ ] **Step 2: Create venv and install**
 
 Run:
+
 ```bash
 cd adaptive_chat_server
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
+
 Expected: installs without error. (Add `.venv/` to the repo `.gitignore` if not already ignored.)
 
 - [ ] **Step 3: Write the failing store test** — `adaptive_chat_server/tests/test_store.py`
@@ -183,9 +189,11 @@ class ConversationStore:
 - [ ] **Step 6: Add `tests/__init__.py` and a `conftest.py` so `app` imports resolve**
 
 Create `adaptive_chat_server/conftest.py`:
+
 ```python
 # Ensures `import app.*` resolves when pytest runs from adaptive_chat_server/.
 ```
+
 (An empty file is enough; pytest adds the rootdir to `sys.path`.)
 
 - [ ] **Step 7: Run test to verify it passes**
@@ -225,10 +233,12 @@ git commit -m "feat(chat-server): scaffold FastAPI project and conversation stor
 ### Task 2: Bubble card builder + envelope
 
 **Files:**
+
 - Create: `adaptive_chat_server/app/cards.py`
 - Test: `adaptive_chat_server/tests/test_cards.py`
 
 **Interfaces:**
+
 - Consumes: `Message` from `app.store`.
 - Produces: `user_bubble(text: str) -> dict` (right-aligned, accent container), `assistant_bubble(text: str) -> dict` (left-aligned, emphasis container), `envelope(cid: str, iid: str, messages: list[Message]) -> dict`.
 
@@ -357,10 +367,12 @@ git commit -m "feat(chat-server): author bubble cards and response envelope"
 ### Task 3: Responder interface + echo
 
 **Files:**
+
 - Create: `adaptive_chat_server/app/responder.py`
 - Test: `adaptive_chat_server/tests/test_responder.py`
 
 **Interfaces:**
+
 - Produces: `Responder` (Protocol with `reply(text: str) -> str`) and `EchoResponder` returning `"Did you just say: {text}"`.
 
 - [ ] **Step 1: Write the failing test** — `adaptive_chat_server/tests/test_responder.py`
@@ -417,10 +429,12 @@ git commit -m "feat(chat-server): add Responder interface and EchoResponder"
 ### Task 4: FastAPI app + start-conversation route
 
 **Files:**
+
 - Create: `adaptive_chat_server/app/main.py`
 - Test: `adaptive_chat_server/tests/test_api.py`
 
 **Interfaces:**
+
 - Consumes: `ConversationStore` (Task 1), `EchoResponder` (Task 3), `user_bubble`/`assistant_bubble`/`envelope` (Task 2).
 - Produces: FastAPI `app`; `POST /conversations -> {"conversationId": str, "links": {"postNext": str}}`; module-level `store` and `responder` singletons.
 
@@ -500,10 +514,12 @@ git commit -m "feat(chat-server): FastAPI app, CORS, and start-conversation rout
 ### Task 5: Send-interaction route (with idempotency + validation)
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/main.py`
 - Test: `adaptive_chat_server/tests/test_api.py`
 
 **Interfaces:**
+
 - Produces: `POST /conversations/{cid}/interactions` — header `X-Interaction-Id` (required), body PlainJson invoke (`{"kind","actionId","data":{"message"}}`). Returns `200` + `envelope`. `400` on missing header/message; `404` on unknown conversation; repeated `X-Interaction-Id` returns the stored envelope.
 
 - [ ] **Step 1: Add failing tests to `tests/test_api.py`**
@@ -575,6 +591,7 @@ Expected: the five new tests FAIL with `404 Not Found` (route not defined yet).
 - [ ] **Step 3: Add the route to `app/main.py`**
 
 Add imports at top:
+
 ```python
 from fastapi import FastAPI, Header, HTTPException, Request
 
@@ -583,6 +600,7 @@ from app.store import Interaction, Message
 ```
 
 Append the route:
+
 ```python
 @app.post("/conversations/{cid}/interactions")
 async def send_interaction(
@@ -634,10 +652,12 @@ git commit -m "feat(chat-server): send-interaction route with idempotency and va
 ### Task 6: Replay route (GET interaction)
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/main.py`
 - Test: `adaptive_chat_server/tests/test_api.py`
 
 **Interfaces:**
+
 - Produces: `GET /conversations/{cid}/interactions/{iid}` → `200` + `envelope`; `404` on unknown conversation or interaction.
 
 - [ ] **Step 1: Add failing tests to `tests/test_api.py`**
@@ -694,6 +714,7 @@ git commit -m "feat(chat-server): add replay (GET interaction) route"
 ### Task 7: Scaffold the `adaptive_chat_client` app
 
 **Files:**
+
 - Create: `adaptive_chat_client/pubspec.yaml`
 - Create: `adaptive_chat_client/analysis_options.yaml`
 - Create: `adaptive_chat_client/lib/main.dart`
@@ -701,6 +722,7 @@ git commit -m "feat(chat-server): add replay (GET interaction) route"
 - Test: `adaptive_chat_client/test/smoke_test.dart`
 
 **Interfaces:**
+
 - Produces: a runnable app whose home is a `Scaffold` titled "Adaptive Chat".
 
 - [ ] **Step 1: Create `adaptive_chat_client/pubspec.yaml`**
@@ -748,8 +770,9 @@ linter:
 - [ ] **Step 3: Add `adaptive_chat_client` to the root workspace**
 
 In repo-root `pubspec.yaml`, add a final list item under `workspace:`:
+
 ```yaml
-  - adaptive_chat_client
+- adaptive_chat_client
 ```
 
 - [ ] **Step 4: Create minimal `adaptive_chat_client/lib/main.dart`**
@@ -795,9 +818,11 @@ void main() {
 - [ ] **Step 6: Install deps and run the smoke test**
 
 Run:
+
 ```bash
 cd adaptive_chat_client && fvm flutter pub get && fvm flutter test test/smoke_test.dart
 ```
+
 Expected: PASS (1 test). If `pub get` reports workspace errors, run `fvm flutter pub get` from the repo root once, then retry.
 
 - [ ] **Step 7: Commit**
@@ -813,13 +838,16 @@ git commit -m "feat(chat): scaffold adaptive_chat_client Flutter sample app"
 ### Task 8: Wire models + backend client
 
 **Files:**
+
 - Create: `adaptive_chat_client/lib/src/chat_models.dart`
 - Create: `adaptive_chat_client/lib/src/chat_backend_client.dart`
 - Test: `adaptive_chat_client/test/chat_backend_client_test.dart`
 
 **Interfaces:**
+
 - Consumes: `AdaptiveCardInvokeRequest`, `PlainJsonInvokeAdapter` (from `flutter_adaptive_cards_host_fs`); `SubmitActionInvoke` (from `flutter_adaptive_cards_fs`); `package:http`.
 - Produces:
+
   - `ChatStart({required String conversationId, required String postNext})` with `ChatStart.fromJson(Map<String,dynamic>)`.
   - `ChatEnvelope({required String conversationId, required String interactionId, required List<Map<String,dynamic>> messages, required String self, required String postNext})` with `ChatEnvelope.fromJson(Map<String,dynamic>)`.
   - `ChatBackendException(String message)`.
@@ -1079,10 +1107,12 @@ git commit -m "feat(chat): add wire models and backend client"
 ### Task 9: Conversation controller
 
 **Files:**
+
 - Create: `adaptive_chat_client/lib/src/conversation_controller.dart`
 - Test: `adaptive_chat_client/test/conversation_controller_test.dart`
 
 **Interfaces:**
+
 - Consumes: `ChatBackendClient`, `ChatEnvelope`, `ChatStart` (Task 8); `SubmitActionInvoke` (core).
 - Produces: `ChatMode { append, replace }`; `ConversationController extends ChangeNotifier` with fields `List<Map<String,dynamic>> messages`, `bool pending`, `ChatMode mode`, `int composeEpoch`, getter `bool ready`; methods `Future<void> startConversation()`, `Future<void> send(String text)`, `void toggleMode()`, `void clear()`.
 
@@ -1291,12 +1321,14 @@ git commit -m "feat(chat): add conversation controller"
 ### Task 10: Chat page UI (compose card, log, pending)
 
 **Files:**
+
 - Create: `adaptive_chat_client/lib/src/compose_card.dart`
 - Create: `adaptive_chat_client/lib/src/chat_page.dart`
 - Modify: `adaptive_chat_client/lib/main.dart`
 - Test: `adaptive_chat_client/test/chat_page_test.dart`
 
 **Interfaces:**
+
 - Consumes: `ConversationController`, `ChatMode` (Task 9); `AdaptiveCardsCanvas`, `HostConfigs`, `InheritedAdaptiveCardHandlers`, `SubmitActionInvoke` (core).
 - Produces: `composeCard` (a `Map<String,dynamic>` Adaptive Card with `Input.Text id="message"` + `Action.Submit id="send"`); `ChatPage({required ConversationController controller, required HostConfigs hostConfigs})`.
 
@@ -1637,6 +1669,7 @@ class _AdaptiveChatAppState extends State<AdaptiveChatApp> {
 - [ ] **Step 6: Update the smoke test** — `adaptive_chat_client/test/smoke_test.dart`
 
 The app now starts a network call on launch; assert the app bar title without settling network I/O:
+
 ```dart
 import 'package:adaptive_chat_client/main.dart';
 import 'package:flutter/material.dart';
@@ -1670,11 +1703,13 @@ git commit -m "feat(chat): chat page with compose card, log, and pending indicat
 ### Task 11: HostConfig theming + bubble polish
 
 **Files:**
+
 - Create: `adaptive_chat_client/lib/src/chat_host_config.dart`
 - Modify: `adaptive_chat_client/lib/main.dart`
 - Test: `adaptive_chat_client/test/chat_host_config_test.dart`
 
 **Interfaces:**
+
 - Consumes: `HostConfig`, `HostConfigs` (core).
 - Produces: `chatHostConfigs() -> HostConfigs` — a light/dark pair whose container styles give the `accent` (user) and `emphasis` (assistant) bubbles readable fills.
 
@@ -1726,10 +1761,13 @@ HostConfigs chatHostConfigs() {
 - [ ] **Step 5: Use it in `main.dart`**
 
 Replace `HostConfigs()` in `lib/main.dart` with `chatHostConfigs()` and add:
+
 ```dart
 import 'package:adaptive_chat_client/src/chat_host_config.dart';
 ```
+
 so the home line reads:
+
 ```dart
       home: ChatPage(controller: _controller, hostConfigs: chatHostConfigs()),
 ```
@@ -1756,6 +1794,7 @@ Adds run/debug configurations to the existing `.vscode/launch.json` (which alrea
 ### Task 19: VS Code launch configs for the chat app + server
 
 **Files:**
+
 - Modify: `.vscode/launch.json`
 - Modify (optional): `.vscode/tasks.json`
 
@@ -1777,6 +1816,7 @@ The original design anticipated this: `OllamaResponder` drops in behind the exis
 ### Task 20: OllamaResponder + CLI wiring
 
 **Files:**
+
 - Create: `adaptive_chat_server/app/ollama_responder.py`
 - Create: `adaptive_chat_server/app/__main__.py` (CLI entrypoint + responder selection)
 - Modify: `adaptive_chat_server/app/responder.py` (interface), `app/main.py` (responder injection seam), `app/store.py` (persist assistant reply text for history)
@@ -1813,13 +1853,17 @@ Expected: all tests PASS. Record the pass count.
 - [ ] **Step 4: Manual end-to-end smoke (document the result)**
 
 Terminal 1:
+
 ```bash
 cd adaptive_chat_server && .venv/bin/uvicorn app.main:app --port 8000
 ```
+
 Terminal 2:
+
 ```bash
 cd adaptive_chat_client && fvm flutter run -d macos   # or -d chrome
 ```
+
 Type a message, press Send, confirm a right-aligned "you" bubble and a left-aligned "Did you just say: …" reply appear, and the pending indicator shows during the round-trip. Toggle Replace and confirm only the latest interaction remains. Tap New conversation and confirm the log clears.
 
 - [ ] **Step 5: Invoke `superpowers:verification-before-completion`**

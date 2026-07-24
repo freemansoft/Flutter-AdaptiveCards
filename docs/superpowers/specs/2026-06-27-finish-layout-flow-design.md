@@ -54,6 +54,7 @@ targets **`Column`** and **`TableCell`**, and corrects the roadmap wording.
 ## Goals / non-goals
 
 **Goals**
+
 - Authors can reflow a `Column` or `TableCell` from a vertical stack to a wrapping
   `Layout.Flow` at chosen card widths, with the same `layouts` + `targetWidth`
   selection used by `Container` and the root body today.
@@ -68,6 +69,7 @@ targets **`Column`** and **`TableCell`**, and corrects the roadmap wording.
 - **Zero behavior change** for cards that do not declare `layouts` — purely additive.
 
 **Non-goals**
+
 - `itemFit: "Fill"`, `ColumnSet` layouts, `AreaGrid`/`grid.area`, and the remaining
   W4/W5 robustness items (deferred; see Scope).
 - Changing the width-bucket measurement mechanism (kept as the existing scoped
@@ -75,14 +77,14 @@ targets **`Column`** and **`TableCell`**, and corrects the roadmap wording.
 
 ## Background — current state
 
-| Piece | Location | Current behavior |
-| --- | --- | --- |
-| `AdaptiveFlowLayout` | `lib/src/responsive/adaptive_flow_layout.dart` | `Wrap`; spacing + alignment; **wraps every item in `IntrinsicWidth`** (W1); honors `minItemWidth`/`maxItemWidth`; **no `itemWidth`/`itemFit`** |
-| `selectLayout` | `lib/src/responsive/layout_selection.dart` | Picks exact-bucket > **first** relational > default; **first relational wins, not most specific** (W3) |
-| Container Flow | `lib/src/cards/containers/container.dart` | Inline `selectLayout` + `AdaptiveFlowLayout`-vs-`Column` branch |
-| Root body Flow | `lib/src/cards/adaptive_card_element.dart` (`_BodyLayout`) | Inline `selectLayout` + `AdaptiveFlowLayout`-vs-`Column` branch |
-| `Column` | `lib/src/cards/containers/column.dart` | Renders items in a `Column` (stack); **no `layouts`** |
-| `TableCell` | `lib/src/cards/containers/table.dart` (`buildCellContent`) | Renders items in a `Wrap`; **no `layouts`** |
+| Piece                | Location                                                   | Current behavior                                                                                                                               |
+| -------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AdaptiveFlowLayout` | `lib/src/responsive/adaptive_flow_layout.dart`             | `Wrap`; spacing + alignment; **wraps every item in `IntrinsicWidth`** (W1); honors `minItemWidth`/`maxItemWidth`; **no `itemWidth`/`itemFit`** |
+| `selectLayout`       | `lib/src/responsive/layout_selection.dart`                 | Picks exact-bucket > **first** relational > default; **first relational wins, not most specific** (W3)                                         |
+| Container Flow       | `lib/src/cards/containers/container.dart`                  | Inline `selectLayout` + `AdaptiveFlowLayout`-vs-`Column` branch                                                                                |
+| Root body Flow       | `lib/src/cards/adaptive_card_element.dart` (`_BodyLayout`) | Inline `selectLayout` + `AdaptiveFlowLayout`-vs-`Column` branch                                                                                |
+| `Column`             | `lib/src/cards/containers/column.dart`                     | Renders items in a `Column` (stack); **no `layouts`**                                                                                          |
+| `TableCell`          | `lib/src/cards/containers/table.dart` (`buildCellContent`) | Renders items in a `Wrap`; **no `layouts`**                                                                                                    |
 
 The `cardWidthBucketProvider` (scoped, fail-open `wide`) and `targetWidth` evaluation
 are unchanged by this design.
@@ -101,13 +103,14 @@ rules from the spec:
 
 Item sizing after this change (W1 + `itemWidth`):
 
-| JSON | Rendered wrapper for each item |
-| --- | --- |
-| `itemWidth: "<n>px"` | `SizedBox(width: n)` — **no `IntrinsicWidth`** |
-| `minItemWidth` and/or `maxItemWidth` (no `itemWidth`) | `IntrinsicWidth` inside `ConstrainedBox(minWidth, maxWidth)` |
-| none of the above | `IntrinsicWidth(child)` (shrinks to content so items flow side-by-side) |
+| JSON                                                  | Rendered wrapper for each item                                          |
+| ----------------------------------------------------- | ----------------------------------------------------------------------- |
+| `itemWidth: "<n>px"`                                  | `SizedBox(width: n)` — **no `IntrinsicWidth`**                          |
+| `minItemWidth` and/or `maxItemWidth` (no `itemWidth`) | `IntrinsicWidth` inside `ConstrainedBox(minWidth, maxWidth)`            |
+| none of the above                                     | `IntrinsicWidth(child)` (shrinks to content so items flow side-by-side) |
 
 `itemFit`:
+
 - `"Fit"` (default) → current content-fit behavior (each item takes its natural width,
   clamped by the wrapper above).
 - `"Fill"` → **not implemented**; logged once via `dart:developer` `log` and treated as
@@ -157,13 +160,13 @@ deferred.
 Adding `Column` and `TableCell` would make four copies. Extract one helper and route all
 four sites through it.
 
-| Piece | Location | Role |
-| --- | --- | --- |
-| `buildLayoutChildren(...)` | `lib/src/responsive/layout_children.dart` (new) | Calls `selectLayout`; returns `AdaptiveFlowLayout` for `Layout.Flow`, else delegates to a caller-supplied `stackBuilder` |
-| `AdaptiveFlowLayout` sizing + `itemFit`/`itemWidth` | `lib/src/responsive/adaptive_flow_layout.dart` | W1 fix + new sizing/`itemFit` parsing |
-| `selectLayout` specificity | `lib/src/responsive/layout_selection.dart` | W3 nearest-relational tiebreak |
-| Root width guard | `lib/src/cards/adaptive_card_element.dart` (root `LayoutBuilder`) | Unbounded-width log + `wide` |
-| Container / root / Column / TableCell wiring | `container.dart`, `adaptive_card_element.dart`, `column.dart`, `table.dart` | Replace inline branches / add new wiring via `buildLayoutChildren` |
+| Piece                                               | Location                                                                    | Role                                                                                                                     |
+| --------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `buildLayoutChildren(...)`                          | `lib/src/responsive/layout_children.dart` (new)                             | Calls `selectLayout`; returns `AdaptiveFlowLayout` for `Layout.Flow`, else delegates to a caller-supplied `stackBuilder` |
+| `AdaptiveFlowLayout` sizing + `itemFit`/`itemWidth` | `lib/src/responsive/adaptive_flow_layout.dart`                              | W1 fix + new sizing/`itemFit` parsing                                                                                    |
+| `selectLayout` specificity                          | `lib/src/responsive/layout_selection.dart`                                  | W3 nearest-relational tiebreak                                                                                           |
+| Root width guard                                    | `lib/src/cards/adaptive_card_element.dart` (root `LayoutBuilder`)           | Unbounded-width log + `wide`                                                                                             |
+| Container / root / Column / TableCell wiring        | `container.dart`, `adaptive_card_element.dart`, `column.dart`, `table.dart` | Replace inline branches / add new wiring via `buildLayoutChildren`                                                       |
 
 ```dart
 // lib/src/responsive/layout_children.dart (new)
@@ -275,8 +278,8 @@ and `widgetbook` lib assets cannot share a file).
 
 - **`packages/flutter_adaptive_cards_fs/README.md`** (Implementation status): `layouts`
   / `Layout.Flow` row → Container + root **and Column + TableCell** ✅; note `itemWidth`
-  + `itemFit: Fit` shipped, `itemFit: Fill` deferred; **`ColumnSet` marked
-  not-applicable (spec has no `layouts` on ColumnSet)**.
+  - `itemFit: Fit` shipped, `itemFit: Fill` deferred; **`ColumnSet` marked
+    not-applicable (spec has no `layouts` on ColumnSet)**.
 - **`docs/Implementation-Status.md`** (roadmap/Known gaps): correct the "Flow on
   ColumnSet/Column/TableCell" wording → "Flow on Column/TableCell shipped; ColumnSet not
   in spec; `itemFit: Fill` + `AreaGrid` deferred".

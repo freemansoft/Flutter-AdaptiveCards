@@ -15,7 +15,7 @@ long conversation quietly "forgets" its start with nothing in the logs to show i
 This change adds two complementary, configurable behaviors to `OllamaResponder`:
 
 1. **History turn-window (send-only trim).** Bound the history sent to Ollama to
-   the last *N* interactions. **Server-stored history is untouched** — only the
+   the last _N_ interactions. **Server-stored history is untouched** — only the
    outbound `/api/chat` prompt is trimmed.
 2. **Context-window observability.** Set `num_ctx` explicitly so the window is a
    known, enforced value, then log actual prompt-token fill (`prompt_eval_count`)
@@ -39,7 +39,7 @@ are unchanged.
 
 ## Non-goals
 
-- **Token-budget trimming or summarization.** We trim by *turn count*, not tokens.
+- **Token-budget trimming or summarization.** We trim by _turn count_, not tokens.
   A token budget or rolling summary is a possible future step but out of scope.
 - **Bounding the server-side store.** The store stays unbounded for the process
   lifetime (already "lost on restart"); no cap on retained history.
@@ -74,7 +74,7 @@ built by `main.py` from the full `conversation.order`.
 
 `OllamaResponder.reply(text, history)` now:
 
-1. **Trim (send-only):** keep the last *N* interactions —
+1. **Trim (send-only):** keep the last _N_ interactions —
    `history = history[-2 * history_turns:]`. This rebinds a **local** variable to a
    slice; the caller's list and the store are never mutated. If
    `history_turns <= 0`, send **no** prior history (guarded — `history[-0:]` would
@@ -88,7 +88,7 @@ built by `main.py` from the full `conversation.order`.
    emit the tiered INFO/WARN log against `num_ctx`.
 
 The trim (turn count) and the fill log (tokens) are **independent**: even after
-trimming to *N* turns, a few very long turns can still exceed `num_ctx`; the tier
+trimming to _N_ turns, a few very long turns can still exceed `num_ctx`; the tier
 log is what surfaces that residual case.
 
 ## Config plumbing (mirrors existing knobs)

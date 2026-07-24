@@ -9,13 +9,13 @@
 
 PR #24 has since **merged**, so the remediation below lands on `main`, not on the PR branch.
 
-| Finding | Status | Where |
-| ------- | ------ | ----- |
-| 1. State classes documented instead of privatized | **FIXED** | `fix/pr24-review-findings-2-3` |
-| 2. `const` constructor misfiled in changelog | **FIXED** | `18c96e7` on `fix/pr24-review-findings-2-3` |
-| 3. `FullCircleClipper()` left non-const | **FIXED** | `18c96e7` on `fix/pr24-review-findings-2-3` |
-| 4. `AdaptiveUriValidationResult` ctor doc | OPEN | PLAUSIBLE, not actioned |
-| 5. `FullCircleClipper` ctor doc duplicates `getClip` doc | OPEN | PLAUSIBLE; the const fix touched this line but left the doc text alone |
+| Finding                                                  | Status    | Where                                                                  |
+| -------------------------------------------------------- | --------- | ---------------------------------------------------------------------- |
+| 1. State classes documented instead of privatized        | **FIXED** | `fix/pr24-review-findings-2-3`                                         |
+| 2. `const` constructor misfiled in changelog             | **FIXED** | `18c96e7` on `fix/pr24-review-findings-2-3`                            |
+| 3. `FullCircleClipper()` left non-const                  | **FIXED** | `18c96e7` on `fix/pr24-review-findings-2-3`                            |
+| 4. `AdaptiveUriValidationResult` ctor doc                | OPEN      | PLAUSIBLE, not actioned                                                |
+| 5. `FullCircleClipper` ctor doc duplicates `getClip` doc | OPEN      | PLAUSIBLE; the const fix touched this line but left the doc text alone |
 
 ## Findings (most severe first)
 
@@ -27,7 +27,7 @@ PR #24 has since **merged**, so the remediation below lands on `main`, not on th
 `AdaptiveCardsCanvasState` and `FadeAnimationState` get documented public constructors saying "hosts should not construct this directly" / "not intended for direct host use", but neither class needs to be public at all:
 
 - `git grep` finds **zero references** to either class outside its own file (including widgetbook, examples, tests).
-- They leak into the public API only because `flutter_adaptive_cards_fs.dart` exports `adaptive_cards_canvas.dart` with no `show` clause, and `flutter_adaptive_cards_extend_fs.dart` re-exports `utils/utils.dart` wholesale. The very next export line in the barrel *does* narrow deliberately (`show RawAdaptiveCard, RawAdaptiveCardState`), so the pattern is established in-repo.
+- They leak into the public API only because `flutter_adaptive_cards_fs.dart` exports `adaptive_cards_canvas.dart` with no `show` clause, and `flutter_adaptive_cards_extend_fs.dart` re-exports `utils/utils.dart` wholesale. The very next export line in the barrel _does_ narrow deliberately (`show RawAdaptiveCard, RawAdaptiveCardState`), so the pattern is established in-repo.
 - 0.15.0 is unreleased (pub.dev has 0.14.0), so privatizing (`_AdaptiveCardsCanvasState`) or narrowing the export is a **free** breaking change today. After publishing, removal requires a breaking-change bump.
 - `AdaptiveCardsCanvasState` also exposes public mutable fields (`map`, `initData`, `onChange`); the doc comment is advisory only — a private class makes misuse structurally impossible.
 
@@ -86,7 +86,7 @@ The PR adds a **non-const** `FullCircleClipper();` to a fieldless `CustomClipper
 ## Notable refuted candidates (checked and dismissed)
 
 - **`static final` → `static const` on `CardChartsRegistry.overlayExtensions` breaks in-place list mutation** — REFUTED. The Dart semantics are real (the backing list becomes unmodifiable), but `CardOverlayExtensionRegistry` is `@immutable` with a first-class `merge()` composition API, its constructor already defaulted to a const empty list, and the docs direct consumers to pass the registry whole. In-place mutation was never a supported pattern; no in-repo code does it.
-- **charts↔cards publish-ordering risk (`^0.15.0` with no version bump)** — REFUTED. The release runbook (`.agents/skills/adaptive-cards-release-engineer/SKILL.md`) mandates identical versions, tagging one commit, publishing charts *after* cards from that same tag, and a joint post-release bump — the split-publish scenario is contrary to documented process. (Human-followed, not CI-enforced, but directly addresses the risk.)
+- **charts↔cards publish-ordering risk (`^0.15.0` with no version bump)** — REFUTED. The release runbook (`.agents/skills/adaptive-cards-release-engineer/SKILL.md`) mandates identical versions, tagging one commit, publishing charts _after_ cards from that same tag, and a joint post-release bump — the split-publish scenario is contrary to documented process. (Human-followed, not CI-enforced, but directly addresses the risk.)
 - **`AdaptiveCardContentProvider()` should also be const** — REFUTED. All subclasses use `implements` (not `extends`) with mutable fields, so a const super-constructor benefits nobody; pure style.
 - **"Explicit constructors are unnecessary boilerplate / 11 sibling State classes untouched"** — REFUTED. The lint/pana surface only covers barrel-exported classes; the 11 siblings live in unexported `lib/src/cards/**`. Post-PR, every class in the two barrel files has a documented explicit constructor — coverage of the actual pana-checked surface is complete.
 - **"`FullCircleClipper` misnamed / doc wrong about circle vs rectangle"** — REFUTED. `ClipOval` derives the circular clip from the returned bounding `Rect`; the docs are factually accurate.

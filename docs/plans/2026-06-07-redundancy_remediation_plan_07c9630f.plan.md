@@ -33,16 +33,16 @@ isProject: false
 
 ## Current status (updated)
 
-| Phase | Status | Notes |
-|-------|--------|-------|
-| **1** Quick wins | **Done** | Dead files removed, unused deps trimmed, orphans deleted, legacy docs archived |
-| **2** Lib consolidation | **Done** | `parseIsVisible`, `parseHostConfigColor`, merged `isVisible` tests |
-| **3** Test infrastructure (Option A) | **Done** | [`flutter_adaptive_cards_test_support`](packages/flutter_adaptive_cards_test_support/) created; cards + template migrated; charts goldens passing (registry wiring fix) |
-| **6.1–6.2** Docs/skills | **Done** | [`AGENTS.md`](AGENTS.md) paths fixed; monorepo skill dependency graph corrected |
-| **4** Fixtures/fonts | **Partial** | §4.2 Roboto fonts consolidated in test_support (~10 MB saved, merged #27/#28); §4.1 JSON still triplicated across versions |
-| **5** Widgetbook/explorer | **Done** | §5.1 [`widgetbook_card_registry.dart`](../../widgetbook/lib/widgetbook_card_registry.dart); §5.2 [`overlay_demo_scaffold.dart`](../../widgetbook/lib/overlay_demo_scaffold.dart); §5.3 explorer README; docs/skill updated |
-| **6.3–6.4** | **Out of scope** | README boilerplate + generic skills dedup (explicit decision) |
-| **7** CI | Pending | Optional matrix + analyze step |
+| Phase                                | Status           | Notes                                                                                                                                                                                                                      |
+| ------------------------------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1** Quick wins                     | **Done**         | Dead files removed, unused deps trimmed, orphans deleted, legacy docs archived                                                                                                                                             |
+| **2** Lib consolidation              | **Done**         | `parseIsVisible`, `parseHostConfigColor`, merged `isVisible` tests                                                                                                                                                         |
+| **3** Test infrastructure (Option A) | **Done**         | [`flutter_adaptive_cards_test_support`](packages/flutter_adaptive_cards_test_support/) created; cards + template migrated; charts goldens passing (registry wiring fix)                                                    |
+| **6.1–6.2** Docs/skills              | **Done**         | [`AGENTS.md`](AGENTS.md) paths fixed; monorepo skill dependency graph corrected                                                                                                                                            |
+| **4** Fixtures/fonts                 | **Partial**      | §4.2 Roboto fonts consolidated in test_support (~10 MB saved, merged #27/#28); §4.1 JSON still triplicated across versions                                                                                                 |
+| **5** Widgetbook/explorer            | **Done**         | §5.1 [`widgetbook_card_registry.dart`](../../widgetbook/lib/widgetbook_card_registry.dart); §5.2 [`overlay_demo_scaffold.dart`](../../widgetbook/lib/overlay_demo_scaffold.dart); §5.3 explorer README; docs/skill updated |
+| **6.3–6.4**                          | **Out of scope** | README boilerplate + generic skills dedup (explicit decision)                                                                                                                                                              |
+| **7** CI                             | Pending          | Optional matrix + analyze step                                                                                                                                                                                             |
 
 **Verification (latest):**
 
@@ -144,12 +144,12 @@ flowchart TB
 
 Unpublished workspace package ([`README.md`](packages/flutter_adaptive_cards_test_support/README.md)) exporting:
 
-| Module | Purpose |
-|--------|---------|
-| `http_overrides.dart` | `MyTestHttpOverrides`, `TransparentImage`, `Blue8x8Image` (Fake-based; replaces charts mockito mocks) |
+| Module                     | Purpose                                                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `http_overrides.dart`      | `MyTestHttpOverrides`, `TransparentImage`, `Blue8x8Image` (Fake-based; replaces charts mockito mocks)         |
 | `test_widget_helpers.dart` | `getTestWidgetFromMap` / `getTestWidgetFromPath` / `getTestWidgetFromString` with optional `CardTypeRegistry` |
-| `golden_helpers.dart` | `configureTestView`, `getGoldenPath`, `getV16SampleForGoldenTest`, `getSampleForGoldenTest` |
-| `flutter_test_config.dart` | `adaptiveCardsTestExecutable` (HTTP overrides + Roboto font loading) |
+| `golden_helpers.dart`      | `configureTestView`, `getGoldenPath`, `getV16SampleForGoldenTest`, `getSampleForGoldenTest`                   |
+| `flutter_test_config.dart` | `adaptiveCardsTestExecutable` (HTTP overrides + Roboto font loading)                                          |
 
 **Consumers:**
 
@@ -222,11 +222,11 @@ Some widgetbook JSON files share the same filename (e.g. `rating.json`, `progres
 
 #### Implemented (2026-06)
 
-| Location | Status |
-|----------|--------|
+| Location                                                                                                                                 | Status                                                    |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
 | [`packages/flutter_adaptive_cards_test_support/assets/fonts/Roboto/`](packages/flutter_adaptive_cards_test_support/assets/fonts/Roboto/) | **Canonical** — 10 `.ttf` faces + `LICENSE.txt` (~1.4 MB) |
-| [`packages/flutter_adaptive_cards_fs/assets/fonts/`](packages/flutter_adaptive_cards_fs/assets/fonts/) | **Deleted** |
-| [`packages/flutter_adaptive_charts_fs/assets/fonts/`](packages/flutter_adaptive_charts_fs/assets/fonts/) | **Deleted** (was byte-identical copy) |
+| [`packages/flutter_adaptive_cards_fs/assets/fonts/`](packages/flutter_adaptive_cards_fs/assets/fonts/)                                   | **Deleted**                                               |
+| [`packages/flutter_adaptive_charts_fs/assets/fonts/`](packages/flutter_adaptive_charts_fs/assets/fonts/)                                 | **Deleted** (was byte-identical copy)                     |
 
 **Migration approach:** `git mv` of the 10 loaded faces from cards → test_support (preserves git history on those paths); `git rm` of charts duplicate tree and unused variants (`material_fonts/`, italic/black faces).
 
@@ -251,10 +251,10 @@ No golden PNG regeneration required (same font bytes).
 
 #### Former state
 
-| Location | Size | Used by |
-|----------|------|---------|
-| [`packages/flutter_adaptive_cards_fs/assets/fonts/`](packages/flutter_adaptive_cards_fs/assets/fonts/) | ~5.2 MB | Golden/widget tests (via `File('assets/fonts/Roboto/...')`) |
-| [`packages/flutter_adaptive_charts_fs/assets/fonts/`](packages/flutter_adaptive_charts_fs/assets/fonts/) | ~5.2 MB | **Byte-identical copy** for charts golden tests |
+| Location                                                                                                 | Size    | Used by                                                     |
+| -------------------------------------------------------------------------------------------------------- | ------- | ----------------------------------------------------------- |
+| [`packages/flutter_adaptive_cards_fs/assets/fonts/`](packages/flutter_adaptive_cards_fs/assets/fonts/)   | ~5.2 MB | Golden/widget tests (via `File('assets/fonts/Roboto/...')`) |
+| [`packages/flutter_adaptive_charts_fs/assets/fonts/`](packages/flutter_adaptive_charts_fs/assets/fonts/) | ~5.2 MB | **Byte-identical copy** for charts golden tests             |
 
 Phase 3 centralized **loading** in [`loadAdaptiveCardsTestFonts()`](packages/flutter_adaptive_cards_test_support/lib/src/flutter_test_config.dart), but each package still kept its own on-disk tree because loading used a **cwd-relative** path:
 
@@ -284,12 +284,12 @@ packages/flutter_adaptive_cards_test_support/
 
 #### Alternative approaches (not used)
 
-| Option | How | Pros | Cons |
-|--------|-----|------|------|
-| **B. Cards canonical + path param** | Keep fonts only under cards; charts `adaptiveCardsTestExecutable(fontsRoot: '../flutter_adaptive_cards_fs/assets/fonts/Roboto')` | Minimal file moves | Still cwd-sensitive; breaks if test cwd changes; charts depends on cards filesystem layout |
-| **C. Repo-root `fixtures/fonts/`** | `fixtures/fonts/Roboto/` + test_support resolves via monorepo-relative path | Visible “shared fixtures” folder | Fragile outside monorepo; still `File`-based; doesn’t work on pub.dev consumers |
-| **D. Git symlinks** | `charts/assets/fonts` → `../flutter_adaptive_cards_fs/assets/fonts` | No duplicate bytes locally | Poor Windows/checkout support; easy to break |
-| **E. Trim only** | Delete charts copy; charts tests always run from cards path | Quick | Doesn’t fix duplication at source; charts CI must run from specific cwd |
+| Option                              | How                                                                                                                              | Pros                             | Cons                                                                                       |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------ |
+| **B. Cards canonical + path param** | Keep fonts only under cards; charts `adaptiveCardsTestExecutable(fontsRoot: '../flutter_adaptive_cards_fs/assets/fonts/Roboto')` | Minimal file moves               | Still cwd-sensitive; breaks if test cwd changes; charts depends on cards filesystem layout |
+| **C. Repo-root `fixtures/fonts/`**  | `fixtures/fonts/Roboto/` + test_support resolves via monorepo-relative path                                                      | Visible “shared fixtures” folder | Fragile outside monorepo; still `File`-based; doesn’t work on pub.dev consumers            |
+| **D. Git symlinks**                 | `charts/assets/fonts` → `../flutter_adaptive_cards_fs/assets/fonts`                                                              | No duplicate bytes locally       | Poor Windows/checkout support; easy to break                                               |
+| **E. Trim only**                    | Delete charts copy; charts tests always run from cards path                                                                      | Quick                            | Doesn’t fix duplication at source; charts CI must run from specific cwd                    |
 
 #### Migration checklist (Phase 4 PR) — §4.2 done
 
@@ -320,11 +320,11 @@ Replaced inline `CardTypeRegistry(addedElements: CardChartsRegistry…)` in 9 wi
 
 [`widgetbook/lib/overlay_demo_scaffold.dart`](../../widgetbook/lib/overlay_demo_scaffold.dart) — `OverlayDemoPageState<T>` mixin:
 
-| API | Purpose |
-|-----|---------|
-| `loadOverlayCardAsset` | Bundle load; optional `injectIds` (text_block) |
+| API                                         | Purpose                                                             |
+| ------------------------------------------- | ------------------------------------------------------------------- |
+| `loadOverlayCardAsset`                      | Bundle load; optional `injectIds` (text_block)                      |
 | `scheduleOverlayApply` / `runWhenCardReady` | Post-frame queue + 30-attempt retry until `documentContainer` ready |
-| `buildOverlayCard` | Loading spinner + `RawAdaptiveCard` shell |
+| `buildOverlayCard`                          | Loading spinner + `RawAdaptiveCard` shell                           |
 
 All five `*_overlay_page.dart` demos refactored; per-page knob sync and overlay apply logic remain in each page. [`docs/widgetbook-overlay-demos.md`](../widgetbook-overlay-demos.md) and widgetbook-overlay-demos skill updated.
 
@@ -360,28 +360,28 @@ Updated `doc/` → `docs/` links (`AdaptiveWidget-Key-Generation.md`, `form-inpu
 
 ## Explicit non-goals (do not “fix”)
 
-| Item | Reason |
-|------|--------|
-| `MediaSource`, `factsFromJsonList`, `actionIdFromMap` exports | May be used by external pub.dev consumers |
-| Cards vs template package split | Intentional per [`docs/adaptive-template-design.md`](docs/adaptive-template-design.md) |
-| widgetbook + adaptive_explorer both previewing cards | Different UX goals; only dedupe shared wiring |
-| README boilerplate across root/package READMEs (§6.3) | Explicitly out of scope |
-| Generic skills vendored in `.agents/skills/` (§6.4) | Explicitly out of scope |
-| 15 repetitive HostConfig deserialization tests | Low ROI |
+| Item                                                          | Reason                                                                                 |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `MediaSource`, `factsFromJsonList`, `actionIdFromMap` exports | May be used by external pub.dev consumers                                              |
+| Cards vs template package split                               | Intentional per [`docs/adaptive-template-design.md`](docs/adaptive-template-design.md) |
+| widgetbook + adaptive_explorer both previewing cards          | Different UX goals; only dedupe shared wiring                                          |
+| README boilerplate across root/package READMEs (§6.3)         | Explicitly out of scope                                                                |
+| Generic skills vendored in `.agents/skills/` (§6.4)           | Explicitly out of scope                                                                |
+| 15 repetitive HostConfig deserialization tests                | Low ROI                                                                                |
 
 ---
 
 ## Suggested PR sequence (revised)
 
-| PR | Contents | Status |
-|----|----------|--------|
-| **PR1** | Phase 1 | **Merged** |
-| **PR2** | Phase 2 | **Merged** |
-| **PR3** | Phase 3 + §6.1–6.2 + test-support README | **Merged** |
-| **PR4a** | Phase 4 §4.2 fonts (#27, #28) | **Merged** |
-| **PR4b** | Phase 4 §4.1.0 + §4.1.1 JSON canonicalization (incl. widgetbook renames) | **Next** |
-| **PR5** | Phase 5 widgetbook registry + overlay scaffold + CHANGELOG | Ready to commit (if not yet PR’d) |
-| **PR6** | Phase 7 CI matrix | Not started |
+| PR       | Contents                                                                 | Status                            |
+| -------- | ------------------------------------------------------------------------ | --------------------------------- |
+| **PR1**  | Phase 1                                                                  | **Merged**                        |
+| **PR2**  | Phase 2                                                                  | **Merged**                        |
+| **PR3**  | Phase 3 + §6.1–6.2 + test-support README                                 | **Merged**                        |
+| **PR4a** | Phase 4 §4.2 fonts (#27, #28)                                            | **Merged**                        |
+| **PR4b** | Phase 4 §4.1.0 + §4.1.1 JSON canonicalization (incl. widgetbook renames) | **Next**                          |
+| **PR5**  | Phase 5 widgetbook registry + overlay scaffold + CHANGELOG               | Ready to commit (if not yet PR’d) |
+| **PR6**  | Phase 7 CI matrix                                                        | Not started                       |
 
 **Verification commands** (per AGENTS.md):
 
@@ -396,12 +396,12 @@ cd packages/flutter_adaptive_charts_fs && fvm flutter test test/golden_v1_6_test
 
 ## Success metrics
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| Duplicated test code consolidated | ~500+ lines | **Done** (test support package) |
-| Font duplication removed | ~10 MB → single ~1.4 MB subset in test_support | **Done** (§4.2, #27/#28) |
-| Widgetbook registry/scaffold deduped | Single registry + overlay mixin | **Done** (§5.1–5.2) |
-| JSON fixtures canonicalized | 27+ files across v* versions | Pending (Phase 4 §4.1) |
-| Dead source files | 0 | **Done** |
-| AGENTS.md links resolve | Yes | **Done** |
-| Test regressions | None | Cards 360 ✓; template 94 ✓; charts golden 7/7 ✓; widgetbook analyze ✓ |
+| Metric                               | Target                                         | Current                                                               |
+| ------------------------------------ | ---------------------------------------------- | --------------------------------------------------------------------- |
+| Duplicated test code consolidated    | ~500+ lines                                    | **Done** (test support package)                                       |
+| Font duplication removed             | ~10 MB → single ~1.4 MB subset in test_support | **Done** (§4.2, #27/#28)                                              |
+| Widgetbook registry/scaffold deduped | Single registry + overlay mixin                | **Done** (§5.1–5.2)                                                   |
+| JSON fixtures canonicalized          | 27+ files across v\* versions                  | Pending (Phase 4 §4.1)                                                |
+| Dead source files                    | 0                                              | **Done**                                                              |
+| AGENTS.md links resolve              | Yes                                            | **Done**                                                              |
+| Test regressions                     | None                                           | Cards 360 ✓; template 94 ✓; charts golden 7/7 ✓; widgetbook analyze ✓ |

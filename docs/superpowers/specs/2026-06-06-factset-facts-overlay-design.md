@@ -160,15 +160,15 @@ Implemented — mirrors `setText` / `setChoices` delegation to the document noti
 
 ## Documentation updates
 
-| File                                                                   | Status                                                                 |
-| ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `docs/reactive-riverpod.md`                                            | Done — `facts` overlay field, merge rules, runtime-writes table        |
-| `docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md` | Done — `facts` added to dynamic property updates                       |
-| `packages/flutter_adaptive_cards_fs/README.md`                         | Done — host API table includes `setFacts` / `clearFacts`               |
-| `docs/Implementation-Status.md`                                        | Done — FactSet runtime `facts` overlay noted                           |
+| File                                                                   | Status                                                                                                                         |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `docs/reactive-riverpod.md`                                            | Done — `facts` overlay field, merge rules, runtime-writes table                                                                |
+| `docs/superpowers/specs/2026-06-03-dynamic-property-updates-design.md` | Done — `facts` added to dynamic property updates                                                                               |
+| `packages/flutter_adaptive_cards_fs/README.md`                         | Done — host API table includes `setFacts` / `clearFacts`                                                                       |
+| `docs/Implementation-Status.md`                                        | Done — FactSet runtime `facts` overlay noted                                                                                   |
 | `widgetbook/lib/fact_set_overlay_page.dart`                            | Done — **example** knob-driven `setFacts` / `clearFacts` demo (see [Example](#example-widgetbook-sample-factset-overlay-knob)) |
-| `widgetbook/lib/adaptive_cards_use_cases.dart`                         | Done — **example** **Facts overlay (knob)** use case registered                    |
-| `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`              | Done — **example** baseline card with `id: demoFactSet` and four generic facts     |
+| `widgetbook/lib/adaptive_cards_use_cases.dart`                         | Done — **example** **Facts overlay (knob)** use case registered                                                                |
+| `widgetbook/lib/samples/fact_set/facts_overlay_demo.json`              | Done — **example** baseline card with `id: demoFactSet` and four generic facts                                                 |
 
 ## Testing
 
@@ -319,12 +319,12 @@ Uses the public package export (no `implementation_imports` or `src/` imports). 
 
 ## Self-review checklist
 
-| Requirement                                   | Implemented |
-| --------------------------------------------- | ----------- |
-| Pattern A full list replace                   | Yes         |
-| `List<Fact>?` on `ElementOverlay`             | Yes         |
-| No `FactOverlay` storage layer                | Yes         |
-| Resolved merge + reactive widget              | Yes         |
-| Host APIs aligned with `choices` / `text`     | Yes         |
-| Tests and docs                                | Yes         |
+| Requirement                                   | Implemented                             |
+| --------------------------------------------- | --------------------------------------- |
+| Pattern A full list replace                   | Yes                                     |
+| `List<Fact>?` on `ElementOverlay`             | Yes                                     |
+| No `FactOverlay` storage layer                | Yes                                     |
+| Resolved merge + reactive widget              | Yes                                     |
+| Host APIs aligned with `choices` / `text`     | Yes                                     |
+| Tests and docs                                | Yes                                     |
 | Widgetbook knob demo (`clearFacts` + presets) | Yes — baseline enum + `_syncPresetKnob` |

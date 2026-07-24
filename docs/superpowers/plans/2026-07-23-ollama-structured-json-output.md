@@ -24,11 +24,13 @@
 ### Task 1: Card schema file + loader
 
 **Files:**
+
 - Create: `adaptive_chat_server/app/card_schema.json`
 - Modify: `adaptive_chat_server/app/ollama_responder.py` (imports + new constant + new function, near the top of the file, after the existing `DEFAULT_SYSTEM_PROMPT_PATH` constant at line 41)
 - Test: `adaptive_chat_server/tests/test_ollama_responder.py`
 
 **Interfaces:**
+
 - Produces: `app.ollama_responder.CARD_SCHEMA_PATH` (a `pathlib.Path`, resolved relative to `ollama_responder.py`, pointing at the bundled `card_schema.json`); `app.ollama_responder._load_card_schema(path: Path) -> dict | None` (returns the parsed schema dict, or `None` — logged as an error, never raises — if the file is missing, not valid JSON, or lacks the expected `oneOf`/`$defs` top-level keys).
 
 - [ ] **Step 1: Write the failing tests**
@@ -204,10 +206,12 @@ git commit -m "feat(adaptive_chat_server): add card_schema.json and its loader"
 ### Task 2: `json_format` constructor param + request payload wiring
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/ollama_responder.py` (new constant, constructor changes, payload construction inside `reply()`)
 - Test: `adaptive_chat_server/tests/test_ollama_responder.py` (update the shared `_responder()` helper; add new tests)
 
 **Interfaces:**
+
 - Consumes: `CARD_SCHEMA_PATH`, `_load_card_schema` from Task 1.
 - Produces: `app.ollama_responder.DEFAULT_JSON_FORMAT` (`str`, value `"schema"`); `OllamaResponder.__init__` gains `json_format: str = DEFAULT_JSON_FORMAT`; the request payload built inside `reply()` gains a conditional `"format"` key.
 
@@ -422,10 +426,12 @@ git commit -m "feat(adaptive_chat_server): add json_format constructor param and
 ### Task 3: Response-handling rework (the dual text/card branch)
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/ollama_responder.py` (the content-handling block inside `reply()`, currently starting at `self._log_context_fill(data)` and ending at `return Reply(text=content, card_body=card_body)`)
 - Test: `adaptive_chat_server/tests/test_ollama_responder.py`
 
 **Interfaces:**
+
 - Consumes: `try_parse_card_body`, `card_parse_failure_reason` from `app.card_detect` (already imported, unchanged signatures).
 - Produces: `OllamaResponder.reply()`'s externally-visible `Reply` behavior for `json_format in {"json", "schema"}` — a JSON-string reply unwraps to plain text; a card-shaped reply populates `card_body`; anything else falls back to today's heuristic path. No new public interface — this task only changes behavior inside `reply()`.
 
@@ -594,11 +600,13 @@ git commit -m "feat(adaptive_chat_server): branch reply() on format-constrained 
 ### Task 4: CLI flag + `build_responder` wiring
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/main.py` (`build_responder()` signature + body, the module-level `responder = build_responder(...)` call, imports)
 - Modify: `adaptive_chat_server/app/__main__.py` (new argparse flag, env var bridge, import)
 - Test: `adaptive_chat_server/tests/test_responder.py`
 
 **Interfaces:**
+
 - Consumes: `DEFAULT_JSON_FORMAT` from `app.ollama_responder` (Task 2).
 - Produces: `build_responder(ollama_url, model, system_prompt_file=None, num_ctx=DEFAULT_NUM_CTX, history_turns=DEFAULT_HISTORY_TURNS, json_format=DEFAULT_JSON_FORMAT) -> Responder` (new trailing param); CLI flag `--json-format {none,json,schema}` (default `DEFAULT_JSON_FORMAT`); env var `OLLAMA_JSON_FORMAT`.
 
@@ -743,6 +751,7 @@ git commit -m "feat(adaptive_chat_server): add --json-format CLI flag"
 ### Task 5: Prompt update for the dual text/card JSON contract
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/card_system_prompt.txt`
 - Test: `adaptive_chat_server/tests/test_card_system_prompt.py`
 
@@ -814,6 +823,7 @@ git commit -m "docs(adaptive_chat_server): document the structured-output JSON c
 ### Task 6: README documentation
 
 **Files:**
+
 - Modify: `adaptive_chat_server/README.md`
 
 **Interfaces:** None (documentation only).
@@ -822,8 +832,7 @@ git commit -m "docs(adaptive_chat_server): document the structured-output JSON c
 
 In `adaptive_chat_server/README.md`, after the existing paragraph that ends "...is render-only for now." (the last line of the "### Card replies (display-only)" section, immediately before "### Request flow"), insert:
 
-```markdown
-
+````markdown
 ### Structured output (`--json-format`)
 
 By default (`--json-format schema`), every Ollama reply is constrained via
@@ -836,6 +845,7 @@ Markdown replies) so the model cannot emit invalid or leaked-prefix JSON.
 .venv/bin/python -m app --ollama-url http://127.0.0.1:11434 \
   --json-format schema   # default; try --json-format json or --json-format none
 ```
+````
 
 - `schema` (default) — constrains both syntax and the outer reply shape.
 - `json` — constrains syntax only (any valid JSON value); shape is still
@@ -845,7 +855,8 @@ Markdown replies) so the model cannot emit invalid or leaked-prefix JSON.
 See
 [docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md](../docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md)
 for the design rationale.
-```
+
+````
 
 - [ ] **Step 2: Add a CLI reference bullet**
 
@@ -854,7 +865,7 @@ In the same file, in the "**Context window & history.**" area, after the existin
 ```markdown
 - `--json-format` (default `schema`) — `none`/`json`/`schema`; see **Structured
   output** above.
-```
+````
 
 - [ ] **Step 3: Review the diff**
 
@@ -927,6 +938,7 @@ made the connection between "this target asks for cards" and "this feature
 constrains the JSON" invisible to anyone reading the file.
 
 **Files:**
+
 - Modify: `.vscode/launch.json` (both card-prompt configs' `args` arrays and
   their explanatory comments)
 

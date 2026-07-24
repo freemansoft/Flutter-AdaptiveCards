@@ -70,24 +70,24 @@ flowchart LR
 
 ### What changes in Phase 2
 
-| Remove | Replace with |
-| --- | --- |
-| `stateHasError` on mixin | Nothing — no widget-local validation flag |
-| `showValidationErrorFor(input)` | `input.isInvalid` from `watchResolvedInput()` |
-| Validator `setState(() { stateHasError = true })` | `setLocalValidationError()` → notifier `setInputError` |
-| ChoiceSet `stateHasError` in `checkRequired` | `setLocalValidationError()` / `clearLocalValidationError()` |
-| Submit/Execute silent `return` on invalid | `setInputError(id, isInvalid: true)` per failing input, then `return` |
-| `loadErrorMessage(..., stateHasError: …)` | `loadErrorMessage(..., showError: input.isInvalid)` |
+| Remove                                            | Replace with                                                          |
+| ------------------------------------------------- | --------------------------------------------------------------------- |
+| `stateHasError` on mixin                          | Nothing — no widget-local validation flag                             |
+| `showValidationErrorFor(input)`                   | `input.isInvalid` from `watchResolvedInput()`                         |
+| Validator `setState(() { stateHasError = true })` | `setLocalValidationError()` → notifier `setInputError`                |
+| ChoiceSet `stateHasError` in `checkRequired`      | `setLocalValidationError()` / `clearLocalValidationError()`           |
+| Submit/Execute silent `return` on invalid         | `setInputError(id, isInvalid: true)` per failing input, then `return` |
+| `loadErrorMessage(..., stateHasError: …)`         | `loadErrorMessage(..., showError: input.isInvalid)`                   |
 
 **Reset:** Existing factory reset on `resetInput` / `resetAllInputs` already clears **`errorMessage`** and **`isInvalid`** overlays — no extra work beyond removing `stateHasError` cleanup in widget overrides.
 
 ### Phase 1 target (unchanged, done)
 
-| API | Use |
-| --- | --- |
-| `watchResolvedInput()` | Start of `build()` |
-| `readResolvedInput()` | `checkRequired()`, `resetInput()`, init seeding |
-| `listenForResolvedValueChanges()` | Sync controllers on value overlay changes |
+| API                               | Use                                             |
+| --------------------------------- | ----------------------------------------------- |
+| `watchResolvedInput()`            | Start of `build()`                              |
+| `readResolvedInput()`             | `checkRequired()`, `resetInput()`, init seeding |
+| `listenForResolvedValueChanges()` | Sync controllers on value overlay changes       |
 
 **Removed in Phase 1:**
 
@@ -100,13 +100,13 @@ flowchart LR
 
 ### Widget local state after both phases
 
-| File | Local state only |
-| --- | --- |
-| Text, Number | `TextEditingController` |
-| Date | `selectedDateTime`, controller |
-| Time | `selectedTime` |
-| Toggle | `boolValue`, `valueOn`/`valueOff` |
-| ChoiceSet | `_selectedChoices`, controller |
+| File         | Local state only                  |
+| ------------ | --------------------------------- |
+| Text, Number | `TextEditingController`           |
+| Date         | `selectedDateTime`, controller    |
+| Time         | `selectedTime`                    |
+| Toggle       | `boolValue`, `valueOn`/`valueOff` |
+| ChoiceSet    | `_selectedChoices`, controller    |
 
 **No** cached overlay fields. **No** `stateHasError`.
 

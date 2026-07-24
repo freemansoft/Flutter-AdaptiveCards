@@ -8,7 +8,7 @@
 
 **Tech Stack:** Dart 3.12+, `shelf` + `shelf_router`, `flutter_adaptive_cards_fs`, `flutter_adaptive_cards_host_fs`, Widgetbook, FVM.
 
-**Parent context:** [`docs/archive/specs/2026-06-07-backend-host-integration-design.md`](../../archive/specs/2026-06-07-backend-host-integration-design.md) (Phase 2 host package — implemented). This plan closes the optional follow-up: *Widgetbook demo using `AdaptiveCardBackendHandlers` + mock client* with **Teams JSON fidelity (option B)**.
+**Parent context:** [`docs/archive/specs/2026-06-07-backend-host-integration-design.md`](../../archive/specs/2026-06-07-backend-host-integration-design.md) (Phase 2 host package — implemented). This plan closes the optional follow-up: _Widgetbook demo using `AdaptiveCardBackendHandlers` + mock client_ with **Teams JSON fidelity (option B)**.
 
 **User choice:** Teams JSON fidelity via local HTTP server; **Widgetbook first** (standalone `host_invoke_demo/` app deferred).
 
@@ -16,19 +16,19 @@
 
 ## File map
 
-| File | Role |
-| --- | --- |
-| `tool/teams_invoke_mock_server/pubspec.yaml` | **Create** — shelf server package (`publish_to: none`) |
-| `tool/teams_invoke_mock_server/lib/cities_data.dart` | Mock country → city choice lists |
-| `tool/teams_invoke_mock_server/lib/invoke_router.dart` | Route Teams invoke bodies → response maps |
-| `tool/teams_invoke_mock_server/bin/server.dart` | `dart run` entry (default `localhost:8080`) |
-| `tool/teams_invoke_mock_server/test/invoke_router_test.dart` | Router unit tests |
-| `tool/teams_invoke_mock_server/README.md` | Start server + sample request/response JSON |
-| `widgetbook/lib/teams_backend_handlers_demo_page.dart` | **Create** — Widgetbook demo page |
-| `widgetbook/lib/adaptive_cards_use_cases.dart` | Register new use case |
-| `widgetbook/pubspec.yaml` | Add `flutter_adaptive_cards_host_fs` dependency |
-| `widgetbook/README.md` | Document demo + server startup |
-| `docs/superpowers/plans/2026-06-07-backend-host-integration.plan.md` | Link follow-up to this plan |
+| File                                                                 | Role                                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------------ |
+| `tool/teams_invoke_mock_server/pubspec.yaml`                         | **Create** — shelf server package (`publish_to: none`) |
+| `tool/teams_invoke_mock_server/lib/cities_data.dart`                 | Mock country → city choice lists                       |
+| `tool/teams_invoke_mock_server/lib/invoke_router.dart`               | Route Teams invoke bodies → response maps              |
+| `tool/teams_invoke_mock_server/bin/server.dart`                      | `dart run` entry (default `localhost:8080`)            |
+| `tool/teams_invoke_mock_server/test/invoke_router_test.dart`         | Router unit tests                                      |
+| `tool/teams_invoke_mock_server/README.md`                            | Start server + sample request/response JSON            |
+| `widgetbook/lib/teams_backend_handlers_demo_page.dart`               | **Create** — Widgetbook demo page                      |
+| `widgetbook/lib/adaptive_cards_use_cases.dart`                       | Register new use case                                  |
+| `widgetbook/pubspec.yaml`                                            | Add `flutter_adaptive_cards_host_fs` dependency        |
+| `widgetbook/README.md`                                               | Document demo + server startup                         |
+| `docs/superpowers/plans/2026-06-07-backend-host-integration.plan.md` | Link follow-up to this plan                            |
 
 ---
 
@@ -50,21 +50,21 @@
 
 ### Inbound (from `TeamsInvokeAdapter.toMap`)
 
-| `name` | When | Server reads |
-| --- | --- | --- |
-| `application/search` | ChoiceSet `onChange` | `value.dataset`, `value.data`, `value.queryText` |
-| `adaptiveCard/action` | Submit / Execute | `value.action.type`, `value.action.data`, `value.action.verb` |
+| `name`                | When                 | Server reads                                                  |
+| --------------------- | -------------------- | ------------------------------------------------------------- |
+| `application/search`  | ChoiceSet `onChange` | `value.dataset`, `value.data`, `value.queryText`              |
+| `adaptiveCard/action` | Submit / Execute     | `value.action.type`, `value.action.data`, `value.action.verb` |
 
 **Note:** `TeamsInvokeAdapter` does not include `inputId` on `application/search`. Country selection is inferred when `dataset` is absent and `queryText` resolves to a known country code (`usa`, `france`, `india`).
 
 ### Outbound (parsed by `TeamsInvokeAdapter.responseFromMap`)
 
-| Scenario | Response shape |
-| --- | --- |
-| City choice patch | PlainJson: `{ "type": "adaptiveCard.invokeResponse", "effects": [{ "type": "applyPatches", "elements": [{ "id": "city", "choices": [...], "clearValue": true }] }] }` |
-| Submit success | Teams attachment: `{ "attachments": [{ "contentType": "application/vnd.microsoft.card.adaptive", "content": { ... } }] }` |
-| Submit validation error | PlainJson `setInputErrors` effect |
-| No-op | `{ "type": "adaptiveCard.invokeResponse", "effects": [] }` |
+| Scenario                | Response shape                                                                                                                                                        |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| City choice patch       | PlainJson: `{ "type": "adaptiveCard.invokeResponse", "effects": [{ "type": "applyPatches", "elements": [{ "id": "city", "choices": [...], "clearValue": true }] }] }` |
+| Submit success          | Teams attachment: `{ "attachments": [{ "contentType": "application/vnd.microsoft.card.adaptive", "content": { ... } }] }`                                             |
+| Submit validation error | PlainJson `setInputErrors` effect                                                                                                                                     |
+| No-op                   | `{ "type": "adaptiveCard.invokeResponse", "effects": [] }`                                                                                                            |
 
 ---
 
@@ -441,7 +441,7 @@ git commit -m "feat: add Teams invoke mock router and city data"
 
 - [ ] **Step 1: Document startup and sample curl**
 
-```markdown
+````markdown
 # Teams invoke mock server
 
 Local HTTP server for Widgetbook `AdaptiveCardBackendHandlers` demos. Accepts JSON bodies from `TeamsInvokeAdapter.toMap` and returns shapes understood by `TeamsInvokeAdapter.responseFromMap`.
@@ -453,6 +453,7 @@ cd tool/teams_invoke_mock_server
 fvm dart pub get
 fvm dart run bin/server.dart
 ```
+````
 
 Listens on `http://localhost:8080/api/invoke` (override with `PORT` env var).
 
@@ -471,14 +472,15 @@ curl -s -X POST http://localhost:8080/api/invoke \
   -H 'Content-Type: application/json' \
   -d '{"type":"invoke","name":"adaptiveCard/action","value":{"action":{"type":"Action.Submit","data":{"country":"usa","city":"nyc"}}}}'
 ```
-```
+
+````
 
 - [ ] **Step 2: Manual smoke**
 
 ```bash
 cd tool/teams_invoke_mock_server
 fvm dart run bin/server.dart
-```
+````
 
 In another terminal, run the cities `curl` above. Expected: JSON with `applyPatches` and two USA city choices.
 
@@ -503,8 +505,8 @@ git commit -m "docs: add Teams invoke mock server README"
 In `widgetbook/pubspec.yaml` under `dependencies:`:
 
 ```yaml
-  flutter_adaptive_cards_host_fs:
-    path: ../packages/flutter_adaptive_cards_host_fs
+flutter_adaptive_cards_host_fs:
+  path: ../packages/flutter_adaptive_cards_host_fs
 ```
 
 Run:
@@ -757,7 +759,7 @@ In `widgetbook/README.md` interactive demos table, add:
 
 Add a short **Teams mock server** subsection under run instructions:
 
-```markdown
+````markdown
 ### Teams invoke mock server (backend handlers demo)
 
 ```bash
@@ -765,9 +767,11 @@ cd tool/teams_invoke_mock_server
 fvm dart pub get
 fvm dart run bin/server.dart
 ```
+````
 
 Then open Widgetbook → Input.ChoiceSet → **Teams backend handlers (HTTP mock)**.
-```
+
+````
 
 - [ ] **Step 2: Update backend integration plan follow-up**
 
@@ -775,7 +779,7 @@ In `docs/superpowers/plans/2026-06-07-backend-host-integration.plan.md`, replace
 
 ```markdown
 - [ ] Widgetbook demo using `AdaptiveCardBackendHandlers` + mock client — see [`2026-06-07-teams-invoke-example-app.plan.md`](2026-06-07-teams-invoke-example-app.plan.md)
-```
+````
 
 - [ ] **Step 3: Commit**
 

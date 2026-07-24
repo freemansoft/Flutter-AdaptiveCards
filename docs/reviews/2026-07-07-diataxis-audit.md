@@ -19,31 +19,31 @@ large mixed-mode docs**. Four docs at the canonical level were actually out-of-s
 
 ## Per-doc classification
 
-| Doc | Dominant quadrant | State |
-| --- | --- | --- |
-| `Architecture-Overview.md` | Explanation | ✅ clean |
-| `overlay-properties-by-type.md` | Reference | ✅ clean |
-| `documentation-scope.md` | Reference | ✅ clean |
-| `adaptive-style.md` | Explanation | ✅ mostly |
-| `Adaptive-expressions-...functions.md` | Reference | ✅ clean (speculative/future) |
-| `optional-packages-and-extensions.md` | Explanation | ⚠️ mild mix (consumer checklist) |
-| `AdaptiveWidget-Key-Generation.md` | Reference | ⚠️ mild mix |
-| `reactive-riverpod.md` | Explanation | ⚠️ mild mix (how-to + backlog) |
-| `testing-coverage.md` | How-to | ⚠️ mild mix |
-| `hostconfig.md` | **Mixed** | ❌ violation (ref + explanation + how-to) |
-| `actions-architecture.md` | **Mixed** | ❌ violation → **Phase 1 done** (recipe extracted) |
-| `adaptive-template-design.md` | **Mixed** | ❌ violation |
-| `AI-Agent-Support.md` | **Mixed** | ❌ violation |
-| `backend-host-integration.md` | **Mixed** | ❌ violation |
-| `form-inputs.md` | **Mixed** | ❌❌ worst → **Phase 1 done** (see below) |
-| `Implementation-Status.md` | Index + Mixed | ❌ special (index) |
-| `README.md` | Index | ➖ n/a (TOC) |
-| `Column-ColumnSet-Fill-Vertical-Height.md` | — | 🗄️ **archived** (fixed-bug history) |
-| `semantic-label-localization.md` | — | 🗄️ **archived** (proposal / findings) |
-| `backgroundImage.md` | Reference | 🔖 tagged `doc_type: reference` (kept — README-linked) |
-| `Encoded-Image-Support.md` | Reference | 🔖 tagged `doc_type: reference` (kept — README-linked) |
-| `adaptive-explorer-design.md` | Explanation | 🔬 sample (lower priority) |
-| `widgetbook-overlay-demos.md` | How-to/Reference | 🔬 sample (lower priority) |
+| Doc                                        | Dominant quadrant | State                                                  |
+| ------------------------------------------ | ----------------- | ------------------------------------------------------ |
+| `Architecture-Overview.md`                 | Explanation       | ✅ clean                                               |
+| `overlay-properties-by-type.md`            | Reference         | ✅ clean                                               |
+| `documentation-scope.md`                   | Reference         | ✅ clean                                               |
+| `adaptive-style.md`                        | Explanation       | ✅ mostly                                              |
+| `Adaptive-expressions-...functions.md`     | Reference         | ✅ clean (speculative/future)                          |
+| `optional-packages-and-extensions.md`      | Explanation       | ⚠️ mild mix (consumer checklist)                       |
+| `AdaptiveWidget-Key-Generation.md`         | Reference         | ⚠️ mild mix                                            |
+| `reactive-riverpod.md`                     | Explanation       | ⚠️ mild mix (how-to + backlog)                         |
+| `testing-coverage.md`                      | How-to            | ⚠️ mild mix                                            |
+| `hostconfig.md`                            | **Mixed**         | ❌ violation (ref + explanation + how-to)              |
+| `actions-architecture.md`                  | **Mixed**         | ❌ violation → **Phase 1 done** (recipe extracted)     |
+| `adaptive-template-design.md`              | **Mixed**         | ❌ violation                                           |
+| `AI-Agent-Support.md`                      | **Mixed**         | ❌ violation                                           |
+| `backend-host-integration.md`              | **Mixed**         | ❌ violation                                           |
+| `form-inputs.md`                           | **Mixed**         | ❌❌ worst → **Phase 1 done** (see below)              |
+| `Implementation-Status.md`                 | Index + Mixed     | ❌ special (index)                                     |
+| `README.md`                                | Index             | ➖ n/a (TOC)                                           |
+| `Column-ColumnSet-Fill-Vertical-Height.md` | —                 | 🗄️ **archived** (fixed-bug history)                    |
+| `semantic-label-localization.md`           | —                 | 🗄️ **archived** (proposal / findings)                  |
+| `backgroundImage.md`                       | Reference         | 🔖 tagged `doc_type: reference` (kept — README-linked) |
+| `Encoded-Image-Support.md`                 | Reference         | 🔖 tagged `doc_type: reference` (kept — README-linked) |
+| `adaptive-explorer-design.md`              | Explanation       | 🔬 sample (lower priority)                             |
+| `widgetbook-overlay-demos.md`              | How-to/Reference  | 🔬 sample (lower priority)                             |
 
 Package READMEs are Reference-dominant hybrid landing pages — conventionally acceptable, not
 split.

@@ -19,13 +19,13 @@
 
 Each **`TextRun`** uses **`ReferenceResolver.resolveTextBlockStyle()`** with run-level `size`, `weight`, `color`, `fontType`, and `isSubtle`, then:
 
-| Property        | Flutter mapping                                      |
-| --------------- | ---------------------------------------------------- |
-| `italic`        | `FontStyle.italic`                                   |
-| `strikethrough` | `TextDecoration.lineThrough`                         |
-| `underline`     | `TextDecoration.underline`                           |
-| `highlight`     | `TextSpan.style.backgroundColor` (theme highlight)   |
-| `selectAction`  | `TapGestureRecognizer` → action registry `tap()`     |
+| Property        | Flutter mapping                                    |
+| --------------- | -------------------------------------------------- |
+| `italic`        | `FontStyle.italic`                                 |
+| `strikethrough` | `TextDecoration.lineThrough`                       |
+| `underline`     | `TextDecoration.underline`                         |
+| `highlight`     | `TextSpan.style.backgroundColor` (theme highlight) |
+| `selectAction`  | `TapGestureRecognizer` → action registry `tap()`   |
 
 Run text passes through **`parseTextString`** + **`DateTimeUtils.formatText`** (same as `TextBlock`).
 
@@ -39,12 +39,12 @@ Run text passes through **`parseTextString`** + **`DateTimeUtils.formatText`** (
 
 Keep existing **`supportMarkdown`** path and **`MarkdownBody`** link handling.
 
-| Property    | Plain `Text` path (`supportMarkdown: false`)                         |
-| ----------- | --------------------------------------------------------------------- |
-| `maxLines`  | Honor `maxLines` / `wrap` via `resolveMaxLines`; `TextOverflow.ellipsis` |
-| `color`     | Apply `resolveContainerForegroundColor` from resolved appearance    |
-| `isSubtle`  | Same color path as markdown                                           |
-| `weight`    | Already resolved; ensure plain `Text` uses merged appearance          |
+| Property   | Plain `Text` path (`supportMarkdown: false`)                             |
+| ---------- | ------------------------------------------------------------------------ |
+| `maxLines` | Honor `maxLines` / `wrap` via `resolveMaxLines`; `TextOverflow.ellipsis` |
+| `color`    | Apply `resolveContainerForegroundColor` from resolved appearance         |
+| `isSubtle` | Same color path as markdown                                              |
+| `weight`   | Already resolved; ensure plain `Text` uses merged appearance             |
 
 Markdown path limitations remain documented (no `maxLines` in `MarkdownBody`).
 

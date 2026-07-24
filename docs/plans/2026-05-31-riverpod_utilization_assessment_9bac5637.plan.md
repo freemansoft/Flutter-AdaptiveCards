@@ -93,12 +93,12 @@ flowchart LR
 
 > **~~MOSTLY OBSOLETE~~** — The hypotheticals were acted on:
 
-| Hypothetical adoption                                       | Status                                                                        |
-| ----------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Move input state to `NotifierProvider`                      | ✅ Done — `AdaptiveCardDocumentNotifier` owns overlays                        |
-| `ref.watch(styleReferenceResolverProvider)` on theme change | ✅ Answered 2026-06-16 — see note below                                       |
-| Replace `InheritedAdaptiveCardHandlers` with providers      | ➖ Not done — kept on `InheritedWidget` by AGENTS.md policy                   |
-| `ConsumerWidget` for elements                               | ✅ Done — inputs and show-card use `ConsumerStatefulWidget`                   |
+| Hypothetical adoption                                       | Status                                                      |
+| ----------------------------------------------------------- | ----------------------------------------------------------- |
+| Move input state to `NotifierProvider`                      | ✅ Done — `AdaptiveCardDocumentNotifier` owns overlays      |
+| `ref.watch(styleReferenceResolverProvider)` on theme change | ✅ Answered 2026-06-16 — see note below                     |
+| Replace `InheritedAdaptiveCardHandlers` with providers      | ➖ Not done — kept on `InheritedWidget` by AGENTS.md policy |
+| `ConsumerWidget` for elements                               | ✅ Done — inputs and show-card use `ConsumerStatefulWidget` |
 
 **`styleReferenceResolverProvider` theme rebuild (answered 2026-06-16):** Neither `ref.watch` nor `setState`. Propagation is via Flutter's `didChangeDependencies` mechanism: `ProviderScope.containerOf(context)` (default `listen: true`) registers an InheritedWidget dependency; when the override updates, element `didChangeDependencies()` fires and they re-read `styleResolver` fresh. No `ref.watch` conversion needed. **Side-effect bug found:** `ProviderScope(key: ValueKey<Brightness?>(...))` in [`flutter_raw_adaptive_card.dart`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart) destroys the `AdaptiveCardDocumentNotifier` (all input values, overlays) on brightness toggle — see `remove-providerscope-key` todo.
 

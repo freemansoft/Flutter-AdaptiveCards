@@ -24,14 +24,14 @@ know to prefer `Action.Execute`/`Action.Submit`.
 
 ## Action.Http JSON contract
 
-| Property  | Type                      | Required   | Notes |
-| --------- | ------------------------- | ---------- | ----- |
-| `type`    | String                    | yes        | `"Action.Http"` |
-| `title`   | String                    | no         | Button label |
-| `method`  | String                    | yes        | `GET` or `POST` (upper-cased on read) |
-| `url`     | String                    | yes        | Supports `{{inputId.value}}` substitution |
-| `headers` | Array of `{name, value}`  | no         | `value` supports substitution |
-| `body`    | String                    | POST only  | Supports `{{inputId.value}}` substitution |
+| Property  | Type                     | Required  | Notes                                     |
+| --------- | ------------------------ | --------- | ----------------------------------------- |
+| `type`    | String                   | yes       | `"Action.Http"`                           |
+| `title`   | String                   | no        | Button label                              |
+| `method`  | String                   | yes       | `GET` or `POST` (upper-cased on read)     |
+| `url`     | String                   | yes       | Supports `{{inputId.value}}` substitution |
+| `headers` | Array of `{name, value}` | no        | `value` supports substitution             |
+| `body`    | String                   | POST only | Supports `{{inputId.value}}` substitution |
 
 Substitution uses the literal Outlook `{{inputId.value}}` form only. This is distinct
 from the `flutter_adaptive_template_fs` templating engine (`${...}`); the templating
@@ -62,7 +62,7 @@ engine is **not** involved.
 
 - `lib/src/cards/actions/http.dart` — `AdaptiveActionHttp`, a `StatefulWidget` with
   `AdaptiveElementWidgetMixin` (widget) and `AdaptiveActionMixin, AdaptiveElementMixin,
-  ProviderScopeMixin` (state), rendering through `IconButtonAction`. Mirrors
+ProviderScopeMixin` (state), rendering through `IconButtonAction`. Mirrors
   `submit.dart`. Resolves `DefaultHttpAction` from the action type registry in
   `didChangeDependencies` and calls `action.tap(...)` on tap.
 - `lib/src/utils/input_substitution.dart` — pure util
@@ -73,10 +73,10 @@ engine is **not** involved.
 ### Changed files
 
 - `lib/src/action/generic_action.dart` — add `abstract class GenericHttpAction extends
-  GenericAction` with the standard `tap({context, rawAdaptiveCardState, adaptiveMap})`
+GenericAction` with the standard `tap({context, rawAdaptiveCardState, adaptiveMap})`
   contract.
 - `lib/src/action/default_actions.dart` — add `DefaultHttpAction extends
-  GenericHttpAction`. `tap` order:
+GenericHttpAction`. `tap` order:
   1. `validateInputs(container)` → return if invalid.
   2. `collectInputValues()`.
   3. Resolve substitution in `url`, `body`, and header values.

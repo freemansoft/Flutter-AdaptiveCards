@@ -933,7 +933,7 @@ Add one sentence above the example: “Wire this on **`InheritedAdaptiveCardHand
 **Actions table** — update Submit and Execute **Notes** columns:
 
 ```markdown
-| Action.Submit  | ... | ✅ Complete | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | **`id`** as **`actionId`** via **`SubmitActionInvoke`** on `onSubmit`; merged `data` + inputs. **`associatedInputs`** not implemented — see [Known Gaps](#known-gaps). |
+| Action.Submit | ... | ✅ Complete | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | **`id`** as **`actionId`** via **`SubmitActionInvoke`** on `onSubmit`; merged `data` + inputs. **`associatedInputs`** not implemented — see [Known Gaps](#known-gaps). |
 | Action.Execute | ... | ✅ Complete | ✅ Yes | [actions-architecture.md](./actions-architecture.md) | **`verb`** and **`id`** via **`ExecuteActionInvoke`** on `onExecute`; merged `data` + inputs. **`associatedInputs`** not implemented — see [Known Gaps](#known-gaps). |
 ```
 
@@ -948,7 +948,7 @@ Add one sentence above the example: “Wire this on **`InheritedAdaptiveCardHand
 Expand the host callbacks sentence (approx. line 227):
 
 ```markdown
-Host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onChange`, …) remain on **`InheritedAdaptiveCardHandlers`**. These are host integration points, not reactive document state. **`onSubmit`** receives **`SubmitActionInvoke`** (`actionId`, merged `data`); **`onExecute`** receives **`ExecuteActionInvoke`** (`verb`, `actionId`, merged `data`). *(Phase 2 Task 17 documents **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, and **`InputChangeInvoke`**.)*
+Host callbacks (`onSubmit`, `onExecute`, `onOpenUrl`, `onChange`, …) remain on **`InheritedAdaptiveCardHandlers`**. These are host integration points, not reactive document state. **`onSubmit`** receives **`SubmitActionInvoke`** (`actionId`, merged `data`); **`onExecute`** receives **`ExecuteActionInvoke`** (`verb`, `actionId`, merged `data`). _(Phase 2 Task 17 documents **`OpenUrlActionInvoke`**, **`OpenUrlDialogActionInvoke`**, and **`InputChangeInvoke`**.)_
 ```
 
 - [x] **Step 7: Re-run audit — expect clean**
@@ -1313,12 +1313,15 @@ rg -n 'onOpenUrl|onOpenUrlDialog|onChange.*String id|Function\(String url\)' doc
 
 ```markdown
 ## Action.OpenUrl payload
+
 `DefaultOpenUrlAction` → `OpenUrlActionInvoke` (`url`, `actionId`) → `onOpenUrl`.
 
 ## Action.OpenUrlDialog payload
+
 `DefaultOpenUrlDialogAction` → `OpenUrlDialogActionInvoke` → `onOpenUrlDialog`.
 
 ## Input onChange payload
+
 `RawAdaptiveCardState` → `InputChangeInvoke` (`inputId`, `value`, `dataQuery`, `cardState`) → `onChange`.
 ```
 

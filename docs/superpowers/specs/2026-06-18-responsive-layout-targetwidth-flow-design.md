@@ -35,6 +35,7 @@ the single most complex part of v1.6 responsive layout and warrants its own desi
 ## Goals / non-goals
 
 **Goals**
+
 - Authors can show/hide any element by card width via `targetWidth`.
 - Authors can make a `Container` (or root body) reflow from a vertical stack to a
   wrapping layout at chosen widths via `Layout.Flow`.
@@ -42,6 +43,7 @@ the single most complex part of v1.6 responsive layout and warrants its own desi
 - **Zero behavior change for existing cards** — the feature is purely additive.
 
 **Non-goals**
+
 - `AreaGrid`, advanced Flow sizing, and non-`Container` `layouts` hosts (deferred).
 - Changing how width is measured for any purpose other than responsive layout.
 
@@ -102,17 +104,17 @@ the single most complex part of v1.6 responsive layout and warrants its own desi
 
 All changes in `packages/flutter_adaptive_cards_fs`.
 
-| Piece | Location | Role |
-| --- | --- | --- |
-| `WidthBucket` enum + `targetWidthMatches()` | `lib/src/responsive/width_bucket.dart` (new) | Bucket enum; **pure** matcher for bare + `atLeast:` / `atMost:` forms (fail-open) |
-| `selectLayout(layouts, bucket)` | `lib/src/responsive/layout_selection.dart` (new) | **Pure**: pick best `Layout.*` for a bucket; default `Layout.Stack` |
-| `AdaptiveFlowLayout` | `lib/src/responsive/adaptive_flow_layout.dart` (new) | `Wrap`-based renderer for `Layout.Flow` (spacing + alignment) |
-| `HostWidthsConfig` | `lib/src/hostconfig/host_widths_config.dart` (new) | Parses `hostWidthBreakpoints`; spec defaults when absent |
-| `ReferenceResolver.resolveWidthBucket(double)` | `lib/src/reference_resolver.dart` | Maps pixel width → `WidthBucket` using the config |
-| `cardWidthBucketProvider` | `lib/src/riverpod/providers.dart` | Scoped `Provider<WidthBucket>`, overridden by the root `LayoutBuilder` |
-| `AdaptiveResponsiveMixin` | `lib/src/adaptive_mixins.dart` | `ref.watch`es the bucket; exposes `matchesTargetWidth` |
-| Root body `LayoutBuilder` | `lib/src/cards/adaptive_card_element.dart` (and/or `flutter_raw_adaptive_card.dart`) | Sole width measurement; overrides the bucket provider for the subtree; selects root-body layout |
-| Container layout selection | `lib/src/cards/containers/container.dart` | Calls `selectLayout`; renders stack or `AdaptiveFlowLayout` |
+| Piece                                          | Location                                                                             | Role                                                                                            |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `WidthBucket` enum + `targetWidthMatches()`    | `lib/src/responsive/width_bucket.dart` (new)                                         | Bucket enum; **pure** matcher for bare + `atLeast:` / `atMost:` forms (fail-open)               |
+| `selectLayout(layouts, bucket)`                | `lib/src/responsive/layout_selection.dart` (new)                                     | **Pure**: pick best `Layout.*` for a bucket; default `Layout.Stack`                             |
+| `AdaptiveFlowLayout`                           | `lib/src/responsive/adaptive_flow_layout.dart` (new)                                 | `Wrap`-based renderer for `Layout.Flow` (spacing + alignment)                                   |
+| `HostWidthsConfig`                             | `lib/src/hostconfig/host_widths_config.dart` (new)                                   | Parses `hostWidthBreakpoints`; spec defaults when absent                                        |
+| `ReferenceResolver.resolveWidthBucket(double)` | `lib/src/reference_resolver.dart`                                                    | Maps pixel width → `WidthBucket` using the config                                               |
+| `cardWidthBucketProvider`                      | `lib/src/riverpod/providers.dart`                                                    | Scoped `Provider<WidthBucket>`, overridden by the root `LayoutBuilder`                          |
+| `AdaptiveResponsiveMixin`                      | `lib/src/adaptive_mixins.dart`                                                       | `ref.watch`es the bucket; exposes `matchesTargetWidth`                                          |
+| Root body `LayoutBuilder`                      | `lib/src/cards/adaptive_card_element.dart` (and/or `flutter_raw_adaptive_card.dart`) | Sole width measurement; overrides the bucket provider for the subtree; selects root-body layout |
+| Container layout selection                     | `lib/src/cards/containers/container.dart`                                            | Calls `selectLayout`; renders stack or `AdaptiveFlowLayout`                                     |
 
 **Why Approach 1:** consistent with the established Riverpod + mixin + HostConfig
 idioms; `targetWidth` rides the same reactive path as `isVisible`; the two
@@ -159,7 +161,7 @@ card render width (root LayoutBuilder.constraints.maxWidth)
 - **Golden tests** (tagged `golden`): one narrow + one wide snapshot of a Flow card
   to lock the visual reflow (mirrors the charts / text-features verification pattern).
 - **Verification**: `fvm flutter analyze` clean; `fvm flutter test
-  --exclude-tags=golden` green in `flutter_adaptive_cards_fs`.
+--exclude-tags=golden` green in `flutter_adaptive_cards_fs`.
 
 ## Documentation impact
 
@@ -194,7 +196,7 @@ section "Follow-up tasks: post-implementation review").
 > **keeps `IntrinsicWidth` for content-fit items** and skips it **only when `itemWidth` is
 > set** (which uses a `SizedBox` — a perf win on that path and a safe escape for items that
 > can't report an intrinsic width). The residual throw risk for a non-intrinsic item used
-> *directly* as a content-fit flow child is documented in `AdaptiveFlowLayout`; authors
+> _directly_ as a content-fit flow child is documented in `AdaptiveFlowLayout`; authors
 > give such items an `itemWidth`. See
 > [2026-06-27 finish-Layout.Flow design](./2026-06-27-finish-layout-flow-design.md).
 
@@ -203,8 +205,8 @@ section "Follow-up tasks: post-implementation review").
 
 - **It can throw at runtime.** Not every widget supports intrinsic dimensions. A
   flow whose items contain an unbounded-size `Image`, a nested flex / `Expanded`,
-  or certain custom render objects throws *"does not support returning intrinsic
-  dimensions"*. Current tests only exercise `TextBlock` children, so this is
+  or certain custom render objects throws _"does not support returning intrinsic
+  dimensions"_. Current tests only exercise `TextBlock` children, so this is
   unverified and will surface on real cards.
 - **It is O(n) extra speculative layout passes**, re-run on every resize across a
   boundary.
@@ -231,7 +233,7 @@ for width) and the docs described a provider that did not exist.
 
 **Why the provider was chosen (option (b) over blessing the InheritedWidget):**
 `CLAUDE.md` guidance prefers Riverpod for reactive card state, and a provider
-(unlike an `InheritedWidget`) can be read by *other providers / Notifiers* —
+(unlike an `InheritedWidget`) can be read by _other providers / Notifiers_ —
 relevant if width-derived logic ever moves into a `Notifier` (e.g. width-dependent
 validation or action `isEnabled`). The remediation below kept Riverpod **with a
 single stable top-level `ProviderScope`** and without rebuilding it on every layout
@@ -241,7 +243,7 @@ pass.
 
 The tension: the width only exists **inside** `LayoutBuilder`, but Riverpod has no
 way to change a provider's value via `overrideWithValue` **without rebuilding a
-`ProviderScope`** — and a provider's value also cannot be mutated *during* a build
+`ProviderScope`** — and a provider's value also cannot be mutated _during_ a build
 phase (so writing the measured width into a `Notifier` from the `LayoutBuilder`
 builder is disallowed; it would require a deferred `addPostFrameCallback` write that
 costs an extra frame of lag on every boundary crossing).
@@ -295,7 +297,7 @@ Widget build(BuildContext context) {
 **Why this avoids rebuilding on every layout pass:**
 
 1. **The subtree is preserved by element reuse.** Each layout pass creates a new
-   inner `ProviderScope` *widget*, but it is passed the *same* `cardBody` instance.
+   inner `ProviderScope` _widget_, but it is passed the _same_ `cardBody` instance.
    Flutter compares `ProviderScope.child` by identity, sees it unchanged, and does
    **not** rebuild `cardBody` or anything below it. Only a new (cheap) `ProviderScope`
    widget object is allocated; its `State` / `ProviderContainer` persist across passes
@@ -332,7 +334,7 @@ bucket a first-class Riverpod value.
 `selectLayout` (`lib/src/responsive/layout_selection.dart`) takes the **first**
 relational match in array order (`relationalMatch ??= layout`). For
 `[{atLeast:narrow}, {atLeast:standard}]` at bucket `wide`, both match and it returns
-`atLeast:narrow` — not the *most specific*, contradicting this design's "prefer the
+`atLeast:narrow` — not the _most specific_, contradicting this design's "prefer the
 most specific" rule and risking parity drift from other SDKs. Needs a real
 specificity tiebreak (e.g. smallest bucket-distance to the current bucket), not
 array order.
@@ -355,11 +357,11 @@ The bucket derives from the root `LayoutBuilder`'s `constraints.maxWidth`:
 
 ### W5 — Scope / coverage gaps to keep visible
 
-- **`itemFit` not honored, but `minItemWidth` / `maxItemWidth` *were* added** — this
+- **`itemFit` not honored, but `minItemWidth` / `maxItemWidth` _were_ added** — this
   design listed all three as deferred, so the shipped scope quietly expanded. Align
   the `AdaptiveFlowLayout` doc and `Implementation-Status.md` with what actually ships.
 - **No `layouts` on `ColumnSet` / `Column` / `TableCell`**, no `Layout.AreaGrid`
   (separate spec). ✅ **Update (2026-06-27):** `Layout.Flow` now supported on **`Column`**
-  and **`TableCell`**; **`ColumnSet` is *not* in the spec** (it has no `layouts` property),
+  and **`TableCell`**; **`ColumnSet` is _not_ in the spec** (it has no `layouts` property),
   so it is intentionally excluded. `Layout.AreaGrid` remains a separate spec.
 - **`listView` body path skips `Layout.Flow` entirely** — documented, but a real hole.

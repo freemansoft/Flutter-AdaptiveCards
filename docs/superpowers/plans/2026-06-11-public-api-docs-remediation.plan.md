@@ -255,7 +255,7 @@ fvm flutter test --exclude-tags=golden → 400 passed, 2 skipped
 ## Deviations / notes
 
 | Item                        | Plan                          | As built                                                             |
-| --------------------------- | ----------------------------  | -------------------------------------------------------------------- |
+| --------------------------- | ----------------------------- | -------------------------------------------------------------------- |
 | Execution                   | Sequential tasks              | Phases 1–3 run in **parallel subagents** (2026-06-11)                |
 | Git                         | Per-task commits              | Merged on `main` (2026-06-11)                                        |
 | Library dartdoc links       | `[TypeName]` in library docs  | Backticks in barrel files to satisfy `comment_references`            |

@@ -48,16 +48,16 @@ alignment and styling, entirely in Adaptive Card JSON.
 
 ## Decisions locked during brainstorming
 
-| Decision | Choice |
-| --- | --- |
-| Backend runtime | Python **FastAPI**, separate service |
-| POST semantics | POST **returns the cards + `links`** (one round-trip); `self` GET endpoint still exists for replay |
-| Compose box | **Is an Adaptive Card** (`Input.Text` + `Action.Submit`) — showcases the library |
-| Who renders messages | **Server-authoritative** — client renders only server-returned cards; polished pending state |
-| Backend state | **In-memory store from day one** (ready for Ollama context) |
-| Log look | **Messenger bubbles** |
-| Bubble alignment | **Authored in the card JSON** (`ColumnSet` + container styles); **no `role` on the wire** |
-| Client architecture | **Reuse host transport (request side) + custom append sink** |
+| Decision             | Choice                                                                                             |
+| -------------------- | -------------------------------------------------------------------------------------------------- |
+| Backend runtime      | Python **FastAPI**, separate service                                                               |
+| POST semantics       | POST **returns the cards + `links`** (one round-trip); `self` GET endpoint still exists for replay |
+| Compose box          | **Is an Adaptive Card** (`Input.Text` + `Action.Submit`) — showcases the library                   |
+| Who renders messages | **Server-authoritative** — client renders only server-returned cards; polished pending state       |
+| Backend state        | **In-memory store from day one** (ready for Ollama context)                                        |
+| Log look             | **Messenger bubbles**                                                                              |
+| Bubble alignment     | **Authored in the card JSON** (`ColumnSet` + container styles); **no `role` on the wire**          |
+| Client architecture  | **Reuse host transport (request side) + custom append sink**                                       |
 
 ## Repo layout
 
@@ -79,11 +79,11 @@ different interactions to different endpoints.
 
 ### Endpoints
 
-| Method & path | Purpose | Body / headers | Returns |
-| --- | --- | --- | --- |
-| `POST /conversations` | Start a session | — | `{ conversationId, links: { postNext } }` (optionally an initial `messages`) |
-| `POST {postNext}` = `/conversations/{cid}/interactions` | Send one interaction | Header `X-Interaction-Id: <client id>`; body = PlainJson submit invoke | `200` + envelope |
-| `GET {self}` = `/conversations/{cid}/interactions/{iid}` | Replay one interaction | — | envelope |
+| Method & path                                            | Purpose                | Body / headers                                                         | Returns                                                                      |
+| -------------------------------------------------------- | ---------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `POST /conversations`                                    | Start a session        | —                                                                      | `{ conversationId, links: { postNext } }` (optionally an initial `messages`) |
+| `POST {postNext}` = `/conversations/{cid}/interactions`  | Send one interaction   | Header `X-Interaction-Id: <client id>`; body = PlainJson submit invoke | `200` + envelope                                                             |
+| `GET {self}` = `/conversations/{cid}/interactions/{iid}` | Replay one interaction | —                                                                      | envelope                                                                     |
 
 ### Request body (the send)
 
@@ -91,7 +91,11 @@ The compose card's `Action.Submit`, serialized by the host package's PlainJson
 adapter:
 
 ```json
-{ "kind": "submit", "actionId": "send", "data": { "message": "What's the weather?" } }
+{
+  "kind": "submit",
+  "actionId": "send",
+  "data": { "message": "What's the weather?" }
+}
 ```
 
 - `conversationId` comes from the URL.
@@ -106,8 +110,18 @@ adapter:
   "conversationId": "c_abc",
   "interactionId": "i_004",
   "messages": [
-    { "type": "AdaptiveCard", "body": [ /* right-aligned "you" bubble */ ] },
-    { "type": "AdaptiveCard", "body": [ /* left-aligned reply bubble */ ] }
+    {
+      "type": "AdaptiveCard",
+      "body": [
+        /* right-aligned "you" bubble */
+      ]
+    },
+    {
+      "type": "AdaptiveCard",
+      "body": [
+        /* left-aligned reply bubble */
+      ]
+    }
   ],
   "links": {
     "self": "/conversations/c_abc/interactions/i_004",
@@ -202,7 +216,7 @@ compose Submit
   clears the log.
 - **Repo gates:** both new dirs live **outside `packages/`**, so the per-package
   coverage floors and the `CHANGELOG.md` gate do **not** apply. We aim for **zero
-  changes to any published package** — the client only *uses*
+  changes to any published package** — the client only _uses_
   `flutter_adaptive_cards_host_fs` via its exported client interface. If an
   unavoidable package tweak surfaces, that change picks up the changelog gate.
 

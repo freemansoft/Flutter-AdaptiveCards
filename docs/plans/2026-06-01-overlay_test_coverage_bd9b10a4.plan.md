@@ -46,11 +46,11 @@ isProject: false
 
 ## Summary
 
-| Question | Answer |
-| --- | --- |
-| **Original plan (Phases 1–5)?** | **Done** — notifier unit tests, initData overlay widgets, extended ChoiceSet/reset tests, testing skill updated. |
+| Question                                                       | Answer                                                                                                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Original plan (Phases 1–5)?**                                | **Done** — notifier unit tests, initData overlay widgets, extended ChoiceSet/reset tests, testing skill updated.                      |
 | **Enough to validate all overlay fields end-to-end per type?** | **No** — notifier + merge providers are well covered; widget tests are **representative**, not exhaustive per `Input.*` / `Action.*`. |
-| **What’s left?** | Document analysis in **element-registry** skill (pending); optional gap-filling tests (low priority unless regressions appear). |
+| **What’s left?**                                               | Document analysis in **element-registry** skill (pending); optional gap-filling tests (low priority unless regressions appear).       |
 
 ---
 
@@ -66,12 +66,12 @@ isProject: false
 
 ### Additional overlay features — shipped since original plan
 
-| Feature | Tests | Library |
-| --- | --- | --- |
-| `errorMessage` / `isInvalid` | `input_error_overlay_test.dart`; notifier **validation and action overlays** group | `AdaptiveInputMixin` |
-| `text` (TextBlock) | `text_block_text_overlay_test.dart`; notifier **TextBlock text overlays** group; rebuild survival | `AdaptiveTextBlock` |
-| `isEnabled` (actions) | `action_enabled_overlay_test.dart`; `test/samples/v1.5/action_is_enabled.json`; notifier action group | `IconButtonAction` / Submit; `ShowCard` reads provider (untested toggle) |
-| Stable baseline on card rebuild | `text overlay survives RawAdaptiveCard rebuild` | [`flutter_raw_adaptive_card.dart`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart) `_baselineMap` cache |
+| Feature                         | Tests                                                                                                 | Library                                                                                                                            |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `errorMessage` / `isInvalid`    | `input_error_overlay_test.dart`; notifier **validation and action overlays** group                    | `AdaptiveInputMixin`                                                                                                               |
+| `text` (TextBlock)              | `text_block_text_overlay_test.dart`; notifier **TextBlock text overlays** group; rebuild survival     | `AdaptiveTextBlock`                                                                                                                |
+| `isEnabled` (actions)           | `action_enabled_overlay_test.dart`; `test/samples/v1.5/action_is_enabled.json`; notifier action group | `IconButtonAction` / Submit; `ShowCard` reads provider (untested toggle)                                                           |
+| Stable baseline on card rebuild | `text overlay survives RawAdaptiveCard rebuild`                                                       | [`flutter_raw_adaptive_card.dart`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart) `_baselineMap` cache |
 
 ### Out of scope / deferred (still medium priority)
 
@@ -96,30 +96,30 @@ From [`adaptive_card_document.dart`](packages/flutter_adaptive_cards_fs/lib/src/
 
 ### Element overlays
 
-| Field | Notifier | Widget / integration | Gap |
-| --- | --- | --- | --- |
-| `isVisible` | Yes | [`is_visible_test.dart`](packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart) | — |
-| `inputValue` | Yes | init_data (Text, Toggle, ChoiceSet); legacy UI tests in `test/inputs/*` | **Number, Date, Time, Rating** — no overlay-specific widget tests |
-| `choices` / append | Yes | choice_set_overlay + reset action | — |
-| `queryCount` / `querySkip` | Yes | choice_set_data_query_test | `querySearchText` — notifier only |
-| `errorMessage` / `isInvalid` | Yes | **Input.Text only** in input_error_overlay_test | Other input types; `RawAdaptiveCardState.clearInputError` delegate |
-| `text` | Yes | **TextBlock only** | Only element type using `text` overlay |
+| Field                        | Notifier | Widget / integration                                                                            | Gap                                                                |
+| ---------------------------- | -------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `isVisible`                  | Yes      | [`is_visible_test.dart`](packages/flutter_adaptive_cards_fs/test/elements/is_visible_test.dart) | —                                                                  |
+| `inputValue`                 | Yes      | init_data (Text, Toggle, ChoiceSet); legacy UI tests in `test/inputs/*`                         | **Number, Date, Time, Rating** — no overlay-specific widget tests  |
+| `choices` / append           | Yes      | choice_set_overlay + reset action                                                               | —                                                                  |
+| `queryCount` / `querySkip`   | Yes      | choice_set_data_query_test                                                                      | `querySearchText` — notifier only                                  |
+| `errorMessage` / `isInvalid` | Yes      | **Input.Text only** in input_error_overlay_test                                                 | Other input types; `RawAdaptiveCardState.clearInputError` delegate |
+| `text`                       | Yes      | **TextBlock only**                                                                              | Only element type using `text` overlay                             |
 
 ### Action overlays
 
-| API | Notifier | Widget | Gap |
-| --- | --- | --- | --- |
-| `setActionEnabled` | Yes | **Action.Submit** via IconButtonAction | **Action.ShowCard** UI; other action types |
-| `setActionsEnabled` (bulk) | **No** | **No** | Not tested |
+| API                        | Notifier | Widget                                 | Gap                                        |
+| -------------------------- | -------- | -------------------------------------- | ------------------------------------------ |
+| `setActionEnabled`         | Yes      | **Action.Submit** via IconButtonAction | **Action.ShowCard** UI; other action types |
+| `setActionsEnabled` (bulk) | **No**   | **No**                                 | Not tested                                 |
 
 ### Cross-cutting
 
-| Concern | Status |
-| --- | --- |
-| `resetAllInputs` preserves visibility, action overlays, TextBlock text | Notifier + widget (ChoiceSet) |
-| `collectInputValues` | Notifier only |
-| Host APIs (`setText`, `setInputError`, `setActionEnabled`) | Partial delegate tests; not `clearInputError` |
-| Rebuild does not wipe overlays | TextBlock widget test + `_baselineMap` fix |
+| Concern                                                                | Status                                        |
+| ---------------------------------------------------------------------- | --------------------------------------------- |
+| `resetAllInputs` preserves visibility, action overlays, TextBlock text | Notifier + widget (ChoiceSet)                 |
+| `collectInputValues`                                                   | Notifier only                                 |
+| Host APIs (`setText`, `setInputError`, `setActionEnabled`)             | Partial delegate tests; not `clearInputError` |
+| Rebuild does not wipe overlays                                         | TextBlock widget test + `_baselineMap` fix    |
 
 ```mermaid
 flowchart TB

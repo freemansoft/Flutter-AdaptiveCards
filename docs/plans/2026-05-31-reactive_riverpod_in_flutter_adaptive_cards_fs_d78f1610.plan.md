@@ -43,7 +43,7 @@ Update [`packages/flutter_adaptive_cards_fs`](packages/flutter_adaptive_cards_fs
 - **Inputs** become a document-backed reactive state source (submit/reset read from the document, not `visitChildElements`).
 - Library-owned scopes preserve current host ergonomics (hosts shouldn’t need to add an app-level `ProviderScope`).
 
-This plan uses the archived template at [`2026-05-31-reactive_riverpod_in_library_2c717ed6.plan.md`](../archive/plans/2026-05-31-reactive_riverpod_in_library_2c717ed6.plan.md) as the architectural baseline, but tailors it to *this repo’s current* imperative state flows.
+This plan uses the archived template at [`2026-05-31-reactive_riverpod_in_library_2c717ed6.plan.md`](../archive/plans/2026-05-31-reactive_riverpod_in_library_2c717ed6.plan.md) as the architectural baseline, but tailors it to _this repo’s current_ imperative state flows.
 
 ## Current state (what we’re replacing)
 
@@ -63,7 +63,7 @@ Docs currently assert “Riverpod removal completed” ([`doc/replace-riverpod.m
 
 ### Provider scopes
 
-Mirror existing *two-scope* structure (raw-card vs per-card-element), but implement with Riverpod scopes instead of `InheritedReferenceResolver`:
+Mirror existing _two-scope_ structure (raw-card vs per-card-element), but implement with Riverpod scopes instead of `InheritedReferenceResolver`:
 
 - **Raw card scope** (one per `RawAdaptiveCard`):
   - Owns the **document notifier** (baseline JSON + overlays).
@@ -92,7 +92,7 @@ Element widgets read a **resolved element map** via a family provider, which mer
 
 ## Incremental migration strategy (keep build green)
 
-The safest path is to *introduce Riverpod alongside* the inherited scopes first, then migrate features, then delete old paths.
+The safest path is to _introduce Riverpod alongside_ the inherited scopes first, then migrate features, then delete old paths.
 
 ### Phase 0: Build green gate
 
@@ -113,6 +113,7 @@ The safest path is to *introduce Riverpod alongside* the inherited scopes first,
   - `adaptiveCardDocumentProvider` (seeded from `widget.map` deep copy)
 
 Implementation entry points:
+
 - [`packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart`](packages/flutter_adaptive_cards_fs/lib/src/flutter_raw_adaptive_card.dart): add `ProviderScope` and initialize document.
 
 At this stage, existing widgets can continue to use `InheritedReferenceResolver` + `ProviderScopeMixin` unchanged.
@@ -126,6 +127,7 @@ At this stage, existing widgets can continue to use `InheritedReferenceResolver`
   - This implies default actions must have a way to obtain `WidgetRef`/`Ref` (options below).
 
 **How actions get `ref`** (pick one and standardize):
+
 - **Option A (recommended)**: make action widgets (like `AdaptiveActionToggleVisibility`) become `ConsumerStatefulWidget` and call notifier directly from the widget, bypassing `Default*Action` needing `ref`.
 - **Option B**: introduce a small inherited adapter `InheritedWidgetRef` installed near `ProviderScope` that exposes `Ref` to non-consumer code.
 - **Option C**: store a document controller on `RawAdaptiveCardState` (created in build via a `Consumer`) and keep default actions calling through `rawAdaptiveCardState`.
@@ -148,6 +150,7 @@ At this stage, existing widgets can continue to use `InheritedReferenceResolver`
   - stop storing `currentCard` as a widget
 
 Remove dead/legacy registry paths:
+
 - Delete `_registeredCards` from `AdaptiveCardElementState` and the `registerCardWidget`/`unregisterCardWidget` methods.
 - Remove registration calls in `AdaptiveElementMixin.didChangeDependencies` and `dispose` in [`packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart`](packages/flutter_adaptive_cards_fs/lib/src/adaptive_mixins.dart).
 

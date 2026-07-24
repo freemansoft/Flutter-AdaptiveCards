@@ -31,7 +31,7 @@ each column across all rows in a single layout pass, and adds the cell `minHeigh
   (the v1.5 `TableCell` schema defines `items`, `selectAction`, `style`,
   `verticalContentAlignment`, `bleed`, `backgroundImage`, `minHeight`, `rtl`). No sample
   exercises them; the `spacing` values in `test/samples/table1.json` are on TextBlocks
-  *inside* cells, already handled by `SeparatorElement`.
+  _inside_ cells, already handled by `SeparatorElement`.
 
 ## 2. Current state
 
@@ -42,7 +42,7 @@ each column across all rows in a single layout pass, and adds the cell `minHeigh
 - `generateTableRows` inserts `Divider` (grid lines on) or `SizedBox` (grid lines off)
   between rows.
 - `generateTableRowWidgets` builds each row as `IntrinsicHeight(Row(crossAxisAlignment:
-  stretch, …))`, inserting `VerticalDivider`/`SizedBox` between cells, and wraps each cell in:
+stretch, …))`, inserting `VerticalDivider`/`SizedBox` between cells, and wraps each cell in:
   - `Expanded(flex: N)` when `width` is a number,
   - `SizedBox(width: px)` when `width` is `"Npx"`,
   - `Expanded()` (flex 1) otherwise — **this is the bug**: `"auto"` and `"stretch"` both
@@ -61,24 +61,24 @@ Models are already complete: `TableColumnDefinition.width` (`dynamic`) and
 **Chosen: render through Flutter's `Table` widget.** Flutter `Table` computes column widths
 across all rows in one pass — exactly what `auto` requires — and maps all four Adaptive Cards
 width modes onto its `TableColumnWidth` types. It also replaces the manual divider/spacer
-bookkeeping with `TableBorder`, and *reduces* the amount of custom layout code.
+bookkeeping with `TableBorder`, and _reduces_ the amount of custom layout code.
 
-| AC `width`        | `TableColumnWidth`        |
-| ----------------- | ------------------------- |
-| `"auto"`          | `IntrinsicColumnWidth()`  |
-| `"stretch"`       | `FlexColumnWidth(1)`      |
-| number `N` (`>0`) | `FlexColumnWidth(N)`      |
-| `"Npx"`           | `FixedColumnWidth(N)`     |
-| absent / unknown  | `FlexColumnWidth(1)`      |
+| AC `width`        | `TableColumnWidth`       |
+| ----------------- | ------------------------ |
+| `"auto"`          | `IntrinsicColumnWidth()` |
+| `"stretch"`       | `FlexColumnWidth(1)`     |
+| number `N` (`>0`) | `FlexColumnWidth(N)`     |
+| `"Npx"`           | `FixedColumnWidth(N)`    |
+| absent / unknown  | `FlexColumnWidth(1)`     |
 
 ### Resolved risk — per-cell backgrounds and equal-row height
 
 The current code fills each cell's background to the full row height via `IntrinsicHeight` +
 `CrossAxisAlignment.stretch`. Flutter `Table` offers `TableCellVerticalAlignment`:
 
-- `fill` — sized to row height, **but does not contribute to it**; a row whose cells are *all*
+- `fill` — sized to row height, **but does not contribute to it**; a row whose cells are _all_
   `fill` collapses to **zero height** (`flutter/.../rendering/table.dart:353`). Unusable here.
-- `intrinsicHeight` — *"sized to be the same height as the tallest cell in the row"*
+- `intrinsicHeight` — _"sized to be the same height as the tallest cell in the row"_
   (`table.dart:356`) **and** contributes to row height. This reproduces the current
   `IntrinsicHeight`+stretch behavior exactly.
 
@@ -130,8 +130,8 @@ In `build()` (replacing `generateTableRows` / `generateTableRowWidgets`):
    rows with `const SizedBox.shrink()` so all rows match `columnCount` (a `Table` asserts equal
    children counts).
 4. `Table(columnWidths: columnWidths, defaultColumnWidth: const FlexColumnWidth(1),
-   defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
-   border: showGridLines ? TableBorder.all(color: borderColor) : null, children: rows)`.
+defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+border: showGridLines ? TableBorder.all(color: borderColor) : null, children: rows)`.
 5. Keep the `Visibility` + `SeparatorElement` wrappers. **Remove** the outer
    `Container(Border.all)` (now drawn by `TableBorder.all`).
 
@@ -235,7 +235,7 @@ On completion, update:
 - `packages/flutter_adaptive_cards_fs/README.md` → **Implementation status** + **Known gaps**:
   Table row drops `auto`/`stretch` widths and `minHeight`; keeps `bleed` and cell `rtl`.
 - `docs/Implementation-Status.md` → Medium-priority item 1: narrow to `bleed` (+ cell `rtl`
-  Deferred); add a *Recently completed* entry.
+  Deferred); add a _Recently completed_ entry.
 - `.agents/skills/adaptive-cards-spec-compliance/SKILL.md` (and `.claude/skills/…` copy)
   line ~285: Table now `auto`/`stretch` complete; remaining gap is cell `rtl` (+ `bleed`).
 - `CHANGELOG.md` (`flutter_adaptive_cards_fs`) `## [Unreleased]` bullet.

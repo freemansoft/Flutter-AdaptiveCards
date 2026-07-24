@@ -19,7 +19,7 @@
 ## File map
 
 | File                                                                         | Role                                                             |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------  |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | `packages/flutter_adaptive_cards_fs/lib/src/utils/date_input_utils.dart`     | **Create** — shared parse/format for AC date strings             |
 | `packages/flutter_adaptive_cards_fs/lib/src/cards/inputs/date.dart`          | Fix controller sync, `appendInput`, `onTap`, `setState`          |
 | `packages/flutter_adaptive_cards_fs/test/utils/date_input_utils_test.dart`   | **Create** — unit tests for parse/format                         |
