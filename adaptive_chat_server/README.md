@@ -142,7 +142,8 @@ The card prompt's palette is intentionally small:
 
 - **Inputs** — `Input.Date`, `Input.ChoiceSet` (`style: compact` / `expanded`,
   `isMultiSelect`), `Input.Text`, `Input.Number`, `Input.Time`.
-- **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`.
+- **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`, `Table`, `Rating`,
+  `Icon`, `ProgressBar`, `ProgressRing`, `CodeBlock`, `Image`.
 
 **Display-only.** The prompt forbids `Action`/`ActionSet` elements, so the card
 fragment carries no submit button of its own, and any values a user enters

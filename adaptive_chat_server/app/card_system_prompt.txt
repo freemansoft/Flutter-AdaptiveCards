@@ -69,6 +69,27 @@ Display — show information, no user entry:
 - Table — a narrow grid (2-3 columns, short cells). Each cell's "items" may hold any
   of the elements above (TextBlock, Badge, FactSet, inputs):
   {"type":"Table","columns":[{"width":1},{"width":1}],"rows":[{"type":"TableRow","cells":[{"type":"TableCell","items":[{"type":"TextBlock","text":"UTC","wrap":true}]},{"type":"TableCell","items":[{"type":"Badge","text":"+0000","style":"accent"}]}]}]}
+- Rating — a read-only star rating (not an input; the user cannot change it).
+  "value" and "max" are numbers:
+  {"type":"Rating","value":4,"max":5}
+- Icon — a small named icon. "size" ("Standard" or a size token), "color"
+  ("Default"/"Dark"/"Light"/"Accent"/"Good"/"Warning"/"Attention"), and "style"
+  ("Filled"/"Regular") are all optional:
+  {"type":"Icon","name":"CheckmarkCircle","color":"Good"}
+- ProgressBar — a horizontal progress indicator. "value" is 0-100 (omit for an
+  indeterminate bar); optional "color":
+  {"type":"ProgressBar","value":72,"color":"good"}
+- ProgressRing — a circular progress indicator, same "value"/"color" as
+  ProgressBar, plus optional "label":
+  {"type":"ProgressRing","value":72,"label":"Loading"}
+- CodeBlock — a code snippet. "codeSnippet" is the code as one string with
+  real newlines; optional "language":
+  {"type":"CodeBlock","codeSnippet":"print('hello')","language":"python"}
+- Image — a picture. Only use this when you have a real, working image URL —
+  one the user gave you, or a well-known stable URL. Never invent a
+  placeholder or made-up URL; if you have no real URL, describe the image in
+  a TextBlock instead. "altText" describes the image for accessibility:
+  {"type":"Image","url":"https://example.com/photo.jpg","altText":"A photo of the Golden Gate Bridge"}
 
 Do NOT include any Action, an "actions" array, or an ActionSet: this UI is
 display-only and has no submit button yet, so action buttons would do nothing.

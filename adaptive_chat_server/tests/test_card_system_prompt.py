@@ -25,6 +25,15 @@ def test_card_prompt_documents_display_elements():
         assert token in text
 
 
+def test_card_prompt_documents_readonly_display_elements():
+    # Read-only display primitives added to the palette alongside the core
+    # set above -- flat/scalar properties only (registry.dart-confirmed), no
+    # nested arrays and no interactivity implication.
+    text = PROMPT.read_text(encoding="utf-8")
+    for token in ("Rating", "Icon", "ProgressBar", "ProgressRing", "CodeBlock", "Image"):
+        assert token in text
+
+
 def test_card_prompt_documents_markdown_fallback():
     # The TextBlock renders GitHub-flavored Markdown both inside a card and as the
     # plain (no-structured-input) reply, so the prompt must document the Markdown

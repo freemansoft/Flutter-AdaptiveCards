@@ -533,3 +533,91 @@ Manual check against a running Ollama (`--json-format=schema`): a radio-button
 or checkbox request over several choices returns a single well-formed
 `Input.ChoiceSet` with `id`/`style`/`isMultiSelect`/`choices` all present as
 real JSON keys, not smuggled into the `type` string.
+
+## Addendum (2026-07-23, part 3): enum-constrained `type` + palette expansion
+
+### Finding: an unconstrained `type` string permits invalid element names
+
+`Element.type` was `{"type":"string","minLength":1}` — any non-empty string,
+including a hallucinated name that doesn't exist in the client's registry
+(e.g. `Input.RadioButtons` instead of the real `Input.ChoiceSet`, fixed by
+prompt wording in an earlier commit). That prompt fix worked, but nothing at
+the schema layer *guaranteed* it — a differently-phrased prompt or a
+different model could reintroduce the same class of failure.
+
+**Fix:** constrain `type` to a JSON Schema `enum` of exactly the element
+names `card_system_prompt.txt` documents. Verified empirically:
+
+- With the enum in place, using the **original, pre-fix prompt wording**
+  (the weaker version that never mentions `Input.RadioButtons` as forbidden)
+  — 3/3 clean runs, correct `Input.ChoiceSet` every time. This proves the
+  enum is a genuine *structural* guarantee, not just reinforcement of the
+  prompt fix: the prior prompt-only fix remains in place (belt-and-suspenders),
+  but the schema now makes an invalid type name impossible under `schema`
+  mode regardless of prompt wording.
+
+Cross-checked against the real dispatchers to confirm every enum value is a
+real, correctly-cased, spelled-correctly registered type:
+`packages/flutter_adaptive_cards_fs/lib/src/registry.dart:158-242`
+(`_getBaseElement`, case-sensitive exact string match, no normalization).
+
+### Decision: expand the palette with read-only display primitives
+
+The dispatcher supports far more than the prompt's original 10 types. Rather
+than expand to the full registry (which would include types the model has
+no in-prompt worked examples for, shifting malformation risk elsewhere) or
+leave the palette untouched, added six additional types matching the
+existing risk model this whole feature is built around: all six have
+**flat/scalar properties only, no nested arrays-of-items** (confirmed
+against each element's actual Dart property-reading code before adding):
+
+- `Rating` — the read-only display variant (not `Input.Rating`, a separate
+  interactive input, intentionally excluded — inputs already have their own
+  section).
+- `Icon`, `ProgressBar`, `ProgressRing`, `CodeBlock` — all-scalar properties,
+  no external resource dependency, unambiguously non-interactive.
+- `Image` — the one exception with an external dependency (`url` must
+  resolve to a real image). Considered and accepted the risk: the model has
+  no access to real image assets and could invent a non-resolving URL,
+  showing a broken-image icon. The prompt explicitly instructs "only use
+  this when you have a real, working image URL... never invent a
+  placeholder or made-up URL" as mitigation. This is a *visible* failure
+  mode (a broken image icon is obviously broken to the user), not the
+  silent-data-loss class of bug this whole feature exists to close, so the
+  residual risk was judged acceptable.
+
+**Explicitly excluded:** `CompoundButton` — renders as a disabled/inert
+button without a `selectAction` (which the prompt forbids providing),
+visually implying interactivity it doesn't have. A worse UX surprise than
+the elements above, none of which look interactive. `Container`, `ColumnSet`,
+`ImageSet`, `Media`, `RichTextBlock`, `Accordion`, `TabSet`/`TabPage`, and all
+`Chart.*` types were not considered for this pass — several have nested
+arrays-of-items (the exact unreliable pattern documented in the first
+addendum), `RichTextBlock` is redundant with `TextBlock`'s existing Markdown
+support (already noted in the prompt), and `Chart.*` requires
+`flutter_adaptive_charts_fs`, which isn't wired into this chat demo.
+
+**Validated all six against a live Ollama** (6 requests, one per new type,
+using the actual updated prompt + schema): all six produced valid JSON with
+no malformed output. Two requests (`ProgressRing`, `CodeBlock`) had the model
+substitute a different valid existing type (`Badge`, `TextBlock`
+respectively) for ambiguous phrasing — a model *preference*, not a
+reliability defect; `TextBlock`'s Markdown already documents fenced-code
+support, so a one-line code request landing there is a reasonable outcome.
+`Image` picked a real, working Wikipedia URL for a well-known landmark in
+testing, consistent with the "only real URLs" instruction.
+
+### Testing
+
+- `test_bundled_card_schema_constrains_type_to_the_prompt_palette`: asserts
+  the shipped schema's `Element.type` enum is exactly the 16-name set
+  (10 original + 6 new) matching `card_system_prompt.txt`.
+- `test_card_prompt_documents_readonly_display_elements`: asserts all six
+  new type names are documented in the prompt.
+
+### Verification
+
+```bash
+cd adaptive_chat_server
+.venv/bin/python -m pytest
+```

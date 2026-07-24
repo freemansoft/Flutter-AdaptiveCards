@@ -113,6 +113,36 @@ def test_bundled_card_schema_element_allows_additional_properties():
     assert schema["$defs"]["Element"]["additionalProperties"] is True
 
 
+def test_bundled_card_schema_constrains_type_to_the_prompt_palette():
+    # Regression guard: an unconstrained "type" string let the model return a
+    # non-existent type name (e.g. "Input.RadioButtons" instead of the real
+    # "Input.ChoiceSet") -- legal per the old schema, but unrenderable by the
+    # client. Verified empirically that an enum blocks this structurally, even
+    # with prompt wording that doesn't mention the fake-type problem at all
+    # (3/3 clean runs). The enum must exactly match card_system_prompt.txt's
+    # documented element palette -- every type the prompt teaches the model to
+    # use, and nothing the client can't render.
+    schema = _load_card_schema(CARD_SCHEMA_PATH)
+    assert set(schema["$defs"]["Element"]["properties"]["type"]["enum"]) == {
+        "TextBlock",
+        "FactSet",
+        "Badge",
+        "Carousel",
+        "Table",
+        "Input.Date",
+        "Input.ChoiceSet",
+        "Input.Text",
+        "Input.Number",
+        "Input.Time",
+        "Rating",
+        "Icon",
+        "ProgressBar",
+        "ProgressRing",
+        "CodeBlock",
+        "Image",
+    }
+
+
 def test_reply_posts_history_and_new_turn_to_chat_endpoint(tmp_path):
     # Point at a nonexistent prompt file so no system message is injected —
     # this keeps the exact-body assertion decoupled from the default prompt.
