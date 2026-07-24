@@ -100,6 +100,19 @@ def test_bundled_card_schema_loads_successfully():
     assert schema["oneOf"]
 
 
+def test_bundled_card_schema_element_allows_additional_properties():
+    # Regression guard: without "additionalProperties": true, a real Ollama
+    # (0.32.3, llama3.2) under schema-constrained decoding has no legal way to
+    # write id/style/isMultiSelect/choices etc. as real JSON keys on an
+    # Element, so it smuggles them as fake single-quoted pseudo-JSON inside
+    # the "type" string value instead (e.g. observed:
+    # '{"type":"Input.ChoiceSet\',\'id\':\'state\',...'). Verified empirically
+    # that adding this key fixes it (3/3 clean runs vs. 100% reproducible
+    # failure without it) -- see the design-doc addendum.
+    schema = _load_card_schema(CARD_SCHEMA_PATH)
+    assert schema["$defs"]["Element"]["additionalProperties"] is True
+
+
 def test_reply_posts_history_and_new_turn_to_chat_endpoint(tmp_path):
     # Point at a nonexistent prompt file so no system message is injected —
     # this keeps the exact-body assertion decoupled from the default prompt.
@@ -530,6 +543,46 @@ def test_reply_detects_card_through_schema_format(tmp_path):
     ).reply("date?", [])
     assert result.card_body == [{"type": "Input.Date", "id": "d"}]
     assert result.text == content  # raw JSON preserved for history, as before
+
+
+def test_reply_detects_choiceset_with_real_properties_through_schema_format(tmp_path):
+    # Regression test tied to a real observed failure: with additionalProperties
+    # unset on Element, Ollama had no legal way to write id/style/isMultiSelect/
+    # choices as real JSON keys and smuggled them as fake single-quoted text
+    # inside the "type" string instead (card_schema.json now sets
+    # additionalProperties: true on Element to fix this -- see the design-doc
+    # addendum). This locks in that a well-formed response with real
+    # properties parses correctly.
+    missing = tmp_path / "no_prompt.txt"
+    content = json.dumps(
+        {
+            "type": "Input.ChoiceSet",
+            "id": "state",
+            "style": "expanded",
+            "isMultiSelect": False,
+            "choices": [
+                {"title": "California", "value": "CA"},
+                {"title": "Texas", "value": "TX"},
+            ],
+        }
+    )
+    result = _responder(
+        _handler_returning_content(content),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("radio buttons of states?", [])
+    assert result.card_body == [
+        {
+            "type": "Input.ChoiceSet",
+            "id": "state",
+            "style": "expanded",
+            "isMultiSelect": False,
+            "choices": [
+                {"title": "California", "value": "CA"},
+                {"title": "Texas", "value": "TX"},
+            ],
+        }
+    ]
 
 
 def test_reply_falls_back_to_heuristic_path_when_format_guarantee_violated(tmp_path):

@@ -436,3 +436,100 @@ Manual check against a running Ollama (`--json-format=schema`): a request that
 would ask for structured input (e.g. "let me pick a date") returns a renderable
 card; a plain question (e.g. "what's 2+2") returns readable Markdown text, not
 a quoted JSON string leaking into the chat bubble.
+
+## Addendum (2026-07-23, part 2): `additionalProperties` and the `isMultiSelect` limitation
+
+Further manual testing surfaced a second, distinct real-Ollama failure, and
+an attempt to fix a related prompt-accuracy issue that testing showed does
+**not** actually work.
+
+### Finding: properties smuggled into the `type` string
+
+A live request for radio buttons over 5 US states returned:
+
+```
+{"type":"Input.ChoiceSet','id':'top5states','style':'expanded','isMultiSelect':false,'choices':[...]}assistant"
+
+  }
+```
+
+This is legal JSON with exactly **one** key, `"type"` — its value is the
+entire garbled blob (single-quoted pseudo-JSON, not real JSON structure).
+`try_parse_card_body` correctly-but-uselessly accepted this as "a single
+element with a non-empty `type`," and the Flutter client then tried to
+render an element whose `type` is that whole garbage string, showing an
+unknown-element fallback.
+
+**Root cause:** `card_schema.json`'s `Element` definition did not set
+`"additionalProperties": true`. Without it, Ollama's schema-to-grammar
+compiler has no legal path for the model to write `id`/`style`/
+`isMultiSelect`/`choices` as real sibling JSON keys — the model, still
+wanting to express that content (per the prompt's own `Input.ChoiceSet`
+example), smuggles it as fake single-quoted text inside the only string
+slot available (`type`'s value) instead, since a JSON string may legally
+contain any character including unescaped single quotes.
+
+**Verified fix:** adding `"additionalProperties": true` to `Element`.
+Reproduced the bug 1/1 with the unmodified schema, then confirmed the fix
+3/3 clean runs (proper double-quoted JSON, all real keys) with the same
+requests. Also re-tested the already-documented `Carousel.pages`
+duplicate-key issue with this same change: not a full fix (2/4 runs still
+showed a duplicate key or merged content), but a clear improvement over the
+0% clean rate recorded in the prior addendum, with no observed downside.
+Implemented in `app/card_schema.json`; no other file changes were needed —
+`ollama_responder.py`'s response-handling logic (Task 3) already handles a
+well-formed multi-property `Element` correctly, since that capability was
+never schema-specific.
+
+### Finding: `isMultiSelect` accuracy — tested, not fixable by prompt wording
+
+Separately, the model was reported returning `Input.ChoiceSet` with
+`"isMultiSelect":false` for an explicit checkbox request (should be `true`).
+Two prompt-wording mitigations were tested empirically against the live
+model (10 additional live requests) before deciding not to ship either:
+
+- **Strengthened instruction** ("isMultiSelect controls single-vs-multiple
+  selection... do not default to false"): 4/4 still wrong, byte-identical
+  output to the unmodified prompt.
+- **Reordered examples** (checkboxes example last, with an explicit
+  "OPPOSITE of radio buttons above" callout): 5/6 still wrong, 1/6 correct.
+
+Combined across both wordings and the original: 13/14 wrong. This is not a
+prompt-clarity problem fixable with reasonable wording effort — it reads as
+a genuine capability limitation of llama3.2 (3B) for this specific boolean
+semantic mapping, the same character of limitation as the `Carousel`/
+`Table` array issue, just manifesting on a boolean instead of array
+structure.
+
+**Decision:** do not ship a prompt change for this. Shipping a change that
+testing shows barely moves the needle (0/8 → 1/6) would overstate what was
+fixed. `card_system_prompt.txt` is unchanged from the prior addendum's
+`Input.RadioButtons`/`Input.Checkboxes` fix (which **did** work — the model
+now reliably uses the real `Input.ChoiceSet` type name; only the
+`isMultiSelect` boolean value is unreliable for checkbox requests
+specifically). Documented here as a known limitation rather than silently
+left unmentioned.
+
+### Testing
+
+- `test_bundled_card_schema_element_allows_additional_properties`: asserts
+  the shipped schema's `Element` has `additionalProperties: true` — a
+  config regression guard, since this cannot be exercised by a mocked unit
+  test (Ollama's grammar compiler is what actually changes behavior; the
+  fix is validated by the live-Ollama testing above, not by this test
+  alone).
+- `test_reply_detects_choiceset_with_real_properties_through_schema_format`:
+  confirms a well-formed multi-property `Input.ChoiceSet` response parses
+  correctly end-to-end — locks in the target shape this fix aims for.
+
+### Verification
+
+```bash
+cd adaptive_chat_server
+.venv/bin/python -m pytest
+```
+
+Manual check against a running Ollama (`--json-format=schema`): a radio-button
+or checkbox request over several choices returns a single well-formed
+`Input.ChoiceSet` with `id`/`style`/`isMultiSelect`/`choices` all present as
+real JSON keys, not smuggled into the `type` string.
