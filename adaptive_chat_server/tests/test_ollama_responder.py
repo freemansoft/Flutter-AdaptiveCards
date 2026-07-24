@@ -164,7 +164,10 @@ def test_reply_posts_history_and_new_turn_to_chat_endpoint(tmp_path):
             {"role": "user", "content": "new question"},
         ],
         "stream": False,
-        "options": {"num_ctx": 4096},
+        # temperature 0 + think=False are sent on every request (deterministic,
+        # non-thinking decoding); "none" mode sends no "format" field.
+        "options": {"num_ctx": 4096, "temperature": 0.0},
+        "think": False,
     }
 
 
@@ -344,7 +347,7 @@ def test_reply_sends_num_ctx_option(tmp_path):
         num_ctx=2048,
     ).reply("hi", [])
 
-    assert captured["body"]["options"] == {"num_ctx": 2048}
+    assert captured["body"]["options"]["num_ctx"] == 2048
 
 
 def test_fill_below_50pct_logs_nothing(tmp_path, caplog):
@@ -490,8 +493,11 @@ def test_reply_does_not_warn_for_plain_text_reply(tmp_path, caplog):
     assert "looked like an Adaptive Card" not in caplog.text
 
 
-def test_json_format_defaults_to_schema():
-    assert DEFAULT_JSON_FORMAT == "schema"
+def test_json_format_defaults_to_none():
+    # "none" (prompt-only) is the default: with a capable model at temperature 0
+    # the prompt alone produces reliable card JSON, so the schema grammar is not
+    # sent by default (see the none-vs-schema addendum in the design doc).
+    assert DEFAULT_JSON_FORMAT == "none"
 
 
 def test_reply_sends_no_format_field_in_none_mode(tmp_path):
@@ -525,6 +531,52 @@ def test_reply_sends_format_schema_dict(tmp_path):
         json_format="schema",
     ).reply("hi", [])
     assert captured["body"]["format"]["oneOf"]  # the loaded card_schema.json
+
+
+def test_card_path_sends_temperature_zero_and_think_false_schema(tmp_path):
+    # Deterministic, non-thinking decoding on the card path (schema mode): the
+    # highest-leverage reliability settings per the design-doc model/settings
+    # addendum. temperature 0 minimizes malformed JSON; think=False stops a
+    # thinking model from polluting the constrained output.
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="schema",
+    ).reply("hi", [])
+    assert captured["body"]["options"]["temperature"] == 0
+    assert captured["body"]["think"] is False
+
+
+def test_card_path_sends_temperature_zero_and_think_false_json(tmp_path):
+    # Same deterministic settings apply in generic-JSON mode, not just schema.
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="json",
+    ).reply("hi", [])
+    assert captured["body"]["options"]["temperature"] == 0
+    assert captured["body"]["think"] is False
+
+
+def test_none_mode_also_sends_temperature_zero_and_think_false(tmp_path):
+    # Deterministic, non-thinking decoding applies in every mode, including the
+    # default "none": empirically these settings — not the schema grammar — are
+    # what make card JSON reliable, so they must not be gated to constrained modes.
+    missing = tmp_path / "no_prompt.txt"
+    captured = {}
+    _responder(
+        _ok_capturing_handler(captured),
+        system_prompt_file=str(missing),
+        json_format="none",
+    ).reply("hi", [])
+    assert captured["body"]["options"]["temperature"] == 0
+    assert captured["body"]["think"] is False
+    # ...and "none" still sends no format field (that part is unchanged).
+    assert "format" not in captured["body"]
 
 
 def test_schema_mode_downgrades_to_none_when_schema_file_missing(

@@ -22,8 +22,11 @@ from app.responder import Reply
 logger = logging.getLogger("uvicorn.error")
 
 # Single source of truth for the fallback model name; the CLI (`--ollama-model`)
-# and env (`OLLAMA_MODEL`) override it.
-DEFAULT_OLLAMA_MODEL = "llama3.2"
+# and env (`OLLAMA_MODEL`) override it. qwen2.5-coder:7b is the recommended
+# default: it cleared every documented card failure mode at temperature 0 and
+# fits a 16 GB Mac (~4.7 GB). See the model/settings addendum in
+# docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md.
+DEFAULT_OLLAMA_MODEL = "qwen2.5-coder:7b"
 
 # Default number of prior interactions (user+assistant exchanges) replayed to
 # Ollama. Bounds only the outbound prompt — the server store keeps full history.
@@ -35,11 +38,20 @@ DEFAULT_HISTORY_TURNS = 10
 # multi-page card reply plus history, so Ollama does not silently drop tokens.
 DEFAULT_NUM_CTX = 16384
 
-# Values: "none" (no format constraint — today's prompt-only behavior), "json"
-# (Ollama's generic valid-JSON grammar), "schema" (grammar-constrained against
-# CARD_SCHEMA_PATH). See docs/superpowers/specs/2026-07-23-ollama-structured-
-# json-output-design.md for the rationale and the "none|json|schema" tradeoffs.
-DEFAULT_JSON_FORMAT = "schema"
+# Values: "none" (no format constraint — prompt-only), "json" (Ollama's generic
+# valid-JSON grammar), "schema" (grammar-constrained against CARD_SCHEMA_PATH).
+# Default is "none": with a capable model (e.g. qwen2.5-coder:7b) at temperature
+# 0, the prompt alone produces reliable card JSON, and the schema grammar adds
+# latency and can distort output without measurably improving reliability.
+# "schema" remains available as a safety net for weaker/other models. See
+# docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md
+# (none-vs-schema addendum) for the measurements behind this default.
+DEFAULT_JSON_FORMAT = "none"
+
+# Sampling temperature sent on every Ollama request (all json_format modes).
+# 0 = greedy / deterministic decoding, the single highest-leverage setting for
+# minimizing malformed card JSON (see the design-doc model/settings addendum).
+DEFAULT_CARD_TEMPERATURE = 0.0
 
 # System prompt injected as the first message on every chat request. Resolved
 # relative to this file (not the process cwd) so it is found no matter where the
@@ -234,16 +246,27 @@ class OllamaResponder:
         )
         messages.append({"role": "user", "content": text})
         endpoint = f"{self._ollama_url}/api/chat"
-        payload = {
+        options: dict[str, object] = {"num_ctx": self._num_ctx}
+        payload: dict[str, object] = {
             "model": self._model,
             "messages": messages,
             "stream": False,
-            "options": {"num_ctx": self._num_ctx},
+            "options": options,
         }
         if self._json_format == "json":
             payload["format"] = "json"
         elif self._json_format == "schema":
             payload["format"] = self._card_schema
+        # Deterministic, non-thinking decoding on every Ollama request. temperature
+        # 0 minimizes malformed card JSON; think=False stops a thinking-capable
+        # model (e.g. qwen3.5) from emitting reasoning tokens that pollute the reply
+        # and inflate latency (observed ~77s -> ~10s). think=False is safely ignored
+        # by non-thinking models. Applied in all json_format modes — including the
+        # default "none", where these settings (not the schema grammar) are what
+        # empirically make card JSON reliable (see the none-vs-schema addendum in
+        # docs/superpowers/specs/2026-07-23-ollama-structured-json-output-design.md).
+        options["temperature"] = DEFAULT_CARD_TEMPERATURE
+        payload["think"] = False
         logger.info(
             "Ollama request: POST %s (model=%s, %d messages)",
             endpoint,

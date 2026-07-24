@@ -58,10 +58,10 @@ def main() -> None:
         default=DEFAULT_JSON_FORMAT,
         choices=["none", "json", "schema"],
         help=f"Constrain Ollama's output via its `format` field (default: "
-        f"{DEFAULT_JSON_FORMAT}). 'none' is today's prompt-only behavior; "
-        "'json' asks for any syntactically valid JSON; 'schema' additionally "
-        "constrains the outer shape against the bundled card_schema.json so "
-        "both card and plain-text replies come back as guaranteed-valid JSON.",
+        f"{DEFAULT_JSON_FORMAT}). 'none' (default) is prompt-only — reliable with "
+        "a capable model at temperature 0; 'json' asks for any syntactically valid "
+        "JSON; 'schema' additionally constrains the outer shape against the bundled "
+        "card_schema.json (a safety net for weaker models, at some latency cost).",
     )
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)

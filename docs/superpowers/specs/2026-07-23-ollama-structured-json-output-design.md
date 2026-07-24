@@ -150,7 +150,7 @@ elif self._json_format == "schema" and self._card_schema is not None:
 
 **Response handling** — replaces the unconditional
 `card_body = try_parse_card_body(content)` call, but must feed into the
-*same* shared logging that already follows it (`_log_context_fill`, the
+_same_ shared logging that already follows it (`_log_context_fill`, the
 "looked like a card but wasn't usable" warning, the debug log) rather than
 early-returning around them:
 
@@ -220,7 +220,7 @@ pattern exactly:
 
 Add one short paragraph clarifying the dual-shape contract now that the whole
 response may be JSON-constrained — the grammar enforces valid JSON either way,
-but the model should understand *why* a plain-text answer comes back quoted:
+but the model should understand _why_ a plain-text answer comes back quoted:
 
 > When your reply is plain Markdown text (Reply shape 2), your entire response
 > is still a JSON value — write it as a JSON string (e.g.
@@ -232,11 +232,11 @@ list, etc.) are untouched.
 
 ## Error handling
 
-| Failure | Handling |
-| --- | --- |
-| `card_schema.json` missing/invalid JSON/missing expected keys | Logged as error at construction; `json_format` downgraded to `"none"` for the process. Never crashes startup or a request. |
-| Ollama too old to honor `format` | Already handled by the existing `response.status_code >= 400` path (logged, diagnostic `Reply`) — no new code needed. |
-| `json.loads(content)` fails despite `format` being set | Falls through to the existing heuristic `try_parse_card_body(content)` path — same behavior as `json_format="none"` today. |
+| Failure                                                                | Handling                                                                                                                                                                                        |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `card_schema.json` missing/invalid JSON/missing expected keys          | Logged as error at construction; `json_format` downgraded to `"none"` for the process. Never crashes startup or a request.                                                                      |
+| Ollama too old to honor `format`                                       | Already handled by the existing `response.status_code >= 400` path (logged, diagnostic `Reply`) — no new code needed.                                                                           |
+| `json.loads(content)` fails despite `format` being set                 | Falls through to the existing heuristic `try_parse_card_body(content)` path — same behavior as `json_format="none"` today.                                                                      |
 | Valid JSON, but not string/card-shaped (only reachable in `json` mode) | `try_parse_card_body` returns `None`; `Reply(text=content, card_body=None)` — renders as raw-JSON text, same externally-visible outcome as today's "valid JSON but not a renderable card" case. |
 
 ## Testing
@@ -286,7 +286,7 @@ cd adaptive_chat_server
 
 Manual testing against a real Ollama (`0.32.3`, `llama3.2:latest`) after PR #31
 merged Tasks 1-7 found a real gap: `schema` mode's grammar constraint
-guarantees *syntactic* JSON validity but not *semantic* correctness, and one
+guarantees _syntactic_ JSON validity but not _semantic_ correctness, and one
 semantic failure mode is dangerous enough to need its own fix.
 
 ### What was found
@@ -314,7 +314,7 @@ failure.
 
 **Measured failure rate** (repeated identical requests against the real
 model): `Carousel.pages` failed 5/5 times; `Table.rows` failed 1/4 times.
-Flat elements and *top-level* bare arrays (not nested as an object
+Flat elements and _top-level_ bare arrays (not nested as an object
 property) were reliable in every test — the failure is specific to
 "multi-item array required as an object property."
 
@@ -325,8 +325,8 @@ literal duplicate key:
 
 1. **Literal duplicate key** — `"pages":[...],"pages":[...]`. The pattern
    above; the guard below catches exactly this.
-2. **Misplaced sibling key** — the second item's content lands as a *new,
-   different* key directly on the parent object instead of properly nested
+2. **Misplaced sibling key** — the second item's content lands as a _new,
+   different_ key directly on the parent object instead of properly nested
    (observed: a second Carousel page's items appeared as a bare `"items"`
    property sitting alongside `"pages"` on the `Carousel` object itself,
    rather than inside a second `CarouselPage`). Not a repeated key, so the
@@ -334,7 +334,7 @@ literal duplicate key:
 3. **Trailing garbage appended after a structurally-complete object** —
    e.g. a valid `Carousel` object followed by a stray duplicate `"type"` key
    fragment and disconnected empty-object noise, all still inside the
-   *same* JSON object due to how the garbage was tokenized. Legal JSON;
+   _same_ JSON object due to how the garbage was tokenized. Legal JSON;
    the guard does not catch this either since no key is literally repeated.
 4. **Wrong nesting depth** — e.g. a `TableCell` nested directly inside
    another `TableCell` instead of forming a second `TableRow`, silently
@@ -377,7 +377,7 @@ also ruled out).
 
 **Where:** `app/ollama_responder.py` only — `card_detect.py` stays
 untouched, per the original constraint. The guard is needed precisely
-*because* `card_detect.py`'s own `json.loads` usage has the same blind
+_because_ `card_detect.py`'s own `json.loads` usage has the same blind
 spot, so falling back to it after detecting a duplicate key would silently
 reproduce the exact bug being fixed.
 
@@ -401,7 +401,7 @@ def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict:
 
 `reply()`'s response-handling block passes `object_pairs_hook=
 _reject_duplicate_keys` to its `json.loads(content, ...)` call. A new
-`except _DuplicateJsonKeyError:` branch (checked *before* the existing
+`except _DuplicateJsonKeyError:` branch (checked _before_ the existing
 generic `except ValueError:`, since `_DuplicateJsonKeyError` subclasses it)
 sets a `duplicate_key_detected` flag. When set: skip the legacy
 `try_parse_card_body(content)` fallback entirely (same blind spot), skip
@@ -542,7 +542,7 @@ real JSON keys, not smuggled into the `type` string.
 including a hallucinated name that doesn't exist in the client's registry
 (e.g. `Input.RadioButtons` instead of the real `Input.ChoiceSet`, fixed by
 prompt wording in an earlier commit). That prompt fix worked, but nothing at
-the schema layer *guaranteed* it — a differently-phrased prompt or a
+the schema layer _guaranteed_ it — a differently-phrased prompt or a
 different model could reintroduce the same class of failure.
 
 **Fix:** constrain `type` to a JSON Schema `enum` of exactly the element
@@ -551,7 +551,7 @@ names `card_system_prompt.txt` documents. Verified empirically:
 - With the enum in place, using the **original, pre-fix prompt wording**
   (the weaker version that never mentions `Input.RadioButtons` as forbidden)
   — 3/3 clean runs, correct `Input.ChoiceSet` every time. This proves the
-  enum is a genuine *structural* guarantee, not just reinforcement of the
+  enum is a genuine _structural_ guarantee, not just reinforcement of the
   prompt fix: the prior prompt-only fix remains in place (belt-and-suspenders),
   but the schema now makes an invalid type name impossible under `schema`
   mode regardless of prompt wording.
@@ -581,7 +581,7 @@ against each element's actual Dart property-reading code before adding):
   no access to real image assets and could invent a non-resolving URL,
   showing a broken-image icon. The prompt explicitly instructs "only use
   this when you have a real, working image URL... never invent a
-  placeholder or made-up URL" as mitigation. This is a *visible* failure
+  placeholder or made-up URL" as mitigation. This is a _visible_ failure
   mode (a broken image icon is obviously broken to the user), not the
   silent-data-loss class of bug this whole feature exists to close, so the
   residual risk was judged acceptable.
@@ -601,7 +601,7 @@ support (already noted in the prompt), and `Chart.*` requires
 using the actual updated prompt + schema): all six produced valid JSON with
 no malformed output. Two requests (`ProgressRing`, `CodeBlock`) had the model
 substitute a different valid existing type (`Badge`, `TextBlock`
-respectively) for ambiguous phrasing — a model *preference*, not a
+respectively) for ambiguous phrasing — a model _preference_, not a
 reliability defect; `TextBlock`'s Markdown already documents fenced-code
 support, so a one-line code request landing there is a reasonable outcome.
 `Image` picked a real, working Wikipedia URL for a well-known landmark in
@@ -620,4 +620,172 @@ testing, consistent with the "only real URLs" instruction.
 ```bash
 cd adaptive_chat_server
 .venv/bin/python -m pytest
+```
+
+## Addendum (2026-07-24): model + decoding-settings comparison matrix
+
+All prior addendums measured a single model (`llama3.2:3b`) at the server's
+default decoding settings. A follow-up re-ran the documented failure modes
+against two additional models to answer "would a bigger model fix this?" and,
+incidentally, isolated a larger lever than model choice.
+
+### Method
+
+A harness drove `format=schema` requests through the same `card_schema.json`,
+`card_system_prompt.txt`, and `card_detect` parser the server uses (duplicate-
+key guard included), one request per documented failure mode, 3 reps each,
+classifying each result as a clean/complete renderable card. Small sample
+(n=3/case) — directional, not statistical. Prompts asked for: radio buttons
+(type name + `isMultiSelect:false` + real property placement), checkboxes
+(`isMultiSelect:true`), a 4-page Carousel (nested `pages` array), a 4-row
+Table (nested `rows` array), a FactSet (flat baseline), and a plain-prose
+question (string branch).
+
+### Results
+
+| Case                     | `llama3.2:3b` (server defaults, prior addenda) | `qwen3.5:9b` — thinking **on**, temp **1** (= server defaults today) | `qwen3.5:9b` — `think:false`, temp **0** | `qwen2.5-coder:7b` — temp **0**, non-thinking |
+| ------------------------ | ---------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------- |
+| radio                    | mixed                                          | —                                                                    | —                                        | 3/3                                           |
+| checkbox `isMultiSelect` | 1/14                                           | garbage (see below)                                                  | clean                                    | 3/3                                           |
+| carousel (nested pages)  | 0/5                                            | —                                                                    | clean                                    | 3/3                                           |
+| table (nested rows)      | 1/4                                            | —                                                                    | —                                        | valid ✓ (see note)                            |
+| factset (flat)           | reliable                                       | —                                                                    | —                                        | 3/3                                           |
+| prose (string branch)    | ok                                             | —                                                                    | —                                        | 3/3                                           |
+| **latency / call**       | fast                                           | **~77 s**                                                            | **~10 s**                                | **~9 s**                                      |
+
+`qwen3.5:9b` weights are 6.6 GB (Q4_K_M, 9.7B); `qwen2.5-coder:7b` is 4.7 GB —
+both fit a 16 GB Mac with room for the 16 K context.
+
+### Findings
+
+1. **Decoding settings dominate model choice for this task.** At the server's
+   current defaults (temp 1, thinking on — the responder sends only
+   `options:{num_ctx}`, so a thinking model thinks and samples hot),
+   `qwen3.5:9b` answered a checkbox request with a `CodeBlock` of raw HTML
+   (`<input type='checkbox'/>`) using invented keys (`codeLanguage`/`content`
+   instead of `codeSnippet`), taking 77 s. The **same model** with
+   `think:false` + `temperature:0` produced a clean `Input.ChoiceSet` and a
+   clean 4-page Carousel in ~10 s. The garbage was a settings artifact, not a
+   capability limit. **The single highest-leverage change is to have
+   `OllamaResponder` send `temperature: 0` (and `think: false` for thinking-
+   capable models) on the card path** — a code gap in `ollama_responder.py`,
+   which today sends neither.
+
+2. **`qwen2.5-coder:7b` at temp 0 is the recommended default for a 16 GB Mac.**
+   It cleared every documented failure mode — including the two that defeated
+   `llama3.2`: checkbox `isMultiSelect:true` (was 1/14) and nested-array
+   Carousel (was 0/5) — at ~9 s/call, non-thinking so no `think` handling
+   needed. Coder-tuned models are unusually strong at strict JSON syntax,
+   which is precisely the card path's failure surface. Trade-off: coder models
+   are terser on the plain-prose reply path; **`qwen2.5:7b`** (plain instruct,
+   ~4.7 GB) is the better all-rounder if conversational answers matter more
+   than maximal JSON reliability.
+
+3. **`qwen3.5:9b` is usable only with thinking disabled**, and even then offers
+   no reliability edge over `qwen2.5-coder:7b` here while costing slightly more
+   latency and memory. Its thinking capability is a liability for constrained-
+   JSON output. Not recommended as the default for this workload.
+
+4. **The nested-array corruption family (this design's central concern) did not
+   reproduce** on `qwen2.5-coder:7b` or tuned `qwen3.5:9b` in this run — it
+   reads as specific to the 3B model under hot sampling. A better model + temp
+   0 largely closes the gap the duplicate-key guard was built for. Keep the
+   guard regardless: it is cheap, general-purpose insurance for any model/
+   settings combination, and this run is a small sample.
+
+5. **The Table "0/3" is a harness misclassification, not a model defect.** The
+   raw output was a valid, complete, renderable Table containing all four
+   country/capital pairs — the model laid them out as a 2×2 grid (two countries
+   per row) rather than a 4-row country/capital table. The `rows >= 3` success
+   criterion wrongly penalized a legitimate layout. No data loss, no
+   corruption. (Prompt phrasing, not reliability.)
+
+### Recommendation summary
+
+- **Change the responder** to send `temperature: 0` on the card path, and
+  `think: false` when the model advertises the thinking capability. Highest
+  leverage; independent of model choice.
+- **Default model on a 16 GB Mac:** `qwen2.5-coder:7b` (max JSON reliability)
+  or `qwen2.5:7b` (best card + prose balance). Retire `llama3.2:3b` as the
+  card-path default — it is the source of every failure documented above.
+- Keep the duplicate-key guard as cheap insurance.
+
+### Verification
+
+```bash
+cd adaptive_chat_server
+# Harness (scratch, not committed): drives format=schema through the real
+# card_schema.json / card_system_prompt.txt / card_detect path per model.
+```
+
+## Addendum (2026-07-24): `none` vs `schema` — the default flips to `none`
+
+The prior addendum established that decoding settings (temperature 0, thinking
+off) dominate model choice. This one asks the follow-on question: once the model
+is capable and the settings are right, **does the schema grammar still earn its
+place?** — and concludes it does not, as the default.
+
+### Method
+
+Same harness and failure-mode prompts as the model/settings addendum, run
+against `qwen2.5-coder:7b` with the improved `card_system_prompt.txt`, comparing
+`--json-format` modes at matched settings. A separate "adversarial type" probe
+asked for elements outside the palette (pie chart, slider, submit button, bar
+chart) to test schema's one structural guarantee — the `type` enum. Small
+samples (n=3–5/case); directional, not statistical.
+
+### Results (`qwen2.5-coder:7b`, improved prompt)
+
+| Config                                             | Clean           | Latency   | Note                                                                                                                     |
+| -------------------------------------------------- | --------------- | --------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `schema`, temp 0                                   | 18/18           | 8.9 s     | Table rendered as a 2×2 grid — the enum/`additionalProperties` grammar nudged a _worse_ layout                           |
+| `none`, temp 0                                     | **24/24**       | **5.0 s** | Table = clean 4 rows; all cases clean                                                                                    |
+| `none`, temp 1 (hot)                               | 18/18           | 6.4 s     | Still all clean without temp 0                                                                                           |
+| `none`, temp 0, adversarial out-of-palette prompts | 5/5 valid types | —         | pie chart→FactSet, slider→Input.Number, submit button→TextBlock, radio→Input.ChoiceSet — never emitted an invalid `type` |
+
+### Findings
+
+1. **`none` matched or beat `schema` on every case**, while being simpler and
+   ~40% faster (no schema-to-grammar compilation). The schema even _hurt_ once
+   (the 2×2 table), consistent with the earlier `additionalProperties`/property-
+   smuggling observations: grammar-constrained decoding can distort a capable
+   model's output.
+2. **Schema's marquee guarantee — the `type` enum — never fired.** Even under
+   prompts designed to induce a hallucinated/out-of-palette type, the model
+   degraded gracefully to a valid palette type or prose every time. The whole
+   schema apparatus (enum, `additionalProperties`, the duplicate-key guard) was
+   built to prop up the weak 3B model; a competent 7B model + the improved
+   prompt + temp 0 does not need it.
+3. **The heavy lifting is done by prompt + model + temperature 0, not the
+   grammar.** `none` held even at temp 1 for this model, though temp 0 remains
+   cheap variance insurance and is decisive for other models (e.g. qwen3.5).
+
+### Decision
+
+1. **Default `--json-format` flips from `schema` to `none`.** With the default
+   model at temp 0 the prompt is sufficient; `schema` adds latency and can
+   distort output without measurably improving reliability.
+2. **Deterministic settings (`temperature 0`, `think:false`) are ungated** — now
+   applied on **every** Ollama request, in all `json_format` modes, since they
+   (not the grammar) are what make `none` reliable. Previously they were gated to
+   the constrained modes.
+3. **`schema` (and `json`) mode is kept, not removed.** It remains a real safety
+   net for **weaker or different models**, where the earlier addenda show it is
+   decisive (llama3.2: Carousel 0/5, checkbox `isMultiSelect` 1/14). The flag and
+   schema file cost ~nothing to keep. The `.vscode/launch.json` card targets pin
+   `--json-format none` explicitly and note schema as the fallback.
+
+### Caveats
+
+Small samples, one model, curated prompts. The single failure `schema` prevents
+(a silent invisible-blank from a hallucinated `type`) is low-frequency, high-
+severity, and silent — exactly the kind a small sample under-detects. That is
+why `schema` is demoted from the default, **not deleted**: it stays one flag away
+for anyone running a weaker model or wanting the worst-case structural guarantee.
+
+### Verification
+
+```bash
+cd adaptive_chat_server
+.venv/bin/python -m pytest   # 113 passing incl. temp/think + default-none tests
 ```
