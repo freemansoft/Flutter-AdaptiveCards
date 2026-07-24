@@ -673,4 +673,3 @@ Paste exit codes + pass/fail counts before claiming completion.
 - **Risk:** a few `Icons.*_outlined` constants may not exist in the pinned Flutter
   version; Task 1 Step 4 / Task 2 Step 4 (`flutter analyze`) catch these before tests,
   with explicit remediation (use a valid constant or `regular: null`).
-```

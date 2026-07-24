@@ -1180,4 +1180,3 @@ Then (repo root): `fvm dart run tool/coverage/check_coverage.dart`
 Expected: Coverage floor met (the new `table_column_width.dart` is fully covered by Task 1; `table.dart` covered by Tasks 2–6).
 
 - [ ] **Step 5: Invoke `verification-before-completion`** and paste the exit codes / pass-fail counts from Steps 1–4 before claiming completion.
-```
