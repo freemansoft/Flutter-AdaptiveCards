@@ -10,17 +10,17 @@ This document describes how LLM agents (Cursor, Antigravity, Claude Code, and ot
 
 AI instructions are organized in two layers:
 
-| Layer           | Location                                | Purpose                                                                                                      |
-| --------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Always-on rules | [`AGENTS.md`](../AGENTS.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation                         |
-| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Link to `Agents.md` to support the same guardrails. Claude doesn't support `AGENTS.md`                       |
-| Task playbooks  | [`.agents/skills/`](../.agents/skills/) | Modular skills loaded when a task matches (testing, spec compliance, TDD, debugging, release engineering, …) |
-| Task playbooks  | [`.claude/skills`](../.claude/skills/)  | Copied from `.agents/skills/` by a vscode tasks. Users can manually copy with a provided script.             |
+| Layer           | Location                                | Purpose                                                                                                                                                                            |
+| --------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Always-on rules | [`AGENTS.md`](../AGENTS.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation                                                                                               |
+| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Link to `Agents.md` to support the same guardrails. Claude doesn't support `AGENTS.md`                                                                                             |
+| Task playbooks  | [`.claude/skills/`](../.claude/skills/) | Modular skills loaded when a task matches (testing, spec compliance, TDD, debugging, release engineering, …). Claude Code is the primary supported agent and reads this directly.  |
+| Task playbooks  | [`.agents/skills`](../.agents/)         | Generated symlink to `.claude/skills` (via a vscode task, or `scripts/setup-claude.sh`/`.ps1`), so other agents (Cursor, Antigravity, Copilot) can still discover the same skills. |
 
 Supporting files:
 
 - [`skills-lock.json`](../skills-lock.json) — tracks vendored skills from upstream GitHub repos (source, path, content hash) for reproducible installs and updates
-- [`.agents/rules/README.md`](../.agents/rules/README.md) — pointer to `AGENTS.md` and `.agents/skills/`
+- [`.claude/rules/README.md`](../.claude/rules/README.md) — pointer to `AGENTS.md` and `.claude/skills/`
 
 `AGENTS.md` is derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules), trimmed for Antigravity’s ~12K character limit, and customized for this repo (Very Good Analysis, Adaptive Cards architecture, semantic labels, localization, FVM). `CLAUDE.md` has an internal link to `AGENTS.md`
 
@@ -28,7 +28,7 @@ Supporting files:
 
 ## Skill sources
 
-Skills in `.agents/skills/` come from three sources:
+Skills in `.claude/skills/` (mirrored to `.agents/skills/` for other agents) come from three sources:
 
 ### 1. Dart team — [dart-lang/skills](https://github.com/dart-lang/skills)
 
@@ -38,7 +38,7 @@ General Dart development workflows (unit tests, static analysis, mocks, pattern 
 
 Flutter app workflows (widget tests, integration tests, responsive layout, localization, routing, …).
 
-> **Serialization note:** Models here are **hand-written** (`fromJson`/`toJson` factories, no `json_serializable` code-gen). The generic `flutter-implement-json-serialization` skill's manual `dart:convert` approach is directionally right, but follow this repo's conventions in [`adaptive-cards-flutter-standard-practices`](../.agents/skills/adaptive-cards-flutter-standard-practices/SKILL.md) for model classes.
+> **Serialization note:** Models here are **hand-written** (`fromJson`/`toJson` factories, no `json_serializable` code-gen). The generic `flutter-implement-json-serialization` skill's manual `dart:convert` approach is directionally right, but follow this repo's conventions in [`adaptive-cards-flutter-standard-practices`](../.claude/skills/adaptive-cards-flutter-standard-practices/SKILL.md) for model classes.
 
 ### 3. Project-specific skills
 
@@ -62,7 +62,7 @@ Authored for this monorepo (Adaptive Cards spec, HostConfig theming, element reg
 | `adaptive-cards-release-engineer`            | Versioning, pub.dev, changelogs                  |
 | `adaptive-cards-release-flutter-upgrade-sdk` | Flutter SDK upgrade procedure                    |
 
-Project-specific skills are **not** listed in `skills-lock.json`; edit them directly under `.agents/skills/`.
+Project-specific skills are **not** listed in `skills-lock.json`; edit them directly under `.claude/skills/`.
 
 ### Documentation scope
 
@@ -75,7 +75,7 @@ Project-specific skills are **not** listed in `skills-lock.json`; edit them dire
 
 [Superpowers](https://github.com/obra/superpowers) supplies the agentic development methodology: brainstorming before coding, implementation plans, TDD, systematic debugging, code review, git worktrees, and subagent-driven execution.
 
-It is **not** vendored into `.agents/skills/` and is **not** in `skills-lock.json`. It is installed as a Claude Code plugin, enabled for this project in [`.claude/settings.json`](../.claude/settings.json):
+It is **not** vendored into `.claude/skills/` and is **not** in `skills-lock.json`. It is installed as a Claude Code plugin, enabled for this project in [`.claude/settings.json`](../.claude/settings.json):
 
 ```json
 {
@@ -90,7 +90,7 @@ Because it is enabled at **project scope**, Claude Code prompts each collaborato
 Two consequences:
 
 - **Skills are namespaced.** Invoke `superpowers:brainstorming`, not `brainstorming`.
-- **Claude Code only.** Cursor, Antigravity, and other agents do not read Claude Code plugins. They still get the Dart, Flutter, and project-specific skills from `.agents/skills/`, but not Superpowers. Cursor users who want it can install it at user level — see [ai-agent-skills-install.md](ai-agent-skills-install.md).
+- **Claude Code only.** Cursor, Antigravity, and other agents do not read Claude Code plugins. They still get the Dart, Flutter, and project-specific skills from `.claude/skills/` (mirrored via `.agents/skills`), but not Superpowers. Cursor users who want it can install it at user level — see [ai-agent-skills-install.md](ai-agent-skills-install.md).
 
 Rationale for un-vendoring: the vendored copies drifted out of date against upstream and were loaded _alongside_ the plugin, so every session paid for both.
 

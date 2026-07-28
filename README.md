@@ -231,17 +231,17 @@ Many!
 
 ## LLM Agent Support
 
-This repo is configured for Claude Code, Antigravity, CoPilot and ~~Cursor~~, and other coding agents. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
+Claude Code is the primary supported agent, with Antigravity, CoPilot and ~~Cursor~~ also supported. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
 
 ### Always-on rules — [AGENTS.md](AGENTS.md)
 
 Always-on project guardrails (FVM, monorepo hygiene, Very Good Analysis, Riverpod document overlays, semantic labels, localization). Derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules), trimmed for Antigravity’s ~12K character limit.
 
-### Task playbooks — [`.agents/skills/`](.agents/skills/)
+### Task playbooks — [`.claude/skills/`](.claude/skills/)
 
 Modular skills loaded when a task matches. Vendored upstream skills are tracked in [`skills-lock.json`](skills-lock.json).
 
-> **Claude Code:** Opening this workspace in VS Code or Cursor automatically links `.agents/skills/` into `.claude/skills/` via a `folderOpen` task in [`.vscode/tasks.json`](.vscode/tasks.json). You will be prompted to _Allow_ the task once; after that it runs silently on every workspace open. To run it manually: `sh scripts/setup-claude.sh` (Mac/Linux) or `powershell scripts/setup-claude.ps1` (Windows).
+> **Other agents:** Opening this workspace in VS Code or Cursor automatically links `.claude/skills/` into `.agents/skills/` via a `folderOpen` task in [`.vscode/tasks.json`](.vscode/tasks.json), so Cursor, Antigravity, and Copilot can still discover the same skills. You will be prompted to _Allow_ the task once; after that it runs silently on every workspace open. To run it manually: `sh scripts/setup-claude.sh` (Mac/Linux) or `powershell scripts/setup-claude.ps1` (Windows).
 >
 > Only built in skills show up when typing `/` in the Claude Code prompt. Superpowers and other customized skills do not show up in the `/` list in the VSCode plugin but do in a terminal command line. Claude itself says that the list shouldn't work but it did this morning in my terminal window
 

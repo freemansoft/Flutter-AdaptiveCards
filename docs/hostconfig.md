@@ -12,7 +12,7 @@ Related docs:
 
 - [adaptive-style.md](./adaptive-style.md) — style inheritance pipeline (`ChildStyler`, resolver lifecycle diagrams)
 - [Architecture-Overview.md](./Architecture-Overview.md) — where HostConfig fits in the monorepo
-- `.agents/skills/adaptive-cards-hostconfig-theme/SKILL.md` — agent playbook for styling work
+- `.claude/skills/adaptive-cards-hostconfig-theme/SKILL.md` — agent playbook for styling work
 
 Official spec: [HostConfig explorer](https://adaptivecards.io/explorer/HostConfig.html)
 

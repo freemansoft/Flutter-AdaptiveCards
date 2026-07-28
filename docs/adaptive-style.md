@@ -10,7 +10,7 @@ How parsed HostConfig JSON flows through `ReferenceResolver` into element render
 | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | Theme-derived color fallbacks, brightness, serialization tests | [hostconfig.md](./hostconfig.md)                                                                                        |
 | Monorepo placement and diagram canon                           | [Architecture-Overview.md](./Architecture-Overview.md)                                                                  |
-| Agent playbook for styling work                                | [`.agents/skills/adaptive-cards-hostconfig-theme/SKILL.md`](../.agents/skills/adaptive-cards-hostconfig-theme/SKILL.md) |
+| Agent playbook for styling work                                | [`.claude/skills/adaptive-cards-hostconfig-theme/SKILL.md`](../.claude/skills/adaptive-cards-hostconfig-theme/SKILL.md) |
 
 **Official schema:** [host-config.json](https://github.com/microsoft/AdaptiveCards/blob/main/schemas/host-config.json) · package copy: [`host_config_schema.json`](../packages/flutter_adaptive_cards_fs/lib/src/hostconfig/host_config_schema.json)
 

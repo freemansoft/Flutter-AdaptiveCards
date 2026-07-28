@@ -9,7 +9,7 @@ where they come from, and how agents load them, see [`AI-Agent-Support.md`](AI-A
 
 ## Installation
 
-All vendored skills are installed with the [`skills` CLI](https://www.npmjs.com/package/skills) (`npx skills`). The `--agent universal` flag installs into `.agents/skills/`, which Cursor, Antigravity, and other agents recognize.
+All vendored skills are installed with the [`skills` CLI](https://www.npmjs.com/package/skills) (`npx skills`). The `--agent universal` flag installs into `.agents/skills/`, which Cursor, Antigravity, and other agents recognize. `.agents` is a generated symlink to `.claude` (recreated by `scripts/setup-claude.sh`/`.ps1`), so these writes land in `.claude/skills/`, the git-tracked source of truth.
 
 Run these commands from the **repository root**.
 
@@ -92,7 +92,7 @@ Or update a single upstream repo:
 npx skills update dart-add-unit-test flutter-add-widget-test
 ```
 
-Review diffs under `.agents/skills/` after updating. Reconcile project-specific overrides (for example `adaptive-cards-dart-flutter-fvm` wrapping bare `flutter` commands from upstream skills).
+Review diffs under `.claude/skills/` (visible through `.agents/skills/` too, via the symlink) after updating. Reconcile project-specific overrides (for example `adaptive-cards-dart-flutter-fvm` wrapping bare `flutter` commands from upstream skills).
 
 Restore from lock file after a fresh clone:
 

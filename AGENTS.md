@@ -11,7 +11,7 @@ You are an expert Flutter and Dart developer. Your goal is to build beautiful, p
 The project's AI instructions are organized into two layers to keep context efficient:
 
 1. **Root `AGENTS.md`**: Always-on project guardrails (FVM, monorepo hygiene, analysis).
-2. **`.agents/skills/`**: Modular, task-specific playbooks (spec compliance, UI best practices, code review).
+2. **`.claude/skills/`**: Modular, task-specific playbooks (spec compliance, UI best practices, code review). Mirrored to `.agents/skills/` for other agents (Cursor, Antigravity, Copilot) via a generated symlink.
 
 ## Documentation scope
 
@@ -52,7 +52,7 @@ See the **`adaptive-cards-localization`** skill for the rationale, the existing 
 ## Package Management
 
 - **FVM:** Always prefix every `flutter` and `dart` command with `fvm` (e.g. `fvm flutter pub get`, `fvm dart run …`) — the repo pins its SDK via FVM and the bare `flutter`/`dart` aliases may not point at it.
-- **Bare commands in vendored skills:** The vendored `dart-*`/`flutter-*` skills under `.agents/skills/` show bare `flutter`/`dart` commands and are kept verbatim so they diff cleanly against upstream. **Do not** rewrite those files to add `fvm`; instead translate to the `fvm`-prefixed form when you actually run the command. See the `adaptive-cards-dart-flutter-fvm` skill.
+- **Bare commands in vendored skills:** The vendored `dart-*`/`flutter-*` skills under `.claude/skills/` show bare `flutter`/`dart` commands and are kept verbatim so they diff cleanly against upstream. **Do not** rewrite those files to add `fvm`; instead translate to the `fvm`-prefixed form when you actually run the command. See the `adaptive-cards-dart-flutter-fvm` skill.
 - **Dev Dependencies:** Use `fvm flutter pub add dev:<package>`.
 - **Changelog:** Whenever any file under a `packages/<name>/` directory changes, add a bullet to the `## [Unreleased]` section of that package's `CHANGELOG.md` before marking work complete. See `adaptive-cards-monorepo-workspace` skill for format details.
 
@@ -75,11 +75,11 @@ For **sample apps and `adaptive_explorer`**, use normal Flutter state patterns (
 
 `flutter_adaptive_cards_fs` is the **lean core**. Optional capabilities live in sibling packages and are **injected at runtime** — the core must not depend on them.
 
-| Extension | Package | How hosts opt in |
-| --------- | ------- | ---------------- |
-| `Chart.*` elements + chart overlays | `flutter_adaptive_charts_fs` | `CardTypeRegistry(addedElements: CardChartsRegistry.additionalChartElements, overlayExtensions: CardChartsRegistry.overlayExtensions)` |
-| Templating | `flutter_adaptive_template_fs` | Expand JSON before render |
-| Backend invoke | `flutter_adaptive_cards_host_fs` | Wrap card with `AdaptiveCardBackendHandlers` |
+| Extension                           | Package                          | How hosts opt in                                                                                                                       |
+| ----------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `Chart.*` elements + chart overlays | `flutter_adaptive_charts_fs`     | `CardTypeRegistry(addedElements: CardChartsRegistry.additionalChartElements, overlayExtensions: CardChartsRegistry.overlayExtensions)` |
+| Templating                          | `flutter_adaptive_template_fs`   | Expand JSON before render                                                                                                              |
+| Backend invoke                      | `flutter_adaptive_cards_host_fs` | Wrap card with `AdaptiveCardBackendHandlers`                                                                                           |
 
 **When editing `flutter_adaptive_cards_fs`:**
 
@@ -105,7 +105,7 @@ Before running any `git commit` or `git push` (including tag pushes):
 2. Summarize what the commit contains and why.
 3. Wait for the user to explicitly say to proceed before running the commit or push command.
 
-This rule applies even when the overall task description appears to authorize the full workflow (e.g. "tag and push a release"). A broad task description authorizes the *work*; each commit and push still requires a moment-of-action confirmation so the user can review before changes land in the shared repo.
+This rule applies even when the overall task description appears to authorize the full workflow (e.g. "tag and push a release"). A broad task description authorizes the _work_; each commit and push still requires a moment-of-action confirmation so the user can review before changes land in the shared repo.
 
 ## Plan completion gate
 
@@ -171,8 +171,8 @@ linter:
 ```
 
 ---
-> [!NOTE]
-> **Public API `///` comments** — purpose, usage, and anti-patterns are in the `adaptive-cards-public-api-docs` skill.
+
+> [!NOTE] > **Public API `///` comments** — purpose, usage, and anti-patterns are in the `adaptive-cards-public-api-docs` skill.
 > **Serialization** (hand-written `fromJson`/`toJson`, no code-gen) and **theming** divergences are in the `adaptive-cards-flutter-standard-practices` skill; element theming detail is in `adaptive-cards-hostconfig-theme`.
 > **Layout** guidance is in the `flutter-build-responsive-layout` and `flutter-fix-layout-issues` skills.
 > **Routing** guidance is in the `flutter-setup-declarative-routing` skill.
