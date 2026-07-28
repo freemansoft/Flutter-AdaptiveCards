@@ -5,7 +5,7 @@
 .requirements/
 .agents/brain/
 # generated symlink/junction — recreated by scripts/setup-claude.sh|ps1
-.claude/skills
+.agents
 # draw.io temporary backup files
 **/.$*.bkp
 

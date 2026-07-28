@@ -11,7 +11,7 @@ You are an expert Flutter and Dart developer. Your goal is to build beautiful, p
 The project's AI instructions are organized into two layers to keep context efficient:
 
 1. **Root `AGENTS.md`**: Always-on project guardrails (FVM, monorepo hygiene, analysis).
-2. **`.agents/skills/`**: Modular, task-specific playbooks (spec compliance, UI best practices, code review).
+2. **`.claude/skills/`**: Modular, task-specific playbooks (spec compliance, UI best practices, code review). Mirrored to `.agents/skills/` for other agents (Cursor, Antigravity, Copilot) via a generated symlink.
 
 ## Documentation scope
 
@@ -52,7 +52,7 @@ See the **`adaptive-cards-localization`** skill for the rationale, the existing 
 ## Package Management
 
 - **FVM:** Always prefix every `flutter` and `dart` command with `fvm` (e.g. `fvm flutter pub get`, `fvm dart run …`) — the repo pins its SDK via FVM and the bare `flutter`/`dart` aliases may not point at it.
-- **Bare commands in vendored skills:** The vendored `dart-*`/`flutter-*` skills under `.agents/skills/` show bare `flutter`/`dart` commands and are kept verbatim so they diff cleanly against upstream. **Do not** rewrite those files to add `fvm`; instead translate to the `fvm`-prefixed form when you actually run the command. See the `adaptive-cards-dart-flutter-fvm` skill.
+- **Bare commands in vendored skills:** The vendored `dart-*`/`flutter-*` skills under `.claude/skills/` show bare `flutter`/`dart` commands and are kept verbatim so they diff cleanly against upstream. **Do not** rewrite those files to add `fvm`; instead translate to the `fvm`-prefixed form when you actually run the command. See the `adaptive-cards-dart-flutter-fvm` skill.
 - **Dev Dependencies:** Use `fvm flutter pub add dev:<package>`.
 - **Changelog:** Whenever any file under a `packages/<name>/` directory changes, add a bullet to the `## [Unreleased]` section of that package's `CHANGELOG.md` before marking work complete. See `adaptive-cards-monorepo-workspace` skill for format details.
 

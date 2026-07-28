@@ -293,12 +293,12 @@ Per-type patch keys and contract tests: [`overlay-properties-by-type.md`](overla
 | Notifier + merge providers | High — `test/riverpod/adaptive_card_document_notifier_test.dart` |
 | Widget tests per type      | Partial — representative `*_overlay_test.dart` files only        |
 
-Adding a new overlay field requires notifier tests plus a widget test for each consuming type. Implementer checklist: [adaptive-cards-element-registry skill](../.agents/skills/adaptive-cards-element-registry/SKILL.md#overlay-test-coverage).
+Adding a new overlay field requires notifier tests plus a widget test for each consuming type. Implementer checklist: [adaptive-cards-element-registry skill](../.claude/skills/adaptive-cards-element-registry/SKILL.md#overlay-test-coverage).
 
 ### How to add tests
 
 1. **Notifier** — `ProviderContainer` with `baselineMapProvider.overrideWithValue(...)`, assert `resolvedElementProvider` / `resolvedActionProvider` and `overlaysById`.
-2. **Widget** — extend the type's `*_overlay_test.dart`; see [adaptive-cards-testing skill](../.agents/skills/adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
+2. **Widget** — extend the type's `*_overlay_test.dart`; see [adaptive-cards-testing skill](../.claude/skills/adaptive-cards-testing/SKILL.md#reactive-document-tests-overlays-submit-reset).
 3. **Host API** — delegate tests on `RawAdaptiveCardState` when exposing new helpers.
 
 Regression:

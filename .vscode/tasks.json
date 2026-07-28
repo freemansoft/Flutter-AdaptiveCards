@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Setup Claude Skills Link",
+      "label": "Link .agents to .claude",
       "type": "shell",
       "command": "sh scripts/setup-claude.sh",
       "windows": {
