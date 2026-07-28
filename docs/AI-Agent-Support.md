@@ -10,11 +10,11 @@ This document describes how LLM agents (Cursor, Antigravity, Claude Code, and ot
 
 AI instructions are organized in two layers:
 
-| Layer           | Location                                | Purpose                                                                                                      |
-| --------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Always-on rules | [`AGENTS.md`](../AGENTS.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation                         |
-| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Link to `Agents.md` to support the same guardrails. Claude doesn't support `AGENTS.md`                       |
-| Task playbooks  | [`.claude/skills/`](../.claude/skills/) | Modular skills loaded when a task matches (testing, spec compliance, TDD, debugging, release engineering, …). Claude Code is the primary supported agent and reads this directly. |
+| Layer           | Location                                | Purpose                                                                                                                                                                            |
+| --------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Always-on rules | [`AGENTS.md`](../AGENTS.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation                                                                                               |
+| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Link to `Agents.md` to support the same guardrails. Claude doesn't support `AGENTS.md`                                                                                             |
+| Task playbooks  | [`.claude/skills/`](../.claude/skills/) | Modular skills loaded when a task matches (testing, spec compliance, TDD, debugging, release engineering, …). Claude Code is the primary supported agent and reads this directly.  |
 | Task playbooks  | [`.agents/skills`](../.agents/)         | Generated symlink to `.claude/skills` (via a vscode task, or `scripts/setup-claude.sh`/`.ps1`), so other agents (Cursor, Antigravity, Copilot) can still discover the same skills. |
 
 Supporting files:

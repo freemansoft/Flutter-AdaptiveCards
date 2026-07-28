@@ -75,11 +75,11 @@ For **sample apps and `adaptive_explorer`**, use normal Flutter state patterns (
 
 `flutter_adaptive_cards_fs` is the **lean core**. Optional capabilities live in sibling packages and are **injected at runtime** — the core must not depend on them.
 
-| Extension | Package | How hosts opt in |
-| --------- | ------- | ---------------- |
-| `Chart.*` elements + chart overlays | `flutter_adaptive_charts_fs` | `CardTypeRegistry(addedElements: CardChartsRegistry.additionalChartElements, overlayExtensions: CardChartsRegistry.overlayExtensions)` |
-| Templating | `flutter_adaptive_template_fs` | Expand JSON before render |
-| Backend invoke | `flutter_adaptive_cards_host_fs` | Wrap card with `AdaptiveCardBackendHandlers` |
+| Extension                           | Package                          | How hosts opt in                                                                                                                       |
+| ----------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `Chart.*` elements + chart overlays | `flutter_adaptive_charts_fs`     | `CardTypeRegistry(addedElements: CardChartsRegistry.additionalChartElements, overlayExtensions: CardChartsRegistry.overlayExtensions)` |
+| Templating                          | `flutter_adaptive_template_fs`   | Expand JSON before render                                                                                                              |
+| Backend invoke                      | `flutter_adaptive_cards_host_fs` | Wrap card with `AdaptiveCardBackendHandlers`                                                                                           |
 
 **When editing `flutter_adaptive_cards_fs`:**
 
@@ -105,7 +105,7 @@ Before running any `git commit` or `git push` (including tag pushes):
 2. Summarize what the commit contains and why.
 3. Wait for the user to explicitly say to proceed before running the commit or push command.
 
-This rule applies even when the overall task description appears to authorize the full workflow (e.g. "tag and push a release"). A broad task description authorizes the *work*; each commit and push still requires a moment-of-action confirmation so the user can review before changes land in the shared repo.
+This rule applies even when the overall task description appears to authorize the full workflow (e.g. "tag and push a release"). A broad task description authorizes the _work_; each commit and push still requires a moment-of-action confirmation so the user can review before changes land in the shared repo.
 
 ## Plan completion gate
 
@@ -171,8 +171,8 @@ linter:
 ```
 
 ---
-> [!NOTE]
-> **Public API `///` comments** — purpose, usage, and anti-patterns are in the `adaptive-cards-public-api-docs` skill.
+
+> [!NOTE] > **Public API `///` comments** — purpose, usage, and anti-patterns are in the `adaptive-cards-public-api-docs` skill.
 > **Serialization** (hand-written `fromJson`/`toJson`, no code-gen) and **theming** divergences are in the `adaptive-cards-flutter-standard-practices` skill; element theming detail is in `adaptive-cards-hostconfig-theme`.
 > **Layout** guidance is in the `flutter-build-responsive-layout` and `flutter-fix-layout-issues` skills.
 > **Routing** guidance is in the `flutter-setup-declarative-routing` skill.
