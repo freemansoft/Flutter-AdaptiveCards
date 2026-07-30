@@ -23,11 +23,11 @@
 > baselines stay byte-identical, plus an optional labeled scenario-grid widget. No
 > tolerance comparator: fine visual detail is the point, so comparison stays exact.
 >
-> Retained only as a record of what was evaluated and why it was dropped. Two details
-> in Task 5 are still worth doing independently of any migration: removing the stale
-> `golden_toolkit` line at `packages/flutter_adaptive_cards_fs/README.md:725`, and
-> deleting the stray Linux-only baseline
-> `test/gold_files/linux/v1_6_compound_button copy.png`.
+> Retained only as a record of what was evaluated and why it was dropped. The two
+> incidental cleanups Task 5 identified — removing the stale `golden_toolkit` line from
+> `packages/flutter_adaptive_cards_fs/README.md` and deleting the duplicate baseline
+> `test/gold_files/linux/v1_6_compound_button copy.png` — have since been **completed
+> separately**. Nothing in this plan remains to be done.
 >
 > **For agentic workers:** this plan is obsolete — do not execute it. The
 > subagent-driven-development and executing-plans skills must not be invoked against

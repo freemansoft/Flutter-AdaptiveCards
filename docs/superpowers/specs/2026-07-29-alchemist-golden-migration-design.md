@@ -84,15 +84,21 @@ foregone.
 
 ### Findings worth keeping
 
-Independent of the rejected mechanism, three results below remain useful:
+Independent of the rejected mechanism, the results below remain useful:
 
-- `golden_toolkit` is absent from the repo; the only trace is a stale README line at
-  `packages/flutter_adaptive_cards_fs/README.md:725` that should still be removed.
 - The per-test classification of all **49 golden assertions** — 35 static, 14 in
   interaction sequences — in [Migration boundary](#migration-boundary).
-- `linux/v1_6_compound_button copy.png` is a stray duplicate present only on Linux
-  (Linux 42 baselines vs macOS 41); macOS's 41 matches the cards package's 41 golden
-  assertions exactly.
+
+Two incidental cleanups this investigation surfaced have since been **completed**, so
+they are no longer outstanding:
+
+- ✅ The stale `golden_toolkit` line in `packages/flutter_adaptive_cards_fs/README.md`
+  has been removed. `golden_toolkit` is absent from the repo and has been for some
+  time; that line was the only surviving trace.
+- ✅ `linux/v1_6_compound_button copy.png` has been deleted — a byte-identical
+  duplicate (matching MD5) present only on Linux. The Linux and macOS baseline sets
+  are now at parity, 41 each, matching the cards package's 41 golden assertions
+  exactly.
 
 One further discovery, made after this document was written: card reflow is
 **constraint-driven, not view-driven** — `cardWidthBucketProvider` is published from a
