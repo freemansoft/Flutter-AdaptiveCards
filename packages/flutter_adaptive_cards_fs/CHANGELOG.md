@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- chore: removed a stale `golden_toolkit` reference from the README known-issues list. The package is not a dependency of this repo and has not been for some time; golden tests use the built-in `matchesGoldenFile`, and the test jig loads fonts explicitly, so the "black bars if the font isn't loaded" caveat no longer applies.
+- chore: deleted a duplicate Linux golden baseline (`test/gold_files/linux/v1_6_compound_button copy.png`, byte-identical to `v1_6_compound_button.png`). The Linux and macOS baseline sets are now at parity, 41 each.
+
 ## [0.16.0]
 
 - fix: an unrecognized/removed element or action type now renders a visible `AdaptiveErrorPlaceholder` (broken-image icon + error text, announced as a live region) in every build mode, replacing the debug-only `ErrorWidget` that showed nothing in release builds.
