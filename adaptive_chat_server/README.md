@@ -16,7 +16,7 @@ rounded corners live in the card JSON, so the look is a server concern.
 ```mermaid
 flowchart TB
   subgraph server["adaptive_chat_server (FastAPI)"]
-    ROUTES["main.py routes\nPOST /conversations · POST .../interactions · GET .../interactions/{iid}"]
+    ROUTES["main.py routes\nPOST /conversations\nPOST .../interactions\nGET .../interactions/{iid}\nGET /status"]
     STORE["store.py · ConversationStore\nConversation(order, interactions)\nInteraction(text, messages, reply_text)"]
     CARDS["cards.py · bubble authoring\nColumnSet(stretch spacer) + Container(style, roundedCorners)\nuser_bubble(accent, right) · assistant_bubble(emphasis, left)"]
     RESP["responder.py · Responder(reply(text, history))"]
@@ -37,11 +37,12 @@ flowchart TB
 
 ### Wire contract
 
-| Method & path                                 | Purpose                | In                                                                | Out                                       |
-| --------------------------------------------- | ---------------------- | ----------------------------------------------------------------- | ----------------------------------------- |
-| `POST /conversations`                         | Start a session        | —                                                                 | `{ conversationId, links: { postNext } }` |
-| `POST /conversations/{cid}/interactions`      | Send one interaction   | header `X-Interaction-Id`; PlainJson invoke body (`data.message`) | `200` + **envelope**                      |
-| `GET /conversations/{cid}/interactions/{iid}` | Replay one interaction | —                                                                 | **envelope**                              |
+| Method & path                                 | Purpose                        | In                                                                | Out                                       |
+| --------------------------------------------- | ------------------------------ | ----------------------------------------------------------------- | ----------------------------------------- |
+| `POST /conversations`                         | Start a session                | —                                                                 | `{ conversationId, links: { postNext } }` |
+| `POST /conversations/{cid}/interactions`      | Send one interaction           | header `X-Interaction-Id`; PlainJson invoke body (`data.message`) | `200` + **envelope**                      |
+| `GET /conversations/{cid}/interactions/{iid}` | Replay one interaction         | —                                                                 | **envelope**                              |
+| `GET /status`                                 | Server + conversation snapshot | —                                                                 | **status payload**                        |
 
 **Envelope:** `{ conversationId, interactionId, messages: [<AdaptiveCard>, ...], links: { self, postNext } }`.
 `messages` is an ordered list of pre-styled cards (a right-aligned "you" bubble and
@@ -50,17 +51,19 @@ returns the stored envelope without re-running the responder.
 
 ### Components (`app/`)
 
-| File                        | Responsibility                                                                                                                                                                                                                                                                                                                                                                            |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `main.py`                   | FastAPI app, CORS, routes, the `store`/`responder` singletons, `build_responder(url, model)`, and history threading in the send route.                                                                                                                                                                                                                                                    |
-| `store.py`                  | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `reply_text` (so chat **history** can be rebuilt for Ollama). Lost on restart — fine for a demo.                                                                                                                                                                               |
-| `cards.py`                  | Bubble authoring: a `ColumnSet` with a `stretch` spacer for alignment + a styled, `roundedCorners: true` `Container`; `user_bubble` (accent, right), `assistant_bubble` (emphasis, left, Markdown text), `assistant_card_bubble` (emphasis, left, embeds a detected Adaptive Card fragment instead of text), and `envelope(...)`.                                                         |
-| `responder.py`              | `Reply(text, card_body)` — a frozen dataclass: `text` is always the raw model output (threaded into Ollama history); `card_body` is the parsed card body items, or `None` for a plain Markdown reply. `Responder` protocol — `reply(text, history) -> Reply` — and `EchoResponder` (always returns `card_body=None`). The seam that lets the reply strategy swap without touching routes. |
-| `card_detect.py`            | `try_parse_card_body(raw) -> list \| None` — strict text-vs-card detection: the **whole** reply (after stripping an optional code fence) must be a full `{"type": "AdaptiveCard", "body": [...]}` object or a bare, non-empty JSON array of objects, else it's `None` and the caller falls back to a text reply.                                                                          |
-| `ollama_responder.py`       | `OllamaResponder`: prepends the **system prompt** (see below), maps history + current turn to Ollama `messages`, and POSTs `{url}/api/chat` (`stream: false`); runs `try_parse_card_body` on `message.content` and returns a `Reply(text=content, card_body=...)`; falls back to a short message if Ollama is unreachable (always `card_body=None` in that case).                         |
-| `default_system_prompt.txt` | Bundled default system prompt, used when no `--system-prompt-file` is given. Resolved relative to the package (not the process cwd).                                                                                                                                                                                                                                                      |
-| `card_system_prompt.txt`    | Bundled **card** system prompt — selected the same way, via `--system-prompt-file app/card_system_prompt.txt`. Instructs the model to reply with an Adaptive Card fragment (display-only: no actions). See **Card replies (display-only)** below.                                                                                                                                         |
-| `__main__.py`               | CLI entrypoint (`python -m app ...`) that selects the responder from `--ollama-url` and runs uvicorn.                                                                                                                                                                                                                                                                                     |
+| File                        | Responsibility                                                                                                                                                                                                                                                                                                                                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `main.py`                   | FastAPI app, CORS, routes, the `store`/`responder` singletons, `build_responder(url, model)`, and history threading in the send route.                                                                                                                                                                                                                                                                               |
+| `store.py`                  | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `reply_text` (so chat **history** can be rebuilt for Ollama). Lost on restart — fine for a demo.                                                                                                                                                                                                          |
+| `cards.py`                  | Bubble authoring: a `ColumnSet` with a `stretch` spacer for alignment + a styled, `roundedCorners: true` `Container`; `user_bubble` (accent, right), `assistant_bubble` (emphasis, left, Markdown text), `assistant_card_bubble` (emphasis, left, embeds a detected Adaptive Card fragment instead of text), and `envelope(...)`.                                                                                    |
+| `responder.py`              | `Reply(text, card_body)` — a frozen dataclass: `text` is always the raw model output (threaded into Ollama history); `card_body` is the parsed card body items, or `None` for a plain Markdown reply. `Responder` protocol — `reply(text, history) -> Reply` — and `EchoResponder` (always returns `card_body=None`). The seam that lets the reply strategy swap without touching routes.                            |
+| `card_detect.py`            | `try_parse_card_body(raw) -> list \| None` — strict text-vs-card detection: the **whole** reply (after stripping an optional code fence) must be a full `{"type": "AdaptiveCard", "body": [...]}` object or a bare, non-empty JSON array of objects, else it's `None` and the caller falls back to a text reply.                                                                                                     |
+| `stats.py`                  | `InteractionStats` — one Ollama turn's token counts (`prompt_eval_count` / `eval_count`) and timing breakdown, with nanosecond→millisecond conversion done once at capture. `from_ollama_response(data)` returns `None` unless both token counts are present, so a malformed body degrades instead of producing a half-filled record; `to_dict(stats)` derives `totalTokens` and `tokensPerSecond` at serialization. |
+| `status.py`                 | `build_status(store, responder)` — assembles the `GET /status` payload: effective responder config plus per-conversation turn counts, cumulative tokens, and the last turn's stats. Carries **no message text**; a responder without `describe()` degrades to `{"kind": "unknown"}` rather than erroring.                                                                                                            |
+| `ollama_responder.py`       | `OllamaResponder`: prepends the **system prompt** (see below), maps history + current turn to Ollama `messages`, and POSTs `{url}/api/chat` (`stream: false`); runs `try_parse_card_body` on `message.content` and returns a `Reply(text=content, card_body=...)`; falls back to a short message if Ollama is unreachable (always `card_body=None` in that case).                                                    |
+| `default_system_prompt.txt` | Bundled default system prompt, used when no `--system-prompt-file` is given. Resolved relative to the package (not the process cwd).                                                                                                                                                                                                                                                                                 |
+| `card_system_prompt.txt`    | Bundled **card** system prompt — selected the same way, via `--system-prompt-file app/card_system_prompt.txt`. Instructs the model to reply with an Adaptive Card fragment (display-only: no actions). See **Card replies (display-only)** below.                                                                                                                                                                    |
+| `__main__.py`               | CLI entrypoint (`python -m app ...`) that selects the responder from `--ollama-url` and runs uvicorn.                                                                                                                                                                                                                                                                                                                |
 
 ### Responder selection
 
@@ -99,6 +102,73 @@ raising `--history-turns` or `--num-ctx` later needs no data migration.
 `WARNING` at ≥ 76% (leaving headroom for the generated reply). This surfaces the
 otherwise-silent truncation Ollama performs once a prompt exceeds `num_ctx`.
 (`EchoResponder` ignores history entirely — it only echoes the current turn.)
+
+### Status endpoint
+
+`GET /status` is a read-only operator snapshot — how the process is configured and
+how much traffic it is holding. It is **not** part of the chat wire contract and
+the Flutter client never calls it.
+
+```json
+{
+  "responder": {
+    "kind": "ollama",
+    "url": "http://127.0.0.1:11434",
+    "model": "qwen2.5-coder:7b",
+    "numCtx": 16384,
+    "historyTurns": 10,
+    "jsonFormat": "none",
+    "systemPromptFile": "default_system_prompt.txt"
+  },
+  "conversationCount": 2,
+  "conversations": [
+    {
+      "conversationId": "c_ab12cd34ef56",
+      "interactionCount": 3,
+      "totals": {
+        "promptTokens": 4200,
+        "replyTokens": 900,
+        "totalTokens": 5100
+      },
+      "lastInteraction": {
+        "interactionId": "i_0003",
+        "stats": {
+          "promptTokens": 1500,
+          "replyTokens": 300,
+          "totalTokens": 1800,
+          "totalMs": 8200,
+          "loadMs": 12,
+          "promptEvalMs": 900,
+          "evalMs": 7200,
+          "tokensPerSecond": 41.7
+        }
+      }
+    }
+  ]
+}
+```
+
+**`responder` reports _effective_ config, not requested config.** If
+`--json-format schema` was given but the bundled schema was unusable, the
+constructor silently falls back to `none`; `/status` then reports
+`"jsonFormat": "none"` **and** `"jsonFormatRequested": "schema"`. The extra key
+appears only on a downgrade, so its presence is the signal. In echo mode the
+block is just `{"kind": "echo"}`.
+
+**`stats` is `null` whenever a turn cost nothing measurable** — echo mode, or any
+Ollama failure (unreachable, HTTP error, unparseable body). The interaction still
+counts toward `interactionCount`; `totals` sums only the turns that have stats.
+`lastInteraction` is `null` for a conversation with no turns yet. An idempotent
+replay of an existing `X-Interaction-Id` does not increment `interactionCount`.
+
+**`tokensPerSecond`** is generation speed (`replyTokens` over `evalMs`), excluding
+model load and prompt evaluation, so it stays comparable between warm and cold
+turns.
+
+**No message text appears in this payload**, and `systemPromptFile` is reduced to
+a bare filename. The endpoint is unauthenticated and CORS is `allow_origins=["*"]`
+— fine for the default `127.0.0.1` bind, but binding to `0.0.0.0` would expose
+configuration metadata and conversation-volume data to the network.
 
 ### System prompt
 
@@ -195,7 +265,7 @@ flowchart LR
         UI["Chat UI\nrenders server Adaptive Cards verbatim"]
     end
     subgraph server["adaptive_chat_server (FastAPI)"]
-        ROUTES["Routes (main.py)\nstart / send / replay"]
+        ROUTES["Routes (main.py)\nstart / send / replay / status"]
         STORE["ConversationStore + models (store.py)\nin-memory history"]
         CARDS["cards.py\nbubble + envelope authoring"]
         RESP["Responder\nEchoResponder or OllamaResponder"]
@@ -371,9 +441,9 @@ system-settings toggle above.
 .venv/bin/python -m pytest -v
 ```
 
-Covers the store, bubble authoring, the routes (start/send/replay, idempotency,
-validation), responder selection, and the Ollama responder (mocked HTTP — no live
-Ollama).
+Covers the store, bubble authoring, the routes (start/send/replay/status,
+idempotency, validation), responder selection, token-stats capture and the
+status payload, and the Ollama responder (mocked HTTP — no live Ollama).
 
 ## Ollama (optional)
 
