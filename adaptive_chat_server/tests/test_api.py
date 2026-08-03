@@ -42,8 +42,8 @@ def test_send_returns_two_bubbles_and_links():
     body = resp.json()
     assert body["interactionId"] == "i_0001"
     assert len(body["messages"]) == 2
-    user_text = body["messages"][0]["body"][0]["columns"][1]["items"][0]["items"][0]["text"]
-    reply_text = body["messages"][1]["body"][0]["columns"][0]["items"][0]["items"][0]["text"]
+    user_text = body["messages"][0]["body"][1]["columns"][1]["items"][0]["items"][0]["text"]
+    reply_text = body["messages"][1]["body"][1]["columns"][0]["items"][0]["items"][0]["text"]
     assert user_text == "hi there"
     assert reply_text == "Did you just say: hi there"
     assert body["links"]["postNext"] == f"/conversations/{cid}/interactions"
@@ -56,8 +56,8 @@ def test_send_second_turn_still_echoes_correctly():
     first = _send(cid, "i_0001", "first message").json()
     second = _send(cid, "i_0002", "second message").json()
 
-    first_reply = first["messages"][1]["body"][0]["columns"][0]["items"][0]["items"][0]["text"]
-    second_reply = second["messages"][1]["body"][0]["columns"][0]["items"][0]["items"][0][
+    first_reply = first["messages"][1]["body"][1]["columns"][0]["items"][0]["items"][0]["text"]
+    second_reply = second["messages"][1]["body"][1]["columns"][0]["items"][0]["items"][0][
         "text"
     ]
     assert first_reply == "Did you just say: first message"
@@ -71,7 +71,8 @@ def test_send_renders_card_reply_in_assistant_bubble(monkeypatch):
     assert resp.status_code == 200
     body = resp.json()
     # Card replies render full-width (no ColumnSet) so a nested Carousel lays out.
-    container = body["messages"][1]["body"][0]
+    assert body["messages"][1]["body"][0]["type"] == "TextBlock"
+    container = body["messages"][1]["body"][1]
     assert container["type"] == "Container"
     assert container["style"] == "emphasis"
     assert container["items"] == [{"type": "Input.Date", "id": "when"}]
