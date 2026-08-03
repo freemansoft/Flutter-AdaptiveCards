@@ -1,11 +1,13 @@
 """FastAPI entrypoint for the Adaptive Chat backend (echo or Ollama responder)."""
 from __future__ import annotations
 
+import json
 import logging
 import os
 
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.cards import assistant_bubble, assistant_card_bubble, envelope, user_bubble
 from app.ollama_responder import (
@@ -173,11 +175,27 @@ def replay_interaction(cid: str, iid: str) -> dict:
     return envelope(cid, iid, interaction.messages)
 
 
-@app.get("/status")
+class _IndentedJSONResponse(JSONResponse):
+    """JSON rendered with two-space indent instead of FastAPI's compact default.
+
+    Applied only to ``/status``, whose audience is a human reading `curl` output
+    or a browser tab — not a parser. The chat routes keep the compact default:
+    their payloads are machine-consumed by the Flutter client, and their wire
+    format must not change.
+    """
+
+    def render(self, content: object) -> bytes:
+        # ensure_ascii=False keeps non-ASCII characters readable rather than
+        # escaping them; a trailing newline makes shell output land cleanly.
+        return json.dumps(content, indent=2, ensure_ascii=False).encode("utf-8") + b"\n"
+
+
+@app.get("/status", response_class=_IndentedJSONResponse)
 def server_status() -> dict:
     """Operator snapshot: effective responder config and per-conversation volume.
 
     Read-only and side-effect free. Carries no message text — see
-    :func:`app.status.build_status`.
+    :func:`app.status.build_status`. Rendered indented for human readability;
+    still valid JSON, so `curl … | jq` and any client parser work unchanged.
     """
     return build_status(store, responder)

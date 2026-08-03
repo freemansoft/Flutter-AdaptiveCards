@@ -109,6 +109,11 @@ otherwise-silent truncation Ollama performs once a prompt exceeds `num_ctx`.
 how much traffic it is holding. It is **not** part of the chat wire contract and
 the Flutter client never calls it.
 
+Its response is rendered **indented**, because its audience is a human reading
+`curl` output or a browser tab. It is still ordinary JSON, so `curl … | jq` and any
+client parser work unchanged. The chat routes keep FastAPI's compact rendering —
+they are machine-consumed and their wire format must not change.
+
 ```json
 {
   "responder": {

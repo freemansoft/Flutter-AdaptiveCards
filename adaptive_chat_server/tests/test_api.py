@@ -198,3 +198,23 @@ def test_send_envelope_is_unchanged_by_stats():
     cid = _start()
     body = _send(cid, "i_s030", "hello").json()
     assert set(body) == {"conversationId", "interactionId", "messages", "links"}
+
+
+def test_status_is_rendered_as_indented_json():
+    resp = client.get("/status")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("application/json")
+    # Indented for a human reading curl output, not FastAPI's compact default.
+    assert '\n  "responder"' in resp.text
+    assert '\n  "conversations"' in resp.text
+    assert resp.text.endswith("\n")
+    # Indentation must not stop it being parseable — jq and any client still work.
+    assert resp.json()["responder"]["kind"] == "echo"
+
+
+def test_interaction_envelope_stays_compact():
+    # Only /status is indented. The chat routes are machine-consumed by the
+    # Flutter client and their wire format must not change.
+    cid = _start()
+    resp = _send(cid, "i_s040", "hello")
+    assert "\n" not in resp.text
