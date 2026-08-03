@@ -17,6 +17,7 @@ _SPACER_WEIGHT = 1
 
 
 def _bubble(items: list, *, style: str, align_right: bool) -> dict:
+    label = "user" if align_right else "assistant"
     container = {
         "type": "Container",
         "style": style,
@@ -26,10 +27,16 @@ def _bubble(items: list, *, style: str, align_right: bool) -> dict:
     content = {"type": "Column", "width": _BUBBLE_WEIGHT, "items": [container]}
     spacer = {"type": "Column", "width": _SPACER_WEIGHT, "items": []}
     columns = [spacer, content] if align_right else [content, spacer]
+    label_block = {"type": "TextBlock", "text": label, "wrap": True}
+    if align_right:
+        label_block["horizontalAlignment"] = "Right"
     return {
         "type": "AdaptiveCard",
         "version": _VERSION,
-        "body": [{"type": "ColumnSet", "columns": columns}],
+        "body": [
+            label_block,
+            {"type": "ColumnSet", "columns": columns},
+        ],
     }
 
 
@@ -49,7 +56,14 @@ def _full_width_bubble(items: list, *, style: str) -> dict:
         "roundedCorners": True,
         "items": items,
     }
-    return {"type": "AdaptiveCard", "version": _VERSION, "body": [container]}
+    return {
+        "type": "AdaptiveCard",
+        "version": _VERSION,
+        "body": [
+            {"type": "TextBlock", "text": "assistant", "wrap": True},
+            container,
+        ],
+    }
 
 
 def _text_items(text: str) -> list:

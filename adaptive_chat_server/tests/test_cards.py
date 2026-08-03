@@ -15,7 +15,11 @@ def _first_columnset(card: dict) -> dict:
 
 def test_user_bubble_is_right_aligned_accent():
     card = user_bubble("hello")
-    cols = _first_columnset(card)["columns"]
+    body = card["body"]
+    assert body[0]["type"] == "TextBlock"
+    assert body[0]["text"] == "user"
+    assert body[0]["horizontalAlignment"] == "Right"
+    cols = body[1]["columns"]
     # spacer (25%) first, content (75%) second -> bubble spans the right 75%
     assert cols[0]["width"] == _SPACER_WEIGHT
     assert cols[1]["width"] == _BUBBLE_WEIGHT
@@ -27,7 +31,10 @@ def test_user_bubble_is_right_aligned_accent():
 
 def test_assistant_bubble_is_left_aligned_emphasis():
     card = assistant_bubble("Did you just say: hi")
-    cols = _first_columnset(card)["columns"]
+    body = card["body"]
+    assert body[0]["type"] == "TextBlock"
+    assert body[0]["text"] == "assistant"
+    cols = body[1]["columns"]
     # content (75%) first, spacer (25%) second -> bubble spans the left 75%
     assert cols[0]["width"] == _BUBBLE_WEIGHT
     assert cols[1]["width"] == _SPACER_WEIGHT
@@ -69,12 +76,13 @@ def test_assistant_card_bubble_is_full_width_container_without_columnset():
     card = assistant_card_bubble(fragment)
     body = card["body"]
     # The fragment lives directly in a single full-width emphasis container.
-    assert len(body) == 1
-    container = body[0]
+    assert len(body) == 2
+    assert body[0]["type"] == "TextBlock"
+    assert body[0]["text"] == "assistant"
+    container = body[1]
     assert container["type"] == "Container"
     assert container["style"] == "emphasis"
     assert container["roundedCorners"] is True
-    # the model's fragment is the container's items verbatim
     assert container["items"] == fragment
     # Crucially: NO ColumnSet anywhere — that is what breaks a nested Carousel.
     assert not any(el.get("type") == "ColumnSet" for el in body)
