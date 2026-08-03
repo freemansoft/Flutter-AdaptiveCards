@@ -1200,7 +1200,7 @@ git commit -m "docs(chat-server): document GET /status and the stats modules"
 
 Per the AGENTS.md plan-completion gate, do not claim completion until this passes and its output is pasted.
 
-- [ ] **Step 1: Run the full server suite**
+- [x] **Step 1: Run the full server suite**
 
 ```bash
 cd adaptive_chat_server
@@ -1209,7 +1209,7 @@ cd adaptive_chat_server
 
 Expected: PASS, zero failures. Record the pass count.
 
-- [ ] **Step 2: Confirm nothing outside the server changed**
+- [x] **Step 2: Confirm nothing outside the server changed**
 
 ```bash
 git diff --stat main...HEAD
@@ -1217,10 +1217,10 @@ git diff --stat main...HEAD
 
 Expected: only files under `adaptive_chat_server/` plus the two `docs/superpowers/` files. **No** Flutter package, `widgetbook/`, or `adaptive_chat_client/` files. If any appear, the no-wire-change constraint was violated.
 
-- [ ] **Step 3: Invoke the verification skill**
+- [x] **Step 3: Invoke the verification skill**
 
 Use `superpowers:verification-before-completion` and paste the command output (exit code and pass/fail counts) before making any success claim.
 
-- [ ] **Step 4: Report**
+- [x] **Step 4: Report**
 
 State the pass count and the changed-file list. Only then is the plan complete.
