@@ -1,5 +1,6 @@
 import json
 import logging
+from pathlib import Path
 
 import httpx
 
@@ -768,3 +769,88 @@ def test_reply_still_detects_well_formed_nested_card_without_duplicate_keys(tmp_
             ],
         }
     ]
+
+
+def _ok_handler(body):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=body)
+
+    return handler
+
+
+_STATS_BODY = {
+    "message": {"content": "hello"},
+    "prompt_eval_count": 1500,
+    "eval_count": 300,
+    "total_duration": 8_200_000_000,
+    "load_duration": 12_000_000,
+    "prompt_eval_duration": 900_000_000,
+    "eval_duration": 7_200_000_000,
+}
+
+
+def test_reply_captures_token_stats():
+    reply = _responder(_ok_handler(_STATS_BODY)).reply("hi", [])
+    assert reply.stats is not None
+    assert reply.stats.prompt_tokens == 1500
+    assert reply.stats.reply_tokens == 300
+    assert reply.stats.eval_ms == 7200
+
+
+def test_reply_without_counts_has_no_stats():
+    reply = _responder(_ok_handler({"message": {"content": "hello"}})).reply("hi", [])
+    assert reply.text == "hello"
+    assert reply.stats is None
+
+
+def test_transport_failure_has_no_stats():
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("connection refused")
+
+    assert _responder(handler).reply("hi", []).stats is None
+
+
+def test_http_error_has_no_stats():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(404, text="model not found")
+
+    assert _responder(handler).reply("hi", []).stats is None
+
+
+def test_unparseable_body_has_no_stats():
+    assert _responder(_ok_handler({"nope": True})).reply("hi", []).stats is None
+
+
+def test_describe_reports_effective_config():
+    config = _responder(
+        _ok_handler({"message": {"content": "hi"}}), num_ctx=4096, history_turns=3
+    ).describe()
+    assert config["kind"] == "ollama"
+    assert config["url"] == OLLAMA_URL
+    assert config["model"] == OLLAMA_MODEL
+    assert config["numCtx"] == 4096
+    assert config["historyTurns"] == 3
+    assert config["jsonFormat"] == "none"
+    assert config["systemPromptFile"] == "default_system_prompt.txt"
+    assert "jsonFormatRequested" not in config
+
+
+def test_describe_system_prompt_file_is_basename_only(tmp_path):
+    prompt = tmp_path / "custom_prompt.txt"
+    prompt.write_text("be brief", encoding="utf-8")
+    config = _responder(
+        _ok_handler({"message": {"content": "hi"}}), system_prompt_file=str(prompt)
+    ).describe()
+    assert config["systemPromptFile"] == "custom_prompt.txt"
+    assert str(tmp_path) not in str(config)
+
+
+def test_describe_flags_schema_downgrade(monkeypatch):
+    monkeypatch.setattr(
+        "app.ollama_responder.CARD_SCHEMA_PATH", Path("/nonexistent/schema.json")
+    )
+    config = _responder(
+        _ok_handler({"message": {"content": "hi"}}), json_format="schema"
+    ).describe()
+    assert config["jsonFormat"] == "none"
+    assert config["jsonFormatRequested"] == "schema"
