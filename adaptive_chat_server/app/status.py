@@ -7,8 +7,25 @@ and the effective configuration the process is actually running.
 """
 from __future__ import annotations
 
+import hashlib
+
 from app.stats import to_dict
 from app.store import Conversation, ConversationStore
+
+
+def conversation_ref(conversation_id: str) -> str:
+    """Stable, non-reversible label for correlating a conversation across polls.
+
+    An operator watching ``/status`` over time needs some way to tell "this is
+    the same conversation as last poll" without the raw ``conversationId`` —
+    that id is also the bearer credential for
+    ``GET/POST /conversations/{cid}/interactions``, which return message text.
+    Since this endpoint is unauthenticated and CORS is wide open, leaking the
+    id here would hand any web page the developer visits a way to read the
+    transcript. Truncating the hash keeps it short for a status table while
+    leaving it useless for guessing the original id.
+    """
+    return hashlib.sha256(conversation_id.encode()).hexdigest()[:12]
 
 
 def _describe_responder(responder: object) -> dict:
@@ -39,14 +56,20 @@ def _conversation_row(conversation: Conversation) -> dict:
         last_iid = conversation.order[-1]
         last_stats = conversation.interactions[last_iid].stats
         last = {
-            "interactionId": last_iid,
+            # No interaction id here: "lastInteraction" already identifies
+            # which turn this is (the most recent one), so the id adds
+            # nothing an operator needs, and it would be one more identifier
+            # the endpoint didn't need to expose.
             # None when that turn cost nothing measurable — echo mode or an
             # Ollama failure. The turn still counts toward interactionCount.
             "stats": to_dict(last_stats) if last_stats is not None else None,
         }
 
     return {
-        "conversationId": conversation.conversation_id,
+        # Named "conversationRef", not "conversationId": the value is a
+        # truncated hash, not the real id, and keeping the old key name would
+        # invite a caller to try using it against the transcript endpoints.
+        "conversationRef": conversation_ref(conversation.conversation_id),
         "interactionCount": len(conversation.order),
         "totals": {
             "promptTokens": prompt_tokens,

@@ -2,7 +2,7 @@ import json
 
 from app.responder import EchoResponder
 from app.stats import InteractionStats
-from app.status import build_status
+from app.status import build_status, conversation_ref
 from app.store import ConversationStore, Interaction, Message
 
 
@@ -51,7 +51,6 @@ def test_last_interaction_is_the_most_recent():
     _add(store, cid, "i_0001", _stats(100, 20))
     _add(store, cid, "i_0002", _stats(200, 30))
     last = build_status(store, EchoResponder())["conversations"][0]["lastInteraction"]
-    assert last["interactionId"] == "i_0002"
     assert last["stats"]["promptTokens"] == 200
     assert last["stats"]["totalTokens"] == 230
 
@@ -61,7 +60,6 @@ def test_last_interaction_stats_null_when_absent():
     cid = store.create().conversation_id
     _add(store, cid, "i_0001", None)
     last = build_status(store, EchoResponder())["conversations"][0]["lastInteraction"]
-    assert last["interactionId"] == "i_0001"
     assert last["stats"] is None
 
 
@@ -79,7 +77,10 @@ def test_conversations_appear_in_creation_order():
     first = store.create().conversation_id
     second = store.create().conversation_id
     body = build_status(store, EchoResponder())
-    assert [c["conversationId"] for c in body["conversations"]] == [first, second]
+    assert [c["conversationRef"] for c in body["conversations"]] == [
+        conversation_ref(first),
+        conversation_ref(second),
+    ]
     assert body["conversationCount"] == 2
 
 
@@ -107,3 +108,14 @@ def test_status_carries_no_message_text():
     serialized = json.dumps(build_status(store, EchoResponder()))
     assert "my secret question" not in serialized
     assert "my secret answer" not in serialized
+
+
+def test_status_carries_no_raw_conversation_id():
+    # The raw conversation id is the bearer credential for the transcript
+    # endpoints (GET/POST .../interactions); /status is unauthenticated with
+    # CORS wide open, so only the non-reversible ref may appear here.
+    store = ConversationStore()
+    cid = store.create().conversation_id
+    serialized = json.dumps(build_status(store, EchoResponder()))
+    assert cid not in serialized
+    assert conversation_ref(cid) in serialized

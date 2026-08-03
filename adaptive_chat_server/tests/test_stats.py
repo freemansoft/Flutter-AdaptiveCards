@@ -56,6 +56,9 @@ def test_to_dict_derives_total_tokens_and_speed():
     assert body["promptTokens"] == 1500
     assert body["replyTokens"] == 300
     assert body["evalMs"] == 7200
+    assert body["totalMs"] == 8200
+    assert body["loadMs"] == 12
+    assert body["promptEvalMs"] == 900
 
 
 def test_to_dict_guards_zero_eval_ms():

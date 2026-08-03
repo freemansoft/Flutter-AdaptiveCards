@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.responder import Reply
 from app.stats import InteractionStats
+from app.status import conversation_ref
 
 client = TestClient(app)
 
@@ -143,8 +144,10 @@ class _StatsStubResponder:
         return {"kind": "stub"}
 
 
-def _rows_by_id() -> dict:
-    return {c["conversationId"]: c for c in client.get("/status").json()["conversations"]}
+def _rows_by_ref() -> dict:
+    return {
+        c["conversationRef"]: c for c in client.get("/status").json()["conversations"]
+    }
 
 
 def test_status_reports_conversations_and_echo_responder():
@@ -157,20 +160,21 @@ def test_status_reports_conversations_and_echo_responder():
     assert body["responder"]["kind"] == "echo"
     assert body["conversationCount"] >= 2
 
-    rows = {c["conversationId"]: c for c in body["conversations"]}
-    assert rows[cid_a]["interactionCount"] == 2
-    assert rows[cid_a]["lastInteraction"]["interactionId"] == "i_s002"
-    assert rows[cid_a]["lastInteraction"]["stats"] is None
-    assert rows[cid_a]["totals"]["totalTokens"] == 0
-    assert rows[cid_b]["interactionCount"] == 0
-    assert rows[cid_b]["lastInteraction"] is None
+    rows = {c["conversationRef"]: c for c in body["conversations"]}
+    ref_a = conversation_ref(cid_a)
+    ref_b = conversation_ref(cid_b)
+    assert rows[ref_a]["interactionCount"] == 2
+    assert rows[ref_a]["lastInteraction"]["stats"] is None
+    assert rows[ref_a]["totals"]["totalTokens"] == 0
+    assert rows[ref_b]["interactionCount"] == 0
+    assert rows[ref_b]["lastInteraction"] is None
 
 
 def test_status_replay_does_not_increment_interaction_count():
     cid = _start()
     _send(cid, "i_s010", "hello")
     _send(cid, "i_s010", "hello")
-    assert _rows_by_id()[cid]["interactionCount"] == 1
+    assert _rows_by_ref()[conversation_ref(cid)]["interactionCount"] == 1
 
 
 def test_status_reports_stats_captured_from_the_responder(monkeypatch):
@@ -180,7 +184,7 @@ def test_status_reports_stats_captured_from_the_responder(monkeypatch):
 
     body = client.get("/status").json()
     assert body["responder"] == {"kind": "stub"}
-    row = {c["conversationId"]: c for c in body["conversations"]}[cid]
+    row = {c["conversationRef"]: c for c in body["conversations"]}[conversation_ref(cid)]
     assert row["totals"] == {
         "promptTokens": 1500,
         "replyTokens": 300,

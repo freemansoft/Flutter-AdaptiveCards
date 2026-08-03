@@ -123,7 +123,7 @@ the Flutter client never calls it.
   "conversationCount": 2,
   "conversations": [
     {
-      "conversationId": "c_ab12cd34ef56",
+      "conversationRef": "9f2a7c1e4b03",
       "interactionCount": 3,
       "totals": {
         "promptTokens": 4200,
@@ -131,7 +131,6 @@ the Flutter client never calls it.
         "totalTokens": 5100
       },
       "lastInteraction": {
-        "interactionId": "i_0003",
         "stats": {
           "promptTokens": 1500,
           "replyTokens": 300,
@@ -155,8 +154,9 @@ constructor silently falls back to `none`; `/status` then reports
 appears only on a downgrade, so its presence is the signal. In echo mode the
 block is just `{"kind": "echo"}`.
 
-**`stats` is `null` whenever a turn cost nothing measurable** — echo mode, or any
-Ollama failure (unreachable, HTTP error, unparseable body). The interaction still
+**`stats` is `null` whenever a turn cost nothing measurable** — echo mode, any
+Ollama failure (unreachable, HTTP error, unparseable body), or a reply that
+reported no token counts. The interaction still
 counts toward `interactionCount`; `totals` sums only the turns that have stats.
 `lastInteraction` is `null` for a conversation with no turns yet. An idempotent
 replay of an existing `X-Interaction-Id` does not increment `interactionCount`.
@@ -165,9 +165,13 @@ replay of an existing `X-Interaction-Id` does not increment `interactionCount`.
 model load and prompt evaluation, so it stays comparable between warm and cold
 turns.
 
-**No message text appears in this payload**, and `systemPromptFile` is reduced to
-a bare filename. The endpoint is unauthenticated and CORS is `allow_origins=["*"]`
-— fine for the default `127.0.0.1` bind, but binding to `0.0.0.0` would expose
+**No message text and no usable conversation id appear in this payload.**
+`conversationRef` is a truncated SHA-256 of the conversation id — a stable label
+for correlating rows across polls that cannot be used against the transcript
+endpoints (`GET/POST /conversations/{cid}/interactions`), because the raw id is
+the only thing guarding them. `systemPromptFile` is likewise reduced to a bare
+filename. The endpoint is unauthenticated and CORS is `allow_origins=["*"]` —
+fine for the default `127.0.0.1` bind, but binding to `0.0.0.0` would expose
 configuration metadata and conversation-volume data to the network.
 
 ### System prompt
