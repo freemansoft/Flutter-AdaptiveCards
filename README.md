@@ -128,10 +128,12 @@ dynamically at runtime by a local LLM running in [Ollama](https://ollama.com).
 
 ```mermaid
 sequenceDiagram
+    participant User
     participant Client as adaptive_chat_client
     participant Server as adaptive_chat_server
     participant Ollama as ollama
 
+    User->>Client: Enters Text
     Client->>Server: User Input
     Server->>Ollama: User input + Prompt + Context
     Ollama-->>Server: Markdown Response
