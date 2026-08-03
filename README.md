@@ -37,7 +37,6 @@ git remote set-head origin -a
 1. Adaptive Card Charting is an extension that adds charting capabilities and is implemented in its own package so that its third party dependencies are isolated from the core library. [packages/flutter_adaptive_charts_fs](/packages/flutter_adaptive_charts_fs/README.md)
    1. The Adaptive Card Charting library CHANGELOG is in [packages/flutter_adaptive_charts_fs/CHANGELOG.md](/packages/flutter_adaptive_charts_fs/CHANGELOG.md)
 1. The Adaptive Card Template library supports merging json data into an Adaptive Card template. It is implemented in its own package [packages/flutter_adaptive_template_fs](/packages/flutter_adaptive_template_fs/README.md)
-
    1. The Adaptive Card Template library CHANGELOG is in [packages/flutter_adaptive_template_fs/CHANGELOG.md](/packages/flutter_adaptive_template_fs/CHANGELOG.md)
    1. [Adaptive Cards Template specification](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/card-templates)
 
@@ -126,6 +125,19 @@ More detail: [adaptive_explorer/README.md](adaptive_explorer/README.md).
 the chat bubbles and the compose box itself, is an Adaptive Card **authored by the
 server** and rendered verbatim by the client — and those cards can be generated
 dynamically at runtime by a local LLM running in [Ollama](https://ollama.com).
+
+```mermaid
+sequenceDiagram
+    participant Client as adaptive_chat_client
+    participant Server as adaptive_chat_server
+    participant Ollama as ollama
+
+    Client->>Server: User Input
+    Server->>Ollama: User input + Prompt + Context
+    Ollama-->>Server: Markdown Response
+    Ollama-->>Server: Adaptive Card Response
+    Server-->>Client: User and Agent Adaptive Cards
+```
 
 ### What you can do with it
 
