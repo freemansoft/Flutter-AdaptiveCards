@@ -16,6 +16,7 @@ import httpx
 
 from app.card_detect import card_parse_failure_reason, try_parse_card_body
 from app.responder import Reply
+from app.stats import from_ollama_response
 
 # uvicorn installs a handler on the "uvicorn.error" logger, so these messages
 # appear in the server console when running via `python -m app` / uvicorn.
@@ -153,11 +154,37 @@ class OllamaResponder:
             else DEFAULT_SYSTEM_PROMPT_PATH
         )
         self._json_format = json_format
+        # Remembered before the downgrade below so describe() can report that the
+        # process is not running the format it was asked for.
+        self._requested_json_format = json_format
         self._card_schema: dict | None = None
         if self._json_format == "schema":
             self._card_schema = _load_card_schema(CARD_SCHEMA_PATH)
             if self._card_schema is None:
                 self._json_format = "none"
+
+    def describe(self) -> dict:
+        """Effective config for ``GET /status`` — what this process is running.
+
+        ``jsonFormatRequested`` appears only when the constructor downgraded a
+        requested ``"schema"`` to ``"none"`` because the bundled schema was
+        unusable. Its presence is the signal that the process is not doing what
+        it was told; its absence means requested and effective agree.
+        ``systemPromptFile`` is the bare filename — the endpoint is
+        unauthenticated, so no filesystem layout is disclosed.
+        """
+        config = {
+            "kind": "ollama",
+            "url": self._ollama_url,
+            "model": self._model,
+            "numCtx": self._num_ctx,
+            "historyTurns": self._history_turns,
+            "jsonFormat": self._json_format,
+            "systemPromptFile": self._system_prompt_path.name,
+        }
+        if self._requested_json_format != self._json_format:
+            config["jsonFormatRequested"] = self._requested_json_format
+        return config
 
     def _load_system_prompt(self) -> str | None:
         """Read the active system-prompt file, or None if unusable.
@@ -336,6 +363,11 @@ class OllamaResponder:
             )
         self._log_context_fill(data)
 
+        # Independent of _log_context_fill's own prompt-token read: that logs a
+        # warning tier, this records data. Keeping them separate avoids coupling
+        # a log threshold to the stored record.
+        stats = from_ollama_response(data)
+
         reply_text = content
         card_body: list | None = None
         used_format_path = False
@@ -403,4 +435,4 @@ class OllamaResponder:
             card_body is not None,
             content,
         )
-        return Reply(text=reply_text, card_body=card_body)
+        return Reply(text=reply_text, card_body=card_body, stats=stats)

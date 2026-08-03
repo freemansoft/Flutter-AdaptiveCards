@@ -4,6 +4,8 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass, field
 
+from app.stats import InteractionStats
+
 
 @dataclass
 class Message:
@@ -21,6 +23,9 @@ class Interaction:
     text: str
     messages: list[Message]
     reply_text: str = ""
+    # None whenever the reply cost no measurable tokens: echo mode, or any
+    # Ollama failure. The interaction still counts — it happened.
+    stats: InteractionStats | None = None
 
 
 @dataclass
@@ -61,3 +66,11 @@ class ConversationStore:
         if conv is None:
             return None
         return conv.interactions.get(iid)
+
+    def list_conversations(self) -> list[Conversation]:
+        """Every live conversation, in creation order.
+
+        Insertion order is guaranteed by ``dict``; the status endpoint relies on
+        it so conversations read oldest-first.
+        """
+        return list(self._conversations.values())

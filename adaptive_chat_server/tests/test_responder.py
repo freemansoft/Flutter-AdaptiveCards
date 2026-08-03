@@ -3,6 +3,7 @@ import logging
 from app.main import _int_env, build_responder
 from app.ollama_responder import DEFAULT_OLLAMA_MODEL, OllamaResponder
 from app.responder import EchoResponder, Reply
+from app.stats import InteractionStats
 
 
 def test_echo_wraps_the_input():
@@ -48,3 +49,27 @@ def test_int_env_falls_back_and_warns_on_bad_value(monkeypatch, caplog):
 def test_build_responder_forwards_json_format():
     responder = build_responder("http://x", DEFAULT_OLLAMA_MODEL, json_format="none")
     assert isinstance(responder, OllamaResponder)
+
+
+def test_reply_stats_default_to_none():
+    assert Reply(text="hi").stats is None
+
+
+def test_reply_carries_stats_when_given():
+    stats = InteractionStats(
+        prompt_tokens=1,
+        reply_tokens=2,
+        total_ms=3,
+        load_ms=0,
+        prompt_eval_ms=1,
+        eval_ms=2,
+    )
+    assert Reply(text="hi", stats=stats).stats is stats
+
+
+def test_echo_responder_describes_itself():
+    assert EchoResponder().describe() == {"kind": "echo"}
+
+
+def test_echo_responder_reply_has_no_stats():
+    assert EchoResponder().reply("hi", []).stats is None

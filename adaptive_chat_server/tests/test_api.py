@@ -2,6 +2,8 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.responder import Reply
+from app.stats import InteractionStats
+from app.status import conversation_ref
 
 client = TestClient(app)
 
@@ -122,3 +124,97 @@ def test_replay_unknown_interaction_is_404():
     cid = _start()
     resp = client.get(f"/conversations/{cid}/interactions/i_missing")
     assert resp.status_code == 404
+
+
+class _StatsStubResponder:
+    def reply(self, text, history):
+        return Reply(
+            text="ok",
+            stats=InteractionStats(
+                prompt_tokens=1500,
+                reply_tokens=300,
+                total_ms=8200,
+                load_ms=12,
+                prompt_eval_ms=900,
+                eval_ms=7200,
+            ),
+        )
+
+    def describe(self):
+        return {"kind": "stub"}
+
+
+def _rows_by_ref() -> dict:
+    return {
+        c["conversationRef"]: c for c in client.get("/status").json()["conversations"]
+    }
+
+
+def test_status_reports_conversations_and_echo_responder():
+    cid_a = _start()
+    _send(cid_a, "i_s001", "hello")
+    _send(cid_a, "i_s002", "again")
+    cid_b = _start()
+
+    body = client.get("/status").json()
+    assert body["responder"]["kind"] == "echo"
+    assert body["conversationCount"] >= 2
+
+    rows = {c["conversationRef"]: c for c in body["conversations"]}
+    ref_a = conversation_ref(cid_a)
+    ref_b = conversation_ref(cid_b)
+    assert rows[ref_a]["interactionCount"] == 2
+    assert rows[ref_a]["lastInteraction"]["stats"] is None
+    assert rows[ref_a]["totals"]["totalTokens"] == 0
+    assert rows[ref_b]["interactionCount"] == 0
+    assert rows[ref_b]["lastInteraction"] is None
+
+
+def test_status_replay_does_not_increment_interaction_count():
+    cid = _start()
+    _send(cid, "i_s010", "hello")
+    _send(cid, "i_s010", "hello")
+    assert _rows_by_ref()[conversation_ref(cid)]["interactionCount"] == 1
+
+
+def test_status_reports_stats_captured_from_the_responder(monkeypatch):
+    monkeypatch.setattr("app.main.responder", _StatsStubResponder())
+    cid = _start()
+    _send(cid, "i_s020", "hello")
+
+    body = client.get("/status").json()
+    assert body["responder"] == {"kind": "stub"}
+    row = {c["conversationRef"]: c for c in body["conversations"]}[conversation_ref(cid)]
+    assert row["totals"] == {
+        "promptTokens": 1500,
+        "replyTokens": 300,
+        "totalTokens": 1800,
+    }
+    assert row["lastInteraction"]["stats"]["tokensPerSecond"] == 41.7
+    assert row["lastInteraction"]["stats"]["evalMs"] == 7200
+
+
+def test_send_envelope_is_unchanged_by_stats():
+    cid = _start()
+    body = _send(cid, "i_s030", "hello").json()
+    assert set(body) == {"conversationId", "interactionId", "messages", "links"}
+
+
+def test_status_is_rendered_as_indented_json():
+    resp = client.get("/status")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("application/json")
+    # Indented for a human reading curl output, not FastAPI's compact default.
+    assert '\n  "responder"' in resp.text
+    assert '\n  "conversations"' in resp.text
+    assert resp.text.endswith("\n")
+    # Indentation must not stop it being parseable — jq and any client still work.
+    assert resp.json()["responder"]["kind"] == "echo"
+
+
+def test_interaction_envelope_stays_compact():
+    # Only /status is indented. The chat routes are machine-consumed by the
+    # Flutter client and their wire format must not change.
+    cid = _start()
+    resp = _send(cid, "i_s040", "hello")
+    assert "\n" not in resp.text
