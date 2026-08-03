@@ -5,8 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
 ## [0.16.0]
 
 - fix: an unrecognized/removed element or action type now renders a visible `AdaptiveErrorPlaceholder` (broken-image icon + error text, announced as a live region) in every build mode, replacing the debug-only `ErrorWidget` that showed nothing in release builds.
