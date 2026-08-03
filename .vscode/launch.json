@@ -77,7 +77,12 @@
         "8000"
       ],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
-      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+      // Default path used for macOS and Linux
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python",
+      // Automatic override applied only when running on Windows
+      "windows": {
+          "python": "${workspaceFolder}/adaptive_chat_server/.venv/Scripts/python.exe"
+      }
     },
     {
       // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
@@ -102,7 +107,12 @@
         "8000"
       ],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
-      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+      // Default path used for macOS and Linux
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python",
+      // Automatic override applied only when running on Windows
+      "windows": {
+          "python": "${workspaceFolder}/adaptive_chat_server/.venv/Scripts/python.exe"
+      }
     },
     {
       // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
@@ -127,7 +137,12 @@
         "8000"
       ],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
-      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+      // Default path used for macOS and Linux
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python",
+      // Automatic override applied only when running on Windows
+      "windows": {
+          "python": "${workspaceFolder}/adaptive_chat_server/.venv/Scripts/python.exe"
+      }
     },
     {
       // Runs the CLI entrypoint (python -m app) which selects OllamaResponder
@@ -152,7 +167,12 @@
         "8000"
       ],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
-      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+      // Default path used for macOS and Linux
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python",
+      // Automatic override applied only when running on Windows
+      "windows": {
+          "python": "${workspaceFolder}/adaptive_chat_server/.venv/Scripts/python.exe"
+      }
     },
     {
       // Card mode with qwen2.5-coder:7b: same as the qwen2.5-coder:7b target but
@@ -188,7 +208,12 @@
         "8000"
       ],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
-      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+      // Default path used for macOS and Linux
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python",
+      // Automatic override applied only when running on Windows
+      "windows": {
+          "python": "${workspaceFolder}/adaptive_chat_server/.venv/Scripts/python.exe"
+      }
     },
     {
       // Card mode: same as the gpt-oss:20b target but points the responder at
@@ -225,7 +250,12 @@
         "8000"
       ],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
-      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+      // Default path used for macOS and Linux
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python",
+      // Automatic override applied only when running on Windows
+      "windows": {
+          "python": "${workspaceFolder}/adaptive_chat_server/.venv/Scripts/python.exe"
+      }
     },
     {
       // Card mode: same as the gpt-oss:20b target but points the responder at
@@ -262,7 +292,12 @@
         "8000"
       ],
       "cwd": "${workspaceFolder}/adaptive_chat_server",
-      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python"
+      // Default path used for macOS and Linux
+      "python": "${workspaceFolder}/adaptive_chat_server/.venv/bin/python",
+      // Automatic override applied only when running on Windows
+      "windows": {
+          "python": "${workspaceFolder}/adaptive_chat_server/.venv/Scripts/python.exe"
+      }
     }
   ],
   "compounds": [

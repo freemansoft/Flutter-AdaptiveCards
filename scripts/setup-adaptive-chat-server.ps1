@@ -18,6 +18,7 @@ function Test-PythonVersion {
 
 function Find-Python {
   $candidates = @(
+    @("py", "-3.14"),
     @("py", "-3.13"),
     @("py", "-3.12"),
     @("py", "-3.11"),
