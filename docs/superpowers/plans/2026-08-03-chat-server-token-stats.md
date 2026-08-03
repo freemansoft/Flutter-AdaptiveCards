@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- **Working directory is `adaptive_chat_server/`** for every command in this plan. It is a top-level Python demo server, *not* a Flutter package — `fvm`, `flutter`, and `dart` are not involved.
+- **Working directory is `adaptive_chat_server/`** for every command in this plan. It is a top-level Python demo server, _not_ a Flutter package — `fvm`, `flutter`, and `dart` are not involved.
 - **Test command:** `.venv/bin/python -m pytest -v`. Create the venv first if absent: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
 - **No `CHANGELOG.md` entry.** `adaptive_chat_server/` is not under `packages/`, so the AGENTS.md changelog gate does not apply.
 - **No wire-contract change** to the interaction envelope. `POST/GET …/interactions` responses must be byte-identical to today. `adaptive_chat_client` is not modified.
@@ -20,19 +20,22 @@
 - **No message text in the `/status` payload.** The endpoint is unauthenticated and CORS is `allow_origins=["*"]`.
 - **Commit gate (overrides the template's commit steps):** AGENTS.md forbids committing or pushing without explicit user confirmation at the moment of action. Each "Commit" step below means: show the diff, summarize it, **wait for the user to approve**, then run the command.
 - **Branch first:** before Task 1, create a feature branch off `main` (`git checkout -b feat/chat-server-token-stats`). Do not work directly on `main`.
-- Style follows the existing modules: `from __future__ import annotations`, frozen dataclasses for value types, `"""Docstrings"""` explaining *why* and the caller contract, module logger `logging.getLogger("uvicorn.error")`.
+- Style follows the existing modules: `from __future__ import annotations`, frozen dataclasses for value types, `"""Docstrings"""` explaining _why_ and the caller contract, module logger `logging.getLogger("uvicorn.error")`.
 
 ---
 
 ### Task 1: `app/stats.py` — the stats record
 
 **Files:**
+
 - Create: `adaptive_chat_server/app/stats.py`
 - Test: `adaptive_chat_server/tests/test_stats.py`
 
 **Interfaces:**
+
 - Consumes: nothing (leaf module — imports only `dataclasses`).
 - Produces:
+
   - `InteractionStats` frozen dataclass with `int` fields `prompt_tokens`, `reply_tokens`, `total_ms`, `load_ms`, `prompt_eval_ms`, `eval_ms`
   - `from_ollama_response(data: dict) -> InteractionStats | None`
   - `to_dict(stats: InteractionStats) -> dict`
@@ -214,7 +217,7 @@ def to_dict(stats: InteractionStats) -> dict:
 Run: `.venv/bin/python -m pytest tests/test_stats.py -v`
 Expected: PASS — 7 passed
 
-- [x] **Step 5: Commit** *(show diff, wait for user approval, then run)*
+- [x] **Step 5: Commit** _(show diff, wait for user approval, then run)_
 
 ```bash
 git add app/stats.py tests/test_stats.py
@@ -226,12 +229,15 @@ git commit -m "feat(chat-server): add InteractionStats record for Ollama token u
 ### Task 2: Store the stats on an interaction
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/store.py:16-23` (`Interaction`), `:35-63` (`ConversationStore`)
 - Test: `adaptive_chat_server/tests/test_store.py`
 
 **Interfaces:**
+
 - Consumes: `InteractionStats` from Task 1.
 - Produces:
+
   - `Interaction.stats: InteractionStats | None = None` (defaults to `None`, so all existing construction sites keep working unchanged)
   - `ConversationStore.list_conversations() -> list[Conversation]`
 
@@ -337,7 +343,7 @@ Add to `ConversationStore`, after `get_interaction`:
 Run: `.venv/bin/python -m pytest tests/test_store.py -v`
 Expected: PASS — all store tests, including the 3 pre-existing ones
 
-- [x] **Step 5: Commit** *(show diff, wait for user approval, then run)*
+- [x] **Step 5: Commit** _(show diff, wait for user approval, then run)_
 
 ```bash
 git add app/store.py tests/test_store.py
@@ -349,12 +355,15 @@ git commit -m "feat(chat-server): store per-interaction stats and expose convers
 ### Task 3: `Reply.stats` and the `describe()` contract
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/responder.py:8-33`
 - Test: `adaptive_chat_server/tests/test_responder.py`
 
 **Interfaces:**
+
 - Consumes: `InteractionStats` from Task 1.
 - Produces:
+
   - `Reply.stats: InteractionStats | None = None` (third positional field, after `card_body`)
   - `Responder.describe(self) -> dict` on the Protocol
   - `EchoResponder.describe() -> {"kind": "echo"}`
@@ -460,7 +469,7 @@ class EchoResponder:
 Run: `.venv/bin/python -m pytest tests/test_responder.py -v`
 Expected: PASS
 
-- [x] **Step 5: Commit** *(show diff, wait for user approval, then run)*
+- [x] **Step 5: Commit** _(show diff, wait for user approval, then run)_
 
 ```bash
 git add app/responder.py tests/test_responder.py
@@ -472,10 +481,12 @@ git commit -m "feat(chat-server): add Reply.stats and Responder.describe() contr
 ### Task 4: `OllamaResponder` captures stats and reports config
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/ollama_responder.py:128-160` (`__init__`), `:322-340` (success path), and add `describe()`
 - Test: `adaptive_chat_server/tests/test_ollama_responder.py`
 
 **Interfaces:**
+
 - Consumes: `from_ollama_response` (Task 1), `Reply.stats` (Task 3).
 - Produces: `OllamaResponder.describe() -> dict` with keys `kind`, `url`, `model`, `numCtx`, `historyTurns`, `jsonFormat`, `systemPromptFile`, and `jsonFormatRequested` **only on downgrade**.
 
@@ -654,7 +665,7 @@ Leave all three early-return failure paths untouched — they already return a b
 Run: `.venv/bin/python -m pytest tests/test_ollama_responder.py -v`
 Expected: PASS — new tests plus all pre-existing Ollama tests
 
-- [x] **Step 5: Commit** *(show diff, wait for user approval, then run)*
+- [x] **Step 5: Commit** _(show diff, wait for user approval, then run)_
 
 ```bash
 git add app/ollama_responder.py tests/test_ollama_responder.py
@@ -666,10 +677,12 @@ git commit -m "feat(chat-server): capture Ollama token stats and report effectiv
 ### Task 5: `app/status.py` — payload assembly
 
 **Files:**
+
 - Create: `adaptive_chat_server/app/status.py`
 - Test: `adaptive_chat_server/tests/test_status.py`
 
 **Interfaces:**
+
 - Consumes: `to_dict` (Task 1), `Interaction.stats` + `ConversationStore.list_conversations` (Task 2), `describe()` (Tasks 3–4).
 - Produces: `build_status(store: ConversationStore, responder: object) -> dict`
 
@@ -877,7 +890,7 @@ def build_status(store: ConversationStore, responder: object) -> dict:
 Run: `.venv/bin/python -m pytest tests/test_status.py -v`
 Expected: PASS — 8 passed
 
-- [x] **Step 5: Commit** *(show diff, wait for user approval, then run)*
+- [x] **Step 5: Commit** _(show diff, wait for user approval, then run)_
 
 ```bash
 git add app/status.py tests/test_status.py
@@ -889,10 +902,12 @@ git commit -m "feat(chat-server): assemble status payload from store and respond
 ### Task 6: Wire the route and persist stats
 
 **Files:**
+
 - Modify: `adaptive_chat_server/app/main.py:10-19` (imports), `:151-159` (`add_interaction` call), and add the route after `replay_interaction`
 - Test: `adaptive_chat_server/tests/test_api.py`
 
 **Interfaces:**
+
 - Consumes: `build_status` (Task 5), `Reply.stats` (Task 3), `Interaction.stats` (Task 2).
 - Produces: `GET /status` returning the payload from `build_status`.
 
@@ -1027,7 +1042,7 @@ def server_status() -> dict:
 Run: `.venv/bin/python -m pytest tests/test_api.py -v`
 Expected: PASS — new tests plus all pre-existing route tests
 
-- [x] **Step 5: Commit** *(show diff, wait for user approval, then run)*
+- [x] **Step 5: Commit** _(show diff, wait for user approval, then run)_
 
 ```bash
 git add app/main.py tests/test_api.py
@@ -1039,9 +1054,11 @@ git commit -m "feat(chat-server): add GET /status and persist stats on interacti
 ### Task 7: README documentation
 
 **Files:**
+
 - Modify: `adaptive_chat_server/README.md` — wire-contract table (~line 42), components table (~line 53), both mermaid `ROUTES` nodes (lines 19 and 198), plus a new status section
 
 **Interfaces:**
+
 - Consumes: the payload shape produced by Task 6. No code changes.
 
 - [x] **Step 1: Add the wire-contract row**
@@ -1049,7 +1066,7 @@ git commit -m "feat(chat-server): add GET /status and persist stats on interacti
 In the **Wire contract** table, add after the `GET /conversations/{cid}/interactions/{iid}` row:
 
 ```markdown
-| `GET /status`                                 | Server + conversation snapshot | —                                                                 | **status payload**                        |
+| `GET /status` | Server + conversation snapshot | — | **status payload** |
 ```
 
 - [x] **Step 2: Add the components rows**
@@ -1057,8 +1074,8 @@ In the **Wire contract** table, add after the `GET /conversations/{cid}/interact
 In the **Components (`app/`)** table, add after the `card_detect.py` row:
 
 ```markdown
-| `stats.py`                  | `InteractionStats` — one Ollama turn's token counts (`prompt_eval_count` / `eval_count`) and timing breakdown, with nanosecond→millisecond conversion done once at capture. `from_ollama_response(data)` returns `None` unless both token counts are present, so a malformed body degrades instead of producing a half-filled record; `to_dict(stats)` derives `totalTokens` and `tokensPerSecond` at serialization. |
-| `status.py`                 | `build_status(store, responder)` — assembles the `GET /status` payload: effective responder config plus per-conversation turn counts, cumulative tokens, and the last turn's stats. Carries **no message text**; a responder without `describe()` degrades to `{"kind": "unknown"}` rather than erroring.                                                                                                              |
+| `stats.py` | `InteractionStats` — one Ollama turn's token counts (`prompt_eval_count` / `eval_count`) and timing breakdown, with nanosecond→millisecond conversion done once at capture. `from_ollama_response(data)` returns `None` unless both token counts are present, so a malformed body degrades instead of producing a half-filled record; `to_dict(stats)` derives `totalTokens` and `tokensPerSecond` at serialization. |
+| `status.py` | `build_status(store, responder)` — assembles the `GET /status` payload: effective responder config plus per-conversation turn counts, cumulative tokens, and the last turn's stats. Carries **no message text**; a responder without `describe()` degrades to `{"kind": "unknown"}` rather than erroring. |
 ```
 
 - [x] **Step 3: Update both mermaid ROUTES nodes**
@@ -1114,7 +1131,11 @@ the Flutter client never calls it.
     {
       "conversationId": "c_ab12cd34ef56",
       "interactionCount": 3,
-      "totals": { "promptTokens": 4200, "replyTokens": 900, "totalTokens": 5100 },
+      "totals": {
+        "promptTokens": 4200,
+        "replyTokens": 900,
+        "totalTokens": 5100
+      },
       "lastInteraction": {
         "interactionId": "i_0003",
         "stats": {
@@ -1187,7 +1208,7 @@ curl -s -X POST localhost:8000/conversations
 
 Expected: `{"responder":{"kind":"echo"},"conversationCount":0,"conversations":[]}`, then a conversation id. Stop the server afterward.
 
-- [x] **Step 7: Commit** *(show diff, wait for user approval, then run)*
+- [x] **Step 7: Commit** _(show diff, wait for user approval, then run)_
 
 ```bash
 git add README.md

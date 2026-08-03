@@ -6,7 +6,7 @@
 ## Problem
 
 The server keeps full per-conversation history in memory but discards every
-signal about what that history *costs*. Ollama returns token counts and timing
+signal about what that history _costs_. Ollama returns token counts and timing
 breakdowns on every `/api/chat` response; `OllamaResponder._log_context_fill`
 reads exactly one field (`prompt_eval_count`), logs a tier, and throws the rest
 away. There is no way to ask the running server how many conversations it is
@@ -44,14 +44,14 @@ Two consequences:
 
 ## Decisions
 
-| Decision | Choice | Rationale |
-| --- | --- | --- |
-| Consumer | Operator only, via `/status` | Smallest blast radius; the documented wire contract and the Flutter client stay untouched. |
-| Granularity | Per interaction, plus derived conversation totals | ~6 ints per turn. "Last interaction" becomes `order[-1]`; totals and per-turn history stay recoverable. A single overwritten slot on `Conversation` would discard both. |
-| Fields | Tokens **and** durations | Ollama returns both in the same response, so durations are free. Token counts alone cannot distinguish model-load latency from generation latency. |
-| Status rows | Counts and stats, **no message text** | CORS is `allow_origins=["*"]` and the endpoint is unauthenticated. Keeping conversation content out means the endpoint cannot leak what anyone said. |
-| Config source | `Responder.describe()` | The responder is the only component that knows its *effective* config, including the schema→none downgrade. Re-reading env vars in `main.py` would duplicate defaults and miss the downgrade. |
-| Transport | Optional `stats` field on `Reply` | Follows the existing frozen-dataclass style. Every failure path already returns early with a bare `Reply`, so "no stats" falls out with no extra branching. |
+| Decision      | Choice                                            | Rationale                                                                                                                                                                                     |
+| ------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Consumer      | Operator only, via `/status`                      | Smallest blast radius; the documented wire contract and the Flutter client stay untouched.                                                                                                    |
+| Granularity   | Per interaction, plus derived conversation totals | ~6 ints per turn. "Last interaction" becomes `order[-1]`; totals and per-turn history stay recoverable. A single overwritten slot on `Conversation` would discard both.                       |
+| Fields        | Tokens **and** durations                          | Ollama returns both in the same response, so durations are free. Token counts alone cannot distinguish model-load latency from generation latency.                                            |
+| Status rows   | Counts and stats, **no message text**             | CORS is `allow_origins=["*"]` and the endpoint is unauthenticated. Keeping conversation content out means the endpoint cannot leak what anyone said.                                          |
+| Config source | `Responder.describe()`                            | The responder is the only component that knows its _effective_ config, including the schema→none downgrade. Re-reading env vars in `main.py` would duplicate defaults and miss the downgrade. |
+| Transport     | Optional `stats` field on `Reply`                 | Follows the existing frozen-dataclass style. Every failure path already returns early with a bare `Reply`, so "no stats" falls out with no extra branching.                                   |
 
 ### Rejected alternatives
 
@@ -69,14 +69,14 @@ Two consequences:
 Two new modules keep `main.py` a thin route layer and give the new logic its own
 test files.
 
-| File | Change |
-| --- | --- |
-| `app/stats.py` *(new)* | `InteractionStats`, `from_ollama_response()`, `to_dict()` |
-| `app/status.py` *(new)* | `build_status(store, responder) -> dict` |
-| `app/store.py` | `Interaction.stats` field; `list_conversations()` |
-| `app/responder.py` | `Reply.stats` field; `describe()` on the `Responder` Protocol; `EchoResponder.describe()` |
-| `app/ollama_responder.py` | Populate stats on the success path; `describe()` |
-| `app/main.py` | Persist `reply.stats`; `GET /status` route |
+| File                      | Change                                                                                    |
+| ------------------------- | ----------------------------------------------------------------------------------------- |
+| `app/stats.py` _(new)_    | `InteractionStats`, `from_ollama_response()`, `to_dict()`                                 |
+| `app/status.py` _(new)_   | `build_status(store, responder) -> dict`                                                  |
+| `app/store.py`            | `Interaction.stats` field; `list_conversations()`                                         |
+| `app/responder.py`        | `Reply.stats` field; `describe()` on the `Responder` Protocol; `EchoResponder.describe()` |
+| `app/ollama_responder.py` | Populate stats on the success path; `describe()`                                          |
+| `app/main.py`             | Persist `reply.stats`; `GET /status` route                                                |
 
 Import direction stays acyclic: `store → stats`, and `status → store, stats`.
 Aggregation lives in `status.py` rather than `stats.py` precisely because
@@ -101,7 +101,7 @@ class InteractionStats:
 - Returns `None` unless **both** token counts are present and are `int`,
   mirroring the defensive style of `_log_context_fill`. A body shape it does not
   recognize yields `None` rather than a half-filled record.
-- Missing or non-`int` *duration* fields default to `0` — a duration is
+- Missing or non-`int` _duration_ fields default to `0` — a duration is
   supplementary, and its absence should not discard usable token counts.
 - Ollama reports durations in **nanoseconds**. Conversion to milliseconds happens
   once, here, so no downstream code has to remember the unit.
@@ -156,7 +156,11 @@ Tests swap the responder via `monkeypatch.setattr("app.main.responder", …)`, s
     {
       "conversationId": "c_ab12cd34ef56",
       "interactionCount": 3,
-      "totals": { "promptTokens": 4200, "replyTokens": 900, "totalTokens": 5100 },
+      "totals": {
+        "promptTokens": 4200,
+        "replyTokens": 900,
+        "totalTokens": 5100
+      },
       "lastInteraction": {
         "interactionId": "i_0003",
         "stats": {
@@ -194,22 +198,22 @@ Semantics:
 Every new code path is non-raising, consistent with the module's existing
 posture that a misbehaving Ollama must never break a request:
 
-| Condition | Behavior |
-| --- | --- |
+| Condition                        | Behavior                                                                    |
+| -------------------------------- | --------------------------------------------------------------------------- |
 | Ollama body missing token counts | `from_ollama_response` returns `None`; interaction stored with `stats=None` |
-| Ollama body has non-`int` counts | Same as above |
-| Ollama duration fields missing | Default to `0`; token counts still captured |
-| `eval_ms == 0` | `tokensPerSecond` is `0.0`, no `ZeroDivisionError` |
-| Responder lacks `describe()` | `responder` block reports `{"kind": "unknown"}` |
-| Echo responder | `stats` is `null` throughout; `responder.kind` is `"echo"` |
-| Empty store | `conversationCount: 0`, `conversations: []` |
+| Ollama body has non-`int` counts | Same as above                                                               |
+| Ollama duration fields missing   | Default to `0`; token counts still captured                                 |
+| `eval_ms == 0`                   | `tokensPerSecond` is `0.0`, no `ZeroDivisionError`                          |
+| Responder lacks `describe()`     | `responder` block reports `{"kind": "unknown"}`                             |
+| Echo responder                   | `stats` is `null` throughout; `responder.kind` is `"echo"`                  |
+| Empty store                      | `conversationCount: 0`, `conversations: []`                                 |
 
 ## Testing
 
 All tests run offline against `httpx.MockTransport` and FastAPI's `TestClient`.
 No live Ollama is contacted.
 
-**`tests/test_stats.py`** *(new)*
+**`tests/test_stats.py`** _(new)_
 
 - Full Ollama body → all fields populated; nanosecond→millisecond conversion
 - Missing / non-`int` token counts → `None`
@@ -217,7 +221,7 @@ No live Ollama is contacted.
 - `to_dict` derives `totalTokens` and `tokensPerSecond`
 - `eval_ms == 0` → `tokensPerSecond == 0.0`
 
-**`tests/test_status.py`** *(new)*
+**`tests/test_status.py`** _(new)_
 
 - Empty store → `conversationCount: 0`, `conversations: []`
 - Echo responder → `stats: null`, `kind: "echo"`
@@ -225,7 +229,7 @@ No live Ollama is contacted.
 - Conversation with zero interactions → `lastInteraction: null`
 - Stub responder without `describe()` → `{"kind": "unknown"}`, no raise
 
-**`tests/test_ollama_responder.py`** *(extend)*
+**`tests/test_ollama_responder.py`** _(extend)_
 
 - MockTransport body with counts → `Reply.stats` populated
 - Each of the three failure paths (transport, HTTP ≥ 400, unparseable) →
@@ -234,13 +238,13 @@ No live Ollama is contacted.
   `jsonFormat: "none"` **and** `jsonFormatRequested: "schema"`
 - `describe()["systemPromptFile"]` is a bare filename, not a path
 
-**`tests/test_api.py`** *(extend)*
+**`tests/test_api.py`** _(extend)_
 
 - `GET /status` after two conversations returns both, with correct
   `interactionCount` values
 - An idempotent replay does not increment `interactionCount`
 
-**`tests/test_store.py`** *(extend)*
+**`tests/test_store.py`** _(extend)_
 
 - An `Interaction` round-trips its `stats` through `add_interaction` /
   `get_interaction`
