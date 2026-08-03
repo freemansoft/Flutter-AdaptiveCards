@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.responder import Reply
+from app.stats import InteractionStats
 
 client = TestClient(app)
 
@@ -122,3 +123,74 @@ def test_replay_unknown_interaction_is_404():
     cid = _start()
     resp = client.get(f"/conversations/{cid}/interactions/i_missing")
     assert resp.status_code == 404
+
+
+class _StatsStubResponder:
+    def reply(self, text, history):
+        return Reply(
+            text="ok",
+            stats=InteractionStats(
+                prompt_tokens=1500,
+                reply_tokens=300,
+                total_ms=8200,
+                load_ms=12,
+                prompt_eval_ms=900,
+                eval_ms=7200,
+            ),
+        )
+
+    def describe(self):
+        return {"kind": "stub"}
+
+
+def _rows_by_id() -> dict:
+    return {c["conversationId"]: c for c in client.get("/status").json()["conversations"]}
+
+
+def test_status_reports_conversations_and_echo_responder():
+    cid_a = _start()
+    _send(cid_a, "i_s001", "hello")
+    _send(cid_a, "i_s002", "again")
+    cid_b = _start()
+
+    body = client.get("/status").json()
+    assert body["responder"]["kind"] == "echo"
+    assert body["conversationCount"] >= 2
+
+    rows = {c["conversationId"]: c for c in body["conversations"]}
+    assert rows[cid_a]["interactionCount"] == 2
+    assert rows[cid_a]["lastInteraction"]["interactionId"] == "i_s002"
+    assert rows[cid_a]["lastInteraction"]["stats"] is None
+    assert rows[cid_a]["totals"]["totalTokens"] == 0
+    assert rows[cid_b]["interactionCount"] == 0
+    assert rows[cid_b]["lastInteraction"] is None
+
+
+def test_status_replay_does_not_increment_interaction_count():
+    cid = _start()
+    _send(cid, "i_s010", "hello")
+    _send(cid, "i_s010", "hello")
+    assert _rows_by_id()[cid]["interactionCount"] == 1
+
+
+def test_status_reports_stats_captured_from_the_responder(monkeypatch):
+    monkeypatch.setattr("app.main.responder", _StatsStubResponder())
+    cid = _start()
+    _send(cid, "i_s020", "hello")
+
+    body = client.get("/status").json()
+    assert body["responder"] == {"kind": "stub"}
+    row = {c["conversationId"]: c for c in body["conversations"]}[cid]
+    assert row["totals"] == {
+        "promptTokens": 1500,
+        "replyTokens": 300,
+        "totalTokens": 1800,
+    }
+    assert row["lastInteraction"]["stats"]["tokensPerSecond"] == 41.7
+    assert row["lastInteraction"]["stats"]["evalMs"] == 7200
+
+
+def test_send_envelope_is_unchanged_by_stats():
+    cid = _start()
+    body = _send(cid, "i_s030", "hello").json()
+    assert set(body) == {"conversationId", "interactionId", "messages", "links"}

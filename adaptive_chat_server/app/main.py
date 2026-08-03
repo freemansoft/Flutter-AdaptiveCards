@@ -16,6 +16,7 @@ from app.ollama_responder import (
     OllamaResponder,
 )
 from app.responder import EchoResponder, Responder
+from app.status import build_status
 from app.store import ConversationStore, Interaction, Message
 
 logger = logging.getLogger("uvicorn.error")
@@ -155,6 +156,7 @@ async def send_interaction(
             text=message,
             messages=messages,
             reply_text=reply.text,
+            stats=reply.stats,
         ),
     )
     return envelope(cid, x_interaction_id, messages)
@@ -169,3 +171,13 @@ def replay_interaction(cid: str, iid: str) -> dict:
     if interaction is None:
         raise HTTPException(status_code=404, detail="unknown interaction")
     return envelope(cid, iid, interaction.messages)
+
+
+@app.get("/status")
+def server_status() -> dict:
+    """Operator snapshot: effective responder config and per-conversation volume.
+
+    Read-only and side-effect free. Carries no message text — see
+    :func:`app.status.build_status`.
+    """
+    return build_status(store, responder)
