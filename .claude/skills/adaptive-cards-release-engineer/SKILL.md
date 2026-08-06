@@ -126,6 +126,11 @@ flutter pub publish --dry-run   # verify first
 flutter pub publish             # requires pub.dev credentials / token
 ```
 
+Each published package has a consumer-minimal `.pubignore` (see
+[`docs/pub-score-pana.md`](../../../docs/pub-score-pana.md)). The dry-run tree
+must list only `lib/`, `pubspec.yaml`, README/CHANGELOG/LICENSE, and
+`analysis_options.yaml`.
+
 Repeat for `flutter_adaptive_template_fs`, `flutter_adaptive_charts_fs`, and `flutter_adaptive_cards_host_fs`.
 
 **Re-score charts and host after core publishes.** `flutter_adaptive_charts_fs`

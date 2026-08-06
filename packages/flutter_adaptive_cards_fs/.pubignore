@@ -1,0 +1,10 @@
+# Publish-only excludes (consumer-minimal archive).
+#
+# Rules from ancestor .gitignore files (e.g. repo root) still apply.
+# This file replaces only THIS directory's .gitignore for packaging.
+# Hidden paths (names starting with '.') are never published.
+# https://dart.dev/tools/pub/publishing#what-files-are-published
+test/
+tool/
+dart_test.yaml
+analyze.json
