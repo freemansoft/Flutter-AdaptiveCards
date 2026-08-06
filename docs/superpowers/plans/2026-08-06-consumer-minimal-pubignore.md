@@ -24,6 +24,7 @@
 ### Task 1: Add `.pubignore` to all four published packages
 
 **Files:**
+
 - Create: `packages/flutter_adaptive_cards_fs/.pubignore`
 - Create: `packages/flutter_adaptive_charts_fs/.pubignore`
 - Create: `packages/flutter_adaptive_template_fs/.pubignore`
@@ -33,6 +34,7 @@
 - Modify: `.claude/skills/adaptive-cards-release-engineer/SKILL.md` (one dry-run note)
 
 **Interfaces:**
+
 - Consumes: package `.gitignore` contents; design keep/exclude sets
 - Produces: dry-run archives with keep-set only
 

@@ -19,21 +19,21 @@ Publish only what package consumers need on pub.dev. Shrink archives by excludin
 
 No package has a `.pubignore` today. `dart pub publish --dry-run` showed:
 
-| Package | Compressed archive | Extra top-level vs consumer keep-set |
-| --- | --- | --- |
-| `flutter_adaptive_cards_fs` | 1 MB | `analyze.json`, `dart_test.yaml`, entire `test/` (~3.3 MB on disk; ~1.9 MB goldens) |
-| `flutter_adaptive_charts_fs` | 275 KB | `dart_test.yaml`, entire `test/` (~408 KB; mostly goldens) |
-| `flutter_adaptive_template_fs` | 94 KB | entire `test/` (~1.3 MB MS fixtures), `tool/` |
-| `flutter_adaptive_cards_host_fs` | 20 KB | entire `test/` (~60 KB) |
+| Package                          | Compressed archive | Extra top-level vs consumer keep-set                                                |
+| -------------------------------- | ------------------ | ----------------------------------------------------------------------------------- |
+| `flutter_adaptive_cards_fs`      | 1 MB               | `analyze.json`, `dart_test.yaml`, entire `test/` (~3.3 MB on disk; ~1.9 MB goldens) |
+| `flutter_adaptive_charts_fs`     | 275 KB             | `dart_test.yaml`, entire `test/` (~408 KB; mostly goldens)                          |
+| `flutter_adaptive_template_fs`   | 94 KB              | entire `test/` (~1.3 MB MS fixtures), `tool/`                                       |
+| `flutter_adaptive_cards_host_fs` | 20 KB              | entire `test/` (~60 KB)                                                             |
 
 Pana (`tool/pana/check_pana.dart --report-only`, `--no-dartdoc`, max 150):
 
-| Package | Points | Floor |
-| --- | --- | --- |
-| `flutter_adaptive_cards_fs` | 120 | 140 |
-| `flutter_adaptive_template_fs` | 140 | 140 |
-| `flutter_adaptive_charts_fs` | 40 | 40 |
-| `flutter_adaptive_cards_host_fs` | 40 | 40 |
+| Package                          | Points | Floor |
+| -------------------------------- | ------ | ----- |
+| `flutter_adaptive_cards_fs`      | 120    | 140   |
+| `flutter_adaptive_template_fs`   | 140    | 140   |
+| `flutter_adaptive_charts_fs`     | 40     | 40    |
+| `flutter_adaptive_cards_host_fs` | 40     | 40    |
 
 ## Decision
 
@@ -60,23 +60,23 @@ Rejected alternatives: mirroring the full `.gitignore` into `.pubignore`
 
 Every published archive must contain only:
 
-| Path | Why |
-| --- | --- |
-| `lib/` | Runtime API and implementation |
-| `pubspec.yaml` | Required |
-| `README.md` | pub.dev / consumers |
-| `CHANGELOG.md` | pub.dev / consumers |
-| `LICENSE` | Required |
+| Path                    | Why                                           |
+| ----------------------- | --------------------------------------------- |
+| `lib/`                  | Runtime API and implementation                |
+| `pubspec.yaml`          | Required                                      |
+| `README.md`             | pub.dev / consumers                           |
+| `CHANGELOG.md`          | pub.dev / consumers                           |
+| `LICENSE`               | Required                                      |
 | `analysis_options.yaml` | Small; useful when the dependency is analyzed |
 
 ## What must not ship (exclude-set)
 
-| Path | Packages |
-| --- | --- |
-| `test/` | all four |
-| `tool/` | `flutter_adaptive_template_fs` |
-| `dart_test.yaml` | `flutter_adaptive_cards_fs`, `flutter_adaptive_charts_fs` |
-| `analyze.json` | `flutter_adaptive_cards_fs` |
+| Path                                                                                                                        | Packages                                                                                                                                                                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `test/`                                                                                                                     | all four                                                                                                                                                                                                                                                           |
+| `tool/`                                                                                                                     | `flutter_adaptive_template_fs`                                                                                                                                                                                                                                     |
+| `dart_test.yaml`                                                                                                            | `flutter_adaptive_cards_fs`, `flutter_adaptive_charts_fs`                                                                                                                                                                                                          |
+| `analyze.json`                                                                                                              | `flutter_adaptive_cards_fs`                                                                                                                                                                                                                                        |
 | Patterns already in each package `.gitignore` (`.dart_tool/`, `/build/`, `/coverage/`, IDE junk, golden failure dirs, etc.) | all four — **do not** re-list in `.pubignore`; ancestor/repo `.gitignore` + hidden-file rules still exclude them. Package-local `.gitignore` is overruled only for **this** directory when `.pubignore` is present — covered in practice by root ignores + `test/` |
 
 Hidden Flutter IDE files such as `.metadata` were not observed in dry-run trees; do not rely on that — if a future dry-run shows them, add them to that package’s `.pubignore`.
@@ -126,8 +126,8 @@ After adding each `.pubignore`:
 
 ## Risks
 
-| Risk | Mitigation |
-| --- | --- |
+| Risk                                                                                            | Mitigation                                                                                                    |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Forgetting package-local gitignore patterns that are not covered by the repo root or by `test/` | Dry-run after every `.pubignore` edit; keep `.pubignore` slim and rely on ancestor ignores + hidden-file rule |
-| Someone later adds a package asset under `test/` or `tool/` that consumers need | Keep runtime assets under `lib/` or a declared `flutter: assets:` path outside excluded dirs |
-| Maintainers assume tests ship on pub.dev | Document in `docs/pub-score-pana.md`; tests remain in git |
+| Someone later adds a package asset under `test/` or `tool/` that consumers need                 | Keep runtime assets under `lib/` or a declared `flutter: assets:` path outside excluded dirs                  |
+| Maintainers assume tests ship on pub.dev                                                        | Document in `docs/pub-score-pana.md`; tests remain in git                                                     |
