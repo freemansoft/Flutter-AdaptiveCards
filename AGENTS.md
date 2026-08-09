@@ -111,6 +111,12 @@ Before running any `git commit` or `git push` (including tag pushes):
 
 This rule applies even when the overall task description appears to authorize the full workflow (e.g. "tag and push a release"). A broad task description authorizes the _work_; each commit and push still requires a moment-of-action confirmation so the user can review before changes land in the shared repo.
 
+**Standing exception — subagent-driven plan execution.** When an approved implementation plan (`docs/superpowers/plans/`) is being executed via subagents (`superpowers:subagent-driven-development` or similar), each subagent may commit its completed, verified task directly to the current feature branch without per-commit confirmation — the user pre-authorized this for that workflow. This exception covers `git commit` to the feature branch only; it does **not** cover `git push`, merging, force-push, or any action on `main`/a shared branch — those still require explicit confirmation per the rule above.
+
+## Local tooling permissions
+
+`curl` and other local network calls — including querying a local Ollama instance (`http://127.0.0.1:11434` or similar) — do not require asking permission first. This covers local/loopback development tooling only, not calls to remote or third-party services.
+
 ## Plan completion gate
 
 When executing an implementation plan (`docs/superpowers/plans/`) or claiming work is complete:
