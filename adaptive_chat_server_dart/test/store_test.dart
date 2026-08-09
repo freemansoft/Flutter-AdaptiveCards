@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   group('ConversationStore', () {
     test(
-      'create returns a conversation with a c_ prefixed id, discoverable via get',
+      'create returns c_ prefixed id, discoverable via get',
       () {
         final store = ConversationStore();
         final conv = store.create();
@@ -37,10 +37,10 @@ void main() {
         promptEvalMs: 1,
         evalMs: 2,
       );
-      final interaction = Interaction(
+      const interaction = Interaction(
         interactionId: 'i_0001',
         text: 'hi',
-        messages: const [],
+        messages: [],
         replyText: 'hello',
         stats: stats,
       );
