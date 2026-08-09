@@ -11,3 +11,4 @@ workspace:
   - widgetbook
   - adaptive_explorer
   - adaptive_chat_client
+  - adaptive_chat_server_dart
