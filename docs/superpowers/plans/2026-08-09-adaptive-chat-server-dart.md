@@ -3091,7 +3091,7 @@ existing `server:` job (Python):
       - uses: actions/checkout@v6
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: "3.9" # should sync with fvm's pinned Flutter release's Dart version
+          sdk: "stable" # "stable" tracks whatever Dart ships with the latest stable Flutter — always satisfies the ^3.12.0 workspace floor
 
       - run: dart --version
 
