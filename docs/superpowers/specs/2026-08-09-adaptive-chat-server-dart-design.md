@@ -38,14 +38,15 @@ is the input to this port — not a redesign.
   instructions.
 - A test suite that mirrors the Python suite file-for-file and case-for-case, so
   parity is checkable line by line, not just "it starts and echoes."
-- Joins the root Dart/Flutter pub workspace, so `dart pub get`/`flutter pub get`
-  at the repo root resolves it (same pattern as `adaptive_chat_client`).
+- Resolves standalone (own `pubspec.yaml`/`pubspec.lock`, `dart pub get` from
+  within the package directory) — **not** a member of the root pub workspace.
+  See the Decisions table and the CI correction note below for why.
 
 ## Non-goals
 
 - **Not a cutover.** `adaptive_chat_server` (Python) is untouched — not deleted,
   not deprecated in docs, its CI job keeps running. This plan stands the Dart
-  server up *alongside* it. Retiring the Python version (deleting it, rewriting
+  server up _alongside_ it. Retiring the Python version (deleting it, rewriting
   the root README's chat section, `.github/workflows/adaptive_chat.yml`,
   `.vscode/launch.json`) is an explicit follow-up once parity is proven, not
   part of this work.
@@ -65,19 +66,19 @@ is the input to this port — not a redesign.
 
 ## Decisions
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| HTTP framework | `shelf` + `shelf_router` | Idiomatic Dart ecosystem choice; composable middleware gives an easy CORS seam and closely mirrors FastAPI's route-handler ergonomics. |
-| Location | `adaptive_chat_server_dart/` at repo root | Sibling to `adaptive_chat_server` / `adaptive_chat_client`, not under `packages/` — it's a demo app, not a published library. |
-| Workspace membership | Added to root `pubspec.yaml`'s `workspace:` list | Matches `adaptive_chat_client`'s precedent; `pub get` at the root resolves it. |
-| CLI parsing | `args` | Direct analog of Python's `argparse`; same flag names, defaults, and choices. |
-| Ollama HTTP client | `http`, mockable via `package:http/testing.dart`'s `MockClient` | Direct analog of the Python tests' mocked `httpx.Client`/`MockTransport` — no live Ollama needed in tests. |
-| Logging | `logging` package → stdout, level from `--log-level` | `debug` surfaces raw model content + card-detection result, mirroring `logger.debug` in `ollama_responder.py`. |
-| `conversationRef` hashing | `crypto` (sha256) | Same algorithm as Python's `hashlib.sha256(...).hexdigest()[:12]`. |
-| CORS | Small hand-rolled shelf middleware (`allow_origins: *`, handles `OPTIONS`) | ~10 lines; avoids a dependency for behavior this narrow and keeps full control to match FastAPI's `CORSMiddleware(allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])` exactly. |
-| Asset resolution | Relative to `bin/server.dart` via `Platform.script`, walking up to `assets/` | Dart analog of Python's `Path(__file__).with_name(...)` — cwd-independent, matching `python -m app`'s behavior regardless of launch directory. |
-| Env-var config bridging | None | Existed in Python solely so config survived uvicorn's `--reload` subprocess re-import. Not applicable — `--reload` isn't ported (see Non-goals), and Dart has no equivalent reload boundary to cross. |
-| Retirement of Python server | Deferred | Confirmed with the user: stand up alongside first, remove later once verified. |
+| Decision                    | Choice                                                                       | Rationale                                                                                                                                                                                                                                                                                                |
+| --------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| HTTP framework              | `shelf` + `shelf_router`                                                     | Idiomatic Dart ecosystem choice; composable middleware gives an easy CORS seam and closely mirrors FastAPI's route-handler ergonomics.                                                                                                                                                                   |
+| Location                    | `adaptive_chat_server_dart/` at repo root                                    | Sibling to `adaptive_chat_server` / `adaptive_chat_client`, not under `packages/` — it's a demo app, not a published library.                                                                                                                                                                            |
+| Workspace membership        | Standalone — **not** added to root `pubspec.yaml`'s `workspace:` list        | Reversed after the PR's first CI run (see the CI section's correction note): pub workspaces resolve as one unit, and this is the only member with zero Flutter dependency — joining it would force every resolution (CI included) to install the full Flutter SDK solely to satisfy the _other_ members. |
+| CLI parsing                 | `args`                                                                       | Direct analog of Python's `argparse`; same flag names, defaults, and choices.                                                                                                                                                                                                                            |
+| Ollama HTTP client          | `http`, mockable via `package:http/testing.dart`'s `MockClient`              | Direct analog of the Python tests' mocked `httpx.Client`/`MockTransport` — no live Ollama needed in tests.                                                                                                                                                                                               |
+| Logging                     | `logging` package → stdout, level from `--log-level`                         | `debug` surfaces raw model content + card-detection result, mirroring `logger.debug` in `ollama_responder.py`.                                                                                                                                                                                           |
+| `conversationRef` hashing   | `crypto` (sha256)                                                            | Same algorithm as Python's `hashlib.sha256(...).hexdigest()[:12]`.                                                                                                                                                                                                                                       |
+| CORS                        | Small hand-rolled shelf middleware (`allow_origins: *`, handles `OPTIONS`)   | ~10 lines; avoids a dependency for behavior this narrow and keeps full control to match FastAPI's `CORSMiddleware(allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])` exactly.                                                                                                               |
+| Asset resolution            | Relative to `bin/server.dart` via `Platform.script`, walking up to `assets/` | Dart analog of Python's `Path(__file__).with_name(...)` — cwd-independent, matching `python -m app`'s behavior regardless of launch directory.                                                                                                                                                           |
+| Env-var config bridging     | None                                                                         | Existed in Python solely so config survived uvicorn's `--reload` subprocess re-import. Not applicable — `--reload` isn't ported (see Non-goals), and Dart has no equivalent reload boundary to cross.                                                                                                    |
+| Retirement of Python server | Deferred                                                                     | Confirmed with the user: stand up alongside first, remove later once verified.                                                                                                                                                                                                                           |
 
 ### Rejected alternatives
 
@@ -137,7 +138,7 @@ and `stats`; `app.dart` depends on everything as the thin route layer.
   nullable — `null` whenever the turn cost nothing measurable, same semantics
   as Python).
 - `Conversation` — `{conversationId, interactions: Map<String, Interaction>,
-  order: List<String>}`.
+order: List<String>}`.
 - `ConversationStore` — `create()` (id = `'c_' + <12 hex chars>` via `Random` +
   hex encoding, not `uuid.uuid4` itself but the same shape/entropy class),
   `get(cid)`, `hasInteraction(cid, iid)`, `addInteraction(cid, interaction)`,
@@ -160,15 +161,15 @@ required: the Carousel/`IntrinsicHeight` interaction that motivated it lives in
 - `Reply` — immutable class `{text, cardBody, stats}`, `cardBody` a
   `List<Map<String, dynamic>>?`, `stats` an `InteractionStats?`.
 - `abstract interface class Responder` — `Reply reply(String text,
-  List<(String, String)> history)` and `Map<String, dynamic> describe()`.
+List<(String, String)> history)` and `Map<String, dynamic> describe()`.
 - `EchoResponder implements Responder` — `reply()` returns `Reply(text: 'Did
-  you just say: $text')`, `describe()` returns `{'kind': 'echo'}`.
+you just say: $text')`, `describe()` returns `{'kind': 'echo'}`.
 
 ### `lib/src/card_detect.dart` (~ `card_detect.py`)
 
 Ports the regex-based fence/decoration stripping and shape detection exactly:
 
-- `_fence` — balanced ```` ```json ... ``` ```` (or bare ```` ``` ````) wrapping
+- `_fence` — balanced ` ```json ... ``` ` (or bare ` ``` `) wrapping
   the whole reply.
 - `_openFence` / `_closeFence` — unbalanced single-sided fence markers.
 - `_decoration` — leading/trailing whitespace and delimiter runs (`=== `, `---`,
@@ -212,30 +213,30 @@ Constants ported as top-level `const`s: `defaultOllamaModel =
   wording/intent as the Python log lines.
 - `reply(text, history)` — builds `messages` (system + trimmed history + turn),
   POSTs `{url}/api/chat` with `stream: false`, `options.num_ctx`, `options.temperature:
-  0`, `think: false`, and `format` only in `json`/`schema` modes. Three failure
+0`, `think: false`, and `format` only in `json`/`schema` modes. Three failure
   tiers, each returning a `Reply` with a diagnostic `text` and `cardBody: null`,
   never throwing to the caller:
   1. transport failure (`http.ClientException`/socket errors) → `"(Ollama
-     unreachable at $ollamaUrl — ...)"`.
+unreachable at $ollamaUrl — ...)"`.
   2. HTTP status ≥ 400 → `"(Ollama error HTTP $status at ...)"`.
   3. 2xx with an unparseable/missing `message.content` → `"(Ollama returned an
-     unexpected response: ...)"`.
-  On success: captures stats via `fromOllamaResponse`, then — in `json`/`schema`
-  modes — parses `content` with a duplicate-key guard (Dart's `json.decode` has
-  no `object_pairs_hook`, so this is implemented as a small custom JSON-object
-  scanner that walks the raw text and raises on a repeated key at the same
-  nesting level as the target object, ported from the Python
-  `_reject_duplicate_keys` intent rather than its literal mechanism, since
-  `dart:convert` doesn't expose a pairs hook) — a duplicate key skips straight to
-  a text reply, exactly like the Python `_DuplicateJsonKeyError` path. Otherwise
-  falls through to `tryParseCardBody` on the raw content. Logs a WARNING with
-  `cardParseFailureReason` when a reply looked like JSON but wasn't usable, and a
-  DEBUG line with the raw content + detection result.
+unexpected response: ...)"`.
+     On success: captures stats via `fromOllamaResponse`, then — in `json`/`schema`
+     modes — parses `content` with a duplicate-key guard (Dart's `json.decode` has
+     no `object_pairs_hook`, so this is implemented as a small custom JSON-object
+     scanner that walks the raw text and raises on a repeated key at the same
+     nesting level as the target object, ported from the Python
+     `_reject_duplicate_keys` intent rather than its literal mechanism, since
+     `dart:convert` doesn't expose a pairs hook) — a duplicate key skips straight to
+     a text reply, exactly like the Python `_DuplicateJsonKeyError` path. Otherwise
+     falls through to `tryParseCardBody` on the raw content. Logs a WARNING with
+     `cardParseFailureReason` when a reply looked like JSON but wasn't usable, and a
+     DEBUG line with the raw content + detection result.
 
 ### `lib/src/stats.dart` (~ `stats.py`)
 
 - `InteractionStats` — immutable `{promptTokens, replyTokens, totalMs, loadMs,
-  promptEvalMs, evalMs}` (ints; ns→ms conversion via integer division, done once
+promptEvalMs, evalMs}` (ints; ns→ms conversion via integer division, done once
   at capture).
 - `fromOllamaResponse(Map<String, dynamic> data) -> InteractionStats?` — `null`
   unless both `prompt_eval_count` and `eval_count` are present and `int`;
@@ -261,23 +262,23 @@ Constants ported as top-level `const`s: `defaultOllamaModel =
 - Builds the `shelf_router.Router` with the four routes, wraps it with the CORS
   middleware and a logging middleware.
 - `buildResponder(ollamaUrl, model, systemPromptFile, numCtx, historyTurns,
-  jsonFormat) -> Responder` — same selection rule: `OllamaResponder` when
+jsonFormat) -> Responder` — same selection rule: `OllamaResponder` when
   `ollamaUrl` is non-null/non-empty, else `EchoResponder`; logs the selection at
   startup.
 - `POST /conversations` — creates a conversation, returns `{conversationId,
-  links: {postNext}}`.
+links: {postNext}}`.
 - `POST /conversations/{cid}/interactions` — requires `X-Interaction-Id` header
   (400 if absent), 404s an unknown conversation, short-circuits an
   already-seen interaction id by replaying its stored envelope (responder **not**
   re-run), else reads `body.data.message` (400 if absent/empty), rebuilds
   history by walking `conversation.order`, calls `responder.reply(message,
-  history)`, authors `userBubble`/`assistantBubble` or `assistantCardBubble`,
+history)`, authors `userBubble`/`assistantBubble` or `assistantCardBubble`,
   stores the interaction, returns the envelope.
 - `GET /conversations/{cid}/interactions/{iid}` — 404s unknown conversation or
   interaction, else returns the stored envelope.
 - `GET /status` — returns `buildStatus(store, responder)` JSON-encoded with a
   two-space indent (`JsonEncoder.withIndent('  ')`), trailing newline, `Content-
-  Type: application/json; charset=utf-8` — matching `_IndentedJSONResponse`'s
+Type: application/json; charset=utf-8` — matching `_IndentedJSONResponse`'s
   human-readable intent. Chat routes stay compact (`jsonEncode`, no indent) —
   same "machine-consumed, wire format must not change" reasoning as the Python
   comment.
@@ -306,6 +307,7 @@ host, port)`.
 final scriptDir = p.dirname(Platform.script.toFilePath());
 final assetsDir = p.normalize(p.join(scriptDir, '..', 'assets'));
 ```
+
 `bin/server.dart` always lives at `<package root>/bin/server.dart`, so
 `assetsDir` always resolves to `<package root>/assets` regardless of the
 directory the process was launched from — the same cwd-independence Python gets
@@ -318,20 +320,20 @@ to cwd unless given absolute), since that flag is explicitly operator-supplied.
 Every failure mode from the Python version has a direct Dart equivalent, kept
 in the same table shape as the token-stats design doc for consistency:
 
-| Condition | Behavior |
-|---|---|
-| Missing `X-Interaction-Id` | `400` |
-| Unknown conversation | `404` |
-| Repeated interaction id | `200`, stored envelope replayed, responder not re-run |
-| Missing/empty `data.message` | `400` |
-| Ollama transport failure | `Reply` with `"(Ollama unreachable at ...)"`, `cardBody: null`, `stats: null` |
-| Ollama HTTP ≥ 400 | `Reply` with `"(Ollama error HTTP ... )"` |
-| Ollama 2xx, unparseable body | `Reply` with `"(Ollama returned an unexpected response: ...)"` |
-| Duplicate JSON object key in `json`/`schema` mode | Rendered as text, WARNING logged, never a crash |
-| System-prompt file missing/unreadable/empty | WARNING logged, request proceeds with no system message |
-| `card_schema.json` missing/malformed (schema mode) | ERROR logged, downgrades to `jsonFormat: 'none'` for the process |
-| Responder without a working `describe()` | `/status` reports `{'kind': 'unknown'}`, never 500s |
-| Empty store | `/status` reports `conversationCount: 0, conversations: []` |
+| Condition                                          | Behavior                                                                      |
+| -------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Missing `X-Interaction-Id`                         | `400`                                                                         |
+| Unknown conversation                               | `404`                                                                         |
+| Repeated interaction id                            | `200`, stored envelope replayed, responder not re-run                         |
+| Missing/empty `data.message`                       | `400`                                                                         |
+| Ollama transport failure                           | `Reply` with `"(Ollama unreachable at ...)"`, `cardBody: null`, `stats: null` |
+| Ollama HTTP ≥ 400                                  | `Reply` with `"(Ollama error HTTP ... )"`                                     |
+| Ollama 2xx, unparseable body                       | `Reply` with `"(Ollama returned an unexpected response: ...)"`                |
+| Duplicate JSON object key in `json`/`schema` mode  | Rendered as text, WARNING logged, never a crash                               |
+| System-prompt file missing/unreadable/empty        | WARNING logged, request proceeds with no system message                       |
+| `card_schema.json` missing/malformed (schema mode) | ERROR logged, downgrades to `jsonFormat: 'none'` for the process              |
+| Responder without a working `describe()`           | `/status` reports `{'kind': 'unknown'}`, never 500s                           |
+| Empty store                                        | `/status` reports `conversationCount: 0, conversations: []`                   |
 
 ## Testing
 
@@ -387,25 +389,32 @@ Ported 1:1 from the Python suite:
 ## CI
 
 New `dart-server:` job in `.github/workflows/adaptive_chat.yml`, alongside the
-existing `client:` (Flutter) and `server:` (Python) jobs: checkout, set up
-Flutter (`subosito/flutter-action`, same version pin as the `client:` job),
-`flutter pub get` from the repo root, then `dart test` from
-`adaptive_chat_server_dart/`. The Python `server:` job is untouched.
+existing `client:` (Flutter) and `server:` (Python) jobs: checkout, set up a
+standalone Dart SDK (`dart-lang/setup-dart`, `sdk: "stable"`), `dart pub get`
+**from within `adaptive_chat_server_dart/`** (not the repo root — see
+Workspace membership above), then `dart test` from the same directory. The
+Python `server:` job is untouched.
 
-**Correction (discovered on the PR's first real CI run):** this section
-originally specified `dart-lang/setup-dart` (a standalone Dart SDK, no
-Flutter) plus a plain `dart pub get`, reasoning that since
-`adaptive_chat_server_dart` itself has no Flutter dependency, the plain Dart
-SDK would be sufficient. That reasoning was wrong: Dart/Flutter pub
-workspaces resolve as **one unit** — `dart pub get` from the repo root
-necessarily resolves every workspace member together, including the Flutter
-packages (`flutter_adaptive_cards_fs`, etc.), which depend on `flutter_test`
-from the Flutter SDK. A standalone Dart SDK can't satisfy that, so the job
-failed at `dart pub get` before ever reaching `dart test`. `flutter pub get`
-is required, matching the `client:` job's own approach — this was missed by
-every local verification step in the plan because they all ran via `fvm`,
-which already wraps a full Flutter SDK, so the gap only surfaced once CI ran
-with a plain Dart SDK.
+**History (discovered on the PR's first two real CI runs):** this section
+originally specified exactly the setup above, on the reasoning that
+`adaptive_chat_server_dart` has no Flutter dependency so a standalone Dart SDK
+would be sufficient — but the plan also added the package to the root pub
+workspace. Those two decisions contradict each other: pub workspaces resolve
+as **one unit**, so `dart pub get` from the repo root necessarily resolves
+every workspace member together, including the Flutter packages
+(`flutter_adaptive_cards_fs`, etc.), which depend on `flutter_test` from the
+Flutter SDK. A standalone Dart SDK can't satisfy that, so the first real CI
+run failed at `dart pub get` before ever reaching `dart test`. The first fix
+attempt swapped in `subosito/flutter-action` + `flutter pub get` (matching the
+`client:` job) to satisfy the workspace's Flutter dependency — which worked,
+but only by installing a full Flutter toolchain for a job that fundamentally
+doesn't need one. The root-cause fix instead removed
+`adaptive_chat_server_dart` from the workspace entirely (see Workspace
+membership above), letting the original standalone-Dart-SDK design stand as
+originally intended. Both gaps were missed by every local verification step
+in the plan because they all ran via `fvm`, which already wraps a full
+Flutter SDK regardless of workspace membership — the gap only surfaced once
+CI ran with a genuinely Flutter-free SDK.
 
 ## Workflow
 

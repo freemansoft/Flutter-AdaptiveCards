@@ -27,6 +27,7 @@
 ## Task 1: Scaffold the package
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/pubspec.yaml`
 - Create: `adaptive_chat_server_dart/analysis_options.yaml`
 - Create: `adaptive_chat_server_dart/CHANGELOG.md`
@@ -36,6 +37,7 @@
 - Modify: `pubspec.yaml:7-9` (root workspace list)
 
 **Interfaces:**
+
 - Produces: the `adaptive_chat_server_dart` package (importable as `package:adaptive_chat_server_dart/src/...`), and three bundled asset files later tasks read via `File`.
 
 - [ ] **Step 1: Create the package manifest**
@@ -137,15 +139,29 @@ git add adaptive_chat_server_dart/pubspec.yaml adaptive_chat_server_dart/analysi
 git commit -m "feat(adaptive-chat-server-dart): scaffold package and bundle prompt assets"
 ```
 
+**Correction (post-merge, discovered on the PR's CI runs):** Step 5 above
+added `adaptive_chat_server_dart` to the root `workspace:` list. This was
+later reverted — pub workspaces resolve as one unit, so a Flutter-free
+package sitting in a workspace alongside Flutter packages
+(`flutter_adaptive_cards_fs`, etc.) forces every resolution, CI included, to
+install the full Flutter SDK just to satisfy those other members. The
+package now resolves standalone: no `resolution: workspace` in its own
+`pubspec.yaml`, no entry in the root `workspace:` list, its own
+`pubspec.lock`. See the design spec's Workspace membership decision and CI
+section for the full history, and Task 13 below for the corresponding CI job
+correction.
+
 ---
 
 ## Task 2: `lib/src/stats.dart` — token/timing stats
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/lib/src/stats.dart`
 - Test: `adaptive_chat_server_dart/test/stats_test.dart`
 
 **Interfaces:**
+
 - Produces: `class InteractionStats` (`{promptTokens, replyTokens, totalMs, loadMs, promptEvalMs, evalMs}`, all `int`, `const` constructor), `InteractionStats? fromOllamaResponse(Map<String, dynamic> data)`, `Map<String, dynamic> statsToJson(InteractionStats stats)`.
 
 - [ ] **Step 1: Write the test file**
@@ -374,10 +390,12 @@ git commit -m "feat(adaptive-chat-server-dart): port stats.py to stats.dart"
 ## Task 3: `lib/src/store.dart` — in-memory conversation state
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/lib/src/store.dart`
 - Test: `adaptive_chat_server_dart/test/store_test.dart`
 
 **Interfaces:**
+
 - Consumes: `InteractionStats` from Task 2 (`package:adaptive_chat_server_dart/src/stats.dart`).
 - Produces: `class Message {role, card}`, `class Interaction {interactionId, text, messages, replyText, stats}`, `class Conversation {conversationId, interactions, order}`, `class ConversationStore` with `create()`, `get(cid)`, `hasInteraction(cid, iid)`, `addInteraction(cid, interaction)`, `getInteraction(cid, iid)`, `listConversations()`.
 
@@ -604,10 +622,12 @@ git commit -m "feat(adaptive-chat-server-dart): port store.py to store.dart"
 ## Task 4: `lib/src/cards.dart` — bubble + envelope authoring
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/lib/src/cards.dart`
 - Test: `adaptive_chat_server_dart/test/cards_test.dart`
 
 **Interfaces:**
+
 - Consumes: `Message` from Task 3 (`package:adaptive_chat_server_dart/src/store.dart`).
 - Produces: `Map<String, dynamic> userBubble(String text)`, `Map<String, dynamic> assistantBubble(String text)`, `Map<String, dynamic> assistantCardBubble(List<Map<String, dynamic>> bodyItems)`, `Map<String, dynamic> envelope(String cid, String iid, List<Message> messages)`.
 
@@ -832,10 +852,12 @@ git commit -m "feat(adaptive-chat-server-dart): port cards.py to cards.dart"
 ## Task 5: `lib/src/responder.dart` — `Reply`, `Responder`, `EchoResponder`
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/lib/src/responder.dart`
 - Test: `adaptive_chat_server_dart/test/responder_test.dart`
 
 **Interfaces:**
+
 - Consumes: `InteractionStats` from Task 2.
 - Produces: `class Reply {text, cardBody, stats}`; `abstract interface class Responder` with `Future<Reply> reply(String text, List<(String, String)> history)` and `Map<String, dynamic> describe()`; `class EchoResponder implements Responder`.
 - **Deviation from the design spec's sketch, noted deliberately:** `reply()` is `Future<Reply>`, not a bare `Reply`. Dart's `http.Client.post` (used by `OllamaResponder` in Task 8) has no synchronous form — Python's `httpx.Client` does. Every `Responder` implementation, including the trivial `EchoResponder`, is therefore async, and every caller `await`s it.
@@ -952,17 +974,19 @@ git commit -m "feat(adaptive-chat-server-dart): port responder.py to responder.d
 ## Task 6: `lib/src/card_detect.dart` — card-vs-text detection
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/lib/src/card_detect.dart`
 - Test: `adaptive_chat_server_dart/test/card_detect_test.dart`
 
 **Interfaces:**
+
 - Produces: `List<Map<String, dynamic>>? tryParseCardBody(String raw)`, `String? cardParseFailureReason(String raw)`.
 
 - [ ] **Step 1: Write the test file**
 
 `adaptive_chat_server_dart/test/card_detect_test.dart`:
 
-```dart
+````dart
 import 'package:adaptive_chat_server_dart/src/card_detect.dart';
 import 'package:test/test.dart';
 
@@ -1075,7 +1099,7 @@ void main() {
     });
   });
 }
-```
+````
 
 - [ ] **Step 2: Run the test to verify it fails**
 
@@ -1086,7 +1110,7 @@ Expected: FAIL — `lib/src/card_detect.dart` doesn't exist yet.
 
 `adaptive_chat_server_dart/lib/src/card_detect.dart`:
 
-```dart
+````dart
 /// Decide whether a model reply is *only* an Adaptive Card, and extract its
 /// body.
 ///
@@ -1184,7 +1208,7 @@ String? cardParseFailureReason(String raw) {
   return "valid JSON but not a renderable card "
       "(empty body, missing 'type', or empty/mixed array)";
 }
-```
+````
 
 - [ ] **Step 4: Run the test to verify it passes**
 
@@ -1203,10 +1227,12 @@ git commit -m "feat(adaptive-chat-server-dart): port card_detect.py to card_dete
 ## Task 7: `lib/src/status.dart` — `/status` payload assembly
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/lib/src/status.dart`
 - Test: `adaptive_chat_server_dart/test/status_test.dart`
 
 **Interfaces:**
+
 - Consumes: `ConversationStore`, `Conversation` from Task 3; `Responder` from Task 5; `statsToJson` from Task 2.
 - Produces: `String conversationRef(String conversationId)`, `Map<String, dynamic> buildStatus(ConversationStore store, Responder responder)`.
 
@@ -1426,10 +1452,12 @@ git commit -m "feat(adaptive-chat-server-dart): port status.py to status.dart"
 ## Task 8: `lib/src/ollama_responder.dart` — the Ollama-backed responder
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/lib/src/ollama_responder.dart`
 - Test: `adaptive_chat_server_dart/test/ollama_responder_test.dart`
 
 **Interfaces:**
+
 - Consumes: `Reply`, `Responder` from Task 5; `tryParseCardBody`, `cardParseFailureReason` from Task 6; `fromOllamaResponse` from Task 2.
 - Produces: `const defaultOllamaModel`, `defaultHistoryTurns`, `defaultNumCtx`, `defaultJsonFormat`; `class OllamaResponder implements Responder`, constructed with named params `{required String ollamaUrl, required String defaultSystemPromptPath, required String cardSchemaPath, String model, http.Client? client, String? systemPromptFile, int historyTurns, int numCtx, String jsonFormat}`.
 - **Deviation from the design spec, noted deliberately:** the spec's Python-derived sketch resolved the default system prompt / card schema paths internally via `Path(__file__)`-style resolution. Dart's `Platform.script` resolution is fragile inside a library and untestable without touching the real filesystem relative to the test runner's location, so this task takes `defaultSystemPromptPath` and `cardSchemaPath` as **required constructor parameters**, resolved once by the caller (Task 10's `bin/server.dart`, via `buildResponder` in Task 9). This keeps `OllamaResponder` a pure, easily-testable unit — tests pass their own temp-file paths.
@@ -2029,10 +2057,12 @@ git commit -m "feat(adaptive-chat-server-dart): port ollama_responder.py to olla
 ## Task 9: `lib/src/app.dart` — routes, CORS, responder selection
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/lib/src/app.dart`
 - Test: `adaptive_chat_server_dart/test/api_test.dart`
 
 **Interfaces:**
+
 - Consumes: `ConversationStore`, `Conversation`, `Interaction`, `Message` (Task 3); `userBubble`, `assistantBubble`, `assistantCardBubble`, `envelope` (Task 4); `Reply`, `Responder`, `EchoResponder` (Task 5); `OllamaResponder` + its defaults (Task 8); `buildStatus` (Task 7).
 - Produces: `Responder buildResponder({String? ollamaUrl, required String model, required String defaultSystemPromptPath, required String cardSchemaPath, String? systemPromptFile, int numCtx, int historyTurns, String jsonFormat})`; `Handler buildHandler({required ConversationStore store, required Responder responder})` (a `shelf.Handler`) — consumed by Task 10's `bin/server.dart`.
 
@@ -2387,9 +2417,11 @@ git commit -m "feat(adaptive-chat-server-dart): port main.py routes to app.dart"
 ## Task 10: `bin/server.dart` — CLI entrypoint
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/bin/server.dart`
 
 **Interfaces:**
+
 - Consumes: `buildResponder`, `buildHandler` (Task 9); `defaultOllamaModel`, `defaultNumCtx`, `defaultHistoryTurns`, `defaultJsonFormat` (Task 8); `ConversationStore` (Task 3).
 - Produces: the runnable CLI (`dart run bin/server.dart [flags]`). No other task consumes this file — it's the top of the dependency graph.
 
@@ -2539,9 +2571,11 @@ git commit -m "feat(adaptive-chat-server-dart): add CLI entrypoint (bin/server.d
 ## Task 11: `README.md` for `adaptive_chat_server_dart`
 
 **Files:**
+
 - Create: `adaptive_chat_server_dart/README.md`
 
 **Interfaces:**
+
 - None — documentation only, but must accurately name every file/route/flag introduced in Tasks 1–10.
 
 - [ ] **Step 1: Write the README**
@@ -2593,11 +2627,11 @@ flowchart TB
 ### Wire contract
 
 | Method & path                                 | Purpose                        | In                                                                | Out                                       |
-| ---------------------------------------------- | ------------------------------- | ------------------------------------------------------------------ | ------------------------------------------ |
-| `POST /conversations`                          | Start a session                 | —                                                                   | `{ conversationId, links: { postNext } }` |
-| `POST /conversations/{cid}/interactions`       | Send one interaction             | header `X-Interaction-Id`; PlainJson invoke body (`data.message`) | `200` + **envelope**                       |
-| `GET /conversations/{cid}/interactions/{iid}`  | Replay one interaction           | —                                                                   | **envelope**                               |
-| `GET /status`                                  | Server + conversation snapshot   | —                                                                   | **status payload**                         |
+| --------------------------------------------- | ------------------------------ | ----------------------------------------------------------------- | ----------------------------------------- |
+| `POST /conversations`                         | Start a session                | —                                                                 | `{ conversationId, links: { postNext } }` |
+| `POST /conversations/{cid}/interactions`      | Send one interaction           | header `X-Interaction-Id`; PlainJson invoke body (`data.message`) | `200` + **envelope**                      |
+| `GET /conversations/{cid}/interactions/{iid}` | Replay one interaction         | —                                                                 | **envelope**                              |
+| `GET /status`                                 | Server + conversation snapshot | —                                                                 | **status payload**                        |
 
 Identical shape to `adaptive_chat_server`'s wire contract — see that
 package's README for the full envelope/idempotency description, which applies
@@ -2605,20 +2639,20 @@ unchanged here.
 
 ### Components (`lib/src/`)
 
-| File                     | Responsibility                                                                                                                                                  |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app.dart`                | shelf `Router`, CORS middleware, the `buildResponder`/`buildHandler` factories used by `bin/server.dart`.                                                     |
-| `store.dart`              | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `replyText` (so chat history can be rebuilt).       |
-| `cards.dart`              | Bubble authoring: `userBubble` (accent, right), `assistantBubble` (emphasis, left, Markdown text), `assistantCardBubble` (emphasis, left, embedded card), and `envelope(...)`. |
-| `responder.dart`          | `Reply(text, cardBody, stats)`, the `Responder` interface (`Future<Reply> reply(text, history)`, `describe()`), and `EchoResponder`.                          |
-| `card_detect.dart`        | `tryParseCardBody(raw) -> List<Map>?` — strict text-vs-card detection, same rules as the Python original.                                                     |
-| `stats.dart`               | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                |
-| `status.dart`              | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                          |
-| `ollama_responder.dart`    | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                 |
-| `assets/default_system_prompt.txt` | Bundled default system prompt (content-identical to the Python original).                                                                             |
-| `assets/card_system_prompt.txt`    | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                     |
-| `assets/card_schema.json`          | Bundled schema for `--json-format schema`.                                                                                                             |
-| `bin/server.dart`          | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder from `--ollama-url` and starts `shelf_io.serve`.                                    |
+| File                               | Responsibility                                                                                                                                                                 |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `app.dart`                         | shelf `Router`, CORS middleware, the `buildResponder`/`buildHandler` factories used by `bin/server.dart`.                                                                      |
+| `store.dart`                       | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `replyText` (so chat history can be rebuilt).                       |
+| `cards.dart`                       | Bubble authoring: `userBubble` (accent, right), `assistantBubble` (emphasis, left, Markdown text), `assistantCardBubble` (emphasis, left, embedded card), and `envelope(...)`. |
+| `responder.dart`                   | `Reply(text, cardBody, stats)`, the `Responder` interface (`Future<Reply> reply(text, history)`, `describe()`), and `EchoResponder`.                                           |
+| `card_detect.dart`                 | `tryParseCardBody(raw) -> List<Map>?` — strict text-vs-card detection, same rules as the Python original.                                                                      |
+| `stats.dart`                       | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                                 |
+| `status.dart`                      | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                                         |
+| `ollama_responder.dart`            | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                                 |
+| `assets/default_system_prompt.txt` | Bundled default system prompt (content-identical to the Python original).                                                                                                      |
+| `assets/card_system_prompt.txt`    | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                              |
+| `assets/card_schema.json`          | Bundled schema for `--json-format schema`.                                                                                                                                     |
+| `bin/server.dart`                  | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder from `--ollama-url` and starts `shelf_io.serve`.                                                    |
 
 ### Responder selection
 
@@ -2628,6 +2662,7 @@ the env-var bridging trick (that existed only to survive uvicorn's `--reload`
 subprocess re-import; this server has no `--reload` flag to begin with).
 
 ### Conversation context, context-fill logging, system prompt, card replies
+
 (display-only), and structured output (`--json-format`)
 
 All identical in behavior to `adaptive_chat_server` — see that package's
@@ -2854,6 +2889,7 @@ git commit -m "docs(adaptive-chat-server-dart): add README with architecture dia
 ## Task 12: VS Code launch configs for `adaptive_chat_server_dart`
 
 **Files:**
+
 - Modify: `.vscode/launch.json`
 
 **Interfaces:** None — editor configuration only. Added per explicit user request: the new Dart server needs a VS Code run target for each existing Python "Adaptive Chat Server (...)" target, one-for-one, so a developer can launch either backend the same way.
@@ -3055,6 +3091,7 @@ git commit -m "chore(adaptive-chat-server-dart): add VS Code run targets, one-fo
 ## Task 13: Root README pointer + CI job
 
 **Files:**
+
 - Modify: `README.md:120-201` (root — "adaptive_chat_server + adaptive_chat_client" section)
 - Modify: `.github/workflows/adaptive_chat.yml`
 
@@ -3083,41 +3120,50 @@ Modify `.github/workflows/adaptive_chat.yml`, adding a new job after the
 existing `server:` job (Python):
 
 ```yaml
-  dart-server:
-    name: Adaptive Chat server (Dart)
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          flutter-version: 3.44.0 # should sync with fvm version (.fvmrc)
-          cache: true
+dart-server:
+  name: Adaptive Chat server (Dart)
+  runs-on: ubuntu-24.04
+  timeout-minutes: 10
+  steps:
+    - uses: actions/checkout@v6
+    - uses: dart-lang/setup-dart@v1
+      with:
+        sdk: "stable" # "stable" tracks whatever Dart ships with the latest stable Flutter — always satisfies the ^3.12.0 floor
 
-      - run: dart --version
+    - run: dart --version
 
-      # Resolve from the repo root: adaptive_chat_server_dart is a workspace
-      # member alongside Flutter packages (flutter_adaptive_cards_fs, etc.),
-      # and Dart/Flutter pub workspaces resolve as one unit — `dart pub get`
-      # cannot satisfy `flutter_test` (an SDK package, not a pub package)
-      # without the Flutter SDK. `flutter pub get` is required here, same as
-      # the client: job, even though this package itself has no Flutter
-      # dependency of its own. (An earlier version of this job used
-      # `dart-lang/setup-dart@v1` + `dart pub get`, which fails in CI for
-      # exactly this reason — caught only after the PR's first real CI run,
-      # since local verification always ran under `fvm`, which already
-      # wraps a full Flutter SDK.)
-      - run: flutter pub get
+    # adaptive_chat_server_dart is deliberately NOT a member of the root pub
+    # workspace (see Task 1's correction note), so it resolves standalone
+    # here — a plain Dart SDK is enough, no Flutter install needed.
+    - name: Install dependencies
+      run: dart pub get
+      working-directory: ./adaptive_chat_server_dart
 
-      - name: Run adaptive_chat_server_dart tests
-        run: dart test
-        working-directory: ./adaptive_chat_server_dart
+    - name: Run adaptive_chat_server_dart tests
+      run: dart test
+      working-directory: ./adaptive_chat_server_dart
 ```
 
 Update the file's top comment (currently "Runs the Adaptive Chat demo tests:
 the Flutter client (adaptive_chat_client) and the Python FastAPI backend
 (adaptive_chat_server)...") to also mention `adaptive_chat_server_dart`.
+
+**Correction (post-merge, discovered across the PR's first three CI runs):**
+this job went through two iterations before landing on the form above.
+Originally it used `dart-lang/setup-dart` + a plain `dart pub get` from the
+**repo root** — but Task 1 (at the time) had added the package to the root
+pub workspace, and pub workspaces resolve as one unit: `dart pub get` from
+the root necessarily resolves every member together, including the Flutter
+packages, which need `flutter_test` from the Flutter SDK. That first run
+failed at `dart pub get` before `dart test` ever ran. The first fix swapped
+in `subosito/flutter-action` + `flutter pub get` (matching the `client:`
+job) — which worked, but only by installing a full Flutter toolchain for a
+job that fundamentally doesn't need one. The actual root-cause fix removed
+`adaptive_chat_server_dart` from the workspace (see Task 1's correction
+note and the design spec), which is what let this job return to its
+originally-intended plain-Dart-SDK form, now resolving from within the
+package directory instead of the repo root. See the design spec's CI
+section for the full narrative.
 
 - [ ] **Step 3: Verify the workflow YAML is well-formed**
 

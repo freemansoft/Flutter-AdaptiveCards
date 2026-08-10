@@ -63,22 +63,18 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-      - uses: subosito/flutter-action@v2
+      - uses: dart-lang/setup-dart@v1
         with:
-          channel: "stable"
-          flutter-version: 3.44.0 # should sync with fvm version (.fvmrc)
-          cache: true
+          sdk: "stable" # "stable" tracks whatever Dart ships with the latest stable Flutter — always satisfies the ^3.12.0 floor
 
       - run: dart --version
 
-      # Resolve from the repo root: adaptive_chat_server_dart is a workspace
-      # member alongside Flutter packages (flutter_adaptive_cards_fs, etc.),
-      # and Dart/Flutter pub workspaces resolve as one unit — `dart pub get`
-      # cannot satisfy `flutter_test` (an SDK package, not a pub package)
-      # without the Flutter SDK. `flutter pub get` is required here, same as
-      # the client: job, even though this package itself has no Flutter
-      # dependency of its own.
-      - run: flutter pub get
+      # adaptive_chat_server_dart is deliberately NOT a member of the root
+      # pub workspace (see its pubspec.yaml), so it resolves standalone here
+      # — a plain Dart SDK is enough, no Flutter install needed for this job.
+      - name: Install dependencies
+        run: dart pub get
+        working-directory: ./adaptive_chat_server_dart
 
       - name: Run adaptive_chat_server_dart tests
         run: dart test
