@@ -1,0 +1,27 @@
+name: adaptive_chat_server_dart
+description: Dart port of the Adaptive Chat SDUI demo backend (adaptive_chat_server).
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.12.0
+
+# Deliberately NOT `resolution: workspace` / a member of the root workspace:
+# this package has no Flutter dependency, and pub workspaces resolve as one
+# unit, so joining it would force every resolution of this package (CI
+# included) to install the full Flutter SDK just to satisfy the Flutter
+# packages elsewhere in the repo. See the root pubspec.yaml's workspace:
+# comment and docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md.
+
+dependencies:
+  args: ^2.6.0
+  crypto: ^3.0.5
+  http: ^1.2.2
+  logging: ^1.2.0
+  path: ^1.9.0
+  shelf: ^1.4.2
+  shelf_router: ^1.1.4
+
+dev_dependencies:
+  test: ^1.25.0
+  very_good_analysis: ^10.3.0

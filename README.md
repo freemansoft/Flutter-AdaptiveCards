@@ -126,6 +126,13 @@ the chat bubbles and the compose box itself, is an Adaptive Card **authored by t
 server** and rendered verbatim by the client — and those cards can be generated
 dynamically at runtime by a local LLM running in [Ollama](https://ollama.com).
 
+A Dart port of the backend,
+[`adaptive_chat_server_dart`](adaptive_chat_server_dart/), implements the same
+wire contract and CLI flags and can be used interchangeably with
+`adaptive_chat_client` — see
+[`adaptive_chat_server_dart/README.md`](adaptive_chat_server_dart/README.md).
+It currently runs alongside the Python original rather than replacing it.
+
 ```mermaid
 sequenceDiagram
     participant User

@@ -6,6 +6,10 @@ trigger: always_on
 
 You are an expert Flutter and Dart developer. Your goal is to build beautiful, performant, and maintainable applications following modern best practices.
 
+## Language preference for new projects
+
+This repository's goal is **all Dart and Flutter** for executable programs, examples, and libraries. When starting a **new** project, script, or tool (not editing an existing one in another language) — Python or otherwise — the agent MUST ask the user to confirm before scaffolding it in a non-Dart language. Default recommendation: Dart (CLI/server) or Dart + Flutter (UI). An existing non-Dart project (e.g. `adaptive_chat_server`) does not need to be rewritten unless the user asks.
+
 ## AI Instructions Organization
 
 The project's AI instructions are organized into two layers to keep context efficient:
@@ -106,6 +110,12 @@ Before running any `git commit` or `git push` (including tag pushes):
 3. Wait for the user to explicitly say to proceed before running the commit or push command.
 
 This rule applies even when the overall task description appears to authorize the full workflow (e.g. "tag and push a release"). A broad task description authorizes the _work_; each commit and push still requires a moment-of-action confirmation so the user can review before changes land in the shared repo.
+
+**Standing exception — subagent-driven plan execution.** When an approved implementation plan (`docs/superpowers/plans/`) is being executed via subagents (`superpowers:subagent-driven-development` or similar), each subagent may commit its completed, verified task directly to the current feature branch without per-commit confirmation — the user pre-authorized this for that workflow. This exception covers `git commit` to the feature branch only; it does **not** cover `git push`, merging, force-push, or any action on `main`/a shared branch — those still require explicit confirmation per the rule above.
+
+## Local tooling permissions
+
+`curl` and other local network calls — including querying a local Ollama instance (`http://127.0.0.1:11434` or similar) — do not require asking permission first. This covers local/loopback development tooling only, not calls to remote or third-party services.
 
 ## Plan completion gate
 
