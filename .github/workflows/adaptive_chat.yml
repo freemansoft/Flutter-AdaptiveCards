@@ -1,7 +1,7 @@
-# Runs the Adaptive Chat demo tests: the Flutter client (adaptive_chat_client)
-# and the Python FastAPI backend (adaptive_chat_server). These live outside the
-# published packages, so they are kept in their own workflow rather than the
-# package matrix in test.yml.
+# Runs the Adaptive Chat demo tests: the Flutter client (adaptive_chat_client),
+# the Python FastAPI backend (adaptive_chat_server), and the Dart backend port
+# (adaptive_chat_server_dart). These live outside the published packages, so they
+# are kept in their own workflow rather than the package matrix in test.yml.
 #
 # Scoped `push` to main to avoid duplicate runs on branches with an open PR
 # (matches test.yml / validate.yaml).
@@ -56,3 +56,24 @@ jobs:
       - name: Run adaptive_chat_server tests
         run: python -m pytest
         working-directory: ./adaptive_chat_server
+
+  dart-server:
+    name: Adaptive Chat server (Dart)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: "3.9" # should sync with fvm's pinned Flutter release's Dart version
+
+      - run: dart --version
+
+      # Resolve from the repo root: adaptive_chat_server_dart is a workspace
+      # member, so its dependencies are resolved by the root pub get, same as
+      # the other workspace-member jobs.
+      - run: dart pub get
+
+      - name: Run adaptive_chat_server_dart tests
+        run: dart test
+        working-directory: ./adaptive_chat_server_dart
