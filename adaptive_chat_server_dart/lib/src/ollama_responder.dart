@@ -164,6 +164,7 @@ class OllamaResponder implements Responder {
     int historyTurns = defaultHistoryTurns,
     int numCtx = defaultNumCtx,
     String jsonFormat = defaultJsonFormat,
+    Duration ollamaTimeout = const Duration(seconds: 60),
   }) : // Field names are prefixed with `_` while the required constructor
        // param names (fixed by the public API contract) are not, so an
        // initializing formal isn't available here.
@@ -181,7 +182,10 @@ class OllamaResponder implements Responder {
        _numCtx = numCtx,
        _systemPromptPath = systemPromptFile ?? defaultSystemPromptPath,
        _jsonFormat = jsonFormat,
-       _requestedJsonFormat = jsonFormat {
+       _requestedJsonFormat = jsonFormat,
+       // Same reason as _ollamaUrl above.
+       // ignore: prefer_initializing_formals
+       _ollamaTimeout = ollamaTimeout {
     if (_jsonFormat == 'schema') {
       _cardSchema = _loadCardSchema(cardSchemaPath);
       if (_cardSchema == null) {
@@ -197,6 +201,7 @@ class OllamaResponder implements Responder {
   final int _numCtx;
   final String _systemPromptPath;
   final String _requestedJsonFormat;
+  final Duration _ollamaTimeout;
   String _jsonFormat;
   Map<String, dynamic>? _cardSchema;
 
@@ -302,11 +307,13 @@ class OllamaResponder implements Responder {
 
     http.Response response;
     try {
-      response = await _client.post(
-        Uri.parse(endpoint),
-        headers: {'content-type': 'application/json'},
-        body: jsonEncode(payload),
-      );
+      response = await _client
+          .post(
+            Uri.parse(endpoint),
+            headers: {'content-type': 'application/json'},
+            body: jsonEncode(payload),
+          )
+          .timeout(_ollamaTimeout);
     } on Object catch (exc) {
       _log.severe(
         'Ollama CONNECTION FAILED: $exc\n  endpoint=$endpoint '

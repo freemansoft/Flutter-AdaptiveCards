@@ -29,6 +29,7 @@ void main() {
     String jsonFormat = 'none',
     int historyTurns = defaultHistoryTurns,
     String? systemPromptFile,
+    Duration? ollamaTimeout,
   }) {
     return OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
@@ -38,6 +39,7 @@ void main() {
       jsonFormat: jsonFormat,
       historyTurns: historyTurns,
       systemPromptFile: systemPromptFile,
+      ollamaTimeout: ollamaTimeout ?? const Duration(seconds: 60),
     );
   }
 
@@ -63,6 +65,24 @@ void main() {
         (request) async => throw const SocketException('refused'),
       );
       final reply = await makeResponder(client: client).reply('hi', const []);
+      expect(reply.text, contains('Ollama unreachable'));
+      expect(reply.cardBody, isNull);
+      expect(reply.stats, isNull);
+    },
+  );
+
+  test(
+    'a stalled Ollama times out and returns the unreachable diagnostic, '
+    'not a hang',
+    () async {
+      final client = MockClient((request) async {
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+        return okResponse('should never be returned');
+      });
+      final reply = await makeResponder(
+        client: client,
+        ollamaTimeout: const Duration(milliseconds: 50),
+      ).reply('hi', const []);
       expect(reply.text, contains('Ollama unreachable'));
       expect(reply.cardBody, isNull);
       expect(reply.stats, isNull);
