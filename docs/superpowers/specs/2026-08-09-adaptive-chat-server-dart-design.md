@@ -387,13 +387,25 @@ Ported 1:1 from the Python suite:
 ## CI
 
 New `dart-server:` job in `.github/workflows/adaptive_chat.yml`, alongside the
-existing `client:` (Flutter) and `server:` (Python) jobs: checkout, set up the
-Dart SDK (`dart-lang/setup-dart`, pinned to the version `.fvmrc`'s Flutter
-release bundles), `dart pub get` from the repo root (resolves the whole pub
-workspace, same mechanism as the `client:` job's root-level `flutter pub get` —
-`adaptive_chat_server_dart` has no Flutter SDK dependency so the plain Dart SDK
-is sufficient), then `dart test` from `adaptive_chat_server_dart/`. The Python
-`server:` job is untouched.
+existing `client:` (Flutter) and `server:` (Python) jobs: checkout, set up
+Flutter (`subosito/flutter-action`, same version pin as the `client:` job),
+`flutter pub get` from the repo root, then `dart test` from
+`adaptive_chat_server_dart/`. The Python `server:` job is untouched.
+
+**Correction (discovered on the PR's first real CI run):** this section
+originally specified `dart-lang/setup-dart` (a standalone Dart SDK, no
+Flutter) plus a plain `dart pub get`, reasoning that since
+`adaptive_chat_server_dart` itself has no Flutter dependency, the plain Dart
+SDK would be sufficient. That reasoning was wrong: Dart/Flutter pub
+workspaces resolve as **one unit** — `dart pub get` from the repo root
+necessarily resolves every workspace member together, including the Flutter
+packages (`flutter_adaptive_cards_fs`, etc.), which depend on `flutter_test`
+from the Flutter SDK. A standalone Dart SDK can't satisfy that, so the job
+failed at `dart pub get` before ever reaching `dart test`. `flutter pub get`
+is required, matching the `client:` job's own approach — this was missed by
+every local verification step in the plan because they all ran via `fvm`,
+which already wraps a full Flutter SDK, so the gap only surfaced once CI ran
+with a plain Dart SDK.
 
 ## Workflow
 
