@@ -298,6 +298,171 @@
       "windows": {
           "python": "${workspaceFolder}/adaptive_chat_server/.venv/Scripts/python.exe"
       }
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (echo)". Runs the shelf
+      // server directly via the Dart VS Code extension (no Python venv).
+      "name": "Adaptive Chat Server Dart (echo)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": ["--port", "8000"]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama qwen2.5-coder:7b)".
+      // Requires a local Ollama (`ollama serve`) with the model pulled
+      // (`ollama pull qwen2.5-coder:7b`).
+      "name": "Adaptive Chat Server Dart (Ollama qwen2.5-coder:7b)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen2.5-coder:7b",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama gpt-oss:20b)".
+      // Requires a local Ollama (`ollama serve`) with the model pulled
+      // (`ollama pull gpt-oss:20b`).
+      "name": "Adaptive Chat Server Dart (Ollama gpt-oss:20b)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "gpt-oss:20b",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama qwen3.5:9b)".
+      // Requires a local Ollama (`ollama serve`) with the model pulled
+      // (`ollama pull qwen3.5:9b`).
+      "name": "Adaptive Chat Server Dart (Ollama qwen3.5:9b)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen3.5:9b",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama qwen2.5-coder:7b,
+      // card prompt)". Points at the bundled card system prompt under
+      // assets/ (not app/ — see Task 1) so the model replies with Adaptive
+      // Card fragments instead of Markdown text.
+      "name": "Adaptive Chat Server Dart (Ollama qwen2.5-coder:7b, card prompt)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen2.5-coder:7b",
+        "--system-prompt-file",
+        "assets/card_system_prompt.txt",
+        "--json-format",
+        "none",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama gpt-oss:20b, card
+      // prompt)".
+      "name": "Adaptive Chat Server Dart (Ollama gpt-oss:20b, card prompt)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "gpt-oss:20b",
+        "--system-prompt-file",
+        "assets/card_system_prompt.txt",
+        "--json-format",
+        "none",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama qwen3.5:9b, card
+      // prompt)".
+      "name": "Adaptive Chat Server Dart (Ollama qwen3.5:9b, card prompt)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen3.5:9b",
+        "--system-prompt-file",
+        "assets/card_system_prompt.txt",
+        "--json-format",
+        "none",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
     }
   ],
   "compounds": [
