@@ -20,7 +20,7 @@
 - Git commit gate: per AGENTS.md's standing exception for subagent-driven plan execution, each task below may `git commit` to the current feature branch (`feat/adaptive-chat-server-dart`) without asking — do **not** `git push`, merge, or touch `main`.
 - Local tooling: `curl` and local Ollama calls (`http://127.0.0.1:11434`) don't require asking permission (AGENTS.md § Local tooling permissions).
 - No `CHANGELOG.md` package-gate applies (`adaptive_chat_server_dart/` is a top-level demo app, not under `packages/`) and no `tool/coverage_floors.yaml` entry is needed — see the design spec's Non-goals.
-- Every new/changed top-level directory this plan touches: `adaptive_chat_server_dart/` (new), `pubspec.yaml` (root workspace list), `README.md` (root, pointer note), `.github/workflows/adaptive_chat.yml` (new CI job).
+- Every new/changed top-level directory this plan touches: `adaptive_chat_server_dart/` (new), `pubspec.yaml` (root workspace list), `README.md` (root, pointer note), `.github/workflows/adaptive_chat.yml` (new CI job), `.vscode/launch.json` (new Dart run targets, one-for-one with the existing Python ones).
 
 ---
 
@@ -2851,7 +2851,208 @@ git commit -m "docs(adaptive-chat-server-dart): add README with architecture dia
 
 ---
 
-## Task 12: Root README pointer + CI job
+## Task 12: VS Code launch configs for `adaptive_chat_server_dart`
+
+**Files:**
+- Modify: `.vscode/launch.json`
+
+**Interfaces:** None — editor configuration only. Added per explicit user request: the new Dart server needs a VS Code run target for each existing Python "Adaptive Chat Server (...)" target, one-for-one, so a developer can launch either backend the same way.
+
+- [ ] **Step 1: Add seven new configurations to `.vscode/launch.json`**
+
+`.vscode/launch.json` currently has 7 `"Adaptive Chat Server (...)"` Python configurations (echo, 3 plain Ollama models, 3 card-prompt Ollama models), each using `"type": "debugpy"` and the project's Python venv. Add 7 Dart equivalents using `"type": "dart"` (the Dart VS Code extension launches a plain Dart CLI program the same way it launches a Flutter app — no `flutterMode` key, since `bin/server.dart` isn't Flutter) with `"program": "bin/server.dart"` and the same CLI flags `bin/server.dart` accepts (Task 10). The three card-prompt configs point at `assets/card_system_prompt.txt` (not `app/card_system_prompt.txt` — the Dart port's bundled prompts live under `assets/`, per Task 1).
+
+Insert these 7 objects into the `"configurations"` array, immediately after the existing `"Adaptive Chat Server (Ollama qwen3.5:9b, card prompt)"` object (the last Python server config) and before the array's closing `]`:
+
+```json
+    {
+      // Dart equivalent of "Adaptive Chat Server (echo)". Runs the shelf
+      // server directly via the Dart VS Code extension (no Python venv).
+      "name": "Adaptive Chat Server Dart (echo)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": ["--port", "8000"]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama qwen2.5-coder:7b)".
+      // Requires a local Ollama (`ollama serve`) with the model pulled
+      // (`ollama pull qwen2.5-coder:7b`).
+      "name": "Adaptive Chat Server Dart (Ollama qwen2.5-coder:7b)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen2.5-coder:7b",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama gpt-oss:20b)".
+      // Requires a local Ollama (`ollama serve`) with the model pulled
+      // (`ollama pull gpt-oss:20b`).
+      "name": "Adaptive Chat Server Dart (Ollama gpt-oss:20b)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "gpt-oss:20b",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama qwen3.5:9b)".
+      // Requires a local Ollama (`ollama serve`) with the model pulled
+      // (`ollama pull qwen3.5:9b`).
+      "name": "Adaptive Chat Server Dart (Ollama qwen3.5:9b)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen3.5:9b",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama qwen2.5-coder:7b,
+      // card prompt)". Points at the bundled card system prompt under
+      // assets/ (not app/ — see Task 1) so the model replies with Adaptive
+      // Card fragments instead of Markdown text.
+      "name": "Adaptive Chat Server Dart (Ollama qwen2.5-coder:7b, card prompt)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen2.5-coder:7b",
+        "--system-prompt-file",
+        "assets/card_system_prompt.txt",
+        "--json-format",
+        "none",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama gpt-oss:20b, card
+      // prompt)".
+      "name": "Adaptive Chat Server Dart (Ollama gpt-oss:20b, card prompt)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "gpt-oss:20b",
+        "--system-prompt-file",
+        "assets/card_system_prompt.txt",
+        "--json-format",
+        "none",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Dart equivalent of "Adaptive Chat Server (Ollama qwen3.5:9b, card
+      // prompt)".
+      "name": "Adaptive Chat Server Dart (Ollama qwen3.5:9b, card prompt)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen3.5:9b",
+        "--system-prompt-file",
+        "assets/card_system_prompt.txt",
+        "--json-format",
+        "none",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    }
+```
+
+Do not add new `"compounds"` entries — the user asked specifically for run targets one-for-one with the existing Python ones; the three existing compounds (which pair a Python server config with the web client) are out of scope for this task.
+
+- [ ] **Step 2: Validate the JSON**
+
+Run: `python3 -c "import json; json.load(open('.vscode/launch.json'))"`
+Expected: no output, exit code 0 (valid JSON — comments in `.vscode/launch.json` are VS Code's JSONC dialect; if this strict-JSON check fails only because of the `//` comments already present throughout the file, confirm instead that your added block's brace/bracket nesting matches its siblings by inspection, since the file demonstrably already relies on JSONC parsing in VS Code).
+
+- [ ] **Step 3: Manually confirm each new config's args match its Task 10 CLI flag**
+
+Cross-check every flag name used above (`--ollama-url`, `--ollama-model`, `--system-prompt-file`, `--json-format`, `--num-ctx`, `--history-turns`, `--log-level`, `--port`) against `adaptive_chat_server_dart/bin/server.dart`'s `ArgParser` (Task 10) — they must be exact string matches, including hyphenation.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add .vscode/launch.json
+git commit -m "chore(adaptive-chat-server-dart): add VS Code run targets, one-for-one with the Python server targets"
+```
+
+---
+
+## Task 13: Root README pointer + CI job
 
 **Files:**
 - Modify: `README.md:120-201` (root — "adaptive_chat_server + adaptive_chat_client" section)
@@ -2922,9 +3123,9 @@ git commit -m "docs+ci(adaptive-chat-server-dart): link from root README, add CI
 
 ---
 
-## Task 13: Final verification
+## Task 14: Final verification
 
-**Files:** None created — this task only runs checks across everything built in Tasks 1–12.
+**Files:** None created — this task only runs checks across everything built in Tasks 1–13.
 
 - [ ] **Step 1: Format**
 
@@ -2999,8 +3200,9 @@ verification, not a blocking gate for the plan.
 
 Run: `git status && git log --oneline main..HEAD`
 Expected: working tree clean; the log shows one commit per task from Tasks
-1–12 (12 commits) plus the Step 1 format commit above (13 total), all on
-`feat/adaptive-chat-server-dart`, none on `main`. Also confirms the earlier
+1–13 (13+ commits, allowing for fix-round commits) plus the Step 1 format
+commit above, all on `feat/adaptive-chat-server-dart`, none on `main`. Also
+confirms the earlier
 `feat/adaptive-chat-server-dart` commit from the design-spec phase (AGENTS.md
 policy + spec doc) is still the branch's base commit, unaffected.
 
