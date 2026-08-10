@@ -63,7 +63,9 @@ List<Map<String, dynamic>>? tryParseCardBody(String raw) {
     final map = Map<String, dynamic>.from(parsed);
     if (map['type'] == 'AdaptiveCard') {
       final body = map['body'];
-      return body is List && body.isNotEmpty
+      return body is List &&
+              body.isNotEmpty &&
+              body.every((item) => item is Map)
           ? body.cast<Map<String, dynamic>>()
           : null;
     }
