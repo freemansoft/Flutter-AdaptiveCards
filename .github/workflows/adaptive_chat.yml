@@ -1,7 +1,7 @@
-# Runs the Adaptive Chat demo tests: the Flutter client (adaptive_chat_client),
-# the Python FastAPI backend (adaptive_chat_server), and the Dart backend port
-# (adaptive_chat_server_dart). These live outside the published packages, so they
-# are kept in their own workflow rather than the package matrix in test.yml.
+# Runs the Adaptive Chat demo tests: the Flutter client (adaptive_chat_client)
+# and the Dart backend (adaptive_chat_server_dart). These live outside the
+# published packages, so they are kept in their own workflow rather than the
+# package matrix in test.yml.
 #
 # Scoped `push` to main to avoid duplicate runs on branches with an open PR
 # (matches test.yml / validate.yaml).
@@ -34,28 +34,6 @@ jobs:
       - name: Run adaptive_chat_client tests
         run: flutter test -r expanded
         working-directory: ./adaptive_chat_client
-
-  server:
-    name: Adaptive Chat server (Python)
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: adaptive_chat_server/requirements.txt
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-        working-directory: ./adaptive_chat_server
-
-      # conftest.py at the package root puts adaptive_chat_server on sys.path so
-      # `import app.*` resolves when pytest runs from here.
-      - name: Run adaptive_chat_server tests
-        run: python -m pytest
-        working-directory: ./adaptive_chat_server
 
   dart-server:
     name: Adaptive Chat server (Dart)

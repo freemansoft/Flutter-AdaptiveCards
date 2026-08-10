@@ -117,27 +117,21 @@ On macOS, the app uses `file_picker` and needs appropriate signing and entitleme
 
 More detail: [adaptive_explorer/README.md](adaptive_explorer/README.md).
 
-## adaptive_chat_server + adaptive_chat_client
+## adaptive_chat_server_dart + adaptive_chat_client
 
-[`adaptive_chat_server`](adaptive_chat_server/) (a Python FastAPI backend) and
-[`adaptive_chat_client`](adaptive_chat_client/) (a Flutter app) together are an
-**end-to-end server-driven UI (SDUI) demo**: every screen the user sees, including
-the chat bubbles and the compose box itself, is an Adaptive Card **authored by the
-server** and rendered verbatim by the client — and those cards can be generated
-dynamically at runtime by a local LLM running in [Ollama](https://ollama.com).
-
-A Dart port of the backend,
-[`adaptive_chat_server_dart`](adaptive_chat_server_dart/), implements the same
-wire contract and CLI flags and can be used interchangeably with
-`adaptive_chat_client` — see
-[`adaptive_chat_server_dart/README.md`](adaptive_chat_server_dart/README.md).
-It currently runs alongside the Python original rather than replacing it.
+[`adaptive_chat_server_dart`](adaptive_chat_server_dart/) (a Dart `shelf`
+backend) and [`adaptive_chat_client`](adaptive_chat_client/) (a Flutter app)
+together are an **end-to-end server-driven UI (SDUI) demo**: every screen the
+user sees, including the chat bubbles and the compose box itself, is an
+Adaptive Card **authored by the server** and rendered verbatim by the client —
+and those cards can be generated dynamically at runtime by a local LLM running
+in [Ollama](https://ollama.com).
 
 ```mermaid
 sequenceDiagram
     participant User
     participant Client as adaptive_chat_client
-    participant Server as adaptive_chat_server
+    participant Server as adaptive_chat_server_dart
     participant Ollama as ollama
 
     User->>Client: Enters Text
@@ -167,10 +161,9 @@ sequenceDiagram
 
 ```bash
 # Terminal 1: backend (echo mode by default)
-cd adaptive_chat_server
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/uvicorn app.main:app --reload --port 8000
+cd adaptive_chat_server_dart
+fvm dart pub get
+fvm dart run bin/server.dart
 
 # Terminal 2: client
 cd adaptive_chat_client
@@ -179,32 +172,33 @@ fvm flutter run -d chrome    # or -d macos
 
 To generate replies as **dynamic Adaptive Cards** instead of echoed text, point the
 server at a local Ollama model and its bundled card system prompt — this is the
-`Adaptive Chat Server (Ollama qwen2.5-coder:7b, card prompt)` launch config in
+`Adaptive Chat Server Dart (Ollama qwen2.5-coder:7b, card prompt)` launch config in
 [`.vscode/launch.json`](.vscode/launch.json):
 
 ```bash
 ollama pull qwen2.5-coder:7b
 ollama serve
-cd adaptive_chat_server
-.venv/bin/python -m app \
+cd adaptive_chat_server_dart
+fvm dart run bin/server.dart \
   --ollama-url http://127.0.0.1:11434 \
   --ollama-model qwen2.5-coder:7b \
-  --system-prompt-file app/card_system_prompt.txt \
+  --system-prompt-file assets/card_system_prompt.txt \
   --json-format none \
   --num-ctx 16384 \
   --history-turns 10 \
   --port 8000
 ```
 
-VS Code users can instead run the `Adaptive Chat Server (Ollama qwen2.5-coder:7b,
-card prompt)` and `Adaptive Chat Client - Web` launch configs together from the Run
-and Debug panel (or use the **Adaptive Chat (card-mode Ollama gpt-oss server +
-web)** compound for the `gpt-oss:20b` variant).
+VS Code users can instead run the `Adaptive Chat Server Dart (Ollama
+qwen2.5-coder:7b, card prompt)` and `Adaptive Chat Client - Web` launch configs
+together from the Run and Debug panel (or use the **Adaptive Chat (card-mode
+Ollama gpt-oss server + web)** compound for the `gpt-oss:20b` variant).
 
-More detail: [adaptive_chat_server/README.md](adaptive_chat_server/README.md),
+More detail:
+[adaptive_chat_server_dart/README.md](adaptive_chat_server_dart/README.md),
 [adaptive_chat_client/README.md](adaptive_chat_client/README.md), and the design
 notes in
-[docs/superpowers/specs/2026-07-18-adaptive-chat-sdui-design.md](docs/superpowers/specs/2026-07-18-adaptive-chat-sdui-design.md).
+[docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md](docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md).
 
 ## Platform Support
 

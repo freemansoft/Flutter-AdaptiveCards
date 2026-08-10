@@ -5,9 +5,9 @@ log is a scrolling list of **Adaptive Cards authored entirely by the server**, a
 the compose box is itself an Adaptive Card — so the whole conversation is driven by
 card JSON, exercising the library's host-invoke patterns end to end.
 
-Pairs with the FastAPI backend in [`../adaptive_chat_server`](../adaptive_chat_server).
-Design notes: [`docs/superpowers/specs/2026-07-18-adaptive-chat-sdui-design.md`](../docs/superpowers/specs/2026-07-18-adaptive-chat-sdui-design.md)
-and the plan [`docs/superpowers/plans/2026-07-18-adaptive-chat-sdui.md`](../docs/superpowers/plans/2026-07-18-adaptive-chat-sdui.md).
+Pairs with the Dart `shelf` backend in
+[`../adaptive_chat_server_dart`](../adaptive_chat_server_dart).
+Design notes: [`docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md`](../docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md).
 
 ## What makes it "server-driven"
 
@@ -43,7 +43,7 @@ flowchart TB
     CP -. renders each message via .-> ADAPTIVE["AdaptiveCardsCanvas.map / RawAdaptiveCard\n(flutter_adaptive_cards_fs)"]
     HC --> ADAPTIVE
   end
-  CBC -->|"POST {postNext} (X-Interaction-Id, PlainJson body)"| SRV["adaptive_chat_server\n(FastAPI)"]
+  CBC -->|"POST {postNext} (X-Interaction-Id, PlainJson body)"| SRV["adaptive_chat_server_dart\n(shelf)"]
   SRV -->|"envelope: messages[] + links"| CBC
   CBC -->|appendMessages| CC
 ```
@@ -95,7 +95,7 @@ sequenceDiagram
     participant K as Compose card<br/>Input.Text + Action.Submit
     participant C as ConversationController
     participant B as ChatBackendClient
-    participant S as adaptive_chat_server
+    participant S as adaptive_chat_server_dart
 
     Note over P,S: App launch — start a conversation (from initState)
     P->>C: startConversation()
@@ -137,8 +137,8 @@ sequenceDiagram
 
 ## Run
 
-Start the backend first (see [`../adaptive_chat_server`](../adaptive_chat_server)),
-then:
+Start the backend first (see
+[`../adaptive_chat_server_dart`](../adaptive_chat_server_dart)), then:
 
 ```bash
 fvm flutter run -d chrome    # or -d macos
@@ -184,7 +184,7 @@ An assistant bubble may now carry rich **inputs and display elements** authored 
 the server (date pickers, choice sets, FactSets, badges, carousels, tables,
 ratings, icons, progress bars/rings, code blocks, images) instead of Markdown
 text — the client renders whatever card the server sends, no code change
-needed. See [`../adaptive_chat_server`](../adaptive_chat_server)'s **Card
-replies (display-only)** section for the current palette. This is
+needed. See [`../adaptive_chat_server_dart`](../adaptive_chat_server_dart)'s
+**Card replies (display-only)** section for the current palette. This is
 **display-only**: the same gap as in-card form submits above, returned input
 values do not post back anywhere yet.
