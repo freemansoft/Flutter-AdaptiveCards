@@ -107,6 +107,28 @@ Drop the flag to make it enforcing once the plumbing has proven itself.
 
 `flutter_adaptive_cards_test_support` is not scored: it is `publish_to: none`.
 
+## Consumer-minimal `.pubignore`
+
+Each published package under `packages/` ships a slim `.pubignore` so the
+pub.dev archive contains only what consumers need: `lib/`, `pubspec.yaml`,
+`README.md` / `CHANGELOG.md` / `LICENSE`, and `analysis_options.yaml`.
+
+The file lists **publish-only** excludes (`test/`, `tool/`, `dart_test.yaml`,
+`analyze.json`). Ancestor `.gitignore` rules (repo root) still apply; hidden
+paths are never published. A `.pubignore` in the package directory replaces
+**only that directory’s** `.gitignore` — it does not need to duplicate gitignore
+patterns. See [What files are published?](https://dart.dev/tools/pub/publishing#what-files-are-published).
+
+Before publishing, confirm with a dry-run from the package directory — the
+printed tree must not list `test/` (or `tool/`):
+
+```bash
+cd packages/flutter_adaptive_cards_fs
+fvm dart pub publish --dry-run
+```
+
+Design: [`docs/superpowers/specs/2026-08-06-consumer-minimal-pubignore-design.md`](superpowers/specs/2026-08-06-consumer-minimal-pubignore-design.md).
+
 ## Known gaps
 
 - Neither `flutter_adaptive_cards_fs` nor `flutter_adaptive_template_fs` ships an

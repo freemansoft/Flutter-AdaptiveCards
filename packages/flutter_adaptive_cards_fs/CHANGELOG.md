@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.17.0]
 
-- no changes yet
+- chore: add consumer-minimal `.pubignore` so pub.dev archives exclude `test/` and other non-consumer files.
 
 ## [0.16.0]
 
