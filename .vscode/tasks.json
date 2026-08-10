@@ -17,21 +17,6 @@
       }
     },
     {
-      "label": "Setup Adaptive Chat Server venv",
-      "type": "shell",
-      "command": "sh scripts/setup-adaptive-chat-server.sh",
-      "windows": {
-        "command": "powershell scripts/setup-adaptive-chat-server.ps1"
-      },
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "shared"
-      }
-    },
-    {
       "label": "Setup pana",
       "detail": "Activates the pinned pana CLI used by the pub-score gate.",
       "type": "shell",

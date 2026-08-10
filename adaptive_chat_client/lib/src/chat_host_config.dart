@@ -3,7 +3,7 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 /// Corner radius applied to chat bubbles, in logical pixels.
 ///
 /// The server marks each bubble `Container` with `roundedCorners: true`
-/// (see `_text_container` in `adaptive_chat_server/app/cards.py`); that
+/// (see `_bubble` in `adaptive_chat_server_dart/lib/src/cards.dart`); that
 /// flag opts the container into `HostConfig.cornerRadius` rather than the
 /// library's sharp-corner default. 16 reads as a chat-bubble radius rather
 /// than the library-wide default of 8.

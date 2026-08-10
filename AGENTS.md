@@ -8,7 +8,7 @@ You are an expert Flutter and Dart developer. Your goal is to build beautiful, p
 
 ## Language preference for new projects
 
-This repository's goal is **all Dart and Flutter** for executable programs, examples, and libraries. When starting a **new** project, script, or tool (not editing an existing one in another language) — Python or otherwise — the agent MUST ask the user to confirm before scaffolding it in a non-Dart language. Default recommendation: Dart (CLI/server) or Dart + Flutter (UI). An existing non-Dart project (e.g. `adaptive_chat_server`) does not need to be rewritten unless the user asks.
+This repository's goal is **all Dart and Flutter** for executable programs, examples, and libraries. When starting a **new** project, script, or tool (not editing an existing one in another language) — Python or otherwise — the agent MUST ask the user to confirm before scaffolding it in a non-Dart language. Default recommendation: Dart (CLI/server) or Dart + Flutter (UI). An existing non-Dart project does not need to be rewritten unless the user asks.
 
 ## AI Instructions Organization
 

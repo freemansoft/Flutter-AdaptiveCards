@@ -8,3 +8,9 @@ Superseded or duplicate plans moved from [`docs/plans/`](../plans/) for historic
 | `2026-01-26-implement_isvisible_feature_066e549a.plan.md` | [`2026-01-27-implement_isvisible_feature_875ea9e9.plan.md`](../../plans/2026-01-27-implement_isvisible_feature_875ea9e9.plan.md) — see also [`reactive-riverpod.md`](../../reactive-riverpod.md#visibility-isvisible) |
 | `2026-06-02-overlay_test_coverage_skill_f45d8c5a.plan.md` | [`2026-06-01-overlay_test_coverage_bd9b10a4.plan.md`](../../plans/2026-06-01-overlay_test_coverage_bd9b10a4.plan.md) and [`reactive-riverpod.md`](../../reactive-riverpod.md#overlay-test-coverage) |
 | `2026-06-03-statehaserror_vs_isinvalid_d84e66e6.plan.md` | [`2026-06-03-statehaserror_vs_isinvalid_ae92fdbe.plan.md`](../../plans/2026-06-03-statehaserror_vs_isinvalid_ae92fdbe.plan.md) (implemented unified overlay validation) |
+| `2026-07-18-adaptive-chat-sdui.md` | Python `adaptive_chat_server` implementation plan; package removed in favor of the Dart port — see [`adaptive_chat_server_dart/README.md`](../../../adaptive_chat_server_dart/README.md) |
+| `2026-07-20-adaptive-chat-card-replies.md` | Python-only; feature ported unchanged to `adaptive_chat_server_dart` |
+| `2026-07-20-adaptive-chat-ollama-context-window.md` | Python-only; feature ported unchanged to `adaptive_chat_server_dart` |
+| `2026-07-21-card-json-leaked-prefix.md` | Python-only; fix ported unchanged to `adaptive_chat_server_dart`'s `card_detect.dart` |
+| `2026-07-23-ollama-structured-json-output.md` | Python-only; feature ported unchanged to `adaptive_chat_server_dart` |
+| `2026-08-03-chat-server-token-stats.md` | Python-only; feature ported unchanged to `adaptive_chat_server_dart` |
