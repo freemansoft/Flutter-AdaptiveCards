@@ -403,6 +403,54 @@ idempotency, validation), responder selection, card detection, token-stats
 capture and the status payload, and the Ollama responder (mocked HTTP — no
 live Ollama).
 
+## Known gaps
+
+Found while validating this server against a live Ollama. None is a blocker
+for the demo; they are recorded so they are not rediscovered from scratch.
+
+**Card detection is over-permissive.** `tryParseCardBody` accepts _any_ JSON
+object carrying a non-empty `type` string as a single card element, so a
+model reply like `{"type":"greeting","text":"hi"}` renders as an unknown
+element instead of falling back to readable text. The fix is small; the open
+question is what to validate `type` against — the full Adaptive Cards element
+set (precise, but drifts from the library) or the palette the card system
+prompt actually advertises (narrower, but couples detection to prompt text).
+
+**Bubble role labels are hardcoded English.** `_bubble` emits a `TextBlock`
+reading `user` / `assistant` above every bubble (`cards.dart`, duplicated in
+`_fullWidthBubble`). Beyond being untranslatable, it is unusual chat UX —
+alignment and fill already convey who spoke. Needs a product decision: drop
+the labels, or keep them and let the host supply the strings.
+
+**Conversation state grows without bound.** `ConversationStore` never evicts:
+neither conversations nor the interactions inside them, and `GET /status`
+reports every conversation, so that payload grows too. Fine for a demo that
+gets restarted; the design question for a fix is that trimming old
+interactions breaks idempotent replay for those ids — a client retrying an
+evicted `X-Interaction-Id` would re-run the model.
+
+**`ConversationStore.hasInteraction` is dead code** — only its own tests call
+it; the routes use `getInteraction(...) != null`.
+
+**Card replies inflate the prompt.** A card reply's `replyText` is the raw
+card JSON, so it is replayed verbatim as history. Bounded by
+`--history-turns` (steady state measured around 5.4k of a 16384 window), so
+this is a prompt-evaluation cost rather than a correctness problem.
+
+**Unverified:** `prompt_eval_count` may under-report context fill when Ollama
+caches a prompt prefix across turns, which would let the 50% / 76% log tiers
+stay quiet while the window fills. A 3-turn run did _not_ show this. Confirm
+over a long conversation before acting on it.
+
+### Not planned
+
+**Streaming.** Replies are requested with `stream: false`, so the client shows
+nothing until generation completes. Beyond the wire contract, card detection
+needs the _complete_ message to decide text-vs-card — a partial card fragment
+is invalid JSON — so streaming would benefit text replies only, and would
+need either a visible bubble swap when a finished reply turns out to be a
+card, or committing to a mode up front. Treated as an enhancement, not a gap.
+
 ## Ollama (optional)
 
 By default the server runs the echo demo (every reply is `"Did you just say:
