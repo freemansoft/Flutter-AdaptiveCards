@@ -72,6 +72,7 @@ second one.
 | `assets/default_system_prompt.txt` | Bundled default system prompt.                                                                                                                        |
 | `assets/card_system_prompt.txt`    | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                     |
 | `assets/card_schema.json`          | Bundled schema for `--json-format schema`.                                                                                                             |
+| `cli.dart`                 | `buildArgParser()` / `resolveLogLevel()` — the flag set, defaults, and allowed values. In `lib/` so the CLI surface is reachable from tests.                    |
 | `bin/server.dart`          | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder from `--ollama-url` and starts `shelf_io.serve`.                                    |
 
 ### Responder selection
@@ -113,9 +114,11 @@ said and carry that into every later turn. The exchange is dropped whole
 rather than user-turn-only, so the model is never left an unanswered question
 to explain.
 
-**Model residency.** Every request sends `keep_alive: 30m`, overriding
-Ollama's 5-minute default. An idle chat otherwise pays a full model reload on
-its next message — measured at roughly 20× the warm load time on a 7B model.
+**Model residency.** Every request sends `keep_alive` (default `30m`,
+`--keep-alive`), overriding Ollama's 5-minute default. An idle chat otherwise
+pays a full model reload on its next message — measured at roughly 20× the
+warm load time on a 7B model. `--keep-alive 0` unloads immediately;
+`--keep-alive -1` keeps the model resident indefinitely.
 
 **Context-fill logging.** The server sends an explicit `options.num_ctx`
 (default 16384) and, after each reply, logs the actual prompt tokens
@@ -349,7 +352,11 @@ sequenceDiagram
 ```bash
 fvm dart pub get
 fvm dart run bin/server.dart
+fvm dart run bin/server.dart --help   # every flag, with defaults
 ```
+
+`--help` (or `-h`) prints the full flag list and exits without starting a
+server; an unrecognised flag prints the same usage and exits `2`.
 
 CORS is enabled for local dev so the Flutter web client can reach it.
 

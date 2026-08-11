@@ -17,6 +17,15 @@
   recording a duplicate entry in the conversation order.
 - Fixed: an Ollama timeout is reported as a timeout instead of "unreachable" —
   a slow-but-healthy server and a dead one are different problems.
+- Added: `--keep-alive` (default `30m`, reported by `GET /status`) so an idle
+  chat does not pay a full model reload on its next message. Ollama's own
+  default is 5m.
+- Added: `--help` / `-h` prints usage and exits without starting a server. An
+  unrecognised flag now prints the same usage and exits `2` instead of
+  throwing an unhandled exception with a stack trace.
+- Flag parsing moved from `bin/server.dart` to `lib/src/cli.dart`
+  (`buildArgParser`, `resolveLogLevel`) so the CLI surface is covered by
+  tests; `bin/server.dart` is now a thin entrypoint.
 - Now the only Adaptive Chat backend: the Python/FastAPI prototype this package
   was ported from has been removed. README expanded to carry the behavior
   documentation it previously deferred to that package's README (wire
