@@ -62,7 +62,23 @@ Future<void> main(List<String> arguments) async {
     historyTurns: int.parse(args['history-turns'] as String),
     jsonFormat: args['json-format'] as String,
     keepAlive: args['keep-alive'] as String,
+    ollamaTimeout: Duration(
+      seconds: int.parse(args['ollama-timeout'] as String),
+    ),
   );
+
+  // Advisory only: a backend that is not up yet may still come up, so this
+  // reports loudly and starts anyway rather than refusing to serve.
+  final log = Logger('adaptive_chat_server_dart');
+  final readiness = await responder.checkReadiness();
+  if (readiness.isReady) {
+    log.info('Preflight: ${readiness.detail}');
+  } else {
+    log.severe(
+      'Preflight FAILED: ${readiness.detail}\n  Starting anyway — requests '
+      'will return a diagnostic until this is fixed.',
+    );
+  }
 
   final handler = buildHandler(
     store: ConversationStore(),

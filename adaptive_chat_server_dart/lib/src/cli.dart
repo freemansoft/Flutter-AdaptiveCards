@@ -89,6 +89,15 @@ ArgParser buildArgParser() {
           '$defaultJsonFormat).',
     )
     ..addOption(
+      'ollama-timeout',
+      defaultsTo: '$defaultOllamaTimeoutSeconds',
+      help:
+          'Seconds to wait for one Ollama reply (default: '
+          '$defaultOllamaTimeoutSeconds). A cold load of a large model plus a '
+          'full context window can exceed this; raise it rather than assuming '
+          'the server is unreachable.',
+    )
+    ..addOption(
       'keep-alive',
       defaultsTo: defaultKeepAlive,
       help:

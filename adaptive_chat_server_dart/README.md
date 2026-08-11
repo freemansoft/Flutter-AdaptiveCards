@@ -114,6 +114,19 @@ said and carry that into every later turn. The exchange is dropped whole
 rather than user-turn-only, so the model is never left an unanswered question
 to explain.
 
+**Startup preflight.** When `--ollama-url` is set, the server asks Ollama for
+its model list (`/api/tags`) before serving and logs the result: an `INFO`
+line naming the model when all is well, or a `SEVERE` line distinguishing
+"Ollama unreachable" from "model not pulled" (with the `ollama pull` command
+and the list of models that *are* available). It **starts either way** — an
+Ollama brought up after the server still works — but the operator learns
+about a misconfiguration at launch rather than on the first message.
+
+**Reply timeout.** `--ollama-timeout` (seconds, default 60) bounds one
+`/api/chat` call. A cold load of a large model plus a full context window can
+exceed it; raise the flag rather than assuming the server is unreachable. The
+effective value is reported by `GET /status` as `timeoutSeconds`.
+
 **Model residency.** Every request sends `keep_alive` (default `30m`,
 `--keep-alive`), overriding Ollama's 5-minute default. An idle chat otherwise
 pays a full model reload on its next message — measured at roughly 20× the
@@ -217,7 +230,8 @@ routes stay compact. Example payload:
     "historyTurns": 10,
     "jsonFormat": "none",
     "systemPromptFile": "default_system_prompt.txt",
-    "keepAlive": "30m"
+    "keepAlive": "30m",
+    "timeoutSeconds": 60
   },
   "conversationCount": 1,
   "conversations": [

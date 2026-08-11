@@ -20,6 +20,15 @@
 - Added: `--keep-alive` (default `30m`, reported by `GET /status`) so an idle
   chat does not pay a full model reload on its next message. Ollama's own
   default is 5m.
+- Added: `--ollama-timeout` (seconds, default 60, reported by `GET /status`).
+  The per-request timeout was previously hardcoded and unreachable from the
+  command line, so a cold load of a large model could only be worked around by
+  editing source.
+- Added: a startup preflight against `/api/tags` when `--ollama-url` is set.
+  It distinguishes "Ollama unreachable" from "model not pulled" (naming the
+  `ollama pull` command and the models that are available) and logs the result
+  before serving. The server still starts either way, since an Ollama brought
+  up afterwards will work.
 - Added: `--help` / `-h` prints usage and exits without starting a server. An
   unrecognised flag now prints the same usage and exits `2` instead of
   throwing an unhandled exception with a stack trace.

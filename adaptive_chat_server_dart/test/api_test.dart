@@ -19,6 +19,10 @@ class _CountingResponder implements Responder {
 
   @override
   Map<String, dynamic> describe() => {'kind': 'counting'};
+
+  @override
+  Future<ResponderReadiness> checkReadiness() async =>
+      const ResponderReadiness.ready('test double');
 }
 
 /// Stays inside [reply] until [gate] completes, so a second request can
@@ -37,6 +41,10 @@ class _GatedResponder implements Responder {
 
   @override
   Map<String, dynamic> describe() => {'kind': 'gated'};
+
+  @override
+  Future<ResponderReadiness> checkReadiness() async =>
+      const ResponderReadiness.ready('test double');
 }
 
 /// Records the history handed to each call so tests can assert on what the
@@ -54,6 +62,10 @@ class _HistorySpyResponder implements Responder {
 
   @override
   Map<String, dynamic> describe() => {'kind': 'history-spy'};
+
+  @override
+  Future<ResponderReadiness> checkReadiness() async =>
+      const ResponderReadiness.ready('test double');
 }
 
 void main() {

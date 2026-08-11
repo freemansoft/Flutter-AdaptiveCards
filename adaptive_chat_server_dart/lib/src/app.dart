@@ -53,13 +53,16 @@ Responder buildResponder({
   int historyTurns = defaultHistoryTurns,
   String jsonFormat = defaultJsonFormat,
   String keepAlive = defaultKeepAlive,
+  Duration ollamaTimeout = const Duration(
+    seconds: defaultOllamaTimeoutSeconds,
+  ),
 }) {
   if (ollamaUrl != null && ollamaUrl.isNotEmpty) {
     _log.info(
       'Responder: OllamaResponder (url=$ollamaUrl, model=$model, '
       'system_prompt=${systemPromptFile ?? "default"}, num_ctx=$numCtx, '
       'history_turns=$historyTurns, json_format=$jsonFormat, '
-      'keep_alive=$keepAlive)',
+      'keep_alive=$keepAlive, timeout=${ollamaTimeout.inSeconds}s)',
     );
     return OllamaResponder(
       ollamaUrl: ollamaUrl,
@@ -71,6 +74,7 @@ Responder buildResponder({
       historyTurns: historyTurns,
       jsonFormat: jsonFormat,
       keepAlive: keepAlive,
+      ollamaTimeout: ollamaTimeout,
     );
   }
   _log.info('Responder: EchoResponder (no --ollama-url set)');

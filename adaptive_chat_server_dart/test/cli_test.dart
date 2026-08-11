@@ -45,6 +45,24 @@ void main() {
     });
   });
 
+  group('--ollama-timeout', () {
+    test('defaults to the bundled timeout', () {
+      final args = buildArgParser().parse([]);
+      expect(args['ollama-timeout'], '$defaultOllamaTimeoutSeconds');
+    });
+
+    test('reaches the responder, so GET /status reports it', () {
+      final responder = buildResponder(
+        model: 'test-model',
+        defaultSystemPromptPath: 'assets/default_system_prompt.txt',
+        cardSchemaPath: 'assets/card_schema.json',
+        ollamaUrl: 'http://127.0.0.1:11434',
+        ollamaTimeout: const Duration(seconds: 240),
+      );
+      expect(responder.describe()['timeoutSeconds'], 240);
+    });
+  });
+
   group('--help', () {
     test('is off by default', () {
       expect(buildArgParser().parse([])['help'], isFalse);
