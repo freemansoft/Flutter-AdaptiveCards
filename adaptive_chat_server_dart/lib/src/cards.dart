@@ -17,8 +17,8 @@ Map<String, dynamic> _bubble(
   List<Map<String, dynamic>> items, {
   required String style,
   required bool alignRight,
+  required String label,
 }) {
-  final label = alignRight ? 'user' : 'assistant';
   final container = <String, dynamic>{
     'type': 'Container',
     'style': style,
@@ -62,6 +62,7 @@ Map<String, dynamic> _bubble(
 Map<String, dynamic> _fullWidthBubble(
   List<Map<String, dynamic>> items, {
   required String style,
+  required String label,
 }) {
   final container = <String, dynamic>{
     'type': 'Container',
@@ -73,7 +74,7 @@ Map<String, dynamic> _fullWidthBubble(
     'type': 'AdaptiveCard',
     'version': _version,
     'body': [
-      {'type': 'TextBlock', 'text': 'assistant', 'wrap': true},
+      {'type': 'TextBlock', 'text': label, 'wrap': true},
       container,
     ],
   };
@@ -84,20 +85,38 @@ List<Map<String, dynamic>> _textItems(String text) => [
 ];
 
 /// Right-aligned accent bubble for the user's message.
-Map<String, dynamic> userBubble(String text) =>
-    _bubble(_textItems(text), style: 'accent', alignRight: true);
+///
+/// [label] is the role text shown above the bubble; callers (the client,
+/// via the request body) may override it, and it defaults to
+/// [defaultUserLabel].
+Map<String, dynamic> userBubble(
+  String text, {
+  String label = defaultUserLabel,
+}) =>
+    _bubble(_textItems(text), style: 'accent', alignRight: true, label: label);
 
 /// Left-aligned emphasis bubble for a Markdown text assistant reply.
 ///
 /// The `TextBlock` renders GitHub-flavored Markdown, so this is the default
-/// reply shape used before the card path existed.
-Map<String, dynamic> assistantBubble(String text) =>
-    _bubble(_textItems(text), style: 'emphasis', alignRight: false);
+/// reply shape used before the card path existed. [label] defaults to
+/// [defaultAssistantLabel]; see [userBubble].
+Map<String, dynamic> assistantBubble(
+  String text, {
+  String label = defaultAssistantLabel,
+}) => _bubble(
+  _textItems(text),
+  style: 'emphasis',
+  alignRight: false,
+  label: label,
+);
 
 /// Full-width emphasis container holding a model card fragment.
+///
+/// [label] defaults to [defaultAssistantLabel]; see [userBubble].
 Map<String, dynamic> assistantCardBubble(
-  List<Map<String, dynamic>> bodyItems,
-) => _fullWidthBubble(bodyItems, style: 'emphasis');
+  List<Map<String, dynamic>> bodyItems, {
+  String label = defaultAssistantLabel,
+}) => _fullWidthBubble(bodyItems, style: 'emphasis', label: label);
 
 /// Wire envelope: pre-styled cards plus self/postNext links.
 Map<String, dynamic> envelope(

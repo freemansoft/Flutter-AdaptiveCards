@@ -63,6 +63,44 @@ void main() {
     expect(c.pending, isFalse);
   });
 
+  test(
+    'startConversation sends the configured userLabel, assistantLabel, and '
+    'language',
+    () async {
+      Map<String, dynamic>? captured;
+      final mock = MockClient((req) async {
+        if (req.url.path == '/conversations') {
+          captured = jsonDecode(req.body) as Map<String, dynamic>;
+          return http.Response(
+            jsonEncode({
+              'conversationId': 'c_1',
+              'links': {'postNext': '/conversations/c_1/interactions'},
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      });
+      final c = ConversationController(
+        client: ChatBackendClient(
+          baseUrl: Uri.parse('http://localhost:8000'),
+          client: mock,
+        ),
+        userLabel: 'Me',
+        assistantLabel: 'Bot',
+        language: 'es',
+      );
+
+      await c.startConversation();
+
+      expect(captured, {
+        'userLabel': 'Me',
+        'assistantLabel': 'Bot',
+        'language': 'es',
+      });
+    },
+  );
+
   test('send does nothing before startConversation', () async {
     final c = ConversationController(client: _clientReturning([]));
     await c.send('hello');

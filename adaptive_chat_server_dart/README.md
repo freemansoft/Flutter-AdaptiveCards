@@ -44,10 +44,17 @@ flowchart TB
 
 | Method & path                                 | Purpose                        | In                                                                | Out                                       |
 | --------------------------------------------- | ------------------------------ | ----------------------------------------------------------------- | ----------------------------------------- |
-| `POST /conversations`                         | Start a session                | —                                                                 | `{ conversationId, links: { postNext } }` |
+| `POST /conversations`                         | Start a session                | optional body `{ userLabel?, assistantLabel?, language? }`        | `{ conversationId, links: { postNext } }` |
 | `POST /conversations/{cid}/interactions`      | Send one interaction           | header `X-Interaction-Id`; PlainJson invoke body (`data.message`) | `200` + **envelope**                      |
 | `GET /conversations/{cid}/interactions/{iid}` | Replay one interaction         | —                                                                 | **envelope**                              |
 | `GET /status`                                 | Server + conversation snapshot | —                                                                 | **status payload**                        |
+
+**Bubble role labels:** `userLabel` / `assistantLabel` set the text shown
+above each bubble (`cards.dart`) for the lifetime of the conversation —
+sent once at `POST /conversations`, not per interaction, since they never
+change mid-conversation. Both default to `user` / `assistant` when omitted.
+`language` is stored on the conversation but not yet consumed by any
+behavior.
 
 **Envelope:** `{ conversationId, interactionId, messages: [<AdaptiveCard>, ...], links: { self, postNext } }`.
 `messages` is an ordered list of pre-styled cards (a right-aligned "you" bubble
@@ -415,12 +422,6 @@ element instead of falling back to readable text. The fix is small; the open
 question is what to validate `type` against — the full Adaptive Cards element
 set (precise, but drifts from the library) or the palette the card system
 prompt actually advertises (narrower, but couples detection to prompt text).
-
-**Bubble role labels are hardcoded English.** `_bubble` emits a `TextBlock`
-reading `user` / `assistant` above every bubble (`cards.dart`, duplicated in
-`_fullWidthBubble`). Beyond being untranslatable, it is unusual chat UX —
-alignment and fill already convey who spoke. Needs a product decision: drop
-the labels, or keep them and let the host supply the strings.
 
 **Conversation state grows without bound.** `ConversationStore` never evicts:
 neither conversations nor the interactions inside them, and `GET /status`

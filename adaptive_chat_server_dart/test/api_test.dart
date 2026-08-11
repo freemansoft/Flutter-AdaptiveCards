@@ -178,6 +178,62 @@ void main() {
     expect(await decode(replay), envelope);
   });
 
+  test(
+    "labels supplied at POST /conversations apply to every interaction's "
+    'bubbles',
+    () async {
+      final start = await handler(
+        Request(
+          'POST',
+          Uri.parse('http://localhost/conversations'),
+          body: jsonEncode({'userLabel': 'Me', 'assistantLabel': 'Bot'}),
+        ),
+      );
+      final cid = (await decode(start))['conversationId'] as String;
+
+      final send = await handler(
+        Request(
+          'POST',
+          Uri.parse('http://localhost/conversations/$cid/interactions'),
+          headers: {'x-interaction-id': 'i_0001'},
+          body: jsonEncode({
+            'data': {'message': 'hello'},
+          }),
+        ),
+      );
+      final envelope = await decode(send);
+      final messages = envelope['messages'] as List;
+      final userCard = messages[0] as Map<String, dynamic>;
+      final assistantCard = messages[1] as Map<String, dynamic>;
+      expect(((userCard['body'] as List)[0] as Map)['text'], 'Me');
+      expect(((assistantCard['body'] as List)[0] as Map)['text'], 'Bot');
+    },
+  );
+
+  test(
+    'POST /conversations without a body defaults labels to '
+    '"user"/"assistant"',
+    () async {
+      final cid = await startConversation(handler);
+      final send = await handler(
+        Request(
+          'POST',
+          Uri.parse('http://localhost/conversations/$cid/interactions'),
+          headers: {'x-interaction-id': 'i_0001'},
+          body: jsonEncode({
+            'data': {'message': 'hello'},
+          }),
+        ),
+      );
+      final envelope = await decode(send);
+      final messages = envelope['messages'] as List;
+      final userCard = messages[0] as Map<String, dynamic>;
+      final assistantCard = messages[1] as Map<String, dynamic>;
+      expect(((userCard['body'] as List)[0] as Map)['text'], 'user');
+      expect(((assistantCard['body'] as List)[0] as Map)['text'], 'assistant');
+    },
+  );
+
   test('GET replay of an unknown interaction returns 404', () async {
     final cid = await startConversation(handler);
     final response = await handler(

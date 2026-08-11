@@ -21,6 +21,25 @@ void main() {
       expect(a.conversationId, isNot(b.conversationId));
     });
 
+    test('create defaults userLabel/assistantLabel to "user"/"assistant" '
+        'and language to null', () {
+      final conv = ConversationStore().create();
+      expect(conv.userLabel, 'user');
+      expect(conv.assistantLabel, 'assistant');
+      expect(conv.language, isNull);
+    });
+
+    test('create stores caller-supplied userLabel/assistantLabel/language', () {
+      final conv = ConversationStore().create(
+        userLabel: 'Me',
+        assistantLabel: 'Bot',
+        language: 'es',
+      );
+      expect(conv.userLabel, 'Me');
+      expect(conv.assistantLabel, 'Bot');
+      expect(conv.language, 'es');
+    });
+
     test('get returns null for an unknown id', () {
       final store = ConversationStore();
       expect(store.get('missing'), isNull);

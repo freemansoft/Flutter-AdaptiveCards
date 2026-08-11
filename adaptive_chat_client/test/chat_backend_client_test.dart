@@ -73,6 +73,38 @@ void main() {
     },
   );
 
+  test(
+    'startConversation sends userLabel/assistantLabel/language when given',
+    () async {
+      late http.Request captured;
+      final mock = MockClient((req) async {
+        captured = req;
+        return http.Response(
+          jsonEncode({
+            'conversationId': 'c_1',
+            'links': {'postNext': '/conversations/c_1/interactions'},
+          }),
+          200,
+        );
+      });
+      final client = ChatBackendClient(
+        baseUrl: Uri.parse('http://localhost:8000'),
+        client: mock,
+      );
+
+      await client.startConversation(
+        userLabel: 'Me',
+        assistantLabel: 'Bot',
+        language: 'es',
+      );
+
+      final body = jsonDecode(captured.body) as Map<String, dynamic>;
+      expect(body['userLabel'], 'Me');
+      expect(body['assistantLabel'], 'Bot');
+      expect(body['language'], 'es');
+    },
+  );
+
   test('non-200 throws ChatBackendException', () async {
     final mock = MockClient((req) async => http.Response('boom', 500));
     final client = ChatBackendClient(

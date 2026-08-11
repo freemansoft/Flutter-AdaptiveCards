@@ -107,13 +107,18 @@ Future<List<Message>> _runInteraction({
   required String cid,
   required String interactionId,
   required String message,
+  String userLabel = defaultUserLabel,
+  String assistantLabel = defaultAssistantLabel,
 }) async {
   final reply = await responder.reply(message, _historyFor(store.get(cid)!));
   final assistantCard = reply.cardBody != null
-      ? assistantCardBubble(reply.cardBody!)
-      : assistantBubble(reply.text);
+      ? assistantCardBubble(reply.cardBody!, label: assistantLabel)
+      : assistantBubble(reply.text, label: assistantLabel);
   final messages = [
-    Message(role: 'user', card: userBubble(message)),
+    Message(
+      role: 'user',
+      card: userBubble(message, label: userLabel),
+    ),
     Message(role: 'assistant', card: assistantCard),
   ];
   store.addInteraction(
@@ -144,8 +149,17 @@ Handler buildHandler({
   final inFlight = <String, Future<List<Message>>>{};
 
   final router = Router()
-    ..post('/conversations', (Request request) {
-      final conv = store.create();
+    ..post('/conversations', (Request request) async {
+      final rawBody = await request.readAsString();
+      final body = rawBody.isEmpty
+          ? <String, dynamic>{}
+          : jsonDecode(rawBody) as Map<String, dynamic>;
+      final conv = store.create(
+        userLabel: body['userLabel'] as String? ?? defaultUserLabel,
+        assistantLabel:
+            body['assistantLabel'] as String? ?? defaultAssistantLabel,
+        language: body['language'] as String?,
+      );
       final cid = conv.conversationId;
       return Response.ok(
         jsonEncode({
@@ -163,7 +177,8 @@ Handler buildHandler({
       if (interactionId == null || interactionId.isEmpty) {
         return _error(400, 'X-Interaction-Id header required');
       }
-      if (store.get(cid) == null) {
+      final conv = store.get(cid);
+      if (conv == null) {
         return _error(404, 'unknown conversation');
       }
 
@@ -199,6 +214,8 @@ Handler buildHandler({
           cid: cid,
           interactionId: interactionId,
           message: message,
+          userLabel: conv.userLabel,
+          assistantLabel: conv.assistantLabel,
         );
         inFlight[key] = started;
         try {
