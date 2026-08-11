@@ -27,6 +27,18 @@ void main() {
         expect(textBlock['text'], 'hello');
       },
     );
+
+    test('defaults the role label to "user"', () {
+      final card = userBubble('hello');
+      final body = card['body'] as List;
+      expect((body[0] as Map)['text'], 'user');
+    });
+
+    test('accepts a caller-supplied role label', () {
+      final card = userBubble('hello', label: 'Me');
+      final body = card['body'] as List;
+      expect((body[0] as Map)['text'], 'Me');
+    });
   });
 
   group('assistantBubble', () {
@@ -41,6 +53,18 @@ void main() {
       final container =
           ((columns[0] as Map)['items'] as List).single as Map<String, dynamic>;
       expect(container['style'], 'emphasis');
+    });
+
+    test('defaults the role label to "assistant"', () {
+      final card = assistantBubble('hi there');
+      final body = card['body'] as List;
+      expect((body[0] as Map)['text'], 'assistant');
+    });
+
+    test('accepts a caller-supplied role label', () {
+      final card = assistantBubble('hi there', label: 'Bot');
+      final body = card['body'] as List;
+      expect((body[0] as Map)['text'], 'Bot');
     });
   });
 
@@ -70,6 +94,15 @@ void main() {
         );
       },
     );
+
+    test('accepts a caller-supplied role label', () {
+      final bodyItems = [
+        {'type': 'TextBlock', 'text': 'card content', 'wrap': true},
+      ];
+      final card = assistantCardBubble(bodyItems, label: 'Bot');
+      final body = card['body'] as List;
+      expect((body[0] as Map)['text'], 'Bot');
+    });
   });
 
   group('envelope', () {

@@ -5,6 +5,13 @@ import 'dart:math';
 
 import 'package:adaptive_chat_server_dart/src/stats.dart';
 
+/// Default user role label, used when a client does not supply its own
+/// at `POST /conversations` time.
+const defaultUserLabel = 'user';
+
+/// Default assistant role label. See [defaultUserLabel].
+const defaultAssistantLabel = 'assistant';
+
 /// One rendered bubble: an author role plus its Adaptive Card map.
 class Message {
   /// Creates a message.
@@ -55,10 +62,29 @@ class Interaction {
 /// A session: ordered interactions keyed by client-supplied id.
 class Conversation {
   /// Creates a conversation.
-  Conversation({required this.conversationId}) : interactions = {}, order = [];
+  Conversation({
+    required this.conversationId,
+    this.userLabel = defaultUserLabel,
+    this.assistantLabel = defaultAssistantLabel,
+    this.language,
+  }) : interactions = {},
+       order = [];
 
   /// The unique identifier for this conversation.
   final String conversationId;
+
+  /// Role label shown above the user's bubbles, fixed for the conversation's
+  /// lifetime (set once, at `POST /conversations`).
+  final String userLabel;
+
+  /// Role label shown above the assistant's bubbles. See [userLabel].
+  final String assistantLabel;
+
+  /// Client-supplied language tag (e.g. `es`), if any.
+  ///
+  /// Stored for future use (e.g. a localized system prompt or the
+  /// "conversation expired" card); nothing reads it yet.
+  final String? language;
 
   /// Map of interaction ids to interactions.
   final Map<String, Interaction> interactions;
@@ -80,8 +106,17 @@ class ConversationStore {
   final Map<String, Conversation> _conversations = {};
 
   /// Creates a new conversation and returns it.
-  Conversation create() {
-    final conv = Conversation(conversationId: _newConversationId());
+  Conversation create({
+    String userLabel = defaultUserLabel,
+    String assistantLabel = defaultAssistantLabel,
+    String? language,
+  }) {
+    final conv = Conversation(
+      conversationId: _newConversationId(),
+      userLabel: userLabel,
+      assistantLabel: assistantLabel,
+      language: language,
+    );
     _conversations[conv.conversationId] = conv;
     return conv;
   }

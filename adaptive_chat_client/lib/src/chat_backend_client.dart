@@ -28,10 +28,25 @@ class ChatBackendClient {
   };
 
   /// Starts a conversation and returns its id + first `postNext`.
-  Future<ChatStart> startConversation() async {
+  ///
+  /// [userLabel] and [assistantLabel] set the bubble role labels for every
+  /// interaction in this conversation; the server defaults to `user` /
+  /// `assistant` when omitted. [language] is stored by the server for
+  /// future use but does not otherwise change behavior yet.
+  Future<ChatStart> startConversation({
+    String? userLabel,
+    String? assistantLabel,
+    String? language,
+  }) async {
+    final body = <String, dynamic>{
+      'userLabel': ?userLabel,
+      'assistantLabel': ?assistantLabel,
+      'language': ?language,
+    };
     final resp = await _client.post(
       baseUrl.resolve('/conversations'),
       headers: _jsonHeaders,
+      body: body.isEmpty ? null : jsonEncode(body),
     );
     if (resp.statusCode != 200) {
       throw ChatBackendException('start failed: HTTP ${resp.statusCode}');

@@ -7,10 +7,29 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 /// Ordinary Flutter state — Riverpod is reserved for the core library.
 class ConversationController extends ChangeNotifier {
   /// Creates a controller backed by [client].
-  ConversationController({required this.client});
+  ///
+  /// [userLabel] and [assistantLabel] are sent once, at
+  /// [startConversation], and set the bubble role labels for the whole
+  /// conversation. [language] is passed through to the backend for future
+  /// use.
+  ConversationController({
+    required this.client,
+    this.userLabel = 'user',
+    this.assistantLabel = 'assistant',
+    this.language,
+  });
 
   /// Backend transport.
   final ChatBackendClient client;
+
+  /// Role label shown above the user's bubbles.
+  final String userLabel;
+
+  /// Role label shown above the assistant's bubbles.
+  final String assistantLabel;
+
+  /// Client-supplied language tag (e.g. `es`) passed to the backend.
+  final String? language;
 
   /// Rendered bubble cards, oldest first.
   final List<Map<String, dynamic>> messages = [];
@@ -49,7 +68,11 @@ class ConversationController extends ChangeNotifier {
     startError = null;
     notifyListeners();
     try {
-      final start = await client.startConversation();
+      final start = await client.startConversation(
+        userLabel: userLabel,
+        assistantLabel: assistantLabel,
+        language: language,
+      );
       _conversationId = start.conversationId;
       _postNext = start.postNext;
       messages.clear();

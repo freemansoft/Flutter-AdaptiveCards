@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:adaptive_chat_client/l10n/generated/app_localizations.dart';
 import 'package:adaptive_chat_client/src/compose_card.dart';
 import 'package:adaptive_chat_client/src/conversation_controller.dart';
 import 'package:flutter/material.dart';
@@ -79,16 +80,17 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ListenableBuilder(
       listenable: widget.controller,
       builder: (context, _) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Adaptive Chat'),
+            title: Text(l10n.appTitle),
             actions: [
               IconButton(
                 key: const ValueKey('new-conversation'),
-                tooltip: 'New conversation',
+                tooltip: l10n.newConversationTooltip,
                 icon: const Icon(Icons.add_comment_outlined),
                 onPressed: widget.controller.startConversation,
               ),
@@ -113,6 +115,7 @@ class _ChatPageState extends State<ChatPage> {
       widget.controller.startError != null;
 
   Widget _buildStartError(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       key: const ValueKey('start-error'),
       color: Theme.of(context).colorScheme.errorContainer,
@@ -122,7 +125,7 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             Expanded(
               child: Text(
-                "Couldn't reach the chat server.",
+                l10n.startErrorMessage,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
@@ -131,7 +134,7 @@ class _ChatPageState extends State<ChatPage> {
             TextButton(
               key: const ValueKey('start-error-retry'),
               onPressed: widget.controller.startConversation,
-              child: const Text('Retry'),
+              child: Text(l10n.retryButton),
             ),
           ],
         ),
@@ -178,6 +181,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildCompose(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(12),
       child: InheritedAdaptiveCardHandlers(
@@ -192,7 +196,10 @@ class _ChatPageState extends State<ChatPage> {
         child: AdaptiveCardsCanvas.map(
           // Rebuild empty after each send.
           key: ValueKey('compose-${widget.controller.composeEpoch}'),
-          content: composeCard(),
+          content: composeCard(
+            placeholder: l10n.composePlaceholder,
+            sendTitle: l10n.sendButton,
+          ),
           hostConfigs: widget.hostConfigs,
           showDebugJson: false,
         ),

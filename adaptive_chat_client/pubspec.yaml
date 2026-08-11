@@ -15,7 +15,10 @@ dependencies:
     path: ../packages/flutter_adaptive_cards_fs
   flutter_adaptive_cards_host_fs:
     path: ../packages/flutter_adaptive_cards_host_fs
+  flutter_localizations:
+    sdk: flutter
   http: ^1.2.2
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -24,3 +27,4 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true

@@ -8,4 +8,12 @@ void main() {
     await tester.pump();
     expect(find.widgetWithText(AppBar, 'Adaptive Chat'), findsOneWidget);
   });
+
+  testWidgets('app renders the Spanish app bar when locale is es', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const AdaptiveChatApp(locale: Locale('es')));
+    await tester.pump();
+    expect(find.widgetWithText(AppBar, 'Chat Adaptativo'), findsOneWidget);
+  });
 }

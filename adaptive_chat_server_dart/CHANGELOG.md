@@ -43,3 +43,9 @@
   documentation it previously deferred to that package's README (wire
   envelope, conversation context, system prompt, card replies, structured
   output, Ollama diagnostics, macOS local-network notes).
+- Added: `POST /conversations` accepts an optional `userLabel` / `assistantLabel`
+  body, fixed for that conversation's lifetime and applied to every bubble
+  rendered in it (was previously the hardcoded English `user` / `assistant`
+  text above each bubble). Defaults to `user` / `assistant` when omitted. Also
+  accepts a `language` field, stored on the conversation for future use but
+  not yet consumed by any behavior.

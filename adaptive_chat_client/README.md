@@ -164,6 +164,33 @@ rebuild** (`fvm flutter run -d macos`) — entitlements are applied at build/sig
 time, so a hot reload/restart won't pick them up. (This is a build entitlement,
 not the Local Network system-settings toggle the web client needs.)
 
+## Localization
+
+The app's own chrome (app bar title, tooltips, the start-error banner, the
+compose box's placeholder/Send button, and the default bubble role labels) is
+localized via `flutter_localizations` + `.arb` files — English and Spanish
+today. This is ordinary Flutter app localization, distinct from the packages
+under `packages/`, which ship no `.arb` files by design (see
+[`docs/documentation-scope.md`](../docs/documentation-scope.md) and the
+`adaptive-cards-localization` skill); the server's own **card content**
+(the chat bubbles themselves) is author/model output and is never
+translated by the client.
+
+- Source strings: [`lib/l10n/app_en.arb`](lib/l10n/app_en.arb) /
+  [`lib/l10n/app_es.arb`](lib/l10n/app_es.arb). Generated code (via
+  `flutter pub get` / `flutter gen-l10n`, see [`l10n.yaml`](l10n.yaml)) lives
+  in `lib/l10n/generated/` and is committed, matching this repo's convention
+  of committing generated Dart output (e.g. `widgetbook/lib/main.directories.g.dart`).
+- `AdaptiveChatApp`'s `locale` parameter is a test seam (forces a locale
+  instead of relying on the OS/test-runner default); the running app follows
+  the device locale via `MaterialApp.supportedLocales`.
+- The resolved locale's `userRoleLabel` / `assistantRoleLabel` strings are
+  sent once, at `POST /conversations`, as the `userLabel` / `assistantLabel`
+  body fields (see [`../adaptive_chat_server_dart`](../adaptive_chat_server_dart)'s
+  wire contract) — the server has no locale awareness of its own. The
+  resolved language tag is also sent as `language`, stored by the server for
+  future use.
+
 ## Test
 
 ```bash

@@ -1,0 +1,35 @@
+{
+  "@@locale": "en",
+  "appTitle": "Adaptive Chat",
+  "@appTitle": {
+    "description": "App name, shown as the window/app-bar title."
+  },
+  "newConversationTooltip": "New conversation",
+  "@newConversationTooltip": {
+    "description": "Tooltip on the app bar button that starts a fresh conversation."
+  },
+  "startErrorMessage": "Couldn''t reach the chat server.",
+  "@startErrorMessage": {
+    "description": "Shown when starting a conversation fails."
+  },
+  "retryButton": "Retry",
+  "@retryButton": {
+    "description": "Button that retries a failed conversation start."
+  },
+  "composePlaceholder": "Type a message",
+  "@composePlaceholder": {
+    "description": "Placeholder text in the message compose box."
+  },
+  "sendButton": "Send",
+  "@sendButton": {
+    "description": "Title of the button that submits the compose box."
+  },
+  "userRoleLabel": "user",
+  "@userRoleLabel": {
+    "description": "Role label shown above the user's own chat bubbles."
+  },
+  "assistantRoleLabel": "assistant",
+  "@assistantRoleLabel": {
+    "description": "Role label shown above the assistant's chat bubbles."
+  }
+}
