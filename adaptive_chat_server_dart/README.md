@@ -68,7 +68,7 @@ later send on that id finds the auto-vivified conversation already there.
 Its body comes from `assets/expired_conversation_notice.json` (falls back to
 a small built-in message if that file is missing or invalid), editable
 without recompiling. The **replay** route (`GET .../interactions/{iid}`)
-does *not* auto-vivify — it still 404s for an unknown conversation, since
+does _not_ auto-vivify — it still 404s for an unknown conversation, since
 there is no stored interaction to replay.
 
 **`X-Chat-Notice` header policy:** when a response still carries a normal
@@ -93,23 +93,23 @@ second one.
 
 ### Components (`lib/src/`)
 
-| File                               | Responsibility                                                                                                                                                                 |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `app.dart`                         | shelf `Router`, CORS middleware, the `buildResponder`/`buildHandler` factories used by `bin/server.dart`.                                                                      |
-| `store.dart`                       | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `replyText` (so chat history can be rebuilt).                       |
-| `cards.dart`                       | Bubble authoring: `userBubble` (accent, right), `assistantBubble` (emphasis, left, Markdown text), `assistantCardBubble` (emphasis, left, embedded card), `noticeCard` (attention, no role label — the expired-conversation notice), and `envelope(...)`. |
-| `expired_conversation.dart`        | `loadExpiredConversationBodyItems(path)` — reads the bundled notice body, falling back to a built-in message if the asset is missing/invalid.                                 |
-| `responder.dart`                   | `Reply(text, cardBody, stats)`, the `Responder` interface (`Future<Reply> reply(text, history)`, `describe()`), and `EchoResponder`.                                           |
-| `card_detect.dart`                 | `tryParseCardBody(raw) -> List<Map>?` — strict text-vs-card detection (see **Card replies** below).                                                                            |
-| `stats.dart`                       | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                                 |
-| `status.dart`                      | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                                         |
-| `ollama_responder.dart`            | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                                 |
-| `assets/default_system_prompt.txt` | Bundled default system prompt.                                                                                                                                                 |
-| `assets/card_system_prompt.txt`    | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                              |
-| `assets/card_schema.json`          | Bundled schema for `--json-format schema`.                                                                                                                                     |
-| `assets/expired_conversation_notice.json` | Bundled notice card body for an auto-vivified (expired) conversation.                                                                                                   |
-| `cli.dart`                         | `buildArgParser()` / `resolveLogLevel()` — the flag set, defaults, and allowed values. In `lib/` so the CLI surface is reachable from tests.                                   |
-| `bin/server.dart`                  | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder from `--ollama-url` and starts `shelf_io.serve`.                                                    |
+| File                                      | Responsibility                                                                                                                                                                                                                                            |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app.dart`                                | shelf `Router`, CORS middleware, the `buildResponder`/`buildHandler` factories used by `bin/server.dart`.                                                                                                                                                 |
+| `store.dart`                              | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `replyText` (so chat history can be rebuilt).                                                                                                  |
+| `cards.dart`                              | Bubble authoring: `userBubble` (accent, right), `assistantBubble` (emphasis, left, Markdown text), `assistantCardBubble` (emphasis, left, embedded card), `noticeCard` (attention, no role label — the expired-conversation notice), and `envelope(...)`. |
+| `expired_conversation.dart`               | `loadExpiredConversationBodyItems(path)` — reads the bundled notice body, falling back to a built-in message if the asset is missing/invalid.                                                                                                             |
+| `responder.dart`                          | `Reply(text, cardBody, stats)`, the `Responder` interface (`Future<Reply> reply(text, history)`, `describe()`), and `EchoResponder`.                                                                                                                      |
+| `card_detect.dart`                        | `tryParseCardBody(raw) -> List<Map>?` — strict text-vs-card detection (see **Card replies** below).                                                                                                                                                       |
+| `stats.dart`                              | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                                                                                                            |
+| `status.dart`                             | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                                                                                                                    |
+| `ollama_responder.dart`                   | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                                                                                                            |
+| `assets/default_system_prompt.txt`        | Bundled default system prompt.                                                                                                                                                                                                                            |
+| `assets/card_system_prompt.txt`           | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                                                                                                         |
+| `assets/card_schema.json`                 | Bundled schema for `--json-format schema`.                                                                                                                                                                                                                |
+| `assets/expired_conversation_notice.json` | Bundled notice card body for an auto-vivified (expired) conversation.                                                                                                                                                                                     |
+| `cli.dart`                                | `buildArgParser()` / `resolveLogLevel()` — the flag set, defaults, and allowed values. In `lib/` so the CLI surface is reachable from tests.                                                                                                              |
+| `bin/server.dart`                         | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder from `--ollama-url` and starts `shelf_io.serve`.                                                                                                                               |
 
 ### Responder selection
 
