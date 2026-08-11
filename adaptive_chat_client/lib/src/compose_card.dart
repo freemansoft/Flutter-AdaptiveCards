@@ -7,19 +7,22 @@
 /// send glyph (alongside the "Send" title; icon-only rendering is a follow-up).
 /// default hostconfig for `iconPlacement` is `aboveTitle`,
 /// so the icon appears above the title text.
-Map<String, dynamic> composeCard() => {
+Map<String, dynamic> composeCard({
+  required String placeholder,
+  required String sendTitle,
+}) => {
   'type': 'AdaptiveCard',
   'version': '1.5',
   'body': [
     {
       'type': 'Input.Text',
       'id': 'message',
-      'placeholder': 'Type a message',
+      'placeholder': placeholder,
       'isMultiline': true,
       'inlineAction': {
         'type': 'Action.Submit',
         'id': 'send',
-        'title': 'Send',
+        'title': sendTitle,
         'iconUrl': 'icon:Send',
       },
     },

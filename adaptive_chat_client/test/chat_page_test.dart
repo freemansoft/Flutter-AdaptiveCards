@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:adaptive_chat_client/l10n/generated/app_localizations.dart';
 import 'package:adaptive_chat_client/src/chat_backend_client.dart';
 import 'package:adaptive_chat_client/src/chat_page.dart';
 import 'package:adaptive_chat_client/src/conversation_controller.dart';
@@ -95,6 +96,8 @@ ChatBackendClient _clientWithStartFailing(bool Function() startFails) {
 Future<void> _pumpPage(WidgetTester tester, ConversationController c) async {
   await tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: ChatPage(controller: c, hostConfigs: HostConfigs()),
     ),
   );

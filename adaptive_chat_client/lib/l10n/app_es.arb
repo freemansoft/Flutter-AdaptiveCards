@@ -1,0 +1,11 @@
+{
+  "@@locale": "es",
+  "appTitle": "Chat Adaptativo",
+  "newConversationTooltip": "Nueva conversación",
+  "startErrorMessage": "No se pudo conectar con el servidor de chat.",
+  "retryButton": "Reintentar",
+  "composePlaceholder": "Escribe un mensaje",
+  "sendButton": "Enviar",
+  "userRoleLabel": "usuario",
+  "assistantRoleLabel": "asistente"
+}
