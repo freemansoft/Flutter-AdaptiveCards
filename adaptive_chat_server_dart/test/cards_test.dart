@@ -105,6 +105,29 @@ void main() {
     });
   });
 
+  group('noticeCard', () {
+    test(
+      'renders full-width attention style with no role label, embedding '
+      'the given body items',
+      () {
+        final bodyItems = [
+          {'type': 'TextBlock', 'text': 'notice', 'wrap': true},
+        ];
+        final card = noticeCard(bodyItems);
+        expect(card['type'], 'AdaptiveCard');
+        final body = card['body'] as List;
+        // No role-label TextBlock ahead of the container: a notice card has
+        // no author.
+        expect(body, hasLength(1));
+        final container = body[0] as Map<String, dynamic>;
+        expect(container['type'], 'Container');
+        expect(container['style'], 'attention');
+        expect(container['roundedCorners'], true);
+        expect(container['items'], bodyItems);
+      },
+    );
+  });
+
   group('envelope', () {
     test('carries conversationId, interactionId, message cards, and links', () {
       final messages = [

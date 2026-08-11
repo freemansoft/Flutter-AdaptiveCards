@@ -56,6 +56,33 @@ change mid-conversation. Both default to `user` / `assistant` when omitted.
 `language` is stored on the conversation but not yet consumed by any
 behavior.
 
+**Expired conversations:** all state is in-memory, so restarting the server
+strands any client still holding a `conversationId`. `POST
+.../interactions` no longer 404s for an unknown id — it **auto-vivifies** a
+fresh `Conversation` under that same id (default `user`/`assistant` labels;
+the originals were lost too) and **prepends a "this conversation no longer
+exists" notice card** to the envelope, ahead of the usual user/assistant
+bubbles, so the transcript itself says what happened. The notice appears
+exactly once — the interaction that discovers the id is gone — because every
+later send on that id finds the auto-vivified conversation already there.
+Its body comes from `assets/expired_conversation_notice.json` (falls back to
+a small built-in message if that file is missing or invalid), editable
+without recompiling. The **replay** route (`GET .../interactions/{iid}`)
+does *not* auto-vivify — it still 404s for an unknown conversation, since
+there is no stored interaction to replay.
+
+**`X-Chat-Notice` header policy:** when a response still carries a normal
+`200` + a real card the client can render, but reflects something
+noteworthy that happened server-side (not a client-facing error), that's
+signalled with the `X-Chat-Notice` response header rather than the status
+code or a body field — the status code answers "did the HTTP request
+succeed," this header answers "here's extra context about the answer,"
+which a client may read, log, or ignore. `conversation-recovered` is the
+first value (set whenever the envelope's first message is the expired-
+conversation notice, including on an idempotent replay of a stored
+interaction that carried one); future cases of this kind should add a new
+value here rather than a new header.
+
 **Envelope:** `{ conversationId, interactionId, messages: [<AdaptiveCard>, ...], links: { self, postNext } }`.
 `messages` is an ordered list of pre-styled cards (a right-aligned "you" bubble
 and a left-aligned reply bubble). **Idempotent by `X-Interaction-Id`:** a
@@ -70,7 +97,8 @@ second one.
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `app.dart`                         | shelf `Router`, CORS middleware, the `buildResponder`/`buildHandler` factories used by `bin/server.dart`.                                                                      |
 | `store.dart`                       | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `replyText` (so chat history can be rebuilt).                       |
-| `cards.dart`                       | Bubble authoring: `userBubble` (accent, right), `assistantBubble` (emphasis, left, Markdown text), `assistantCardBubble` (emphasis, left, embedded card), and `envelope(...)`. |
+| `cards.dart`                       | Bubble authoring: `userBubble` (accent, right), `assistantBubble` (emphasis, left, Markdown text), `assistantCardBubble` (emphasis, left, embedded card), `noticeCard` (attention, no role label — the expired-conversation notice), and `envelope(...)`. |
+| `expired_conversation.dart`        | `loadExpiredConversationBodyItems(path)` — reads the bundled notice body, falling back to a built-in message if the asset is missing/invalid.                                 |
 | `responder.dart`                   | `Reply(text, cardBody, stats)`, the `Responder` interface (`Future<Reply> reply(text, history)`, `describe()`), and `EchoResponder`.                                           |
 | `card_detect.dart`                 | `tryParseCardBody(raw) -> List<Map>?` — strict text-vs-card detection (see **Card replies** below).                                                                            |
 | `stats.dart`                       | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                                 |
@@ -79,6 +107,7 @@ second one.
 | `assets/default_system_prompt.txt` | Bundled default system prompt.                                                                                                                                                 |
 | `assets/card_system_prompt.txt`    | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                              |
 | `assets/card_schema.json`          | Bundled schema for `--json-format schema`.                                                                                                                                     |
+| `assets/expired_conversation_notice.json` | Bundled notice card body for an auto-vivified (expired) conversation.                                                                                                   |
 | `cli.dart`                         | `buildArgParser()` / `resolveLogLevel()` — the flag set, defaults, and allowed values. In `lib/` so the CLI surface is reachable from tests.                                   |
 | `bin/server.dart`                  | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder from `--ollama-url` and starts `shelf_io.serve`.                                                    |
 
@@ -443,22 +472,6 @@ over a long conversation before acting on it.
 ### Requested enhancements
 
 Wanted, not yet built.
-
-**Explain an expired conversation with a card instead of a bare 404.** All
-state is in-memory, so restarting the server strands any client holding a
-`conversationId`: `POST …/interactions` and the replay route both answer
-`404 {"detail": "unknown conversation"}`, and the user is stuck with no
-in-chat explanation. Instead the server should carry on serving the message
-and **prepend a "this conversation no longer exists" card** to the envelope,
-ahead of the usual user and assistant bubbles — so the transcript itself says
-what happened. The card body should come from a bundled JSON file, the way
-the system prompts do, so the wording is editable without recompiling.
-
-Open questions: whether the server adopts the client's unknown
-`conversationId` or mints a fresh one and returns it; whether the notice
-appears once or on every send until the client restarts; and what the replay
-route (`GET …/interactions/{iid}`) should do, since there is no stored
-interaction to replay.
 
 **A debug flag that logs the outgoing envelope.** `--log-level debug` today
 surfaces the raw _model_ content and the card-detection outcome

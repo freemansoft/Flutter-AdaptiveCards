@@ -5,6 +5,7 @@ library;
 import 'dart:convert';
 
 import 'package:adaptive_chat_server_dart/src/cards.dart';
+import 'package:adaptive_chat_server_dart/src/expired_conversation.dart';
 import 'package:adaptive_chat_server_dart/src/ollama_responder.dart';
 import 'package:adaptive_chat_server_dart/src/responder.dart';
 import 'package:adaptive_chat_server_dart/src/status.dart';
@@ -16,6 +17,28 @@ import 'package:shelf_router/shelf_router.dart';
 final _log = Logger('adaptive_chat_server_dart');
 
 const _jsonHeaders = {'content-type': 'application/json'};
+
+/// Policy: an interaction response that still carries a normal envelope
+/// (200, a real card the client can render) but reflects something
+/// noteworthy that happened server-side — not a client-facing error — is
+/// signalled via this header, never via the status code or a body field.
+/// The status code says "did the HTTP request succeed"; this says "here's
+/// extra context about the answer," which a client may read, log, or
+/// ignore. `conversation-recovered` is the first case; add values here
+/// (not new headers) for future ones.
+const _chatNoticeHeader = 'X-Chat-Notice';
+
+/// Headers for an interaction envelope response, adding [_chatNoticeHeader]
+/// when [messages] opens with a server notice (see `noticeCard` /
+/// `_runInteraction`'s `notice` param) — including on an idempotent replay
+/// of a stored interaction that carried one, so a retry sees the same
+/// signal as the original call.
+Map<String, String> _envelopeHeaders(List<Message> messages) {
+  if (messages.isNotEmpty && messages.first.role == 'notice') {
+    return {..._jsonHeaders, _chatNoticeHeader: 'conversation-recovered'};
+  }
+  return _jsonHeaders;
+}
 
 const _corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -101,6 +124,11 @@ List<(String, String)> _historyFor(Conversation conversation) {
 }
 
 /// Runs one interaction end to end and stores it, returning its bubbles.
+///
+/// [notice], when set, is prepended ahead of the user/assistant bubbles and
+/// stored as part of the interaction — see the unknown-conversation
+/// auto-vivify branch in `buildHandler`, which sets it exactly once, on the
+/// interaction that discovers the conversation is gone.
 Future<List<Message>> _runInteraction({
   required ConversationStore store,
   required Responder responder,
@@ -109,12 +137,14 @@ Future<List<Message>> _runInteraction({
   required String message,
   String userLabel = defaultUserLabel,
   String assistantLabel = defaultAssistantLabel,
+  Message? notice,
 }) async {
   final reply = await responder.reply(message, _historyFor(store.get(cid)!));
   final assistantCard = reply.cardBody != null
       ? assistantCardBubble(reply.cardBody!, label: assistantLabel)
       : assistantBubble(reply.text, label: assistantLabel);
   final messages = [
+    ?notice,
     Message(
       role: 'user',
       card: userBubble(message, label: userLabel),
@@ -136,9 +166,17 @@ Future<List<Message>> _runInteraction({
 }
 
 /// Builds the shelf [Handler] serving the four Adaptive Chat routes.
+///
+/// [expiredConversationBodyItems] is the notice card body prepended when a
+/// `POST .../interactions` targets a `conversationId` the store has lost
+/// (e.g. a restart) — see the auto-vivify branch below. Defaults to
+/// [fallbackExpiredConversationBodyItems]; `bin/server.dart` passes the
+/// bundled asset instead.
 Handler buildHandler({
   required ConversationStore store,
   required Responder responder,
+  List<Map<String, dynamic>> expiredConversationBodyItems =
+      fallbackExpiredConversationBodyItems,
 }) {
   // Interactions currently inside `responder.reply`, keyed `cid|iid`. The
   // stored-envelope check alone cannot make a retry idempotent: nothing is
@@ -177,16 +215,26 @@ Handler buildHandler({
       if (interactionId == null || interactionId.isEmpty) {
         return _error(400, 'X-Interaction-Id header required');
       }
-      final conv = store.get(cid);
+      // A restart drops all conversations; a client resending to one it
+      // still holds an id for would otherwise get a bare 404 with no
+      // in-chat explanation. Auto-vivify a fresh Conversation under the
+      // same id instead (default labels — the originals were lost too) and
+      // carry on, so the transcript itself says what happened.
+      var conv = store.get(cid);
+      Message? expiredNotice;
       if (conv == null) {
-        return _error(404, 'unknown conversation');
+        conv = store.create(conversationId: cid);
+        expiredNotice = Message(
+          role: 'notice',
+          card: noticeCard(expiredConversationBodyItems),
+        );
       }
 
       final existing = store.getInteraction(cid, interactionId);
       if (existing != null) {
         return Response.ok(
           jsonEncode(envelope(cid, interactionId, existing.messages)),
-          headers: _jsonHeaders,
+          headers: _envelopeHeaders(existing.messages),
         );
       }
 
@@ -216,6 +264,7 @@ Handler buildHandler({
           message: message,
           userLabel: conv.userLabel,
           assistantLabel: conv.assistantLabel,
+          notice: expiredNotice,
         );
         inFlight[key] = started;
         try {
@@ -230,7 +279,7 @@ Handler buildHandler({
 
       return Response.ok(
         jsonEncode(envelope(cid, interactionId, messages)),
-        headers: _jsonHeaders,
+        headers: _envelopeHeaders(messages),
       );
     })
     ..get('/conversations/<cid>/interactions/<iid>', (
