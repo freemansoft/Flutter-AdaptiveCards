@@ -439,6 +439,34 @@ caches a prompt prefix across turns, which would let the 50% / 76% log tiers
 stay quiet while the window fills. A 3-turn run did _not_ show this. Confirm
 over a long conversation before acting on it.
 
+### Requested enhancements
+
+Wanted, not yet built.
+
+**Explain an expired conversation with a card instead of a bare 404.** All
+state is in-memory, so restarting the server strands any client holding a
+`conversationId`: `POST …/interactions` and the replay route both answer
+`404 {"detail": "unknown conversation"}`, and the user is stuck with no
+in-chat explanation. Instead the server should carry on serving the message
+and **prepend a "this conversation no longer exists" card** to the envelope,
+ahead of the usual user and assistant bubbles — so the transcript itself says
+what happened. The card body should come from a bundled JSON file, the way
+the system prompts do, so the wording is editable without recompiling.
+
+Open questions: whether the server adopts the client's unknown
+`conversationId` or mints a fresh one and returns it; whether the notice
+appears once or on every send until the client restarts; and what the replay
+route (`GET …/interactions/{iid}`) should do, since there is no stored
+interaction to replay.
+
+**A debug flag that logs the outgoing envelope.** `--log-level debug` today
+surfaces the raw *model* content and the card-detection outcome
+(`ollama_responder.dart`), but the **response JSON actually sent to the
+client** is never logged — so diagnosing a rendering problem means capturing
+it from the client or a proxy. Worth its own switch rather than folding into
+`debug`, because envelopes embed full card JSON and are large enough to bury
+the other debug lines.
+
 ### Not planned
 
 **Streaming.** Replies are requested with `stream: false`, so the client shows
