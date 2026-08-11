@@ -43,33 +43,37 @@ flowchart TB
 ### Wire contract
 
 | Method & path                                 | Purpose                        | In                                                                | Out                                       |
-| ---------------------------------------------- | ------------------------------- | ------------------------------------------------------------------ | ------------------------------------------ |
-| `POST /conversations`                          | Start a session                 | —                                                                   | `{ conversationId, links: { postNext } }` |
-| `POST /conversations/{cid}/interactions`       | Send one interaction             | header `X-Interaction-Id`; PlainJson invoke body (`data.message`) | `200` + **envelope**                       |
-| `GET /conversations/{cid}/interactions/{iid}`  | Replay one interaction           | —                                                                   | **envelope**                               |
-| `GET /status`                                  | Server + conversation snapshot   | —                                                                   | **status payload**                         |
+| --------------------------------------------- | ------------------------------ | ----------------------------------------------------------------- | ----------------------------------------- |
+| `POST /conversations`                         | Start a session                | —                                                                 | `{ conversationId, links: { postNext } }` |
+| `POST /conversations/{cid}/interactions`      | Send one interaction           | header `X-Interaction-Id`; PlainJson invoke body (`data.message`) | `200` + **envelope**                      |
+| `GET /conversations/{cid}/interactions/{iid}` | Replay one interaction         | —                                                                 | **envelope**                              |
+| `GET /status`                                 | Server + conversation snapshot | —                                                                 | **status payload**                        |
 
 **Envelope:** `{ conversationId, interactionId, messages: [<AdaptiveCard>, ...], links: { self, postNext } }`.
 `messages` is an ordered list of pre-styled cards (a right-aligned "you" bubble
 and a left-aligned reply bubble). **Idempotent by `X-Interaction-Id`:** a
-repeated id returns the stored envelope without re-running the responder.
+repeated id returns the stored envelope without re-running the responder —
+including a retry that arrives while the first call is _still running_, which
+joins the in-flight call and answers with its result rather than starting a
+second one.
 
 ### Components (`lib/src/`)
 
-| File                     | Responsibility                                                                                                                                                  |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app.dart`                | shelf `Router`, CORS middleware, the `buildResponder`/`buildHandler` factories used by `bin/server.dart`.                                                     |
-| `store.dart`              | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `replyText` (so chat history can be rebuilt).       |
-| `cards.dart`              | Bubble authoring: `userBubble` (accent, right), `assistantBubble` (emphasis, left, Markdown text), `assistantCardBubble` (emphasis, left, embedded card), and `envelope(...)`. |
-| `responder.dart`          | `Reply(text, cardBody, stats)`, the `Responder` interface (`Future<Reply> reply(text, history)`, `describe()`), and `EchoResponder`.                          |
-| `card_detect.dart`        | `tryParseCardBody(raw) -> List<Map>?` — strict text-vs-card detection (see **Card replies** below).                                                            |
-| `stats.dart`               | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                |
-| `status.dart`              | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                          |
-| `ollama_responder.dart`    | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                 |
-| `assets/default_system_prompt.txt` | Bundled default system prompt.                                                                                                                        |
-| `assets/card_system_prompt.txt`    | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                     |
-| `assets/card_schema.json`          | Bundled schema for `--json-format schema`.                                                                                                             |
-| `bin/server.dart`          | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder from `--ollama-url` and starts `shelf_io.serve`.                                    |
+| File                               | Responsibility                                                                                                                                                                 |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `app.dart`                         | shelf `Router`, CORS middleware, the `buildResponder`/`buildHandler` factories used by `bin/server.dart`.                                                                      |
+| `store.dart`                       | In-memory `ConversationStore`; `Interaction` keeps the user `text`, the rendered `messages`, and the plain `replyText` (so chat history can be rebuilt).                       |
+| `cards.dart`                       | Bubble authoring: `userBubble` (accent, right), `assistantBubble` (emphasis, left, Markdown text), `assistantCardBubble` (emphasis, left, embedded card), and `envelope(...)`. |
+| `responder.dart`                   | `Reply(text, cardBody, stats)`, the `Responder` interface (`Future<Reply> reply(text, history)`, `describe()`), and `EchoResponder`.                                           |
+| `card_detect.dart`                 | `tryParseCardBody(raw) -> List<Map>?` — strict text-vs-card detection (see **Card replies** below).                                                                            |
+| `stats.dart`                       | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                                 |
+| `status.dart`                      | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                                         |
+| `ollama_responder.dart`            | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                                 |
+| `assets/default_system_prompt.txt` | Bundled default system prompt.                                                                                                                                                 |
+| `assets/card_system_prompt.txt`    | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                              |
+| `assets/card_schema.json`          | Bundled schema for `--json-format schema`.                                                                                                                                     |
+| `cli.dart`                         | `buildArgParser()` / `resolveLogLevel()` — the flag set, defaults, and allowed values. In `lib/` so the CLI surface is reachable from tests.                                   |
+| `bin/server.dart`                  | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder from `--ollama-url` and starts `shelf_io.serve`.                                                    |
 
 ### Responder selection
 
@@ -100,6 +104,39 @@ conversation (durable log + idempotent replay). What is bounded is only the
 prompt **sent to Ollama**: `OllamaResponder` replays just the last
 `--history-turns` exchanges (default 10). Nothing is pruned from the store, so
 raising `--history-turns` or `--num-ctx` later needs no data migration.
+
+**Failed turns are excluded.** When a turn fails (Ollama unreachable, timed
+out, an HTTP error, or an unreadable response), the user still sees the
+diagnostic bubble and the interaction is still stored and replayable — but the
+whole exchange is **skipped** when history is rebuilt for the next request.
+Otherwise the model would read `"(Ollama unreachable …)"` as something it once
+said and carry that into every later turn. The exchange is dropped whole
+rather than user-turn-only, so the model is never left an unanswered question
+to explain.
+
+**Startup preflight.** When `--ollama-url` is set, the server asks Ollama for
+its model list (`/api/tags`) before serving and logs the result: an `INFO`
+line naming the model when all is well, or a `SEVERE` line distinguishing
+"Ollama unreachable" from "model not pulled" (with the `ollama pull` command
+and the list of models that _are_ available). It **starts either way** — an
+Ollama brought up after the server still works — but the operator learns
+about a misconfiguration at launch rather than on the first message.
+
+**Reply timeout.** `--ollama-timeout` (seconds, default 60) bounds one
+`/api/chat` call. It is sized for a model **load**, not a **download**:
+`/api/chat` never pulls a missing model (it 404s, which the preflight above
+catches first), so the budget only covers reading an already-present model
+into memory and generating one reply — a minutes-long `ollama pull` is
+out-of-band and never waited on here. A cold load of a large model plus a
+full context window can still exceed 60s; raise the flag rather than assuming
+the server is unreachable. The effective value is reported by `GET /status`
+as `timeoutSeconds`.
+
+**Model residency.** Every request sends `keep_alive` (default `30m`,
+`--keep-alive`), overriding Ollama's 5-minute default. An idle chat otherwise
+pays a full model reload on its next message — measured at roughly 20× the
+warm load time on a 7B model. `--keep-alive 0` unloads immediately;
+`--keep-alive -1` keeps the model resident indefinitely.
 
 **Context-fill logging.** The server sends an explicit `options.num_ctx`
 (default 16384) and, after each reply, logs the actual prompt tokens
@@ -197,7 +234,9 @@ routes stay compact. Example payload:
     "numCtx": 16384,
     "historyTurns": 10,
     "jsonFormat": "none",
-    "systemPromptFile": "default_system_prompt.txt"
+    "systemPromptFile": "default_system_prompt.txt",
+    "keepAlive": "30m",
+    "timeoutSeconds": 60
   },
   "conversationCount": 1,
   "conversations": [
@@ -332,7 +371,11 @@ sequenceDiagram
 ```bash
 fvm dart pub get
 fvm dart run bin/server.dart
+fvm dart run bin/server.dart --help   # every flag, with defaults
 ```
+
+`--help` (or `-h`) prints the full flag list and exits without starting a
+server; an unrecognised flag prints the same usage and exits `2`.
 
 CORS is enabled for local dev so the Flutter web client can reach it.
 
@@ -360,6 +403,79 @@ idempotency, validation), responder selection, card detection, token-stats
 capture and the status payload, and the Ollama responder (mocked HTTP — no
 live Ollama).
 
+## Known gaps
+
+Found while validating this server against a live Ollama. None is a blocker
+for the demo; they are recorded so they are not rediscovered from scratch.
+
+**Card detection is over-permissive.** `tryParseCardBody` accepts _any_ JSON
+object carrying a non-empty `type` string as a single card element, so a
+model reply like `{"type":"greeting","text":"hi"}` renders as an unknown
+element instead of falling back to readable text. The fix is small; the open
+question is what to validate `type` against — the full Adaptive Cards element
+set (precise, but drifts from the library) or the palette the card system
+prompt actually advertises (narrower, but couples detection to prompt text).
+
+**Bubble role labels are hardcoded English.** `_bubble` emits a `TextBlock`
+reading `user` / `assistant` above every bubble (`cards.dart`, duplicated in
+`_fullWidthBubble`). Beyond being untranslatable, it is unusual chat UX —
+alignment and fill already convey who spoke. Needs a product decision: drop
+the labels, or keep them and let the host supply the strings.
+
+**Conversation state grows without bound.** `ConversationStore` never evicts:
+neither conversations nor the interactions inside them, and `GET /status`
+reports every conversation, so that payload grows too. Fine for a demo that
+gets restarted; the design question for a fix is that trimming old
+interactions breaks idempotent replay for those ids — a client retrying an
+evicted `X-Interaction-Id` would re-run the model.
+
+**Card replies inflate the prompt.** A card reply's `replyText` is the raw
+card JSON, so it is replayed verbatim as history. Bounded by
+`--history-turns` (steady state measured around 5.4k of a 16384 window), so
+this is a prompt-evaluation cost rather than a correctness problem.
+
+**Unverified:** `prompt_eval_count` may under-report context fill when Ollama
+caches a prompt prefix across turns, which would let the 50% / 76% log tiers
+stay quiet while the window fills. A 3-turn run did _not_ show this. Confirm
+over a long conversation before acting on it.
+
+### Requested enhancements
+
+Wanted, not yet built.
+
+**Explain an expired conversation with a card instead of a bare 404.** All
+state is in-memory, so restarting the server strands any client holding a
+`conversationId`: `POST …/interactions` and the replay route both answer
+`404 {"detail": "unknown conversation"}`, and the user is stuck with no
+in-chat explanation. Instead the server should carry on serving the message
+and **prepend a "this conversation no longer exists" card** to the envelope,
+ahead of the usual user and assistant bubbles — so the transcript itself says
+what happened. The card body should come from a bundled JSON file, the way
+the system prompts do, so the wording is editable without recompiling.
+
+Open questions: whether the server adopts the client's unknown
+`conversationId` or mints a fresh one and returns it; whether the notice
+appears once or on every send until the client restarts; and what the replay
+route (`GET …/interactions/{iid}`) should do, since there is no stored
+interaction to replay.
+
+**A debug flag that logs the outgoing envelope.** `--log-level debug` today
+surfaces the raw _model_ content and the card-detection outcome
+(`ollama_responder.dart`), but the **response JSON actually sent to the
+client** is never logged — so diagnosing a rendering problem means capturing
+it from the client or a proxy. Worth its own switch rather than folding into
+`debug`, because envelopes embed full card JSON and are large enough to bury
+the other debug lines.
+
+### Not planned
+
+**Streaming.** Replies are requested with `stream: false`, so the client shows
+nothing until generation completes. Beyond the wire contract, card detection
+needs the _complete_ message to decide text-vs-card — a partial card fragment
+is invalid JSON — so streaming would benefit text replies only, and would
+need either a visible bubble swap when a finished reply turns out to be a
+card, or committing to a mode up front. Treated as an enhancement, not a gap.
+
 ## Ollama (optional)
 
 By default the server runs the echo demo (every reply is `"Did you just say:
@@ -382,9 +498,14 @@ even though Ollama is running.
 responder at startup, each outgoing `POST …/api/chat`, and — on failure —
 the exception. Failures are reported distinctly rather than all as
 "unreachable": a connection failure returns `"(Ollama unreachable at … —
-<error>)"`, an HTTP error (e.g. the model isn't pulled → 404) returns
-`"(Ollama error HTTP 404 at …: <body>)"`, and an unexpected 2xx body returns
-`"(Ollama returned an unexpected response: …)"`.
+<error>)"`, a **timeout** (Ollama is alive but slow — usually a cold model
+load or a long generation) returns `"(Ollama timed out after Ns at …)"`, an
+HTTP error (e.g. the model isn't pulled → 404) returns `"(Ollama error HTTP
+404 at …: <body>)"`, and an unexpected 2xx body returns `"(Ollama returned an
+unexpected response: …)"`.
+
+None of these diagnostics is threaded back into the conversation — see
+**Failed turns** under Conversation context.
 
 ```bash
 fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \

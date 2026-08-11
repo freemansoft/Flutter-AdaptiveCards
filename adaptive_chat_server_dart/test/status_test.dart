@@ -14,6 +14,10 @@ class _StubResponder implements Responder {
 
   @override
   Map<String, dynamic> describe() => _describeImpl();
+
+  @override
+  Future<ResponderReadiness> checkReadiness() async =>
+      const ResponderReadiness.ready('test double');
 }
 
 void main() {

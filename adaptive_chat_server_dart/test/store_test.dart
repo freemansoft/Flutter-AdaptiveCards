@@ -72,24 +72,12 @@ void main() {
       );
     });
 
-    test(
-      'hasInteraction is false for an unknown conversation or interaction',
-      () {
-        final store = ConversationStore();
-        expect(store.hasInteraction('missing', 'i_0001'), isFalse);
-        final conv = store.create();
-        expect(store.hasInteraction(conv.conversationId, 'i_0001'), isFalse);
-      },
-    );
-
-    test('hasInteraction is true once the interaction is added', () {
+    test('getInteraction is null for an unknown conversation or '
+        'interaction', () {
       final store = ConversationStore();
+      expect(store.getInteraction('missing', 'i_0001'), isNull);
       final conv = store.create();
-      store.addInteraction(
-        conv.conversationId,
-        const Interaction(interactionId: 'i_0001', text: 'hi', messages: []),
-      );
-      expect(store.hasInteraction(conv.conversationId, 'i_0001'), isTrue);
+      expect(store.getInteraction(conv.conversationId, 'i_0001'), isNull);
     });
 
     test('listConversations preserves creation order', () {

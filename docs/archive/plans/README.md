@@ -1,6 +1,6 @@
 # Archived implementation plans
 
-Superseded or duplicate plans moved from [`docs/plans/`](../plans/) for historical reference. **Do not execute** — use the canonical plan linked in each file's status banner.
+Superseded, duplicate, or fully-implemented plans moved here from [`docs/plans/`](../../plans/) and [`docs/superpowers/plans/`](../../superpowers/plans/) for historical reference. **Do not execute** — use the canonical replacement in the right column below (older entries also carry a status banner inside the file itself).
 
 | Archived file | Canonical replacement |
 | --- | --- |
@@ -14,3 +14,4 @@ Superseded or duplicate plans moved from [`docs/plans/`](../plans/) for historic
 | `2026-07-21-card-json-leaked-prefix.md` | Python-only; fix ported unchanged to `adaptive_chat_server_dart`'s `card_detect.dart` |
 | `2026-07-23-ollama-structured-json-output.md` | Python-only; feature ported unchanged to `adaptive_chat_server_dart` |
 | `2026-08-03-chat-server-token-stats.md` | Python-only; feature ported unchanged to `adaptive_chat_server_dart` |
+| `2026-08-09-adaptive-chat-server-dart.md` | Implemented. Build plan for the Dart port, written while the Python server still existed — its "behavior source of truth" references to `adaptive_chat_server/app/*.py` point at deleted files. Current usage: [`adaptive_chat_server_dart/README.md`](../../../adaptive_chat_server_dart/README.md); design rationale: [`2026-08-09-adaptive-chat-server-dart-design.md`](../../superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md) |

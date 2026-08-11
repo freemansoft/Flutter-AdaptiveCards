@@ -5,7 +5,9 @@
   "description": "Markdown tooling (Prettier) for the Flutter-AdaptiveCards docs. Not a runtime dependency of any published package.",
   "scripts": {
     "format:md": "prettier --write \"docs/**/*.md\"",
-    "check:md": "prettier --check \"docs/**/*.md\""
+    "format:md:chat": "prettier --write \"adaptive_chat_client/**/*.md\" \"adaptive_chat_server_dart/**/*.md\"",
+    "check:md": "prettier --check \"docs/**/*.md\"",
+    "check:md:chat": "prettier --check \"adaptive_chat_client/**/*.md\" \"adaptive_chat_server_dart/**/*.md\""
   },
   "devDependencies": {
     "prettier": "3.4.2"

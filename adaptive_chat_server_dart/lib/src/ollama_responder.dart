@@ -6,6 +6,7 @@
 /// Ollama never crashes a request.
 library;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -38,6 +39,28 @@ const defaultJsonFormat = 'none';
 /// decoding, the highest-leverage setting for minimizing malformed card
 /// JSON.
 const defaultCardTemperature = 0.0;
+
+/// How long Ollama keeps the model resident after a reply, as an Ollama
+/// duration string.
+///
+/// Ollama's own default is 5 minutes, which is shorter than the gaps between
+/// messages in a real conversation — so an idle chat pays a full model reload
+/// on its next turn (measured: ~20x the warm load time). Holding the model
+/// for longer trades idle RAM for a responsive chat.
+const defaultKeepAlive = '30m';
+
+/// Seconds to wait for one `/api/chat` reply before giving up.
+///
+/// Sized for a model **load**, not a model **download**: `/api/chat` never
+/// pulls a missing model (it returns 404, which the startup preflight catches
+/// first), so this budget only has to cover reading an already-present model
+/// into memory plus generating one reply. Minutes-long pulls happen
+/// out-of-band via `ollama pull` and are never waited on here.
+///
+/// Generous enough for a warm mid-size model on a laptop; a cold load of a
+/// large model plus a full context window can still exceed it — raise
+/// `--ollama-timeout` rather than assuming the server is unreachable.
+const defaultOllamaTimeoutSeconds = 60;
 
 Map<String, dynamic>? _loadCardSchema(String path) {
   Map<String, dynamic> schema;
@@ -164,7 +187,10 @@ class OllamaResponder implements Responder {
     int historyTurns = defaultHistoryTurns,
     int numCtx = defaultNumCtx,
     String jsonFormat = defaultJsonFormat,
-    Duration ollamaTimeout = const Duration(seconds: 60),
+    Duration ollamaTimeout = const Duration(
+      seconds: defaultOllamaTimeoutSeconds,
+    ),
+    String keepAlive = defaultKeepAlive,
   }) : // Field names are prefixed with `_` while the required constructor
        // param names (fixed by the public API contract) are not, so an
        // initializing formal isn't available here.
@@ -185,7 +211,10 @@ class OllamaResponder implements Responder {
        _requestedJsonFormat = jsonFormat,
        // Same reason as _ollamaUrl above.
        // ignore: prefer_initializing_formals
-       _ollamaTimeout = ollamaTimeout {
+       _ollamaTimeout = ollamaTimeout,
+       // Same reason as _ollamaUrl above.
+       // ignore: prefer_initializing_formals
+       _keepAlive = keepAlive {
     if (_jsonFormat == 'schema') {
       _cardSchema = _loadCardSchema(cardSchemaPath);
       if (_cardSchema == null) {
@@ -202,6 +231,7 @@ class OllamaResponder implements Responder {
   final String _systemPromptPath;
   final String _requestedJsonFormat;
   final Duration _ollamaTimeout;
+  final String _keepAlive;
   String _jsonFormat;
   Map<String, dynamic>? _cardSchema;
 
@@ -215,11 +245,67 @@ class OllamaResponder implements Responder {
       'historyTurns': _historyTurns,
       'jsonFormat': _jsonFormat,
       'systemPromptFile': p.basename(_systemPromptPath),
+      'keepAlive': _keepAlive,
+      'timeoutSeconds': _ollamaTimeout.inSeconds,
     };
     if (_requestedJsonFormat != _jsonFormat) {
       config['jsonFormatRequested'] = _requestedJsonFormat;
     }
     return config;
+  }
+
+  /// Asks Ollama for its model list and checks the configured model is there.
+  ///
+  /// `/api/tags` is the cheapest probe that distinguishes the two failures an
+  /// operator actually hits — Ollama not running at all, versus running
+  /// without the model pulled — which otherwise both surface as a failed
+  /// first message. An untagged model name matches its `:latest` entry, the
+  /// same way Ollama resolves it.
+  @override
+  Future<ResponderReadiness> checkReadiness() async {
+    final endpoint = '$_ollamaUrl/api/tags';
+    http.Response response;
+    try {
+      response = await _client
+          .get(Uri.parse(endpoint))
+          .timeout(const Duration(seconds: 5));
+    } on Object catch (exc) {
+      return ResponderReadiness.notReady(
+        'Ollama unreachable at $_ollamaUrl ($exc). Is `ollama serve` '
+        'running? On macOS use 127.0.0.1, not localhost — Ollama binds '
+        'IPv4 while localhost often resolves to IPv6 first.',
+      );
+    }
+    if (response.statusCode != 200) {
+      return ResponderReadiness.notReady(
+        'Ollama at $_ollamaUrl answered HTTP ${response.statusCode} for '
+        '/api/tags.',
+      );
+    }
+
+    List<String> names;
+    try {
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      names = [
+        for (final m in body['models']! as List)
+          (m as Map<String, dynamic>)['name']! as String,
+      ];
+    } on Object {
+      return ResponderReadiness.notReady(
+        'Ollama at $_ollamaUrl returned an unreadable /api/tags body.',
+      );
+    }
+
+    final wanted = _model.contains(':') ? _model : '$_model:latest';
+    if (names.contains(_model) || names.contains(wanted)) {
+      return ResponderReadiness.ready(
+        'Ollama at $_ollamaUrl has $_model',
+      );
+    }
+    return ResponderReadiness.notReady(
+      'Ollama at $_ollamaUrl does not have $_model — run '
+      '`ollama pull $_model`. Available: ${names.join(", ")}',
+    );
   }
 
   String? _loadSystemPrompt() {
@@ -293,6 +379,7 @@ class OllamaResponder implements Responder {
       'stream': false,
       'options': options,
       'think': false,
+      'keep_alive': _keepAlive,
     };
     if (_jsonFormat == 'json') {
       payload['format'] = 'json';
@@ -314,6 +401,21 @@ class OllamaResponder implements Responder {
             body: jsonEncode(payload),
           )
           .timeout(_ollamaTimeout);
+    } on TimeoutException {
+      final seconds = _ollamaTimeout.inMilliseconds / 1000;
+      _log.severe(
+        'Ollama TIMED OUT after ${seconds}s: endpoint=$endpoint '
+        'model=$_model\n  Ollama answered nothing in time — it is likely '
+        'still loading the model or generating. A cold model load plus a '
+        'large prompt can exceed the timeout; raise --ollama-timeout, lower '
+        '--num-ctx or --history-turns, or use a smaller model.',
+      );
+      return Reply(
+        text:
+            '(Ollama timed out after ${seconds}s at $_ollamaUrl — it may '
+            'still be loading the model or generating a long reply)',
+        ok: false,
+      );
     } on Object catch (exc) {
       _log.severe(
         'Ollama CONNECTION FAILED: $exc\n  endpoint=$endpoint '
@@ -323,6 +425,7 @@ class OllamaResponder implements Responder {
       );
       return Reply(
         text: '(Ollama unreachable at $_ollamaUrl — ${exc.runtimeType}: $exc)',
+        ok: false,
       );
     }
 
@@ -338,6 +441,7 @@ class OllamaResponder implements Responder {
       return Reply(
         text:
             '(Ollama error HTTP ${response.statusCode} at $_ollamaUrl: $body)',
+        ok: false,
       );
     }
 
@@ -353,6 +457,7 @@ class OllamaResponder implements Responder {
       _log.severe('Ollama response could not be parsed ($exc):\n  $body');
       return Reply(
         text: '(Ollama returned an unexpected response: ${exc.runtimeType})',
+        ok: false,
       );
     }
     _logContextFill(data);

@@ -1,5 +1,5 @@
 name: adaptive_chat_server_dart
-description: Dart port of the Adaptive Chat SDUI demo backend (adaptive_chat_server).
+description: Dart/shelf backend for the Adaptive Chat SDUI demo.
 publish_to: none
 version: 0.1.0
 
