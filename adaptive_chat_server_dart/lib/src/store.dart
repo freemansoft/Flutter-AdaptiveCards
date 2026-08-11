@@ -26,6 +26,7 @@ class Interaction {
     required this.messages,
     this.replyText = '',
     this.stats,
+    this.ok = true,
   });
 
   /// The unique identifier for this interaction.
@@ -43,6 +44,12 @@ class Interaction {
   /// `null` whenever the reply cost no measurable tokens: echo mode, or any
   /// Ollama failure. The interaction still counts — it happened.
   final InteractionStats? stats;
+
+  /// Whether [replyText] is a real answer rather than a failure diagnostic.
+  ///
+  /// Stored so history rebuilds can skip failed exchanges; the interaction is
+  /// still kept and replayed to the client, because it did happen.
+  final bool ok;
 }
 
 /// A session: ordered interactions keyed by client-supplied id.
@@ -88,9 +95,15 @@ class ConversationStore {
     return conv != null && conv.interactions.containsKey(iid);
   }
 
-  /// Adds an interaction to a conversation.
+  /// Adds an interaction to a conversation, ignoring a repeated id.
+  ///
+  /// The first write for an interaction id wins. Re-adding the same id is a
+  /// no-op rather than a second entry, so a client retry can never duplicate
+  /// a turn in [Conversation.order] — which would otherwise replay that turn
+  /// twice in the model's history and double-count it in `GET /status`.
   void addInteraction(String cid, Interaction interaction) {
     final conv = _conversations[cid]!;
+    if (conv.interactions.containsKey(interaction.interactionId)) return;
     conv.interactions[interaction.interactionId] = interaction;
     conv.order.add(interaction.interactionId);
   }

@@ -15,10 +15,23 @@ import 'package:adaptive_chat_server_dart/src/stats.dart';
 /// path). It never affects what the user sees — it exists for `GET /status`.
 class Reply {
   /// Creates a [Reply] with the given text, optional card body, and stats.
-  const Reply({required this.text, this.cardBody, this.stats});
+  const Reply({
+    required this.text,
+    this.cardBody,
+    this.stats,
+    this.ok = true,
+  });
 
   /// The responder's raw text output for conversation history.
   final String text;
+
+  /// Whether this reply is the model's actual answer.
+  ///
+  /// `false` marks a diagnostic stand-in produced when the responder could
+  /// not reach or understand the model. Such a [text] is shown to the user
+  /// but must never be replayed as conversation history — the model would
+  /// read its own error message as something it once said.
+  final bool ok;
 
   /// Optional parsed Adaptive Card body items, or null to render text as
   /// Markdown.

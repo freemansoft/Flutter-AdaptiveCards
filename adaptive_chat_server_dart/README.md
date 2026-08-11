@@ -52,7 +52,10 @@ flowchart TB
 **Envelope:** `{ conversationId, interactionId, messages: [<AdaptiveCard>, ...], links: { self, postNext } }`.
 `messages` is an ordered list of pre-styled cards (a right-aligned "you" bubble
 and a left-aligned reply bubble). **Idempotent by `X-Interaction-Id`:** a
-repeated id returns the stored envelope without re-running the responder.
+repeated id returns the stored envelope without re-running the responder —
+including a retry that arrives while the first call is *still running*, which
+joins the in-flight call and answers with its result rather than starting a
+second one.
 
 ### Components (`lib/src/`)
 
@@ -100,6 +103,19 @@ conversation (durable log + idempotent replay). What is bounded is only the
 prompt **sent to Ollama**: `OllamaResponder` replays just the last
 `--history-turns` exchanges (default 10). Nothing is pruned from the store, so
 raising `--history-turns` or `--num-ctx` later needs no data migration.
+
+**Failed turns are excluded.** When a turn fails (Ollama unreachable, timed
+out, an HTTP error, or an unreadable response), the user still sees the
+diagnostic bubble and the interaction is still stored and replayable — but the
+whole exchange is **skipped** when history is rebuilt for the next request.
+Otherwise the model would read `"(Ollama unreachable …)"` as something it once
+said and carry that into every later turn. The exchange is dropped whole
+rather than user-turn-only, so the model is never left an unanswered question
+to explain.
+
+**Model residency.** Every request sends `keep_alive: 30m`, overriding
+Ollama's 5-minute default. An idle chat otherwise pays a full model reload on
+its next message — measured at roughly 20× the warm load time on a 7B model.
 
 **Context-fill logging.** The server sends an explicit `options.num_ctx`
 (default 16384) and, after each reply, logs the actual prompt tokens
@@ -197,7 +213,8 @@ routes stay compact. Example payload:
     "numCtx": 16384,
     "historyTurns": 10,
     "jsonFormat": "none",
-    "systemPromptFile": "default_system_prompt.txt"
+    "systemPromptFile": "default_system_prompt.txt",
+    "keepAlive": "30m"
   },
   "conversationCount": 1,
   "conversations": [
@@ -382,9 +399,14 @@ even though Ollama is running.
 responder at startup, each outgoing `POST …/api/chat`, and — on failure —
 the exception. Failures are reported distinctly rather than all as
 "unreachable": a connection failure returns `"(Ollama unreachable at … —
-<error>)"`, an HTTP error (e.g. the model isn't pulled → 404) returns
-`"(Ollama error HTTP 404 at …: <body>)"`, and an unexpected 2xx body returns
-`"(Ollama returned an unexpected response: …)"`.
+<error>)"`, a **timeout** (Ollama is alive but slow — usually a cold model
+load or a long generation) returns `"(Ollama timed out after Ns at …)"`, an
+HTTP error (e.g. the model isn't pulled → 404) returns `"(Ollama error HTTP
+404 at …: <body>)"`, and an unexpected 2xx body returns `"(Ollama returned an
+unexpected response: …)"`.
+
+None of these diagnostics is threaded back into the conversation — see
+**Failed turns** under Conversation context.
 
 ```bash
 fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \

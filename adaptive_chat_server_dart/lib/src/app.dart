@@ -74,11 +74,68 @@ Responder buildResponder({
   return EchoResponder();
 }
 
+/// Replays a conversation as alternating user/assistant turns for the model.
+///
+/// Exchanges whose reply was a failure diagnostic are dropped **whole**: the
+/// model must not read "(Ollama unreachable …)" as something it once said,
+/// and replaying the user's question without an answer would leave it an
+/// unanswered turn to explain. The interaction itself is kept — it happened,
+/// and the client can still replay it.
+List<(String, String)> _historyFor(Conversation conversation) {
+  final history = <(String, String)>[];
+  for (final priorIid in conversation.order) {
+    final prior = conversation.interactions[priorIid]!;
+    if (!prior.ok) continue;
+    history
+      ..add(('user', prior.text))
+      ..add(('assistant', prior.replyText));
+  }
+  return history;
+}
+
+/// Runs one interaction end to end and stores it, returning its bubbles.
+Future<List<Message>> _runInteraction({
+  required ConversationStore store,
+  required Responder responder,
+  required String cid,
+  required String interactionId,
+  required String message,
+}) async {
+  final reply = await responder.reply(message, _historyFor(store.get(cid)!));
+  final assistantCard = reply.cardBody != null
+      ? assistantCardBubble(reply.cardBody!)
+      : assistantBubble(reply.text);
+  final messages = [
+    Message(role: 'user', card: userBubble(message)),
+    Message(role: 'assistant', card: assistantCard),
+  ];
+  store.addInteraction(
+    cid,
+    Interaction(
+      interactionId: interactionId,
+      text: message,
+      messages: messages,
+      replyText: reply.text,
+      stats: reply.stats,
+      ok: reply.ok,
+    ),
+  );
+  return messages;
+}
+
 /// Builds the shelf [Handler] serving the four Adaptive Chat routes.
 Handler buildHandler({
   required ConversationStore store,
   required Responder responder,
 }) {
+  // Interactions currently inside `responder.reply`, keyed `cid|iid`. The
+  // stored-envelope check alone cannot make a retry idempotent: nothing is
+  // stored until the responder returns, so a client that gives up waiting
+  // and re-sends would run the model a second time. Joining the in-flight
+  // call instead means the retry waits for — and answers with — the first
+  // result. Entries are removed once the call settles.
+  final inFlight = <String, Future<List<Message>>>{};
+
   final router = Router()
     ..post('/conversations', (Request request) {
       final conv = store.create();
@@ -121,33 +178,32 @@ Handler buildHandler({
         return _error(400, 'data.message required');
       }
 
-      final conversation = store.get(cid)!;
-      final history = <(String, String)>[];
-      for (final priorIid in conversation.order) {
-        final prior = conversation.interactions[priorIid]!;
-        history
-          ..add(('user', prior.text))
-          ..add(('assistant', prior.replyText));
+      final key = '$cid|$interactionId';
+      final List<Message> messages;
+      final joined = inFlight[key];
+      if (joined != null) {
+        // A retry arrived while the first call is still running: wait for it
+        // and answer with the same result instead of running the model again.
+        messages = await joined;
+      } else {
+        final started = _runInteraction(
+          store: store,
+          responder: responder,
+          cid: cid,
+          interactionId: interactionId,
+          message: message,
+        );
+        inFlight[key] = started;
+        try {
+          messages = await started;
+        } finally {
+          // `removeWhere`, not `remove`: the map's values are Futures, so
+          // `remove` would hand back the very Future this function is
+          // completing and read as a discarded async call.
+          inFlight.removeWhere((k, _) => k == key);
+        }
       }
 
-      final reply = await responder.reply(message, history);
-      final assistantCard = reply.cardBody != null
-          ? assistantCardBubble(reply.cardBody!)
-          : assistantBubble(reply.text);
-      final messages = [
-        Message(role: 'user', card: userBubble(message)),
-        Message(role: 'assistant', card: assistantCard),
-      ];
-      store.addInteraction(
-        cid,
-        Interaction(
-          interactionId: interactionId,
-          text: message,
-          messages: messages,
-          replyText: reply.text,
-          stats: reply.stats,
-        ),
-      );
       return Response.ok(
         jsonEncode(envelope(cid, interactionId, messages)),
         headers: _jsonHeaders,

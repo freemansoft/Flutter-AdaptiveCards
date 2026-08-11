@@ -6,6 +6,7 @@
 /// Ollama never crashes a request.
 library;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -38,6 +39,15 @@ const defaultJsonFormat = 'none';
 /// decoding, the highest-leverage setting for minimizing malformed card
 /// JSON.
 const defaultCardTemperature = 0.0;
+
+/// How long Ollama keeps the model resident after a reply, as an Ollama
+/// duration string.
+///
+/// Ollama's own default is 5 minutes, which is shorter than the gaps between
+/// messages in a real conversation — so an idle chat pays a full model reload
+/// on its next turn (measured: ~20x the warm load time). Holding the model
+/// for longer trades idle RAM for a responsive chat.
+const defaultKeepAlive = '30m';
 
 Map<String, dynamic>? _loadCardSchema(String path) {
   Map<String, dynamic> schema;
@@ -165,6 +175,7 @@ class OllamaResponder implements Responder {
     int numCtx = defaultNumCtx,
     String jsonFormat = defaultJsonFormat,
     Duration ollamaTimeout = const Duration(seconds: 60),
+    String keepAlive = defaultKeepAlive,
   }) : // Field names are prefixed with `_` while the required constructor
        // param names (fixed by the public API contract) are not, so an
        // initializing formal isn't available here.
@@ -185,7 +196,10 @@ class OllamaResponder implements Responder {
        _requestedJsonFormat = jsonFormat,
        // Same reason as _ollamaUrl above.
        // ignore: prefer_initializing_formals
-       _ollamaTimeout = ollamaTimeout {
+       _ollamaTimeout = ollamaTimeout,
+       // Same reason as _ollamaUrl above.
+       // ignore: prefer_initializing_formals
+       _keepAlive = keepAlive {
     if (_jsonFormat == 'schema') {
       _cardSchema = _loadCardSchema(cardSchemaPath);
       if (_cardSchema == null) {
@@ -202,6 +216,7 @@ class OllamaResponder implements Responder {
   final String _systemPromptPath;
   final String _requestedJsonFormat;
   final Duration _ollamaTimeout;
+  final String _keepAlive;
   String _jsonFormat;
   Map<String, dynamic>? _cardSchema;
 
@@ -215,6 +230,7 @@ class OllamaResponder implements Responder {
       'historyTurns': _historyTurns,
       'jsonFormat': _jsonFormat,
       'systemPromptFile': p.basename(_systemPromptPath),
+      'keepAlive': _keepAlive,
     };
     if (_requestedJsonFormat != _jsonFormat) {
       config['jsonFormatRequested'] = _requestedJsonFormat;
@@ -293,6 +309,7 @@ class OllamaResponder implements Responder {
       'stream': false,
       'options': options,
       'think': false,
+      'keep_alive': _keepAlive,
     };
     if (_jsonFormat == 'json') {
       payload['format'] = 'json';
@@ -314,6 +331,21 @@ class OllamaResponder implements Responder {
             body: jsonEncode(payload),
           )
           .timeout(_ollamaTimeout);
+    } on TimeoutException {
+      final seconds = _ollamaTimeout.inMilliseconds / 1000;
+      _log.severe(
+        'Ollama TIMED OUT after ${seconds}s: endpoint=$endpoint '
+        'model=$_model\n  Ollama answered nothing in time — it is likely '
+        'still loading the model or generating. A cold model load plus a '
+        'large prompt can exceed the timeout; lower --num-ctx or '
+        '--history-turns, or use a smaller model.',
+      );
+      return Reply(
+        text:
+            '(Ollama timed out after ${seconds}s at $_ollamaUrl — it may '
+            'still be loading the model or generating a long reply)',
+        ok: false,
+      );
     } on Object catch (exc) {
       _log.severe(
         'Ollama CONNECTION FAILED: $exc\n  endpoint=$endpoint '
@@ -323,6 +355,7 @@ class OllamaResponder implements Responder {
       );
       return Reply(
         text: '(Ollama unreachable at $_ollamaUrl — ${exc.runtimeType}: $exc)',
+        ok: false,
       );
     }
 
@@ -338,6 +371,7 @@ class OllamaResponder implements Responder {
       return Reply(
         text:
             '(Ollama error HTTP ${response.statusCode} at $_ollamaUrl: $body)',
+        ok: false,
       );
     }
 
@@ -353,6 +387,7 @@ class OllamaResponder implements Responder {
       _log.severe('Ollama response could not be parsed ($exc):\n  $body');
       return Reply(
         text: '(Ollama returned an unexpected response: ${exc.runtimeType})',
+        ok: false,
       );
     }
     _logContextFill(data);

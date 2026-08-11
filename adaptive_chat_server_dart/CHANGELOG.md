@@ -8,6 +8,15 @@
   has no Flutter dependency, and workspace membership was forcing CI to
   install the full Flutter SDK just to satisfy unrelated Flutter packages
   elsewhere in the repo.
+- Fixed: a failed turn's diagnostic (`"(Ollama unreachable …)"` and friends) is
+  no longer replayed to the model as an assistant turn. Failed exchanges are
+  skipped whole when history is rebuilt, so one transient Ollama failure no
+  longer poisons the rest of the conversation.
+- Fixed: a client retry that arrives while the first call is still running now
+  joins the in-flight call instead of running the model a second time and
+  recording a duplicate entry in the conversation order.
+- Fixed: an Ollama timeout is reported as a timeout instead of "unreachable" —
+  a slow-but-healthy server and a dead one are different problems.
 - Now the only Adaptive Chat backend: the Python/FastAPI prototype this package
   was ported from has been removed. README expanded to carry the behavior
   documentation it previously deferred to that package's README (wire

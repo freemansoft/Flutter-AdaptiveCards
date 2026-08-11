@@ -72,8 +72,8 @@ void main() {
   );
 
   test(
-    'a stalled Ollama times out and returns the unreachable diagnostic, '
-    'not a hang',
+    'a stalled Ollama times out with a timeout diagnostic, not a hang and '
+    'not the unreachable message',
     () async {
       final client = MockClient((request) async {
         await Future<void>.delayed(const Duration(milliseconds: 200));
@@ -83,11 +83,82 @@ void main() {
         client: client,
         ollamaTimeout: const Duration(milliseconds: 50),
       ).reply('hi', const []);
-      expect(reply.text, contains('Ollama unreachable'));
+      // A slow-but-alive Ollama is a different problem from a dead one, and
+      // sends the operator somewhere different. Keep the two distinguishable.
+      expect(reply.text, contains('timed out'));
+      expect(reply.text, isNot(contains('unreachable')));
       expect(reply.cardBody, isNull);
       expect(reply.stats, isNull);
     },
   );
+
+  test('a timeout is not treated as a successful turn', () async {
+    final client = MockClient((request) async {
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      return okResponse('should never be returned');
+    });
+    final reply = await makeResponder(
+      client: client,
+      ollamaTimeout: const Duration(milliseconds: 50),
+    ).reply('hi', const []);
+    expect(reply.ok, isFalse);
+  });
+
+  test('a transport failure is not treated as a successful turn', () async {
+    final client = MockClient(
+      (request) async => throw const SocketException('refused'),
+    );
+    final reply = await makeResponder(client: client).reply('hi', const []);
+    expect(reply.ok, isFalse);
+  });
+
+  test('an HTTP error is not treated as a successful turn', () async {
+    final client = MockClient(
+      (request) async => http.Response('model not found', 404),
+    );
+    final reply = await makeResponder(client: client).reply('hi', const []);
+    expect(reply.ok, isFalse);
+  });
+
+  test('an unparseable 2xx body is not treated as a successful turn', () async {
+    final client = MockClient((request) async => http.Response('{}', 200));
+    final reply = await makeResponder(client: client).reply('hi', const []);
+    expect(reply.ok, isFalse);
+  });
+
+  test('a normal reply is treated as a successful turn', () async {
+    final client = MockClient((request) async => okResponse('hello'));
+    final reply = await makeResponder(client: client).reply('hi', const []);
+    expect(reply.ok, isTrue);
+  });
+
+  test('every request sends keep_alive so the model stays resident', () async {
+    late Map<String, dynamic> payload;
+    final client = MockClient((request) async {
+      payload = jsonDecode(request.body) as Map<String, dynamic>;
+      return okResponse('hi');
+    });
+    await makeResponder(client: client).reply('hi', const []);
+    expect(payload['keep_alive'], defaultKeepAlive);
+  });
+
+  test('keep_alive is configurable and reported by describe()', () async {
+    late Map<String, dynamic> payload;
+    final client = MockClient((request) async {
+      payload = jsonDecode(request.body) as Map<String, dynamic>;
+      return okResponse('hi');
+    });
+    final responder = OllamaResponder(
+      ollamaUrl: 'http://127.0.0.1:11434',
+      defaultSystemPromptPath: promptPath,
+      cardSchemaPath: schemaPath,
+      client: client,
+      keepAlive: '2h',
+    );
+    await responder.reply('hi', const []);
+    expect(payload['keep_alive'], '2h');
+    expect(responder.describe()['keepAlive'], '2h');
+  });
 
   test('HTTP 404 returns an error diagnostic naming the status', () async {
     final client = MockClient(
