@@ -460,7 +460,7 @@ route (`GET …/interactions/{iid}`) should do, since there is no stored
 interaction to replay.
 
 **A debug flag that logs the outgoing envelope.** `--log-level debug` today
-surfaces the raw *model* content and the card-detection outcome
+surfaces the raw _model_ content and the card-detection outcome
 (`ollama_responder.dart`), but the **response JSON actually sent to the
 client** is never logged — so diagnosing a rendering problem means capturing
 it from the client or a proxy. Worth its own switch rather than folding into
