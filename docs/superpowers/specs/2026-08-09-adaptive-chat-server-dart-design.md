@@ -4,6 +4,16 @@
 **Component:** `adaptive_chat_server_dart/` (new top-level demo backend; not a
 published package under `packages/`)
 
+> [!NOTE] > **Partially superseded 2026-08-10.** The Python `adaptive_chat_server`
+> was removed and `adaptive_chat_server_dart` is now the only backend. Two
+> sections describe the pre-removal world and no longer apply: **Non-goals →
+> "Not a cutover"** (and the matching `Retirement of Python server | Deferred`
+> row in Decisions), and **CI**, which describes a Python `server:` job that no
+> longer exists in `.github/workflows/adaptive_chat.yml`. Everything else —
+> architecture, wire contract, responder behavior, asset resolution, testing —
+> still describes the shipped server. Current usage:
+> [`adaptive_chat_server_dart/README.md`](../../../adaptive_chat_server_dart/README.md).
+
 ## Problem
 
 This repository's stated goal is **all Dart and Flutter** for executable

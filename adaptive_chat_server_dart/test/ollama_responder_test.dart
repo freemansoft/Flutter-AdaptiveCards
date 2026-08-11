@@ -264,8 +264,8 @@ void main() {
     expect(reply.cardBody, isNotNull);
   });
 
-  // --- Step 5 parity additions (cross-checked against
-  // adaptive_chat_server/tests/test_ollama_responder.py) ---
+  // --- Parity additions (cross-checked against the removed Python
+  // prototype's test_ollama_responder.py during the port) ---
 
   test('none mode sends no format field but does send temperature 0 and '
       'think false', () async {

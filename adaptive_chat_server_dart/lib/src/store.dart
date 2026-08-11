@@ -101,7 +101,7 @@ class ConversationStore {
 
   /// Every live conversation, in creation order.
   ///
-  /// Insertion order is guaranteed by [Map] (a `LinkedHashMap` by default),
-  /// the same guarantee the Python store relies on for `dict`.
+  /// Insertion order is guaranteed by [Map] (a `LinkedHashMap` by default), so
+  /// callers may rely on it without extra bookkeeping.
   List<Conversation> listConversations() => _conversations.values.toList();
 }
