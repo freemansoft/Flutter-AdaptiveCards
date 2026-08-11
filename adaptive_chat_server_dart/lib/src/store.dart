@@ -89,12 +89,6 @@ class ConversationStore {
   /// Gets a conversation by id, or null if not found.
   Conversation? get(String cid) => _conversations[cid];
 
-  /// Checks if an interaction exists in a conversation.
-  bool hasInteraction(String cid, String iid) {
-    final conv = _conversations[cid];
-    return conv != null && conv.interactions.containsKey(iid);
-  }
-
   /// Adds an interaction to a conversation, ignoring a repeated id.
   ///
   /// The first write for an interaction id wins. Re-adding the same id is a

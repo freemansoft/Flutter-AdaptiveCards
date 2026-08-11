@@ -20,6 +20,9 @@
 - Added: `--keep-alive` (default `30m`, reported by `GET /status`) so an idle
   chat does not pay a full model reload on its next message. Ollama's own
   default is 5m.
+- Removed: `ConversationStore.hasInteraction`, which nothing outside its own
+  tests called — the routes use `getInteraction(...) != null`. The existence
+  assertion it carried now covers `getInteraction` instead.
 - Added: `--ollama-timeout` (seconds, default 60, reported by `GET /status`).
   The per-request timeout was previously hardcoded and unreachable from the
   command line, so a cold load of a large model could only be worked around by

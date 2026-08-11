@@ -9,9 +9,11 @@ published package under `packages/`)
 > sections describe the pre-removal world and no longer apply: **Non-goals →
 > "Not a cutover"** (and the matching `Retirement of Python server | Deferred`
 > row in Decisions), and **CI**, which describes a Python `server:` job that no
-> longer exists in `.github/workflows/adaptive_chat.yml`. Everything else —
-> architecture, wire contract, responder behavior, asset resolution, testing —
-> still describes the shipped server. Current usage:
+> longer exists in `.github/workflows/adaptive_chat.yml`. The
+> `ConversationStore` API listed under **Types** has also since dropped
+> `hasInteraction(cid, iid)`, which nothing but its own tests called.
+> Everything else — architecture, wire contract, responder behavior, asset
+> resolution, testing — still describes the shipped server. Current usage:
 > [`adaptive_chat_server_dart/README.md`](../../../adaptive_chat_server_dart/README.md).
 
 ## Problem

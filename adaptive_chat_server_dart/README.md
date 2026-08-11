@@ -429,9 +429,6 @@ gets restarted; the design question for a fix is that trimming old
 interactions breaks idempotent replay for those ids — a client retrying an
 evicted `X-Interaction-Id` would re-run the model.
 
-**`ConversationStore.hasInteraction` is dead code** — only its own tests call
-it; the routes use `getInteraction(...) != null`.
-
 **Card replies inflate the prompt.** A card reply's `replyText` is the raw
 card JSON, so it is replayed verbatim as history. Bounded by
 `--history-turns` (steady state measured around 5.4k of a 16384 window), so
