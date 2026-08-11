@@ -51,8 +51,14 @@ const defaultKeepAlive = '30m';
 
 /// Seconds to wait for one `/api/chat` reply before giving up.
 ///
-/// Generous enough for a warm mid-size model on a laptop, but a cold load of
-/// a large model plus a full context window can exceed it — raise
+/// Sized for a model **load**, not a model **download**: `/api/chat` never
+/// pulls a missing model (it returns 404, which the startup preflight catches
+/// first), so this budget only has to cover reading an already-present model
+/// into memory plus generating one reply. Minutes-long pulls happen
+/// out-of-band via `ollama pull` and are never waited on here.
+///
+/// Generous enough for a warm mid-size model on a laptop; a cold load of a
+/// large model plus a full context window can still exceed it — raise
 /// `--ollama-timeout` rather than assuming the server is unreachable.
 const defaultOllamaTimeoutSeconds = 60;
 

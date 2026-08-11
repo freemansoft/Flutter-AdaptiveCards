@@ -123,9 +123,14 @@ Ollama brought up after the server still works — but the operator learns
 about a misconfiguration at launch rather than on the first message.
 
 **Reply timeout.** `--ollama-timeout` (seconds, default 60) bounds one
-`/api/chat` call. A cold load of a large model plus a full context window can
-exceed it; raise the flag rather than assuming the server is unreachable. The
-effective value is reported by `GET /status` as `timeoutSeconds`.
+`/api/chat` call. It is sized for a model **load**, not a **download**:
+`/api/chat` never pulls a missing model (it 404s, which the preflight above
+catches first), so the budget only covers reading an already-present model
+into memory and generating one reply — a minutes-long `ollama pull` is
+out-of-band and never waited on here. A cold load of a large model plus a
+full context window can still exceed 60s; raise the flag rather than assuming
+the server is unreachable. The effective value is reported by `GET /status`
+as `timeoutSeconds`.
 
 **Model residency.** Every request sends `keep_alive` (default `30m`,
 `--keep-alive`), overriding Ollama's 5-minute default. An idle chat otherwise
