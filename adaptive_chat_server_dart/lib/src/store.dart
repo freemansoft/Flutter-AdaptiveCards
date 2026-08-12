@@ -106,13 +106,19 @@ class ConversationStore {
   final Map<String, Conversation> _conversations = {};
 
   /// Creates a new conversation and returns it.
+  ///
+  /// [conversationId] defaults to a freshly minted id; a caller may instead
+  /// supply one to re-adopt a client-held id (e.g. auto-vivifying a
+  /// conversation the store lost across a restart, under the same id the
+  /// client is already using) rather than minting a new one.
   Conversation create({
+    String? conversationId,
     String userLabel = defaultUserLabel,
     String assistantLabel = defaultAssistantLabel,
     String? language,
   }) {
     final conv = Conversation(
-      conversationId: _newConversationId(),
+      conversationId: conversationId ?? _newConversationId(),
       userLabel: userLabel,
       assistantLabel: assistantLabel,
       language: language,

@@ -118,6 +118,25 @@ Map<String, dynamic> assistantCardBubble(
   String label = defaultAssistantLabel,
 }) => _fullWidthBubble(bodyItems, style: 'emphasis', label: label);
 
+/// Full-width "attention"-styled card with no role label.
+///
+/// Used for server-authored system notices (e.g. an expired conversation)
+/// that are not attributed to either bubble role — see [userBubble] and
+/// [assistantBubble] for those.
+Map<String, dynamic> noticeCard(List<Map<String, dynamic>> bodyItems) {
+  final container = <String, dynamic>{
+    'type': 'Container',
+    'style': 'attention',
+    'roundedCorners': true,
+    'items': bodyItems,
+  };
+  return {
+    'type': 'AdaptiveCard',
+    'version': _version,
+    'body': [container],
+  };
+}
+
 /// Wire envelope: pre-styled cards plus self/postNext links.
 Map<String, dynamic> envelope(
   String cid,

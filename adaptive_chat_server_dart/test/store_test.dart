@@ -40,6 +40,14 @@ void main() {
       expect(conv.language, 'es');
     });
 
+    test('create uses a caller-supplied conversationId instead of minting '
+        'one, discoverable via get', () {
+      final store = ConversationStore();
+      final conv = store.create(conversationId: 'c_restored');
+      expect(conv.conversationId, 'c_restored');
+      expect(store.get('c_restored'), same(conv));
+    });
+
     test('get returns null for an unknown id', () {
       final store = ConversationStore();
       expect(store.get('missing'), isNull);

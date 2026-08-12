@@ -49,3 +49,15 @@
   text above each bubble). Defaults to `user` / `assistant` when omitted. Also
   accepts a `language` field, stored on the conversation for future use but
   not yet consumed by any behavior.
+- Added: `POST /conversations/{cid}/interactions` no longer 404s for a
+  `conversationId` the (in-memory) store has lost across a restart. It now
+  auto-vivifies a fresh conversation under the same id and prepends a "this
+  conversation no longer exists" notice card to the envelope, so the
+  transcript explains what happened instead of the client hitting a bare
+  error. Notice body is bundled at `assets/expired_conversation_notice.json`
+  (editable without recompiling); the replay route
+  (`GET .../interactions/{iid}`) is unchanged and still 404s. The response
+  also carries `X-Chat-Notice: conversation-recovered` — the first use of a
+  new policy: a noteworthy-but-not-an-error server event on an otherwise
+  normal `200` is signalled via this header, not the status code or a body
+  field.

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:adaptive_chat_server_dart/src/app.dart';
 import 'package:adaptive_chat_server_dart/src/cli.dart';
+import 'package:adaptive_chat_server_dart/src/expired_conversation.dart';
 import 'package:adaptive_chat_server_dart/src/store.dart';
 import 'package:args/args.dart';
 import 'package:logging/logging.dart';
@@ -83,6 +84,9 @@ Future<void> main(List<String> arguments) async {
   final handler = buildHandler(
     store: ConversationStore(),
     responder: responder,
+    expiredConversationBodyItems: loadExpiredConversationBodyItems(
+      p.join(assetsDir, 'expired_conversation_notice.json'),
+    ),
   );
 
   final server = await shelf_io.serve(
