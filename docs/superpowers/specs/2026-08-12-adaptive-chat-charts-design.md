@@ -2,7 +2,8 @@
 
 **Date:** 2026-08-12
 **Components:** `adaptive_chat_server_dart/` and `adaptive_chat_client/` (both
-top-level demo apps; neither is a published package under `packages/`)
+top-level demo apps; neither is a published package under `packages/`), plus
+one new file in the published `packages/flutter_adaptive_charts_fs/`
 
 ## Problem
 
@@ -34,6 +35,10 @@ ecosystem and the chat bubble is a natural place to show a small chart.
   the prompt now advertises.
 - The prompt/schema/client coupling is documented, so the failure mode below
   is not rediscovered.
+- The chart widget classes are importable, so a host's tests can assert
+  `find.byType(AdaptivePieChart)` instead of inferring a chart from rendered
+  text — without changing what today's `flutter_adaptive_charts_fs.dart`
+  import exposes.
 
 ## Non-goals
 
@@ -46,6 +51,9 @@ ecosystem and the chat bubble is a natural place to show a small chart.
   a separate change (confirmed with the user during design).
 - **Not a HostConfig redesign.** No `chartColors` / `chartsLayout` tuning — see
   Decisions.
+- **Not a change to the existing charts entrypoint.** A second barrel is added
+  (below); `flutter_adaptive_charts_fs.dart` itself is untouched, so current
+  consumers see no API change.
 
 ## Background: what already works
 
@@ -94,6 +102,43 @@ the client-side requirement.
 It also shapes the client test: a negative case pinning what the default
 registry renders is a far stronger guard than asserting on the absence of
 exceptions. See Testing.
+
+### Charts package: a second barrel for the widget classes
+
+The chart widget classes (`AdaptivePieChart`, `AdaptiveBarChart`,
+`AdaptiveLineChart`, `AdaptiveGaugeChart`) live in
+`flutter_adaptive_charts_fs/lib/src/charts/` and are reachable only through
+the registry's `ElementCreator` closures — nothing importable names them. That
+makes `find.byType(AdaptivePieChart)` impossible in a consumer's tests, which
+is the most direct way to assert a chart actually rendered.
+
+A new second entrypoint fixes that without touching the existing one:
+
+```text
+packages/flutter_adaptive_charts_fs/lib/
+  flutter_adaptive_charts_fs.dart          (unchanged)
+  flutter_adaptive_charts_widgets_fs.dart  (new)
+```
+
+The new barrel uses `show` clauses so only the widget classes, their `State`
+classes, and `BarChartType` (required by `AdaptiveBarChart`'s constructor)
+become reachable. This mirrors the core package's
+`export '…flutter_raw_adaptive_card.dart' show RawAdaptiveCard, RawAdaptiveCardState;`
+and its existing two-entrypoint split
+(`flutter_adaptive_cards_fs.dart` for consumers,
+`flutter_adaptive_cards_extend_fs.dart` for extension authors).
+
+Verified by trial export before committing to this design: exporting the four
+chart widget files analyzes clean under `very_good_analysis` (no
+`public_member_api_docs` gaps), and the internal chrome — `ChartChrome`,
+`ChartLegendEntry`, `GaugeSegment`, `GaugeValueFormat`, `GaugePainter` — does
+**not** leak through.
+
+**This is real published API, not a test-only hatch.** `.pubignore` excludes
+`test/`, `tool/`, `dart_test.yaml`, and `analyze.json` — not files under
+`lib/`. The new barrel ships to pub.dev and anyone may import it. The benefit
+is that it is a separate, opt-in, separately-documented surface: the default
+import stays exactly as it is today.
 
 ### Server: `adaptive_chat_server_dart`
 
@@ -199,49 +244,48 @@ see Decisions.
 
 ## Decisions
 
-| Decision                                       | Choice                                     | Rationale                                                                                                                                                                                                                                                                                                                                                                          |
-| ---------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Where chart instructions live                  | Extended `card_system_prompt.txt` in place | One prompt file, no new CLI flag, no duplicated text. Considered and rejected: a `--charts` flag composing a separate fragment (extra machinery for a demo), and a third standalone prompt file (~153 duplicated lines to keep in sync by hand).                                                                                                                                   |
-| Which chart types the prompt advertises        | The six flat-data types                    | Covers every chart widget in the package (pie/donut, gauge, line, bar) and all the visual variety, with three data shapes. The two multi-series types need a fourth, deeply nested shape (`{legend, values:[{x,y},…]}`) — the heaviest JSON in the palette, and exactly the nesting the prompt already warns against. A malformed chart falls back to raw JSON text in the bubble. |
-| Chart overlay extensions on the client         | Omitted                                    | `overlayExtensions` exists for hosts that patch chart data at runtime. The chat client renders each server card once and never mutates it. Widgetbook makes the same split: its default registry omits them and only the overlay demo page adds them.                                                                                                                              |
-| Chart sizing / colors in the client HostConfig | Left at library defaults                   | Defaults are 250px (bar, line) and 200px (pie, gauge) inside a full-width bubble, and the default chart palette is already theme-aware. Tuning before seeing it render would be guesswork; the demo showing library defaults is also the more honest demo.                                                                                                                         |
-| `adaptive_explorer`                            | Out of scope                               | Confirmed with the user. Explorer has no chart wiring today; the request's premise that it already had some was incorrect.                                                                                                                                                                                                                                                         |
+| Decision                                       | Choice                                     | Rationale                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ---------------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Where chart instructions live                  | Extended `card_system_prompt.txt` in place | One prompt file, no new CLI flag, no duplicated text. Considered and rejected: a `--charts` flag composing a separate fragment (extra machinery for a demo), and a third standalone prompt file (~153 duplicated lines to keep in sync by hand).                                                                                                                                                                                                          |
+| Which chart types the prompt advertises        | The six flat-data types                    | Covers every chart widget in the package (pie/donut, gauge, line, bar) and all the visual variety, with three data shapes. The two multi-series types need a fourth, deeply nested shape (`{legend, values:[{x,y},…]}`) — the heaviest JSON in the palette, and exactly the nesting the prompt already warns against. A malformed chart falls back to raw JSON text in the bubble.                                                                        |
+| Chart overlay extensions on the client         | Omitted                                    | `overlayExtensions` exists for hosts that patch chart data at runtime. The chat client renders each server card once and never mutates it. Widgetbook makes the same split: its default registry omits them and only the overlay demo page adds them.                                                                                                                                                                                                     |
+| Chart sizing / colors in the client HostConfig | Left at library defaults                   | Defaults are 250px (bar, line) and 200px (pie, gauge) inside a full-width bubble, and the default chart palette is already theme-aware. Tuning before seeing it render would be guesswork; the demo showing library defaults is also the more honest demo.                                                                                                                                                                                                |
+| `adaptive_explorer`                            | Out of scope                               | Confirmed with the user. Explorer has no chart wiring today; the request's premise that it already had some was incorrect.                                                                                                                                                                                                                                                                                                                                |
+| Exposing the chart widget classes              | New second barrel                          | Confirmed with the user, who accepted a `packages/` change for this. Adding the widgets to `flutter_adaptive_charts_fs.dart` would widen the default consumer API and diverge from the core, which exports no element widgets. A second entrypoint keeps the default import identical and matches the core's own `_fs` / `_extend_fs` split. Rejected: leaving the API alone and asserting on the chart's rendered `title` text — workable, but indirect. |
 
 ## Testing
 
-| Where                                                          | Test                                                                                                                                                                                                                                                                             |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `adaptive_chat_server_dart/test/card_schema_test.dart` (new)   | `assets/card_schema.json`'s `Element.type` enum contains all six advertised `Chart.*` names — guards the prompt/schema drift that silently breaks `--json-format schema`                                                                                                         |
-| `adaptive_chat_server_dart/test/card_detect_test.dart`         | A bare `Chart.Pie` element object and a full `AdaptiveCard` wrapping one both survive `tryParseCardBody`                                                                                                                                                                         |
-| `adaptive_chat_client/test/chart_reply_render_test.dart` (new) | Widget test: a full-width assistant bubble containing a `Chart.Pie` and one containing a `Chart.VerticalBar` each render with `chatCardTypeRegistry`; plus a negative case proving the default `CardTypeRegistry()` renders the unknown-type error placeholder for the same card |
+| Where                                                                     | Test                                                                                                                                                                                                                                                                             |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `adaptive_chat_server_dart/test/card_schema_test.dart` (new)              | `assets/card_schema.json`'s `Element.type` enum contains all six advertised `Chart.*` names — guards the prompt/schema drift that silently breaks `--json-format schema`                                                                                                         |
+| `adaptive_chat_server_dart/test/card_detect_test.dart`                    | A bare `Chart.Pie` element object and a full `AdaptiveCard` wrapping one both survive `tryParseCardBody`                                                                                                                                                                         |
+| `adaptive_chat_client/test/chart_reply_render_test.dart` (new)            | Widget test: a full-width assistant bubble containing a `Chart.Pie` and one containing a `Chart.VerticalBar` each render with `chatCardTypeRegistry`; plus a negative case proving the default `CardTypeRegistry()` renders the unknown-type error placeholder for the same card |
+| `packages/flutter_adaptive_charts_fs/test/widgets_barrel_test.dart` (new) | The widgets barrel resolves every class it promises, and does **not** re-export the internal chrome (`ChartChrome`, `GaugePainter`, …). A compile-time guard: if someone narrows a `show` clause later, this fails to build rather than breaking a downstream consumer silently. |
 
-**What the client test asserts on — and why not on widget types.** Neither
-class the test would naturally reach for is importable from the client:
+**What the client test asserts on.** With the widgets barrel in place the
+positive assertion is direct:
 
-- The chart widgets (`AdaptivePieChart`, `AdaptiveBarChart`, …) live under
-  `flutter_adaptive_charts_fs/lib/src/charts/` and are **not** re-exported by
-  the package barrel, which exports only `card_chart_registry.dart` and
-  `chart_element_overlay_extension.dart`.
-- `AdaptiveErrorPlaceholder` lives under `flutter_adaptive_cards_fs/lib/src/`
-  and is likewise not exported by that package's barrel.
-
-So both assertions go through rendered text, which needs no import:
-
-- **Positive:** `find.text('<chart title>')`. `ChartChrome` emits the
-  element's `title` as a `Text` above the plot, and an unregistered type never
-  reaches `ChartChrome` — so the title is present exactly when the registry
-  did its job.
+- **Positive:** `find.byType(AdaptivePieChart)` / `find.byType(AdaptiveBarChart)`,
+  importing `package:flutter_adaptive_charts_fs/flutter_adaptive_charts_widgets_fs.dart`.
+  This names the widget the registry was supposed to build, rather than
+  inferring it from rendered text.
 - **Negative:** pump the same card with `const CardTypeRegistry()` and expect
-  `find.text('<chart title>')` to be `findsNothing` while
-  `find.textContaining('Type Chart.Pie not found')` — the `AdaptiveUnknown`
-  message — is `findsOneWidget`.
+  `find.byType(AdaptivePieChart)` to be `findsNothing` while
+  `find.textContaining('Type Chart.Pie not found')` is `findsOneWidget`.
+
+The negative case still goes through text for the placeholder half:
+`AdaptiveErrorPlaceholder` lives under `flutter_adaptive_cards_fs/lib/src/`
+and is not exported by that package's barrel. Exporting it is out of scope —
+the `AdaptiveUnknown` message string is a sufficient handle, and widening a
+second package's API for one assertion is not worth it.
 
 The negative case is what stops the suite passing trivially: it pins the exact
 before/after difference this change creates.
 
 ## Verification
 
-Matching the three jobs in `.github/workflows/adaptive_chat.yml`:
+The three jobs in `.github/workflows/adaptive_chat.yml`, plus the charts
+package (now in scope via the widgets barrel):
 
 ```bash
 # Repo root
@@ -253,10 +297,21 @@ cd adaptive_chat_client && fvm flutter test
 
 # Server (resolves standalone, no Flutter needed)
 cd adaptive_chat_server_dart && dart pub get && dart test
+
+# Charts package (in scope: the new widgets barrel)
+cd packages/flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden
 ```
 
-No files under `packages/` change, so no package `CHANGELOG.md` entries and no
-coverage floors are in play.
+**Package obligations from the barrel.** Adding a file under
+`packages/flutter_adaptive_charts_fs/` triggers the repo's changelog rule: a
+bullet in that package's `## [Unreleased]` section is required. The barrel
+contains only `export` directives — no executable lines — so the
+`flutter_adaptive_charts_fs: 83` line-coverage floor in
+`tool/coverage_floors.yaml` is unaffected and must not be edited. The
+`adaptive_chat_*` apps are not published packages and have no floors.
+
+The only in-scope file under `packages/` is the new barrel. A change to any
+other file there is scope creep — stop and re-check the design.
 
 ## Manual smoke check
 
