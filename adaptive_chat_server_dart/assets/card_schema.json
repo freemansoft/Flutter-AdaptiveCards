@@ -23,7 +23,13 @@
             "ProgressBar",
             "ProgressRing",
             "CodeBlock",
-            "Image"
+            "Image",
+            "Chart.Pie",
+            "Chart.Donut",
+            "Chart.VerticalBar",
+            "Chart.HorizontalBar",
+            "Chart.Line",
+            "Chart.Gauge"
           ]
         }
       }

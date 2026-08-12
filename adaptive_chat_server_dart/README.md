@@ -228,11 +228,22 @@ The card prompt's palette is intentionally small:
   `expanded`, `isMultiSelect`), `Input.Text`, `Input.Number`, `Input.Time`.
 - **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`, `Table`,
   `Rating`, `Icon`, `ProgressBar`, `ProgressRing`, `CodeBlock`, `Image`.
+- **Charts** — `Chart.Pie`, `Chart.Donut`, `Chart.VerticalBar`,
+  `Chart.HorizontalBar`, `Chart.Line`, `Chart.Gauge`. The two multi-series
+  types (`Chart.VerticalBar.Grouped`, `Chart.HorizontalBar.Stacked`) are
+  deliberately not advertised: they need a nested
+  `{legend, values:[{x,y}]}` shape, the most error-prone JSON in the palette.
 
 **Display-only.** The prompt forbids `Action`/`ActionSet` elements, so the
 card fragment carries no submit button of its own, and any values a user
 enters into its inputs do not post back to the server — the fragment is
 render-only for now.
+
+**Charts need a chart-aware client.** `Chart.*` elements render only if the
+client registered `flutter_adaptive_charts_fs` — `adaptive_chat_client` does
+this in `lib/src/chat_card_registry.dart`. A client without it renders each
+chart as a broken-image icon and a `Type Chart.Pie not found` message, not a
+blank space, so the failure is visible but ugly.
 
 ### Structured output (`--json-format`)
 

@@ -113,6 +113,28 @@ Display — show information, no user entry:
   placeholder or made-up URL; if you have no real URL, describe the image in
   a TextBlock instead. "altText" describes the image for accessibility:
   {"type":"Image","url":"https://example.com/photo.jpg","altText":"A photo of the Golden Gate Bridge"}
+Charts — small data visualizations. Keep "data" to at most 6 points: a long
+series will not fit the narrow bubble. Use at most ONE chart per reply, and
+never put a chart inside a Table or a Carousel. Every "x", "y", and "value" is
+a plain number or string, never a nested object. Every chart accepts an
+optional "title" (shown above the plot) and "showLegend" (true/false); bar and
+line charts also accept "xAxisTitle" and "yAxisTitle".
+- Chart.Pie and Chart.Donut — parts of a whole. Each data item is a
+  {"title","value"} pair:
+  {"type":"Chart.Pie","title":"Sales by region","data":[{"title":"North","value":30},{"title":"South","value":45},{"title":"West","value":25}]}
+- Chart.VerticalBar and Chart.HorizontalBar — compare a value across
+  categories. Each data item is an {"x","y"} pair, where "x" is the category
+  label and "y" is the number. Prefer Chart.HorizontalBar when the category
+  labels are long:
+  {"type":"Chart.VerticalBar","title":"Weekly signups","xAxisTitle":"Day","yAxisTitle":"Signups","data":[{"x":"Mon","y":12},{"x":"Tue","y":19},{"x":"Wed","y":7}]}
+- Chart.Line — a trend across an ordered axis. Same {"x","y"} items; "x" may
+  be a number or an ISO date string:
+  {"type":"Chart.Line","title":"Response time (ms)","data":[{"x":1,"y":120},{"x":2,"y":95},{"x":3,"y":110}]}
+- Chart.Gauge — one number against a range. "value", "min", and "max" are
+  numbers; the optional "segments" array colors the arc:
+  {"type":"Chart.Gauge","title":"Disk used","min":0,"max":100,"value":72,"showLegend":true,"segments":[{"color":"categoricalGreen","value":60,"legend":"OK"},{"color":"categoricalRed","value":40,"legend":"High"}]}
+There are no other chart types. In particular there is no grouped or stacked
+chart here: to compare two series, send two separate charts or a Table.
 
 Do NOT include any Action, an "actions" array, or an ActionSet: this UI is
 display-only and has no submit button yet, so action buttons would do nothing.
