@@ -54,27 +54,42 @@ This was trialed during design: exporting these four files analyzes clean under 
 Create `packages/flutter_adaptive_charts_fs/test/widgets_barrel_test.dart`:
 
 ```dart
+import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_fs.dart';
 import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_widgets_fs.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('the widgets barrel exposes every chart widget class', () {
-    // A compile-time guard, not a behavioral one: if a `show` clause is
-    // narrowed or a class renamed, this file fails to build instead of
-    // silently breaking a downstream consumer's find.byType.
+  test('registry builders produce the exported widget types', () {
+    // Ties the barrel to the registry: fails if a `show` clause exports the
+    // wrong class, a class is renamed, or a builder changes what it returns.
+    // The import line is itself a compile-time guard on the barrel's surface.
+    // Calling a builder only constructs the widget -- no BuildContext, no
+    // pumping needed.
+    final builders = CardChartsRegistry.additionalChartElements;
+
     expect(
-      <Type>[
-        AdaptivePieChart,
-        AdaptivePieChartState,
-        AdaptiveBarChart,
-        AdaptiveBarChartState,
-        BarChartType,
-        AdaptiveLineChart,
-        AdaptiveLineChartState,
-        AdaptiveGaugeChart,
-        AdaptiveGaugeChartState,
-      ],
-      hasLength(9),
+      builders['Chart.Pie']!({'type': 'Chart.Pie'}),
+      isA<AdaptivePieChart>(),
+    );
+    expect(
+      builders['Chart.Donut']!({'type': 'Chart.Donut'}),
+      isA<AdaptivePieChart>(),
+    );
+    expect(
+      builders['Chart.VerticalBar']!({'type': 'Chart.VerticalBar'}),
+      isA<AdaptiveBarChart>(),
+    );
+    expect(
+      builders['Chart.HorizontalBar']!({'type': 'Chart.HorizontalBar'}),
+      isA<AdaptiveBarChart>(),
+    );
+    expect(
+      builders['Chart.Line']!({'type': 'Chart.Line'}),
+      isA<AdaptiveLineChart>(),
+    );
+    expect(
+      builders['Chart.Gauge']!({'type': 'Chart.Gauge'}),
+      isA<AdaptiveGaugeChart>(),
     );
   });
 
@@ -85,6 +100,12 @@ void main() {
   });
 }
 ```
+
+The `State` classes (`AdaptivePieChartState` and friends) are exported for
+symmetry with the core package's `show RawAdaptiveCard, RawAdaptiveCardState`
+but are not asserted here — `isA<AdaptivePieChart>()` already fails to compile
+if the widget class is not exported, and a `State` type has no useful
+assertion outside a pumped tree.
 
 - [ ] **Step 2: Run the test to verify it fails**
 
@@ -136,6 +157,8 @@ fvm flutter test test/widgets_barrel_test.dart
 ```
 
 Expected: PASS, 2 tests. If `BarChartType.values` is not length 4, read `lib/src/charts/bar_chart.dart` and correct the expected count in the test — do not change the enum.
+
+If a builder call throws during construction (rather than returning a widget), the chart widget does real work in its constructor. Do not work around it by pumping — report it as a concern; it is a finding about the widget, not about this barrel.
 
 - [ ] **Step 5: Document the entrypoint in the package README**
 
