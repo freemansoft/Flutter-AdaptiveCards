@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:adaptive_chat_server_dart/src/card_detect.dart';
 import 'package:test/test.dart';
 
@@ -47,6 +49,47 @@ void main() {
     test('an unbalanced closing fence is stripped', () {
       const raw = '{"type":"TextBlock","text":"hi"}\n```';
       expect(tryParseCardBody(raw), isNotNull);
+    });
+
+    test('a card whose own text contains a Markdown code fence survives', () {
+      // Verbatim reply from qwen3.6:27b-coding-nvfp4 for "show me a Dart
+      // snippet ... with a short explanation above it". It is valid JSON —
+      // every newline correctly escaped — but the reply is a single line, so
+      // the unbalanced-closing-fence heuristic used to match the ```dart
+      // that opens the snippet *inside* the string and delete everything
+      // from there to the end, truncating the JSON mid-string.
+      // jsonEncode reproduces the model's exact wire form: one line, every
+      // newline escaped as \n.
+      final raw = jsonEncode({
+        'type': 'TextBlock',
+        'text': 'Use `dart:convert` to decode the file contents into a '
+            '`Map`, then access the key directly:\n\n'
+            '```dart\n'
+            "import 'dart:convert';\n\n"
+            'void main() {\n'
+            '  final data = jsonDecode(json) as Map<String, dynamic>;\n'
+            "  print(data['name']);\n"
+            '}\n'
+            '```',
+        'wrap': true,
+      });
+      expect(raw, isNot(contains('\n')), reason: 'model emits a single line');
+      final body = tryParseCardBody(raw);
+      expect(body, isNotNull, reason: 'valid JSON must never be mangled');
+      expect(body!.single['type'], 'TextBlock');
+      expect(body.single['text'], contains('```dart'));
+      expect(cardParseFailureReason(raw), isNull);
+    });
+
+    test('a fenced reply whose card text also contains a fence survives', () {
+      // The repair heuristic must still work when it is genuinely needed:
+      // a real wrapping fence around a card that itself mentions ```dart.
+      const raw =
+          '```json\n{"type":"TextBlock","text":"run ```dart main()``` now"}\n'
+          '```';
+      final body = tryParseCardBody(raw);
+      expect(body, isNotNull);
+      expect(body!.single['text'], contains('```dart'));
     });
 
     test('leading/trailing decoration (=== headers) is stripped', () {

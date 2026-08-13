@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+- Fixed: a card whose own text contains a Markdown code fence is no longer
+  truncated and shown as raw JSON. The unbalanced-closing-fence heuristic
+  (` ```[^\n]*$ `) matched the ` ```dart ` **inside** the card's text — a
+  model reply is a single line, so the pattern ran to end-of-string and
+  deleted everything from that fence on, leaving unparseable JSON. Fence and
+  decoration stripping are repair heuristics, so they now run only when the
+  reply does not already parse as JSON. The defect was in the detector, not
+  in any model: every reply that was valid single-line JSON containing a
+  fence was corrupted. Observed with `qwen3.6:27b-coding-nvfp4` on "show me
+  a code snippet" requests, identically at temperature 0 and 0.6.
+
 - Added: `--ollama-temperature` (default `0`, unchanged behavior) sets
   `options.temperature` per run instead of it being a hardcoded constant. The
   literal value `model` sends no temperature at all, so Ollama applies the
