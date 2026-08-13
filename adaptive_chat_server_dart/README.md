@@ -266,6 +266,17 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
   exactly the shapes `tryParseCardBody` accepts). A safety net for
   weaker/other models, at some latency cost.
 
+> [!WARNING] > **`format` is not honored by every model, and Ollama does not say so.**
+> Ollama accepts the `format` field for any model but applies it only for
+> some; when it doesn't, you get an ordinary `200` with unconstrained text
+> and no error. Measured: `format: "json"` with the prompt "Say hello in
+> plain English prose" returns `{"text":"Hello!"}` on `qwen2.5-coder:7b` but
+> plain prose on `qwen3.6:27b-coding-nvfp4` — so `--json-format json|schema`
+> is **inert on that model** and buys nothing over `none`. The responder logs
+> a `WARNING` naming the model whenever a reply fails to parse as JSON in
+> `json`/`schema` mode, which is the symptom. Check a candidate model with a
+> one-line `curl` before relying on the constraint.
+
 ### Status endpoint
 
 `GET /status` is a read-only operator snapshot, rendered **indented**

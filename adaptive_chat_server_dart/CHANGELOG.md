@@ -9,6 +9,11 @@
   settings (`qwen3.6:27b-coding-nvfp4` ships `0.6`). The effective value is
   reported by `GET /status`, and an invalid value now exits with a usage
   error instead of a stack trace.
+- Added: a `WARNING` when a reply fails to parse as JSON in `--json-format`
+  `json`/`schema` mode. Ollama accepts `format` for every model but honors it
+  on only some — `qwen3.6:27b-coding-nvfp4` ignores it and returns
+  unconstrained prose with no error — so the constraint could previously look
+  like a safety net while doing nothing. Documented in the README.
 - Changed: `defaultCardTemperature` no longer claims temperature 0 is
   deterministic. Greedy decoding repeats short replies verbatim but long
   generations still diverge; measured, a ~3.5 K-character table gave two

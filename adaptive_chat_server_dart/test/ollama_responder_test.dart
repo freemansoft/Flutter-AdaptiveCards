@@ -505,6 +505,66 @@ void main() {
     expect((reply.cardBody!.single['pages'] as List).length, 2);
   });
 
+  group('a model that ignores the format constraint', () {
+    // Ollama accepts `format` for every model but only honors it on some
+    // (qwen3.6:27b-coding-nvfp4 returns plain prose and no error). Silent
+    // degradation is the worst version of that, so it must be logged.
+    Future<List<LogRecord>> replyCapturingLogs(OllamaResponder r) async {
+      final records = <LogRecord>[];
+      Logger.root.level = Level.ALL;
+      final sub = Logger.root.onRecord.listen(records.add);
+      await r.reply('hi', const []);
+      await sub.cancel();
+      return records;
+    }
+
+    test('json mode warns when the reply is not JSON at all', () async {
+      final client = MockClient(
+        (request) async => okResponse('Hello. How are you doing today?'),
+      );
+      final responder = makeResponder(client: client, jsonFormat: 'json');
+      final logs = await replyCapturingLogs(responder);
+      final match = logs.where(
+        (r) => r.message.contains('ignoring the format constraint'),
+      );
+      expect(match, isNotEmpty);
+      expect(match.first.level, Level.WARNING);
+      expect(match.first.message, contains('json'));
+    });
+
+    test('schema mode warns when the reply is not JSON at all', () async {
+      final client = MockClient((request) async => okResponse('plain prose'));
+      final responder = makeResponder(client: client, jsonFormat: 'schema');
+      final logs = await replyCapturingLogs(responder);
+      expect(
+        logs.any((r) => r.message.contains('ignoring the format constraint')),
+        isTrue,
+      );
+    });
+
+    test('none mode never warns, since no constraint was requested', () async {
+      final client = MockClient((request) async => okResponse('plain prose'));
+      final responder = makeResponder(client: client);
+      final logs = await replyCapturingLogs(responder);
+      expect(
+        logs.any((r) => r.message.contains('ignoring the format constraint')),
+        isFalse,
+      );
+    });
+
+    test('a valid JSON reply in json mode does not warn', () async {
+      final client = MockClient(
+        (request) async => okResponse('{"text":"Hello!"}'),
+      );
+      final responder = makeResponder(client: client, jsonFormat: 'json');
+      final logs = await replyCapturingLogs(responder);
+      expect(
+        logs.any((r) => r.message.contains('ignoring the format constraint')),
+        isFalse,
+      );
+    });
+  });
+
   group('context-fill logging tiers', () {
     late List<LogRecord> records;
 

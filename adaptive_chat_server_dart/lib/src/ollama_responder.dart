@@ -506,8 +506,18 @@ class OllamaResponder implements Responder {
       } on DuplicateJsonKeyException {
         duplicateKeyDetected = true;
       } on FormatException {
-        // Unexpected: format guarantee failed; fall through to the generic
-        // detection path below, same as the raw-content path would.
+        // Under a working grammar constraint invalid JSON is impossible, so
+        // this means the constraint was not applied. Ollama accepts `format`
+        // for every model but silently honors it on only some — without this
+        // warning, `--json-format schema` looks like a safety net while
+        // doing nothing at all.
+        _log.warning(
+          'Model returned invalid JSON despite format=$_jsonFormat '
+          '(model=$_model) — the model may be ignoring the format '
+          'constraint. Ollama applies it silently or not at all depending on '
+          'the model; verify with a trivial format=json request, and treat '
+          '--json-format as unavailable for this model if it is ignored.',
+        );
       }
     }
     if (!usedFormatPath && !duplicateKeyDetected) {
