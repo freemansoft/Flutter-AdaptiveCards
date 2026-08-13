@@ -19,6 +19,27 @@ const _logLevelChoices = [
   'trace',
 ];
 
+/// Value of `--ollama-temperature` that defers to the model's own default.
+const temperatureModelDefault = 'model';
+
+/// Parses `--ollama-temperature` into the value the responder should send.
+///
+/// Returns `null` for the literal `model`, which means "send no temperature
+/// at all" so Ollama applies the model's Modelfile value. Throws a
+/// [FormatException] for anything that is not a non-negative number, so a
+/// typo fails at startup rather than silently sampling at the wrong heat.
+double? resolveTemperature(String value) {
+  if (value == temperatureModelDefault) return null;
+  final parsed = double.tryParse(value);
+  if (parsed == null || parsed.isNaN || parsed < 0) {
+    throw FormatException(
+      'Invalid --ollama-temperature "$value": expected a non-negative '
+      'number (e.g. 0, 0.6) or "$temperatureModelDefault".',
+    );
+  }
+  return parsed;
+}
+
 /// Maps a `--log-level` name to its [Level], defaulting to [Level.INFO].
 Level resolveLogLevel(String name) {
   switch (name) {
@@ -87,6 +108,17 @@ ArgParser buildArgParser() {
       help:
           "Constrain Ollama's output via its format field (default: "
           '$defaultJsonFormat).',
+    )
+    ..addOption(
+      'ollama-temperature',
+      defaultsTo: '$defaultCardTemperature',
+      help:
+          'Sampling temperature sent as options.temperature (default: '
+          '$defaultCardTemperature). 0 selects greedy decoding, which '
+          'minimizes malformed card JSON but makes a bad card reproducibly '
+          'bad. Pass "$temperatureModelDefault" to send no temperature and '
+          "let the model's own Modelfile default apply — measured worse than "
+          '0 for card generation, so prefer the default.',
     )
     ..addOption(
       'ollama-timeout',

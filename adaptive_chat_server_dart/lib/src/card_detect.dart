@@ -44,9 +44,29 @@ String _stripFence(String raw) {
 
 String _stripDecoration(String text) => text.replaceAll(_decoration, '');
 
+/// Prepares a reply for `jsonDecode`, repairing it only if it needs repair.
+///
+/// Fence and decoration stripping exist for models that wrap their answer in
+/// Markdown. Running them over a reply that **already parses** can only
+/// corrupt it: the unbalanced-closing-fence pattern matches any ``` run
+/// through end-of-line, so a single-line card whose own text opens a
+/// ` ```dart ` snippet had everything from that fence onward deleted and
+/// arrived as truncated, unparseable JSON. Parsing first keeps a
+/// well-formed reply untouched and leaves the heuristics for replies that
+/// actually are wrapped.
+String _normalizeForParsing(String raw) {
+  final trimmed = raw.trim();
+  try {
+    jsonDecode(trimmed);
+    return trimmed;
+  } on FormatException {
+    return _stripDecoration(_stripFence(raw));
+  }
+}
+
 /// Returns Adaptive Card body items if [raw] is *only* a card, else `null`.
 List<Map<String, dynamic>>? tryParseCardBody(String raw) {
-  final text = _stripDecoration(_stripFence(raw));
+  final text = _normalizeForParsing(raw);
   dynamic parsed;
   try {
     parsed = jsonDecode(text);
@@ -84,7 +104,7 @@ List<Map<String, dynamic>>? tryParseCardBody(String raw) {
 /// stripping). Returns a short reason when the reply *began* like JSON but
 /// could not be used.
 String? cardParseFailureReason(String raw) {
-  final text = _stripDecoration(_stripFence(raw));
+  final text = _normalizeForParsing(raw);
   if (text.isEmpty || !(text.startsWith('{') || text.startsWith('['))) {
     return null;
   }

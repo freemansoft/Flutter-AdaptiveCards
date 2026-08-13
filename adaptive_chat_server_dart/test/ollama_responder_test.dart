@@ -30,6 +30,7 @@ void main() {
     int historyTurns = defaultHistoryTurns,
     String? systemPromptFile,
     Duration? ollamaTimeout,
+    double? temperature = defaultCardTemperature,
   }) {
     return OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
@@ -40,6 +41,7 @@ void main() {
       historyTurns: historyTurns,
       systemPromptFile: systemPromptFile,
       ollamaTimeout: ollamaTimeout ?? const Duration(seconds: 60),
+      temperature: temperature,
     );
   }
 
@@ -385,6 +387,48 @@ void main() {
     expect(capturedPayload['think'], false);
   });
 
+  test('sends the configured temperature, not a hardcoded zero', () async {
+    late Map<String, dynamic> capturedPayload;
+    final client = MockClient((request) async {
+      capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
+      return okResponse('ok');
+    });
+    final responder = makeResponder(client: client, temperature: 0.6);
+    await responder.reply('hi', const []);
+    final options = capturedPayload['options'] as Map<String, dynamic>;
+    expect(options['temperature'], 0.6);
+  });
+
+  test('a null temperature omits the key so Ollama uses the model default',
+      () async {
+    late Map<String, dynamic> capturedPayload;
+    final client = MockClient((request) async {
+      capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
+      return okResponse('ok');
+    });
+    final responder = makeResponder(client: client, temperature: null);
+    await responder.reply('hi', const []);
+    final options = capturedPayload['options'] as Map<String, dynamic>;
+    expect(options.containsKey('temperature'), isFalse);
+    // num_ctx still goes out — only temperature is deferred to the model.
+    expect(options['num_ctx'], defaultNumCtx);
+  });
+
+  test('describe reports the configured temperature for GET /status',
+      () async {
+    final client = MockClient((request) async => okResponse('ok'));
+    expect(
+      makeResponder(client: client, temperature: 0.6).describe()['temperature'],
+      0.6,
+    );
+  });
+
+  test('describe reports "model" when no temperature is sent', () async {
+    final client = MockClient((request) async => okResponse('ok'));
+    final responder = makeResponder(client: client, temperature: null);
+    expect(responder.describe()['temperature'], 'model');
+  });
+
   test('reply does not mutate the caller-supplied history list', () async {
     final client = MockClient((request) async => okResponse('ok'));
     final responder = makeResponder(client: client, historyTurns: 1);
@@ -459,6 +503,66 @@ void main() {
     expect(reply.cardBody, isNotNull);
     expect(reply.cardBody!.single['type'], 'Carousel');
     expect((reply.cardBody!.single['pages'] as List).length, 2);
+  });
+
+  group('a model that ignores the format constraint', () {
+    // Ollama accepts `format` for every model but only honors it on some
+    // (qwen3.6:27b-coding-nvfp4 returns plain prose and no error). Silent
+    // degradation is the worst version of that, so it must be logged.
+    Future<List<LogRecord>> replyCapturingLogs(OllamaResponder r) async {
+      final records = <LogRecord>[];
+      Logger.root.level = Level.ALL;
+      final sub = Logger.root.onRecord.listen(records.add);
+      await r.reply('hi', const []);
+      await sub.cancel();
+      return records;
+    }
+
+    test('json mode warns when the reply is not JSON at all', () async {
+      final client = MockClient(
+        (request) async => okResponse('Hello. How are you doing today?'),
+      );
+      final responder = makeResponder(client: client, jsonFormat: 'json');
+      final logs = await replyCapturingLogs(responder);
+      final match = logs.where(
+        (r) => r.message.contains('ignoring the format constraint'),
+      );
+      expect(match, isNotEmpty);
+      expect(match.first.level, Level.WARNING);
+      expect(match.first.message, contains('json'));
+    });
+
+    test('schema mode warns when the reply is not JSON at all', () async {
+      final client = MockClient((request) async => okResponse('plain prose'));
+      final responder = makeResponder(client: client, jsonFormat: 'schema');
+      final logs = await replyCapturingLogs(responder);
+      expect(
+        logs.any((r) => r.message.contains('ignoring the format constraint')),
+        isTrue,
+      );
+    });
+
+    test('none mode never warns, since no constraint was requested', () async {
+      final client = MockClient((request) async => okResponse('plain prose'));
+      final responder = makeResponder(client: client);
+      final logs = await replyCapturingLogs(responder);
+      expect(
+        logs.any((r) => r.message.contains('ignoring the format constraint')),
+        isFalse,
+      );
+    });
+
+    test('a valid JSON reply in json mode does not warn', () async {
+      final client = MockClient(
+        (request) async => okResponse('{"text":"Hello!"}'),
+      );
+      final responder = makeResponder(client: client, jsonFormat: 'json');
+      final logs = await replyCapturingLogs(responder);
+      expect(
+        logs.any((r) => r.message.contains('ignoring the format constraint')),
+        isFalse,
+      );
+    });
   });
 
   group('context-fill logging tiers', () {

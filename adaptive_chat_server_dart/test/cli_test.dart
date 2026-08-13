@@ -30,6 +30,59 @@ void main() {
     });
   });
 
+  group('--ollama-temperature', () {
+    test('defaults to the documented card temperature', () {
+      final args = buildArgParser().parse([]);
+      expect(args['ollama-temperature'], '$defaultCardTemperature');
+    });
+
+    test('parses an explicit value', () {
+      final args = buildArgParser().parse(['--ollama-temperature', '0.6']);
+      expect(args['ollama-temperature'], '0.6');
+    });
+
+    test('reaches the responder, so GET /status reports it', () {
+      final responder = buildResponder(
+        model: 'test-model',
+        defaultSystemPromptPath: 'assets/default_system_prompt.txt',
+        cardSchemaPath: 'assets/card_schema.json',
+        ollamaUrl: 'http://127.0.0.1:11434',
+        temperature: 0.6,
+      );
+      expect(responder.describe()['temperature'], 0.6);
+    });
+
+    test('"model" reaches the responder as no temperature at all', () {
+      final responder = buildResponder(
+        model: 'test-model',
+        defaultSystemPromptPath: 'assets/default_system_prompt.txt',
+        cardSchemaPath: 'assets/card_schema.json',
+        ollamaUrl: 'http://127.0.0.1:11434',
+        temperature: null,
+      );
+      expect(responder.describe()['temperature'], 'model');
+    });
+  });
+
+  group('resolveTemperature', () {
+    test('parses a numeric value', () {
+      expect(resolveTemperature('0.6'), 0.6);
+      expect(resolveTemperature('0'), 0.0);
+    });
+
+    test('maps "model" to null, meaning send no temperature', () {
+      expect(resolveTemperature('model'), isNull);
+    });
+
+    test('rejects a non-numeric value', () {
+      expect(() => resolveTemperature('warm'), throwsFormatException);
+    });
+
+    test('rejects a negative value', () {
+      expect(() => resolveTemperature('-1'), throwsFormatException);
+    });
+  });
+
   group('resolveLogLevel', () {
     test('maps each accepted name to a logging level', () {
       expect(resolveLogLevel('critical'), Level.SHOUT);
@@ -126,6 +179,27 @@ void main() {
           output,
           isNot(contains('#0')),
           reason: 'a bad flag is user error, not a crash to dump a trace for',
+        );
+      },
+      timeout: const Timeout(Duration(minutes: 2)),
+    );
+
+    test(
+      'a bad --ollama-temperature fails with a message, not a stack trace',
+      () async {
+        final result = await Process.run(Platform.resolvedExecutable, [
+          'run',
+          'bin/server.dart',
+          '--ollama-temperature',
+          'warm',
+        ], workingDirectory: Directory.current.path);
+        expect(result.exitCode, isNot(0));
+        final output = '${result.stdout}${result.stderr}';
+        expect(output, contains('ollama-temperature'));
+        expect(
+          output,
+          isNot(contains('#0')),
+          reason: 'a bad value is user error, not a crash to dump a trace for',
         );
       },
       timeout: const Timeout(Duration(minutes: 2)),

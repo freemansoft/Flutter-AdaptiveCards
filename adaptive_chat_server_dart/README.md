@@ -266,6 +266,19 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
   exactly the shapes `tryParseCardBody` accepts). A safety net for
   weaker/other models, at some latency cost.
 
+> [!WARNING] > **`format` is not honored by every model, and Ollama does not say so.**
+> Ollama accepts the `format` field for any model but applies it only for
+> some; when it doesn't, you get an ordinary `200` with unconstrained text
+> and no error. Measured: `format: "json"` with the prompt "Say hello in
+> plain English prose" returns `{"text":"Hello!"}` on `qwen2.5-coder:7b` but
+> plain prose on `qwen3.6:27b-coding-nvfp4` — so `--json-format json|schema`
+> is **inert on that model** and buys nothing over `none`. The responder logs
+> a `WARNING` naming the model whenever a reply fails to parse as JSON in
+> `json`/`schema` mode, which is the symptom. Check a candidate model with a
+> one-line `curl` before relying on the constraint, or run
+> [`tool/model_probes/json_format_probe.dart`](tool/model_probes/README.md),
+> whose canary answers exactly this question.
+
 ### Status endpoint
 
 `GET /status` is a read-only operator snapshot, rendered **indented**
@@ -283,7 +296,8 @@ routes stay compact. Example payload:
     "jsonFormat": "none",
     "systemPromptFile": "default_system_prompt.txt",
     "keepAlive": "30m",
-    "timeoutSeconds": 60
+    "timeoutSeconds": 60,
+    "temperature": 0.0
   },
   "conversationCount": 1,
   "conversations": [
@@ -348,7 +362,7 @@ sequenceDiagram
         S-->>R: prior (user, assistant) pairs = full history
         R->>O: reply(message, history)
         O->>O: load system prompt (per request) + trim history
-        O->>L: POST /api/chat<br/>{system + history + turn, num_ctx, temperature:0, think:false}
+        O->>L: POST /api/chat<br/>{system + history + turn, num_ctx, temperature (--ollama-temperature), think:false}
         L-->>O: message.content (or failure -> diagnostic text)
         O-->>R: Reply(text, cardBody)
         alt cardBody is not null
@@ -386,7 +400,7 @@ sequenceDiagram
     end
     O->>O: _trimHistory() — keep last historyTurns exchanges
     O->>O: messages += history + {role: user, content: text}
-    O->>L: POST /api/chat<br/>{model, messages, stream:false, num_ctx,<br/>temperature:0, think:false, + format (json/schema modes only)}
+    O->>L: POST /api/chat<br/>{model, messages, stream:false, num_ctx,<br/>temperature (omitted if --ollama-temperature model), think:false,<br/>+ format (json/schema modes only)}
     alt transport failure (connection / DNS / timeout)
         L--xO: exception
         O-->>R: Reply("(Ollama unreachable ...)", cardBody=null)
@@ -544,8 +558,45 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
 - `--num-ctx` (default 16384) — context window sent as `options.num_ctx`.
 - `--history-turns` (default 10) — prior exchanges replayed to the model.
 - `--json-format` (default `none`) — `none`/`json`/`schema`.
+- `--ollama-temperature` (default 0) — sent as `options.temperature`. `0`
+  selects greedy decoding, which minimizes malformed card JSON; the trade-off
+  is that a card the model gets wrong at 0 is usually wrong the same way on
+  every retry. Pass `model` to send no temperature at all, letting the
+  model's own Modelfile default apply. The effective value is reported by
+  `GET /status`.
+
+  **Prefer the default 0 unless a specific model measures better.** A model's
+  shipped temperature is tuned for general chat, not for strict-JSON output.
+  Measured on `qwen3.6:27b-coding-nvfp4` (Modelfile default `0.6`) against
+  the real `card_detect.dart` bar: 12/15 hard cases at `0` versus 9/15 at
+  `0.6`, with `0.6`'s extra failures being long card JSON truncated
+  mid-generation. Both settings passed 7/7 easy cases, so the difference only
+  shows on large or nested cards. Re-measure for a new model with
+  [`tool/model_probes/`](tool/model_probes/README.md) rather than assuming
+  either way.
+
 - `--host`/`--port` default to `127.0.0.1`/`8000`. `--log-level` defaults to
   `info`; use `debug` to see the raw model response content and
   card-detection result for each turn.
 
 Omit `--ollama-url` to keep the echo demo.
+
+## Evaluating a model (`tool/model_probes/`)
+
+Whether a given model produces renderable cards, which temperature suits it,
+and whether it honors `--json-format` are **empirical** questions — and each
+has already produced a wrong answer when reasoned about instead of measured.
+[`tool/model_probes/`](tool/model_probes/README.md) holds hand-run scripts
+that answer them against a local Ollama, judging replies with this server's
+own card detection so the numbers match what the server would do.
+
+```sh
+cd adaptive_chat_server_dart
+fvm dart run tool/model_probes/temperature_matrix.dart --model <tag>
+fvm dart run tool/model_probes/json_format_probe.dart --model <tag>
+```
+
+They are not part of `dart test` and never run in CI: they need a local
+Ollama, take minutes, and inform a human decision rather than gating a build.
+The findings behind this README's temperature and `format` guidance are
+recorded there.

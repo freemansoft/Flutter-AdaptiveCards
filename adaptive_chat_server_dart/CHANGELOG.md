@@ -2,6 +2,41 @@
 
 ## [Unreleased]
 
+- Added: `tool/model_probes/` — hand-run scripts that measure whether a local
+  Ollama model produces renderable cards, which temperature suits it, whether
+  it honors `format`, and what it literally emitted. They judge replies with
+  the server's own card detection, so their pass rates match the running
+  server. Not wired into `dart test` or CI (they need a local Ollama and take
+  minutes). The directory README records the findings behind the temperature
+  and `--json-format` guidance in the package README.
+
+- Fixed: a card whose own text contains a Markdown code fence is no longer
+  truncated and shown as raw JSON. The unbalanced-closing-fence heuristic
+  (` ```[^\n]*$ `) matched the ` ```dart ` **inside** the card's text — a
+  model reply is a single line, so the pattern ran to end-of-string and
+  deleted everything from that fence on, leaving unparseable JSON. Fence and
+  decoration stripping are repair heuristics, so they now run only when the
+  reply does not already parse as JSON. The defect was in the detector, not
+  in any model: every reply that was valid single-line JSON containing a
+  fence was corrupted. Observed with `qwen3.6:27b-coding-nvfp4` on "show me
+  a code snippet" requests, identically at temperature 0 and 0.6.
+
+- Added: `--ollama-temperature` (default `0`, unchanged behavior) sets
+  `options.temperature` per run instead of it being a hardcoded constant. The
+  literal value `model` sends no temperature at all, so Ollama applies the
+  model's own Modelfile default — useful for models that ship tuned sampling
+  settings (`qwen3.6:27b-coding-nvfp4` ships `0.6`). The effective value is
+  reported by `GET /status`, and an invalid value now exits with a usage
+  error instead of a stack trace.
+- Added: a `WARNING` when a reply fails to parse as JSON in `--json-format`
+  `json`/`schema` mode. Ollama accepts `format` for every model but honors it
+  on only some — `qwen3.6:27b-coding-nvfp4` ignores it and returns
+  unconstrained prose with no error — so the constraint could previously look
+  like a safety net while doing nothing. Documented in the README.
+- Changed: `defaultCardTemperature` no longer claims temperature 0 is
+  deterministic. Greedy decoding repeats short replies verbatim but long
+  generations still diverge; measured, a ~3.5 K-character table gave two
+  different outputs across three calls at 0.
 - Added: the card system prompt and `assets/card_schema.json` now advertise six
   flat-data `Chart.*` types (`Chart.Pie`, `Chart.Donut`, `Chart.VerticalBar`,
   `Chart.HorizontalBar`, `Chart.Line`, `Chart.Gauge`), so a model can answer

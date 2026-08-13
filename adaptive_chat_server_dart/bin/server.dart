@@ -23,24 +23,37 @@ void _printUsage(ArgParser parser) {
     ..writeln(parser.usage);
 }
 
+/// Reports user error the way a CLI should — the problem plus how to invoke
+/// it — rather than dumping a Dart stack trace.
+Never _exitWithUsageError(String message, ArgParser parser) {
+  stderr
+    ..writeln(message)
+    ..writeln();
+  _printUsage(parser);
+  exit(_usageErrorExitCode);
+}
+
 Future<void> main(List<String> arguments) async {
   final parser = buildArgParser();
   final ArgResults args;
   try {
     args = parser.parse(arguments);
   } on FormatException catch (e) {
-    // A bad flag is user error: say what was wrong and how to invoke it,
-    // rather than dumping a Dart stack trace.
-    stderr
-      ..writeln(e.message)
-      ..writeln();
-    _printUsage(parser);
-    exit(_usageErrorExitCode);
+    _exitWithUsageError(e.message, parser);
   }
 
   if (args['help'] as bool) {
     _printUsage(parser);
     return;
+  }
+
+  // Resolved before any work starts: a typo here should fail at launch, not
+  // silently sample at the wrong heat for the life of the process.
+  final double? temperature;
+  try {
+    temperature = resolveTemperature(args['ollama-temperature'] as String);
+  } on FormatException catch (e) {
+    _exitWithUsageError(e.message, parser);
   }
 
   Logger.root.level = resolveLogLevel(args['log-level'] as String);
@@ -66,6 +79,7 @@ Future<void> main(List<String> arguments) async {
     ollamaTimeout: Duration(
       seconds: int.parse(args['ollama-timeout'] as String),
     ),
+    temperature: temperature,
   );
 
   // Advisory only: a backend that is not up yet may still come up, so this
