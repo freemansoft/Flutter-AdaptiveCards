@@ -53,6 +53,33 @@ void main() {
       const raw = '=== \n{"type":"TextBlock","text":"hi"}\n ===';
       expect(tryParseCardBody(raw), isNotNull);
     });
+
+    test('a bare Chart.Pie element is wrapped as a one-item body', () {
+      const raw =
+          '{"type":"Chart.Pie","data":[{"title":"North","value":30}]}';
+      expect(tryParseCardBody(raw), [
+        {
+          'type': 'Chart.Pie',
+          'data': [
+            {'title': 'North', 'value': 30},
+          ],
+        },
+      ]);
+    });
+
+    test('a full AdaptiveCard wrapping a chart returns its body', () {
+      const raw =
+          '{"type":"AdaptiveCard","body":[{"type":"Chart.VerticalBar",'
+          '"data":[{"x":"Mon","y":12}]}]}';
+      expect(tryParseCardBody(raw), [
+        {
+          'type': 'Chart.VerticalBar',
+          'data': [
+            {'x': 'Mon', 'y': 12},
+          ],
+        },
+      ]);
+    });
   });
 
   group('tryParseCardBody — rejected shapes', () {

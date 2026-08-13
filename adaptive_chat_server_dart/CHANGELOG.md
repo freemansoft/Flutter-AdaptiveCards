@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Added: the card system prompt and `assets/card_schema.json` now advertise six
+  flat-data `Chart.*` types (`Chart.Pie`, `Chart.Donut`, `Chart.VerticalBar`,
+  `Chart.HorizontalBar`, `Chart.Line`, `Chart.Gauge`), so a model can answer
+  with a chart instead of a Markdown table. Multi-series grouped/stacked charts
+  are deliberately excluded. A new `test/card_schema_test.dart` reads the chart
+  types out of the prompt and fails if the schema enum disagrees.
 - Initial Dart port of the Adaptive Chat backend (echo + Ollama responders,
   card detection, `/status` endpoint).
 - Resolves standalone (no longer a root pub workspace member) — this package

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:adaptive_chat_client/l10n/generated/app_localizations.dart';
+import 'package:adaptive_chat_client/src/chat_card_registry.dart';
 import 'package:adaptive_chat_client/src/compose_card.dart';
 import 'package:adaptive_chat_client/src/conversation_controller.dart';
 import 'package:flutter/material.dart';
@@ -171,6 +172,7 @@ class _ChatPageState extends State<ChatPage> {
               child: AdaptiveCardsCanvas.map(
                 content: card,
                 hostConfigs: widget.hostConfigs,
+                cardTypeRegistry: chatCardTypeRegistry,
                 showDebugJson: false,
               ),
             ),

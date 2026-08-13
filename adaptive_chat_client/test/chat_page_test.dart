@@ -7,6 +7,7 @@ import 'package:adaptive_chat_client/src/chat_page.dart';
 import 'package:adaptive_chat_client/src/conversation_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
+import 'package:flutter_adaptive_charts_fs/flutter_adaptive_charts_widgets_fs.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -93,6 +94,59 @@ ChatBackendClient _clientWithStartFailing(bool Function() startFails) {
   );
 }
 
+/// A client whose reply is a full-width bubble containing a `Chart.Pie`,
+/// matching what `assistantCardBubble` sends for a model card reply.
+ChatBackendClient _clientReplyingWithChart() {
+  return ChatBackendClient(
+    baseUrl: Uri.parse('http://localhost:8000'),
+    client: MockClient((req) async {
+      if (req.url.path == '/conversations') {
+        return http.Response(
+          jsonEncode({
+            'conversationId': 'c_1',
+            'links': {'postNext': '/conversations/c_1/interactions'},
+          }),
+          200,
+        );
+      }
+      return http.Response(
+        jsonEncode({
+          'conversationId': 'c_1',
+          'interactionId': req.headers['X-Interaction-Id'],
+          'messages': [
+            {
+              'type': 'AdaptiveCard',
+              'version': '1.5',
+              'body': [
+                {
+                  'type': 'Container',
+                  'style': 'emphasis',
+                  'roundedCorners': true,
+                  'items': [
+                    {
+                      'type': 'Chart.Pie',
+                      'title': 'Sales by region',
+                      'data': [
+                        {'title': 'North', 'value': 30},
+                        {'title': 'South', 'value': 45},
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          'links': {
+            'self': '/conversations/c_1/interactions/x',
+            'postNext': '/conversations/c_1/interactions',
+          },
+        }),
+        200,
+      );
+    }),
+  );
+}
+
 Future<void> _pumpPage(WidgetTester tester, ConversationController c) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -114,6 +168,21 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('you: hello'), findsOneWidget);
+  });
+
+  testWidgets('a Chart.* reply renders as a chart in the log', (tester) async {
+    final c = ConversationController(client: _clientReplyingWithChart());
+    await c.startConversation();
+    await _pumpPage(tester, c);
+
+    await c.send('chart my sales');
+    await tester.pumpAndSettle();
+
+    // Guards the wiring, not just the registry: ChatPage's log canvas must
+    // pass chatCardTypeRegistry, or Chart.Pie falls through to the
+    // unknown-type error placeholder.
+    expect(find.byType(AdaptivePieChart), findsOneWidget);
+    expect(find.textContaining('Type Chart.Pie not found'), findsNothing);
   });
 
   testWidgets('pending indicator shows while a send is in flight', (

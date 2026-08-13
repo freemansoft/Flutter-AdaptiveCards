@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+- Added: `flutter_adaptive_charts_widgets_fs.dart`, a second entrypoint
+  exposing the chart widget classes (`AdaptivePieChart`, `AdaptiveBarChart` +
+  `BarChartType`, `AdaptiveLineChart`, `AdaptiveGaugeChart`, and their `State`
+  classes) so hosts can assert `find.byType(...)` in widget tests or embed a
+  chart outside a card. The existing `flutter_adaptive_charts_fs.dart`
+  entrypoint is unchanged.
+
 ## [0.17.0]
 
 - chore: add consumer-minimal `.pubignore` so pub.dev archives exclude `test/` and other non-consumer files.
