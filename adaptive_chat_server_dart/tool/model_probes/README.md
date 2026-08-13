@@ -21,6 +21,7 @@ decision, not a pass/fail gate.
 | `temperature_stress.dart` | Which temperature survives the hard cases, and is the output stable?      |
 | `json_format_probe.dart`  | Does this model honor Ollama's `format` constraint at all?                |
 | `dump_reply.dart`         | What did the model _literally_ emit, byte for byte?                       |
+| `prompt_ab.dart`          | Does an edited card system prompt beat the one we ship?                   |
 | `probe_support.dart`      | Shared plumbing — not a probe.                                            |
 
 All accept `--model`, `--url`, `--samples`, and `-h`. Defaults come from the
@@ -75,6 +76,20 @@ on an M-series Mac against Ollama, August 2026.
   answers the `format: json` canary with prose and no error, so
   `--json-format json|schema` is inert for it. `qwen2.5-coder:7b` honors it.
   Check the canary before relying on the constraint.
+- **Forbidding a behavior moved it; giving it a home fixed it.** Asked to
+  explain code, `qwen2.5-coder:7b` emitted a card and then appended the
+  explanation, which makes the whole reply raw text. Telling it harder not to
+  append (and to prefer Markdown when it wanted to) did **not** help — it
+  scored the same and abandoned cards entirely, answering every code question
+  as prose. Telling it where the explanation *goes* — a `TextBlock` beside the
+  `CodeBlock` in the same array — fixed it: hard cases went 6/10 → 15/15 at
+  `t=0` and 7/10 → 14/15 at `t=0.6`. Prefer redirecting a model's behavior
+  over prohibiting it.
+- **Each prompt fix exposes the next failure.** Once the model started sending
+  two elements, it began dropping the `[ ]` around them — valid intent,
+  invalid JSON. Prompt wording cut that to near zero at `t=0` but not at
+  `t=0.6`, so `card_detect.dart` also repairs the bracketless form. Wording
+  moves the rate; only the detector makes a shape safe.
 - **A "broken card" was our bug, not the model's.** `dump_reply.dart` showed
   a reply blamed on the model contained zero real newlines and 11 correctly
   escaped ones — valid JSON. The corruption came from this server's
