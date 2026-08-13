@@ -275,7 +275,9 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
 > is **inert on that model** and buys nothing over `none`. The responder logs
 > a `WARNING` naming the model whenever a reply fails to parse as JSON in
 > `json`/`schema` mode, which is the symptom. Check a candidate model with a
-> one-line `curl` before relying on the constraint.
+> one-line `curl` before relying on the constraint, or run
+> [`tool/model_probes/json_format_probe.dart`](tool/model_probes/README.md),
+> whose canary answers exactly this question.
 
 ### Status endpoint
 
@@ -569,10 +571,32 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
   the real `card_detect.dart` bar: 12/15 hard cases at `0` versus 9/15 at
   `0.6`, with `0.6`'s extra failures being long card JSON truncated
   mid-generation. Both settings passed 7/7 easy cases, so the difference only
-  shows on large or nested cards.
+  shows on large or nested cards. Re-measure for a new model with
+  [`tool/model_probes/`](tool/model_probes/README.md) rather than assuming
+  either way.
 
 - `--host`/`--port` default to `127.0.0.1`/`8000`. `--log-level` defaults to
   `info`; use `debug` to see the raw model response content and
   card-detection result for each turn.
 
 Omit `--ollama-url` to keep the echo demo.
+
+## Evaluating a model (`tool/model_probes/`)
+
+Whether a given model produces renderable cards, which temperature suits it,
+and whether it honors `--json-format` are **empirical** questions — and each
+has already produced a wrong answer when reasoned about instead of measured.
+[`tool/model_probes/`](tool/model_probes/README.md) holds hand-run scripts
+that answer them against a local Ollama, judging replies with this server's
+own card detection so the numbers match what the server would do.
+
+```sh
+cd adaptive_chat_server_dart
+fvm dart run tool/model_probes/temperature_matrix.dart --model <tag>
+fvm dart run tool/model_probes/json_format_probe.dart --model <tag>
+```
+
+They are not part of `dart test` and never run in CI: they need a local
+Ollama, take minutes, and inform a human decision rather than gating a build.
+The findings behind this README's temperature and `format` guidance are
+recorded there.

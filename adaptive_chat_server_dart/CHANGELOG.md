@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Added: `tool/model_probes/` — hand-run scripts that measure whether a local
+  Ollama model produces renderable cards, which temperature suits it, whether
+  it honors `format`, and what it literally emitted. They judge replies with
+  the server's own card detection, so their pass rates match the running
+  server. Not wired into `dart test` or CI (they need a local Ollama and take
+  minutes). The directory README records the findings behind the temperature
+  and `--json-format` guidance in the package README.
+
 - Fixed: a card whose own text contains a Markdown code fence is no longer
   truncated and shown as raw JSON. The unbalanced-closing-fence heuristic
   (` ```[^\n]*$ `) matched the ` ```dart ` **inside** the card's text — a
