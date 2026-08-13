@@ -399,23 +399,24 @@ void main() {
     expect(options['temperature'], 0.6);
   });
 
-  test('a null temperature omits the key so Ollama uses the model default',
-      () async {
-    late Map<String, dynamic> capturedPayload;
-    final client = MockClient((request) async {
-      capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
-      return okResponse('ok');
-    });
-    final responder = makeResponder(client: client, temperature: null);
-    await responder.reply('hi', const []);
-    final options = capturedPayload['options'] as Map<String, dynamic>;
-    expect(options.containsKey('temperature'), isFalse);
-    // num_ctx still goes out — only temperature is deferred to the model.
-    expect(options['num_ctx'], defaultNumCtx);
-  });
+  test(
+    'a null temperature omits the key so Ollama uses the model default',
+    () async {
+      late Map<String, dynamic> capturedPayload;
+      final client = MockClient((request) async {
+        capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
+        return okResponse('ok');
+      });
+      final responder = makeResponder(client: client, temperature: null);
+      await responder.reply('hi', const []);
+      final options = capturedPayload['options'] as Map<String, dynamic>;
+      expect(options.containsKey('temperature'), isFalse);
+      // num_ctx still goes out — only temperature is deferred to the model.
+      expect(options['num_ctx'], defaultNumCtx);
+    },
+  );
 
-  test('describe reports the configured temperature for GET /status',
-      () async {
+  test('describe reports the configured temperature for GET /status', () async {
     final client = MockClient((request) async => okResponse('ok'));
     expect(
       makeResponder(client: client, temperature: 0.6).describe()['temperature'],

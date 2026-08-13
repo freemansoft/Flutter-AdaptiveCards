@@ -53,9 +53,9 @@ Future<void> main(List<String> argv) async {
     ..writeln(
       honored
           ? 'VERDICT: format IS honored (reply is JSON) — json/schema modes '
-              'are usable with this model.'
+                'are usable with this model.'
           : 'VERDICT: format is IGNORED (reply is prose) — --json-format '
-              'json|schema buys nothing here; treat it as unavailable.',
+                'json|schema buys nothing here; treat it as unavailable.',
     )
     ..writeln()
     ..writeln('=== card request through each --json-format mode ===');

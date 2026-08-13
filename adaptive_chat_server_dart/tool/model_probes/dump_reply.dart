@@ -70,8 +70,10 @@ Future<void> main(List<String> argv) async {
     // The distinction that matters: a real newline inside a JSON string is
     // invalid, an escaped one is correct. They look identical when printed.
     ..writeln('real newlines        : ${'\n'.allMatches(content).length}')
-    ..writeln(r'escaped \n sequences : '
-        '${r'\n'.allMatches(content).length}')
+    ..writeln(
+      r'escaped \n sequences : '
+      '${r'\n'.allMatches(content).length}',
+    )
     ..writeln('contains ``` fence   : ${content.contains('```')}')
     ..writeln('verdict              : ${judgeReply(content, 0).label}');
   client.close();

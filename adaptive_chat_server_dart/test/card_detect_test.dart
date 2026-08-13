@@ -62,7 +62,8 @@ void main() {
       // newline escaped as \n.
       final raw = jsonEncode({
         'type': 'TextBlock',
-        'text': 'Use `dart:convert` to decode the file contents into a '
+        'text':
+            'Use `dart:convert` to decode the file contents into a '
             '`Map`, then access the key directly:\n\n'
             '```dart\n'
             "import 'dart:convert';\n\n"
@@ -98,8 +99,7 @@ void main() {
     });
 
     test('a bare Chart.Pie element is wrapped as a one-item body', () {
-      const raw =
-          '{"type":"Chart.Pie","data":[{"title":"North","value":30}]}';
+      const raw = '{"type":"Chart.Pie","data":[{"title":"North","value":30}]}';
       expect(tryParseCardBody(raw), [
         {
           'type': 'Chart.Pie',
@@ -107,6 +107,35 @@ void main() {
             {'title': 'North', 'value': 30},
           ],
         },
+      ]);
+    });
+
+    test('top-level objects missing their array brackets are wrapped', () {
+      // Verbatim shape from qwen2.5-coder:7b once the card system prompt
+      // taught it to answer "explain this code" with TextBlock + CodeBlock:
+      // it emits the two elements comma-separated but drops the enclosing
+      // [ ]. That is an array missing its brackets and nothing else, so it
+      // is repairable without guessing at intent.
+      const raw =
+          '```json\n'
+          '{\n  "type": "TextBlock",\n  "text": "Reads a file.",\n'
+          '  "wrap": true\n},\n'
+          '{\n  "type": "CodeBlock",\n  "codeSnippet": "print(1)",\n'
+          '  "language": "dart"\n}\n'
+          '```';
+      expect(tryParseCardBody(raw), [
+        {'type': 'TextBlock', 'text': 'Reads a file.', 'wrap': true},
+        {'type': 'CodeBlock', 'codeSnippet': 'print(1)', 'language': 'dart'},
+      ]);
+    });
+
+    test('unbracketed top-level objects work without a fence too', () {
+      const raw =
+          '{"type":"TextBlock","text":"hi"},'
+          '{"type":"Badge","text":"New"}';
+      expect(tryParseCardBody(raw), [
+        {'type': 'TextBlock', 'text': 'hi'},
+        {'type': 'Badge', 'text': 'New'},
       ]);
     });
 
@@ -175,6 +204,15 @@ void main() {
 
     test('invalid JSON returns null', () {
       expect(tryParseCardBody('{not valid json'), isNull);
+    });
+
+    test('bracket repair does not rescue trailing prose after a card', () {
+      // The failure the bracket repair must NOT paper over: a card followed
+      // by an explanation is a mixed reply, not a bracketless array.
+      const raw =
+          '{"type":"CodeBlock","codeSnippet":"print(1)"}\n\n'
+          'This card shows a Dart snippet.';
+      expect(tryParseCardBody(raw), isNull);
     });
   });
 

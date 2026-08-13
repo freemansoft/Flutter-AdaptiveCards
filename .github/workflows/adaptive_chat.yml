@@ -8,6 +8,10 @@
 # docs, packages, and front door — and deliberately excludes these demo apps,
 # which `check:md:chat` exists to cover.
 #
+# Dart formatting splits the same way: validate.yaml's `dart-format` job covers
+# packages/ and tool/, so these two apps are checked here instead — as a step in
+# each app's own job, where its dependencies are already resolved.
+#
 # Scoped `push` to main to avoid duplicate runs on branches with an open PR
 # (matches test.yml / validate.yaml).
 on:
@@ -61,6 +65,19 @@ jobs:
         run: flutter test -r expanded
         working-directory: ./adaptive_chat_client
 
+      # Formatting is checked inside the job that already resolved this app's
+      # dependencies, rather than in a `dart-format` job of its own like
+      # validate.yaml has. `dart format` reads its config from
+      # analysis_options.yaml, which here `include:`s package:very_good_analysis
+      # -- unresolved, the include fails and the formatter silently falls back
+      # to its own defaults, reporting unrelated files as changed. The two chat
+      # apps resolve differently (this one via the root workspace, the server
+      # standalone), so a shared job would have to duplicate both setups.
+      #
+      # Runs after the tests so a formatting failure never hides a test result.
+      - name: Check Dart formatting
+        run: dart format --output=none --set-exit-if-changed adaptive_chat_client/
+
   dart-server:
     name: Adaptive Chat server (Dart)
     runs-on: ubuntu-24.04
@@ -82,4 +99,11 @@ jobs:
 
       - name: Run adaptive_chat_server_dart tests
         run: dart test
+        working-directory: ./adaptive_chat_server_dart
+
+      # See the note on the client job's formatting step. Covers lib/, bin/,
+      # test/, and tool/ -- tool/model_probes/ is hand-run tooling, but it is
+      # still source we read and edit, so it is held to the same bar.
+      - name: Check Dart formatting
+        run: dart format --output=none --set-exit-if-changed .
         working-directory: ./adaptive_chat_server_dart

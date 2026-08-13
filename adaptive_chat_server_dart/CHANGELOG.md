@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+- Fixed: asked to explain a code snippet, a model no longer answers with a
+  card followed by a loose explanation — a mixed reply that is shown to the
+  user as raw JSON. The card system prompt now gives that explanation a legal
+  home (a `TextBlock` beside the `CodeBlock` in the same array) instead of
+  only forbidding the append; forbidding alone was measured and did not work,
+  it just pushed the model out of cards into prose. Measured on
+  `qwen2.5-coder:7b`: hard cases 6/10 → 15/15 at `t=0`, 7/10 → 14/15 at
+  `t=0.6`; code-snippet prompts 14/16 → 16/16 and now render as cards rather
+  than falling back to Markdown.
+
+- Fixed: `card_detect.dart` recovers a card whose top-level elements were
+  emitted comma-separated without the enclosing `[ ]`. This is the shape a
+  model reaches for once asked to send two elements, and it is an array
+  missing its brackets and nothing else. The repair runs only on a reply that
+  has already failed to parse and only when bracketing makes it parse, so a
+  card followed by trailing prose is still (correctly) treated as text, and a
+  full `AdaptiveCard` object keeps its meaning.
+
+- Added: `tool/model_probes/prompt_ab.dart` — runs the shipped card system
+  prompt and an edited copy over the same user prompts and prints both pass
+  rates, so a prompt-wording change is measured rather than argued.
+
 - Added: `tool/model_probes/` — hand-run scripts that measure whether a local
   Ollama model produces renderable cards, which temperature suits it, whether
   it honors `format`, and what it literally emitted. They judge replies with
