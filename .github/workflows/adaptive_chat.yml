@@ -86,7 +86,14 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: "stable" # "stable" tracks whatever Dart ships with the latest stable Flutter — always satisfies the ^3.12.0 floor
+          # Pinned to the Dart that Flutter 3.44.0 ships, i.e. what `fvm dart`
+          # runs locally (.fvmrc), matching the flutter-version pins in every
+          # other job. This was `stable` — fine while the job only ran tests,
+          # but it now also runs `dart format`, and formatter output is
+          # SDK-dependent: the day `stable` moves ahead of the pin and changes
+          # the formatter, CI fails on code that is clean locally and no local
+          # command reproduces it. Bump this with .fvmrc, in its own commit.
+          sdk: "3.12.0" # should sync with the Dart in fvm's Flutter (.fvmrc)
 
       - run: dart --version
 
