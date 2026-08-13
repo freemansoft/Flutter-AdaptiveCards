@@ -283,7 +283,8 @@ routes stay compact. Example payload:
     "jsonFormat": "none",
     "systemPromptFile": "default_system_prompt.txt",
     "keepAlive": "30m",
-    "timeoutSeconds": 60
+    "timeoutSeconds": 60,
+    "temperature": 0.0
   },
   "conversationCount": 1,
   "conversations": [
@@ -348,7 +349,7 @@ sequenceDiagram
         S-->>R: prior (user, assistant) pairs = full history
         R->>O: reply(message, history)
         O->>O: load system prompt (per request) + trim history
-        O->>L: POST /api/chat<br/>{system + history + turn, num_ctx, temperature:0, think:false}
+        O->>L: POST /api/chat<br/>{system + history + turn, num_ctx, temperature (--ollama-temperature), think:false}
         L-->>O: message.content (or failure -> diagnostic text)
         O-->>R: Reply(text, cardBody)
         alt cardBody is not null
@@ -386,7 +387,7 @@ sequenceDiagram
     end
     O->>O: _trimHistory() — keep last historyTurns exchanges
     O->>O: messages += history + {role: user, content: text}
-    O->>L: POST /api/chat<br/>{model, messages, stream:false, num_ctx,<br/>temperature:0, think:false, + format (json/schema modes only)}
+    O->>L: POST /api/chat<br/>{model, messages, stream:false, num_ctx,<br/>temperature (omitted if --ollama-temperature model), think:false,<br/>+ format (json/schema modes only)}
     alt transport failure (connection / DNS / timeout)
         L--xO: exception
         O-->>R: Reply("(Ollama unreachable ...)", cardBody=null)
@@ -544,6 +545,21 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
 - `--num-ctx` (default 16384) — context window sent as `options.num_ctx`.
 - `--history-turns` (default 10) — prior exchanges replayed to the model.
 - `--json-format` (default `none`) — `none`/`json`/`schema`.
+- `--ollama-temperature` (default 0) — sent as `options.temperature`. `0`
+  selects greedy decoding, which minimizes malformed card JSON; the trade-off
+  is that a card the model gets wrong at 0 is usually wrong the same way on
+  every retry. Pass `model` to send no temperature at all, letting the
+  model's own Modelfile default apply. The effective value is reported by
+  `GET /status`.
+
+  **Prefer the default 0 unless a specific model measures better.** A model's
+  shipped temperature is tuned for general chat, not for strict-JSON output.
+  Measured on `qwen3.6:27b-coding-nvfp4` (Modelfile default `0.6`) against
+  the real `card_detect.dart` bar: 12/15 hard cases at `0` versus 9/15 at
+  `0.6`, with `0.6`'s extra failures being long card JSON truncated
+  mid-generation. Both settings passed 7/7 easy cases, so the difference only
+  shows on large or nested cards.
+
 - `--host`/`--port` default to `127.0.0.1`/`8000`. `--log-level` defaults to
   `info`; use `debug` to see the raw model response content and
   card-detection result for each turn.

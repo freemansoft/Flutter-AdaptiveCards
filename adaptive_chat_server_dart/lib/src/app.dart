@@ -79,13 +79,15 @@ Responder buildResponder({
   Duration ollamaTimeout = const Duration(
     seconds: defaultOllamaTimeoutSeconds,
   ),
+  double? temperature = defaultCardTemperature,
 }) {
   if (ollamaUrl != null && ollamaUrl.isNotEmpty) {
     _log.info(
       'Responder: OllamaResponder (url=$ollamaUrl, model=$model, '
       'system_prompt=${systemPromptFile ?? "default"}, num_ctx=$numCtx, '
       'history_turns=$historyTurns, json_format=$jsonFormat, '
-      'keep_alive=$keepAlive, timeout=${ollamaTimeout.inSeconds}s)',
+      'keep_alive=$keepAlive, timeout=${ollamaTimeout.inSeconds}s, '
+      'temperature=${temperature ?? "model default"})',
     );
     return OllamaResponder(
       ollamaUrl: ollamaUrl,
@@ -98,6 +100,7 @@ Responder buildResponder({
       jsonFormat: jsonFormat,
       keepAlive: keepAlive,
       ollamaTimeout: ollamaTimeout,
+      temperature: temperature,
     );
   }
   _log.info('Responder: EchoResponder (no --ollama-url set)');

@@ -30,6 +30,7 @@ void main() {
     int historyTurns = defaultHistoryTurns,
     String? systemPromptFile,
     Duration? ollamaTimeout,
+    double? temperature = defaultCardTemperature,
   }) {
     return OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
@@ -40,6 +41,7 @@ void main() {
       historyTurns: historyTurns,
       systemPromptFile: systemPromptFile,
       ollamaTimeout: ollamaTimeout ?? const Duration(seconds: 60),
+      temperature: temperature,
     );
   }
 
@@ -383,6 +385,48 @@ void main() {
     final options = capturedPayload['options'] as Map<String, dynamic>;
     expect(options['temperature'], 0.0);
     expect(capturedPayload['think'], false);
+  });
+
+  test('sends the configured temperature, not a hardcoded zero', () async {
+    late Map<String, dynamic> capturedPayload;
+    final client = MockClient((request) async {
+      capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
+      return okResponse('ok');
+    });
+    final responder = makeResponder(client: client, temperature: 0.6);
+    await responder.reply('hi', const []);
+    final options = capturedPayload['options'] as Map<String, dynamic>;
+    expect(options['temperature'], 0.6);
+  });
+
+  test('a null temperature omits the key so Ollama uses the model default',
+      () async {
+    late Map<String, dynamic> capturedPayload;
+    final client = MockClient((request) async {
+      capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
+      return okResponse('ok');
+    });
+    final responder = makeResponder(client: client, temperature: null);
+    await responder.reply('hi', const []);
+    final options = capturedPayload['options'] as Map<String, dynamic>;
+    expect(options.containsKey('temperature'), isFalse);
+    // num_ctx still goes out — only temperature is deferred to the model.
+    expect(options['num_ctx'], defaultNumCtx);
+  });
+
+  test('describe reports the configured temperature for GET /status',
+      () async {
+    final client = MockClient((request) async => okResponse('ok'));
+    expect(
+      makeResponder(client: client, temperature: 0.6).describe()['temperature'],
+      0.6,
+    );
+  });
+
+  test('describe reports "model" when no temperature is sent', () async {
+    final client = MockClient((request) async => okResponse('ok'));
+    final responder = makeResponder(client: client, temperature: null);
+    expect(responder.describe()['temperature'], 'model');
   });
 
   test('reply does not mutate the caller-supplied history list', () async {

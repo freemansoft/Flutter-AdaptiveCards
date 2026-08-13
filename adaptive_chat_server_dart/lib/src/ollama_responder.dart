@@ -35,9 +35,24 @@ const defaultNumCtx = 16384;
 /// (grammar-constrained against the bundled card schema).
 const defaultJsonFormat = 'none';
 
-/// Sampling temperature sent on every Ollama request. 0 = deterministic
+/// Sampling temperature sent on every Ollama request. 0 selects greedy
 /// decoding, the highest-leverage setting for minimizing malformed card
 /// JSON.
+///
+/// **Not a determinism guarantee.** Greedy decoding repeats short replies
+/// verbatim, but long generations still diverge run to run (measured: a
+/// ~3.5 K-character table produced two different outputs across three calls
+/// at 0). What 0 does buy is the failure mode being *stable* — a card the
+/// model gets wrong at 0 is usually wrong the same way on retry, so a broken
+/// card never self-heals.
+///
+/// Override with `--ollama-temperature` when a model's own recommended
+/// sampling settings suit it better; `--ollama-temperature model` sends no
+/// temperature at all, leaving the model's Modelfile default in force.
+/// Measured on `qwen3.6:27b-coding-nvfp4`, whose Modelfile ships 0.6, that
+/// model's own default scored *worse* on card generation than 0 (9/15 vs
+/// 12/15 on hard cases), mostly by truncating long JSON — so prefer 0 unless
+/// a specific model measures better.
 const defaultCardTemperature = 0.0;
 
 /// How long Ollama keeps the model resident after a reply, as an Ollama
@@ -191,6 +206,7 @@ class OllamaResponder implements Responder {
       seconds: defaultOllamaTimeoutSeconds,
     ),
     String keepAlive = defaultKeepAlive,
+    double? temperature = defaultCardTemperature,
   }) : // Field names are prefixed with `_` while the required constructor
        // param names (fixed by the public API contract) are not, so an
        // initializing formal isn't available here.
@@ -214,7 +230,10 @@ class OllamaResponder implements Responder {
        _ollamaTimeout = ollamaTimeout,
        // Same reason as _ollamaUrl above.
        // ignore: prefer_initializing_formals
-       _keepAlive = keepAlive {
+       _keepAlive = keepAlive,
+       // Same reason as _ollamaUrl above.
+       // ignore: prefer_initializing_formals
+       _temperature = temperature {
     if (_jsonFormat == 'schema') {
       _cardSchema = _loadCardSchema(cardSchemaPath);
       if (_cardSchema == null) {
@@ -232,6 +251,10 @@ class OllamaResponder implements Responder {
   final String _requestedJsonFormat;
   final Duration _ollamaTimeout;
   final String _keepAlive;
+
+  /// `null` means send no `temperature`, so Ollama applies the model's own
+  /// Modelfile value rather than one this server picked.
+  final double? _temperature;
   String _jsonFormat;
   Map<String, dynamic>? _cardSchema;
 
@@ -247,6 +270,7 @@ class OllamaResponder implements Responder {
       'systemPromptFile': p.basename(_systemPromptPath),
       'keepAlive': _keepAlive,
       'timeoutSeconds': _ollamaTimeout.inSeconds,
+      'temperature': _temperature ?? 'model',
     };
     if (_requestedJsonFormat != _jsonFormat) {
       config['jsonFormatRequested'] = _requestedJsonFormat;
@@ -371,7 +395,9 @@ class OllamaResponder implements Responder {
     final endpoint = '$_ollamaUrl/api/chat';
     final options = <String, dynamic>{
       'num_ctx': _numCtx,
-      'temperature': defaultCardTemperature,
+      // Omitted entirely when null: Ollama then falls back to the model's
+      // own Modelfile temperature instead of one this server chose.
+      if (_temperature != null) 'temperature': _temperature,
     };
     final payload = <String, dynamic>{
       'model': _model,

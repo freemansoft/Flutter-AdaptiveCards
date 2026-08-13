@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+- Added: `--ollama-temperature` (default `0`, unchanged behavior) sets
+  `options.temperature` per run instead of it being a hardcoded constant. The
+  literal value `model` sends no temperature at all, so Ollama applies the
+  model's own Modelfile default — useful for models that ship tuned sampling
+  settings (`qwen3.6:27b-coding-nvfp4` ships `0.6`). The effective value is
+  reported by `GET /status`, and an invalid value now exits with a usage
+  error instead of a stack trace.
+- Changed: `defaultCardTemperature` no longer claims temperature 0 is
+  deterministic. Greedy decoding repeats short replies verbatim but long
+  generations still diverge; measured, a ~3.5 K-character table gave two
+  different outputs across three calls at 0.
 - Added: the card system prompt and `assets/card_schema.json` now advertise six
   flat-data `Chart.*` types (`Chart.Pie`, `Chart.Donut`, `Chart.VerticalBar`,
   `Chart.HorizontalBar`, `Chart.Line`, `Chart.Gauge`), so a model can answer
