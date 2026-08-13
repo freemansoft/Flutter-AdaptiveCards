@@ -81,7 +81,7 @@ on an M-series Mac against Ollama, August 2026.
   explanation, which makes the whole reply raw text. Telling it harder not to
   append (and to prefer Markdown when it wanted to) did **not** help — it
   scored the same and abandoned cards entirely, answering every code question
-  as prose. Telling it where the explanation *goes* — a `TextBlock` beside the
+  as prose. Telling it where the explanation _goes_ — a `TextBlock` beside the
   `CodeBlock` in the same array — fixed it: hard cases went 6/10 → 15/15 at
   `t=0` and 7/10 → 14/15 at `t=0.6`. Prefer redirecting a model's behavior
   over prohibiting it.

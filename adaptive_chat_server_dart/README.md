@@ -597,7 +597,7 @@ fvm dart run tool/model_probes/json_format_probe.dart --model <tag>
 fvm dart run tool/model_probes/prompt_ab.dart --candidate <edited-prompt.txt>
 ```
 
-The card system prompt is the server's only lever over reply *shape*, so a
+The card system prompt is the server's only lever over reply _shape_, so a
 wording change is measured the same way: `prompt_ab.dart` runs the current
 `assets/card_system_prompt.txt` and an edited copy over the same prompts and
 prints both pass rates.
