@@ -1,3 +1,9 @@
+# Test suites for the published packages: golden passes, per-package coverage
+# passes, and the coverage gate. Also runs adaptive_explorer, which exercises
+# the packages as a sample consumer. Non-test gates (Prettier, pana, dart
+# format) are in packages-validate.yml; the two Adaptive Chat demo apps have
+# their own workflow, chat-apps.yml.
+#
 # Build on pushes to main (merges) and on pull requests. Scoping `push` to main
 # avoids the duplicate run you'd get from `on: [push, pull_request]` when pushing
 # to a branch that has an open PR (both events fire). Feature-branch commits are

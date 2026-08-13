@@ -1,19 +1,19 @@
 # Runs the Adaptive Chat demo tests: the Flutter client (adaptive_chat_client)
 # and the Dart backend (adaptive_chat_server_dart). These live outside the
 # published packages, so they are kept in their own workflow rather than the
-# package matrix in test.yml.
+# package matrix in packages-test.yml.
 #
-# Markdown here is checked by this workflow, not validate.yaml: that one's
-# `check:md` covers docs/**, packages/**, and the root *.md — the published
-# docs, packages, and front door — and deliberately excludes these demo apps,
-# which `check:md:chat` exists to cover.
+# Markdown here is checked by this workflow, not packages-validate.yml: that
+# one's `check:md` covers docs/**, packages/**, and the root *.md — the
+# published docs, packages, and front door — and deliberately excludes these
+# demo apps, which `check:md:chat` exists to cover.
 #
-# Dart formatting splits the same way: validate.yaml's `dart-format` job covers
-# packages/ and tool/, so these two apps are checked here instead — as a step in
-# each app's own job, where its dependencies are already resolved.
+# Dart formatting splits the same way: packages-validate.yml's `dart-format`
+# job covers packages/ and tool/, so these two apps are checked here instead —
+# as a step in each app's own job, where its dependencies are already resolved.
 #
 # Scoped `push` to main to avoid duplicate runs on branches with an open PR
-# (matches test.yml / validate.yaml).
+# (matches packages-test.yml / packages-validate.yml).
 on:
   push:
     branches: [main]
@@ -58,7 +58,7 @@ jobs:
 
       # Resolve from the repo root: adaptive_chat_client is a workspace member,
       # so its dependencies are resolved by the root pub get (Flutter 3.6.0+
-      # workspace feature), same as the package tests in test.yml.
+      # workspace feature), same as the package tests in packages-test.yml.
       - run: flutter pub get
 
       - name: Run adaptive_chat_client tests
@@ -67,7 +67,7 @@ jobs:
 
       # Formatting is checked inside the job that already resolved this app's
       # dependencies, rather than in a `dart-format` job of its own like
-      # validate.yaml has. `dart format` reads its config from
+      # packages-validate.yml has. `dart format` reads its config from
       # analysis_options.yaml, which here `include:`s package:very_good_analysis
       # -- unresolved, the include fails and the formatter silently falls back
       # to its own defaults, reporting unrelated files as changed. The two chat

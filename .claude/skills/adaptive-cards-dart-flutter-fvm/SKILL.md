@@ -49,7 +49,7 @@ Confirm these files agree on the version:
 
 - `.fvm/fvm_config.json`
 - `.fvmrc`
-- `.github/workflows/test.yml` → `flutter-version:` (see **`adaptive-cards-release-flutter-upgrade-sdk`** for the full bump checklist)
+- `.github/workflows/*.yml` → every `flutter-version:` and `sdk:` pin, not just one file (see **`adaptive-cards-release-flutter-upgrade-sdk`** for the full bump checklist)
 
 Check the pin without switching:
 

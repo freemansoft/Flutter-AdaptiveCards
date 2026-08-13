@@ -12,7 +12,7 @@ Coverage is produced by a **dedicated test pass that excludes golden tests**:
 fvm flutter test --coverage --exclude-tags=golden
 ```
 
-`.github/workflows/test.yml` splits the suite into a **golden-only** pass
+`.github/workflows/packages-test.yml` splits the suite into a **golden-only** pass
 (`flutter test --tags=golden`, render validation) and a **non-golden coverage** pass
 (`flutter test --coverage --exclude-tags=golden`, which owns the number). The two tag
 selectors partition the suite, so every test runs exactly once. Because the coverage pass
@@ -21,11 +21,11 @@ there is no platform/golden drift to reconcile.
 
 ## The pieces
 
-| File                                | Role                                                                                                          |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `tool/coverage_floors.yaml`         | Flat `package_name: <int percent>` map of minimum line coverage per package.                                  |
-| `tool/coverage/check_coverage.dart` | Dependency-free gate. Parses each package's `coverage/lcov.info`, prints a table, exits non-zero below floor. |
-| `.github/workflows/test.yml`        | Adds the golden-excluded coverage passes + the gate step.                                                     |
+| File                                  | Role                                                                                                          |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `tool/coverage_floors.yaml`           | Flat `package_name: <int percent>` map of minimum line coverage per package.                                  |
+| `tool/coverage/check_coverage.dart`   | Dependency-free gate. Parses each package's `coverage/lcov.info`, prints a table, exits non-zero below floor. |
+| `.github/workflows/packages-test.yml` | Adds the golden-excluded coverage passes + the gate step.                                                     |
 
 `flutter_adaptive_cards_test_support` is intentionally **not** in the floors map — it is a
 test helper package with no tests of its own.

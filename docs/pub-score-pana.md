@@ -102,7 +102,7 @@ number.
 ## Current state
 
 The CI job is **report-only** (`--report-only` in
-`.github/workflows/validate.yaml`), matching the rollout the coverage gate used.
+`.github/workflows/packages-validate.yml`), matching the rollout the coverage gate used.
 Drop the flag to make it enforcing once the plumbing has proven itself.
 
 `flutter_adaptive_cards_test_support` is not scored: it is `publish_to: none`.

@@ -24,22 +24,31 @@ You can manually update flutter versions by running:
 
 The GitHub Actions workflows must use the exact same Flutter version as FVM to prevent CI drifts.
 
-- Open `.github/workflows/test.yml`.
-- Locate the `subosito/flutter-action` step.
-- Update the `flutter-version:` parameter to match the new FVM version exactly.
+There is more than one pin, in more than one workflow file. Find them all rather than working from a remembered list:
+
+```bash
+grep -rn "flutter-version:\|sdk:" .github/workflows/
+```
+
+- For each `subosito/flutter-action` step, set `flutter-version:` to the new FVM version exactly.
+- For each `dart-lang/setup-dart` step, set `sdk:` to the Dart version that Flutter ships (`fvm dart --version` after step 1).
+- Re-run the grep and confirm nothing was left behind.
+
+Missing one leaves a job building against a different SDK than every other job. For the jobs that run `dart format`, that surfaces as CI failing on code that is clean locally, with no local command reproducing it.
 
 ## 3. Update Package `pubspec.yaml` Files
 
 All packages in the monorepo should share the same minimum Dart/Flutter SDK requirements.
 
-- Locate all `pubspec.yaml` files across the repository. This includes:
-- `packages/flutter_adaptive_cards_fs/pubspec.yaml`
-- `packages/flutter_adaptive_charts_fs/pubspec.yaml`
-- `packages/flutter_adaptive_template_fs/pubspec.yaml`
-- `packages/flutter_adaptive_cards_host_fs/pubspec.yaml`
-- `adaptive_explorer/pubspec.yaml`
-- `widgetbook/pubspec.yaml`
-- Update the `environment:` constraints to match the new minimum Dart SDK (and optionally Flutter SDK) corresponding to the new Flutter version.
+Find them the same way — a hand-maintained list here goes stale every time a package is added:
+
+```bash
+git grep -n "^  sdk:" -- '*/pubspec.yaml' 'pubspec.yaml'
+```
+
+That currently spans the four published packages, `flutter_adaptive_cards_test_support`, `adaptive_explorer`, `widgetbook`, both Adaptive Chat apps, and the root workspace `pubspec.yaml`.
+
+- Update each `environment:` constraint to match the new minimum Dart SDK (and optionally Flutter SDK) corresponding to the new Flutter version.
 
   ```yaml
   environment:
