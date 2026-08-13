@@ -4,8 +4,9 @@
 # package matrix in test.yml.
 #
 # Markdown here is checked by this workflow, not validate.yaml: that one's
-# `check:md` is scoped to docs/**, which is the published-docs governance
-# scope and deliberately excludes these demo apps.
+# `check:md` covers docs/**, packages/**, and the root *.md — the published
+# docs, packages, and front door — and deliberately excludes these demo apps,
+# which `check:md:chat` exists to cover.
 #
 # Scoped `push` to main to avoid duplicate runs on branches with an open PR
 # (matches test.yml / validate.yaml).
