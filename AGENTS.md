@@ -142,6 +142,24 @@ fvm dart run tool/coverage/check_coverage.dart
 
 If the plan touched other packages, run their suites too (`flutter_adaptive_template_fs`, `flutter_adaptive_charts_fs`, `flutter_adaptive_cards_host_fs`, etc.). See **`adaptive-cards-monorepo-workspace`** and **`adaptive-cards-testing`** skills for directory and tagging details.
 
+**Format gates.** CI enforces Dart and Markdown formatting, and both fail a build that `analyze` and the test suites pass — formatting is not a lint. Run the checks that match what you touched, **before** you commit:
+
+```bash
+# Markdown — pick by path; the two scripts cover different trees and
+# neither covers the other's.
+npm run check:md        # docs/**, packages/**, root *.md
+npm run check:md:chat   # adaptive_chat_client/**, adaptive_chat_server_dart/**
+
+# Dart — same split, same reason.
+fvm dart format --output=none --set-exit-if-changed packages/ tool/
+fvm dart format --output=none --set-exit-if-changed adaptive_chat_client/ adaptive_chat_server_dart/
+```
+
+Both are mechanically fixable: drop `--output=none --set-exit-if-changed` for Dart, or run `npm run format:md` / `format:md:chat` for Markdown. Two traps worth knowing:
+
+- **Prettier rewrites `*italic*` to `_italic_`** and normalizes list markers and table padding. Hand-written Markdown usually needs one `format:md` pass before it is clean.
+- **`check:md` and `check:md:chat` do not overlap.** A change under `adaptive_chat_*` is invisible to `check:md`, which is the check most people run.
+
 **Coverage gate:** CI enforces a per-package line-coverage floor (`tool/coverage_floors.yaml`) measured with a golden-excluded pass. Don't lower a floor to pass — add tests. See [`docs/testing-coverage.md`](docs/testing-coverage.md).
 
 ## Architecture documentation sync gate
