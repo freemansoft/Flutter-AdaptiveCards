@@ -2,11 +2,11 @@
   "name": "flutter-adaptivecards-docs-tooling",
   "version": "1.0.0",
   "private": true,
-  "description": "Markdown tooling (Prettier) for the Flutter-AdaptiveCards docs. Not a runtime dependency of any published package.",
+  "description": "Markdown tooling (Prettier) for the Flutter-AdaptiveCards docs, published packages, and root. Not a runtime dependency of any published package.",
   "scripts": {
-    "format:md": "prettier --write \"docs/**/*.md\"",
+    "format:md": "prettier --write \"docs/**/*.md\" \"packages/**/*.md\" \"*.md\"",
     "format:md:chat": "prettier --write \"adaptive_chat_client/**/*.md\" \"adaptive_chat_server_dart/**/*.md\"",
-    "check:md": "prettier --check \"docs/**/*.md\"",
+    "check:md": "prettier --check \"docs/**/*.md\" \"packages/**/*.md\" \"*.md\"",
     "check:md:chat": "prettier --check \"adaptive_chat_client/**/*.md\" \"adaptive_chat_server_dart/**/*.md\""
   },
   "devDependencies": {
