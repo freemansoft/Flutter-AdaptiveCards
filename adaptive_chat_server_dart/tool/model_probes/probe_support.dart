@@ -90,9 +90,9 @@ ProbeArgs parseProbeArgs(List<String> argv, {int defaultSamples = 3}) {
 String loadCardSystemPrompt() {
   final scriptDir = p.dirname(Platform.script.toFilePath());
   final assets = p.normalize(p.join(scriptDir, '..', '..', 'assets'));
-  return File(p.join(assets, 'card_system_prompt.txt'))
-      .readAsStringSync()
-      .trim();
+  return File(
+    p.join(assets, 'card_system_prompt.txt'),
+  ).readAsStringSync().trim();
 }
 
 /// Reads the bundled card schema, for probes exercising `format: <schema>`.
