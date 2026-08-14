@@ -1,7 +1,12 @@
-# Repo-wide validation checks that are not the test suite:
-#   - markdown-format: the published Markdown docs are Prettier-formatted.
+# Non-test quality gates for the published surface — packages/, docs/, tool/,
+# and the root front door:
+#   - markdown-format: `check:md` covers docs/**, packages/**, and root *.md.
 #   - pana: the four published packages meet their pub.dev score floors.
 #   - dart-format: Dart sources under packages/ and tool/ are dart format-clean.
+#
+# The two Adaptive Chat demo apps are deliberately out of scope here and are
+# covered end to end by chat-apps.yml. Tests for the published packages live in
+# packages-test.yml; this workflow is everything that is *not* a test.
 on:
   push:
     branches: [main]

@@ -8,7 +8,7 @@
 #
 # Values are the baseline measured with golden tests EXCLUDED, rounded down with a
 # ~1-point jitter buffer. CI measures coverage with a dedicated golden-excluded pass
-# (see .github/workflows/test.yml), so the CI number equals what you get locally with
+# (see .github/workflows/packages-test.yml), so the CI number equals what you get locally with
 # `fvm flutter test --coverage --exclude-tags=golden` -- there is no CI/local drift.
 # These floors are therefore authoritative, not provisional. See docs/testing-coverage.md.
 #
