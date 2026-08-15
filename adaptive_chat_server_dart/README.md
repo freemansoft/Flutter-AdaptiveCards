@@ -224,9 +224,9 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
 
 The card prompt's palette is intentionally small:
 
-- **Inputs** — `Input.Date`, `Input.ChoiceSet` (`style: compact` /
+- **Inputs** — `Input.Date`, `Input.Toggle`, `Input.ChoiceSet` (`style: compact` /
   `expanded`, `isMultiSelect`), `Input.Text`, `Input.Number`, `Input.Time`.
-- **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`, `Table`,
+- **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`, `ColumnSet`, `Table`,
   `Rating`, `Icon`, `ProgressBar`, `ProgressRing`, `CodeBlock`, `Image`.
 - **Charts** — `Chart.Pie`, `Chart.Donut`, `Chart.VerticalBar`,
   `Chart.HorizontalBar`, `Chart.Line`, `Chart.Gauge`. The two multi-series

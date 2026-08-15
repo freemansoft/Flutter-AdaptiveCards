@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Fixed: the README's element palette listed neither `Input.Toggle` nor
+  `ColumnSet` after both were added to the card system prompt and schema, so
+  the documented palette disagreed with the shipped one. Added a test that
+  asserts every type the prompt advertises appears in both the schema enum
+  and the README, turning this drift into a build failure instead of a
+  discrepancy someone has to notice.
+
 - Added: `Input.Toggle` and `ColumnSet` to the card system prompt and to
   `card_schema.json`. Both were already registered and renderable on the
   Flutter side but named nowhere the model could see, so it could not emit
