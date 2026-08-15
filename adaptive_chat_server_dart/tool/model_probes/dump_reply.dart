@@ -34,7 +34,14 @@ Future<void> main(List<String> argv) async {
     ..addOption('samples')
     ..addFlag('help', abbr: 'h', negatable: false);
   final parsed = promptParser.parse(argv);
-  final args = parseProbeArgs(argv, defaultSamples: 1);
+  // Hand `parseProbeArgs` only the options it declares. Passing the raw argv
+  // made it reject `--prompt` -- the one option this probe exists for, and
+  // the one its own usage example passes -- because that parser knows only
+  // --model/--url/--samples.
+  final args = parseProbeArgs([
+    for (final option in ['model', 'url', 'samples'])
+      if (parsed[option] != null) ...['--$option', parsed[option] as String],
+  ], defaultSamples: 1);
   final userPrompt = parsed['prompt'] as String;
 
   final client = HttpClient()..idleTimeout = const Duration(minutes: 5);

@@ -129,3 +129,7 @@ widgetbook/widgetbook_screenshot.png
 
 # git worktree fallback location (superpowers:using-git-worktrees)
 .worktrees/
+
+# Worktrees created for isolated subagent runs. Each is a full checkout, so
+# without this a handful of background agents bury `git status`.
+.claude/worktrees/

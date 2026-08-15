@@ -68,6 +68,10 @@ inventing a type.
 
 Inputs — collect a value from the user (always give each an "id"):
 - Input.Date — a date picker: {"type":"Input.Date","id":"when"}
+- Input.Toggle — a single on/off switch, for ONE setting with two opposite
+  states (on/off, yes/no, enable/disable). "title" is the label shown beside
+  the switch; without it the switch appears unlabelled:
+  {"type":"Input.Toggle","id":"notify","title":"Email me updates"}
 - Input.ChoiceSet — the ONLY element for radio buttons, checkboxes, or a
   drop-down list of choices. There is no "Input.RadioButtons" or
   "Input.Checkboxes" element type — never invent one; always write
@@ -96,6 +100,11 @@ Display — show information, no user entry:
 - Table — a narrow grid (2-3 columns, short cells). Each cell's "items" may hold any
   of the elements above (TextBlock, Badge, FactSet, inputs):
   {"type":"Table","columns":[{"width":1},{"width":1}],"rows":[{"type":"TableRow","cells":[{"type":"TableCell","items":[{"type":"TextBlock","text":"UTC","wrap":true}]},{"type":"TableCell","items":[{"type":"Badge","text":"+0000","style":"accent"}]}]}]}
+- ColumnSet — side-by-side columns, for comparing two or three things. Each
+  Column holds its content in "items". Use this when the user asks to compare
+  things "side by side"; anything you want to say about the comparison goes in
+  a TextBlock in the same array, never after the closing bracket:
+  {"type":"ColumnSet","columns":[{"type":"Column","width":1,"items":[{"type":"TextBlock","text":"**SQLite**\nEmbedded, zero setup","wrap":true}]},{"type":"Column","width":1,"items":[{"type":"TextBlock","text":"**Postgres**\nServer, full SQL","wrap":true}]}]}
 - Rating — a read-only star rating (not an input; the user cannot change it).
   "value" and "max" are numbers:
   {"type":"Rating","value":4,"max":5}

@@ -73,7 +73,7 @@ Full contract and testing patterns: **`adaptive-cards-accessibility`**.
 ### Exports
 
 - [ ] **Public API**: Is the new class/widget exported in `lib/flutter_adaptive_cards_fs.dart`?
-- [ ] **Extension API**: Is it exported in `lib/flutter_adaptive_cards_extend.dart` if intended for customization by consumers?
+- [ ] **Extension API**: Is it exported in `lib/flutter_adaptive_cards_extend_fs.dart` if intended for customization by consumers?
 - [ ] **Public `///` docs**: Do new or changed exported members explain **why** the API exists and **how** callers use it — not implementation steps? See **`adaptive-cards-public-api-docs`**.
 
 ---

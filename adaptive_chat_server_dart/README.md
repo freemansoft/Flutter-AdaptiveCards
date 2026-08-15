@@ -604,5 +604,8 @@ prints both pass rates.
 
 They are not part of `dart test` and never run in CI: they need a local
 Ollama, take minutes, and inform a human decision rather than gating a build.
-The findings behind this README's temperature and `format` guidance are
-recorded there.
+
+Results are recorded in [`ModelBehavior.md`](ModelBehavior.md) — which model to
+reach for, which ones silently ignore `--json-format`, and which settings beat
+their own vendor defaults. Read it before probing: the answer may already be
+there, and a finding that contradicts it is worth knowing about.

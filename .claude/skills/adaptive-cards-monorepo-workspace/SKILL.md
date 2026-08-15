@@ -146,7 +146,7 @@ flutter_adaptive_cards_host_fs ──► flutter_adaptive_cards_fs, http
 - Parses and renders Adaptive Cards JSON as Flutter widgets.
 - Entry points:
   - `lib/flutter_adaptive_cards_fs.dart` — public API (import this in consuming apps)
-  - `lib/flutter_adaptive_cards_extend.dart` — extension API (import when creating custom elements)
+  - `lib/flutter_adaptive_cards_extend_fs.dart` — extension API (import when creating custom elements)
 - Contains: element widgets, containers, inputs, actions, HostConfig, registry.
 
 ### `packages/flutter_adaptive_charts_fs` — Charts Extension
