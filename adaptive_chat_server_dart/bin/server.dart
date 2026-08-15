@@ -33,6 +33,29 @@ Never _exitWithUsageError(String message, ArgParser parser) {
   exit(_usageErrorExitCode);
 }
 
+/// Announces which system prompt is in force, because the wrong one is
+/// otherwise invisible.
+///
+/// Card replies are opt-in: the bundled default prompt tells the model to
+/// answer in Markdown and never mentions Adaptive Cards, so a server started
+/// without `--system-prompt-file` answers "what are my options?" with bullet
+/// points and no amount of rephrasing produces a choice set. Measured on
+/// `qwen2.5-coder:7b` at temperature 0 over eight options questions: 0/8 cards
+/// on the default prompt, 8/8 on the card prompt. That reads as a model or
+/// prompt-wording failure when it is a launch-flag failure, so name the file
+/// at startup and spell out the flag that switches modes.
+void _logSystemPromptChoice(Logger log, String? systemPromptFile) {
+  if (systemPromptFile != null) {
+    log.info('System prompt: $systemPromptFile');
+    return;
+  }
+  log.info(
+    'System prompt: bundled assets/default_system_prompt.txt (Markdown '
+    'replies only — no Adaptive Cards). For card replies restart with '
+    '--system-prompt-file assets/card_system_prompt.txt',
+  );
+}
+
 Future<void> main(List<String> arguments) async {
   final parser = buildArgParser();
   final ArgResults args;
@@ -85,6 +108,7 @@ Future<void> main(List<String> arguments) async {
   // Advisory only: a backend that is not up yet may still come up, so this
   // reports loudly and starts anyway rather than refusing to serve.
   final log = Logger('adaptive_chat_server_dart');
+  _logSystemPromptChoice(log, args['system-prompt-file'] as String?);
   final readiness = await responder.checkReadiness();
   if (readiness.isReady) {
     log.info('Preflight: ${readiness.detail}');

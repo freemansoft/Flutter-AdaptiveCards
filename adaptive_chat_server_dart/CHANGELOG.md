@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- Added: the server logs which system prompt is active at startup, and says how
+  to switch. Card replies are opt-in via `--system-prompt-file`, and the
+  bundled default prompt never mentions Adaptive Cards — measured on
+  `qwen2.5-coder:7b` at `t=0` over eight options questions: 0/8 cards on the
+  default prompt versus 8/8 on the card prompt, same model, same temperature.
+  Nothing previously indicated which mode was running, so "the model never
+  sends cards" looked like a model or prompt-wording problem when it was a
+  launch-flag problem. `--help` now names the card prompt file too.
+
 - Fixed: probes scored a prose-wrapped card as a passing `prose` reply. A model
   that writes "Sure, here you go:" before a fenced card produces a message the
   server renders as Markdown, so the user sees raw JSON in a code block — the

@@ -83,8 +83,10 @@ ArgParser buildArgParser() {
       'system-prompt-file',
       help:
           'Path to a text file whose contents become the system prompt. '
-          'Re-read per request, so edits apply without restart. Omit to '
-          'use the bundled default prompt.',
+          'Re-read per request, so edits apply without restart. Omit to use '
+          'the bundled assets/default_system_prompt.txt, which produces '
+          'Markdown replies only. Pass assets/card_system_prompt.txt for '
+          'Adaptive Card replies.',
     )
     ..addOption(
       'num-ctx',
