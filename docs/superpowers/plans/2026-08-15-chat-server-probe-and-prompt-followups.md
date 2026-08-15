@@ -69,18 +69,25 @@ Append this group to `test/card_schema_test.dart`. It parses element types out o
             as Map<String, dynamic>;
     final readme = File('README.md').readAsStringSync();
 
-    // Types the prompt actually advertises: the bullet headings plus every
-    // "type":"X" in its examples. Chart.* are covered by the chart group.
     Set<String> promptTypes() {
-      final types = <String>{
-        ...RegExp(r'^- ([A-Z][A-Za-z.]+) —', multiLine: true)
-            .allMatches(prompt)
-            .map((m) => m.group(1)!),
-        ...RegExp(r'"type":"([A-Za-z.]+)"')
-            .allMatches(prompt)
-            .map((m) => m.group(1)!),
-      };
-      // Structural children and the wrapper are not standalone palette entries.
+      // A bullet heading alone is not proof of an element type — the prompt
+      // uses headings like "- Charts —" to introduce a family. Require a
+      // matching "type":"X" example, which every real palette entry has and
+      // no section heading does. This keeps the filter self-maintaining
+      // instead of growing a denylist of headings.
+      final exampled = RegExp(r'"type":"([A-Za-z.]+)"')
+          .allMatches(prompt)
+          .map((m) => m.group(1)!)
+          .toSet();
+      final headings = RegExp(r'^- ([A-Z][A-Za-z.]+) —', multiLine: true)
+          .allMatches(prompt)
+          .map((m) => m.group(1)!)
+          .toSet();
+      // addAll keeps types demonstrated only in examples — those still need
+      // to be in the schema and the README.
+      final types = headings.intersection(exampled)..addAll(exampled);
+      // Structural children and the card wrapper appear in examples but are
+      // not standalone palette entries a user would look up.
       types.removeWhere(
         (t) =>
             t.startsWith('Chart.') ||
@@ -135,6 +142,8 @@ The file already imports `dart:convert`, `dart:io`, and `package:test/test.dart`
 Run: `cd adaptive_chat_server_dart && fvm dart test test/card_schema_test.dart`
 
 Expected: the schema test PASSES (PR #51 already added both types to the enum). The README test FAILS with `missing: {Input.Toggle, ColumnSet}`. A failure naming exactly those two confirms the test detects real drift rather than passing vacuously.
+
+If a failure names anything else — a family heading, a structural child — the extractor is over-matching, not the palette drifting. Report that rather than editing the test until it looks right: a test tuned to pass is worth nothing.
 
 - [ ] **Step 3: Fix the README palette**
 
