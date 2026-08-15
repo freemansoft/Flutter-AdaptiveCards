@@ -68,11 +68,19 @@ ArgParser buildArgParser() {
       negatable: false,
       help: 'Print this usage information and exit.',
     )
+    ..addFlag(
+      'echo',
+      negatable: false,
+      help:
+          'Run the echo demo instead of calling a model. Without this the '
+          'server talks to Ollama at --ollama-url.',
+    )
     ..addOption(
       'ollama-url',
+      defaultsTo: defaultOllamaUrl,
       help:
-          'Base URL of a running Ollama server, e.g. http://127.0.0.1:11434. '
-          'Omit to run the echo demo.',
+          'Base URL of a running Ollama server (default: $defaultOllamaUrl). '
+          'Pass --echo to skip Ollama entirely and run the echo demo.',
     )
     ..addOption(
       'ollama-model',
@@ -84,9 +92,9 @@ ArgParser buildArgParser() {
       help:
           'Path to a text file whose contents become the system prompt. '
           'Re-read per request, so edits apply without restart. Omit to use '
-          'the bundled assets/default_system_prompt.txt, which produces '
-          'Markdown replies only. Pass assets/card_system_prompt.txt for '
-          'Adaptive Card replies.',
+          'the bundled assets/card_system_prompt.txt, which produces Adaptive '
+          'Card replies. Pass assets/default_system_prompt.txt for '
+          'Markdown-only replies.',
     )
     ..addOption(
       'num-ctx',

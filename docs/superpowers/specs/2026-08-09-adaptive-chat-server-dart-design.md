@@ -12,6 +12,20 @@ published package under `packages/`)
 > longer exists in `.github/workflows/adaptive_chat.yml`. The
 > `ConversationStore` API listed under **Types** has also since dropped
 > `hasInteraction(cid, iid)`, which nothing but its own tests called.
+>
+> **Also superseded 2026-08-15 — the responder and prompt defaults inverted.**
+> This spec describes the echo responder as what you get by passing nothing and
+> the card system prompt as opt-in. Both are now the other way round: the
+> server talks to Ollama at `--ollama-url` (default `http://127.0.0.1:11434`)
+> and loads `assets/card_system_prompt.txt` unless told otherwise, with the
+> echo demo behind `--echo` and Markdown replies behind
+> `--system-prompt-file assets/default_system_prompt.txt`. The measurement
+> behind the flip: 8/8 cards on the card prompt versus 0/8 on the Markdown one,
+> same model at `t=0`. Startup preflight behavior is unchanged — an unreachable
+> Ollama still logs `SEVERE` and serves a diagnostic rather than refusing to
+> start. The CI workflow named below has also been renamed to
+> `.github/workflows/chat-apps.yml`.
+>
 > Everything else — architecture, wire contract, responder behavior, asset
 > resolution, testing — still describes the shipped server. Current usage:
 > [`adaptive_chat_server_dart/README.md`](../../../adaptive_chat_server_dart/README.md).

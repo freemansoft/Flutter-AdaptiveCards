@@ -23,6 +23,13 @@ final _log = Logger('adaptive_chat_server_dart.ollama');
 /// card failure mode at temperature 0 and fits a 16 GB Mac.
 const defaultOllamaModel = 'qwen2.5-coder:7b';
 
+/// Where the server looks for Ollama unless told otherwise.
+///
+/// IPv4 on purpose: Ollama binds IPv4 while macOS often resolves `localhost`
+/// to IPv6 first, which surfaces as a connection refused that looks like
+/// Ollama being down.
+const defaultOllamaUrl = 'http://127.0.0.1:11434';
+
 /// Prior interactions (user+assistant exchanges) replayed to Ollama by
 /// default. Bounds only the outbound prompt — the server store keeps full
 /// history.

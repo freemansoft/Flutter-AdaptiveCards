@@ -84,7 +84,10 @@ Responder buildResponder({
   if (ollamaUrl != null && ollamaUrl.isNotEmpty) {
     _log.info(
       'Responder: OllamaResponder (url=$ollamaUrl, model=$model, '
-      'system_prompt=${systemPromptFile ?? "default"}, num_ctx=$numCtx, '
+      // "default" would be ambiguous now that the bundled default is the card
+      // prompt — it previously implied the Markdown one.
+      'system_prompt=${systemPromptFile ?? "bundled card prompt"}, '
+      'num_ctx=$numCtx, '
       'history_turns=$historyTurns, json_format=$jsonFormat, '
       'keep_alive=$keepAlive, timeout=${ollamaTimeout.inSeconds}s, '
       'temperature=${temperature ?? "model default"})',
@@ -103,7 +106,9 @@ Responder buildResponder({
       temperature: temperature,
     );
   }
-  _log.info('Responder: EchoResponder (no --ollama-url set)');
+  // Reached via --echo, or by a caller passing a null URL directly. Saying
+  // "no --ollama-url set" would be wrong now that the URL has a default.
+  _log.info('Responder: EchoResponder (echo demo — no model is called)');
   return EchoResponder();
 }
 

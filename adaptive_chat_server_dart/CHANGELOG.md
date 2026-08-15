@@ -2,6 +2,29 @@
 
 ## [Unreleased]
 
+- Changed: Adaptive Card replies are now the default and the echo demo is
+  opt-in via `--echo`. `--ollama-url` defaults to `http://127.0.0.1:11434` and
+  the bundled system prompt is `card_system_prompt.txt`. Previously a
+  card-rendering chat server needed two flags to render cards and none to do
+  nothing interesting: starting it plainly produced Markdown bullet points that
+  no rephrasing could turn into a card, and the reason was invisible. The
+  measurement behind the flip is the largest single effect on record for this
+  workload — 8/8 cards on the card prompt versus 0/8 on the Markdown one, same
+  model at `t=0`, larger than any model or temperature difference. The chat
+  client is the only consumer, so nothing external breaks.
+
+  Preflight behaviour is deliberately unchanged: an unreachable Ollama still
+  logs `SEVERE` and serves a diagnostic rather than refusing to start, so the
+  error surfaces in the chat bubble instead of as a refused connection. The
+  message now names both remedies (`ollama serve`, or `--echo`). Making echo
+  opt-in already removes the hazard that motivated failing hard — the server
+  can no longer silently echo when you meant to use a model.
+
+  `assets/default_system_prompt.txt` keeps its now-misleading name: renaming it
+  would break every `--system-prompt-file` invocation already written down.
+  `.vscode/launch.json` inverts to match — the plain Ollama configs produce
+  cards, and the `, markdown prompt)` variants opt back out.
+
 - Added: the server logs which system prompt is active at startup, and says how
   to switch. Card replies are opt-in via `--system-prompt-file`, and the
   bundled default prompt never mentions Adaptive Cards — measured on

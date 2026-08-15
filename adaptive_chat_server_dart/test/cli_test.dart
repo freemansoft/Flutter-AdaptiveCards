@@ -129,6 +129,7 @@ void main() {
     test('usage lists every flag the server accepts', () {
       final usage = buildArgParser().usage;
       for (final flag in [
+        'echo',
         'ollama-url',
         'ollama-model',
         'system-prompt-file',
@@ -215,5 +216,35 @@ void main() {
     expect(args['host'], '127.0.0.1');
     expect(args['port'], '8000');
     expect(args['log-level'], 'info');
+    // Changed deliberately: talking to a local Ollama is now the default and
+    // the echo demo is opt-in. See the --echo group below.
+    expect(args['ollama-url'], defaultOllamaUrl);
+    expect(args['echo'], isFalse);
+  });
+
+  group('--echo and the default responder', () {
+    test('the echo demo is opt-in, not the default', () {
+      expect(buildArgParser().parse([])['echo'], isFalse);
+      expect(buildArgParser().parse(['--echo'])['echo'], isTrue);
+    });
+
+    test('--ollama-url defaults to the local Ollama', () {
+      expect(
+        buildArgParser().parse([])['ollama-url'],
+        'http://127.0.0.1:11434',
+      );
+    });
+
+    test('--ollama-url is still overridable', () {
+      final args = buildArgParser().parse(['--ollama-url', 'http://box:9999']);
+      expect(args['ollama-url'], 'http://box:9999');
+    });
+
+    test('no --system-prompt-file means the card prompt, not Markdown', () {
+      // The flag stays null; bin/server.dart resolves the bundled default.
+      // This asserts the CLI does not force a prompt file, so the server is
+      // free to default to cards.
+      expect(buildArgParser().parse([])['system-prompt-file'], isNull);
+    });
   });
 }

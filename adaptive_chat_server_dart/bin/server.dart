@@ -36,23 +36,24 @@ Never _exitWithUsageError(String message, ArgParser parser) {
 /// Announces which system prompt is in force, because the wrong one is
 /// otherwise invisible.
 ///
-/// Card replies are opt-in: the bundled default prompt tells the model to
-/// answer in Markdown and never mentions Adaptive Cards, so a server started
-/// without `--system-prompt-file` answers "what are my options?" with bullet
-/// points and no amount of rephrasing produces a choice set. Measured on
-/// `qwen2.5-coder:7b` at temperature 0 over eight options questions: 0/8 cards
-/// on the default prompt, 8/8 on the card prompt. That reads as a model or
-/// prompt-wording failure when it is a launch-flag failure, so name the file
-/// at startup and spell out the flag that switches modes.
+/// Two prompts ship with the server and they produce entirely different
+/// replies, so which one is loaded is worth one line at startup.
+///
+/// Measured on `qwen2.5-coder:7b` at temperature 0 over eight options
+/// questions: the Markdown prompt yields 0/8 cards, the card prompt 8/8. Until
+/// the default was flipped, the Markdown prompt was in force unless you passed
+/// a flag, and "the model never sends cards" read as a model or wording
+/// failure when it was a launch-flag failure. Naming the file removes the
+/// guesswork in either direction.
 void _logSystemPromptChoice(Logger log, String? systemPromptFile) {
   if (systemPromptFile != null) {
     log.info('System prompt: $systemPromptFile');
     return;
   }
   log.info(
-    'System prompt: bundled assets/default_system_prompt.txt (Markdown '
-    'replies only — no Adaptive Cards). For card replies restart with '
-    '--system-prompt-file assets/card_system_prompt.txt',
+    'System prompt: bundled assets/card_system_prompt.txt (Adaptive Card '
+    'replies). For Markdown-only replies restart with --system-prompt-file '
+    'assets/default_system_prompt.txt',
   );
 }
 
@@ -90,9 +91,11 @@ Future<void> main(List<String> arguments) async {
   final assetsDir = p.normalize(p.join(scriptDir, '..', 'assets'));
 
   final responder = buildResponder(
-    ollamaUrl: args['ollama-url'] as String?,
+    // buildResponder treats a null URL as "use the echo demo", so --echo is
+    // expressed by withholding the URL rather than by a second switch.
+    ollamaUrl: (args['echo'] as bool) ? null : args['ollama-url'] as String,
     model: args['ollama-model'] as String,
-    defaultSystemPromptPath: p.join(assetsDir, 'default_system_prompt.txt'),
+    defaultSystemPromptPath: p.join(assetsDir, 'card_system_prompt.txt'),
     cardSchemaPath: p.join(assetsDir, 'card_schema.json'),
     systemPromptFile: args['system-prompt-file'] as String?,
     numCtx: int.parse(args['num-ctx'] as String),
@@ -115,7 +118,9 @@ Future<void> main(List<String> arguments) async {
   } else {
     log.severe(
       'Preflight FAILED: ${readiness.detail}\n  Starting anyway — requests '
-      'will return a diagnostic until this is fixed.',
+      'will return a diagnostic until this is fixed.\n  Fix by starting '
+      'Ollama (`ollama serve`), or restart with --echo to run the echo demo '
+      'with no model at all.',
     );
   }
 
