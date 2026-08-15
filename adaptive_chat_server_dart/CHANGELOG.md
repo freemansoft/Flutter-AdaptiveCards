@@ -2,6 +2,24 @@
 
 ## [Unreleased]
 
+- Added: `Input.Toggle` and `ColumnSet` to the card system prompt and to
+  `card_schema.json`. Both were already registered and renderable on the
+  Flutter side but named nowhere the model could see, so it could not emit
+  them — a binary question got a two-choice `Input.ChoiceSet` and "compare X
+  and Y side by side" had no side-by-side element at all. Both files needed
+  the change: the prompt decides what the model reaches for, the schema enum
+  is the grammar under `--json-format schema`, and adding only the prompt
+  leaves schema mode rejecting what the prompt just started requesting.
+  Measured on `qwen2.5-coder:7b` at `t=0` — the new types are emitted for the
+  prompts that call for them, with stress 5/5 at `t=0` and `t=0.6` and the
+  code A/B set 8/8, i.e. no regression.
+
+- Added: `ModelBehavior.md` — the durable record of which models produce
+  renderable cards, what settings they need, and which of the card test
+  classes each has been through. Results previously lived only in plans and
+  design specs that get archived; this file is where they survive. Seeded with
+  six newly probed models plus the four already on record.
+
 - Fixed: asked to explain a code snippet, a model no longer answers with a
   card followed by a loose explanation — a mixed reply that is shown to the
   user as raw JSON. The card system prompt now gives that explanation a legal

@@ -29,7 +29,9 @@
             "Chart.VerticalBar",
             "Chart.HorizontalBar",
             "Chart.Line",
-            "Chart.Gauge"
+            "Chart.Gauge",
+            "Input.Toggle",
+            "ColumnSet"
           ]
         }
       }

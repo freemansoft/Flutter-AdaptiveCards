@@ -62,6 +62,11 @@ trusting a first-call number.
 Recorded so the next person can tell a new result from a known one. Measured
 on an M-series Mac against Ollama, August 2026.
 
+The durable, per-model record lives in [`../../ModelBehavior.md`](../../ModelBehavior.md) —
+which model to reach for, which ones ignore `format`, and which settings beat
+their own vendor defaults. Add findings there as well as here: this section is
+about the probes, that file is about the models.
+
 - **`qwen3.6:27b-coding-nvfp4` scored worse at its own recommended
   temperature.** Its Modelfile ships `temperature 0.6`, but it passed 12/15
   hard cases at `0` versus 9/15 at `0.6`, the extra failures being long card

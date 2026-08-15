@@ -129,7 +129,7 @@ case 'MyElement':
 ### Step 3: Export from the Extension Library (if needed for consumers)
 
 If consumers need to subclass or reference your element, add it to:
-`lib/flutter_adaptive_cards_extend.dart`
+`lib/flutter_adaptive_cards_extend_fs.dart`
 
 ---
 

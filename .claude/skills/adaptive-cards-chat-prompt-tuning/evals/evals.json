@@ -1,0 +1,48 @@
+{
+  "skill_name": "adaptive-cards-chat-prompt-tuning",
+  "evals": [
+    {
+      "id": 0,
+      "name": "raw-json-in-bubble",
+      "prompt": "The chat bubble is showing a big blob of raw JSON instead of a rendered card when I ask the assistant to compare two things side by side. Running qwen2.5-coder:7b. Can you tighten up the card system prompt so it stops doing that?",
+      "expected_output": "Reproduces the failure with dump_reply.dart before editing; identifies the actual shape from the server's own verdict; if it changes the prompt, gives the unwanted behavior a legal home rather than only adding a prohibition; measures the change with prompt_ab.dart before promoting it.",
+      "files": [],
+      "assertions": [
+        "Captured the model's literal reply with a probe (dump_reply.dart or an equivalent direct /api/chat call) BEFORE editing the prompt",
+        "Reported the server's own verdict for the reply (card[n] / prose / broken: ...) rather than only eyeballing the JSON",
+        "Correctly identified the failing shape from the verdict instead of guessing a cause",
+        "Any prompt edit gives the unwanted behavior a legal place to go, not only a new prohibition",
+        "Measured the prompt change against the unmodified prompt (prompt_ab.dart or temperature_stress.dart) before treating it as an improvement",
+        "Did not claim the fix works without a before/after number"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "add-input-toggle",
+      "prompt": "I want the assistant to be able to send a yes/no toggle switch. Input.Toggle is supported by the Flutter side already but I don't think the server ever emits it. What do I need to change in adaptive_chat_server_dart?",
+      "expected_output": "Identifies that assets/card_system_prompt.txt never names Input.Toggle so the model cannot emit it; adds a minimal single-line example in the right section; mentions card_schema.json for --json-format schema; verifies the model actually emits it rather than assuming.",
+      "files": [],
+      "assertions": [
+        "Identified that assets/card_system_prompt.txt never names Input.Toggle, and that this is why the model cannot emit it",
+        "Added an Input.Toggle entry to the prompt with a complete, valid, single-line JSON example",
+        "Kept the example minimal rather than showing every optional property",
+        "Mentioned assets/card_schema.json as also needing the type for --json-format schema",
+        "Verified with a real model call that the model now emits Input.Toggle, rather than assuming",
+        "Added a CHANGELOG.md bullet under [Unreleased]"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "prose-instead-of-choiceset",
+      "prompt": "When I ask the chat server 'what are my options for deployment targets' it answers with markdown bullet points instead of a choice set I can actually click on. I'd rather it gave me a real card. Is this a prompt problem or a model problem?",
+      "expected_output": "Recognizes prose is a legal reply, not a broken card; distinguishes prompt cause from decoding/model cause; checks ModelBehavior.md and/or probes rather than asserting; does not blindly add a prohibition against Markdown.",
+      "assertions": [
+        "States that a Markdown/prose reply is a legal reply shape per the card system prompt, not a broken card",
+        "Explicitly answers the user's either/or question (prompt problem vs model problem)",
+        "Distinguished prompt cause from decoding/model cause using evidence (a probe run or ModelBehavior.md), not assertion",
+        "Did not add a blanket prohibition against answering in Markdown",
+        "If it changed the prompt, measured the change rather than assuming it helped"
+      ]
+    }
+  ]
+}
