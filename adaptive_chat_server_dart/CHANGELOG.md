@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Fixed: probes scored a prose-wrapped card as a passing `prose` reply. A model
+  that writes "Sure, here you go:" before a fenced card produces a message the
+  server renders as Markdown, so the user sees raw JSON in a code block — the
+  exact symptom people report, scored green by every probe. `card_detect.dart`
+  gained `replyWrapsCardInProse`, and `judgeReply` now returns
+  `prose-with-card` as a failure. Prose that merely contains a non-card code
+  fence is still a legitimate pass, so a Markdown answer with a Dart snippet is
+  unaffected. Every pass rate measured before this change counted this shape as
+  a success.
+
 - Fixed: the README's element palette listed neither `Input.Toggle` nor
   `ColumnSet` after both were added to the card system prompt and schema, so
   the documented palette disagreed with the shipped one. Added a test that

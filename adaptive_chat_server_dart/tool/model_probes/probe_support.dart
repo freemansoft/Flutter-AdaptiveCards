@@ -117,7 +117,11 @@ class ProbeOutcome {
   /// Whether the reply was usable — a renderable card, or clean prose.
   ///
   /// Prose counts as a pass: the card system prompt explicitly allows a
-  /// Markdown answer, so only a *broken* card is a failure.
+  /// Markdown answer, so only a *broken* card is a failure. The exception is
+  /// prose that *wraps* a card (see [replyWrapsCardInProse]) — the server
+  /// renders that as Markdown, so the user sees raw JSON in a code block.
+  /// It reads as a tidy Markdown answer and is scored a failure anyway,
+  /// because it is the shape users actually report.
   final bool ok;
 
   /// Short human-readable verdict, e.g. `card[3]`, `prose`, `broken-card: …`.
@@ -203,6 +207,12 @@ ProbeOutcome judgeReply(String content, int ms) {
   final card = tryParseCardBody(content);
   if (card != null) {
     return outcome(ok: true, label: 'card[${card.length}]');
+  }
+  if (replyWrapsCardInProse(content)) {
+    return outcome(
+      ok: false,
+      label: 'prose-with-card (user sees raw JSON)',
+    );
   }
   final why = cardParseFailureReason(content);
   return why == null
