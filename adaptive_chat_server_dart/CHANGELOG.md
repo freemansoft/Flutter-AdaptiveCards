@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Added: `ModelBehavior.md` now records the `qwen2.5-coder:7b` fence rate and
+  the default-vs-card prompt comparison measured on 2026-08-14, which had
+  lived only in scratch reports until now. It also records this branch's own
+  measurements in full: the escape-hatch fix's real multi-turn numbers
+  (2/12 → 6/12 with history, `choiceset_ab.dart --samples 2`, `t=0` — not the
+  2026-08-14 investigation's original 0/6 reference figure, which was
+  superseded once the fix actually shipped and was re-measured) and the
+  compare-and-comment wording's negative result (tied baseline, then caught a
+  reproducible regression, not promoted). This is exactly the loss the file
+  exists to prevent.
 - Added: multi-turn (`With history`) results for the six models that already
   had cold-start numbers. The column previously had one value out of fourteen,
   which let cold-start figures read as though they described real
@@ -16,7 +26,7 @@
   own, and pick-from-a-set questions are named explicitly as ChoiceSet
   questions. Measured on `qwen2.5-coder:7b` at `t=0`: 2/12 → 6/12 with
   history (`choiceset_ab.dart --samples 2`), stress (`temperature_stress.dart
-  --samples 2`, 10/10 at both `t=0` and `t=0.6`) and code A/B
+--samples 2`, 10/10 at both `t=0` and `t=0.6`) and code A/B
   (`prompt_ab.dart --samples 1`, 8/8, including the closure case Task 6
   regressed) unregressed.
 - Measured, not promoted: tried adding a paragraph telling the model a
