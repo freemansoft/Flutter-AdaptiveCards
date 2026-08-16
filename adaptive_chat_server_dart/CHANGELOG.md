@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Fixed: findings from the final whole-branch review. `ModelBehavior.md`'s
+  six-model history sweep (2026-08-16) now says explicitly it was measured
+  *after* Task 7's escape-hatch fix was already promoted, both in the sweep's
+  own paragraph and as a note next to the `With history` column, so the
+  6/12 (`--samples 2`) cell for `qwen2.5-coder:7b` no longer reads as the
+  odd one out among the other `N/6` (`--samples 1`) cells; that cell is now
+  labelled with its own sample count. `tool/model_probes/README.md`'s "What
+  these found" section gained the two probe-side findings this branch
+  actually produced — cold start not predicting multi-turn behavior, and
+  three of six models collapsing to 0/6 with prior prose turns — which its
+  own stated contract said belonged there. `-h`/`--help` now works in
+  `choiceset_ab.dart`, `prompt_ab.dart`, and `dump_reply.dart`; all three
+  declared the flag but never checked it, so it silently started a full
+  probe run instead of printing usage. `dump_reply.dart`'s `history turns`
+  summary line now aligns its colon with its siblings.
 - Added: `ModelBehavior.md` now records the `qwen2.5-coder:7b` fence rate and
   the default-vs-card prompt comparison measured on 2026-08-14, which had
   lived only in scratch reports until now. It also records this branch's own
@@ -25,10 +40,10 @@
   element type fits"), the prompt says to judge the current question on its
   own, and pick-from-a-set questions are named explicitly as ChoiceSet
   questions. Measured on `qwen2.5-coder:7b` at `t=0`: 2/12 → 6/12 with
-  history (`choiceset_ab.dart --samples 2`), stress (`temperature_stress.dart
---samples 2`, 10/10 at both `t=0` and `t=0.6`) and code A/B
-  (`prompt_ab.dart --samples 1`, 8/8, including the closure case Task 6
-  regressed) unregressed.
+  history (`choiceset_ab.dart --samples 2`). Regression checks stayed clean:
+  stress (`temperature_stress.dart --samples 2`) held 10/10 at both `t=0`
+  and `t=0.6`, and code A/B (`prompt_ab.dart --samples 1`) held 8/8,
+  including the closure case Task 6 regressed.
 - Measured, not promoted: tried adding a paragraph telling the model a
   two-part request ("compare A and B, then tell me which you'd pick") is
   still one message, plus a matching pre-send check-0 clause, to fix a

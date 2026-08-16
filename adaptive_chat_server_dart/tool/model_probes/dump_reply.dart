@@ -40,6 +40,10 @@ Future<void> main(List<String> argv) async {
     )
     ..addFlag('help', abbr: 'h', negatable: false);
   final parsed = promptParser.parse(argv);
+  if (parsed['help'] as bool) {
+    stdout.writeln(promptParser.usage);
+    return;
+  }
   // Only this script accepts --prompt/--history; the shared parser rejects
   // options it does not declare, which is what broke --prompt.
   final args = parseProbeArgs([
@@ -94,7 +98,7 @@ Future<void> main(List<String> argv) async {
       '${r'\n'.allMatches(content).length}',
     )
     ..writeln('contains ``` fence   : ${content.contains('```')}')
-    ..writeln('history turns      : ${history.length}')
+    ..writeln('history turns        : ${history.length}')
     ..writeln('verdict              : ${judgeReply(content, 0).label}');
   client.close();
 }

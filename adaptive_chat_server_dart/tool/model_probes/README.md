@@ -108,6 +108,16 @@ about the probes, that file is about the models.
   a reply blamed on the model contained zero real newlines and 11 correctly
   escaped ones — valid JSON. The corruption came from this server's
   fence-stripping heuristic. Dump the bytes before theorising.
+- **A cold-start pass predicts nothing about multi-turn behavior.** Sets
+  1–3 are all single-turn, and that gap hid a whole failure class until
+  `dump_reply.dart --history` and `choiceset_ab.dart` existed to replay
+  prior turns the way the server actually does. Reach for one of them before
+  trusting a cold-start number for a bug reported mid-conversation.
+- **History erosion is per-model, not universal.** Running six models
+  through `choiceset_ab.dart` with two prior prose turns collapsed three of
+  six to 0/6, dropped two more to 3/6, and left one untouched at 6/6 — a
+  model's cold-start score did not predict which side it landed on. See
+  `ModelBehavior.md` for the per-model breakdown.
 
 ## Adding a probe
 

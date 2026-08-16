@@ -89,6 +89,10 @@ Future<void> main(List<String> argv) async {
     )
     ..addFlag('help', abbr: 'h', negatable: false);
   final parsed = parser.parse(argv);
+  if (parsed['help'] as bool) {
+    stdout.writeln(parser.usage);
+    return;
+  }
   final args = parseProbeArgs([
     for (final option in ['model', 'url', 'samples'])
       if (parsed[option] != null) ...['--$option', parsed[option] as String],
