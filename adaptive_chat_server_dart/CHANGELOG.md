@@ -2,28 +2,31 @@
 
 ## [Unreleased]
 
-- Changed: Adaptive Card replies are now the default and the echo demo is
-  opt-in via `--echo`. `--ollama-url` defaults to `http://127.0.0.1:11434` and
-  the bundled system prompt is `card_system_prompt.txt`. Previously a
-  card-rendering chat server needed two flags to render cards and none to do
-  nothing interesting: starting it plainly produced Markdown bullet points that
-  no rephrasing could turn into a card, and the reason was invisible. The
-  measurement behind the flip is the largest single effect on record for this
-  workload — 8/8 cards on the card prompt versus 0/8 on the Markdown one, same
-  model at `t=0`, larger than any model or temperature difference. The chat
-  client is the only consumer, so nothing external breaks.
+- **Breaking:** the server no longer has a default reply mode and refuses to
+  start without one. Every invocation names `--system-prompt-file` (the card
+  prompt for Adaptive Cards, the Markdown prompt for prose) or `--echo` for the
+  echo demo; anything else exits `2` with a message listing all three. The two
+  bundled prompts produce the largest single effect on record for this workload
+  — **8/8 cards versus 0/8** on the same model at `t=0`, bigger than any model
+  or temperature difference — so whichever one had been implicit, somebody
+  would eventually run the server, get the other kind of reply, and blame the
+  model. Refusing to guess costs one flag and removes that entire class of
+  confusion. The chat client is the only consumer, so nothing external breaks.
+
+  `--ollama-url` now defaults to `http://127.0.0.1:11434`, so naming a prompt
+  is enough to talk to Ollama; `--echo` withholds the URL and selects the echo
+  demo. Startup logs the chosen mode.
 
   Preflight behaviour is deliberately unchanged: an unreachable Ollama still
   logs `SEVERE` and serves a diagnostic rather than refusing to start, so the
   error surfaces in the chat bubble instead of as a refused connection. The
-  message now names both remedies (`ollama serve`, or `--echo`). Making echo
-  opt-in already removes the hazard that motivated failing hard — the server
-  can no longer silently echo when you meant to use a model.
+  message now names both remedies (`ollama serve`, or `--echo`).
 
-  `assets/default_system_prompt.txt` keeps its now-misleading name: renaming it
-  would break every `--system-prompt-file` invocation already written down.
-  `.vscode/launch.json` inverts to match — the plain Ollama configs produce
-  cards, and the `, markdown prompt)` variants opt back out.
+  `assets/default_system_prompt.txt` keeps its misleading name — it is not a
+  default and is never loaded unless named — because renaming an asset breaks
+  every `--system-prompt-file` invocation already written down. Every
+  `.vscode/launch.json` server configuration now states its mode in its name
+  **and** passes the matching flag, so a name cannot drift from behaviour.
 
 - Added: the server logs which system prompt is active at startup, and says how
   to switch. Card replies are opt-in via `--system-prompt-file`, and the

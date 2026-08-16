@@ -84,9 +84,10 @@ Responder buildResponder({
   if (ollamaUrl != null && ollamaUrl.isNotEmpty) {
     _log.info(
       'Responder: OllamaResponder (url=$ollamaUrl, model=$model, '
-      // "default" would be ambiguous now that the bundled default is the card
-      // prompt — it previously implied the Markdown one.
-      'system_prompt=${systemPromptFile ?? "bundled card prompt"}, '
+      // bin/server.dart always passes an explicit file, so the fallback is
+      // only reached by programmatic callers (the tests). Naming a specific
+      // prompt here would be a guess.
+      'system_prompt=${systemPromptFile ?? "caller-supplied default"}, '
       'num_ctx=$numCtx, '
       'history_turns=$historyTurns, json_format=$jsonFormat, '
       'keep_alive=$keepAlive, timeout=${ollamaTimeout.inSeconds}s, '

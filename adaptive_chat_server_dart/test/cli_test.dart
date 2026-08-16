@@ -186,17 +186,64 @@ void main() {
     );
 
     test(
-      'a bad --ollama-temperature fails with a message, not a stack trace',
+      'naming no reply mode fails with guidance, not a stack trace',
       () async {
+        // The server refuses to guess between card, Markdown, and echo — the
+        // three produce completely different output.
         final result = await Process.run(Platform.resolvedExecutable, [
           'run',
           'bin/server.dart',
+        ], workingDirectory: Directory.current.path);
+        expect(result.exitCode, isNot(0));
+        final output = '${result.stdout}${result.stderr}';
+        expect(output, contains('Choose a reply mode'));
+        // The message must name all three ways out, or it is a riddle.
+        expect(output, contains('card_system_prompt.txt'));
+        expect(output, contains('default_system_prompt.txt'));
+        expect(output, contains('--echo'));
+        expect(
+          output,
+          isNot(contains('#0')),
+          reason: 'a missing flag is user error, not a crash',
+        );
+      },
+      timeout: const Timeout(Duration(minutes: 2)),
+    );
+
+    test(
+      '--echo alone is a complete invocation',
+      () async {
+        // --echo names a mode, so it must satisfy the requirement on its own.
+        // Verified via --help + --echo so the process exits instead of serving.
+        final result = await Process.run(Platform.resolvedExecutable, [
+          'run',
+          'bin/server.dart',
+          '--echo',
+          '--help',
+        ], workingDirectory: Directory.current.path);
+        expect(result.exitCode, 0);
+        expect('${result.stdout}', isNot(contains('Choose a reply mode')));
+      },
+      timeout: const Timeout(Duration(minutes: 2)),
+    );
+
+    test(
+      'a bad --ollama-temperature fails with a message, not a stack trace',
+      () async {
+        // --echo names a reply mode so this reaches the temperature check.
+        // Without it the run stops earlier, on the missing-mode error, and
+        // this test would pass on the usage dump alone — which lists every
+        // flag name, including this one.
+        final result = await Process.run(Platform.resolvedExecutable, [
+          'run',
+          'bin/server.dart',
+          '--echo',
           '--ollama-temperature',
           'warm',
         ], workingDirectory: Directory.current.path);
         expect(result.exitCode, isNot(0));
         final output = '${result.stdout}${result.stderr}';
-        expect(output, contains('ollama-temperature'));
+        expect(output, contains('Invalid --ollama-temperature'));
         expect(
           output,
           isNot(contains('#0')),
@@ -240,10 +287,10 @@ void main() {
       expect(args['ollama-url'], 'http://box:9999');
     });
 
-    test('no --system-prompt-file means the card prompt, not Markdown', () {
-      // The flag stays null; bin/server.dart resolves the bundled default.
-      // This asserts the CLI does not force a prompt file, so the server is
-      // free to default to cards.
+    test('the parser itself supplies no prompt default', () {
+      // Deliberate: there is no default reply mode. bin/server.dart rejects an
+      // invocation that names neither --system-prompt-file nor --echo, which
+      // is asserted end-to-end in the bin/server.dart group.
       expect(buildArgParser().parse([])['system-prompt-file'], isNull);
     });
   });

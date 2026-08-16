@@ -72,8 +72,9 @@ ArgParser buildArgParser() {
       'echo',
       negatable: false,
       help:
-          'Run the echo demo instead of calling a model. Without this the '
-          'server talks to Ollama at --ollama-url.',
+          'Run the echo demo instead of calling a model. Selects a reply mode, '
+          'so it satisfies the requirement to name one; otherwise pass '
+          '--system-prompt-file.',
     )
     ..addOption(
       'ollama-url',
@@ -90,11 +91,12 @@ ArgParser buildArgParser() {
     ..addOption(
       'system-prompt-file',
       help:
-          'Path to a text file whose contents become the system prompt. '
-          'Re-read per request, so edits apply without restart. Omit to use '
-          'the bundled assets/card_system_prompt.txt, which produces Adaptive '
-          'Card replies. Pass assets/default_system_prompt.txt for '
-          'Markdown-only replies.',
+          'REQUIRED unless --echo. Path to a text file whose contents become '
+          'the system prompt; re-read per request, so edits apply without '
+          'restart. Use assets/card_system_prompt.txt for Adaptive Card '
+          'replies or assets/default_system_prompt.txt for Markdown. There is '
+          'no default — the two produce completely different output, so the '
+          'server makes you say which one you want.',
     )
     ..addOption(
       'num-ctx',

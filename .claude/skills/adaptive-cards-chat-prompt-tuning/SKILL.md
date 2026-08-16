@@ -31,18 +31,18 @@ The server ships **two** system prompts and they produce entirely different repl
 
 | File | What it tells the model |
 | --- | --- |
-| `assets/card_system_prompt.txt` | **The default.** The card palette and rules. |
-| `assets/default_system_prompt.txt` | Opt in via `--system-prompt-file`. Your reply renders in a TextBlock; use Markdown. Never mentions Adaptive Cards. Its name is a leftover — it has not been the default since 2026-08-15. |
+| `assets/card_system_prompt.txt` | The card palette and rules. |
+| `assets/default_system_prompt.txt` | Your reply renders in a TextBlock; use Markdown. Never mentions Adaptive Cards. Its name is a leftover — it is not a default and is never loaded unless named. |
 
-Measured on `qwen2.5-coder:7b` at `t=0` over the same eight questions: **8/8 cards** on the card prompt, **0/8** on the Markdown one. That is a larger effect than any model or temperature difference recorded in [`ModelBehavior.md`](../../../adaptive_chat_server_dart/ModelBehavior.md).
+Measured on `qwen2.5-coder:7b` at `t=0` over the same eight questions: **8/8 cards** on the card prompt, **0/8** on the Markdown one. That is a larger effect than any model or temperature difference recorded in [`ModelBehavior.md`](../../../adaptive_chat_server_dart/ModelBehavior.md), which is why the server has **no default** — it refuses to start unless the invocation names `--system-prompt-file` or `--echo`.
 
-So when the report is "it answers in Markdown" or "it never sends cards", confirm the active prompt **first** — the server names it at startup:
+So when the report is "it answers in Markdown" or "it never sends cards", confirm which prompt was named **first** — the server logs it at startup:
 
 ```
-INFO: System prompt: bundled assets/card_system_prompt.txt (Adaptive Card replies)
+INFO: System prompt: assets/card_system_prompt.txt
 ```
 
-One glance invalidates every other hypothesis. Since the flip this is rarer than it was, but it still happens two ways: someone passed `--system-prompt-file assets/default_system_prompt.txt`, or they are running a build from before the flip, when Markdown was what you got by passing nothing.
+One glance invalidates every other hypothesis. Since the default was removed on 2026-08-15 this is rarer, but it still happens two ways: someone named the Markdown prompt, or they are running a build from before that date, when the prompt could be implicit.
 
 This does not apply when the complaint is a *broken* card — raw JSON, blank elements, truncation. Those prove the card prompt is already active, so skip ahead.
 

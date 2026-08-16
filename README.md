@@ -145,10 +145,11 @@ sequenceDiagram
 
 ### What you can do with it
 
-- Run it against a local **Ollama** chat model — the default — and get replies as
-  live Adaptive Card fragments (dates, choice sets, FactSets, tables, ratings, and
-  more). The client renders whatever shape the server sends with no client code
-  change, demonstrating dynamic, LLM-generated SDUI end to end.
+- Run it against a local **Ollama** chat model with the card system prompt and
+  get replies as live Adaptive Card fragments (dates, choice sets, FactSets,
+  tables, ratings, and more). The client renders whatever shape the server sends
+  with no client code change, demonstrating dynamic, LLM-generated SDUI end to
+  end.
 - Run it in **echo mode** (`--echo`, no LLM) to see the SDUI wiring on its own: the
   server authors right/left chat bubbles as Adaptive Cards, and the compose box is
   an `Input.Text` + `Action.Submit` card wired through
@@ -161,12 +162,13 @@ assets/default_system_prompt.txt`) to compare Markdown replies against cards on
 ### Run the demo from the repo root
 
 ```bash
-# Terminal 1: backend (talks to Ollama and replies with cards by default)
+# Terminal 1: backend — every run names its reply mode; there is no default
 ollama pull qwen2.5-coder:7b   # once
 ollama serve                   # if not already running
 cd adaptive_chat_server_dart
 fvm dart pub get
-fvm dart run bin/server.dart   # add --echo to run with no model at all
+fvm dart run bin/server.dart --system-prompt-file assets/card_system_prompt.txt
+# or: fvm dart run bin/server.dart --echo   (no model called at all)
 
 # Terminal 2: client
 cd adaptive_chat_client

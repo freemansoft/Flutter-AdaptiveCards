@@ -36,25 +36,21 @@ Never _exitWithUsageError(String message, ArgParser parser) {
 /// Announces which system prompt is in force, because the wrong one is
 /// otherwise invisible.
 ///
-/// Two prompts ship with the server and they produce entirely different
-/// replies, so which one is loaded is worth one line at startup.
+/// Echoes back the reply mode the operator chose, so the log says what this
+/// process will actually do.
 ///
-/// Measured on `qwen2.5-coder:7b` at temperature 0 over eight options
-/// questions: the Markdown prompt yields 0/8 cards, the card prompt 8/8. Until
-/// the default was flipped, the Markdown prompt was in force unless you passed
-/// a flag, and "the model never sends cards" read as a model or wording
-/// failure when it was a launch-flag failure. Naming the file removes the
-/// guesswork in either direction.
+/// The two bundled prompts produce entirely different replies — measured on
+/// `qwen2.5-coder:7b` at temperature 0 over eight options questions, the card
+/// prompt yields 8/8 Adaptive Cards and the Markdown one 0/8. A mode is always
+/// explicit (see the argument check in `main`), so there is no default to
+/// explain here; this line exists so a log tells you which of the two you are
+/// looking at without re-deriving it from the launch config.
 void _logSystemPromptChoice(Logger log, String? systemPromptFile) {
-  if (systemPromptFile != null) {
-    log.info('System prompt: $systemPromptFile');
+  if (systemPromptFile == null) {
+    log.info('Reply mode: echo demo (--echo) — no system prompt is used');
     return;
   }
-  log.info(
-    'System prompt: bundled assets/card_system_prompt.txt (Adaptive Card '
-    'replies). For Markdown-only replies restart with --system-prompt-file '
-    'assets/default_system_prompt.txt',
-  );
+  log.info('System prompt: $systemPromptFile');
 }
 
 Future<void> main(List<String> arguments) async {
@@ -69,6 +65,24 @@ Future<void> main(List<String> arguments) async {
   if (args['help'] as bool) {
     _printUsage(parser);
     return;
+  }
+
+  // No default reply mode on purpose. The two bundled prompts produce
+  // completely different output — 8/8 Adaptive Cards versus 0/8 on the same
+  // model at t=0 — and whichever one is implicit, somebody eventually runs
+  // the server, gets the other kind of reply, and blames the model. Refusing
+  // to guess costs one flag and removes that whole class of confusion.
+  if (!(args['echo'] as bool) && args['system-prompt-file'] == null) {
+    _exitWithUsageError(
+      'Choose a reply mode — the server does not pick one for you:\n'
+      '  --system-prompt-file assets/card_system_prompt.txt     '
+      'Adaptive Card replies\n'
+      '  --system-prompt-file assets/default_system_prompt.txt  '
+      'Markdown replies\n'
+      '  --echo                                                 '
+      'echo demo, no model called',
+      parser,
+    );
   }
 
   // Resolved before any work starts: a typo here should fail at launch, not

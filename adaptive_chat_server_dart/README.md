@@ -2,8 +2,9 @@
 
 A Dart/`shelf` backend for the **Adaptive Chat** SDUI demo. It authors the
 chat bubbles as Adaptive Cards, keeps conversation state in memory, and
-answers with a local **Ollama** chat model (the default) or, with `--echo`, a
-simple echo demo that calls no model at all. Pairs with the Flutter client in
+answers with a local **Ollama** chat model or, with `--echo`, a simple echo
+demo that calls no model at all. Every run names its reply mode explicitly —
+there is no default. Pairs with the Flutter client in
 [`../adaptive_chat_client`](../adaptive_chat_client).
 
 This package started as a wire-compatible port of an earlier Python/FastAPI
@@ -27,7 +28,7 @@ flowchart TB
     RESP["responder.dart · Responder(reply(text, history))"]
     ECHO["EchoResponder\n'Did you just say: ...'"]
     OLLAMA["ollama_responder.dart · OllamaResponder\nPOST {url}/api/chat"]
-    PROMPT["assets/card_system_prompt.txt (default)\n(or --system-prompt-file)\nre-read per request"]
+    PROMPT["--system-prompt-file (required)\ncard_system_prompt.txt or default_system_prompt.txt\nre-read per request"]
     ROUTES --> STORE
     ROUTES --> CARDS
     ROUTES --> RESP
@@ -105,7 +106,7 @@ second one.
 | `status.dart`                             | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                                                                                                                    |
 | `ollama_responder.dart`                   | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                                                                                                            |
 | `assets/default_system_prompt.txt`        | Bundled **Markdown** system prompt — opt in via `--system-prompt-file assets/default_system_prompt.txt`.                                                                                                                                                  |
-| `assets/card_system_prompt.txt`           | Bundled **card** system prompt — the default; no flag needed.                                                                                                                                                                                             |
+| `assets/card_system_prompt.txt`           | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                                                                                                         |
 | `assets/card_schema.json`                 | Bundled schema for `--json-format schema`.                                                                                                                                                                                                                |
 | `assets/expired_conversation_notice.json` | Bundled notice card body for an auto-vivified (expired) conversation.                                                                                                                                                                                     |
 | `cli.dart`                                | `buildArgParser()` / `resolveLogLevel()` — the flag set, defaults, and allowed values. In `lib/` so the CLI surface is reachable from tests.                                                                                                              |
@@ -114,9 +115,15 @@ second one.
 ### Responder selection
 
 `buildResponder(...)` returns an `OllamaResponder` when it is given a URL, and
-an `EchoResponder` when the URL is `null`. `--ollama-url` defaults to
-`http://127.0.0.1:11434`, so the server talks to Ollama unless you pass
-`--echo`, which withholds the URL and selects the echo demo.
+an `EchoResponder` when the URL is `null`. `--echo` withholds the URL and
+selects the echo demo; otherwise the server talks to Ollama at `--ollama-url`
+(default `http://127.0.0.1:11434`).
+
+The server refuses to start unless the invocation names a reply mode — either
+`--system-prompt-file` or `--echo`. That is deliberate: the bundled prompts
+produce 8/8 cards versus 0/8 on the same model, so any implicit choice
+guarantees somebody eventually gets the other kind of reply and blames the
+model.
 
 ### Conversation context
 
@@ -190,12 +197,14 @@ Every Ollama request is prefixed with a `{"role": "system", ...}` message so
 the model's behavior and output formatting can be tuned without code changes.
 The prompt text comes from a file:
 
-- **Source.** `--system-prompt-file <path>`. When omitted, the bundled
-  [`assets/card_system_prompt.txt`](assets/card_system_prompt.txt) is used, so
-  replies are Adaptive Cards by default. Pass
+- **Source.** `--system-prompt-file <path>`, and it is **required** unless you
+  pass `--echo`. There is no default: the two bundled prompts produce entirely
+  different output — 8/8 cards versus 0/8 on the same model at `t=0` — so the
+  server makes you name one rather than guessing. Use
+  [`assets/card_system_prompt.txt`](assets/card_system_prompt.txt) for Adaptive
+  Cards or
   [`assets/default_system_prompt.txt`](assets/default_system_prompt.txt) for
-  Markdown-only replies — the two produce entirely different output, measured
-  at 8/8 cards versus 0/8 on the same model at `t=0`.
+  Markdown.
 - **Live reload.** The file is re-read on **every request**, so editing the
   active prompt file takes effect on the next turn without restarting the
   server.
@@ -436,7 +445,7 @@ sequenceDiagram
 
 ```bash
 fvm dart pub get
-fvm dart run bin/server.dart
+fvm dart run bin/server.dart --system-prompt-file assets/card_system_prompt.txt
 fvm dart run bin/server.dart --help   # every flag, with defaults
 ```
 
@@ -520,16 +529,17 @@ is invalid JSON — so streaming would benefit text replies only, and would
 need either a visible bubble swap when a finished reply turns out to be a
 card, or committing to a mode up front. Treated as an enhancement, not a gap.
 
-## Ollama (the default)
+## Ollama
 
-The server calls a local [Ollama](https://ollama.com) chat model unless told
-otherwise, so it needs one running:
+Unless you pass `--echo`, the server calls a local
+[Ollama](https://ollama.com) chat model, so it needs one running:
 
 ```bash
 ollama pull qwen2.5-coder:7b   # once, if you haven't already (the default model)
 ollama serve                   # if it isn't already running
 
-fvm dart run bin/server.dart   # --ollama-url defaults to http://127.0.0.1:11434
+fvm dart run bin/server.dart --system-prompt-file assets/card_system_prompt.txt
+# --ollama-url defaults to http://127.0.0.1:11434
 ```
 
 If Ollama is unreachable the server still starts, logs a `SEVERE` preflight
