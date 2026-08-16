@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Added: multi-turn (`With history`) results for the six models that already
+  had cold-start numbers. The column previously had one value out of fourteen,
+  which let cold-start figures read as though they described real
+  conversations. Measured with `choiceset_ab.dart` at `t=0`, `--samples 1`,
+  one model resident at a time.
 - Fixed: an ongoing Markdown conversation talked the model out of cards
   entirely. The escape hatch was keyed on confidence ("if you are unsure
   whether a card helps"), and two prose turns are enough to make it unsure —
