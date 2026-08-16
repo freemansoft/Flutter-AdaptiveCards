@@ -28,6 +28,9 @@ decision, not a pass/fail gate.
 All accept `--model`, `--url`, `--samples`, and `-h`. Defaults come from the
 server's own constants, so a bare run probes the current default model.
 
+`prompt_ab.dart --prompts <file>` runs your own set — one prompt per line.
+The built-in set is code-flavoured and cannot exercise other shapes.
+
 ```sh
 cd adaptive_chat_server_dart
 ollama serve                                   # if not already running

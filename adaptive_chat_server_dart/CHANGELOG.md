@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Added: `prompt_ab.dart --prompts <file>` runs an external prompt set. The
+  built-in list is code-flavoured and could not express the comparison or
+  options shapes, so every investigation had to work around it.
 - Added: `choiceset_ab.dart`, a shape-aware probe for pick-from-a-set
   questions. It sends prior prose turns and requires a card containing an
   `Input.ChoiceSet`, because the generic sets score a tidy Markdown list of
