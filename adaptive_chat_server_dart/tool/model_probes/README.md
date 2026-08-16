@@ -15,14 +15,14 @@ decision, not a pass/fail gate.
 
 ## The scripts
 
-| Script                    | Question it answers                                                       |
-| ------------------------- | ------------------------------------------------------------------------- |
-| `temperature_matrix.dart` | Does this model handle everyday card requests, across three temperatures? |
-| `temperature_stress.dart` | Which temperature survives the hard cases, and is the output stable?      |
-| `json_format_probe.dart`  | Does this model honor Ollama's `format` constraint at all?                |
-| `dump_reply.dart`         | What did the model _literally_ emit, byte for byte?                       |
-| `prompt_ab.dart`          | Does an edited card system prompt beat the one we ship?                   |
-| `probe_support.dart`      | Shared plumbing — not a probe.                                            |
+| Script                    | Question it answers                                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------- |
+| `temperature_matrix.dart` | Does this model handle everyday card requests, across three temperatures?                   |
+| `temperature_stress.dart` | Which temperature survives the hard cases, and is the output stable?                        |
+| `json_format_probe.dart`  | Does this model honor Ollama's `format` constraint at all?                                  |
+| `dump_reply.dart`         | What did the model _literally_ emit, byte for byte? (use `--history` to replay prior turns) |
+| `prompt_ab.dart`          | Does an edited card system prompt beat the one we ship?                                     |
+| `probe_support.dart`      | Shared plumbing — not a probe.                                                              |
 
 All accept `--model`, `--url`, `--samples`, and `-h`. Defaults come from the
 server's own constants, so a bare run probes the current default model.
@@ -35,6 +35,11 @@ fvm dart run tool/model_probes/temperature_matrix.dart --model qwen2.5-coder:7b
 
 Use `127.0.0.1`, not `localhost` — Ollama binds IPv4 while macOS often
 resolves `localhost` to IPv6 first. That is the default here.
+
+`dump_reply.dart --history <file>` replays prior turns the way the server
+does. Sets 1–3 are all single-turn, so a bug that only appears after a few
+turns of conversation is invisible to them — reach for `--history` before
+concluding a reported bug does not reproduce.
 
 ## How a reply is judged
 

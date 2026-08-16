@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Added: `dump_reply.dart --history <file>` (repeatable) replays prior
+  conversation turns the way `OllamaResponder` does. Every probe was
+  single-turn while the server always sends history, so any failure triggered
+  by an ongoing conversation was structurally invisible to the whole suite.
 - **Breaking:** the server no longer has a default reply mode and refuses to
   start without one. Every invocation names `--system-prompt-file` (the card
   prompt for Adaptive Cards, the Markdown prompt for prose) or `--echo` for the
