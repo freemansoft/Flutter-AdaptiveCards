@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+- Fixed: an ongoing Markdown conversation talked the model out of cards
+  entirely. The escape hatch was keyed on confidence ("if you are unsure
+  whether a card helps"), and two prose turns are enough to make it unsure —
+  measured 2/12 on options questions with prior prose turns on
+  `qwen2.5-coder:7b` at `t=0`. The hatch is now keyed on capability ("if no
+  element type fits"), the prompt says to judge the current question on its
+  own, and pick-from-a-set questions are named explicitly as ChoiceSet
+  questions. Measured on `qwen2.5-coder:7b` at `t=0`: 2/12 → 6/12 with
+  history (`choiceset_ab.dart --samples 2`), stress (`temperature_stress.dart
+  --samples 2`, 10/10 at both `t=0` and `t=0.6`) and code A/B
+  (`prompt_ab.dart --samples 1`, 8/8, including the closure case Task 6
+  regressed) unregressed.
 - Measured, not promoted: tried adding a paragraph telling the model a
   two-part request ("compare A and B, then tell me which you'd pick") is
   still one message, plus a matching pre-send check-0 clause, to fix a
