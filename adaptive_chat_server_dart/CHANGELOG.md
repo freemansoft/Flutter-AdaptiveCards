@@ -4,7 +4,7 @@
 
 - Fixed: findings from the final whole-branch review. `ModelBehavior.md`'s
   six-model history sweep (2026-08-16) now says explicitly it was measured
-  *after* Task 7's escape-hatch fix was already promoted, both in the sweep's
+  _after_ Task 7's escape-hatch fix was already promoted, both in the sweep's
   own paragraph and as a note next to the `With history` column, so the
   6/12 (`--samples 2`) cell for `qwen2.5-coder:7b` no longer reads as the
   odd one out among the other `N/6` (`--samples 1`) cells; that cell is now
