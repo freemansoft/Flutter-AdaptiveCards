@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+- Measured, not promoted: tried adding a paragraph telling the model a
+  two-part request ("compare A and B, then tell me which you'd pick") is
+  still one message, plus a matching pre-send check-0 clause, to fix a
+  reported card-then-loose-paragraph failure. On `qwen2.5-coder:7b` at
+  `t=0` the candidate tied baseline on the compare-and-comment set
+  (10/10 → 10/10 — Task 2's corrected `judgeReply` already resolves the
+  originally-reported failure, so there was no headroom left to measure an
+  improvement against) and it _improved_ the stress set's `t=0.6` "mixed"
+  compare-then-choice-set case (9/10 → 10/10, `t=0` unchanged at 10/10).
+  But the Step 4 regression check on the built-in code A/B set caught a
+  real, reproducible regression the compare-and-comment set could not see:
+  "what is a closure? show an example" went from a passing plain-Markdown
+  reply to a `prose-with-card` reply — raw JSON shown to the user — 8/8 →
+  7/8, confirmed deterministic by repeating that one prompt 3 times at
+  `t=0` (baseline 3/3 pass, candidate 0/3 pass). Per the promote-only-if-
+  better rule, the candidate wording was reverted and not shipped;
+  `assets/card_system_prompt.txt` is unchanged. The trade-off (fix an
+  already-fixed case, break an unrelated one) is not worth taking, so this
+  wording is not something to retry without a materially different
+  approach.
 - Added: `prompt_ab.dart --prompts <file>` runs an external prompt set. The
   built-in list is code-flavoured and could not express the comparison or
   options shapes, so every investigation had to work around it.
