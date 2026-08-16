@@ -3,6 +3,20 @@
 ## [Unreleased]
 
 - Added: `ModelBehavior.md` now records the first probe of
+  `nemotron-3.5-lightning:30b` (23.7 GB), previously blank in every column.
+  Measured 2026-08-16, one model resident at a time, card system prompt,
+  `--samples 1`: everyday set 6/7 · 6/7 · 5/7 across `t=0`/`0.2`/`0.6`
+  (`temperature_matrix.dart`, the weakest large-candidate everyday score so
+  far — `table` fails at all three temperatures rather than only `t=0.6`),
+  stress set 3/5 at `t=0` and 4/5 at `t=0.6` (`temperature_stress.dart`, the
+  best large-candidate stress score so far, three failures: two truncated
+  `bigtable` responses and one last-character `nested` malformation), and
+  0/6 with two prior prose turns (`choiceset_ab.dart`, `t=0`) — a total
+  collapse to prose on every prompt. A weaker everyday score and a stronger
+  stress score than either `nemotron` 30B build, on the same model, land on
+  opposite sides of the large-candidate ranking without predicting its
+  total with-history collapse.
+- Added: `ModelBehavior.md` now records the first probe of
   `nemotron-3-nano:30b` (22.6 GB, the Ollama-library build), previously
   blank in every column. Measured 2026-08-16, one model resident at a time,
   card system prompt, `--samples 1`: everyday set 7/7 · 7/7 · 6/7 across
