@@ -32,17 +32,36 @@ Future<void> main(List<String> argv) async {
     ..addOption('model')
     ..addOption('url')
     ..addOption('samples')
+    ..addMultiOption(
+      'history',
+      help:
+          'File whose contents become one prior turn. Repeatable; turns '
+          'alternate user, assistant, user, ... in the order given.',
+    )
     ..addFlag('help', abbr: 'h', negatable: false);
   final parsed = promptParser.parse(argv);
-  // Hand `parseProbeArgs` only the options it declares. Passing the raw argv
-  // made it reject `--prompt` -- the one option this probe exists for, and
-  // the one its own usage example passes -- because that parser knows only
-  // --model/--url/--samples.
+  if (parsed['help'] as bool) {
+    stdout.writeln(promptParser.usage);
+    return;
+  }
+  // Only this script accepts --prompt/--history; the shared parser rejects
+  // options it does not declare, which is what broke --prompt.
   final args = parseProbeArgs([
     for (final option in ['model', 'url', 'samples'])
       if (parsed[option] != null) ...['--$option', parsed[option] as String],
   ], defaultSamples: 1);
   final userPrompt = parsed['prompt'] as String;
+  final history = parsed['history'] as List<String>;
+
+  final messages = <Map<String, String>>[
+    {'role': 'system', 'content': loadCardSystemPrompt()},
+    for (final (i, turnFile) in history.indexed)
+      {
+        'role': i.isEven ? 'user' : 'assistant',
+        'content': File(turnFile).readAsStringSync(),
+      },
+    {'role': 'user', 'content': userPrompt},
+  ];
 
   final client = HttpClient()..idleTimeout = const Duration(minutes: 5);
   final request = await client.postUrl(Uri.parse('${args.url}/api/chat'));
@@ -50,10 +69,7 @@ Future<void> main(List<String> argv) async {
   request.write(
     jsonEncode({
       'model': args.model,
-      'messages': [
-        {'role': 'system', 'content': loadCardSystemPrompt()},
-        {'role': 'user', 'content': userPrompt},
-      ],
+      'messages': messages,
       'stream': false,
       'think': false,
       'keep_alive': '30m',
@@ -82,6 +98,7 @@ Future<void> main(List<String> argv) async {
       '${r'\n'.allMatches(content).length}',
     )
     ..writeln('contains ``` fence   : ${content.contains('```')}')
+    ..writeln('history turns        : ${history.length}')
     ..writeln('verdict              : ${judgeReply(content, 0).label}');
   client.close();
 }

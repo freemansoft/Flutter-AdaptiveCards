@@ -39,24 +39,26 @@ curl -s http://127.0.0.1:11434/api/tags | python3 -c "import sys,json;[print(m['
 
 Sorted by model name, and within a family by parameter count ascending (so `nemotron-3-nano:4b` precedes `:30b`), which makes a tag quick to find. Role and verdict, not position, carry the meaning.
 
-| Model                                             | Weights | 16 GB | Role                   | Cold start                                                 | With history                     |
-| ------------------------------------------------- | ------- | ----- | ---------------------- | ---------------------------------------------------------- | -------------------------------- |
-| gpt-oss:20b                                       | 12.8 GB | ❌    | top 3 (`launch.json`)  | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | — not yet probed                 |
-| granite4.1:3b                                     | 2.0 GB  | ✅    | candidate              | ❌ everyday 4/7 · stress 4/5 `t=0`, 3/5 `t=0.6` — weakest  | — not yet probed                 |
-| granite4.1:8b                                     | 5.0 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | — not yet probed                 |
-| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                 |
-| llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate              | ✅ everyday 7/7 all temps · stress 5/5 both — clean sweep  | — not yet probed                 |
-| llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0` but **1/5** at `t=0.6`  | — not yet probed                 |
-| llama3.2:latest                                   | 1.9 GB  | ✅    | candidate              | ❌ Retired as default — failed nested and multi-select     | — not yet probed                 |
-| nemotron-3-nano:4b                                | 2.6 GB  | ✅    | candidate              | ❌ everyday 6/7 but stress **2/5** `t=0`, 1/5 `t=0.6`      | — not yet probed                 |
-| nemotron-3-nano:30b                               | 22.6 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                 |
-| nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                 |
-| qwen2.5-coder:7b                                  | 4.4 GB  | ✅    | server default + top 3 | ✅ Recommended — cleared every documented failure at `t=0` | ❌ 0/6 — drops to prose (see §4) |
-| qwen3-coder:30b                                   | 17.3 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                 |
-| qwen3.5:9b                                        | 6.1 GB  | ⚠️    | top 3 (`launch.json`)  | ⚠️ Only with thinking off; no edge over the default        | — not yet probed                 |
-| qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    | candidate              | ⚠️ Ignores `format`; better at `t=0` than its own `0.6`    | — not yet probed                 |
+| Model                                             | Weights | 16 GB | Role                   | Cold start                                                 | With history                                                      |
+| ------------------------------------------------- | ------- | ----- | ---------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------- |
+| gpt-oss:20b                                       | 12.8 GB | ❌    | top 3 (`launch.json`)  | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ✅ 6/6 choice-set                                                 |
+| granite4.1:3b                                     | 2.0 GB  | ✅    | candidate              | ❌ everyday 4/7 · stress 4/5 `t=0`, 3/5 `t=0.6` — weakest  | ⚠️ 3/6 choice-set                                                 |
+| granite4.1:8b                                     | 5.0 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ⚠️ 3/6 choice-set                                                 |
+| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                                                  |
+| llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate              | ✅ everyday 7/7 all temps · stress 5/5 both — clean sweep  | ❌ 0/6 — drops to prose                                           |
+| llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0` but **1/5** at `t=0.6`  | ❌ 0/6 — drops to prose                                           |
+| llama3.2:latest                                   | 1.9 GB  | ✅    | candidate              | ❌ Retired as default — failed nested and multi-select     | — not yet probed                                                  |
+| nemotron-3-nano:4b                                | 2.6 GB  | ✅    | candidate              | ❌ everyday 6/7 but stress **2/5** `t=0`, 1/5 `t=0.6`      | ❌ 0/6 — drops to prose                                           |
+| nemotron-3-nano:30b                               | 22.6 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                                                  |
+| nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                                                  |
+| qwen2.5-coder:7b                                  | 4.4 GB  | ✅    | server default + top 3 | ✅ Recommended — cleared every documented failure at `t=0` | ⚠️ 6/12 (`--samples 2`) after escape-hatch fix (was 2/12, see §4) |
+| qwen3-coder:30b                                   | 17.3 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                                                  |
+| qwen3.5:9b                                        | 6.1 GB  | ⚠️    | top 3 (`launch.json`)  | ⚠️ Only with thinking off; no edge over the default        | — not yet probed                                                  |
+| qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    | candidate              | ⚠️ Ignores `format`; better at `t=0` than its own `0.6`    | — not yet probed                                                  |
 
 **Cold start** is a single-turn probe. **With history** replays prior conversation turns the way the server actually does. These are different measurements and a model can pass one while failing the other — every result recorded before 2026-08-14 is a cold-start number, because no probe sent history at all.
+
+Every **With history** cell added on 2026-08-16 — all six `N/6` cells, not only `qwen2.5-coder:7b`'s `6/12` — was measured against `assets/card_system_prompt.txt` _after_ Task 7's escape-hatch re-key had already been promoted. None of these numbers is a "before" baseline for a fix still to come; read them as the current, fixed-prompt state of each model.
 
 ## Test one model at a time
 
@@ -88,6 +90,13 @@ Measured on `qwen2.5-coder:7b` at `t=0`, same eight questions, only the prompt f
 Its name is misleading: `default_system_prompt.txt` is not a default and never gets loaded unless you ask for it by name. It keeps the name because renaming an asset breaks every `--system-prompt-file` invocation already written down in docs, launch configs, and shell history.
 
 When reading a bug report, still confirm which prompt was loaded — the server logs it at startup. "The model never sends cards" now means someone named the Markdown prompt, or is running a build from before 2026-08-15, when the prompt could be implicit.
+
+Full result, `qwen2.5-coder:7b` at `t=0`, eight options questions, only the
+prompt file differing: **0/8 cards / 8/8 prose** on the default prompt versus
+**8/8 cards / 0/8 prose** on the card prompt, with zero broken cards either
+way. Six of the eight card-prompt replies contained a real `Input.ChoiceSet`;
+the other two chose a `FactSet` and a `TextBlock`, which are defensible for
+those questions.
 
 ## The card test classes
 
@@ -138,6 +147,22 @@ Two consequences worth internalising:
 - **A cold-start pass proves less than it looks.** Reproduce with history before concluding a bug is fixed, and say which condition a number came from.
 - **"Renderable prose" is not always a pass.** For an options question a tidy Markdown list renders perfectly and still fails the user, because it cannot be clicked. The generic sets score it `prose` = pass; only a shape-aware check catches it. `choiceset_ab.dart` scores strictly — the reply must be a card _containing_ an `Input.ChoiceSet`.
 
+Six more models were run through the same `choiceset_ab.dart` probe on 2026-08-16 (`t=0`, `--samples 1`, two prose turns before the question, against `assets/card_system_prompt.txt` _after_ Task 7's escape-hatch re-key below had already been promoted — these are post-fix numbers, not a "before" baseline for a fix still to come), to see whether the collapse above is specific to `qwen2.5-coder:7b` or a property of the workload. The result does not round into a tidy conclusion: `gpt-oss:20b` held up completely at ✅ 6/6, while `llama3-chatqa:8b` — the model that had swept the cold-start everyday and stress sets 7/7 and 5/5 — collapsed to ❌ 0/6, the same total-collapse pattern already on record for `qwen2.5-coder:7b`. `llama3-groq-tool-use:8b` and `nemotron-3-nano:4b` also collapsed to 0/6. `granite4.1:8b` and `granite4.1:3b` landed in between at ⚠️ 3/6, each losing half their cold-start options answers to prose. A ranking built only from cold-start numbers would have placed `llama3-chatqa:8b` above `gpt-oss:20b`; with history the order inverts. Sanity-checking the best performer, `gpt-oss:20b`, cold-start with `dump_reply.dart` confirmed the same question still returns `card[2]` with zero history — so its strength with history is a real property of the model, not an artifact of a weak cold-start baseline. History erosion is real and, across this run, the majority case: three of six models collapsed completely (0/6), two more were partially degraded (3/6), and only one of six (`gpt-oss:20b`) was unaffected — the failure mode is per-model, not a property of "local models" in general, and a model's cold-start score is not a reliable predictor of which side it lands on.
+
+Re-keying the escape hatch from confidence to capability moved
+`qwen2.5-coder:7b` from **2/12 to 6/12** on the options set with prior prose
+turns (`choiceset_ab.dart --samples 2`, `t=0`) — 3 of 6 prompts now pass both
+samples ("what are my options for deployment targets", "what environments
+can I deploy to?", "what are my options for notification frequency") while
+the other 3 still fail both samples ("which log level should I use?", "help
+me pick a database engine", "what build modes can I choose from?"). The
+2/12 baseline is this run's own live measurement, not the original
+2026-08-14 investigation's 0/6 — the same order of magnitude but not
+identical, ordinary run-to-run variance rather than a discrepancy in method.
+The fix clearly helps but does not close the gap for every phrasing tested;
+regression checks on this same prompt change (stress and code A/B) were
+clean — see the `qwen2.5-coder:7b` section above.
+
 ### Not a card test: the `format` canary
 
 `json_format_probe.dart` asks a different question — does this model honour Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.
@@ -157,6 +182,39 @@ Honors Ollama's `format` constraint, so `--json-format json|schema` is meaningfu
 Trade-off: coder models are terser on the plain-prose reply path. `qwen2.5:7b` (plain instruct, ~4.7 GB) is the better all-rounder if conversational answers matter more than maximal JSON reliability.
 
 Measured on the code-explanation failure (August 2026): hard cases 6/10 → 15/15 at `t=0` and 7/10 → 14/15 at `t=0.6` after the card system prompt gave explanations a home inside the card.
+
+**It fences its card almost every time.** Across two independent
+investigations on 2026-08-14, the model wrapped its JSON in a ` ```json `
+fence in 7/7 and 9/9 replies respectively, despite the prompt forbidding
+fences in two places. This is currently harmless — `_stripFence` recovers a
+reply that is _only_ a fence — but the detector is carrying a load the prompt
+claims it should not have to, and fence-stripping has regressed here before
+(see `a13808b`). Anything that follows the closing fence defeats the
+recovery, which is why "nothing after the closing fence" is the load-bearing
+rule rather than "no fence".
+
+**A negative result, recorded so it isn't retried.** A candidate paragraph
+teaching the prompt that a two-part request ("compare A and B, then tell me
+which you'd pick") is still one message was measured on `qwen2.5-coder:7b` at
+`t=0`. It tied baseline 10/10 on the compare-and-comment set (already at
+ceiling under the corrected `judgeReply`, so there was no headroom left to
+demonstrate an improvement) and it did improve the stress set's `t=0.6`
+"mixed" compare-then-choice-set case (9/10 → 10/10, `t=0` unchanged at
+10/10). But the built-in code A/B regression check (`prompt_ab.dart
+--samples 1`, `t=0`) caught a real, reproducible regression the
+compare-and-comment set could not see: "what is a closure? show an example"
+went from a passing plain-Markdown reply to `prose-with-card` (raw JSON shown
+to the user), 8/8 → 7/8, confirmed deterministic by repeating that one prompt
+3 times against both prompt versions (baseline 3/3 pass, candidate 0/3 pass).
+Per the promote-only-if-better rule the wording was reverted, not shipped —
+`assets/card_system_prompt.txt` is unchanged (see `CHANGELOG.md`,
+"Measured, not promoted").
+
+The escape-hatch re-key that _was_ promoted (§4, `choiceset_ab.dart
+--samples 2`, `t=0`: 2/12 → 6/12 with history) ran the same two regression
+checks clean — stress 10/10 at both `t=0` and `t=0.6`, and the code A/B set
+8/8 including the exact closure prompt the compare-and-comment candidate
+above regressed.
 
 ### Six models probed 2026-08-14 (everyday + stress, `--samples 1`)
 

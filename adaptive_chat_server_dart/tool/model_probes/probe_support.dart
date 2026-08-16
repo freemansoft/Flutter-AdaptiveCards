@@ -112,6 +112,7 @@ class ProbeOutcome {
     required this.chars,
     required this.ms,
     required this.hash,
+    required this.reply,
   });
 
   /// Whether the reply was usable — a renderable card, or clean prose.
@@ -135,6 +136,10 @@ class ProbeOutcome {
 
   /// Short digest of the reply, for spotting identical outputs across runs.
   final String hash;
+
+  /// The raw reply text, so a caller can score for a specific element rather
+  /// than only for "is it broken?".
+  final String reply;
 }
 
 /// Sends one `/api/chat` request and judges the reply.
@@ -148,6 +153,7 @@ Future<ProbeOutcome> probeOnce({
   required String model,
   required String systemPrompt,
   required String userPrompt,
+  List<String> history = const [],
   Map<String, dynamic> options = const {},
   Object? format,
 }) async {
@@ -159,6 +165,8 @@ Future<ProbeOutcome> probeOnce({
       'model': model,
       'messages': [
         {'role': 'system', 'content': systemPrompt},
+        for (final (i, turn) in history.indexed)
+          {'role': i.isEven ? 'user' : 'assistant', 'content': turn},
         {'role': 'user', 'content': userPrompt},
       ],
       'stream': false,
@@ -179,6 +187,7 @@ Future<ProbeOutcome> probeOnce({
       chars: body.length,
       ms: ms,
       hash: '-',
+      reply: body,
     );
   }
   final data = jsonDecode(body) as Map<String, dynamic>;
@@ -197,6 +206,7 @@ ProbeOutcome judgeReply(String content, int ms) {
         chars: content.length,
         ms: ms,
         hash: hash,
+        reply: content,
       );
 
   try {

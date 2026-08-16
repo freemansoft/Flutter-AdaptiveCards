@@ -2,6 +2,81 @@
 
 ## [Unreleased]
 
+- Fixed: findings from the final whole-branch review. `ModelBehavior.md`'s
+  six-model history sweep (2026-08-16) now says explicitly it was measured
+  _after_ Task 7's escape-hatch fix was already promoted, both in the sweep's
+  own paragraph and as a note next to the `With history` column, so the
+  6/12 (`--samples 2`) cell for `qwen2.5-coder:7b` no longer reads as the
+  odd one out among the other `N/6` (`--samples 1`) cells; that cell is now
+  labelled with its own sample count. `tool/model_probes/README.md`'s "What
+  these found" section gained the two probe-side findings this branch
+  actually produced — cold start not predicting multi-turn behavior, and
+  three of six models collapsing to 0/6 with prior prose turns — which its
+  own stated contract said belonged there. `-h`/`--help` now works in
+  `choiceset_ab.dart`, `prompt_ab.dart`, and `dump_reply.dart`; all three
+  declared the flag but never checked it, so it silently started a full
+  probe run instead of printing usage. `dump_reply.dart`'s `history turns`
+  summary line now aligns its colon with its siblings.
+- Added: `ModelBehavior.md` now records the `qwen2.5-coder:7b` fence rate and
+  the default-vs-card prompt comparison measured on 2026-08-14, which had
+  lived only in scratch reports until now. It also records this branch's own
+  measurements in full: the escape-hatch fix's real multi-turn numbers
+  (2/12 → 6/12 with history, `choiceset_ab.dart --samples 2`, `t=0` — not the
+  2026-08-14 investigation's original 0/6 reference figure, which was
+  superseded once the fix actually shipped and was re-measured) and the
+  compare-and-comment wording's negative result (tied baseline, then caught a
+  reproducible regression, not promoted). This is exactly the loss the file
+  exists to prevent.
+- Added: multi-turn (`With history`) results for the six models that already
+  had cold-start numbers. The column previously had one value out of fourteen,
+  which let cold-start figures read as though they described real
+  conversations. Measured with `choiceset_ab.dart` at `t=0`, `--samples 1`,
+  one model resident at a time.
+- Fixed: an ongoing Markdown conversation talked the model out of cards
+  entirely. The escape hatch was keyed on confidence ("if you are unsure
+  whether a card helps"), and two prose turns are enough to make it unsure —
+  measured 2/12 on options questions with prior prose turns on
+  `qwen2.5-coder:7b` at `t=0`. The hatch is now keyed on capability ("if no
+  element type fits"), the prompt says to judge the current question on its
+  own, and pick-from-a-set questions are named explicitly as ChoiceSet
+  questions. Measured on `qwen2.5-coder:7b` at `t=0`: 2/12 → 6/12 with
+  history (`choiceset_ab.dart --samples 2`). Regression checks stayed clean:
+  stress (`temperature_stress.dart --samples 2`) held 10/10 at both `t=0`
+  and `t=0.6`, and code A/B (`prompt_ab.dart --samples 1`) held 8/8,
+  including the closure case Task 6 regressed.
+- Measured, not promoted: tried adding a paragraph telling the model a
+  two-part request ("compare A and B, then tell me which you'd pick") is
+  still one message, plus a matching pre-send check-0 clause, to fix a
+  reported card-then-loose-paragraph failure. On `qwen2.5-coder:7b` at
+  `t=0` the candidate tied baseline on the compare-and-comment set
+  (10/10 → 10/10 — Task 2's corrected `judgeReply` already resolves the
+  originally-reported failure, so there was no headroom left to measure an
+  improvement against) and it _improved_ the stress set's `t=0.6` "mixed"
+  compare-then-choice-set case (9/10 → 10/10, `t=0` unchanged at 10/10).
+  But the Step 4 regression check on the built-in code A/B set caught a
+  real, reproducible regression the compare-and-comment set could not see:
+  "what is a closure? show an example" went from a passing plain-Markdown
+  reply to a `prose-with-card` reply — raw JSON shown to the user — 8/8 →
+  7/8, confirmed deterministic by repeating that one prompt 3 times at
+  `t=0` (baseline 3/3 pass, candidate 0/3 pass). Per the promote-only-if-
+  better rule, the candidate wording was reverted and not shipped;
+  `assets/card_system_prompt.txt` is unchanged. The trade-off (fix an
+  already-fixed case, break an unrelated one) is not worth taking, so this
+  wording is not something to retry without a materially different
+  approach.
+- Added: `prompt_ab.dart --prompts <file>` runs an external prompt set. The
+  built-in list is code-flavoured and could not express the comparison or
+  options shapes, so every investigation had to work around it.
+- Added: `choiceset_ab.dart`, a shape-aware probe for pick-from-a-set
+  questions. It sends prior prose turns and requires a card containing an
+  `Input.ChoiceSet`, because the generic sets score a tidy Markdown list of
+  options as a passing `prose` reply while the user is left with something
+  they cannot click. `probeOnce` gained an optional `history` parameter and
+  `ProbeOutcome` now carries the raw `reply`.
+- Added: `dump_reply.dart --history <file>` (repeatable) replays prior
+  conversation turns the way `OllamaResponder` does. Every probe was
+  single-turn while the server always sends history, so any failure triggered
+  by an ongoing conversation was structurally invisible to the whole suite.
 - **Breaking:** the server no longer has a default reply mode and refuses to
   start without one. Every invocation names `--system-prompt-file` (the card
   prompt for Adaptive Cards, the Markdown prompt for prose) or `--echo` for the

@@ -326,7 +326,7 @@ Run: `cd adaptive_chat_server_dart && fvm dart run tool/_verify_judge.dart`
 
 Expected:
 
-```
+```txt
 wrapped -> prose-with-card (user sees raw JSON) (ok=false)
 bare    -> card[1] (ok=true)
 predicate on wrapped: true
@@ -813,7 +813,7 @@ Record the baseline number. Expect failures of the form `invalid JSON ... at the
 
 In `/tmp/candidate.txt`, add this paragraph immediately after the opening "Choose ONE of two reply shapes per turn…" block:
 
-````
+````txt
 This is easiest to get wrong when one request asks for two things — "compare A
 and B, then tell me which to pick", "show the table, then explain your
 reasoning", "summarize first, then show them side by side". That is still ONE
@@ -825,7 +825,7 @@ the card and the user sees the JSON.
 
 Extend pre-send check `0.` so it names this case. Change the sentence beginning "second code block, no "This card shows…"" to end:
 
-```
+```txt
    second code block, no "This card shows…", and no closing paragraph of
    recommendation, reasoning, or summary. If you have written the JSON and
    still have something to say, do not append it: move it into a TextBlock
@@ -912,7 +912,7 @@ cd adaptive_chat_server_dart && cp assets/card_system_prompt.txt /tmp/candidate7
 
 In `/tmp/candidate7.txt`, **replace** the existing paragraph:
 
-```
+```txt
 If you are unsure whether a card helps, use reply shape 2 (plain Markdown)
 instead — a malformed card is shown to the user as raw JSON text, which is far
 worse than a plain Markdown answer.
@@ -920,7 +920,7 @@ worse than a plain Markdown answer.
 
 with:
 
-```
+```txt
 Decide the shape from the CURRENT question by itself. Having answered in
 Markdown earlier in this conversation is NOT a reason to answer in Markdown now
 — a question that asks the user to pick from a set gets a card even when every
