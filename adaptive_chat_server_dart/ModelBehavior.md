@@ -44,7 +44,7 @@ Sorted by model name, and within a family by parameter count ascending (so `nemo
 | gpt-oss:20b                                       | 12.8 GB | ❌    | top 3 (`launch.json`)  | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ✅ 6/6 choice-set                                                 |
 | granite4.1:3b                                     | 2.0 GB  | ✅    | candidate              | ❌ everyday 4/7 · stress 4/5 `t=0`, 3/5 `t=0.6` — weakest  | ⚠️ 3/6 choice-set                                                 |
 | granite4.1:8b                                     | 5.0 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ⚠️ 3/6 choice-set                                                 |
-| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                                                  |
+| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | ❌ everyday 7/7 · stress 3/5 `t=0`, 3/5 `t=0.6`             | ❌ 1/6 choice-set                                                 |
 | llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate              | ✅ everyday 7/7 all temps · stress 5/5 both — clean sweep  | ❌ 0/6 — drops to prose                                           |
 | llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0` but **1/5** at `t=0.6`  | ❌ 0/6 — drops to prose                                           |
 | llama3.2:latest                                   | 1.9 GB  | ✅    | candidate              | ❌ Retired as default — failed nested and multi-select     | — not yet probed                                                  |
@@ -149,6 +149,8 @@ Two consequences worth internalising:
 
 Six more models were run through the same `choiceset_ab.dart` probe on 2026-08-16 (`t=0`, `--samples 1`, two prose turns before the question, against `assets/card_system_prompt.txt` _after_ Task 7's escape-hatch re-key below had already been promoted — these are post-fix numbers, not a "before" baseline for a fix still to come), to see whether the collapse above is specific to `qwen2.5-coder:7b` or a property of the workload. The result does not round into a tidy conclusion: `gpt-oss:20b` held up completely at ✅ 6/6, while `llama3-chatqa:8b` — the model that had swept the cold-start everyday and stress sets 7/7 and 5/5 — collapsed to ❌ 0/6, the same total-collapse pattern already on record for `qwen2.5-coder:7b`. `llama3-groq-tool-use:8b` and `nemotron-3-nano:4b` also collapsed to 0/6. `granite4.1:8b` and `granite4.1:3b` landed in between at ⚠️ 3/6, each losing half their cold-start options answers to prose. A ranking built only from cold-start numbers would have placed `llama3-chatqa:8b` above `gpt-oss:20b`; with history the order inverts. Sanity-checking the best performer, `gpt-oss:20b`, cold-start with `dump_reply.dart` confirmed the same question still returns `card[2]` with zero history — so its strength with history is a real property of the model, not an artifact of a weak cold-start baseline. History erosion is real and, across this run, the majority case: three of six models collapsed completely (0/6), two more were partially degraded (3/6), and only one of six (`gpt-oss:20b`) was unaffected — the failure mode is per-model, not a property of "local models" in general, and a model's cold-start score is not a reliable predictor of which side it lands on.
 
+A seventh model, `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` (22.9 GB), was run through the same `choiceset_ab.dart` probe separately on 2026-08-16, as part of a follow-up sweep of large models that had never been probed at all — same conditions (`t=0`, `--samples 1`, two prose turns before the question, `assets/card_system_prompt.txt` post-Task-7). It scored ❌ 1/6: one pass ("what are my options for deployment targets" → `card[2]`), two prose fails ("which log level should I use?", "what build modes can I choose from?"), one valid card that omitted the `Input.ChoiceSet` ("what are my options for notification frequency" → `card[1]`), and two broken-JSON fails ("what environments can I deploy to?", "help me pick a database engine"). Unlike `llama3-chatqa:8b`'s collapse from a strong cold start, this model's cold start already flagged fragility — it only managed 3/5 on the stress set at both temperatures (see the large-model table above) — so cold start and multi-turn behavior point the same direction here rather than diverging.
+
 Re-keying the escape hatch from confidence to capability moved
 `qwen2.5-coder:7b` from **2/12 to 6/12** on the options set with prior prose
 turns (`choiceset_ab.dart --samples 2`, `t=0`) — 3 of 6 prompts now pass both
@@ -236,6 +238,30 @@ Three things this run showed:
 - **`gpt-oss:20b`, a top-three model, had never been probed at all.** It is respectable but not better than models a third its size, which is worth knowing before recommending it.
 
 All of these are **cold-start** numbers at `--samples 1`. None has been run with conversation history, and a single sample at `t=0.6` is noisy — treat the two 1/5 results as a flag to re-run, not a settled verdict.
+
+### Large candidate models probed 2026-08-16 (everyday + stress, `--samples 1`)
+
+Run one model resident at a time, card system prompt, on the 64 GB M1. This
+table is the large-model (17-24 GB) counterpart to the 2026-08-14 table
+above — same methodology, different date, extend it as more of these get
+probed.
+
+| Model                                              | Everyday `t=0` / `0.2` / `0.6` | Stress `t=0` | Stress `t=0.6` |
+| --------------------------------------------------- | ------------------------------- | ------------- | --------------- |
+| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest    | 7/7 · 7/7 · 6/7                 | 3/5           | 3/5             |
+
+`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` (22.9 GB) swept the
+everyday set at `t=0`/`t=0.2` and only lost one case at `t=0.6` (a truncated
+table — `Unexpected end of input`). The stress set is where it struggles:
+3/5 at **both** temperatures, with `bigtable` and `mixed` failing at both
+`t=0` and `t=0.6`. Those two failures share a pattern distinct from the
+truncation above — an extra closing `]` after the last element (e.g.
+`"wrap":true}]]}]`), as if the model occasionally double-wraps the final
+item in an array. `codeblock`, `nested`, and `multiline` were clean at both
+temperatures. Cold start alone would rank this model mid-pack — better than
+`granite4.1:3b`, worse than the `llama3-chatqa:8b` / `gpt-oss:20b` /
+`granite4.1:8b` tier — with the everyday set again failing to predict the
+stress-set weakness, consistent with the 2026-08-14 finding above.
 
 ### `qwen3.6:27b-coding-nvfp4`
 

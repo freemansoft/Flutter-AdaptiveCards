@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Added: `ModelBehavior.md` now records the first probe of
+  `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` (22.9 GB), previously
+  blank in every column. Measured 2026-08-16, one model resident at a time,
+  card system prompt, `--samples 1`: everyday set 7/7 · 7/7 · 6/7 across
+  `t=0`/`0.2`/`0.6` (`temperature_matrix.dart`), stress set 3/5 at both `t=0`
+  and `t=0.6` (`temperature_stress.dart`, `bigtable` and `mixed` failing at
+  both temperatures with a repeated extra-closing-bracket pattern), and
+  1/6 with two prior prose turns (`choiceset_ab.dart`, `t=0`). Unlike
+  `llama3-chatqa:8b`'s collapse from a strong cold start, this model's
+  cold-start stress weakness already predicted the multi-turn result.
 - Fixed: findings from the final whole-branch review. `ModelBehavior.md`'s
   six-model history sweep (2026-08-16) now says explicitly it was measured
   _after_ Task 7's escape-hatch fix was already promoted, both in the sweep's
