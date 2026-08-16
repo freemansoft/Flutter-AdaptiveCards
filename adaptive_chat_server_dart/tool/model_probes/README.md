@@ -22,6 +22,7 @@ decision, not a pass/fail gate.
 | `json_format_probe.dart`  | Does this model honor Ollama's `format` constraint at all?                                  |
 | `dump_reply.dart`         | What did the model _literally_ emit, byte for byte? (use `--history` to replay prior turns) |
 | `prompt_ab.dart`          | Does an edited card system prompt beat the one we ship?                                     |
+| `choiceset_ab.dart`       | Does a pick-from-a-set question yield a clickable card?                                     |
 | `probe_support.dart`      | Shared plumbing — not a probe.                                                              |
 
 All accept `--model`, `--url`, `--samples`, and `-h`. Defaults come from the

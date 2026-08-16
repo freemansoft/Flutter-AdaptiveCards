@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Added: `choiceset_ab.dart`, a shape-aware probe for pick-from-a-set
+  questions. It sends prior prose turns and requires a card containing an
+  `Input.ChoiceSet`, because the generic sets score a tidy Markdown list of
+  options as a passing `prose` reply while the user is left with something
+  they cannot click. `probeOnce` gained an optional `history` parameter and
+  `ProbeOutcome` now carries the raw `reply`.
 - Added: `dump_reply.dart --history <file>` (repeatable) replays prior
   conversation turns the way `OllamaResponder` does. Every probe was
   single-turn while the server always sends history, so any failure triggered
