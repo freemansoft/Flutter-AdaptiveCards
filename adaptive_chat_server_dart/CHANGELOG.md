@@ -3,6 +3,19 @@
 ## [Unreleased]
 
 - Added: `ModelBehavior.md` now records the first probe of
+  `nemotron-3-nano:30b` (22.6 GB, the Ollama-library build), previously
+  blank in every column. Measured 2026-08-16, one model resident at a time,
+  card system prompt, `--samples 1`: everyday set 7/7 · 7/7 · 6/7 across
+  `t=0`/`0.2`/`0.6` (`temperature_matrix.dart`, the same single `t=0.6`
+  truncated-table loss as the `hf.co/unsloth` build), stress set 2/5 at
+  `t=0` and 1/5 at `t=0.6` (`temperature_stress.dart`, seven failures
+  spanning three distinct malformation types rather than one shared
+  pattern), and 5/6 with two prior prose turns (`choiceset_ab.dart`,
+  `t=0`). Despite a weaker cold start than the `hf.co/unsloth` build of the
+  same nominal model, this build scored far better with history (5/6 vs
+  1/6) — the two builds land at opposite ends of the with-history scale
+  under identical conditions.
+- Added: `ModelBehavior.md` now records the first probe of
   `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` (22.9 GB), previously
   blank in every column. Measured 2026-08-16, one model resident at a time,
   card system prompt, `--samples 1`: everyday set 7/7 · 7/7 · 6/7 across
