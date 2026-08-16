@@ -2,8 +2,9 @@
 
 A Dart/`shelf` backend for the **Adaptive Chat** SDUI demo. It authors the
 chat bubbles as Adaptive Cards, keeps conversation state in memory, and
-answers either with a simple **echo** (default) or a local **Ollama** chat
-model. Pairs with the Flutter client in
+answers with a local **Ollama** chat model or, with `--echo`, a simple echo
+demo that calls no model at all. Every run names its reply mode explicitly —
+there is no default. Pairs with the Flutter client in
 [`../adaptive_chat_client`](../adaptive_chat_client).
 
 This package started as a wire-compatible port of an earlier Python/FastAPI
@@ -27,12 +28,12 @@ flowchart TB
     RESP["responder.dart · Responder(reply(text, history))"]
     ECHO["EchoResponder\n'Did you just say: ...'"]
     OLLAMA["ollama_responder.dart · OllamaResponder\nPOST {url}/api/chat"]
-    PROMPT["assets/default_system_prompt.txt\n(or --system-prompt-file)\nre-read per request"]
+    PROMPT["--system-prompt-file (required)\ncard_system_prompt.txt or default_system_prompt.txt\nre-read per request"]
     ROUTES --> STORE
     ROUTES --> CARDS
     ROUTES --> RESP
-    RESP -. buildResponder(--ollama-url) .-> ECHO
-    RESP -. buildResponder(--ollama-url) .-> OLLAMA
+    RESP -. buildResponder(--echo) .-> ECHO
+    RESP -. buildResponder(default) .-> OLLAMA
     PROMPT -. system message .-> OLLAMA
   end
   CLIENT["adaptive_chat_client (Flutter)"] -->|"POST interaction (X-Interaction-Id, PlainJson body)"| ROUTES
@@ -104,17 +105,25 @@ second one.
 | `stats.dart`                              | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                                                                                                            |
 | `status.dart`                             | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                                                                                                                    |
 | `ollama_responder.dart`                   | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                                                                                                            |
-| `assets/default_system_prompt.txt`        | Bundled default system prompt.                                                                                                                                                                                                                            |
+| `assets/default_system_prompt.txt`        | Bundled **Markdown** system prompt — opt in via `--system-prompt-file assets/default_system_prompt.txt`.                                                                                                                                                  |
 | `assets/card_system_prompt.txt`           | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                                                                                                         |
 | `assets/card_schema.json`                 | Bundled schema for `--json-format schema`.                                                                                                                                                                                                                |
 | `assets/expired_conversation_notice.json` | Bundled notice card body for an auto-vivified (expired) conversation.                                                                                                                                                                                     |
 | `cli.dart`                                | `buildArgParser()` / `resolveLogLevel()` — the flag set, defaults, and allowed values. In `lib/` so the CLI surface is reachable from tests.                                                                                                              |
-| `bin/server.dart`                         | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder from `--ollama-url` and starts `shelf_io.serve`.                                                                                                                               |
+| `bin/server.dart`                         | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder (Ollama by default, echo with `--echo`) and starts `shelf_io.serve`.                                                                                                           |
 
 ### Responder selection
 
-`buildResponder(...)` returns an `OllamaResponder` when `--ollama-url` is
-given, otherwise an `EchoResponder`.
+`buildResponder(...)` returns an `OllamaResponder` when it is given a URL, and
+an `EchoResponder` when the URL is `null`. `--echo` withholds the URL and
+selects the echo demo; otherwise the server talks to Ollama at `--ollama-url`
+(default `http://127.0.0.1:11434`).
+
+The server refuses to start unless the invocation names a reply mode — either
+`--system-prompt-file` or `--echo`. That is deliberate: the bundled prompts
+produce 8/8 cards versus 0/8 on the same model, so any implicit choice
+guarantees somebody eventually gets the other kind of reply and blames the
+model.
 
 ### Conversation context
 
@@ -188,9 +197,14 @@ Every Ollama request is prefixed with a `{"role": "system", ...}` message so
 the model's behavior and output formatting can be tuned without code changes.
 The prompt text comes from a file:
 
-- **Source.** `--system-prompt-file <path>`. When omitted, the bundled
-  [`assets/default_system_prompt.txt`](assets/default_system_prompt.txt) is
-  used.
+- **Source.** `--system-prompt-file <path>`, and it is **required** unless you
+  pass `--echo`. There is no default: the two bundled prompts produce entirely
+  different output — 8/8 cards versus 0/8 on the same model at `t=0` — so the
+  server makes you name one rather than guessing. Use
+  [`assets/card_system_prompt.txt`](assets/card_system_prompt.txt) for Adaptive
+  Cards or
+  [`assets/default_system_prompt.txt`](assets/default_system_prompt.txt) for
+  Markdown.
 - **Live reload.** The file is re-read on **every request**, so editing the
   active prompt file takes effect on the next turn without restarting the
   server.
@@ -224,9 +238,9 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
 
 The card prompt's palette is intentionally small:
 
-- **Inputs** — `Input.Date`, `Input.ChoiceSet` (`style: compact` /
+- **Inputs** — `Input.Date`, `Input.Toggle`, `Input.ChoiceSet` (`style: compact` /
   `expanded`, `isMultiSelect`), `Input.Text`, `Input.Number`, `Input.Time`.
-- **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`, `Table`,
+- **Display** — `TextBlock`, `FactSet`, `Badge`, `Carousel`, `ColumnSet`, `Table`,
   `Rating`, `Icon`, `ProgressBar`, `ProgressRing`, `CodeBlock`, `Image`.
 - **Charts** — `Chart.Pie`, `Chart.Donut`, `Chart.VerticalBar`,
   `Chart.HorizontalBar`, `Chart.Line`, `Chart.Gauge`. The two multi-series
@@ -294,7 +308,7 @@ routes stay compact. Example payload:
     "numCtx": 16384,
     "historyTurns": 10,
     "jsonFormat": "none",
-    "systemPromptFile": "default_system_prompt.txt",
+    "systemPromptFile": "card_system_prompt.txt",
     "keepAlive": "30m",
     "timeoutSeconds": 60,
     "temperature": 0.0
@@ -385,7 +399,7 @@ sequenceDiagram
     autonumber
     participant R as Route
     participant O as OllamaResponder
-    participant F as system-prompt file<br/>assets/default_system_prompt.txt or --system-prompt-file
+    participant F as system-prompt file<br/>assets/card_system_prompt.txt or --system-prompt-file
     participant L as local Ollama /api/chat
     participant D as card_detect.dart tryParseCardBody
 
@@ -431,7 +445,7 @@ sequenceDiagram
 
 ```bash
 fvm dart pub get
-fvm dart run bin/server.dart
+fvm dart run bin/server.dart --system-prompt-file assets/card_system_prompt.txt
 fvm dart run bin/server.dart --help   # every flag, with defaults
 ```
 
@@ -515,17 +529,26 @@ is invalid JSON — so streaming would benefit text replies only, and would
 need either a visible bubble swap when a finished reply turns out to be a
 card, or committing to a mode up front. Treated as an enhancement, not a gap.
 
-## Ollama (optional)
+## Ollama
 
-By default the server runs the echo demo (every reply is `"Did you just say:
-..."`). To answer with a local [Ollama](https://ollama.com) chat model
-instead:
+Unless you pass `--echo`, the server calls a local
+[Ollama](https://ollama.com) chat model, so it needs one running:
 
 ```bash
 ollama pull qwen2.5-coder:7b   # once, if you haven't already (the default model)
 ollama serve                   # if it isn't already running
 
-fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 [--ollama-model qwen2.5-coder:7b]
+fvm dart run bin/server.dart --system-prompt-file assets/card_system_prompt.txt
+# --ollama-url defaults to http://127.0.0.1:11434
+```
+
+If Ollama is unreachable the server still starts, logs a `SEVERE` preflight
+failure naming both remedies, and returns that diagnostic as the reply text —
+so the error shows up in the chat bubble rather than as a refused connection.
+Fix it by starting Ollama, or run without a model at all:
+
+```bash
+fvm dart run bin/server.dart --echo   # every reply is "Did you just say: ..."
 ```
 
 **Use `127.0.0.1`, not `localhost`.** With Ollama's "expose to the network"

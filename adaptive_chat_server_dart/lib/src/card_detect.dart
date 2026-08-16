@@ -130,6 +130,30 @@ List<Map<String, dynamic>>? tryParseCardBody(String raw) {
   return null;
 }
 
+/// Whether [raw] is prose that *contains* a card rather than being one.
+///
+/// This shape is why a probe can report a green pass rate on the failure
+/// users actually report. The reply does not parse as a card, so the server
+/// falls back to rendering it as Markdown — and the user sees raw JSON in a
+/// code block. Scored as "prose" it looks like a legal Markdown answer, which
+/// the card system prompt does permit, so nothing flags it.
+///
+/// Deliberately narrow: it only fires when a fenced block on its own would
+/// have been a renderable card. A fenced Dart snippet inside an ordinary
+/// prose answer is a legitimate Markdown reply and must not be flagged.
+bool replyWrapsCardInProse(String raw) {
+  if (tryParseCardBody(raw) != null) return false;
+  final fence = RegExp(
+    r'```(?:json)?\s*(.*?)\s*```',
+    dotAll: true,
+    caseSensitive: false,
+  );
+  for (final match in fence.allMatches(raw)) {
+    if (tryParseCardBody(match.group(1)!) != null) return true;
+  }
+  return false;
+}
+
 /// Explains why a reply that *looked like* a card was not rendered as one.
 ///
 /// Diagnostic/logging aid only. Returns `null` when [raw] is a valid card

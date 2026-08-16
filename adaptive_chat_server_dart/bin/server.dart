@@ -33,6 +33,26 @@ Never _exitWithUsageError(String message, ArgParser parser) {
   exit(_usageErrorExitCode);
 }
 
+/// Announces which system prompt is in force, because the wrong one is
+/// otherwise invisible.
+///
+/// Echoes back the reply mode the operator chose, so the log says what this
+/// process will actually do.
+///
+/// The two bundled prompts produce entirely different replies — measured on
+/// `qwen2.5-coder:7b` at temperature 0 over eight options questions, the card
+/// prompt yields 8/8 Adaptive Cards and the Markdown one 0/8. A mode is always
+/// explicit (see the argument check in `main`), so there is no default to
+/// explain here; this line exists so a log tells you which of the two you are
+/// looking at without re-deriving it from the launch config.
+void _logSystemPromptChoice(Logger log, String? systemPromptFile) {
+  if (systemPromptFile == null) {
+    log.info('Reply mode: echo demo (--echo) — no system prompt is used');
+    return;
+  }
+  log.info('System prompt: $systemPromptFile');
+}
+
 Future<void> main(List<String> arguments) async {
   final parser = buildArgParser();
   final ArgResults args;
@@ -45,6 +65,24 @@ Future<void> main(List<String> arguments) async {
   if (args['help'] as bool) {
     _printUsage(parser);
     return;
+  }
+
+  // No default reply mode on purpose. The two bundled prompts produce
+  // completely different output — 8/8 Adaptive Cards versus 0/8 on the same
+  // model at t=0 — and whichever one is implicit, somebody eventually runs
+  // the server, gets the other kind of reply, and blames the model. Refusing
+  // to guess costs one flag and removes that whole class of confusion.
+  if (!(args['echo'] as bool) && args['system-prompt-file'] == null) {
+    _exitWithUsageError(
+      'Choose a reply mode — the server does not pick one for you:\n'
+      '  --system-prompt-file assets/card_system_prompt.txt     '
+      'Adaptive Card replies\n'
+      '  --system-prompt-file assets/default_system_prompt.txt  '
+      'Markdown replies\n'
+      '  --echo                                                 '
+      'echo demo, no model called',
+      parser,
+    );
   }
 
   // Resolved before any work starts: a typo here should fail at launch, not
@@ -67,9 +105,11 @@ Future<void> main(List<String> arguments) async {
   final assetsDir = p.normalize(p.join(scriptDir, '..', 'assets'));
 
   final responder = buildResponder(
-    ollamaUrl: args['ollama-url'] as String?,
+    // buildResponder treats a null URL as "use the echo demo", so --echo is
+    // expressed by withholding the URL rather than by a second switch.
+    ollamaUrl: (args['echo'] as bool) ? null : args['ollama-url'] as String,
     model: args['ollama-model'] as String,
-    defaultSystemPromptPath: p.join(assetsDir, 'default_system_prompt.txt'),
+    defaultSystemPromptPath: p.join(assetsDir, 'card_system_prompt.txt'),
     cardSchemaPath: p.join(assetsDir, 'card_schema.json'),
     systemPromptFile: args['system-prompt-file'] as String?,
     numCtx: int.parse(args['num-ctx'] as String),
@@ -85,13 +125,16 @@ Future<void> main(List<String> arguments) async {
   // Advisory only: a backend that is not up yet may still come up, so this
   // reports loudly and starts anyway rather than refusing to serve.
   final log = Logger('adaptive_chat_server_dart');
+  _logSystemPromptChoice(log, args['system-prompt-file'] as String?);
   final readiness = await responder.checkReadiness();
   if (readiness.isReady) {
     log.info('Preflight: ${readiness.detail}');
   } else {
     log.severe(
       'Preflight FAILED: ${readiness.detail}\n  Starting anyway — requests '
-      'will return a diagnostic until this is fixed.',
+      'will return a diagnostic until this is fixed.\n  Fix by starting '
+      'Ollama (`ollama serve`), or restart with --echo to run the echo demo '
+      'with no model at all.',
     );
   }
 

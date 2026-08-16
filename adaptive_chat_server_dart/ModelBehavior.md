@@ -76,16 +76,18 @@ done
 
 ## Which system prompt produced the number
 
-Every result in this file was measured with **`assets/card_system_prompt.txt`**, because that is the prompt whose job is to produce cards. It is **not** the server's default.
+Every result in this file was measured with **`assets/card_system_prompt.txt`**. The server has no default prompt — every run names one with `--system-prompt-file` (or opts out of models entirely with `--echo`).
 
-| File                               | Default?                          | Effect                                        |
-| ---------------------------------- | --------------------------------- | --------------------------------------------- |
-| `assets/default_system_prompt.txt` | ✅ yes                            | Markdown only — never mentions Adaptive Cards |
-| `assets/card_system_prompt.txt`    | no — needs `--system-prompt-file` | The card palette and rules                    |
+| File                               | Effect                                        |
+| ---------------------------------- | --------------------------------------------- |
+| `assets/card_system_prompt.txt`    | The card palette and rules                    |
+| `assets/default_system_prompt.txt` | Markdown only — never mentions Adaptive Cards |
 
-Measured on `qwen2.5-coder:7b` at `t=0`, same eight questions, only the prompt file differing: **0/8 cards** with the default, **8/8** with the card prompt. `.vscode/launch.json` pairs three plain configurations with three `card prompt` ones.
+Measured on `qwen2.5-coder:7b` at `t=0`, same eight questions, only the prompt file differing: **0/8 cards** with the Markdown prompt, **8/8** with the card prompt. The gap between the two is the largest single effect recorded in this file — larger than any model or temperature difference — which is why the server stopped having a default at all on 2026-08-15 and now makes every run say which prompt it wants.
 
-This matters when reading a bug report: "the model never sends cards" is far more often the wrong prompt file than a model deficiency, and no number in this file describes the default prompt's behavior.
+Its name is misleading: `default_system_prompt.txt` is not a default and never gets loaded unless you ask for it by name. It keeps the name because renaming an asset breaks every `--system-prompt-file` invocation already written down in docs, launch configs, and shell history.
+
+When reading a bug report, still confirm which prompt was loaded — the server logs it at startup. "The model never sends cards" now means someone named the Markdown prompt, or is running a build from before 2026-08-15, when the prompt could be implicit.
 
 ## The card test classes
 

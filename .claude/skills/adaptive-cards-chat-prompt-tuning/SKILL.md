@@ -27,16 +27,22 @@ The rest of this skill is about telling those apart before editing anything, the
 
 ## Check this before anything else: which prompt is even loaded?
 
-The server ships **two** system prompts, and the card one is opt-in:
+The server ships **two** system prompts and they produce entirely different replies:
 
 | File | What it tells the model |
 | --- | --- |
-| `assets/default_system_prompt.txt` | **The default.** Your reply renders in a TextBlock; use Markdown. Never mentions Adaptive Cards. |
-| `assets/card_system_prompt.txt` | The card palette and rules. Selected only via `--system-prompt-file`. |
+| `assets/card_system_prompt.txt` | The card palette and rules. |
+| `assets/default_system_prompt.txt` | Your reply renders in a TextBlock; use Markdown. Never mentions Adaptive Cards. Its name is a leftover — it is not a default and is never loaded unless named. |
 
-Measured on `qwen2.5-coder:7b` at `t=0` over the same eight questions: **0/8 cards** on the default prompt, **8/8** on the card prompt. `.vscode/launch.json` carries paired configurations — three plain, three suffixed `card prompt` — so launching the wrong one produces a chat that never emits a card no matter what you do to the wording.
+Measured on `qwen2.5-coder:7b` at `t=0` over the same eight questions: **8/8 cards** on the card prompt, **0/8** on the Markdown one. That is a larger effect than any model or temperature difference recorded in [`ModelBehavior.md`](../../../adaptive_chat_server_dart/ModelBehavior.md), which is why the server has **no default** — it refuses to start unless the invocation names `--system-prompt-file` or `--echo`.
 
-So when the report is "it answers in Markdown" or "it never sends cards", confirm the active prompt **first**. It costs one glance at the launch config or the startup log and it invalidates every other hypothesis. Rewording a prompt the server never loads is the most expensive way to learn this.
+So when the report is "it answers in Markdown" or "it never sends cards", confirm which prompt was named **first** — the server logs it at startup:
+
+```
+INFO: System prompt: assets/card_system_prompt.txt
+```
+
+One glance invalidates every other hypothesis. Since the default was removed on 2026-08-15 this is rarer, but it still happens two ways: someone named the Markdown prompt, or they are running a build from before that date, when the prompt could be implicit.
 
 This does not apply when the complaint is a *broken* card — raw JSON, blank elements, truncation. Those prove the card prompt is already active, so skip ahead.
 

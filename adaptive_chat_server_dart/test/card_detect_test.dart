@@ -216,6 +216,32 @@ void main() {
     });
   });
 
+  group('replyWrapsCardInProse', () {
+    test('a preamble followed by a fenced card is flagged', () {
+      const raw =
+          'Sure, here you go:\n\n'
+          '```json\n{"type":"TextBlock","text":"hi","wrap":true}\n```';
+      expect(replyWrapsCardInProse(raw), isTrue);
+      // It is not a usable card either — that is the whole problem.
+      expect(tryParseCardBody(raw), isNull);
+    });
+
+    test('a fenced card with nothing around it is not flagged', () {
+      const raw = '```json\n{"type":"TextBlock","text":"hi","wrap":true}\n```';
+      expect(replyWrapsCardInProse(raw), isFalse);
+      expect(tryParseCardBody(raw), isNotNull);
+    });
+
+    test('genuine prose containing a non-card code fence is not flagged', () {
+      const raw = 'Use dart:io:\n\n```dart\nvoid main() {}\n```';
+      expect(replyWrapsCardInProse(raw), isFalse);
+    });
+
+    test('plain prose with no fence at all is not flagged', () {
+      expect(replyWrapsCardInProse('Just a normal reply.'), isFalse);
+    });
+  });
+
   group('cardParseFailureReason', () {
     test('returns null for a valid card', () {
       expect(

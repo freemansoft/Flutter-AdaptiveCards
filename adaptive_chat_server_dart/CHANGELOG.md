@@ -2,6 +2,58 @@
 
 ## [Unreleased]
 
+- **Breaking:** the server no longer has a default reply mode and refuses to
+  start without one. Every invocation names `--system-prompt-file` (the card
+  prompt for Adaptive Cards, the Markdown prompt for prose) or `--echo` for the
+  echo demo; anything else exits `2` with a message listing all three. The two
+  bundled prompts produce the largest single effect on record for this workload
+  — **8/8 cards versus 0/8** on the same model at `t=0`, bigger than any model
+  or temperature difference — so whichever one had been implicit, somebody
+  would eventually run the server, get the other kind of reply, and blame the
+  model. Refusing to guess costs one flag and removes that entire class of
+  confusion. The chat client is the only consumer, so nothing external breaks.
+
+  `--ollama-url` now defaults to `http://127.0.0.1:11434`, so naming a prompt
+  is enough to talk to Ollama; `--echo` withholds the URL and selects the echo
+  demo. Startup logs the chosen mode.
+
+  Preflight behaviour is deliberately unchanged: an unreachable Ollama still
+  logs `SEVERE` and serves a diagnostic rather than refusing to start, so the
+  error surfaces in the chat bubble instead of as a refused connection. The
+  message now names both remedies (`ollama serve`, or `--echo`).
+
+  `assets/default_system_prompt.txt` keeps its misleading name — it is not a
+  default and is never loaded unless named — because renaming an asset breaks
+  every `--system-prompt-file` invocation already written down. Every
+  `.vscode/launch.json` server configuration now states its mode in its name
+  **and** passes the matching flag, so a name cannot drift from behaviour.
+
+- Added: the server logs which system prompt is active at startup, and says how
+  to switch. Card replies are opt-in via `--system-prompt-file`, and the
+  bundled default prompt never mentions Adaptive Cards — measured on
+  `qwen2.5-coder:7b` at `t=0` over eight options questions: 0/8 cards on the
+  default prompt versus 8/8 on the card prompt, same model, same temperature.
+  Nothing previously indicated which mode was running, so "the model never
+  sends cards" looked like a model or prompt-wording problem when it was a
+  launch-flag problem. `--help` now names the card prompt file too.
+
+- Fixed: probes scored a prose-wrapped card as a passing `prose` reply. A model
+  that writes "Sure, here you go:" before a fenced card produces a message the
+  server renders as Markdown, so the user sees raw JSON in a code block — the
+  exact symptom people report, scored green by every probe. `card_detect.dart`
+  gained `replyWrapsCardInProse`, and `judgeReply` now returns
+  `prose-with-card` as a failure. Prose that merely contains a non-card code
+  fence is still a legitimate pass, so a Markdown answer with a Dart snippet is
+  unaffected. Every pass rate measured before this change counted this shape as
+  a success.
+
+- Fixed: the README's element palette listed neither `Input.Toggle` nor
+  `ColumnSet` after both were added to the card system prompt and schema, so
+  the documented palette disagreed with the shipped one. Added a test that
+  asserts every type the prompt advertises appears in both the schema enum
+  and the README, turning this drift into a build failure instead of a
+  discrepancy someone has to notice.
+
 - Added: `Input.Toggle` and `ColumnSet` to the card system prompt and to
   `card_schema.json`. Both were already registered and renderable on the
   Flutter side but named nowhere the model could see, so it could not emit
