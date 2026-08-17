@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+- Added: `ModelBehavior.md` now records the first probe of `qwen3-coder:30b`
+  (17.3 GB), previously blank in every column. Measured 2026-08-16, one
+  model resident at a time, card system prompt, `--samples 1`: everyday set
+  7/7 · 6/7 · 7/7 across `t=0`/`0.2`/`0.6` (`temperature_matrix.dart`, one
+  loss — `rating` at `t=0.2`, missing array brackets around two elements),
+  a clean stress set 5/5 at both `t=0` and `t=0.6` (`temperature_stress.dart`
+  — the best large-candidate stress score on record, the only one of the
+  four large candidates to sweep every case), and 2/6 with two prior prose
+  turns (`choiceset_ab.dart`, `t=0`) — a new with-history failure signature:
+  all four failures attempted a card rather than dropping to prose, each
+  missing the wrapping `[ ]` around a `TextBlock`/`Input.ChoiceSet` pair,
+  and three of the four (including "help me pick a database engine", which
+  shares no wording with the topic) returned the exact worked example from
+  `assets/card_system_prompt.txt` verbatim rather than question-specific
+  content, confirmed with `dump_reply.dart`. The best large-candidate cold
+  start on record did not predict either the with-history score or its
+  failure mode.
 - Added: `ModelBehavior.md` now records the first probe of
   `nemotron-3.5-lightning:30b` (23.7 GB), previously blank in every column.
   Measured 2026-08-16, one model resident at a time, card system prompt,
