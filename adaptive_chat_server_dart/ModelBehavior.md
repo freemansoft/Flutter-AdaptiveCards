@@ -51,7 +51,7 @@ Sorted by model name, and within a family by parameter count ascending (so `nemo
 | nemotron-3-nano:4b                                | 2.6 GB  | ✅    | candidate              | ❌ everyday 6/7 but stress **2/5** `t=0`, 1/5 `t=0.6`      | ❌ 0/6 — drops to prose                                    |
 | nemotron-3-nano:30b                               | 22.6 GB | ❌    | candidate              | ❌ everyday 7/7 · stress 2/5 `t=0`, 1/5 `t=0.6`            | ⚠️ 5/6 choice-set                                          |
 | nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    | candidate              | ❌ everyday 6/7 · stress 3/5 `t=0`, 4/5 `t=0.6`            | ❌ 0/6 — drops to prose                                    |
-| qwen2.5-coder:7b                                  | 4.4 GB  | ✅    | server default + top 3 | ✅ Recommended — cleared every documented failure at `t=0` | ⚠️ 3/6 choice-set — post escape-hatch fix (see §4)         |
+| qwen2.5-coder:7b                                  | 4.4 GB  | ✅    | server default + top 3 | ✅ Recommended — cleared every documented failure at `t=0` | ⚠️ 3/6 choice-set · shapes 18/25 (see §4)                  |
 | qwen3-coder:30b                                   | 17.3 GB | ❌    | candidate              | ⚠️ everyday 7/7 · stress 5/5 `t=0`, 5/5 `t=0.6`            | ⚠️ 2/6 choice-set — bracket omission, not prose            |
 | qwen3.5:9b                                        | 6.1 GB  | ⚠️    | top 3 (`launch.json`)  | ⚠️ Only with thinking off; no edge over the default        | ⚠️ 5/6 choice-set — one miss: TextBlock list, no ChoiceSet |
 | qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    | candidate              | ⚠️ Ignores `format`; better at `t=0` than its own `0.6`    | ✅ 6/6 choice-set                                          |
@@ -189,6 +189,54 @@ in the 12-trial run. The two runs agree prompt-for-prompt, so the `--samples
 2` figure and the `--samples 1` figure are the same finding at different
 resolutions; the `2/12 → 6/12` pair above is kept because it is the
 before/after that actually justified promoting the escape-hatch change.
+
+#### Shape coverage — `qwen2.5-coder:7b`, 2026-08-17
+
+First run of `shape_ab.dart` (25 cases, `t=0`, `--samples 1`, current shipped
+prompt). Cold-start **19/25**, with-history **18/25**.
+
+Shapes lost to history (produced cold, prose or wrong shape with two prior
+prose turns): `choice2`, `choice5`, `choice6` — all three passed cold as a
+card containing `Input.ChoiceSet` and regressed to bare `prose` with history
+present, matching the `eroded by history` set the probe itself derives from
+the two condition runs.
+
+Shapes this model never produced under either condition: `carousel`,
+`columnset`, `rating_ask`, `text` — these are capability or palette gaps, not
+drift, and no anti-drift wording will move them.
+
+Notable per-case detail:
+
+- `text` ("ask me to describe the bug"): cold-start scored `no-input` — it
+  answered with a bare `TextBlock` instead of `Input.Text`; with-history
+  degraded further to plain `prose`, no card at all. Failed both conditions,
+  but the failure mode changed shape rather than staying constant.
+- `rating_ask` ("ask me to rate my support experience 1 to 5"): identical
+  `no-input` failure under both conditions — the model returned a read-only
+  `Rating` display instead of an `Input.ChoiceSet`/`Input.Number`. This is a
+  systematic confusion between "show a rating" and "collect a rating," not
+  history-related drift.
+- `carousel`: `wrong-shape` cold (a bare `TextBlock` instead of `Carousel`),
+  degrading to bare `prose` with history. `Carousel` was never emitted under
+  either condition in this run.
+- `columnset`: `wrong-shape` under both conditions unchanged — a bare
+  `TextBlock` instead of `ColumnSet`/`Table` both times. The only
+  never-produced shape whose failure did not get worse with history.
+- Two cases inverted the expected direction, failing cold-start but passing
+  with-history: `number` (cold `no-input`, a bare `TextBlock`; warm passed
+  with `Input.Number`) and `table` (cold `wrong-shape`, a bare `TextBlock`;
+  warm passed with a real `Table`). At `--samples 1` this may be
+  call-to-call variance rather than a real history effect; it fits neither
+  "lost to history" nor "never produced" and is recorded here rather than
+  forced into either bucket.
+- `codeblock` passed cleanly under both conditions (`CodeBlock, TextBlock`)
+  — the model always emitted a real `CodeBlock` rather than a
+  Markdown-fenced `TextBlock`, so the case-design caveat about that
+  alternative being defensible did not come up in this run.
+- `gauge` and `progress` also passed cleanly and distinctly under both
+  conditions (`Chart.Gauge` and `ProgressBar` respectively) despite sharing
+  the "72%" wording — no cross-contamination between the two buckets was
+  observed.
 
 ### Not a card test: the `format` canary
 

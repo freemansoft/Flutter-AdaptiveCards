@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Added: first `shape_ab.dart` baseline — `qwen2.5-coder:7b`, 25 cases,
+  `t=0`, `--samples 1`, current shipped prompt: cold-start 19/25,
+  with-history 18/25. Recorded in `ModelBehavior.md` alongside which shapes
+  were lost to history and which the model never produced under either
+  condition — the second group being capability gaps rather than drift, which
+  no anti-drift wording will move.
+
 - Added: `tool/model_probes/README.md` documents `shape_ab.dart`, its four
   card-failure labels, and the finding that motivated it — that judging
   replies only as "renders or not" left 23 of 24 advertised element types
