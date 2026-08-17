@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Added: `tool/model_probes/README.md` documents `shape_ab.dart`, its four
+  card-failure labels, and the finding that motivated it — that judging
+  replies only as "renders or not" left 23 of 24 advertised element types
+  unverified.
 - Added: `shape_ab.dart`, a shape-aware probe. It runs all 25 cases
   cold-start and again after two prose turns, then prints the shapes a model
   produces cold and loses with history — the number a prompt fix has to move.
