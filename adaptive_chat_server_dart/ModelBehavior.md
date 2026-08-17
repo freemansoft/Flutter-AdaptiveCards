@@ -43,7 +43,7 @@ Sorted by model name, and within a family by parameter count ascending (so `nemo
 | ------------------------------------------------- | ------- | ----- | ---------------------- | ---------------------------------------------------------- | ---------------------------------------------------------- |
 | gpt-oss:20b                                       | 12.8 GB | ❌    | top 3 (`launch.json`)  | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ✅ 6/6 choice-set · shapes 22/25 (see §4)                  |
 | granite4.1:3b                                     | 2.0 GB  | ✅    | candidate              | ❌ everyday 4/7 · stress 4/5 `t=0`, 3/5 `t=0.6` — weakest  | ⚠️ 3/6 choice-set                                          |
-| granite4.1:8b                                     | 5.0 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ⚠️ 3/6 choice-set                                          |
+| granite4.1:8b                                     | 5.0 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ⚠️ 3/6 choice-set · shapes 15/25 (see §4)                  |
 | hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | ❌ everyday 7/7 · stress 3/5 `t=0`, 3/5 `t=0.6`            | ❌ 1/6 choice-set                                          |
 | llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate              | ✅ everyday 7/7 all temps · stress 5/5 both — clean sweep  | ❌ 0/6 — drops to prose · shapes 2/25 (see §4)             |
 | llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0` but **1/5** at `t=0.6`  | ❌ 0/6 — drops to prose                                    |
@@ -434,6 +434,130 @@ probe here that can tell "produces good cards" apart from "answers in
 prose and gets credited for it," and this model is the clearest
 demonstration on record of a case where those two things were being
 conflated.
+
+#### Shape coverage — `granite4.1:8b`, 2026-08-17
+
+Preceded by a cheap five-case screen (`date`, `table`, `pie`, `carousel`,
+`choice1`, `--samples 1`) run first as a go/no-go check against the
+`llama3-chatqa:8b` failure mode (near-zero cold-start card production). The
+screen returned cold-start 2/5 with two clean card passes (`date` →
+`Input.Date, TextBlock`; `choice1` → `Input.ChoiceSet, TextBlock`), which
+ruled out a total collapse and cleared the model for the full run.
+
+First full run of `shape_ab.dart` (25 cases, `t=0`, `--samples 1`, current
+shipped prompt). Cold-start **18/25**, with-history **15/25**.
+
+Shapes lost to history (produced cold, prose or wrong shape with two prior
+prose turns): `choice1`, `choice5`, `columnset`, `number` (4) — the probe's
+own derived set agrees: `eroded by history: choice1, choice5, columnset,
+number (4)`. Three of the four eroded to bare `prose` (`choice1`, `choice5`,
+`number`, each a clean cold pass — `Input.ChoiceSet, TextBlock`,
+`Input.ChoiceSet`, `Input.Number` respectively — replaced by conversational
+text with no card attempted). The fourth, `columnset`, eroded differently: it
+passed cold as `Column, ColumnSet, TextBlock` and regressed with history not
+to prose but to a bare `TextBlock` (`wrong-shape: got {TextBlock} want
+{ColumnSet, Table}`) — a demoted card, not an abandoned one, the same
+distinction `qwen2.5-coder:7b`'s write-up above draws for its own `text`
+case.
+
+Shapes this model never produced under either condition (6): `text`,
+`choice2`, `rating_ask`, `carousel`, `table`, `codeblock`. These are not one
+failure mode:
+
+- `text` and `table` scored flat `prose` under both conditions — no card
+  attempted, cold or warm.
+- `choice2` shifted shape without ever passing: cold scored `no-input` (`got
+{TextBlock} want {Input.ChoiceSet}` — a card attempted, wrong element
+  type), warm dropped further to plain `prose` — an abandoned attempt, not
+  a repeated one.
+- `rating_ask` scored the identical `no-input` verdict under both conditions
+  (`got {Rating} want {Input.ChoiceSet, Input.Number}`) — the same
+  show-a-rating/collect-a-rating confusion already on record for
+  `qwen2.5-coder:7b`'s `rating_ask` case, evidently not specific to one
+  model.
+- `carousel` scored the identical `broken: prose-with-card (user sees raw
+JSON)` verdict under both conditions — the model attempts real card JSON
+  every time but wraps it in surrounding prose, so it leaks to the user
+  instead of rendering; never a JSON-validity break and never a wrong
+  element type.
+- `codeblock` changed failure character between conditions without ever
+  passing: cold scored `broken: invalid JSON` — the reply broke mid-generation
+  while narrating a Dart snippet (`FormatException: Unexpected character (at
+line 4, character 253)`, trailing text `...**Dart snippet:**`) — while
+  warm scored `broken: prose-with-card (user sees raw JSON)`, the same
+  leaking pattern as `carousel`. Neither cold nor warm failure is the
+  TextBlock-with-a-fenced-block shape the case-design caveat warns is
+  defensible-but-scored-as-a-miss; both are broken or leaked JSON, not a
+  clean prose substitute.
+
+One case moved the opposite direction — failing cold-start and passing
+with-history: `pie` (cold: `broken: invalid JSON`, the response breaking on
+a trailing sentence appended after the JSON — `*Values are approximate
+percentages based on recent market data.` — `FormatException: Unexpected
+character (at line 3, character 1)`; warm: passed cleanly with
+`Chart.Pie`). At `--samples 1` this may be call-to-call noise rather than a
+real history effect, the same caveat the three baselines above apply to
+their own inverted cases (`qwen2.5-coder:7b`'s `number`/`table`,
+`gpt-oss:20b`'s `gauge`/`rating_show`, `llama3-chatqa:8b`'s `pie`) — so it is
+recorded here rather than folded into either the "lost to history" or
+"never produced" buckets.
+
+Bucket arithmetic: 14 shapes passed both conditions (`date`, `time`,
+`toggle`, `choice3`, `choice4`, `choice6`, `bar`, `line`, `gauge`,
+`rating_show`, `facts`, `progress`, `badge`, `prose`) + 4 lost to history +
+6 never produced + 1 failed-cold-passed-warm = 25. 14 + 4 = 18 (the cold
+figure); 14 + 1 = 15 (the warm figure).
+
+Notable per-case detail not already covered above:
+
+- `gauge` and `progress` again landed in their own distinct, correct
+  buckets under both conditions (`Chart.Gauge` and `ProgressBar`
+  respectively) despite sharing the "72%" wording — no cross-contamination
+  between the two, matching every prior baseline.
+- `choice3`, `choice4`, and `choice6` held cleanly under both conditions
+  (`Input.ChoiceSet` variants both times); only `choice1`, `choice2`, and
+  `choice5` failed to hold — three of six choice cases are unaffected by
+  history, three are not.
+
+**Four-way comparison across all baselines on record.** `qwen2.5-coder:7b`
+went 19/25 cold to 18/25 warm, three eroded, all three to prose.
+`gpt-oss:20b` went 20/25 cold to 22/25 warm, zero eroded, its only failures
+JSON-validity breaks on the three most nested shapes. `llama3-chatqa:8b`
+went 1/25 cold to 2/25 warm — essentially no cold-start card path to erode.
+`granite4.1:8b` sits closest to `qwen2.5-coder:7b`'s shape: 18/25 cold (one
+below `qwen2.5-coder:7b`, two below `gpt-oss:20b`, seventeen above
+`llama3-chatqa:8b`) to 15/25 warm, with **4** eroded — numerically more than
+`qwen2.5-coder:7b`'s 3, and qualitatively different, since one of the four
+(`columnset`) eroded to a wrong element type rather than to prose. Restricted
+to just the six choice-shape cases (`choice1`-`choice6`, the closest
+`shape_ab.dart` analogue to the narrower `choiceset_ab.dart` options probe
+that produced the original "loses half its cold-start options answers to
+prose" reading), cold-start passed 5 of 6 (all but `choice2`, which failed
+cold on a wrong element type rather than passing) and with-history held only
+3 of those 5 (`choice3`, `choice4`, `choice6`) — 2 of 5 cold-passing choice
+cases lost, 40%, close to but not exactly the earlier "half" figure, and
+measured on a different, broader probe than the one that produced the
+original number. The direction of the original characterization holds; the
+exact fraction does not reproduce precisely on this instrument.
+
+**Verdict: a legitimate drift-fix validation subject, plausibly a better
+one than `qwen2.5-coder:7b`.** `granite4.1:8b` clears both bars the task set
+out to check. It has a real cold-start card path (18/25, the second-highest
+cold-start score of the four baselines on record, and not a near-zero
+starting point the way `llama3-chatqa:8b`'s 1/25 was) and it shows genuine,
+countable erosion under history (4 shapes lost, one more than
+`qwen2.5-coder:7b`'s 3), which gives a fix more signal to move than
+`gpt-oss:20b`'s zero-erosion ceiling offers. There is also real
+absolute-improvement headroom independent of the drift question: even
+cold-start leaves 7/25 shapes unproduced, and warm leaves 10/25, so a fix
+that only partially addresses drift would still have room to raise the
+absolute score. One caveat for validation design: unlike `qwen2.5-coder:7b`,
+where all three eroded cases collapsed specifically to prose (making
+"prose resistance" a clean, single target), `granite4.1:8b`'s `columnset`
+erosion went to a wrong element type instead — a pure anti-prose-drift
+wording fix aimed only at "keep answering with a card" might not move that
+one case, so a validation pass on this model should track `columnset`
+separately rather than assuming all 4 eroded cases share one mechanism.
 
 ### Not a card test: the `format` canary
 

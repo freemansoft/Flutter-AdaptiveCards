@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+- Added: fourth `shape_ab.dart` baseline — `granite4.1:8b`, preceded by a
+  five-case go/no-go screen confirming a real cold-start card path, then the
+  full 25 cases, `t=0`, `--samples 1`, current shipped prompt: cold-start
+  18/25, with-history 15/25, 4 shapes eroded by history (`choice1`,
+  `choice5`, `columnset`, `number`). Recorded in `ModelBehavior.md`: this is
+  the second-strongest cold start of the four baselines on record and shows
+  real, countable drift — more eroded shapes than `qwen2.5-coder:7b`'s 3,
+  including one (`columnset`) that eroded to a wrong element type rather
+  than prose — making it a plausible, arguably better drift-fix validation
+  subject than `qwen2.5-coder:7b`.
+
 - Added: third `shape_ab.dart` baseline — `llama3-chatqa:8b`, 25 cases,
   `t=0`, `--samples 1`, current shipped prompt: cold-start 1/25,
   with-history 2/25, zero shapes eroded by history. Recorded in
