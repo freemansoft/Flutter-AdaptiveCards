@@ -5,6 +5,11 @@
 /// tested without constructing an `HttpClient`.
 library;
 
+import 'package:adaptive_chat_server_dart/src/card_detect.dart';
+
+// Relative: probe_support lives outside lib/, beside this file.
+import 'probe_support.dart';
+
 /// One prompt, the element types that would answer it acceptably, and whether
 /// it asks the user for a value.
 ///
@@ -211,3 +216,121 @@ const shapeCases = <ShapeCase>[
     accepted: {},
   ),
 ];
+
+/// How one reply scored against one [ShapeCase].
+class ShapeResult {
+  /// Creates a result.
+  const ShapeResult({
+    required this.caseId,
+    required this.pass,
+    required this.label,
+    required this.found,
+    required this.wanted,
+  });
+
+  /// The case this judged.
+  final String caseId;
+
+  /// Whether the reply was the right shape.
+  final bool pass;
+
+  /// One of `ok`, `prose-ok`, `prose`, `no-input`, `wrong-shape`,
+  /// `unwanted-card`, or `broken: <reason>`.
+  final String label;
+
+  /// Every element type the reply actually contained, empty when it was not
+  /// a card.
+  final Set<String> found;
+
+  /// The case's accepted types, carried so a failure line can show both sides
+  /// of the mismatch without the caller re-looking-up the case.
+  final Set<String> wanted;
+
+  /// A one-line explanation, naming both sides when the shape was wrong.
+  ///
+  /// "carousel failed" and "carousel failed, it emitted three TextBlocks"
+  /// call for different fixes, so a wrong-shape line prints what came back
+  /// next to what was acceptable.
+  String describe() {
+    if (pass) return label == 'ok' ? _sorted(found).join(', ') : label;
+    if (label == 'wrong-shape' || label == 'no-input') {
+      return '$label: got {${_sorted(found).join(', ')}} '
+          'want {${_sorted(wanted).join(', ')}}';
+    }
+    if (label == 'unwanted-card') {
+      return '$label: got {${_sorted(found).join(', ')}} want prose';
+    }
+    return label;
+  }
+
+  static List<String> _sorted(Set<String> types) => types.toList()..sort();
+}
+
+/// Judges [outcome] against [c], layering shape checks over the server's own
+/// card/prose verdict.
+///
+/// `no-input` is decided before `wrong-shape` deliberately: "asked for a date
+/// and got a bare TextBlock" and "asked for a date and got an Input.Text" are
+/// different failures, and collapsing them loses the distinction that says
+/// whether the model understood it needed to collect something at all.
+ShapeResult judgeShape(ShapeCase c, ProbeOutcome outcome) {
+  final body = tryParseCardBody(outcome.reply);
+
+  // Negative control: prose is correct here and a card is the failure.
+  if (c.accepted.isEmpty) {
+    return body == null
+        ? ShapeResult(
+            caseId: c.id,
+            pass: true,
+            label: 'prose-ok',
+            found: const {},
+            wanted: c.accepted,
+          )
+        : ShapeResult(
+            caseId: c.id,
+            pass: false,
+            label: 'unwanted-card',
+            found: collectElementTypes(body),
+            wanted: c.accepted,
+          );
+  }
+
+  if (body == null) {
+    // outcome.ok is true only for clean prose here, since a card would have
+    // parsed; anything else is broken and carries the server's own reason.
+    return ShapeResult(
+      caseId: c.id,
+      pass: false,
+      label: outcome.ok ? 'prose' : 'broken: ${outcome.label}',
+      found: const {},
+      wanted: c.accepted,
+    );
+  }
+
+  final found = collectElementTypes(body);
+  if (c.requiresInput && !found.any((t) => t.startsWith('Input.'))) {
+    return ShapeResult(
+      caseId: c.id,
+      pass: false,
+      label: 'no-input',
+      found: found,
+      wanted: c.accepted,
+    );
+  }
+  if (found.intersection(c.accepted).isEmpty) {
+    return ShapeResult(
+      caseId: c.id,
+      pass: false,
+      label: 'wrong-shape',
+      found: found,
+      wanted: c.accepted,
+    );
+  }
+  return ShapeResult(
+    caseId: c.id,
+    pass: true,
+    label: 'ok',
+    found: found,
+    wanted: c.accepted,
+  );
+}

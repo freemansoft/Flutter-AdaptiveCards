@@ -19,6 +19,13 @@
   `ModelBehavior.md` remain reproducible. New unit tests pin the walker's
   behavior, which is what makes touching that reproducer safe.
 
+- Added: `judgeShape` in `shape_cases.dart`, a seven-outcome classifier
+  layered over the server's own card/prose verdict: `ok`, `prose-ok`,
+  `prose`, `no-input`, `wrong-shape`, `unwanted-card`, `broken`. `no-input`
+  is decided before `wrong-shape` so "asked for a date, got a bare
+  TextBlock" stays distinguishable from "asked for a date, got an
+  Input.Text" — different failures with different fixes.
+
 - Changed: `ModelBehavior.md`'s `With history` column now uses one denominator
   for every model. `qwen2.5-coder:7b` was the only cell measured at
   `--samples 2` (Task 7 wanted two samples per prompt because that number
