@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Added: `shape_cases.dart` — a 25-case table naming, for each prompt, the
+  element types that would answer it acceptably. Expectations are sets rather
+  than single types because several shapes are often equally correct
+  ("summarize these specs" is defensibly a `FactSet` or a `Table`), and this
+  file already records one case where a strict assertion was the bug rather
+  than the model. Tests assert every accepted type exists in
+  `card_schema.json`'s enum, so a typo cannot silently fail every model.
+
 - Added: `collectElementTypes` and `cardContainsAnyType` in
   `probe_support.dart` — a recursive element-type walker shared by the
   probes, reporting every `type` present anywhere in a parsed card body
