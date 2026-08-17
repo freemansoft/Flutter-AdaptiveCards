@@ -145,5 +145,27 @@ void main() {
       expect(r.describe(), contains('TextBlock'));
       expect(r.describe(), contains('Table'));
     });
+
+    test('broken when a parsed card has duplicate JSON keys', () {
+      // A Carousel with duplicate "pages" key. The jsonDecode keeps the last
+      // value, so tryParseCardBody succeeds, but judgeReply detects the
+      // duplicate via checkNoDuplicateJsonKeys and returns ok: false.
+      const reply =
+          '{"type":"Carousel","pages":[],"pages":[{"type":"Container",'
+          '"items":[]}]}';
+      final outcome = outcomeFor(reply);
+      // Verify the server marked it broken before testing judgeShape.
+      expect(
+        outcome.ok,
+        isFalse,
+        reason: 'fixture should trigger duplicate-key',
+      );
+      expect(outcome.label, contains('duplicate-key'));
+
+      final r = judgeShape(tableCase, outcome);
+      expect(r.pass, isFalse);
+      expect(r.label, startsWith('broken'));
+      expect(r.found, contains('Carousel'));
+    });
   });
 }

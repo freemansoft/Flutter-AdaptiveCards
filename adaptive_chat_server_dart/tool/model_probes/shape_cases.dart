@@ -278,21 +278,48 @@ ShapeResult judgeShape(ShapeCase c, ProbeOutcome outcome) {
 
   // Negative control: prose is correct here and a card is the failure.
   if (c.accepted.isEmpty) {
-    return body == null
-        ? ShapeResult(
-            caseId: c.id,
-            pass: true,
-            label: 'prose-ok',
-            found: const {},
-            wanted: c.accepted,
-          )
-        : ShapeResult(
-            caseId: c.id,
-            pass: false,
-            label: 'unwanted-card',
-            found: collectElementTypes(body),
-            wanted: c.accepted,
-          );
+    if (body == null) {
+      return ShapeResult(
+        caseId: c.id,
+        pass: true,
+        label: 'prose-ok',
+        found: const {},
+        wanted: c.accepted,
+      );
+    }
+    // For prose control cases that returned a card, check if the server
+    // marked it broken (e.g., duplicate-key). Broken takes precedence over
+    // unwanted-card because data integrity is compromised.
+    if (!outcome.ok) {
+      return ShapeResult(
+        caseId: c.id,
+        pass: false,
+        label: 'broken: ${outcome.label}',
+        found: collectElementTypes(body),
+        wanted: c.accepted,
+      );
+    }
+    return ShapeResult(
+      caseId: c.id,
+      pass: false,
+      label: 'unwanted-card',
+      found: collectElementTypes(body),
+      wanted: c.accepted,
+    );
+  }
+
+  // Short-circuit on duplicate-key and other hard errors: tryParseCardBody
+  // succeeds even with duplicate keys (jsonDecode keeps the last value),
+  // but the server's own checkNoDuplicateJsonKeys has already failed.
+  // Report the server's verdict rather than silently accepting data loss.
+  if (body != null && !outcome.ok) {
+    return ShapeResult(
+      caseId: c.id,
+      pass: false,
+      label: 'broken: ${outcome.label}',
+      found: collectElementTypes(body),
+      wanted: c.accepted,
+    );
   }
 
   if (body == null) {
