@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+- Added: `ModelBehavior.md` now records the with-history probe of
+  `qwen3.5:9b` (6.1 GB) — its cold-start cell was already filled, only
+  **With history** was blank. Measured 2026-08-16, `choiceset_ab.dart`,
+  two prior prose turns, `t=0`, `--samples 1`, `think:false` (the probe
+  tooling's `probeOnce` hardcodes `think: false` unconditionally, so this
+  is the same thinking-off condition as the model's existing "usable only
+  with thinking disabled" cold-start note, not a thinking-on measurement).
+  Scored ⚠️ 5/6, one miss ("what build modes can I choose from?") where the
+  reply was a valid single-element card whose element was a `TextBlock`
+  Markdown list of the three modes rather than an `Input.ChoiceSet`,
+  confirmed with `dump_reply.dart`; the other five prompts each returned a
+  card containing the `Input.ChoiceSet`. Ties `nemotron-3-nano:30b` for the
+  second-best with-history score on record among candidate models — only
+  `gpt-oss:20b`'s 6/6 is higher. Also corrects this model's per-model
+  section, which stated it was "not currently installed locally"; it is
+  present in `ollama list`. This is the eleventh `N/6` with-history cell
+  filled in this file (re-counted, not incremented).
 - Added: `ModelBehavior.md` now records the first probe of `qwen3-coder:30b`
   (17.3 GB), previously blank in every column. Measured 2026-08-16, one
   model resident at a time, card system prompt, `--samples 1`: everyday set
