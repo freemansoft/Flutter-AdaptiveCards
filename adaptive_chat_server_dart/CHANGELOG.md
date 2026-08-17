@@ -2,6 +2,25 @@
 
 ## [Unreleased]
 
+- Changed: `ModelBehavior.md`'s `With history` column now uses one denominator
+  for every model. `qwen2.5-coder:7b` was the only cell measured at
+  `--samples 2` (Task 7 wanted two samples per prompt because that number
+  gated a promote-or-revert decision), so it read `6/12` in a column of `N/6`
+  scores and invited a wrong at-a-glance comparison. Re-ran it at
+  `--samples 1` on 2026-08-17 against the current shipped prompt:
+  `qwen2.5-coder:7b` scores **3/6**, passing and failing exactly the same
+  three prompts each as the 12-trial run, so this is a change of resolution
+  rather than of finding. The `2/12 → 6/12` before/after is kept in §4 and in
+  the per-model section, since that pair is the evidence that justified
+  promoting the escape-hatch change in the first place.
+
+  Normalizing adds a thirteenth model to the with-history band tally, which
+  moves it off the even three-way split it had at twelve: the bands are now
+  **4 collapse / 5 partial / 4 strong**, with `qwen2.5-coder:7b` joining the
+  `granite4.1` pair at 3/6 in the partial band. Still no model anywhere at
+  4/6, so the band boundaries remain a property of the scores rather than an
+  arbitrary cut.
+
 - Added: `ModelBehavior.md` now records the with-history probe of
   `qwen3.6:27b-coding-nvfp4` (18.4 GB), the sixth and last model in this
   sweep — its cold-start cell was already filled, only **With history** was
