@@ -100,6 +100,21 @@ void main() {
       expect(r.label, startsWith('broken'));
     });
 
+    test('malformed-JSON label is not doubled with "broken: broken"', () {
+      // Regression: judgeReply already returns 'broken: <reason>' for a
+      // parse failure, and judgeShape used to blindly re-prefix every
+      // outcome.label with 'broken: ', producing 'broken: broken: invalid
+      // JSON...'. brokenLabel() must recognize the label is already
+      // prefixed and leave it alone.
+      final r = judgeShape(
+        tableCase,
+        outcomeFor('{"type":"Table","rows":[{"type":"TableRow"'),
+      );
+      expect(r.pass, isFalse);
+      expect(r.label, startsWith('broken'));
+      expect(r.label, isNot(contains('broken: broken')));
+    });
+
     test('broken when prose wraps a card', () {
       final r = judgeShape(
         tableCase,

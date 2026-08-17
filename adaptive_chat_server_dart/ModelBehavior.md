@@ -41,7 +41,7 @@ Sorted by model name, and within a family by parameter count ascending (so `nemo
 
 | Model                                             | Weights | 16 GB | Role                   | Cold start                                                 | With history                                               |
 | ------------------------------------------------- | ------- | ----- | ---------------------- | ---------------------------------------------------------- | ---------------------------------------------------------- |
-| gpt-oss:20b                                       | 12.8 GB | ❌    | top 3 (`launch.json`)  | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ✅ 6/6 choice-set                                          |
+| gpt-oss:20b                                       | 12.8 GB | ❌    | top 3 (`launch.json`)  | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ✅ 6/6 choice-set · shapes 22/25 (see §4)                  |
 | granite4.1:3b                                     | 2.0 GB  | ✅    | candidate              | ❌ everyday 4/7 · stress 4/5 `t=0`, 3/5 `t=0.6` — weakest  | ⚠️ 3/6 choice-set                                          |
 | granite4.1:8b                                     | 5.0 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ⚠️ 3/6 choice-set                                          |
 | hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | ❌ everyday 7/7 · stress 3/5 `t=0`, 3/5 `t=0.6`            | ❌ 1/6 choice-set                                          |
@@ -237,6 +237,91 @@ Notable per-case detail:
   conditions (`Chart.Gauge` and `ProgressBar` respectively) despite sharing
   the "72%" wording — no cross-contamination between the two buckets was
   observed.
+
+#### Shape coverage — `gpt-oss:20b`, 2026-08-17
+
+First run of `shape_ab.dart` (25 cases, `t=0`, `--samples 1`, current shipped
+prompt). Cold-start **20/25**, with-history **22/25**.
+
+Shapes lost to history (produced cold, prose or wrong shape with two prior
+prose turns): **none**. The probe's own derived set agrees:
+`eroded by history: none`.
+
+Shapes this model never produced under either condition: `carousel`,
+`table`, `columnset` — the three most deeply nested shapes in the case set
+(a `CarouselPage` array, a `Table` with row/cell nesting, and a `ColumnSet`
+with a `Column` array). Unlike every model recorded in the subsection above,
+none of these three are prose drops or a wrong element type: all three
+failed both conditions with the server's own `broken: invalid JSON` verdict
+— a mismatched or missing closing bracket/brace, or (twice) output that
+stopped mid-structure. These read as a JSON-validity ceiling on long, nested
+generations rather than a shape the model doesn't know how to produce.
+
+Two cases moved the opposite direction — failing cold-start and passing
+with-history: `gauge` (cold: `broken: invalid JSON`, a stray trailing quote
+after the numeric `value`; warm: passed cleanly with `Chart.Gauge`) and
+`rating_show` (cold: the identical stray-trailing-quote malformation after a
+numeric field; warm: passed cleanly with `Rating`). At `--samples 1` this
+may be call-to-call noise rather than a real history effect — the same
+caveat the `qwen2.5-coder:7b` write-up above applies to its own two inverted
+cases (`number`, `table`) — so it is recorded here rather than folded into
+either the "lost to history" or "never produced" buckets.
+
+Notable per-case detail:
+
+- `carousel`: `broken: invalid JSON` under both conditions — cold-start
+  truncated mid-structure (`Unexpected end of input`); with-history
+  produced a full-length reply but with an extra unmatched `}` at the very
+  end (`Unexpected character` at the last byte). Never scored
+  `wrong-shape` — the model always attempted a real `Carousel`, it just
+  didn't close the JSON cleanly.
+- `table`: `broken: invalid JSON` under both conditions — cold-start had an
+  extra stray `]` before the closing braces; with-history had an extra
+  stray `}` in the same position. Same failure signature as `carousel`,
+  different shape.
+- `columnset`: `broken: invalid JSON` under both conditions — cold-start
+  had a stray character mid-array; with-history truncated mid-structure
+  (`Unexpected end of input`). Same signature family as the other two
+  never-produced shapes.
+- `codeblock` passed cleanly under both conditions (`CodeBlock, TextBlock`)
+  — the model always emitted a real `CodeBlock` rather than a
+  Markdown-fenced `TextBlock`, so the case-design caveat about that
+  alternative being defensible did not come up in this run, same as the
+  `qwen2.5-coder:7b` result.
+- `gauge` and `progress` landed in their own distinct, correct buckets
+  wherever a valid card came back (`Chart.Gauge` and `ProgressBar`
+  respectively) — no cross-contamination between the two buckets was
+  observed, though `gauge`'s cold-start reply never reached that check at
+  all because it failed to parse first (see above).
+
+**Transcript caveat.** The raw probe output backing this section shows
+every JSON failure printed as `broken: broken: invalid JSON: ...` — a
+doubled prefix, `judgeShape` re-prefixing a label `judgeReply` had already
+prefixed. Fixed in this same change (see `CHANGELOG.md`); it is cosmetic
+only — `pass` was `false` either way and the bucket classification above is
+unaffected — but the captured transcript predates the fix and still shows
+the doubled form.
+
+**Comparison against `qwen2.5-coder:7b`.** qwen's baseline (above) went
+19/25 cold to 18/25 warm, losing three choice-set shapes to prose
+(`choice2`, `choice5`, `choice6`). `gpt-oss:20b` moves the opposite
+direction — 20/25 cold to **22/25** warm, with zero shapes eroded — and its
+failures are a different class entirely: not one of its 8 failing instances
+(5 cold, 3 warm) was a prose drop or a wrong element type; all 8 were
+malformed JSON on the three most structurally nested shapes. This answers
+the question this run was designed for: `gpt-oss:20b`'s choice-set
+resilience on `choiceset_ab.dart` (✅ 6/6 with history, tied with
+`qwen3.6:27b-coding-nvfp4` for the best of the thirteen models measured
+there — see §4) **does generalize** across the other 19 shapes — not merely
+to more prose-drift questions, but to a model with no measurable
+warm-start prose-drift problem at all under this probe. That reframes what
+its weakness actually is: not fragility under conversation history, but a
+JSON-validity ceiling on long/nested generations that is present cold and
+stays exactly as present warm. Practical consequence: `gpt-oss:20b` would
+be a poor screening subject for a future prose-drift fix — it has none to
+fix here — and a fix aimed at nested-JSON validity on
+`Carousel`/`Table`/`ColumnSet` would need a different model, one that
+actually exhibits the failure, as its regression canary.
 
 ### Not a card test: the `format` canary
 

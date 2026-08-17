@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+- Added: second `shape_ab.dart` baseline — `gpt-oss:20b`, 25 cases, `t=0`,
+  `--samples 1`, current shipped prompt: cold-start 20/25, with-history
+  22/25, zero shapes eroded by history. Recorded in `ModelBehavior.md`
+  alongside `qwen2.5-coder:7b`'s baseline for comparison: unlike qwen's
+  three prose-drift losses, every one of this model's 8 failing instances
+  (on `carousel`, `table`, and `columnset`) is malformed JSON on the most
+  structurally nested shapes, present under both conditions — a
+  JSON-validity ceiling rather than a prose-drift problem. Fixed: this run
+  exposed `judgeShape` re-prefixing a label `judgeReply` already prefixed
+  for parse failures, doubling to `broken: broken: invalid JSON…`; added
+  `brokenLabel()` and a regression test. Cosmetic only — bucket
+  classification and the recorded numbers are unaffected.
+
 - Fixed: `judgeShape`'s negative-control branch could score a reply the
   server itself calls broken (invalid JSON, duplicate keys, prose wrapping a
   card) as `prose-ok`, because it checked `outcome.ok` only after already

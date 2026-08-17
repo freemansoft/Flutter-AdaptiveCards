@@ -266,6 +266,13 @@ class ShapeResult {
   static List<String> _sorted(Set<String> types) => types.toList()..sort();
 }
 
+/// Prefixes [label] with `broken:` unless the server's own label already
+/// says so — `judgeReply` returns `broken: <reason>` for a parse failure but
+/// bare labels for `duplicate-key` and `prose-with-card`, so blind prefixing
+/// produced `broken: broken: invalid JSON…`.
+String brokenLabel(String label) =>
+    label.startsWith('broken') ? label : 'broken: $label';
+
 /// Judges [outcome] against [c], layering shape checks over the server's own
 /// card/prose verdict.
 ///
@@ -286,7 +293,7 @@ ShapeResult judgeShape(ShapeCase c, ProbeOutcome outcome) {
       return ShapeResult(
         caseId: c.id,
         pass: false,
-        label: 'broken: ${outcome.label}',
+        label: brokenLabel(outcome.label),
         found: body == null ? const {} : collectElementTypes(body),
         wanted: c.accepted,
       );
@@ -317,7 +324,7 @@ ShapeResult judgeShape(ShapeCase c, ProbeOutcome outcome) {
     return ShapeResult(
       caseId: c.id,
       pass: false,
-      label: 'broken: ${outcome.label}',
+      label: brokenLabel(outcome.label),
       found: collectElementTypes(body),
       wanted: c.accepted,
     );
@@ -329,7 +336,7 @@ ShapeResult judgeShape(ShapeCase c, ProbeOutcome outcome) {
     return ShapeResult(
       caseId: c.id,
       pass: false,
-      label: outcome.ok ? 'prose' : 'broken: ${outcome.label}',
+      label: outcome.ok ? 'prose' : brokenLabel(outcome.label),
       found: const {},
       wanted: c.accepted,
     );
