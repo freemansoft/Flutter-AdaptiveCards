@@ -413,13 +413,27 @@ that stopped; on `shape_ab.dart`'s broader palette, it was barely working
 to begin with. That makes `llama3-chatqa:8b` a **weaker** drift-fix
 validation subject than the hypothesis assumed, not a stronger one: a fix
 aimed at "conversation history erodes an otherwise-working card path" has
-almost no working card path to erode here, cold or warm. The earlier
-everyday/stress and `choiceset_ab.dart` numbers evidently describe
-behavior specific to those narrower question sets rather than a
-model-wide cold-start strength that `shape_ab.dart` should have
-reproduced — the three probes are measuring different things for this
-model, and the wide 25-shape set is the one where its cards mostly never
-appear at all, in either condition.
+almost no working card path to erode here, cold or warm.
+
+The two numbers are not actually in tension — they are two different pass
+criteria applied to the same underlying, strongly prose-preferring
+behavior. The everyday/stress probe's rule, per [What counts as a
+pass](#what-counts-as-a-pass), is that a reply passes if it renders as a
+card **or** as clean prose. This transcript shows why that mattered here:
+24 of this run's 25 cold-start replies scored the server's own `prose`
+verdict — a well-formed, non-broken conversational answer with no card
+attempted at all. Under the everyday/stress probe's lenient either/or
+rule, replies shaped like that are credited as passes; `shape_ab.dart`
+additionally requires the specific requested element (an `Input.*`, a
+chart type, a table), so the same prose-preferring behavior that scored
+7/7 · 5/5 under one rule scores 1/25 under the other. Nothing changed
+about the model between the two probes — the measuring stick changed. Read
+that way, this run is arguably the first evidence in this file that
+`shape_ab.dart` earns its keep as a separate instrument: it is the first
+probe here that can tell "produces good cards" apart from "answers in
+prose and gets credited for it," and this model is the clearest
+demonstration on record of a case where those two things were being
+conflated.
 
 ### Not a card test: the `format` canary
 
@@ -491,7 +505,7 @@ Run sequentially, one model resident at a time, card system prompt, on the 64 GB
 
 Three things this run showed:
 
-- **`llama3-chatqa:8b` swept everything** — 7/7 at all three temperatures and 5/5 stress at both. At 4.3 GB it is the strongest cheap candidate measured so far and deserves a closer look against the default.
+- **`llama3-chatqa:8b` swept everything** — 7/7 at all three temperatures and 5/5 stress at both. At 4.3 GB it is the strongest cheap candidate measured so far and deserves a closer look against the default — but see the 2026-08-17 shape-coverage finding in [§4](#4-multi-turn-set--history-replay): on the broader 25-shape probe this model produces a correct card shape on only 1/25 cases cold-start, so this recommendation should not be acted on without reading that first.
 - **The everyday set kept its reputation for not discriminating.** `nemotron-3-nano:4b` and `llama3-groq-tool-use:8b` both scored 6/7 everyday, then collapsed to 2/5 and 1/5 on the cases that matter. Judging either on the easy set alone would have been badly wrong.
 - **`gpt-oss:20b`, a top-three model, had never been probed at all.** It is respectable but not better than models a third its size, which is worth knowing before recommending it.
 
