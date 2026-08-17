@@ -524,11 +524,15 @@ went 19/25 cold to 18/25 warm, three eroded, all three to prose.
 `gpt-oss:20b` went 20/25 cold to 22/25 warm, zero eroded, its only failures
 JSON-validity breaks on the three most nested shapes. `llama3-chatqa:8b`
 went 1/25 cold to 2/25 warm — essentially no cold-start card path to erode.
-`granite4.1:8b` sits closest to `qwen2.5-coder:7b`'s shape: 18/25 cold (one
-below `qwen2.5-coder:7b`, two below `gpt-oss:20b`, seventeen above
-`llama3-chatqa:8b`) to 15/25 warm, with **4** eroded — numerically more than
-`qwen2.5-coder:7b`'s 3, and qualitatively different, since one of the four
-(`columnset`) eroded to a wrong element type rather than to prose. Restricted
+`granite4.1:8b` sits closest to `qwen2.5-coder:7b`'s shape: 18/25 cold —
+third of the four baselines, one below `qwen2.5-coder:7b`, two below
+`gpt-oss:20b`, seventeen above `llama3-chatqa:8b` — to 15/25 warm, with 4
+eroded overall. Of those 4, only 3 eroded to prose, the same count as
+`qwen2.5-coder:7b`'s 3 — the two models are tied on the like-for-like,
+prose-specific comparison. The fourth (`columnset`) eroded to a wrong
+element type rather than to prose, a different failure mechanism kept
+separate from that tied count rather than added to it (see the verdict
+below). Restricted
 to just the six choice-shape cases (`choice1`-`choice6`, the closest
 `shape_ab.dart` analogue to the narrower `choiceset_ab.dart` options probe
 that produced the original "loses half its cold-start options answers to
@@ -540,24 +544,41 @@ measured on a different, broader probe than the one that produced the
 original number. The direction of the original characterization holds; the
 exact fraction does not reproduce precisely on this instrument.
 
-**Verdict: a legitimate drift-fix validation subject, plausibly a better
-one than `qwen2.5-coder:7b`.** `granite4.1:8b` clears both bars the task set
-out to check. It has a real cold-start card path (18/25, the second-highest
-cold-start score of the four baselines on record, and not a near-zero
-starting point the way `llama3-chatqa:8b`'s 1/25 was) and it shows genuine,
-countable erosion under history (4 shapes lost, one more than
-`qwen2.5-coder:7b`'s 3), which gives a fix more signal to move than
-`gpt-oss:20b`'s zero-erosion ceiling offers. There is also real
-absolute-improvement headroom independent of the drift question: even
-cold-start leaves 7/25 shapes unproduced, and warm leaves 10/25, so a fix
-that only partially addresses drift would still have room to raise the
-absolute score. One caveat for validation design: unlike `qwen2.5-coder:7b`,
-where all three eroded cases collapsed specifically to prose (making
-"prose resistance" a clean, single target), `granite4.1:8b`'s `columnset`
-erosion went to a wrong element type instead — a pure anti-prose-drift
-wording fix aimed only at "keep answering with a card" might not move that
-one case, so a validation pass on this model should track `columnset`
-separately rather than assuming all 4 eroded cases share one mechanism.
+**Verdict: a viable drift-fix validation subject, comparable to
+`qwen2.5-coder:7b` rather than clearly better than it.** The like-for-like
+comparison is shapes eroded specifically to prose — the failure mode an
+anti-prose-drift fix actually targets — and on that count `granite4.1:8b`
+and `qwen2.5-coder:7b` are **tied at 3 apiece**. `granite4.1:8b`'s fourth
+eroded shape, `columnset`, went to a wrong element type instead
+(`wrong-shape: got {TextBlock} want {ColumnSet, Table}`), a different
+failure mechanism a prose-preserving wording fix may not touch at all, so
+it belongs beside the tied count as a separate, uncertain data point rather
+than folded into a "4 vs 3, more signal" headline. Even the tied 3-3 count
+should carry the same `--samples 1` noise caveat this file applies
+elsewhere to single-count movements (`qwen2.5-coder:7b`'s own
+`number`/`table` inversion, `gpt-oss:20b`'s `gauge`/`rating_show`,
+`granite4.1:8b`'s own `pie` inversion above) — a one-shape difference in
+aggregate erosion is the same order of magnitude as those, so "tied" is
+better read as "no demonstrated difference" than as a precise measurement.
+
+What does qualify `granite4.1:8b` as viable: a real cold-start card path
+(18/25, third of the four baselines on record — behind `gpt-oss:20b`'s 20
+and `qwen2.5-coder:7b`'s 19, far ahead of `llama3-chatqa:8b`'s 1 — not a
+near-zero starting point) and real prose erosion under history (unlike
+`gpt-oss:20b`'s zero), which is exactly what a prose-drift fix needs
+something to move. If there is a distinguishing angle at all, it is that
+`granite4.1:8b`'s lower absolute scores (18/15 vs. `qwen2.5-coder:7b`'s
+19/18, and 6 shapes never produced under either condition versus
+`qwen2.5-coder:7b`'s 4) leave more numerical room for a fix to demonstrate
+movement — but the same gap cuts the other way: a lower, more failure-prone
+baseline is also a noisier floor to measure a fix against, with more
+confounding failure modes (`no-input`, `broken`, `wrong-shape`) in the mix
+alongside the prose drops a fix is meant to address. Read together, the
+data supports "`granite4.1:8b` is a viable drift-fix subject on a similar
+footing to `qwen2.5-coder:7b`," not "`granite4.1:8b` is the better choice."
+A validation pass on this model should track `columnset` separately from
+the three prose erosions rather than assuming all four eroded cases share
+one mechanism.
 
 ### Not a card test: the `format` canary
 
