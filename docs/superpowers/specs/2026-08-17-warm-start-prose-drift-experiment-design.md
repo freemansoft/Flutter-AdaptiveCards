@@ -5,8 +5,25 @@
 **Date:** 2026-08-17
 **Depends on:** [`2026-08-17-shape-aware-model-probe-design.md`](./2026-08-17-shape-aware-model-probe-design.md) —
 this experiment's instrument is `shape_ab.dart`, which that spec defines. Its
-baseline cold-start numbers for the three screening models must exist before
-any result here can be interpreted.
+baseline cold-start numbers for the four screening models must exist before
+any result here can be interpreted. **They now do** — see the amendment note
+below.
+
+> **Amended 2026-08-17, after approval, before execution.** Neither this spec
+> nor its plan had been executed when `shape_ab.dart` was built and full
+> 25-case baselines were recorded for four models in `ModelBehavior.md`
+> (`qwen2.5-coder:7b`, `gpt-oss:20b`, `llama3-chatqa:8b`, `granite4.1:8b`).
+> Those measurements invalidated two parts of the original design:
+>
+> 1. **The screening metric.** A single with-history-only metric silently
+>    excludes low-cold-start models from ever showing an improvement — see
+>    "The screening metric depends on the model's baseline" below.
+> 2. **The screening model set.** `nemotron-3-nano:4b` had no shape baseline
+>    and is dropped in favor of the three measured, evidence-backed
+>    informing roles — see the Stage 1 table below.
+>
+> This is a deliberate revision made before any run, not drift discovered
+> after one. Everything below reflects the amended design.
 
 ## The problem
 
@@ -50,8 +67,10 @@ tests three distinct _mechanisms_ rather than three rewordings, and why
 ## Non-goals
 
 - Shipping a fix regardless of measurement. If all five lose, none ships.
-- Fixing shapes a model cannot produce cold-start. Those are capability or
-  palette problems, not drift; see "Erosion is measured against cold start".
+- Treating a shape a model cannot produce cold-start as evidence of _drift_.
+  Those are capability or palette problems; see "The screening metric depends
+  on the model's baseline". (Such a shape can still count toward whether a
+  candidate produces an absolute improvement — see the same section.)
 - Variant-level assertions (`style` / `isMultiSelect` on `Input.ChoiceSet`).
 
 ## Why the non-prompt candidates are cheap to test
@@ -187,45 +206,107 @@ applied in advance rather than after a confusing number.
 
 ### Stage 1 — screening
 
-The three models do **not** carry equal weight. One decides, two inform.
+The four models do **not** carry equal weight. One decides, three inform —
+each in a distinct, evidence-based role drawn from that model's own measured
+25-case baseline (`ModelBehavior.md`, `#### Shape coverage — …`, all dated
+2026-08-17):
 
-| Model                | Weights | Baseline with-history | Role in the decision               | Samples |
-| -------------------- | ------- | --------------------- | ---------------------------------- | ------- |
-| `qwen2.5-coder:7b`   | 4.4 GB  | 3/6 (partial)         | **decides** — the server default   | 2       |
-| `llama3-chatqa:8b`   | 4.3 GB  | 0/6 (collapse)        | informs — does the fix generalize? | 1       |
-| `nemotron-3-nano:4b` | 2.6 GB  | 0/6 (collapse)        | informs — does the fix generalize? | 1       |
+| Model              | Weights | Baseline (cold / warm) | Role in the decision                 | Samples |
+| ------------------ | ------- | ---------------------- | ------------------------------------ | ------- |
+| `qwen2.5-coder:7b` | 4.4 GB  | 19/25 / 18/25          | **decides** — the server default     | 2       |
+| `granite4.1:8b`    | 5.0 GB  | 18/25 / 15/25          | informs — second drift data point    | 1       |
+| `gpt-oss:20b`      | 12.8 GB | 20/25 / 22/25          | informs — harm control               | 1       |
+| `llama3-chatqa:8b` | 4.3 GB  | 1/25 / 2/25            | informs — absolute-improvement floor | 1       |
+
+- **`granite4.1:8b`** independently reproduces real prose erosion (3 of its 4
+  eroded shapes went to bare prose, tying `qwen2.5-coder:7b`'s own 3) on a
+  comparable cold-start card path (18/25 versus 19/25). It guards against a
+  fix that happens to suit one model's idiosyncrasies rather than the
+  mechanism.
+- **`gpt-oss:20b`** has the most to lose and nothing to gain: the highest
+  scores on record (20/25 → 22/25) and **zero** shapes eroded — its only
+  failures are JSON-validity breaks on the three most nested shapes, present
+  and unchanged across both conditions. Four of the five candidates
+  (P1/P2/P3/N1) push a model toward emitting a card more readily; if that
+  push causes over-carding or degrades what already works on a model with no
+  drift problem to begin with, this is where it shows.
+- **`llama3-chatqa:8b`** sits at 1/25 cold-start — almost no working card path
+  to erode, but the largest available headroom on the _absolute-improvement_
+  metric (see the next section). It tests whether a candidate can make a
+  prose-defaulting model emit cards at all, which the drift-specific framing
+  above cannot measure.
+- **`nemotron-3-nano:4b`**, the third informing model in the original design,
+  is **dropped**: it has no `shape_ab.dart` baseline, and the
+  `llama3-chatqa:8b` result above is direct evidence of the risk in that — a
+  0/6 on the older, narrower `choiceset_ab.dart` probe turned out to mean "no
+  card path to begin with," not "collapsed from a working one," and that
+  distinction is exactly what the two metrics below need to tell apart. An
+  unmeasured model risks contributing nothing to either metric, which is the
+  failure this amendment fixes. It can be added back later if someone
+  baselines it on `shape_ab.dart` first.
 
 `qwen2.5-coder:7b` runs at `--samples 2` because it is the model the promotion
 decision turns on, and two samples distinguish a flip that holds from one that
-appeared once. The other two run at `--samples 1` because they change how a
-result is _described_, not whether it ships — see the decision rule.
+appeared once. The other three run at `--samples 1` because they change how a
+result is _described_ and where harm is flagged, not whether it ships — see
+the decision rule.
 
 They stay in the screen despite not voting because a candidate that actually
-rescues a 0/6 model is a far larger finding than a narrow win on the default,
-and it is cheap to find out early on 2.6-4.3 GB models.
+rescues a near-zero model, or one that harms the best-performing model, is a
+far larger finding than a narrow win on the default, and it is cheap to find
+out early on 4.3-12.8 GB models.
 
 Six configurations per model: baseline, P1, P2, P3, N1, N2. Instrument is
 `shape_ab.dart --only` over a fixed subset spanning the failure surface — two
 ChoiceSet cases (the known-eroding shape), `date` (another input), `table` and
 `carousel` (display), `gauge` (chart) — both conditions.
 
-Roughly (1 model × 2 samples + 2 models × 1 sample) × 6 configs × 6 cases × 2
-conditions ≈ 288 calls; minutes-scale on 2.6-4.4 GB models.
+(1 model × 2 samples + 3 models × 1 sample) × 6 configs × 6 cases × 2
+conditions = 5 × 6 × 6 × 2 = **360 calls**; minutes-scale on 4.3-12.8 GB
+models. (Previously ~288 for three models at a 2+1+1 = 4 sample multiplier;
+the fourth informing model raises the multiplier to 2+1+1+1 = 5, scaling the
+total by 5/4.)
 
-### Erosion is measured against cold start
+### The screening metric depends on the model's baseline
 
 A shape a model cannot produce cold-start is **not** a warm-start problem — it
 is a capability or palette problem, and no anti-drift wording will fix it.
-Scoring such a shape as a drift failure would credit or blame a candidate for
-something it cannot affect.
+Scoring such a shape as evidence of _drift_ would credit or blame a candidate
+for something it cannot affect — that insight is unchanged and still governs
+what counts as a drift claim (see Non-goals).
 
-So the primary screening metric is **with-history passes**, always reported
-beside that same candidate's **cold-start passes**. Reporting both is what
-stops a candidate from appearing to win by dragging cold start down to meet
-with-history.
+What changes is the screening rule built on top of it. The original design
+made **with-history passes** the single primary screening metric everywhere.
+Measured against `llama3-chatqa:8b` (1/25 cold-start), that rule filters out
+24 of its 25 cases before measurement even starts — precisely the cases where
+an improvement would appear. That matters because four of the five candidates
+(P1, P2, P3, N1) are not erosion-specific at all: they are "push the model
+toward emitting a card" interventions that do not require prior drift to act
+on. This experiment is looking for changes that make things better, not only
+for changes that restore eroded behavior.
+
+The metric now depends on the model's measured baseline:
+
+- **Erosion reduction**, on a model with a working cold-start card path — the
+  with-history score rising toward that same model's own cold-start score.
+  Applies to `qwen2.5-coder:7b` and `granite4.1:8b`.
+- **Absolute improvement**, in _both_ conditions, on a model with little or no
+  card path to erode. Applies to `llama3-chatqa:8b`. Here a cold-start gain is
+  as meaningful as a with-history gain, and possibly more so — nearly all of
+  this model's headroom sits cold-start, not warm-start.
+
+Both share the same guard, carried over from the original design: a
+candidate's cold-start score must not drop, so it cannot appear to win by
+dragging cold start down to meet with-history.
+
+A shape never produced cold-start is still excluded from a _drift_ claim on
+that model — the original insight holds. It is no longer excluded from
+measuring whether a candidate **improves** things, which is the part that
+changed.
 
 This is the ordering dependency on the shape-probe spec: baseline cold-start
-numbers for these three models must exist first.
+numbers for these four models must exist first — they now exist, dated
+2026-08-17 in `ModelBehavior.md`.
 
 ### Stage 2 — stack the winners
 
@@ -237,11 +318,20 @@ from Stage 1; Stage 2 measures whether the combination composes or interferes.
 ### Stage 3 — confirm
 
 The surviving configuration on the **full 25 cases**, both conditions,
-`--samples 2`, across a wider set: the three screening models plus
+`--samples 2`, across a wider set: the four screening models plus
 `llama3-groq-tool-use:8b`, `nemotron-3.5-lightning:30b` (the two remaining
-total-collapse models), and at least one strong model
-(`gpt-oss:20b` or `qwen3.6:27b-coding-nvfp4`) to confirm the change does not
-_harm_ a model that already worked.
+total-collapse models) — six models total, the same count as the original
+design.
+
+The original design separately named "at least one strong model (`gpt-oss:20b`
+or `qwen3.6:27b-coding-nvfp4`)" here, to confirm the change does not harm a
+model that already worked. That role is now already covered: `gpt-oss:20b` is
+one of the four screening models (informs — harm control, see Stage 1), so
+naming it again here under a second justification would be the same model in
+two roles without explanation. `qwen3.6:27b-coding-nvfp4` remains available as
+an optional additional strong-model check if the Stage 1 harm-control result
+on `gpt-oss:20b` warrants a second data point, but it is not required to reach
+this stage.
 
 ### Stage 4 — regression gates
 
@@ -272,20 +362,26 @@ fix generalizes.
 3. Stage 4's regression gates stay clean.
 
 **A candidate that improves only the default model is a promotion, not a
-rejection.** The two collapse models do not vote. Neither is a plausible
-default — `nemotron-3-nano:4b` also posts stress 2/5 at `t=0`, and
-`nemotron-3.5-lightning:30b` is 23.7 GB and fails the 16 GB portability line —
-so their unsuitability is a fact about them rather than a reason to withhold a
-real improvement to the model actually shipped. An earlier draft of this spec
+rejection.** The three informing models do not vote. None is a plausible
+substitute default: `llama3-chatqa:8b`'s card path is too thin to ship
+regardless of this experiment (1/25 cold-start); `gpt-oss:20b` is 12.8 GB and
+fails the 16 GB portability line despite being one of the server's three
+top-recommended models overall; `granite4.1:8b` is a live candidate but
+choosing a new default is not a decision this experiment makes. Their
+non-voting status is a fact about them rather than a reason to withhold a real
+improvement to the model actually shipped. An earlier draft of this spec
 required two of three models to improve; that let non-candidate models veto a
 win on the default, and was wrong.
 
 What the informational models change is the **description**, not the decision.
-A candidate that lifts the default and leaves both 0/6 models at 0/6 is
-recorded as _"improves the default model by N shapes"_ — **not** as _"fixes
-warm-start prose drift"_. The durable record is what the next person reasons
-from, and those two phrasings invite very different follow-on work. A candidate
-that also rescues a 0/6 model earns the stronger claim.
+A candidate that lifts the default and leaves `llama3-chatqa:8b` flat on the
+absolute-improvement metric (no gain in either condition) and leaves
+`gpt-oss:20b` unharmed is recorded as _"improves the default model by N
+shapes"_ — **not** as _"fixes warm-start prose drift"_. The durable record is
+what the next person reasons from, and those two phrasings invite very
+different follow-on work. A candidate that also moves `llama3-chatqa:8b`'s
+absolute score, or independently reproduces its win on `granite4.1:8b`, earns
+a stronger claim.
 
 **Noise, which the two-of-three rule was really guarding against**, is handled
 by sample count on the deciding model rather than by breadth across models.
@@ -297,7 +393,10 @@ samples on the model that decides is the cheaper and better-targeted guard.
 model itself and except the regression gates, which stay absolute. A candidate
 that takes the default 3/6 → 5/6 while taking `gpt-oss:20b` 6/6 → 5/6 is a
 trade to be made with the numbers in view, not one this rule should decide
-silently. Record both movements and say plainly that it is a trade.
+silently. Record both movements and say plainly that it is a trade. This is
+exactly why `gpt-oss:20b` fills the harm-control role in Stage 1 (see above):
+it is the model with the most headroom to lose, and this paragraph is the
+rule that governs what happens if a candidate causes it to.
 
 A tie everywhere is not an improvement — the Task 6 lesson, where a
 tie-at-ceiling was treated as satisfying a `>=` rule and only the regression
@@ -310,11 +409,13 @@ apart rather than one:
 - **No candidate improves the default model.** The shipping-relevant negative:
   none of these five mechanisms is worth adding to the prompt or the request
   assembly. Recorded so the next person does not re-derive them.
-- **Candidates help the default but no candidate rescues a 0/6 model.** A
-  narrower, weaker claim about total-collapse models specifically. Four of them
-  sit at 0/6 _with Task 7's anti-drift wording already in place_, which is
-  already direct evidence that wording has a ceiling; this experiment either
-  strengthens that or overturns it.
+- **Candidates help the default but none moves `llama3-chatqa:8b`'s absolute
+  score or independently reproduces the erosion-reduction win on
+  `granite4.1:8b`.** A narrower, weaker claim about the informing models
+  specifically. Four models (a broader set than this experiment's screen) sit
+  at 0/6 on the older `choiceset_ab.dart` probe _with Task 7's anti-drift
+  wording already in place_, which is already direct evidence that wording has
+  a ceiling; this experiment either strengthens that or overturns it.
 
 Both are successful experiments. Only the first means nothing ships.
 
@@ -357,4 +458,18 @@ its model, temperature, and condition:
   human, not to the pass rate.
 - **The screening subset could mislead.** Six cases chosen to span the failure
   surface may not represent all 25. Stage 3 exists to catch that, and a Stage 1
-  winner that does not survive the full set is recorded as such.
+  winner that does not survive the full set is recorded as such. This risk is
+  now partly evidenced rather than purely hypothetical: the original design's
+  single with-history-only screening metric would have silently discarded
+  `llama3-chatqa:8b` from ever showing an improvement (see "The screening
+  metric depends on the model's baseline"), a failure mode found only because
+  a full 25-case baseline existed to check the six-case subset against.
+- **Three of the four screening models are informational.** Only
+  `qwen2.5-coder:7b` votes; `granite4.1:8b`, `gpt-oss:20b`, and
+  `llama3-chatqa:8b` shape the description and surface harm, but a candidate
+  that happens to suit `qwen2.5-coder:7b`'s specific failure pattern — without
+  the mechanism generalizing at all — can still promote. The informing models
+  make that scenario visible in the write-up (a "narrow win" framing rather
+  than a "fixes drift" one), but they cannot block it. The experiment rests
+  more heavily on one deciding model than a naive reading of "four models
+  screened" would suggest.

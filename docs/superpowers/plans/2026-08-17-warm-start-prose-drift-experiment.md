@@ -1,10 +1,22 @@
 # Warm-Start Prose Drift Experiment Implementation Plan
 
+> **Amended 2026-08-17, after approval, before execution.** This plan had not
+> been started when `shape_ab.dart` was built and full 25-case baselines were
+> recorded for four models in `ModelBehavior.md`. Those baselines invalidated
+> the screening model set and the screening metric in the spec this plan
+> implements — see the amendment note at the top of
+> [`2026-08-17-warm-start-prose-drift-experiment-design.md`](../specs/2026-08-17-warm-start-prose-drift-experiment-design.md).
+> Every task below is updated to the amended model set — `qwen2.5-coder:7b`
+> (decides), `granite4.1:8b`, `gpt-oss:20b`, `llama3-chatqa:8b` (inform) —
+> replacing the original `qwen2.5-coder:7b` / `llama3-chatqa:8b` /
+> `nemotron-3-nano:4b` trio. This is a deliberate revision made before any run,
+> not drift discovered after one.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Measure five candidate fixes for models dropping to prose once a conversation has gone to Markdown, attribute any improvement to a specific mechanism, and either ship the winner or record a measured negative.
 
-**Architecture:** Two code tasks then six measurement tasks. The code tasks add `--reinforce` and `--seed-card` to `shape_ab.dart`, which is all the two non-prompt candidates need — `probeOnce` already assembles messages exactly as `OllamaResponder` does, so both are testable probe-side with no server change. The three prompt candidates are `/tmp` copies of the shipped prompt, each measured by pointing `--baseline` at it (one prompt per run, rather than paying for two prompts per run via `--candidate`). Screening then runs one deciding model and two informing models, winners stack, survivors face the full case set and the two standing regression gates.
+**Architecture:** Two code tasks then six measurement tasks. The code tasks add `--reinforce` and `--seed-card` to `shape_ab.dart`, which is all the two non-prompt candidates need — `probeOnce` already assembles messages exactly as `OllamaResponder` does, so both are testable probe-side with no server change. The three prompt candidates are `/tmp` copies of the shipped prompt, each measured by pointing `--baseline` at it (one prompt per run, rather than paying for two prompts per run via `--candidate`). Screening then runs one deciding model and three informing models, winners stack, survivors face the full case set and the two standing regression gates.
 
 **Tech Stack:** Dart 3.12 (FVM-pinned), `package:test`, `package:args`, a local Ollama at `http://127.0.0.1:11434`, Prettier for Markdown.
 
@@ -15,17 +27,20 @@
 **Do not start this plan until [`2026-08-17-shape-aware-model-probe.md`](./2026-08-17-shape-aware-model-probe.md) is complete and merged.** Two reasons, both blocking:
 
 1. **The instrument does not exist otherwise.** Every measurement here runs through `shape_ab.dart`, `shape_cases.dart`, and `judgeShape`, all of which Plan 1 creates. Tasks 1 and 2 below modify `shape_ab.dart`.
-2. **The numbers are uninterpretable otherwise.** Plan 1 Task 6 records `qwen2.5-coder:7b`'s baseline cold-start and with-history pass-sets. A shape that model never produces cold-start is a capability or palette gap, not drift — scoring it here would credit or blame a candidate for something it cannot affect.
+2. **The numbers are uninterpretable otherwise.** Plan 1 Task 6 records `qwen2.5-coder:7b`'s baseline cold-start and with-history pass-sets. A shape that model never produces cold-start is a capability or palette gap, not drift — scoring it here would credit or blame a candidate for something it cannot affect. **This plan's amended screening set (Task 4) needs three more of these: `granite4.1:8b`, `gpt-oss:20b`, and `llama3-chatqa:8b` — all four now exist, dated 2026-08-17, in `ModelBehavior.md`.**
 
-Before Task 1, confirm both:
+Before Task 1, confirm all four:
 
 ```bash
 cd adaptive_chat_server_dart
 ls tool/model_probes/shape_ab.dart tool/model_probes/shape_cases.dart
 grep -n "Shape coverage — \`qwen2.5-coder:7b\`" ModelBehavior.md
+grep -n "Shape coverage — \`granite4.1:8b\`" ModelBehavior.md
+grep -n "Shape coverage — \`gpt-oss:20b\`" ModelBehavior.md
+grep -n "Shape coverage — \`llama3-chatqa:8b\`" ModelBehavior.md
 ```
 
-Both must succeed. If the `ModelBehavior.md` grep finds nothing, Plan 1 Task 6 has not run and this plan cannot be interpreted — stop and report that.
+All must succeed. If any `ModelBehavior.md` grep finds nothing, that model's baseline has not run and Task 4 cannot be interpreted for it — stop and report that.
 
 ## Global Constraints
 
@@ -37,8 +52,8 @@ Both must succeed. If the `ModelBehavior.md` grep finds nothing, Plan 1 Task 6 h
 - Analysis is `very_good_analysis`: single quotes, package imports for `lib/`, no `print` (use `stdout.writeln` in scripts).
 - Gates before any task is complete: `fvm dart analyze` clean, `fvm dart test` all passing, `fvm dart format --output=none --set-exit-if-changed .` clean.
 - Probe numbers are only meaningful with their condition attached. Always record **which model**, **which temperature**, **cold-start vs with-history**, **sample count**, and **which candidate**.
-- **Promotion turns on `qwen2.5-coder:7b` alone.** `llama3-chatqa:8b` and `nemotron-3-nano:4b` inform how a result is described; they do not vote. See Task 8.
-- **Nothing shipping is an allowed outcome.** Four models sit at 0/6 with the current anti-drift wording already in place. If no candidate improves the default model, the deliverable is a recorded negative — Task 8 covers that path explicitly.
+- **Promotion turns on `qwen2.5-coder:7b` alone.** `granite4.1:8b`, `gpt-oss:20b`, and `llama3-chatqa:8b` inform how a result is described and surface harm; they do not vote. See Task 8.
+- **Nothing shipping is an allowed outcome.** Four models (a broader set than this plan's screening subset) sit at 0/6 on `choiceset_ab.dart` with the current anti-drift wording already in place. If no candidate improves the default model, the deliverable is a recorded negative — Task 8 covers that path explicitly.
 
 ---
 
@@ -491,7 +506,7 @@ Each model needs a case it passes **without** the reminder, so the pair is run b
 
 ```bash
 cd adaptive_chat_server_dart
-for m in qwen2.5-coder:7b llama3-chatqa:8b nemotron-3-nano:4b; do
+for m in qwen2.5-coder:7b granite4.1:8b gpt-oss:20b llama3-chatqa:8b; do
   echo "########## $m — without reminder ##########"
   fvm dart run tool/model_probes/shape_ab.dart --model "$m" --only choice1
   echo "########## $m — with BANANA reminder ##########"
@@ -556,7 +571,7 @@ git commit -m "docs(chat-server): record which models receive a mid-conversation
 
 ### Task 4: Stage 1 — screen all five candidates
 
-Six configurations per model. The deciding model runs at `--samples 2`; the two informing models at `--samples 1`.
+Six configurations per model. The deciding model runs at `--samples 2`; the three informing models at `--samples 1`.
 
 **Files:**
 
@@ -566,8 +581,8 @@ Six configurations per model. The deciding model runs at `--samples 2`; the two 
 
 **Interfaces:**
 
-- Consumes: `--reinforce` (Task 1), `--seed-card` (Task 2), the delivery-check verdicts (Task 3), Plan 1's baseline.
-- Produces: per-candidate with-history and cold-start scores for three models. Task 5 stacks whatever won.
+- Consumes: `--reinforce` (Task 1), `--seed-card` (Task 2), the delivery-check verdicts (Task 3), Plan 1's baseline, the four `#### Shape coverage — …` baselines already in `ModelBehavior.md`.
+- Produces: per-candidate with-history and cold-start scores for four models. Task 5 stacks whatever won.
 
 - [ ] **Step 1: Build the three candidate prompt files**
 
@@ -639,7 +654,30 @@ The subset spans the failure surface: two ChoiceSet cases, another input, two di
 choice1,choice2,date,table,carousel,gauge
 ```
 
-Before running, check these against Plan 1's recorded baseline for `qwen2.5-coder:7b`. **Any case that failed cold-start under the baseline prompt is not a drift case for that model** — it cannot be eroded because it never worked. If one of the six is in that group for a given model, note it and read that model's numbers over the remaining cases; do not silently keep a 6-case denominator that includes a case the model never passes.
+Before running, check these against each model's recorded 25-case baseline in
+`ModelBehavior.md` (`#### Shape coverage — …`). **Any case that failed
+cold-start under the baseline prompt is not a drift case for that model** — it
+cannot be eroded because it never worked. If one of the six is in that group
+for a given model, note it and read that model's numbers over the remaining
+cases; do not silently keep a 6-case denominator that includes a case the
+model never passes.
+
+This distinction reads differently depending on which of the two per-spec
+metrics applies to the model (see the spec's "The screening metric depends on
+the model's baseline"):
+
+- **`qwen2.5-coder:7b` and `granite4.1:8b`** — erosion reduction. Read
+  with-history rising toward that model's own cold-start score on the subset.
+- **`llama3-chatqa:8b`** — absolute improvement. All six subset cases
+  (`choice1`, `choice2`, `date`, `table`, `carousel`, `gauge`) sit outside its
+  one 25-case cold-start pass (its `prose` case is not in the subset), so its
+  baseline on this subset is 0/6 cold **and** 0/6 warm. That is the expected,
+  correctly-recorded floor for this model on this metric — not a run to
+  discard — and any nonzero score under a candidate, cold or warm, is the
+  signal this model exists in the screen to catch.
+- **`gpt-oss:20b`** — harm control. Read whether either score drops from its
+  own baseline on the subset; a drop is the flag this model exists to catch,
+  not evidence for or against the candidate's mechanism.
 
 - [ ] **Step 3: Screen the deciding model at `--samples 2`**
 
@@ -666,14 +704,14 @@ Note the prompt candidates are passed via `--baseline`, not `--candidate`: each 
 
 Expected: 6 blocks, each with cold-start, with-history, and an erosion line. Confirm `{"models":[]}` at the end.
 
-- [ ] **Step 4: Screen the two informing models at `--samples 1`**
+- [ ] **Step 4: Screen the three informing models at `--samples 1`**
 
 Same loop, one model at a time, `--samples 1`:
 
 ```bash
 cd adaptive_chat_server_dart
 SUB=choice1,choice2,date,table,carousel,gauge
-for M in llama3-chatqa:8b nemotron-3-nano:4b; do
+for M in granite4.1:8b gpt-oss:20b llama3-chatqa:8b; do
   for cfg in "baseline" "p1" "p2" "p3" "reinforce" "seed-card"; do
     echo "########## $M / $cfg ##########"
     case "$cfg" in
@@ -694,16 +732,16 @@ For any model where Task 3 found the reminder is not delivered, the `reinforce` 
 
 - [ ] **Step 5: Tabulate**
 
-Build this table from the three transcripts. Every cell is with-history / cold-start for the six-case subset:
+Build this table from the two transcripts (`/tmp/screen-qwen.txt`, `/tmp/screen-informing.txt`). Every cell is with-history / cold-start for the six-case subset:
 
-| Candidate | `qwen2.5-coder:7b` (decides, n=2) | `llama3-chatqa:8b` (informs) | `nemotron-3-nano:4b` (informs) |
-| --------- | --------------------------------- | ---------------------------- | ------------------------------ |
-| baseline  |                                   |                              |                                |
-| P1        |                                   |                              |                                |
-| P2        |                                   |                              |                                |
-| P3        |                                   |                              |                                |
-| N1        |                                   |                              |                                |
-| N2        |                                   |                              |                                |
+| Candidate | `qwen2.5-coder:7b` (decides, n=2) | `granite4.1:8b` (informs) | `gpt-oss:20b` (informs) | `llama3-chatqa:8b` (informs) |
+| --------- | --------------------------------- | ------------------------- | ----------------------- | ---------------------------- |
+| baseline  |                                   |                           |                         |                              |
+| P1        |                                   |                           |                         |                              |
+| P2        |                                   |                           |                         |                              |
+| P3        |                                   |                           |                         |                              |
+| N1        |                                   |                           |                         |                              |
+| N2        |                                   |                           |                         |                              |
 
 Also record N2's average latency against baseline's, since N2 costs tokens on every request.
 
@@ -722,7 +760,10 @@ The informing models do not gate; they determine wording. Write the results into
 Six configurations — baseline plus five candidates — over a six-case subset
 (`choice1`, `choice2`, `date`, `table`, `carousel`, `gauge`) at `t=0`, both
 conditions, via `shape_ab.dart`. `qwen2.5-coder:7b` at `--samples 2` decides;
-`llama3-chatqa:8b` and `nemotron-3-nano:4b` at `--samples 1` inform.
+`granite4.1:8b`, `gpt-oss:20b`, and `llama3-chatqa:8b` at `--samples 1`
+inform — `granite4.1:8b` as a second drift data point (erosion-reduction
+metric), `gpt-oss:20b` as harm control, `llama3-chatqa:8b` as the
+absolute-improvement floor.
 
 <the table from Step 5>
 
@@ -739,7 +780,8 @@ not worth retrying. A measured negative is the point of recording losers.>
   P2 Markdown-section guard, P3 escape-hatch narrowing, N1 mid-conversation
   reminder, N2 card-shaped history seed), measured 2026-08-17 over a six-case
   subset at `t=0` with `shape_ab.dart`. `qwen2.5-coder:7b` at `--samples 2`
-  decided; two collapse models at `--samples 1` informed the wording.
+  decided; three informing models at `--samples 1` (`granite4.1:8b`,
+  `gpt-oss:20b`, `llama3-chatqa:8b`) informed the wording and surfaced harm.
   Advancing: `<ids or none>`. Losers are recorded with their numbers so they
   are not retried.
 ```
@@ -790,14 +832,14 @@ Expected: one added block per advancing prompt candidate.
 
 If only one prompt candidate advanced, `/tmp/stack.txt` is just that candidate's file — note that and skip ahead. If only N-candidates advanced, there is no stacked prompt file; the stack is the flag combination.
 
-- [ ] **Step 2: Run the stack on all three screening models**
+- [ ] **Step 2: Run the stack on all four screening models**
 
 ```bash
 cd adaptive_chat_server_dart
 SUB=choice1,choice2,date,table,carousel,gauge
 # Add --reinforce and/or --seed-card below only for N-candidates that advanced.
 # Use --baseline /tmp/stack.txt only if a prompt candidate advanced.
-for M in qwen2.5-coder:7b llama3-chatqa:8b nemotron-3-nano:4b; do
+for M in qwen2.5-coder:7b granite4.1:8b gpt-oss:20b llama3-chatqa:8b; do
   N=1; [ "$M" = "qwen2.5-coder:7b" ] && N=2
   echo "########## $M / stack ##########"
   fvm dart run tool/model_probes/shape_ab.dart --model "$M" --samples "$N" --only "$SUB" --baseline /tmp/stack.txt
@@ -824,7 +866,7 @@ confirmation.>`
 ```markdown
 - Added: stacked-configuration result for the warm-start drift candidates
   that individually beat baseline. Measured 2026-08-17 on the same six-case
-  subset and three models. `<Composed / tied / interfered>`; the
+  subset and four models. `<Composed / tied / interfered>`; the
   configuration carried into full confirmation is `<...>`.
 ```
 
@@ -853,13 +895,18 @@ A six-case subset chosen to span the failure surface may not represent all 25. T
 
 - [ ] **Step 1: Run the survivor on the full 25 cases**
 
-Models, one at a time: the three screening models, the two remaining total-collapse models, and one strong model to confirm the change does not harm a model that already worked.
+Models, one at a time: the four screening models plus the two remaining
+total-collapse models (`llama3-groq-tool-use:8b`, `nemotron-3.5-lightning:30b`)
+— six models total. The "at least one strong model" check the original design
+required is already satisfied by `gpt-oss:20b`'s presence in the screening
+set (see the spec's Stage 3 section); `qwen3.6:27b-coding-nvfp4` is not run
+here by default.
 
 ```bash
 cd adaptive_chat_server_dart
 # Substitute the surviving configuration's flags/prompt file for CONFIG below.
-for M in qwen2.5-coder:7b llama3-chatqa:8b nemotron-3-nano:4b \
-         llama3-groq-tool-use:8b nemotron-3.5-lightning:30b qwen3.6:27b-coding-nvfp4; do
+for M in qwen2.5-coder:7b granite4.1:8b gpt-oss:20b llama3-chatqa:8b \
+         llama3-groq-tool-use:8b nemotron-3.5-lightning:30b; do
   echo "########## $M / survivor ##########"
   fvm dart run tool/model_probes/shape_ab.dart --model "$M" --samples 2 --baseline /tmp/stack.txt
   curl -s http://127.0.0.1:11434/api/generate -d "{\"model\":\"$M\",\"keep_alive\":0}" > /dev/null
@@ -867,11 +914,13 @@ for M in qwen2.5-coder:7b llama3-chatqa:8b nemotron-3-nano:4b \
 done 2>&1 | tee /tmp/confirm-run.txt
 ```
 
-`nemotron-3.5-lightning:30b` is 23.7 GB and `qwen3.6:27b-coding-nvfp4` is 18.4 GB — expect this task to take hours, and confirm `{"models":[]}` between every model. Never let two of these be resident at once.
+`nemotron-3.5-lightning:30b` is 23.7 GB and `gpt-oss:20b` is 12.8 GB — the
+lightning model is the one to expect hours from; confirm `{"models":[]}`
+between every model and never let two of these be resident at once.
 
-- [ ] **Step 2: Compare against Plan 1's baselines**
+- [ ] **Step 2: Compare against recorded baselines**
 
-For each model, compare the survivor's cold-start and with-history figures against that model's baseline. For `qwen2.5-coder:7b` the baseline is Plan 1 Task 6's recorded numbers; for the others, run baseline for the same model and case set if no recorded figure exists, one model at a time.
+For each model, compare the survivor's cold-start and with-history figures against that model's baseline. Four of the six already have a full 25-case `shape_ab.dart` baseline recorded in `ModelBehavior.md` (`qwen2.5-coder:7b` from Plan 1 Task 6; `granite4.1:8b`, `gpt-oss:20b`, `llama3-chatqa:8b` from the 2026-08-17 baselines this amendment is built on). For `llama3-groq-tool-use:8b` and `nemotron-3.5-lightning:30b`, no `shape_ab.dart` baseline exists yet (only their `choiceset_ab.dart` 0/6 collapse figure) — run baseline for these two on the same case set first, one model at a time.
 
 Flag, without treating as automatic vetoes: any model whose with-history score **drops**, and any model whose cold-start score drops. Per the spec, harm to a non-default model is a trade for the human to weigh with numbers in view — record both movements and say plainly that it is a trade.
 
