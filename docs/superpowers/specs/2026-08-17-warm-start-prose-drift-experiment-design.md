@@ -187,19 +187,30 @@ applied in advance rather than after a confusing number.
 
 ### Stage 1 — screening
 
-| Model                | Weights | Baseline with-history | Why in the screen            |
-| -------------------- | ------- | --------------------- | ---------------------------- |
-| `qwen2.5-coder:7b`   | 4.4 GB  | 3/6 (partial)         | server default, has headroom |
-| `llama3-chatqa:8b`   | 4.3 GB  | 0/6 (collapse)        | swept cold start, collapsed  |
-| `nemotron-3-nano:4b` | 2.6 GB  | 0/6 (collapse)        | smallest total collapse      |
+The three models do **not** carry equal weight. One decides, two inform.
+
+| Model                | Weights | Baseline with-history | Role in the decision               | Samples |
+| -------------------- | ------- | --------------------- | ---------------------------------- | ------- |
+| `qwen2.5-coder:7b`   | 4.4 GB  | 3/6 (partial)         | **decides** — the server default   | 2       |
+| `llama3-chatqa:8b`   | 4.3 GB  | 0/6 (collapse)        | informs — does the fix generalize? | 1       |
+| `nemotron-3-nano:4b` | 2.6 GB  | 0/6 (collapse)        | informs — does the fix generalize? | 1       |
+
+`qwen2.5-coder:7b` runs at `--samples 2` because it is the model the promotion
+decision turns on, and two samples distinguish a flip that holds from one that
+appeared once. The other two run at `--samples 1` because they change how a
+result is _described_, not whether it ships — see the decision rule.
+
+They stay in the screen despite not voting because a candidate that actually
+rescues a 0/6 model is a far larger finding than a narrow win on the default,
+and it is cheap to find out early on 2.6-4.3 GB models.
 
 Six configurations per model: baseline, P1, P2, P3, N1, N2. Instrument is
 `shape_ab.dart --only` over a fixed subset spanning the failure surface — two
 ChoiceSet cases (the known-eroding shape), `date` (another input), `table` and
-`carousel` (display), `gauge` (chart) — at `--samples 1`, both conditions.
+`carousel` (display), `gauge` (chart) — both conditions.
 
-Roughly 3 models × 6 configs × 6 cases × 2 conditions ≈ 216 calls;
-minutes-scale on 2.6-4.4 GB models.
+Roughly (1 model × 2 samples + 2 models × 1 sample) × 6 configs × 6 cases × 2
+conditions ≈ 288 calls; minutes-scale on 2.6-4.4 GB models.
 
 ### Erosion is measured against cold start
 
@@ -247,31 +258,65 @@ is reverted and recorded rather than shipped.
 
 ## Decision rule
 
-**Promotion bar:** a candidate advances from screening if it raises
-with-history passes on **at least two of the three** screening models and
-lowers it on **none**.
+The decision this experiment informs is **"what should the shipped prompt
+be?"** — and the shipped prompt serves whichever model the server runs, whose
+default is `qwen2.5-coder:7b`. The bar follows from that, not from whether a
+fix generalizes.
 
-Requiring all three would let one stubborn model veto a real improvement;
-requiring only one would promote noise. A tie everywhere is not an
-improvement — the Task 6 lesson, where a tie-at-ceiling was treated as
-satisfying a `>=` rule and only the regression check caught the problem.
+**Promote a candidate when all three hold:**
 
-**The narrow-win case, stated so it is not decided ad hoc later.** A candidate
-that improves only `qwen2.5-coder:7b` — the partial-band server default — and
-leaves both collapse models at 0/6 does **not** meet the bar above. It may
-still be worth shipping as an incremental improvement to the default model;
-Task 7 shipped on exactly that evidence, measured on that model alone. But it
-must be recorded and described as a narrow win on the server default, **not**
-as fixing warm-start drift, and it still has to clear Stages 3 and 4. The
-distinction matters because the durable record is what the next person
-reasons from: "improves the default model by one shape" and "fixes prose
-drift" invite very different follow-on work.
+1. `qwen2.5-coder:7b`'s **with-history** score improves at `--samples 2` — a
+   flip that holds across both samples, not one that appeared once.
+2. That same candidate's **cold-start** score on that model does not drop, so
+   it cannot win by dragging cold start down to meet with-history.
+3. Stage 4's regression gates stay clean.
 
-**Nothing shipping is an allowed outcome.** Four models sit at 0/6 with Task
-7's anti-drift wording already in place, which is direct evidence that prompt
-wording has a ceiling here. If all five candidates fail, the finding is "this
-class of fix does not rescue total-collapse models," recorded as a measured
-negative. That is a successful experiment, not a failed one.
+**A candidate that improves only the default model is a promotion, not a
+rejection.** The two collapse models do not vote. Neither is a plausible
+default — `nemotron-3-nano:4b` also posts stress 2/5 at `t=0`, and
+`nemotron-3.5-lightning:30b` is 23.7 GB and fails the 16 GB portability line —
+so their unsuitability is a fact about them rather than a reason to withhold a
+real improvement to the model actually shipped. An earlier draft of this spec
+required two of three models to improve; that let non-candidate models veto a
+win on the default, and was wrong.
+
+What the informational models change is the **description**, not the decision.
+A candidate that lifts the default and leaves both 0/6 models at 0/6 is
+recorded as _"improves the default model by N shapes"_ — **not** as _"fixes
+warm-start prose drift"_. The durable record is what the next person reasons
+from, and those two phrasings invite very different follow-on work. A candidate
+that also rescues a 0/6 model earns the stronger claim.
+
+**Noise, which the two-of-three rule was really guarding against**, is handled
+by sample count on the deciding model rather than by breadth across models.
+`ModelBehavior.md` already records that temperature 0 is not deterministic for
+long generations, so a single-sample one-prompt flip is not evidence. Two
+samples on the model that decides is the cheaper and better-targeted guard.
+
+**Harm is a flag for the human, not an automatic veto** — except on the default
+model itself and except the regression gates, which stay absolute. A candidate
+that takes the default 3/6 → 5/6 while taking `gpt-oss:20b` 6/6 → 5/6 is a
+trade to be made with the numbers in view, not one this rule should decide
+silently. Record both movements and say plainly that it is a trade.
+
+A tie everywhere is not an improvement — the Task 6 lesson, where a
+tie-at-ceiling was treated as satisfying a `>=` rule and only the regression
+check caught the problem.
+
+**Nothing shipping is an allowed outcome**, and the bar's split between
+deciding and informing models means there are two distinct negatives to keep
+apart rather than one:
+
+- **No candidate improves the default model.** The shipping-relevant negative:
+  none of these five mechanisms is worth adding to the prompt or the request
+  assembly. Recorded so the next person does not re-derive them.
+- **Candidates help the default but no candidate rescues a 0/6 model.** A
+  narrower, weaker claim about total-collapse models specifically. Four of them
+  sit at 0/6 _with Task 7's anti-drift wording already in place_, which is
+  already direct evidence that wording has a ceiling; this experiment either
+  strengthens that or overturns it.
+
+Both are successful experiments. Only the first means nothing ships.
 
 ## Recording results
 
