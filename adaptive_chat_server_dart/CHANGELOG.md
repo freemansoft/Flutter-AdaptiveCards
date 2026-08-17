@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Added: `shape_ab.dart`, a shape-aware probe. It runs all 25 cases
+  cold-start and again after two prose turns, then prints the shapes a model
+  produces cold and loses with history — the number a prompt fix has to move.
+  A case counts as passing only when every sample passed, and the erosion
+  line is derived from the two pass-sets so its count can never disagree with
+  its own list. `--only` rejects unknown case ids rather than silently
+  shrinking the denominator; `--baseline`/`--candidate` A/B two prompts.
+
 - Added: `shape_cases.dart` — a 25-case table naming, for each prompt, the
   element types that would answer it acceptably. Expectations are sets rather
   than single types because several shapes are often equally correct
