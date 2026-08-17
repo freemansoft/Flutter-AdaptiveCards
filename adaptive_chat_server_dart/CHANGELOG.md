@@ -3,6 +3,19 @@
 ## [Unreleased]
 
 - Added: `ModelBehavior.md` now records the with-history probe of
+  `qwen3.6:27b-coding-nvfp4` (18.4 GB), the sixth and last model in this
+  sweep — its cold-start cell was already filled, only **With history** was
+  blank. Measured 2026-08-16, `choiceset_ab.dart`, two prior prose turns,
+  `t=0`, `--samples 1`: ✅ 6/6, a clean sweep matching `gpt-oss:20b`'s —
+  every prompt returned a two-element card containing an `Input.ChoiceSet`.
+  This is the twelfth `N/6` with-history cell filled in this file
+  (re-counted, not incremented). With all twelve now on record, the scores
+  split evenly into three bands with real gaps between them (no model
+  scored 4/6): four collapsed to 0/6 prose, four landed partial at 1/6-3/6,
+  and four — including this one — held up strongly at 5/6 or 6/6. Neither
+  weight class nor model family predicts which band a model lands in; see
+  `ModelBehavior.md` §4 for the full breakdown.
+- Added: `ModelBehavior.md` now records the with-history probe of
   `qwen3.5:9b` (6.1 GB) — its cold-start cell was already filled, only
   **With history** was blank. Measured 2026-08-16, `choiceset_ab.dart`,
   two prior prose turns, `t=0`, `--samples 1`, `think:false` (the probe
