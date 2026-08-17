@@ -45,7 +45,7 @@ Sorted by model name, and within a family by parameter count ascending (so `nemo
 | granite4.1:3b                                     | 2.0 GB  | ✅    | candidate              | ❌ everyday 4/7 · stress 4/5 `t=0`, 3/5 `t=0.6` — weakest  | ⚠️ 3/6 choice-set                                          |
 | granite4.1:8b                                     | 5.0 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ⚠️ 3/6 choice-set                                          |
 | hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | ❌ everyday 7/7 · stress 3/5 `t=0`, 3/5 `t=0.6`            | ❌ 1/6 choice-set                                          |
-| llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate              | ✅ everyday 7/7 all temps · stress 5/5 both — clean sweep  | ❌ 0/6 — drops to prose                                    |
+| llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate              | ✅ everyday 7/7 all temps · stress 5/5 both — clean sweep  | ❌ 0/6 — drops to prose · shapes 2/25 (see §4)             |
 | llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0` but **1/5** at `t=0.6`  | ❌ 0/6 — drops to prose                                    |
 | llama3.2:latest                                   | 1.9 GB  | ✅    | candidate              | ❌ Retired as default — failed nested and multi-select     | — not yet probed                                           |
 | nemotron-3-nano:4b                                | 2.6 GB  | ✅    | candidate              | ❌ everyday 6/7 but stress **2/5** `t=0`, 1/5 `t=0.6`      | ❌ 0/6 — drops to prose                                    |
@@ -322,6 +322,104 @@ be a poor screening subject for a future prose-drift fix — it has none to
 fix here — and a fix aimed at nested-JSON validity on
 `Carousel`/`Table`/`ColumnSet` would need a different model, one that
 actually exhibits the failure, as its regression canary.
+
+#### Shape coverage — `llama3-chatqa:8b`, 2026-08-17
+
+First run of `shape_ab.dart` (25 cases, `t=0`, `--samples 1`, current
+shipped prompt). Cold-start **1/25**, with-history **2/25**.
+
+Shapes lost to history (produced cold, prose or wrong shape with two prior
+prose turns): **none**. The probe's own derived set agrees: `eroded by
+history: none`.
+
+One case moved the opposite direction — failing cold-start and passing
+with-history: `pie` (cold: `prose`, a clean conversational reply with no
+card attempted at all; warm: passed cleanly with `Chart.Pie`). At
+`--samples 1` this may be call-to-call noise rather than a real history
+effect — the same caveat the `qwen2.5-coder:7b` write-up (`number`,
+`table`) and the `gpt-oss:20b` write-up (`gauge`, `rating_show`) above
+apply to their own inverted cases — so it is recorded here rather than
+folded into either the "lost to history" or "never produced" buckets.
+
+Shapes this model never produced under either condition: the remaining 23
+of 25 cases — `date`, `time`, `toggle`, `text`, `number`, `choice1` through
+`choice6` (6 cases), `bar`, `line`, `gauge`, `rating_show`, `rating_ask`,
+`carousel`, `table`, `facts`, `columnset`, `codeblock`, `progress`, and
+`badge`. Unlike either model above, this is not a JSON-validity gap: 22 of
+these 23 scored a flat `prose` verdict under both conditions — the server's
+own "ok, clean prose" bucket for a well-formed conversational answer that
+never attempted card JSON at all, failing the shape probe only because it
+supplied no `Input.*`/chart/table element to grade. This model did not try
+and fail to produce these shapes; on this run it essentially never tried,
+cold or warm alike.
+
+The one exception is `progress`, whose failure changed character between
+conditions without ever passing: cold-start scored plain `prose` (no card
+attempted), but with-history scored `broken: prose-with-card (user sees
+raw JSON)` — the server's label for a reply that wraps card JSON inside
+surrounding prose text, so the JSON leaks to the user instead of rendering.
+That is a shift from "no attempt" to "attempted and leaked," the same kind
+of failure-changed-shape-without-passing already on record for
+`qwen2.5-coder:7b`'s `text` case above, only moving the opposite direction
+(worse under history, not better).
+
+Notable per-case detail:
+
+- Every case except `pie` and `progress` (with-history) produced the
+  byte-for-byte same verdict, `prose`, under both conditions — there is no
+  further per-case pattern to report beyond the aggregate: this model
+  answers in plain conversational text almost regardless of what shape a
+  case asks for.
+- `codeblock` scored `prose` under both conditions, not the `CodeBlock,
+TextBlock` pass recorded for both `qwen2.5-coder:7b` and `gpt-oss:20b`
+  above. Whether the prose reply happened to contain a defensible
+  Markdown-fenced block cannot be confirmed or ruled out from the summary
+  label alone — the verdict line does not record that — so this failure is
+  noted rather than read as a clean capability gap; the case-design caveat
+  may apply here too.
+- `gauge` and `progress` never crossed into each other's bucket — both
+  scored `prose` under both conditions (aside from `progress`'s
+  with-history shift to `prose-with-card` above) — so the shapes' shared
+  "72%" wording caused no observed cross-contamination, but only because
+  neither shape was ever actually produced for the two to be confused.
+
+**Comparison across all three baselines.** The three shape-coverage runs on
+record describe three different mechanisms, not one spectrum with this
+model at an extreme end. `qwen2.5-coder:7b` swept most of the set cold
+(19/25) and lost three choice-set shapes to prose with history (18/25) —
+cold-strong, warm-weaker. `gpt-oss:20b` swept nearly all of it in both
+conditions (20/25 → 22/25, zero eroded), its only failures being
+JSON-validity breaks on the three most nested shapes, present and
+unchanged across both conditions. `llama3-chatqa:8b` matches neither
+shape: it is not cold-strong (1/25 is the weakest cold-start score of the
+three by a wide margin) and it is not meaningfully different warm (2/25)
+— it is close to a uniform, near-total failure under both conditions, and
+the one point of movement (`pie`) is hedged above as possible sampling
+noise rather than a demonstrated effect.
+
+**What this means for validating a drift fix.** The task's hypothesis
+rested on this model's own earlier record: a clean 7/7 everyday · 5/5
+stress cold-start sweep on the narrower everyday/stress probe
+(2026-08-14), followed by a 0/6 collapse with history on the narrower
+`choiceset_ab.dart` options probe. That pairing looked like the textbook
+cold-strong/warm-weak shape a drift fix could be validated against. It
+does not hold on the broader 25-shape set: `shape_ab.dart` shows a
+cold-start score of 1/25, not 19-20/25 like the other two baselines, so
+there is essentially no cold-start card-producing behavior here to erode
+in the first place — the model mostly answers in prose from the very
+first, unhistoried turn. The 0/6 choice-set collapse did **not** generalize
+into broad shape erosion, because "erosion" implies something was working
+that stopped; on `shape_ab.dart`'s broader palette, it was barely working
+to begin with. That makes `llama3-chatqa:8b` a **weaker** drift-fix
+validation subject than the hypothesis assumed, not a stronger one: a fix
+aimed at "conversation history erodes an otherwise-working card path" has
+almost no working card path to erode here, cold or warm. The earlier
+everyday/stress and `choiceset_ab.dart` numbers evidently describe
+behavior specific to those narrower question sets rather than a
+model-wide cold-start strength that `shape_ab.dart` should have
+reproduced — the three probes are measuring different things for this
+model, and the wide 25-shape set is the one where its cards mostly never
+appear at all, in either condition.
 
 ### Not a card test: the `format` canary
 

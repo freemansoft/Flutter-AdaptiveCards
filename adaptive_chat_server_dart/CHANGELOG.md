@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+- Added: third `shape_ab.dart` baseline — `llama3-chatqa:8b`, 25 cases,
+  `t=0`, `--samples 1`, current shipped prompt: cold-start 1/25,
+  with-history 2/25, zero shapes eroded by history. Recorded in
+  `ModelBehavior.md` alongside the `qwen2.5-coder:7b` and `gpt-oss:20b`
+  baselines: unlike either, this model is not cold-strong — 22 of its 23
+  failing cases scored a flat `prose` verdict under both conditions,
+  meaning it mostly never attempted card JSON at all rather than producing
+  it and losing it to drift or JSON invalidity, so its earlier 0/6
+  choice-set collapse does not generalize into broad shape erosion and it
+  is a weaker drift-fix validation subject than that narrower result
+  suggested.
+
 - Added: second `shape_ab.dart` baseline — `gpt-oss:20b`, 25 cases, `t=0`,
   `--samples 1`, current shipped prompt: cold-start 20/25, with-history
   22/25, zero shapes eroded by history. Recorded in `ModelBehavior.md`
