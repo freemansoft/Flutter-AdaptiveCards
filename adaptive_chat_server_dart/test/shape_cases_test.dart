@@ -73,6 +73,32 @@ void main() {
       expect(controls.single.requiresInput, isFalse);
     });
 
+    test(
+      'accepted types cover exactly the schema enum minus TextBlock, Icon, '
+      'and Image',
+      () {
+        // Pinning the doc comment's "21 of 24" claim: if a 25th type is
+        // added to card_schema.json, this test should fail rather than let
+        // the coverage claim (here, in the README, and in the spec) go
+        // stale by silently leaving the new type unprobed.
+        final allowed = schemaElementTypes();
+        final documentedExclusions = {'TextBlock', 'Icon', 'Image'};
+        final expectedCoverage = allowed.difference(documentedExclusions);
+        final actualCoverage = shapeCases.expand((c) => c.accepted).toSet();
+        expect(
+          actualCoverage,
+          equals(expectedCoverage),
+          reason:
+              'shapeCases should cover every element type in '
+              "card_schema.json's enum except the documented exclusions "
+              '(TextBlock, Icon, Image). If this fails because the schema '
+              'gained a new type, either add a case that exercises it or '
+              'add it to the documented exclusions here, in the doc comment '
+              'above shapeCases, and in README.md / the spec.',
+        );
+      },
+    );
+
     test('the six choice cases match choiceset_ab.dart verbatim', () {
       // Copied from choiceset_ab.dart's _prompts. If that list changes, the
       // two probes stop being comparable and this test should fail loudly.

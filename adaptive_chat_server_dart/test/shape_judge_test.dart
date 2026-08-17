@@ -137,6 +137,23 @@ void main() {
       expect(r.label, 'unwanted-card');
     });
 
+    test('broken when the control case gets a prose-wrapped card', () {
+      // Regression: the negative-control branch used to decide on
+      // `body == null` alone, so a reply that failed to parse as a card for
+      // any reason — including prose wrapping a card, which judgeReply marks
+      // broken — scored prose-ok. It must score broken instead, exactly like
+      // the general branch.
+      final r = judgeShape(
+        proseCase,
+        outcomeFor(
+          'Sure, here you go:\n\n```json\n'
+          '{"type":"TextBlock","text":"hi","wrap":true}\n```',
+        ),
+      );
+      expect(r.pass, isFalse);
+      expect(r.label, startsWith('broken'));
+    });
+
     test('describe() names what was found on a wrong-shape failure', () {
       final r = judgeShape(
         tableCase,

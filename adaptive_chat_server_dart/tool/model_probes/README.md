@@ -54,11 +54,21 @@ between the two. Use `--only carousel,gauge` to re-check one shape without
 paying for the other twenty-three, and `--candidate <file>` to A/B a prompt
 change per shape.
 
-Its failure labels distinguish four ways a card reply can be wrong:
+Its failure labels distinguish five ways a card reply can be wrong:
 `wrong-shape` (a card, but not an accepted type — the line names what came
 back), `no-input` (a card with content but no `Input.*` where the prompt
-asked the user for a value), `prose` (no card at all), and `broken` (invalid
-JSON, or prose wrapping a card).
+asked the user for a value), `prose` (no card at all), `unwanted-card` (the
+`prose` control case got a card back instead of the prose it expects), and
+`broken` (invalid JSON, duplicate keys, or prose wrapping a card).
+
+`choiceset_ab.dart`'s `_hasChoiceSet` deliberately judges differently: it
+checks only whether a parsed card contains an `Input.ChoiceSet`, ignoring
+`outcome.ok`. A duplicate-key-corrupted card containing a `ChoiceSet` counts
+as a pass there but scores `broken` in `shape_ab.dart`. This is not a bug in
+either script — the older reproducer stays frozen so its numbers stay
+comparable over time, and `shape_ab.dart`'s stricter rule (agreeing with the
+server's own verdict) is the one new probes should follow. If the two
+probes' choice-set numbers ever diverge, this is the first place to look.
 
 ## How a reply is judged
 

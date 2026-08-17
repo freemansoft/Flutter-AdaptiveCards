@@ -32,6 +32,10 @@ List<ShapeCase> selectCases(String? only) {
       .map((s) => s.trim())
       .where((s) => s.isNotEmpty)
       .toSet();
+  if (wanted.isEmpty) {
+    stderr.writeln('--only was empty; pass at least one case id.');
+    exit(2);
+  }
   final selected = shapeCases.where((c) => wanted.contains(c.id)).toList();
   final unknown = wanted.difference(selected.map((c) => c.id).toSet());
   if (unknown.isNotEmpty) {

@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Fixed: `judgeShape`'s negative-control branch could score a reply the
+  server itself calls broken (invalid JSON, duplicate keys, prose wrapping a
+  card) as `prose-ok`, because it checked `outcome.ok` only after already
+  deciding the reply wasn't a card — the same class of bug the earlier
+  duplicate-key fix (`2d61c13`) closed for the branch's card path but missed
+  here. `--only` with an empty/blank value (e.g. an empty shell variable) now
+  exits 2 instead of silently running zero cases. Added a test pinning that
+  `shapeCases`' accepted types stay in sync with `card_schema.json`'s
+  element enum. Docs: `tool/model_probes/README.md` names duplicate keys and
+  `unwanted-card` and records the deliberate judging difference from
+  `choiceset_ab.dart`; `ModelBehavior.md`'s "every With history cell" claim
+  is narrowed to measured cells. The recorded `qwen2.5-coder:7b` baseline
+  (cold-start 19/25, with-history 18/25) is unaffected — its `prose` case
+  returned genuinely clean prose under both conditions.
+
 - Added: first `shape_ab.dart` baseline — `qwen2.5-coder:7b`, 25 cases,
   `t=0`, `--samples 1`, current shipped prompt: cold-start 19/25,
   with-history 18/25. Recorded in `ModelBehavior.md` alongside which shapes

@@ -278,24 +278,25 @@ ShapeResult judgeShape(ShapeCase c, ProbeOutcome outcome) {
 
   // Negative control: prose is correct here and a card is the failure.
   if (c.accepted.isEmpty) {
+    // Checked first, mirroring the general branch below: a reply the server
+    // itself calls broken (invalid JSON, duplicate keys, prose wrapping a
+    // card) must never score prose-ok just because it didn't parse as a
+    // card. Data integrity takes precedence over the control's own verdict.
+    if (!outcome.ok) {
+      return ShapeResult(
+        caseId: c.id,
+        pass: false,
+        label: 'broken: ${outcome.label}',
+        found: body == null ? const {} : collectElementTypes(body),
+        wanted: c.accepted,
+      );
+    }
     if (body == null) {
       return ShapeResult(
         caseId: c.id,
         pass: true,
         label: 'prose-ok',
         found: const {},
-        wanted: c.accepted,
-      );
-    }
-    // For prose control cases that returned a card, check if the server
-    // marked it broken (e.g., duplicate-key). Broken takes precedence over
-    // unwanted-card because data integrity is compromised.
-    if (!outcome.ok) {
-      return ShapeResult(
-        caseId: c.id,
-        pass: false,
-        label: 'broken: ${outcome.label}',
-        found: collectElementTypes(body),
         wanted: c.accepted,
       );
     }
