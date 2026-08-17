@@ -44,21 +44,21 @@ Sorted by model name, and within a family by parameter count ascending (so `nemo
 | gpt-oss:20b                                       | 12.8 GB | ❌    | top 3 (`launch.json`)  | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ✅ 6/6 choice-set                                                 |
 | granite4.1:3b                                     | 2.0 GB  | ✅    | candidate              | ❌ everyday 4/7 · stress 4/5 `t=0`, 3/5 `t=0.6` — weakest  | ⚠️ 3/6 choice-set                                                 |
 | granite4.1:8b                                     | 5.0 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`            | ⚠️ 3/6 choice-set                                                 |
-| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                                                  |
+| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | ❌ everyday 7/7 · stress 3/5 `t=0`, 3/5 `t=0.6`            | ❌ 1/6 choice-set                                                 |
 | llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate              | ✅ everyday 7/7 all temps · stress 5/5 both — clean sweep  | ❌ 0/6 — drops to prose                                           |
 | llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0` but **1/5** at `t=0.6`  | ❌ 0/6 — drops to prose                                           |
 | llama3.2:latest                                   | 1.9 GB  | ✅    | candidate              | ❌ Retired as default — failed nested and multi-select     | — not yet probed                                                  |
 | nemotron-3-nano:4b                                | 2.6 GB  | ✅    | candidate              | ❌ everyday 6/7 but stress **2/5** `t=0`, 1/5 `t=0.6`      | ❌ 0/6 — drops to prose                                           |
-| nemotron-3-nano:30b                               | 22.6 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                                                  |
-| nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                                                  |
+| nemotron-3-nano:30b                               | 22.6 GB | ❌    | candidate              | ❌ everyday 7/7 · stress 2/5 `t=0`, 1/5 `t=0.6`            | ⚠️ 5/6 choice-set                                                 |
+| nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    | candidate              | ❌ everyday 6/7 · stress 3/5 `t=0`, 4/5 `t=0.6`            | ❌ 0/6 — drops to prose                                           |
 | qwen2.5-coder:7b                                  | 4.4 GB  | ✅    | server default + top 3 | ✅ Recommended — cleared every documented failure at `t=0` | ⚠️ 6/12 (`--samples 2`) after escape-hatch fix (was 2/12, see §4) |
-| qwen3-coder:30b                                   | 17.3 GB | ❌    | candidate              | — not yet probed                                           | — not yet probed                                                  |
-| qwen3.5:9b                                        | 6.1 GB  | ⚠️    | top 3 (`launch.json`)  | ⚠️ Only with thinking off; no edge over the default        | — not yet probed                                                  |
-| qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    | candidate              | ⚠️ Ignores `format`; better at `t=0` than its own `0.6`    | — not yet probed                                                  |
+| qwen3-coder:30b                                   | 17.3 GB | ❌    | candidate              | ⚠️ everyday 7/7 · stress 5/5 `t=0`, 5/5 `t=0.6`            | ⚠️ 2/6 choice-set — bracket omission, not prose                   |
+| qwen3.5:9b                                        | 6.1 GB  | ⚠️    | top 3 (`launch.json`)  | ⚠️ Only with thinking off; no edge over the default        | ⚠️ 5/6 choice-set — one miss: TextBlock list, no ChoiceSet        |
+| qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    | candidate              | ⚠️ Ignores `format`; better at `t=0` than its own `0.6`    | ✅ 6/6 choice-set                                                 |
 
 **Cold start** is a single-turn probe. **With history** replays prior conversation turns the way the server actually does. These are different measurements and a model can pass one while failing the other — every result recorded before 2026-08-14 is a cold-start number, because no probe sent history at all.
 
-Every **With history** cell added on 2026-08-16 — all six `N/6` cells, not only `qwen2.5-coder:7b`'s `6/12` — was measured against `assets/card_system_prompt.txt` _after_ Task 7's escape-hatch re-key had already been promoted. None of these numbers is a "before" baseline for a fix still to come; read them as the current, fixed-prompt state of each model.
+Every **With history** cell added on 2026-08-16 — all twelve `N/6` cells (`gpt-oss:20b`, `granite4.1:3b`, `granite4.1:8b`, `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest`, `llama3-chatqa:8b`, `llama3-groq-tool-use:8b`, `nemotron-3-nano:4b`, `nemotron-3-nano:30b`, `nemotron-3.5-lightning:30b`, `qwen3-coder:30b`, `qwen3.5:9b`, `qwen3.6:27b-coding-nvfp4`), not only `qwen2.5-coder:7b`'s `6/12` — was measured against `assets/card_system_prompt.txt` _after_ Task 7's escape-hatch re-key had already been promoted. None of these numbers is a "before" baseline for a fix still to come; read them as the current, fixed-prompt state of each model.
 
 ## Test one model at a time
 
@@ -149,6 +149,20 @@ Two consequences worth internalising:
 
 Six more models were run through the same `choiceset_ab.dart` probe on 2026-08-16 (`t=0`, `--samples 1`, two prose turns before the question, against `assets/card_system_prompt.txt` _after_ Task 7's escape-hatch re-key below had already been promoted — these are post-fix numbers, not a "before" baseline for a fix still to come), to see whether the collapse above is specific to `qwen2.5-coder:7b` or a property of the workload. The result does not round into a tidy conclusion: `gpt-oss:20b` held up completely at ✅ 6/6, while `llama3-chatqa:8b` — the model that had swept the cold-start everyday and stress sets 7/7 and 5/5 — collapsed to ❌ 0/6, the same total-collapse pattern already on record for `qwen2.5-coder:7b`. `llama3-groq-tool-use:8b` and `nemotron-3-nano:4b` also collapsed to 0/6. `granite4.1:8b` and `granite4.1:3b` landed in between at ⚠️ 3/6, each losing half their cold-start options answers to prose. A ranking built only from cold-start numbers would have placed `llama3-chatqa:8b` above `gpt-oss:20b`; with history the order inverts. Sanity-checking the best performer, `gpt-oss:20b`, cold-start with `dump_reply.dart` confirmed the same question still returns `card[2]` with zero history — so its strength with history is a real property of the model, not an artifact of a weak cold-start baseline. History erosion is real and, across this run, the majority case: three of six models collapsed completely (0/6), two more were partially degraded (3/6), and only one of six (`gpt-oss:20b`) was unaffected — the failure mode is per-model, not a property of "local models" in general, and a model's cold-start score is not a reliable predictor of which side it lands on.
 
+A seventh model, `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` (22.9 GB), was run through the same `choiceset_ab.dart` probe separately on 2026-08-16, as part of a follow-up sweep of large models that had never been probed at all — same conditions (`t=0`, `--samples 1`, two prose turns before the question, `assets/card_system_prompt.txt` post-Task-7). It scored ❌ 1/6: one pass ("what are my options for deployment targets" → `card[2]`), two prose fails ("which log level should I use?", "what build modes can I choose from?"), one valid card that omitted the `Input.ChoiceSet` ("what are my options for notification frequency" → `card[1]`), and two broken-JSON fails ("what environments can I deploy to?", "help me pick a database engine"). Unlike `llama3-chatqa:8b`'s collapse from a strong cold start, this model's cold start already flagged fragility — it only managed 3/5 on the stress set at both temperatures (see the large-model table above) — so cold start and multi-turn behavior point the same direction here rather than diverging.
+
+An eighth model, `nemotron-3-nano:30b` (22.6 GB, the Ollama-library build rather than the `hf.co/unsloth` GGUF above), was run through the identical `choiceset_ab.dart` conditions on 2026-08-16. It scored ⚠️ 5/6, missing only one prompt ("which log level should I use?" → prose); the other five all returned a card containing the `Input.ChoiceSet` ("what are my options for deployment targets" → `card[2]`, "what environments can I deploy to?" → `card[2]`, "what are my options for notification frequency" → `card[2]`, "help me pick a database engine" → `card[2]`, "what build modes can I choose from?" → `card[1]`). This complicates the cold-start-doesn't-predict-multi-turn finding rather than confirming it: this build's cold start was, if anything, weaker than the unsloth build's — identical everyday numbers but a worse stress result (2/5 `t=0`, 1/5 `t=0.6` versus 3/5/3/5) — yet its multi-turn score is the strongest of any candidate model probed with history except `gpt-oss:20b`'s clean 6/6. Two builds of the same nominal model, probed under identical conditions, land at opposite ends of the with-history scale: 1/6 for the unsloth GGUF, 5/6 for the Ollama-library build. That rules out treating "cold start predicts multi-turn" as even a same-model-family heuristic — it does not hold within one model name, let alone across models.
+
+A ninth model, `nemotron-3.5-lightning:30b` (23.7 GB), was run through the identical `choiceset_ab.dart` conditions on 2026-08-16. It scored ❌ 0/6 — every one of the six prompts dropped to prose with no card attempted at all, the same total-collapse pattern already on record for `qwen2.5-coder:7b` (pre-fix), `llama3-chatqa:8b`, `llama3-groq-tool-use:8b`, and `nemotron-3-nano:4b`. Its cold start was, on the everyday and stress sets, the weakest of the three large candidates probed so far (everyday 6/7 · 6/7 · 5/7, versus 7/7 · 7/7 · 6/7 for both `nemotron` 30B builds), yet its stress-set score (3/5 `t=0`, 4/5 `t=0.6`) was actually the strongest large-candidate stress result on record — better than either `nemotron` 30B build's. So within this one model, a mediocre everyday score and a comparatively strong stress score both point away from the total with-history collapse that actually happened: neither cold-start measure predicted it, in either direction.
+
+A tenth model, `qwen3-coder:30b` (17.3 GB), was run through the identical `choiceset_ab.dart` conditions on 2026-08-16. It scored ⚠️ 2/6, but its failure mode is unlike every model probed before it: none of the four failures dropped to prose — all four attempted a card and failed the same way, a `TextBlock` and an `Input.ChoiceSet` placed on separate lines and joined by a real newline instead of being wrapped in `[ ]` and joined by a comma (`invalid JSON: FormatException: Unexpected character (at line 2, character 1)`), the missing-array-brackets pattern already on record in the cross-model findings below. Three of those four failures — "what are my options for deployment targets", "what environments can I deploy to?", and, most tellingly, "help me pick a database engine" — returned identical content to each other, re-confirmed with a fresh `dump_reply.dart` run per prompt against the same two-turn history (full transcripts in the probe report). Stripped of the missing wrapping `[ ]` and with the connecting comma swapped for the model's real newline, all three replies are character-for-character identical to the worked example on line 28 of `assets/card_system_prompt.txt` — same `TextBlock` text, same `Input.ChoiceSet` `id: "target"`, same `Staging`/`Production` choice titles and values, confirmed by direct string comparison against the prompt file. That the database-engine question, with no lexical overlap with "deployment target", produced this exact reused example rather than any database-flavored content shows the model reciting the system prompt's own demonstration instead of generalizing from it. The fourth failure ("which log level should I use?") was topically on point (`id: "logLevel"`, choices `DEBUG`/`INFO`/`WARN`/`ERROR`) but shared the identical missing-bracket malformation. The two passes ("what are my options for notification frequency", "what build modes can I choose from?") each needed only a single element and so had no array to omit. This model's cold start was the strongest large-candidate result on record (see below), and its with-history score neither collapses to prose nor holds that strength — a third distinct with-history failure signature (echoed-example bracket omission) alongside the total-prose-collapse and choice-set-omission patterns already on record in this file.
+
+An eleventh model, `qwen3.5:9b` (6.1 GB), was run through the identical `choiceset_ab.dart` conditions on 2026-08-16. Every probe in this directory sends `think: false` unconditionally — `probeOnce` in `tool/model_probes/probe_support.dart` hardcodes it into the request body, and `choiceset_ab.dart --help` offers no separate thinking flag to override that — which for this particular model is not incidental: its own per-model note below already records it as usable **only** with thinking disabled, so this run measures the same thinking-off condition as that finding, not a different, thinking-on one. It scored ⚠️ 5/6, missing only "what build modes can I choose from?": the reply was a valid single-element card (`card[1]`) whose element was a `TextBlock` holding a numbered Markdown list of three build modes (Debug/Release/Staging) rather than an `Input.ChoiceSet`, confirmed with `dump_reply.dart` — the same renderable-but-unclickable shape called out above, here packaged inside a card element instead of returned as bare Markdown. The other five prompts each returned a card containing the `Input.ChoiceSet` ("what are my options for deployment targets" → `card[2]`, "which log level should I use?" → `card[1]`, "what environments can I deploy to?" → `card[2]`, "what are my options for notification frequency" → `card[1]`, "help me pick a database engine" → `card[2]`). This ties `nemotron-3-nano:30b` for the second-best with-history score of any candidate model measured with `choiceset_ab.dart` — only `gpt-oss:20b`'s clean 6/6 is higher.
+
+A twelfth and final model, `qwen3.6:27b-coding-nvfp4` (18.4 GB), was run through the identical `choiceset_ab.dart` conditions on 2026-08-16. It scored ✅ 6/6, a clean sweep matching `gpt-oss:20b`'s — every prompt returned a two-element card (`card[2]`) containing an `Input.ChoiceSet` ("what are my options for deployment targets", "which log level should I use?", "what environments can I deploy to?", "what are my options for notification frequency", "help me pick a database engine", "what build modes can I choose from?"), leaving none of the truncation its own per-model section below already flags as its weak spot at its Modelfile-recommended `t=0.6` — unsurprising, since this probe runs at `t=0`, the temperature where that same section records it doing better, not worse.
+
+With this model, twelve models have now been measured under `choiceset_ab.dart`'s with-history condition (`t=0`, `--samples 1`, two prior prose turns, `assets/card_system_prompt.txt` post-Task-7). The twelve scores do not cluster around a single outcome, and they also don't spread evenly — the actual distribution has real gaps in it: four collapsed completely to 0/6 prose (`llama3-chatqa:8b`, `llama3-groq-tool-use:8b`, `nemotron-3-nano:4b`, `nemotron-3.5-lightning:30b`), four landed in a partial band of 1/6-3/6 (`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` 1/6, `qwen3-coder:30b` 2/6, `granite4.1:3b` 3/6, `granite4.1:8b` 3/6), and four held up strongly at 5/6 or 6/6 (`nemotron-3-nano:30b` 5/6, `qwen3.5:9b` 5/6, `gpt-oss:20b` 6/6, `qwen3.6:27b-coding-nvfp4` 6/6) — no model scored 4/6 at all, so the three bands are a property of the actual scores, not an arbitrary cut. That's an even three-way split, one third of the set in each band, not the "mostly collapses" picture the first few models in this sweep suggested. Weight class doesn't sort into the bands either: the five large (17-24 GB) candidates measured with history split across all three themselves — one collapse (`nemotron-3.5-lightning:30b`), two partial (`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest`, `qwen3-coder:30b`), two strong (`nemotron-3-nano:30b`, `qwen3.6:27b-coding-nvfp4`). Family is a more mixed picture, and the two same-family pairs in this table point different ways: the three models carrying the `nemotron-3-nano` name land in three different bands (`nemotron-3-nano:4b` collapse, the `hf.co/unsloth` 30B build partial, the Ollama-library 30B build strong), but `granite4.1`'s two sizes do the opposite — `granite4.1:3b` and `granite4.1:8b` land in the identical partial band at the identical 3/6 score, clustering rather than spreading. Cold-start performance was already shown above not to predict with-history robustness for individual models; across the full twelve, weight class still doesn't either — family sends a genuinely mixed signal, spreading a model apart in one case and clustering it in the other, so it isn't a reliable predictor in either direction.
+
 Re-keying the escape hatch from confidence to capability moved
 `qwen2.5-coder:7b` from **2/12 to 6/12** on the options set with prior prose
 turns (`choiceset_ab.dart --samples 2`, `t=0`) — 3 of 6 prompts now pass both
@@ -237,11 +251,99 @@ Three things this run showed:
 
 All of these are **cold-start** numbers at `--samples 1`. None has been run with conversation history, and a single sample at `t=0.6` is noisy — treat the two 1/5 results as a flag to re-run, not a settled verdict.
 
+### Large candidate models probed 2026-08-16 (everyday + stress, `--samples 1`)
+
+Run one model resident at a time, card system prompt, on the 64 GB M1. This
+table is the large-model (17-24 GB) counterpart to the 2026-08-14 table
+above — same methodology, different date, extend it as more of these get
+probed.
+
+| Model                                             | Everyday `t=0` / `0.2` / `0.6` | Stress `t=0` | Stress `t=0.6` |
+| ------------------------------------------------- | ------------------------------ | ------------ | -------------- |
+| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 7/7 · 7/7 · 6/7                | 3/5          | 3/5            |
+| nemotron-3-nano:30b                               | 7/7 · 7/7 · 6/7                | 2/5          | 1/5            |
+| nemotron-3.5-lightning:30b                        | 6/7 · 6/7 · 5/7                | 3/5          | 4/5            |
+| qwen3-coder:30b                                   | 7/7 · 6/7 · 7/7                | 5/5          | 5/5            |
+
+`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` (22.9 GB) swept the
+everyday set at `t=0`/`t=0.2` and only lost one case at `t=0.6` (a truncated
+table — `Unexpected end of input`). The stress set is where it struggles:
+3/5 at **both** temperatures, with `bigtable` and `mixed` failing at both
+`t=0` and `t=0.6`. Those two failures share a pattern distinct from the
+truncation above — an extra closing `]` after the last element (e.g.
+`"wrap":true}]]}]`), as if the model occasionally double-wraps the final
+item in an array. `codeblock`, `nested`, and `multiline` were clean at both
+temperatures. Cold start alone would rank this model mid-pack — better than
+`granite4.1:3b`, worse than the `llama3-chatqa:8b` / `gpt-oss:20b` /
+`granite4.1:8b` tier — with the everyday set again failing to predict the
+stress-set weakness, consistent with the 2026-08-14 finding above.
+
+`nemotron-3-nano:30b` (22.6 GB) — the Ollama-library build, not the
+`hf.co/unsloth` GGUF above — swept the everyday set identically: 7/7 at
+`t=0`/`t=0.2`, and the same single `t=0.6` loss on the same case (`table`,
+`Unexpected end of input` — a truncated response). The stress set is where
+the two builds diverge: this one managed only 2/5 at `t=0` and 1/5 at
+`t=0.6`, worse than the unsloth build's 3/5/3/5. The seven stress failures
+do not reduce to one pattern. Two are outright truncation, with the parse
+error landing exactly one character past the end of the response
+(`bigtable` at `t=0`, `mixed` at `t=0.6`), both reported as `Unexpected end
+of input`. A third (`nested` at `t=0.6`) also errors at the very last
+character of a short, 171-character response, though the parser labels it
+`Unexpected character` rather than `Unexpected end of input`. Three others
+are mid-stream malformations inside otherwise-long, otherwise-plausible
+responses — an extra closing bracket appears immediately before the comma
+that starts the next sibling element (`nested` at `t=0`: `}] ,{`; `bigtable`
+at `t=0.6`: `} },{`; `mixed` at `t=0` shows a similar bracket cluster ahead
+of a comma, though less cleanly isolated than the other two). The seventh
+(`codeblock` at `t=0.6`) is different again: the response opens with
+`["TextBlock","text":...`, missing the `{"type":` wrapper on the first
+array element entirely — a malformation none of the other six share.
+`multiline` was the only stress case clean at both temperatures. Cold start
+again fails to predict the with-history result below — and here it fails
+in the opposite direction from the unsloth build (see there).
+
+`nemotron-3.5-lightning:30b` (23.7 GB) is the weakest of the three large
+candidates on the everyday set: 6/7 at `t=0`/`t=0.2` and 5/7 at `t=0.6`, one
+notch below both `nemotron` 30B builds at every temperature. The `table`
+case fails at all three temperatures (`Unexpected end of input`, a
+truncated response), the only large candidate to lose it at `t=0` and
+`t=0.2` as well as `t=0.6`; `t=0.6` adds a second loss on `date`, where the
+response's second line switches to a Markdown checklist item
+(`- [ ] 2025-01-18`) instead of continuing JSON, reported as `Unexpected
+character (at line 2, character 1)`. The stress set inverts the ranking:
+3/5 at `t=0` and 4/5 at `t=0.6`, the best stress result of the three large
+candidates at either temperature. Of the three stress failures, two are
+outright truncation reported as `Unexpected end of input` exactly one
+character past the response's end (`bigtable` at both `t=0` and `t=0.6`);
+the third (`nested` at `t=0`) is the same last-character variant already
+seen in `nemotron-3-nano:30b`'s `nested`@`t=0.6` failure above — the parser
+reports `Unexpected character` at the response's very last character rather
+than past its end. `codeblock`, `multiline`, and `mixed` were clean at both
+temperatures. So a weaker-than-both-siblings everyday score and a
+better-than-both-siblings stress score, measured on the same model, land on
+opposite sides of the large-candidate ranking — reinforcing rather than
+resolving the everyday-set's-not-a-good-predictor finding above.
+
+`qwen3-coder:30b` (17.3 GB, the smallest of the four large candidates by
+weight) matches the two `nemotron` 30B builds' everyday total of 20/21
+correct — 7/7 at `t=0` and `t=0.6`, with a single loss at `t=0.2` (`rating`,
+`Unexpected character (at character 169)`: a `TextBlock` and an
+`Input.ChoiceSet` concatenated on one line without the wrapping `[ ]`, the
+same missing-array-brackets pattern documented in the with-history results
+below) — and then posts a clean 5/5 stress sweep at both temperatures, a
+result neither `nemotron` build reached (3/5 `t=0` and 3/5 `t=0.6` for the
+unsloth GGUF, 2/5 `t=0` and 1/5 `t=0.6` for the Ollama-library build) and
+the best large-candidate stress result on record — the only one of the four
+large candidates to pass every stress case at both temperatures. Cold start
+alone would rank it at or above every other large candidate.
+
 ### `qwen3.6:27b-coding-nvfp4`
 
 **Scores worse at its own recommended temperature.** Its Modelfile ships `temperature 0.6`, but it passed 12/15 hard cases at `0` versus 9/15 at `0.6` — the extra failures being long card JSON truncated mid-generation. Both passed 7/7 easy cases, which is why the easy set alone is not a useful signal.
 
 **Silently ignores `format`.** It answers the `format: json` canary with prose and no error, so `--json-format json|schema` is inert for it. Check the canary (`tool/model_probes/json_format_probe.dart`) before relying on the constraint.
+
+With history (`choiceset_ab.dart`, two prior prose turns, `t=0`, `--samples 1`), it scored ✅ 6/6 — a clean sweep, every prompt returning a two-element card containing an `Input.ChoiceSet`, tying `gpt-oss:20b` for the best with-history result on record. This probe runs at `t=0`, the temperature where the Modelfile-recommended-temperature finding above already shows this model doing better, not worse, so the clean sweep is consistent with that finding rather than in tension with it. See [§4](#4-multi-turn-set--history-replay) for the full per-prompt breakdown and where this result sits among all twelve models probed with history.
 
 ### `qwen3.5:9b`
 
@@ -249,7 +351,9 @@ Usable **only with thinking disabled**, and even then offers no reliability edge
 
 With server defaults of the time (temp 1, thinking on) it answered a checkbox request with a `CodeBlock` of raw HTML using invented keys (`codeLanguage`/`content` instead of `codeSnippet`), taking 77 s. The same model with `think:false` + `temperature:0` produced a clean `Input.ChoiceSet` and a clean 4-page Carousel in ~10 s.
 
-Not recommended as the default for this workload. Listed in `launch.json`; not currently installed locally.
+With history (`choiceset_ab.dart`, two prior prose turns, `t=0`, `think:false` — the probe tooling hardcodes `think: false` unconditionally, so this measurement is the same thinking-off condition as the finding above, not a thinking-on one), it scored ⚠️ 5/6: one miss ("what build modes can I choose from?") where it returned a valid card whose only element was a `TextBlock` listing the three modes in Markdown rather than an `Input.ChoiceSet`. See [§4](#4-multi-turn-set--history-replay) for the full per-prompt breakdown.
+
+Not recommended as the default for this workload. Listed in `launch.json`; installed locally (`ollama list` / `curl http://127.0.0.1:11434/api/tags` confirms `qwen3.5:9b` present).
 
 ### `llama3.2` (3.2B — the `llama3.2:latest` tag)
 

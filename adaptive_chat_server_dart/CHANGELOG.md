@@ -2,6 +2,97 @@
 
 ## [Unreleased]
 
+- Added: `ModelBehavior.md` now records the with-history probe of
+  `qwen3.6:27b-coding-nvfp4` (18.4 GB), the sixth and last model in this
+  sweep — its cold-start cell was already filled, only **With history** was
+  blank. Measured 2026-08-16, `choiceset_ab.dart`, two prior prose turns,
+  `t=0`, `--samples 1`: ✅ 6/6, a clean sweep matching `gpt-oss:20b`'s —
+  every prompt returned a two-element card containing an `Input.ChoiceSet`.
+  This is the twelfth `N/6` with-history cell filled in this file
+  (re-counted, not incremented). With all twelve now on record, the scores
+  split evenly into three bands with real gaps between them (no model
+  scored 4/6): four collapsed to 0/6 prose, four landed partial at 1/6-3/6,
+  and four — including this one — held up strongly at 5/6 or 6/6. Weight
+  class doesn't predict the band (the five large 17-24 GB candidates split
+  1/2/2 across all three); family is more mixed — `nemotron-3-nano`'s three
+  sizes spread across all three bands, but `granite4.1`'s two sizes
+  (3b, 8b) land in the identical partial band at the identical 3/6 score —
+  see `ModelBehavior.md` §4 for the full breakdown.
+- Added: `ModelBehavior.md` now records the with-history probe of
+  `qwen3.5:9b` (6.1 GB) — its cold-start cell was already filled, only
+  **With history** was blank. Measured 2026-08-16, `choiceset_ab.dart`,
+  two prior prose turns, `t=0`, `--samples 1`, `think:false` (the probe
+  tooling's `probeOnce` hardcodes `think: false` unconditionally, so this
+  is the same thinking-off condition as the model's existing "usable only
+  with thinking disabled" cold-start note, not a thinking-on measurement).
+  Scored ⚠️ 5/6, one miss ("what build modes can I choose from?") where the
+  reply was a valid single-element card whose element was a `TextBlock`
+  Markdown list of the three modes rather than an `Input.ChoiceSet`,
+  confirmed with `dump_reply.dart`; the other five prompts each returned a
+  card containing the `Input.ChoiceSet`. Ties `nemotron-3-nano:30b` for the
+  second-best with-history score on record among candidate models — only
+  `gpt-oss:20b`'s 6/6 is higher. Also corrects this model's per-model
+  section, which stated it was "not currently installed locally"; it is
+  present in `ollama list`. This is the eleventh `N/6` with-history cell
+  filled in this file (re-counted, not incremented).
+- Added: `ModelBehavior.md` now records the first probe of `qwen3-coder:30b`
+  (17.3 GB), previously blank in every column. Measured 2026-08-16, one
+  model resident at a time, card system prompt, `--samples 1`: everyday set
+  7/7 · 6/7 · 7/7 across `t=0`/`0.2`/`0.6` (`temperature_matrix.dart`, one
+  loss — `rating` at `t=0.2`, missing array brackets around two elements),
+  a clean stress set 5/5 at both `t=0` and `t=0.6` (`temperature_stress.dart`
+  — the best large-candidate stress score on record, the only one of the
+  four large candidates to sweep every case), and 2/6 with two prior prose
+  turns (`choiceset_ab.dart`, `t=0`) — a new with-history failure signature:
+  all four failures attempted a card rather than dropping to prose, each
+  missing the wrapping `[ ]` around a `TextBlock`/`Input.ChoiceSet` pair,
+  and three of the four (including "help me pick a database engine", which
+  shares no wording with the topic) returned content that is, once the
+  missing `[ ]` and comma-for-newline swap are accounted for,
+  character-for-character identical to the worked example on line 28 of
+  `assets/card_system_prompt.txt` — same `TextBlock` text, same
+  `Input.ChoiceSet` id and `Staging`/`Production` choices — rather than
+  question-specific content; re-confirmed per-prompt with `dump_reply.dart`
+  and a direct string comparison against the prompt file. The best
+  large-candidate cold start on record did not predict either the
+  with-history score or its failure mode.
+- Added: `ModelBehavior.md` now records the first probe of
+  `nemotron-3.5-lightning:30b` (23.7 GB), previously blank in every column.
+  Measured 2026-08-16, one model resident at a time, card system prompt,
+  `--samples 1`: everyday set 6/7 · 6/7 · 5/7 across `t=0`/`0.2`/`0.6`
+  (`temperature_matrix.dart`, the weakest large-candidate everyday score so
+  far — `table` fails at all three temperatures rather than only `t=0.6`),
+  stress set 3/5 at `t=0` and 4/5 at `t=0.6` (`temperature_stress.dart`, the
+  best large-candidate stress score so far, three failures: two truncated
+  `bigtable` responses and one last-character `nested` malformation), and
+  0/6 with two prior prose turns (`choiceset_ab.dart`, `t=0`) — a total
+  collapse to prose on every prompt. A weaker everyday score and a stronger
+  stress score than either `nemotron` 30B build, on the same model, land on
+  opposite sides of the large-candidate ranking without predicting its
+  total with-history collapse.
+- Added: `ModelBehavior.md` now records the first probe of
+  `nemotron-3-nano:30b` (22.6 GB, the Ollama-library build), previously
+  blank in every column. Measured 2026-08-16, one model resident at a time,
+  card system prompt, `--samples 1`: everyday set 7/7 · 7/7 · 6/7 across
+  `t=0`/`0.2`/`0.6` (`temperature_matrix.dart`, the same single `t=0.6`
+  truncated-table loss as the `hf.co/unsloth` build), stress set 2/5 at
+  `t=0` and 1/5 at `t=0.6` (`temperature_stress.dart`, seven failures
+  spanning three distinct malformation types rather than one shared
+  pattern), and 5/6 with two prior prose turns (`choiceset_ab.dart`,
+  `t=0`). Despite a weaker cold start than the `hf.co/unsloth` build of the
+  same nominal model, this build scored far better with history (5/6 vs
+  1/6) — the two builds land at opposite ends of the with-history scale
+  under identical conditions.
+- Added: `ModelBehavior.md` now records the first probe of
+  `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` (22.9 GB), previously
+  blank in every column. Measured 2026-08-16, one model resident at a time,
+  card system prompt, `--samples 1`: everyday set 7/7 · 7/7 · 6/7 across
+  `t=0`/`0.2`/`0.6` (`temperature_matrix.dart`), stress set 3/5 at both `t=0`
+  and `t=0.6` (`temperature_stress.dart`, `bigtable` and `mixed` failing at
+  both temperatures with a repeated extra-closing-bracket pattern), and
+  1/6 with two prior prose turns (`choiceset_ab.dart`, `t=0`). Unlike
+  `llama3-chatqa:8b`'s collapse from a strong cold start, this model's
+  cold-start stress weakness already predicted the multi-turn result.
 - Fixed: findings from the final whole-branch review. `ModelBehavior.md`'s
   six-model history sweep (2026-08-16) now says explicitly it was measured
   _after_ Task 7's escape-hatch fix was already promoted, both in the sweep's
