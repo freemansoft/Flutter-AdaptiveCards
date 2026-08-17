@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- Added: `collectElementTypes` and `cardContainsAnyType` in
+  `probe_support.dart` — a recursive element-type walker shared by the
+  probes, reporting every `type` present anywhere in a parsed card body
+  including inside `Carousel` pages, `Table` cells, and `Column` items.
+  `choiceset_ab.dart` now uses it instead of a private copy; its prompts,
+  conditions, and output are unchanged, so the thirteen `N/6` scores in
+  `ModelBehavior.md` remain reproducible. New unit tests pin the walker's
+  behavior, which is what makes touching that reproducer safe.
+
 - Changed: `ModelBehavior.md`'s `With history` column now uses one denominator
   for every model. `qwen2.5-coder:7b` was the only cell measured at
   `--samples 2` (Task 7 wanted two samples per prompt because that number

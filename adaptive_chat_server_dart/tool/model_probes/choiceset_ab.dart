@@ -39,17 +39,7 @@ const _historyAssistant =
 
 bool _hasChoiceSet(String reply) {
   final body = tryParseCardBody(reply);
-  if (body == null) return false;
-  bool contains(Object? node) {
-    if (node is Map) {
-      if (node['type'] == 'Input.ChoiceSet') return true;
-      return node.values.any(contains);
-    }
-    if (node is List) return node.any(contains);
-    return false;
-  }
-
-  return body.any(contains);
+  return body != null && cardContainsAnyType(body, {'Input.ChoiceSet'});
 }
 
 Future<int> _run(

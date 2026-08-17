@@ -243,3 +243,35 @@ void printSummary(String setting, List<ProbeOutcome> outcomes) {
     stdout.writeln('     FAIL ${failure.label}');
   }
 }
+
+/// Every element `type` present anywhere in a parsed card [body], including
+/// types nested inside `Carousel` pages, `Table` cells, and `Column` items.
+///
+/// Returns what the model actually emitted, which is what makes a shape
+/// failure diagnosable: "carousel failed" and "carousel failed, it emitted
+/// three TextBlocks" call for different fixes.
+Set<String> collectElementTypes(List<Map<String, dynamic>> body) {
+  final found = <String>{};
+  void walk(Object? node) {
+    if (node is Map) {
+      final type = node['type'];
+      if (type is String && type.isNotEmpty) found.add(type);
+      node.values.forEach(walk);
+    } else if (node is List) {
+      node.forEach(walk);
+    }
+  }
+
+  body.forEach(walk);
+  return found;
+}
+
+/// Whether any element in [body] has a type in [wanted].
+///
+/// [wanted] is a set rather than a single type because several shapes are
+/// often equally correct — "summarize these specs" is defensibly a `FactSet`
+/// or a `Table`, and forcing one would score a good reply as a failure.
+bool cardContainsAnyType(
+  List<Map<String, dynamic>> body,
+  Set<String> wanted,
+) => collectElementTypes(body).intersection(wanted).isNotEmpty;
