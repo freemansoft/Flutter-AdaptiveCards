@@ -1153,7 +1153,7 @@ Three trade-offs that do not block promotion but must not be read past:
    conversation, which is a fixed context-budget and latency cost that scales
    with every call, not a one-time setup cost. The latency evidence for this
    is **thin**: wall-clock across two full probe runs each on
-   `qwen2.5-coder:7b` and `gpt-oss:20b` showed N2 running 27-28% *faster*,
+   `qwen2.5-coder:7b` and `gpt-oss:20b` showed N2 running 27-28% _faster_,
    not slower — the opposite of the expected direction — but that is
    uncontrolled wall-clock across full runs (dominated by reply length and
    retry/JSON-repair behavior), not a controlled per-token benchmark, and it
