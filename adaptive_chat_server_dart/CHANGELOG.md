@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+- Corrected: the warm-start drift candidate screen below conflated two
+  different exclusion criteria for reading `qwen2.5-coder:7b`'s six-case
+  subset. The screen excluded any case that "failed cold-start under the
+  baseline prompt"; the spec's own wording, three times, is narrower — a
+  shape the model **cannot produce** cold-start. `table` fails that
+  narrower test: the 25-case baseline recorded it as an unbucketed
+  _inverted_ case (cold `wrong-shape`, warm a real `Table`), this screen's
+  own baseline reproduced that inversion at `--samples 2`, and `table`
+  additionally passed cold under two of the five candidates. `ModelBehavior.md`
+  now records both readings: excluding `table` (as originally applied),
+  N2 (`--seed-card`) clears the Step 6 promotion bar; excluding only the
+  uncontested `carousel`, N2's with-history score ties baseline instead.
+  No measurements changed — every recorded number was already correct —
+  and the four losing candidates (P1/P2/P3/N1) remain losers under either
+  reading. Also corrected: a "coincidentally" characterization of
+  `table`'s warm regression under N2, which reproduced deterministically
+  across two independent runs and is not coincidental; and an inference
+  that byte-for-byte reproduction across `--samples 2` runs demonstrates
+  statistical robustness — at `t=0` decoding is close to deterministic
+  (71 of 72 sampled pairs in this screen agreed), so a second sample
+  mostly re-measures rather than re-samples.
+
 - Added: screening results for five warm-start drift candidates (P1 recency,
   P2 Markdown-section guard, P3 escape-hatch narrowing, N1 mid-conversation
   reminder, N2 card-shaped history seed), measured 2026-08-17 over a

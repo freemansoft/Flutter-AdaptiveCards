@@ -603,18 +603,40 @@ Every cell below is with-history/cold-start, raw counts out of 6:
 | N1        | 3/4                               | 4/3                       | 4/2                     | 1/1                          |
 | N2        | 4/6                               | 4/6                       | 4/5                     | 0/1                          |
 
-**Why the raw six-case denominator is misleading for `qwen2.5-coder:7b` and
-`granite4.1:8b`, and what was read instead.** Per the spec's screening-set
-guidance, a case that failed cold-start under a model's own recorded 25-case
-baseline (`#### Shape coverage — …` above) cannot be "eroded" by this
-screen — it never worked. Checked against those baselines before reading
-the table:
+**The strongest evidence for N2 does not depend on the exclusion dispute
+below.** Three findings hold regardless of which case-exclusion wording is
+applied: (1) N2 raised cold-start passes on **all four screened models** —
+`qwen2.5-coder:7b` 4/6 → 6/6, `granite4.1:8b` 3/6 → 6/6, `gpt-oss:20b` 3/6 →
+5/6, `llama3-chatqa:8b` 0/6 → 1/6 — one consistent direction across every
+model measured, not one favorable outlier propping up the rest. (2) On both
+erosion-metric models, N2 recovered the specific case each model's own
+25-case baseline had already named as lost to history **before this screen
+ran** — `qwen2.5-coder:7b`'s `choice2` (one of the three shapes that
+baseline recorded as "passed cold as a card containing `Input.ChoiceSet`
+and regressed to bare `prose` with history present") and `granite4.1:8b`'s
+`choice1` (one of the four shapes in that baseline's own "eroded by
+history" list) — rather than a case found by scanning this run's results
+for whatever happened to move. (3) Both recoveries reproduced exactly
+across an independent second run of the same two configs (see the
+determinism note below the contested-exclusion section for what that
+repetition does and doesn't prove — it shows the measurement repeats, not
+that the effect is statistically large). The filtered-denominator margin
+discussed next is corroborating detail on top of this, not the load-bearing
+argument for N2.
 
-- `qwen2.5-coder:7b`: `table` failed cold-start in the 25-case baseline
-  (`wrong-shape`) and `carousel` was never produced under either condition
-  there — both excluded. The valid drift subset is `choice1`, `choice2`,
-  `date`, `gauge` (4 of 6); `choice2` is the model's one real eroded case
-  from that baseline.
+**Why the raw six-case denominator needs a second look for
+`qwen2.5-coder:7b` and `granite4.1:8b`, and what was read instead.** Per the
+spec's screening-set guidance, a case the model **cannot produce**
+cold-start under the baseline prompt is not a drift case — it never worked,
+so it cannot be eroded. Checked against each model's recorded 25-case
+baseline (`#### Shape coverage — …` above) before reading the table:
+
+- `qwen2.5-coder:7b`: `carousel` was never produced under either condition
+  in the 25-case baseline — a genuine capability gap, cleanly excluded.
+  `table` is a different, contested case — see below; it is not a clean
+  exclusion the way `carousel` is. The valid drift subset used for the
+  primary reading here is `choice1`, `choice2`, `date`, `gauge` (4 of 6);
+  `choice2` is the model's one real eroded case from that baseline.
 - `granite4.1:8b`: `choice2`, `table`, and `carousel` were all in that
   model's "never produced under either condition" set — all three
   excluded. The valid drift subset is `choice1`, `date`, `gauge` (3 of 6);
@@ -629,47 +651,132 @@ baseline 3/4, P1 3/4, P2 3/4, P3 3/4, N1 3/4, **N2 4/4**. On this subset
 baseline and every prompt candidate (P1/P2/P3), fails both samples under
 N1, and **passes both samples under N2**. Cold-start held at 4/4 throughout
 (no candidate dragged it down). The raw six-case table above shows N2 tied
-with baseline at with-history 4/6, not ahead — that tie is an artifact of
-`table` (excluded, not a drift case) coincidentally flipping from a warm
-pass under baseline to a warm fail under N2 while `choice2` flips from fail
-to pass in the same column; the two cancel in the untrimmed count and hide
-the real result. Read on the correct denominator, N2 is a clean win on the
-deciding model: with-history increases (3/4 → 4/4), cold-start does not
-decrease (4/4 → 4/4).
+with baseline at with-history 4/6, not ahead. That tie is not a coincidence
+— it is the net of two real, opposite-direction, both-reproduced effects on
+the same denominator: N2 reproducibly recovers `choice2` (fails both
+samples under baseline in both this run and its own independent re-run,
+passes both samples under N2 in both runs), and N2 reproducibly
+destabilizes `table`'s with-history pass (a clean 2/2 warm pass under
+baseline in both runs, a 1/2 split under N2 in both runs, same
+sample-order — sample 1 passes, sample 2 fails — in each). See the
+contested-exclusion note immediately below for why `table` cannot simply be
+waved off as noise the way `carousel` can, and what that means for whether
+N2 clears the promotion bar.
 
 `granite4.1:8b` (valid-3: `choice1`, `date`, `gauge`): baseline 2/3, P1 2/3,
 P2 2/3, P3 2/3, **N1 3/3**, **N2 3/3**. `choice1` — this model's clearest
 prose-erosion case — fails with history under baseline/P1/P2/P3 and passes
 under both N1 and N2, with cold-start unchanged at 3/3 throughout. Both
 mechanisms show real, unambiguous erosion reduction on this informing
-model's own valid subset, agreeing with each other.
+model's own valid subset, agreeing with each other. (`granite4.1:8b`'s own
+`table` sits cleanly in its 25-case baseline's "never produced under either
+condition" bucket — unlike `qwen2.5-coder:7b`'s, it is not a contested
+exclusion, so this reading is not affected by the note below.)
 
-**Promotion decision.** Applying the Step 6 bar (with-history increases,
-cold-start does not decrease) to `qwen2.5-coder:7b`'s correctly-read
-numbers: **only N2 (`--seed-card`) qualifies.**
+**A contested exclusion: `qwen2.5-coder:7b`'s `table`, and the alternative
+valid-5 reading.** The bullet above excludes `table` from `qwen2.5-coder:7b`'s
+drift-case denominator on the same basis as `carousel` — it "failed
+cold-start under the baseline prompt." That test is wider than the spec's,
+which says three times that the relevant criterion is a shape the model
+**cannot produce** cold-start. `table` does not meet that narrower bar: the
+25-case baseline recorded it as an **inverted case** ("cold `wrong-shape`
+— a bare `TextBlock` — warm passed with a real `Table`"), explicitly
+declining to bucket it as either "lost to history" or "never produced," and
+hedging that at `--samples 1` it might be call-to-call variance rather than
+a real effect. This screen's own `--samples 2` baseline reproduced that
+exact inversion (cold FAIL both samples, warm PASS both samples, in both
+the original run and the later timing re-run), and `table` additionally
+passed **cold** under both P1 and N2 in this run. A model that has now
+produced a real `Table` cold, warm, and under two different candidates is
+not exhibiting a capability gap — it is a `wrong-shape` miss under the
+shipped baseline prompt specifically, which is what an erosion-reduction
+screen is supposed to be sensitive to.
 
-**Advancing to the stacked run: `N2`.**
+Re-reading `qwen2.5-coder:7b` on the valid-5 subset (`choice1`, `choice2`,
+`date`, `gauge`, `table` — excluding only the uncontested `carousel`):
+cold-start/with-history — baseline 4/5 · 4/5, P1 5/5 · 3/5, P2 4/5 · 3/5,
+P3 4/5 · 3/5, N1 4/5 · 3/5, **N2 5/5 · 4/5**. On this reading, with-history
+is a **tie** between baseline and N2 (4/5 both) — N2 does not clear Step
+6's "with-history increases" bar. P1, P2, P3, and N1 all remain losers
+under this reading too (each with-history drops from baseline's 4/5 to
+3/5) — the exclusion dispute changes the read on N2 alone, not on any of
+the other four candidates.
+
+There is a legitimate argument for excluding `table` even under this
+narrower spec wording: under an erosion metric, an inverted case already
+sits above the cold-start ceiling a "with-history rising toward cold-start"
+frame is built to measure, so crediting a candidate for a with-history
+`table` pass is uninterpretable — there's no stable cold-start baseline for
+it to rise toward. But that argument cuts one way only: it justifies **not
+crediting** a candidate that makes `table` pass with history (P1's warm
+`table` failure, for instance, isn't evidence against P1 either way). It
+does **not** justify ignoring a candidate that **damages** an
+already-passing case — and under the shipped baseline, `table` passed
+warm cleanly (2/2). N2 turned that clean pass into a 1/2 split. Whether
+that regression should count against N2 is exactly the open question this
+note is recording, not resolving.
+
+**What the reproduction across runs does and doesn't show.**
+`shape_ab.dart` runs at `t=0`; across this screen's sampled calls, 71 of 72
+same-config-same-case sample pairs produced identical verdicts — decoding
+is effectively deterministic here, not merely stable run to run. That means
+"passed both samples" carries roughly the same evidentiary weight as
+"passed once with the same input," not double the confidence a second
+independent draw would provide. The exact reproduction of `choice2`'s N2
+recovery and `table`'s N2 regression across two separately-invoked full
+probe runs (the original screen and the later timing re-run) shows the
+**measurement** is repeatable given the same prompt and history — it does
+not show the underlying **effect** is statistically large the way
+independent resampling would. Put plainly: the disagreement between the
+valid-4 and valid-5 readings above is a methodological question — which
+cases count — not a statistical one; the raw numbers behind both readings
+are themselves stable.
+
+**Promotion decision — contingent on which exclusion wording governs, not
+re-decided here.** Applying the Step 6 bar (with-history increases,
+cold-start does not decrease) to `qwen2.5-coder:7b` depends on which
+reading is used. Under the wider criterion this screen actually applied
+(valid-4, excluding `table` and `carousel`), N2 clears the bar: with-history
+3/4 → 4/4, cold-start held at 4/4. Under the spec's narrower criterion
+(valid-5, excluding only `carousel`), N2 does **not** clear the bar:
+with-history ties at 4/5, cold-start rises to 5/5. This screen's own
+working conclusion, reached under the wording it was actually run against,
+was **advancing: `N2`** — but the record above is written so a reader
+applying the narrower, spec-aligned wording can reach the opposite
+conclusion from the same measured numbers. Which reading governs is being
+decided separately from this write-up.
 
 **Concern to carry into the stacked run — harm signal on `gpt-oss:20b`.**
 N2 does not gate on the harm-control model, but it should not be ignored:
 `gpt-oss:20b`'s own fresh screening baseline scored with-history 5/6; under
 N2 it dropped to 4/6, `gauge` flipping from a clean `Chart.Gauge` pass to
-`broken: invalid JSON` with history present. `gauge` has flipped cold/warm
-pass status for this model before (it was an "inverted case" in the
-25-case baseline too — cold `broken`, warm passed), so this specific case
-carries real single-sample noise, but the _direction_ — an already-working
-with-history case breaking under N2 — is exactly the failure this
-informing model exists to catch and the wording around N2 should say so
-plainly rather than average it away. `qwen2.5-coder:7b`'s own N2 run shows
-a related pattern: `table` and `carousel` (both excluded, non-drift cases)
-also became newly unstable with history under N2 even as cold-start swept
-to 6/6 — the seed-card mechanism looks like it trades some already-fragile
-nested-shape stability for a clean fix on the actual prose-erosion case.
+`broken: invalid JSON` with history present. N2 also raised this model's
+cold-start from 3/6 to 5/6 — the same cross-model cold-start-rise pattern
+noted in the lead paragraph above — so the with-history drop is a real
+trade, not a case where N2 simply performed worse everywhere. `gauge` has
+flipped cold/warm pass status for this model before (it was an "inverted
+case" in the 25-case baseline too — cold `broken`, warm passed), so this
+specific case carries real single-sample noise, but the _direction_ — an
+already-working with-history case breaking under N2 — is exactly the
+failure this informing model exists to catch and the wording around N2
+should say so plainly rather than average it away. `qwen2.5-coder:7b`'s own
+N2 run shows a related, and in `table`'s case reproduced rather than
+noisy, pattern: `table`'s with-history pass regresses from a clean 2/2
+under baseline to a 1/2 split under N2 (see the contested-exclusion note
+above), and `carousel` (an uncontested capability gap under both
+conditions in the 25-case baseline) stays broken under N2's with-history
+condition too, even as cold-start sweeps to 6/6 — the seed-card mechanism
+looks like it trades some already-fragile nested-shape stability for the
+fix on the actual prose-erosion case.
 
 **`N2` latency.** `shape_ab.dart` doesn't print per-run timing, so wall-clock
 was captured with the shell `time` builtin around two full runs each
 (`qwen2.5-coder:7b`, `--samples 2`, 24 live calls per run; `gpt-oss:20b`,
-`--samples 1`, 12 live calls per run):
+`--samples 1`, 12 live calls per run). These four wall-clock figures (and
+the `curl .../api/ps` unload confirmations recorded throughout this task)
+were read live from the shell and are not captured in any saved transcript
+file the way the pass/fail verdicts above are — they cannot be
+independently re-checked from a log, only re-measured:
 
 - `qwen2.5-coder:7b`: baseline 149.85s (≈6.24s/call) vs. N2 109.19s
   (≈4.55s/call) — N2 ran **27% faster**, not slower.
@@ -692,12 +799,21 @@ timed baseline on that model the comparison isn't meaningful and is
 recorded only as a raw number, not a finding).
 
 **Candidates that did not advance, and why they are not worth retrying.**
+Unlike N2, none of these four benefit from the contested-exclusion
+question above: P1, P2, P3, and N1 all remain losers on `qwen2.5-coder:7b`
+under **both** the valid-4 reading (excluding `table` and `carousel`) and
+the valid-5 reading (excluding only `carousel`) — each drops with-history
+from baseline's valid-5 4/5 to 3/5. The dispute changes the read on N2
+alone.
 
 - **P1** (recency — shape-decision section appended last) scored
-  with-history 3/4 on `qwen2.5-coder:7b`'s valid subset, identical to
+  with-history 3/4 on `qwen2.5-coder:7b`'s valid-4 subset, identical to
   baseline's 3/4; `choice2` still fails both samples. Cold-start rose to
-  5/6 in the raw table only because `table` (excluded, non-drift) newly
-  passed cold — the valid-subset cold-start was unchanged at 4/4. On
+  5/6 in the raw table because `table` newly passed cold under P1 too (the
+  same case discussed in the contested-exclusion note above) — but the
+  valid-4 cold-start was unchanged at 4/4, and on the valid-5 reading P1's
+  with-history actually drops (baseline 4/5 → P1 3/5), so P1 does not
+  benefit from the wider reading the way N2 does. On
   `gpt-oss:20b` it is the worst-scoring candidate of the five: with-history
   dropped from 5/6 to 3/6 and cold-start from 3/6 to 2/6, including a
   `choice1` cold-start `HTTP 500` not seen under baseline/P2/P3. Appending
