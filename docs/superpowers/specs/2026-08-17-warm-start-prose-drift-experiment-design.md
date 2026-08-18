@@ -25,6 +25,78 @@ below.
 > This is a deliberate revision made before any run, not drift discovered
 > after one. Everything below reflects the amended design.
 
+> **Amended 2026-08-18, after the Stage 1 screening run had already
+> completed — unlike the amendment above, this one changes a rule after
+> seeing results it affects.** This spec is being brought into line with the
+> Task 4 implementation brief, which had paraphrased the exclusion rule more
+> loosely than this spec's original wording and was not caught until
+> screening was done. This is recorded plainly rather than quietly folded
+> in, because a rule changed mid-run to fit a result is exactly the kind of
+> thing this record must not bury.
+>
+> **What changed.** The rule governing which cases are excluded from a
+> drift claim read, in three places, "a shape the model **cannot produce**
+> cold-start." It now reads "a shape that **failed cold-start** under the
+> baseline prompt" — a wider criterion, no longer conditioned on whether the
+> model is structurally incapable of the shape versus simply did not
+> produce it in that run. See "The screening metric depends on the model's
+> baseline" below for the amended wording and its justification, and the
+> Non-goals section for the amended non-goal.
+>
+> **This is outcome-deciding, not editorial.** For `qwen2.5-coder:7b`, the
+> screened case `table` failed cold-start under the baseline but passed
+> with-history — the 25-case baseline records it as one of two _inverted_
+> cases and explicitly declines to bucket it as either "lost to history" or
+> "never produced," hedging that at `--samples 1` it might be run-to-run
+> noise rather than a real effect. Under the original, narrower wording,
+> `table` does not meet the "cannot produce" bar and stays in the
+> drift-case denominator (the valid-5 reading): baseline with-history and N2
+> with-history both land at 4/5 — a **tie**, N2 does not clear the
+> promotion bar, and this experiment reaches its negative path (nothing
+> ships). Under this amended, wider wording, `table` is excluded (the
+> valid-4 reading): baseline with-history 3/4 versus N2 with-history 4/4 —
+> **N2 clears the bar and advances**. Both readings are computed from the
+> same measured numbers; only which cases count toward the denominator
+> differs.
+>
+> **Why the wider wording is being adopted, and its limit.** The
+> erosion-reduction metric measures the with-history score rising toward
+> that same model's own cold-start score. A case with no cold-start pass has
+> no cold-start baseline to rise toward, so the delta is undefined for that
+> case regardless of _why_ cold-start failed — a genuine capability gap and
+> an unlucky single-sample miss are indistinguishable in their effect on an
+> undefined delta, even though they are not the same thing. That is a
+> stronger basis for the exclusion than "capability" alone, which is why the
+> rule is widened rather than left as written. But the exclusion cuts one
+> way only: it justifies **not crediting** a candidate for an excluded
+> case's with-history outcome. It does **not** justify ignoring a candidate
+> that **damages** an excluded case. Both halves are now stated explicitly
+> in the amended rule below, because the reproduced record already shows why
+> the second half matters: under the shipped baseline, `qwen2.5-coder:7b`'s
+> `table` passed warm cleanly (2/2 samples); under N2 that regressed to a
+> 1/2 split, reproduced identically across two independent runs. That
+> regression is excluded from N2's _credit_ by the amended rule — there is
+> no stable cold-start baseline for `table` to have eroded from — but it is
+> not excluded from being _reported_, and it is reported in full in
+> `ModelBehavior.md`.
+>
+> **Provenance of this change.** This amendment was made by explicit human
+> ruling, presented with the valid-4/valid-5 conflict above and the
+> alternative of leaving the spec as written (which would have left the
+> Stage 1 screen's own working conclusion — "advancing: N2" — contradicting
+> the spec it was run under). The ruling was to amend the spec to match the
+> wider criterion the implementation brief had already used. No recorded
+> measurement was altered to reach this outcome; N2's advancement is decided
+> downstream of this rule change, not re-decided here.
+>
+> **Where to check this against the data.** `adaptive_chat_server_dart/ModelBehavior.md`,
+> the `#### Warm-start drift candidates screened 2026-08-17` subsection
+> (search for "contested exclusion"), records **both** readings side by
+> side — the valid-4 subset this amendment now makes canonical and the
+> valid-5 subset the original wording would have required — so a reader can
+> reconstruct the pre-amendment conclusion from the same data and judge the
+> change independently rather than take this note's word for it.
+
 ## The problem
 
 Once a conversation has been answered in Markdown, models stop sending cards —
@@ -67,10 +139,13 @@ tests three distinct _mechanisms_ rather than three rewordings, and why
 ## Non-goals
 
 - Shipping a fix regardless of measurement. If all five lose, none ships.
-- Treating a shape a model cannot produce cold-start as evidence of _drift_.
-  Those are capability or palette problems; see "The screening metric depends
-  on the model's baseline". (Such a shape can still count toward whether a
-  candidate produces an absolute improvement — see the same section.)
+- Crediting a candidate's **erosion-reduction** reading for a case that
+  failed cold-start under the baseline prompt. **Amended 2026-08-18** — see
+  the amendment note near the top of this document and "The screening
+  metric depends on the model's baseline" below. (Such a case can still
+  count toward whether a candidate produces an absolute improvement — see
+  the same section — and a candidate that makes an excluded case _worse_
+  is still reported: the exclusion withholds credit, not scrutiny.)
 - Variant-level assertions (`style` / `isMultiSelect` on `Input.ChoiceSet`).
 
 ## Why the non-prompt candidates are cheap to test
@@ -269,11 +344,33 @@ total by 5/4.)
 
 ### The screening metric depends on the model's baseline
 
-A shape a model cannot produce cold-start is **not** a warm-start problem — it
-is a capability or palette problem, and no anti-drift wording will fix it.
-Scoring such a shape as evidence of _drift_ would credit or blame a candidate
-for something it cannot affect — that insight is unchanged and still governs
-what counts as a drift claim (see Non-goals).
+> **Amended 2026-08-18.** The exclusion rule below originally read "a shape
+> the model **cannot produce** cold-start." It now reads "a shape that
+> **failed cold-start** under the baseline prompt" — a wider criterion,
+> adopted after Stage 1 screening had already completed. See the amendment
+> note near the top of this document for why, when, and what it changes;
+> this section carries only the amended rule and its justification.
+
+A shape that failed cold-start under the baseline prompt is excluded from the
+**erosion-reduction** reading for that model. The justification is the
+erosion metric itself: erosion is measured as the with-history score rising
+toward that same model's own cold-start score, so a case with no cold-start
+pass has no cold-start baseline to rise toward — the delta is undefined for
+that case regardless of _why_ cold-start failed. Whether the model genuinely
+cannot produce the shape, or merely did not produce it in the baseline run,
+crediting or blaming a candidate for the with-history outcome of a case with
+no cold-start baseline is unsound either way, and no anti-drift wording can
+be credited for closing a gap that was never measurable to begin with.
+
+**This exclusion cuts one way only.** It justifies **not crediting** a
+candidate for an excluded case's with-history outcome. It does **not**
+justify ignoring a candidate that **damages** an excluded case — a candidate
+that turns an already-failing cold-start case into a worse with-history
+outcome, or regresses a warm pass the baseline held even though the case is
+excluded from credit, must still be reported. Excluded cases are watched for
+harm even when they cannot earn credit; see the harm-control role of
+`gpt-oss:20b` in Stage 1 below, and the "Harm is a flag for the human, not an
+automatic veto" rule under Decision rule.
 
 What changes is the screening rule built on top of it. The original design
 made **with-history passes** the single primary screening metric everywhere.
@@ -299,10 +396,15 @@ Both share the same guard, carried over from the original design: a
 candidate's cold-start score must not drop, so it cannot appear to win by
 dragging cold start down to meet with-history.
 
-A shape never produced cold-start is still excluded from a _drift_ claim on
-that model — the original insight holds. It is no longer excluded from
-measuring whether a candidate **improves** things, which is the part that
-changed.
+A shape that failed cold-start under the baseline prompt is still excluded
+from the erosion-reduction reading on that model — the original insight
+holds, only the threshold for what counts as such a shape has widened (see
+the amended rule above). It is still not excluded from measuring whether a
+candidate **improves** things on the absolute-improvement metric, and it is
+still not excluded from being reported when a candidate makes it _worse_ —
+that harm-tracking half is unchanged by this amendment and was already
+implicit in "no anti-drift wording will fix it," but is now stated
+explicitly above so it cannot be read as a one-sided filter.
 
 This is the ordering dependency on the shape-probe spec: baseline cold-start
 numbers for these four models must exist first — they now exist, dated
