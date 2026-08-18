@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Added: full-set confirmation of `--seed-card` (N2, the sole Stage 1
+  survivor) across six models, all 25 cases, `t=0`, `--samples 2`. Held on
+  the promotion-relevant claims and generalized further than the six-case
+  screen: cold-start rose on all six models (not just the four screened),
+  and both erosion-metric models (`qwen2.5-coder:7b`, `granite4.1:8b`)
+  recovered every one of their baseline-eroded cases, not only the one case
+  each the screen happened to include. Did not hold on the harm-control
+  claim: `gpt-oss:20b`'s six-case with-history drop (5/6 → 4/6) inverted to
+  a full-set gain (22/25 → 23/25). Two regressions the screen's four-model
+  list could not catch: `llama3-chatqa:8b`'s with-history score dropped one
+  case (2/25 → 1/25, non-gating), and `llama3-groq-tool-use:8b` picked up a
+  new cold-start over-carding failure on its `prose` case. Stage 2 is
+  recorded as not applicable — exactly one candidate survived Stage 1, so
+  there was nothing to stack.
+
 - Corrected: the warm-start drift candidate screen below conflated two
   different exclusion criteria for reading `qwen2.5-coder:7b`'s six-case
   subset. The screen excluded any case that "failed cold-start under the

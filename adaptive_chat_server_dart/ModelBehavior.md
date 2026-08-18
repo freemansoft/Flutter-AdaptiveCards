@@ -877,6 +877,168 @@ change any conclusion, but they are exactly the kind of nonzero signal this
 model is in the screen to catch, and are recorded here rather than
 discarded as noise.
 
+#### Warm-start drift — full-set confirmation, 2026-08-18
+
+Stage 2 ("stack the winners") produced no commit: exactly one candidate
+advanced from the six-case screen above (N2, `--seed-card`), so there was
+nothing to stack against — Stage 2 exists to measure whether multiple
+winners compose or interfere, and that question does not arise for a single
+survivor. The survivor carried into this stage is **N2 alone**: the shipped,
+**unmodified** `assets/card_system_prompt.txt` with the synthetic
+card-shaped history exchange prepended (`shape_ab.dart --seed-card`). There
+is no candidate prompt file and no `--baseline` override — every run below
+uses `shape_ab.dart`'s own default baseline (the shipped prompt) with
+`--seed-card` added for the candidate arm.
+
+All 25 cases, `t=0`, `--samples 2`, both conditions, six models. Four
+already had a recorded full-set baseline (`qwen2.5-coder:7b`, `granite4.1:8b`,
+`gpt-oss:20b`, `llama3-chatqa:8b` — the `#### Shape coverage — …` sections
+above). `llama3-groq-tool-use:8b` and `nemotron-3.5-lightning:30b` had no
+`shape_ab.dart` baseline (only their `choiceset_ab.dart` 0/6 collapse
+figure), so both a baseline arm and an N2 arm were run for those two,
+same-model, back to back, before moving to the next model.
+
+| Model                        | Cold-start (base → cand) | With-history (base → cand) | Eroded by history (cand) |
+| ---------------------------- | ------------------------ | -------------------------- | ------------------------ |
+| `qwen2.5-coder:7b`           | 19/25 → 21/25            | 18/25 → 19/25              | `carousel`, `table` (2)  |
+| `granite4.1:8b`              | 18/25 → 21/25            | 15/25 → 22/25              | `carousel`, `table` (2)  |
+| `gpt-oss:20b`                | 20/25 → 24/25            | 22/25 → 23/25              | `gauge`, `table` (2)     |
+| `llama3-chatqa:8b`           | 1/25 → 3/25              | 2/25 → 1/25                | `gauge`, `progress` (2)  |
+| `llama3-groq-tool-use:8b`    | 10/25 → 15/25\*          | 9/25 → 16/25\*             | `progress`, `toggle` (2) |
+| `nemotron-3.5-lightning:30b` | 21/25 → 22/25\*          | 13/25 → 22/25\*            | `table` (1)              |
+
+\* No prior `shape_ab.dart` baseline existed for these two models; both the
+base and candidate figures were measured in this task.
+
+**Cold-start rose on all six models, with no drop on any of them.** This is
+a stronger version of the Stage 1 finding, which only had four screening
+models to check (all four rose there too): `qwen2.5-coder:7b` +2,
+`granite4.1:8b` +3, `gpt-oss:20b` +4, `llama3-chatqa:8b` +2,
+`llama3-groq-tool-use:8b` +5, `nemotron-3.5-lightning:30b` +1. Claim (1) from
+Stage 1 **holds and generalizes** to the two additional models.
+
+**The pre-identified erosion cases recovered on both erosion-metric models —
+and so did every other case those models had already lost.** `choice2`
+passed both samples cold and warm under N2 on `qwen2.5-coder:7b`; `choice1`
+did the same on `granite4.1:8b`. That much matches the Stage 1 finding
+exactly. At full scale it goes further: **all three** of
+`qwen2.5-coder:7b`'s baseline-eroded cases (`choice2`, `choice5`, `choice6`)
+and **all four** of `granite4.1:8b`'s (`choice1`, `choice5`, `columnset`,
+`number`) passed both conditions cleanly under N2 — not just the one case
+each that Stage 1's six-case subset happened to include. Partition check,
+`qwen2.5-coder:7b`: 3 baseline-eroded cases, 3 recovered, 0 still failing = 3. Partition check, `granite4.1:8b`: 4 baseline-eroded cases, 4 recovered, 0
+still failing = 4. Claim (2) **holds and strengthens** at full scale.
+
+`granite4.1:8b` also recovered two of its six previously **never-produced**
+cases outright (`choice2`, `codeblock` — both PASS/PASS cold and warm) and a
+third warm-only (`rating_ask` — still FAIL/FAIL cold, now PASS/PASS warm).
+Those are capability gains, not erosion-reduction in the metric's technical
+sense (there was no cold-start baseline for them to rise toward), but they
+are still `--seed-card` moving a model toward emitting cards it previously
+never attempted, and are recorded here because the exclusion rule only
+withholds erosion-reduction _credit_ for such cases — it does not exclude
+reporting a gain on them either.
+
+**The harm-control finding did not hold at full scale — it inverted to a net
+gain.** Stage 1's six-case subset measured `gpt-oss:20b` with-history
+dropping 5/6 → 4/6 while cold-start rose 3/6 → 5/6, and flagged that as a
+concerning trade. On the full 25-case set, `gpt-oss:20b`'s with-history score
+**rose**, 22/25 → 23/25, alongside cold-start rising 20/25 → 24/25 — both
+conditions improved. Claim (3), as measured in Stage 1, **does not hold** at
+full scale, and this write-up is not going to reach for a softer reading of
+it: the aggregate harm the six-case screen flagged is not present in the
+25-case number.
+
+What full scale did **not** erase is the underlying mechanism, only its net
+sign. Two specific cases flipped from a clean with-history pass under
+baseline to a broken with-history JSON failure under N2 (`gauge`, `table`),
+the same "gains cold-start capability on a nested/complex shape, then
+regresses to broken JSON warm" pattern the six-case screen's contested
+`qwen2.5-coder:7b` `table` note first flagged. That pattern now shows up on
+**three of the six** models at full scale — `qwen2.5-coder:7b` (`carousel`,
+`table`), `granite4.1:8b` (`carousel`, `table`), and `gpt-oss:20b` (`gauge`,
+`table`) all newly erode on deeply-nested shapes under N2, even though two of
+those three models' net with-history scores rise overall. `table` alone
+appears in the eroded set of five of the six models measured here
+(`qwen2.5-coder:7b`, `granite4.1:8b`, `gpt-oss:20b`, and — as a newly
+cold-capable-but-warm-fragile case — `nemotron-3.5-lightning:30b`; only
+`llama3-chatqa:8b` and `llama3-groq-tool-use:8b` do not list it, because
+neither model produces a real `Table` under any condition tested here). This
+is a real, reproducible cost of the seed-card mechanism on nested shapes,
+just one that the net numbers on most models are large enough to absorb.
+
+**Two regressions Stage 1 did not have the model list to catch.**
+
+- `llama3-chatqa:8b` (absolute-improvement floor, non-gating): cold-start
+  rose 1/25 → 3/25 (`gauge` and `progress` newly passing, satisfying the
+  "cold-start must not drop" guard), but with-history **dropped** 2/25 →
+  1/25 — the baseline's one non-`prose` warm pass, `pie`, is gone under N2,
+  and neither `gauge` nor `progress` held onto their new cold-start pass
+  when history was present (both are this model's entire "eroded by
+  history" set). The absolute-improvement metric calls for gain in _both_
+  conditions on this model; N2 delivers only one. Per the spec, this does
+  not gate the promotion decision — only `qwen2.5-coder:7b` votes — but it
+  is reported plainly rather than folded into the cold-start-only headline.
+- `llama3-groq-tool-use:8b`, cold-start only: the `prose` case (a plain
+  conversational question with no structured answer) now fails cold-start
+  under N2 with `unwanted-card: got {TextBlock} want prose` — the model
+  returns a card where prose was correct, both samples. This is an
+  over-carding side effect not observed on any other model in this run (all
+  five others' `prose` case passed cleanly under both conditions, both
+  arms). It costs this model one cold-start point that its raw table above
+  does not show cancelled out elsewhere, since the case still passes warm.
+
+**The two previously-unbaselined models, in full.**
+
+- `llama3-groq-tool-use:8b`'s baseline (10/25 cold, 9/25 warm, 1 eroded —
+  `columnset`) is a different shape than its known `choiceset_ab.dart` 0/6
+  collapse suggested: cold-start covers real chart/display capability (`pie`,
+  `bar`, `line`, `gauge`, `rating_show`, `facts`, `columnset`, `progress`,
+  `badge`, `prose` all pass), but **all six choice cases fail under both
+  conditions** — the 0/6 collapse is real and specific to `Input.ChoiceSet`,
+  not a whole-model failure. Under N2, all six choice cases flip to PASS/PASS
+  cold **and** warm — the single largest movement measured in this task on
+  the exact shape the model was known to have zero working path for. Cold
+  10/25 → 15/25 (+5), warm 9/25 → 16/25 (+7). Partition check, cold (both
+  samples pass): `toggle`, `choice1`-`choice6` (6), `pie`, `line`, `gauge`,
+  `carousel`, `facts`, `columnset`, `progress`, `badge` — 1+6+1+1+1+1+1+1+1+1
+  = 15, matching the tool's own `15/25` (`bar` split 1/2 samples and does
+  not count; `prose` newly fails cold — see the over-carding note above).
+  Partition check, warm: `choice1`-`choice6` (6), `pie`, `bar`, `line`,
+  `gauge`, `rating_show` (5), `carousel`, `facts`, `columnset`, `badge`,
+  `prose` (5) — 6+5+5 = 16, matching the tool's own `16/25`.
+- `nemotron-3.5-lightning:30b`'s baseline (21/25 cold, 13/25 warm, 8 eroded —
+  `choice1`-`choice6`, `facts`, `time`) is the most severe single-model
+  erosion recorded anywhere in this file — a strong cold-start model
+  (matching `qwen2.5-coder:7b`'s and exceeding `granite4.1:8b`'s cold
+  scores) that loses every choice-set case plus two more to history. Under
+  N2, all 8 baseline-eroded cases recover to PASS/PASS under both
+  conditions. Cold 21/25 → 22/25 (+1), warm 13/25 → **22/25** (+9) — the
+  largest single with-history gain measured in this task. The only new
+  erosion is `table`, which the baseline never produced under either
+  condition (broken JSON, both) and which N2 makes cold-capable (PASS/PASS)
+  but not yet warm-stable (FAIL/FAIL) — a capability gain paired with a new
+  gap, the same pattern as the `table`/`carousel` cases on the other models
+  above, not a regression from a previously-working state.
+
+**Did the Stage 1 result hold at full scale? Partly, and unevenly across the
+three claims.** The claims the promotion decision actually rests on —
+`qwen2.5-coder:7b`'s with-history rising (18/25 → 19/25) with cold-start not
+dropping (19/25 → 21/25) — held, and the two supporting claims (cold-start
+rising everywhere, erosion-case recovery on both erosion-metric models) held
+and generalized further than Stage 1 measured. The one claim that did not
+hold is the harm-control finding: `gpt-oss:20b` gained on both conditions
+at full scale rather than trading warm for cold. In its place, full scale
+surfaced a real but different set of costs Stage 1's six-case, four-model
+window could not have shown: a reproducible nested-shape fragility pattern
+(`table` especially) spanning half the models tested, a with-history
+regression on the non-gating absolute-improvement floor model
+(`llama3-chatqa:8b`), and a new over-carding failure mode on
+`llama3-groq-tool-use:8b`'s `prose` case. None of these change the
+promotion-relevant number on the deciding model, and none is being read past
+what it shows — they are recorded here as the trades the spec's decision
+rule says to put in front of the human rather than resolve silently.
+
 ### Not a card test: the `format` canary
 
 `json_format_probe.dart` asks a different question — does this model honour Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.
