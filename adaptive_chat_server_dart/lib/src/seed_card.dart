@@ -20,7 +20,7 @@
 /// `tool/model_probes/shape_cases.dart`), and N2 carried no such caveat —
 /// prepending two fixed turns needs no per-model gating. The cost is real
 /// and unconditional too: every request now spends the tokens for two extra
-/// turns, and a `table` reply newly erodes with history present on 5 of the
+/// turns, and a `table` reply newly erodes with history present on 4 of the
 /// 6 measured models — a nested-shape trade-off the net numbers absorb on
 /// most models but do not erase. Full numbers, the erosion pattern, and the
 /// thin latency evidence are in `ModelBehavior.md`.
@@ -40,10 +40,7 @@ const seedCardUser = 'what timezone should I use for the nightly build?';
 /// A bare element array — the shape the card system prompt asks the model to
 /// prefer — so the seed models good output, not just "a card happened".
 const seedCardAssistant =
-    '[{"type":"TextBlock","text":"Pick a timezone '
-    // The literal JSON string sent to the model breaks across lines without
-    // space-separation; this is data, not prose.
-    // ignore: missing_whitespace_between_adjacent_strings
-    'for the nightly build:","wrap":true},{"type":"Input.ChoiceSet",'
-    '"id":"tz","style":"compact","choices":[{"title":"UTC","value":'
-    '"+0000"},{"title":"CET","value":"+0100"}]}]';
+    '[{"type":"TextBlock","text":"Pick a timezone for the nightly '
+    'build:","wrap":true},{"type":"Input.ChoiceSet","id":"tz","'
+    'style":"compact","choices":[{"title":"UTC","value":"+0000"},{'
+    '"title":"CET","value":"+0100"}]}]';

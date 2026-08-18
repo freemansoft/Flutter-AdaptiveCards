@@ -787,12 +787,34 @@ This is the opposite of the expected direction (N2 adds a full extra
 system/user/assistant exchange to every request, which should cost more
 prompt tokens per call). Both directly-timed models moved the same way, so
 it is unlikely to be pure noise, but this is wall-clock across full probe
-runs, not a controlled token-only benchmark — reply length and retry/JSON-
-repair behavior dominate wall time more than the fixed seed-exchange
-overhead does, and N2's replies were shorter/cleaner on average (fewer
-malformed-JSON retries feeding back into narration). Read this as "N2 was
-not observed to be slower," not as proof the added tokens are free; a
-per-token benchmark was out of scope here. `granite4.1:8b` and
+runs, not a controlled token-only benchmark, and two more mundane mechanisms
+are more parsimonious than reply length alone for a *uniform* speedup on
+both timed models and neither was controlled for:
+
+- **Run order and model load.** Both pairs were run baseline-then-N2, same
+  model, back to back — the baseline half of each pair is itself "the later
+  timing re-run" referenced above, run fresh in this same timing session
+  rather than reused from the earlier screening numbers. If baseline was
+  each model's first call after it loaded into memory, baseline paid the
+  cold-load cost that N2's immediately-following, already-resident call (kept
+  warm by `keep_alive: 30m`) did not — plausibly a large share of the delta
+  on `gpt-oss:20b`, a 20B model where load time is non-trivial next to a
+  single reply.
+- **Prompt-prefix cache reuse.** N2 gives every call in a run a longer
+  *identical* prefix (system prompt + the fixed seed pair) ahead of the
+  variable part of the prompt, so a back-to-back loop of calls has more
+  reusable prefix KV cache call-to-call than baseline's system-prompt-only
+  prefix — more of each request can skip re-processing shared tokens.
+
+Neither is separated out here — doing so would need per-call timing and a
+controlled warm-vs-cold comparison, both out of scope for this wall-clock
+read. Reply length and retry/JSON-repair behavior (N2's replies were
+shorter/cleaner on average, fewer malformed-JSON retries feeding back into
+narration) remain a third contributor, not the sole one. Read this as "N2
+was not observed to be slower," not as proof the added tokens are free, and
+not as a mysterious result — three ordinary mechanisms are sufficient to
+explain a uniform speedup without invoking anything unusual about the seed
+pair. A per-token benchmark was out of scope here. `granite4.1:8b` and
 `llama3-chatqa:8b` were not separately timed baseline-vs-N2 (the
 `llama3-chatqa:8b` N2 run alone completed in 6.2s for 12 calls, but with no
 timed baseline on that model the comparison isn't meaningful and is
@@ -939,6 +961,62 @@ never attempted, and are recorded here because the exclusion rule only
 withholds erosion-reduction _credit_ for such cases — it does not exclude
 reporting a gain on them either.
 
+**The deciding model's own +1 net hides more than the recovery paragraph
+above shows.** `qwen2.5-coder:7b`'s with-history score rose 18/25 → 19/25,
+and the paragraph above credits all three baseline-eroded cases recovering
+(`choice2`, `choice5`, `choice6`, +3). But 18 + 3 = 21 ≠ 19 — the recovery
+alone doesn't account for the final number. Reconstructing both warm-pass
+sets case by case (baseline's from the `#### Shape coverage —
+qwen2.5-coder:7b` run above; N2's directly from
+`scratchpad/stage3/qwen2.5-coder-7b-n2.txt`, the raw per-case log this
+model's row in the table above was built from) shows the gap is three
+baseline-passing cases that stopped passing warm under N2, not noise:
+
+- `table` — already covered above as the eroded-by-history case: a clean
+  2/2 warm pass under baseline (single-sample) regresses to a 1/2 split
+  under N2 (`Table, TableCell, TableRow, TextBlock` then `prose`).
+- `number` — this model's other baseline-inverted case (cold `no-input`,
+  warm passed with `Input.Number`, per the `#### Shape coverage` write-up).
+  Under N2 it fails **both** conditions (`prose`, both samples) — it cannot
+  appear in the "eroded by history" column because that bucket requires a
+  cold-N2 pass, and `number` no longer has one.
+- `time` — a stable pass under **both** conditions under baseline (not named
+  in the `#### Shape coverage` write-up at all, which only calls out
+  cases that failed at least once; unlisted cases there are the ones that
+  passed cleanly both ways). Under N2 it fails both cold-start and
+  with-history, both samples, with `no-input: got {TextBlock} want
+  {Input.Time}` — the same failure signature it has on models where it
+  never worked. This case was not previously reported anywhere in this
+  file as history-sensitive, because under baseline it wasn't.
+
+These three losses are partly offset by a fourth change the recovery
+framing also doesn't count: `columnset`, one of this model's baseline
+never-produced cases (`wrong-shape` under both conditions), newly passes
+both cold and warm under N2 — a capability gain of the same kind credited
+to `granite4.1:8b` above, not a recovery. The full accounting: 18
+(baseline) + 3 (recovered: `choice2`, `choice5`, `choice6`) + 1
+(`columnset`, new) − 3 (`table`, `number`, `time`, regressed) = 19,
+matching the reported score exactly. Put the way the promotion note's
+exclusion rule is meant to be read — excluding a case withholds credit, it
+never withholds scrutiny of harm — this model has three regressed cases,
+not the zero the "all three baseline-eroded cases recovered" framing above
+implies, and only one of the three (`table`) had been named as a cost
+anywhere in this file before this note.
+
+One asymmetry worth closing: full warm-set partition checks are given
+above for `llama3-groq-tool-use:8b` and `nemotron-3.5-lightning:30b` (the
+two non-gating models with no prior baseline), but until this paragraph, no
+equivalent case-by-case partition existed for `qwen2.5-coder:7b` — the one
+model whose score actually decides the promotion. One caveat on the
+comparison itself: the baseline figures above come from the `--samples 1`
+`#### Shape coverage` run (2026-08-17), while the N2 figures come from a
+`--samples 2` run (2026-08-18); this file's own determinism check (71 of 72
+same-config-same-case sample pairs agreeing at `t=0`) argues this asymmetry
+is unlikely to explain `time`'s or `number`'s clean 2/2 failure under N2,
+but a single-sample baseline pass carries less weight than a two-sample
+regression, and that imbalance is inherent to reusing the earlier baseline
+rather than re-running it at `--samples 2` alongside N2.
+
 **The harm-control finding did not hold at full scale — it inverted to a net
 gain.** Stage 1's six-case subset measured `gpt-oss:20b` with-history
 dropping 5/6 → 4/6 while cold-start rose 3/6 → 5/6, and flagged that as a
@@ -959,7 +1037,7 @@ regresses to broken JSON warm" pattern the six-case screen's contested
 `table`), `granite4.1:8b` (`carousel`, `table`), and `gpt-oss:20b` (`gauge`,
 `table`) all newly erode on deeply-nested shapes under N2, even though two of
 those three models' net with-history scores rise overall. `table` alone
-appears in the eroded set of five of the six models measured here
+appears in the eroded set of four of the six models measured here
 (`qwen2.5-coder:7b`, `granite4.1:8b`, `gpt-oss:20b`, and — as a newly
 cold-capable-but-warm-fragile case — `nemotron-3.5-lightning:30b`; only
 `llama3-chatqa:8b` and `llama3-groq-tool-use:8b` do not list it, because
@@ -985,8 +1063,20 @@ just one that the net numbers on most models are large enough to absorb.
   returns a card where prose was correct, both samples. This is an
   over-carding side effect not observed on any other model in this run (all
   five others' `prose` case passed cleanly under both conditions, both
-  arms). It costs this model one cold-start point that its raw table above
-  does not show cancelled out elsewhere, since the case still passes warm.
+  arms). `prose` is not this model's only cold-start loss, though: its
+  baseline cold-start pass list also included `bar` and `rating_show`,
+  neither of which survives in the N2 cold partition. `bar` drops to a 1/2
+  split (already excluded from the partition-check pass count below, per
+  the rule that both samples must pass) rather than a clean loss. `rating_show`
+  is a clean loss, `PASS`/`PASS` under baseline to `wrong-shape: got
+  {TextBlock} want {Rating}` on both samples under N2 — not previously
+  called out anywhere in this write-up. The full cold-start accounting for
+  this model is three losses (`bar`, `rating_show`, `prose`) against eight
+  gains (`toggle` and all six `choice*` cases newly passing, plus
+  `carousel`), netting the model's cold-start rise (10/25 → 15/25, +5). It
+  is not, as the previous wording implied, a single isolated point the raw
+  table doesn't otherwise explain — it is three points, two of which the raw
+  table's net gain absorbs without comment.
 
 **The two previously-unbaselined models, in full.**
 
@@ -1096,18 +1186,30 @@ exists (`qwen2.5-coder:7b`, `granite4.1:8b`, `gpt-oss:20b`), N2 either held
 never-produced, PASS/PASS under N2); it never turned a working `codeblock`
 reply into a broken one on any model.
 
-**Conclusion: not an unmeasured risk.** The specific failure category these
-gates exist to catch — a code-plus-explanation ask degrading from a clean
-reply into exposed raw JSON — is already covered by Stage 3's `codeblock`
-case at full scale (six models, both history conditions), and shows no
-occurrence under N2. Stage 3's 25-case × 6-model run is the evidence
-carrying this candidate, consistent with the honest reading the task brief
-calls for rather than a "gates clean" claim that would overstate what a
-same-prompt baseline run can show. No approximation run (e.g. piping
+**Conclusion: not an unmeasured risk at `t=0`.** The specific failure
+category these gates exist to catch — a code-plus-explanation ask degrading
+from a clean reply into exposed raw JSON — is already covered by Stage 3's
+`codeblock` case at full scale (six models, both history conditions), and
+shows no occurrence under N2. Stage 3's 25-case × 6-model run is the
+evidence carrying this candidate, consistent with the honest reading the
+task brief calls for rather than a "gates clean" claim that would overstate
+what a same-prompt baseline run can show. No approximation run (e.g. piping
 `prompt_ab.dart`'s prompt set through `shape_ab.dart --seed-card`) was
 performed, because the `codeblock` case already answers the question the
 approximation would have asked, on the real Stage 3 data rather than a new
 sample.
+
+The qualifier matters: every Stage 3 run — including `codeblock` — was at
+`t=0`, while `temperature_stress.dart` (the gate this section is checking
+N2 against) also covers `t=0.6`, and `--ollama-temperature` is a supported
+override that puts a real deployment at `t=0.6` in reach. **N2's behavior
+under sampling (`t>0`) was not measured at all** — not by Stage 3, and not
+by any candidate run in this task. This is low-severity because the shipped
+default is `defaultCardTemperature = 0.0` (`lib/src/ollama_responder.dart`),
+so an unconfigured server never leaves `t=0`, but it is not nothing: this
+same file records wording fixes elsewhere in this project that held at
+`t=0` and failed at `t=0.6` (see "regression gate" entries above), so `t=0`
+coverage is not a proxy for `t=0.6` coverage on this workload in general.
 
 #### Promoted: N2 (`--seed-card`) shipped, 2026-08-18
 
@@ -1133,22 +1235,31 @@ per-model numbers (`qwen2.5-coder:7b` 19→21 cold / 18→19 warm decides the
 promotion; `granite4.1:8b`, `gpt-oss:20b`, `llama3-groq-tool-use:8b`, and
 `nemotron-3.5-lightning:30b` all improved on both axes too).
 
-Three trade-offs that do not block promotion but must not be read past:
+Four trade-offs that do not block promotion but must not be read past:
 
-1. **`table` newly erodes with history on 5 of the 6 measured models** — a
+1. **`table` newly erodes with history on 4 of the 6 measured models** — a
    real, reproducible nested-shape fragility the full-set confirmation
    surfaced that the six-case screen was too small to catch; only
    `llama3-chatqa:8b` and `llama3-groq-tool-use:8b` are exempt, because
    neither produces a real `Table` under any condition tested. See the
    paragraph beginning "What full scale did **not** erase..." above for the
    full per-model breakdown.
-2. **`llama3-chatqa:8b` regressed with-history, 2/25 → 1/25**, the one model
+2. **`qwen2.5-coder:7b` — the model that decides this promotion — has its
+   own with-history +1 net (18/25 → 19/25) built from +3 recovered and −3
+   regressed, not +3 alone.** `table` (item 1 above), `number`, and `time`
+   all stop passing warm under N2 after passing warm under baseline; a
+   fourth change, `columnset` newly passing both conditions, is a capability
+   gain that happens to offset one of the three losses in the net score but
+   is not a recovery of anything. See "The deciding model's own +1 net hides
+   more than the recovery paragraph above shows" in the full-set
+   confirmation section above for the full per-case accounting.
+3. **`llama3-chatqa:8b` regressed with-history, 2/25 → 1/25**, the one model
    that got worse on the warm axis, even as its cold-start rose 1/25 → 3/25.
    This is non-gating (only `qwen2.5-coder:7b` votes on the promotion
    decision) but is recorded plainly rather than folded into the six-model
    headline — see "Two regressions Stage 1 did not have the model list to
    catch" above.
-3. **N2 costs tokens on every request, permanently** — it prepends a full
+4. **N2 costs tokens on every request, permanently** — it prepends a full
    extra system/user/assistant-equivalent exchange ahead of every
    conversation, which is a fixed context-budget and latency cost that scales
    with every call, not a one-time setup cost. The latency evidence for this
@@ -1168,7 +1279,9 @@ exercises N2 — see "Regression gates against the warm-start survivor,
 2026-08-18" above. The evidence that actually covers the precedent regression
 risk (a code-plus-explanation reply degrading into raw JSON) is Stage 3's
 `codeblock` case: zero `broken:` / raw-JSON-leak failures across all six
-models, both history conditions, 24 samples total, under N2.
+models, both history conditions, 24 samples total, under N2 — but, as noted
+there, only at `t=0`; N2 under sampling (`t>0`, reachable via
+`--ollama-temperature`) was not measured.
 
 **Implementation.** `OllamaResponder.reply()` now inserts the seed pair
 unconditionally, immediately after the system message (if any) and before

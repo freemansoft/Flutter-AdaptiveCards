@@ -38,7 +38,7 @@ flowchart TB
   end
   CLIENT["adaptive_chat_client (Flutter)"] -->|"POST interaction (X-Interaction-Id, PlainJson body)"| ROUTES
   ROUTES -->|"envelope: messages[] + links"| CLIENT
-  OLLAMA -->|"messages (system + history + turn)"| LLM["local Ollama\n/api/chat"]
+  OLLAMA -->|"messages (system + seed pair + history + turn)"| LLM["local Ollama\n/api/chat"]
 ```
 
 ### Wire contract
@@ -105,6 +105,7 @@ second one.
 | `stats.dart`                              | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                                                                                                            |
 | `status.dart`                             | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                                                                                                                    |
 | `ollama_responder.dart`                   | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                                                                                                            |
+| `seed_card.dart`                          | `seedCardUser` / `seedCardAssistant` — the synthetic card-shaped exchange `OllamaResponder` prepends ahead of history on every request (see **Seed-card prefix** below).                                                                                 |
 | `assets/default_system_prompt.txt`        | Bundled **Markdown** system prompt — opt in via `--system-prompt-file assets/default_system_prompt.txt`.                                                                                                                                                  |
 | `assets/card_system_prompt.txt`           | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                                                                                                         |
 | `assets/card_schema.json`                 | Bundled schema for `--json-format schema`.                                                                                                                                                                                                                |
@@ -140,9 +141,11 @@ rebuilds the conversation's history from the store — walking
 `conversation.order` and emitting a `(user, text)` / `(assistant, replyText)`
 pair per prior interaction — and passes it to `responder.reply(text, history)`
 with the **full** history. `OllamaResponder` then sends **system prompt +
-history + current turn** to `/api/chat` (see the request-flow diagrams above)
-— trimmed to a recent window as described next. Because history is built from
-one conversation's `order`, each `conversationId` gets an independent context.
+seed pair + history + current turn** to `/api/chat` (see the request-flow
+diagrams above) — history trimmed to a recent window as described next, the
+seed pair a fixed two turns on every call (see **Seed-card prefix** below
+for what it costs and why it's there). Because history is built from one
+conversation's `order`, each `conversationId` gets an independent context.
 
 **Retained in full; trimmed only on send.** The store keeps the **entire**
 conversation (durable log + idempotent replay). What is bounded is only the
@@ -190,6 +193,17 @@ warm load time on a 7B model. `--keep-alive 0` unloads immediately;
 the otherwise-silent truncation Ollama performs once a prompt exceeds
 `num_ctx`. (`EchoResponder` ignores history entirely — it only echoes the
 current turn.)
+
+**Seed-card prefix.** `OllamaResponder` also prepends a synthetic
+card-shaped user/assistant exchange (`seedCardUser` / `seedCardAssistant`,
+`lib/src/seed_card.dart`) ahead of the replayed history on **every**
+request — two fixed extra turns, unconditionally, with **no flag to disable
+it**. This is a fixed per-request context cost, not a one-time setup cost:
+it counts toward `num_ctx` fill on every call. It exists because a
+conversation that has drifted to prose tends to stay in prose; seeding a
+card-shaped turn before history keeps a card the conversation's established
+format. See `ModelBehavior.md` ("Promoted: N2 (`--seed-card`) shipped") for
+the measurement behind it.
 
 ### System prompt
 
