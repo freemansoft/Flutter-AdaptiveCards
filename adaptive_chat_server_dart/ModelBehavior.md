@@ -788,7 +788,7 @@ system/user/assistant exchange to every request, which should cost more
 prompt tokens per call). Both directly-timed models moved the same way, so
 it is unlikely to be pure noise, but this is wall-clock across full probe
 runs, not a controlled token-only benchmark, and two more mundane mechanisms
-are more parsimonious than reply length alone for a *uniform* speedup on
+are more parsimonious than reply length alone for a _uniform_ speedup on
 both timed models and neither was controlled for:
 
 - **Run order and model load.** Both pairs were run baseline-then-N2, same
@@ -801,7 +801,7 @@ both timed models and neither was controlled for:
   on `gpt-oss:20b`, a 20B model where load time is non-trivial next to a
   single reply.
 - **Prompt-prefix cache reuse.** N2 gives every call in a run a longer
-  *identical* prefix (system prompt + the fixed seed pair) ahead of the
+  _identical_ prefix (system prompt + the fixed seed pair) ahead of the
   variable part of the prompt, so a back-to-back loop of calls has more
   reusable prefix KV cache call-to-call than baseline's system-prompt-only
   prefix — more of each request can skip re-processing shared tokens.
@@ -985,7 +985,7 @@ baseline-passing cases that stopped passing warm under N2, not noise:
   cases that failed at least once; unlisted cases there are the ones that
   passed cleanly both ways). Under N2 it fails both cold-start and
   with-history, both samples, with `no-input: got {TextBlock} want
-  {Input.Time}` — the same failure signature it has on models where it
+{Input.Time}` — the same failure signature it has on models where it
   never worked. This case was not previously reported anywhere in this
   file as history-sensitive, because under baseline it wasn't.
 
@@ -1069,7 +1069,7 @@ just one that the net numbers on most models are large enough to absorb.
   split (already excluded from the partition-check pass count below, per
   the rule that both samples must pass) rather than a clean loss. `rating_show`
   is a clean loss, `PASS`/`PASS` under baseline to `wrong-shape: got
-  {TextBlock} want {Rating}` on both samples under N2 — not previously
+{TextBlock} want {Rating}` on both samples under N2 — not previously
   called out anywhere in this write-up. The full cold-start accounting for
   this model is three losses (`bar`, `rating_show`, `prose`) against eight
   gains (`toggle` and all six `choice*` cases newly passing, plus
