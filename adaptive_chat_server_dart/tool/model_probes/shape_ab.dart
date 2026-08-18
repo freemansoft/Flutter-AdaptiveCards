@@ -57,6 +57,7 @@ Future<Set<String>> runCondition({
   required List<ShapeCase> cases,
   required bool withHistory,
   required bool reinforce,
+  required bool seedCard,
   required ProbeArgs args,
   required HttpClient client,
 }) async {
@@ -71,9 +72,10 @@ Future<Set<String>> runCondition({
         model: args.model,
         systemPrompt: systemPrompt,
         userPrompt: c.prompt,
-        history: withHistory
-            ? const [shapeHistoryUser, shapeHistoryAssistant]
-            : const [],
+        history: [
+          if (seedCard) ...[seedCardUser, seedCardAssistant],
+          if (withHistory) ...[shapeHistoryUser, shapeHistoryAssistant],
+        ],
         reminder: reinforce ? reinforceReminder : null,
         options: const {'temperature': 0.0},
       );
@@ -98,11 +100,13 @@ Future<void> runPrompt({
   required String systemPrompt,
   required List<ShapeCase> cases,
   required bool reinforce,
+  required bool seedCard,
   required ProbeArgs args,
   required HttpClient client,
 }) async {
   final flags = [
     if (reinforce) 'reinforce',
+    if (seedCard) 'seed-card',
   ];
   stdout.writeln(
     '\n===== $label${flags.isEmpty ? '' : ' [${flags.join(', ')}]'} =====',
@@ -113,6 +117,7 @@ Future<void> runPrompt({
     cases: cases,
     withHistory: false,
     reinforce: reinforce,
+    seedCard: seedCard,
     args: args,
     client: client,
   );
@@ -122,6 +127,7 @@ Future<void> runPrompt({
     cases: cases,
     withHistory: true,
     reinforce: reinforce,
+    seedCard: seedCard,
     args: args,
     client: client,
   );
@@ -150,6 +156,13 @@ Future<void> main(List<String> argv) async {
           'N1: inject a shape reminder as a system message after the '
           'history, immediately before the current user turn.',
     )
+    ..addFlag(
+      'seed-card',
+      negatable: false,
+      help:
+          'N2: prepend a synthetic card-shaped exchange ahead of the '
+          'replayed history, so a card is the established format.',
+    )
     ..addOption('model')
     ..addOption('url')
     ..addOption('samples')
@@ -167,11 +180,13 @@ Future<void> main(List<String> argv) async {
   final cases = selectCases(parsed['only'] as String?);
   final client = HttpClient()..idleTimeout = const Duration(minutes: 10);
   final reinforce = parsed['reinforce'] as bool;
+  final seedCard = parsed['seed-card'] as bool;
   await runPrompt(
     label: 'baseline',
     systemPrompt: File(parsed['baseline'] as String).readAsStringSync().trim(),
     cases: cases,
     reinforce: reinforce,
+    seedCard: seedCard,
     args: args,
     client: client,
   );
@@ -182,6 +197,7 @@ Future<void> main(List<String> argv) async {
       systemPrompt: File(candidate).readAsStringSync().trim(),
       cases: cases,
       reinforce: reinforce,
+      seedCard: seedCard,
       args: args,
       client: client,
     );

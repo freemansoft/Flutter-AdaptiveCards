@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- Added: `shape_ab.dart --seed-card` (candidate N2) prepends a synthetic
+  card-shaped exchange ahead of the replayed history, so a card is the
+  conversation's established format before any prose accumulates. The seed's
+  subject (build timezones) is unrelated to every case prompt, so a pass
+  cannot come from the model copying its content — the format is what is
+  being seeded. Server-side this would be few-shot priming prepended to every
+  request, which also means it costs tokens on every request; N2's evaluation
+  records latency alongside pass rate.
+
 - Added: `shape_ab.dart --reinforce` (candidate N1) injects a shape reminder
   as a `system` message after the replayed history and immediately before the
   current user turn. `probeOnce` gained an optional `reminder`, and its

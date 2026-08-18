@@ -227,6 +227,25 @@ const reinforceReminder =
     'choose, enter, schedule, or rate something, or to see a table or chart, '
     'reply with a card.';
 
+/// N2's synthetic leading user turn, prepended by `--seed-card`.
+///
+/// Deliberately unrelated to every case prompt in [shapeCases], so a pass
+/// cannot come from the model copying this exchange's subject matter. It is
+/// the *format* that is being seeded, not the content.
+const seedCardUser = 'what timezone should I use for the nightly build?';
+
+/// The card-shaped assistant half of [seedCardUser]'s exchange.
+///
+/// A bare element array — the shape the card system prompt tells the model to
+/// prefer — so the seed models good output as well as the card habit.
+const seedCardAssistant =
+    '[{"type":"TextBlock","text":"Pick a timezone '
+    // N2 seed is JSON that breaks across lines without space-separation.
+    // ignore: missing_whitespace_between_adjacent_strings
+    'for the nightly build:","wrap":true},{"type":"Input.ChoiceSet",'
+    '"id":"tz","style":"compact","choices":[{"title":"UTC","value":'
+    '"+0000"},{"title":"CET","value":"+0100"}]}]';
+
 /// How one reply scored against one [ShapeCase].
 class ShapeResult {
   /// Creates a result.
