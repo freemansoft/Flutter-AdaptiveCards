@@ -775,25 +775,60 @@ Retired as a default. Failed the shapes that matter: checkbox `isMultiSelect` 1/
 - **A failed assertion is sometimes a bad assertion.** One model's "0/3" on tables was a valid, complete, renderable Table laid out as a 2×2 grid; the `rows >= 3` success criterion wrongly penalized a legitimate layout.
 - **A second `system` message is not universally delivered.** Ollama chat
   templates vary in whether a `system` message placed after the conversation
-  history reaches the model at all; some keep only the first. Checked
-  2026-08-18 by setting the injected reminder to "always begin your reply with
-  the word BANANA" and reading the reply: `qwen2.5-coder:7b` — delivery
-  unconfirmed (`choice1` cold-start stayed `PASS` with the reminder in
-  place); `gpt-oss:20b` — delivery unconfirmed (`choice1` cold-start stayed
-  `PASS`); `granite4.1:8b` — delivery unconfirmed (`choice1` cold-start
-  stayed `PASS`); `llama3-chatqa:8b` — no case exists that could answer this.
-  Its only recorded cold-start pass among the 25 `shape_ab.dart` cases is the
-  `prose` negative control, whose own pass criterion (a non-card,
-  non-broken reply) is satisfied by a bare "BANANA" reply exactly as it
-  would be by a normal answer, so a `PASS` → `FAIL` transition is
-  structurally impossible on that case regardless of whether the reminder
-  arrives; every other case already fails this model cold-start (1/25
-  overall), leaving no baseline to break. This matters before interpreting
-  any mid-conversation reinforcement result — a candidate that scores
-  exactly at baseline on a model that silently drops the message has not
-  been tested on it, and on none of the four screening models did this check
-  produce positive proof of delivery, so N1's numbers should be read as
-  unverified-delivery on all four rather than confirmed on any.
+  history reaches the model at all; some keep only the first. Two check
+  designs were tried on 2026-08-18 against the four screening models,
+  `choice1`, cold-start.
+
+  **First attempt (weaker, kept as a documented negative result).** The
+  injected reminder was set to a _contradicting_ instruction: "disregard the
+  question entirely, reply with only the single word BANANA." This produced
+  no positive result on any of the four models. That uniform null turned out
+  to be uninformative rather than a real finding: the card system prompt is
+  long and insistent about always producing cards, so a model that prioritizes
+  the system prompt over a one-off contradicting instruction looks identical,
+  from the outside, to a model whose chat template silently dropped the
+  message. A contradicting-instruction probe cannot tell "dropped" from
+  "arrived and lost a priority fight" apart, which is exactly the ambiguity
+  this check exists to resolve — so it settled nothing.
+
+  **Second attempt (used for the verdicts below).** The reminder was
+  rewritten to be _additive_ rather than contradictory: "in addition to
+  answering the question normally, every card you send must also include a
+  Badge element with the text 'OK'." This does not fight the card prompt, and
+  a delivered-and-honored reminder is directly visible as an extra `Badge` in
+  `shape_ab.dart`'s printed type list — no code change needed to observe it.
+  Reading `choice1`'s cold-start type list with and without `--reinforce`:
+  `gpt-oss:20b` — **delivered** (`Input.ChoiceSet, TextBlock` without the
+  reminder became `Badge, Input.ChoiceSet, TextBlock` with it, in both
+  cold-start and with-history conditions — positive proof the second
+  `system` message reaches this model). `qwen2.5-coder:7b` — delivery
+  unconfirmed (cold-start type list stayed `Input.ChoiceSet, TextBlock`, no
+  `Badge`, with or without the reminder). `granite4.1:8b` — delivery
+  unconfirmed by the cold-start reading (stayed `Input.ChoiceSet, TextBlock`);
+  its with-history run did add `Badge` (`Badge, Input.ChoiceSet, TextBlock`),
+  an inconsistency between conditions that is recorded but does not override
+  the cold-start verdict, since cold-start — no replayed history to compete
+  for context — is the condition this check is defined against.
+  `llama3-chatqa:8b` — no suitable case exists: across the full 25-case
+  `shape_ab.dart` set its only cold-start pass is the `prose` negative
+  control, which never produces a card at all, so there is no cold-start case
+  where an added `Badge` could be observed either appearing or not.
+
+  **Practical consequence.** N1's numbers can be read as delivery-confirmed
+  only for `gpt-oss:20b`. `qwen2.5-coder:7b` and `granite4.1:8b` remain
+  delivery-unconfirmed — dropped-by-the-template and arrived-but-ignored are
+  still indistinguishable for them — and `llama3-chatqa:8b` has no evidence
+  in either direction. A candidate that scores exactly at baseline on a
+  delivery-unconfirmed model has not been meaningfully tested on it.
+
+  **Reusable lesson.** An inverted-signal delivery probe must not ask the
+  model to do something the surrounding system prompt actively opposes — a
+  null result there is ambiguous by construction, not merely noisy, because
+  "the model resisted a contradiction" and "the message never arrived"
+  produce the identical observation. An additive, prompt-compatible probe
+  (add one harmless, checkable element; don't ask the model to abandon its
+  main instructions) removes that confound and is the design to reach for
+  first when checking whether a chat template delivers a message.
 
 ## How results are produced
 

@@ -5,9 +5,15 @@
 - Added: a delivery check for mid-conversation `system` messages, recorded in
   `ModelBehavior.md`. Ollama chat templates differ in whether a `system`
   message placed after the history reaches the model; measured per screening
-  model on 2026-08-18 by making the injected reminder demand the word BANANA.
-  Without this, a candidate scoring at baseline is ambiguous between "did not
-  help" and "never arrived".
+  model on 2026-08-18. A first attempt used a reminder that contradicted the
+  card system prompt and produced no positive result on any model — an
+  uninformative design, since a model preferring its main instructions over a
+  contradiction looks identical to a template that dropped the message. A
+  second, additive reminder (append a checkable `Badge` element rather than
+  override the reply) settled it: delivered on `gpt-oss:20b`, unconfirmed on
+  `qwen2.5-coder:7b` and `granite4.1:8b`, no suitable case on
+  `llama3-chatqa:8b`. Without this, a candidate scoring at baseline is
+  ambiguous between "did not help" and "never arrived".
 
 - Added: `shape_ab.dart --seed-card` (candidate N2) prepends a synthetic
   card-shaped exchange ahead of the replayed history, so a card is the
