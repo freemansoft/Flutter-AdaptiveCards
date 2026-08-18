@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Added: a delivery check for mid-conversation `system` messages, recorded in
+  `ModelBehavior.md`. Ollama chat templates differ in whether a `system`
+  message placed after the history reaches the model; measured per screening
+  model on 2026-08-18 by making the injected reminder demand the word BANANA.
+  Without this, a candidate scoring at baseline is ambiguous between "did not
+  help" and "never arrived".
+
 - Added: `shape_ab.dart --seed-card` (candidate N2) prepends a synthetic
   card-shaped exchange ahead of the replayed history, so a card is the
   conversation's established format before any prose accumulates. The seed's

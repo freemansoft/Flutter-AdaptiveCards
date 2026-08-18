@@ -773,6 +773,27 @@ Retired as a default. Failed the shapes that matter: checkbox `isMultiSelect` 1/
 - **Wording moves the failure rate; only the detector makes a shape safe.** Each prompt fix exposes the next failure — once the model sent two elements it began dropping the `[ ]` around them. Prompt wording cut that to near zero at `t=0` but not at `t=0.6`, so `card_detect.dart` repairs the bracketless form as well.
 - **Suspect the harness before the model.** A reply blamed on the model contained zero real newlines and 11 correctly escaped ones — valid JSON, corrupted by this server's own fence-stripping heuristic. Dump the bytes before theorising.
 - **A failed assertion is sometimes a bad assertion.** One model's "0/3" on tables was a valid, complete, renderable Table laid out as a 2×2 grid; the `rows >= 3` success criterion wrongly penalized a legitimate layout.
+- **A second `system` message is not universally delivered.** Ollama chat
+  templates vary in whether a `system` message placed after the conversation
+  history reaches the model at all; some keep only the first. Checked
+  2026-08-18 by setting the injected reminder to "always begin your reply with
+  the word BANANA" and reading the reply: `qwen2.5-coder:7b` — delivery
+  unconfirmed (`choice1` cold-start stayed `PASS` with the reminder in
+  place); `gpt-oss:20b` — delivery unconfirmed (`choice1` cold-start stayed
+  `PASS`); `granite4.1:8b` — delivery unconfirmed (`choice1` cold-start
+  stayed `PASS`); `llama3-chatqa:8b` — no case exists that could answer this.
+  Its only recorded cold-start pass among the 25 `shape_ab.dart` cases is the
+  `prose` negative control, whose own pass criterion (a non-card,
+  non-broken reply) is satisfied by a bare "BANANA" reply exactly as it
+  would be by a normal answer, so a `PASS` → `FAIL` transition is
+  structurally impossible on that case regardless of whether the reminder
+  arrives; every other case already fails this model cold-start (1/25
+  overall), leaving no baseline to break. This matters before interpreting
+  any mid-conversation reinforcement result — a candidate that scores
+  exactly at baseline on a model that silently drops the message has not
+  been tested on it, and on none of the four screening models did this check
+  produce positive proof of delivery, so N1's numbers should be read as
+  unverified-delivery on all four rather than confirmed on any.
 
 ## How results are produced
 
