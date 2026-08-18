@@ -580,6 +580,187 @@ A validation pass on this model should track `columnset` separately from
 the three prose erosions rather than assuming all four eroded cases share
 one mechanism.
 
+#### Warm-start drift candidates screened 2026-08-17
+
+Six configurations — baseline plus five candidates — over a six-case subset
+(`choice1`, `choice2`, `date`, `table`, `carousel`, `gauge`) at `t=0`, both
+conditions, via `shape_ab.dart`. `qwen2.5-coder:7b` at `--samples 2` decides;
+`granite4.1:8b`, `gpt-oss:20b`, and `llama3-chatqa:8b` at `--samples 1`
+inform — `granite4.1:8b` as a second drift data point (erosion-reduction
+metric), `gpt-oss:20b` as harm control, `llama3-chatqa:8b` as the
+absolute-improvement floor. The three prompt candidates were passed via
+`--baseline <file>`, not `--candidate`, so each run measures exactly one
+prompt against both conditions.
+
+Every cell below is with-history/cold-start, raw counts out of 6:
+
+| Candidate | `qwen2.5-coder:7b` (decides, n=2) | `granite4.1:8b` (informs) | `gpt-oss:20b` (informs) | `llama3-chatqa:8b` (informs) |
+| --------- | --------------------------------- | ------------------------- | ----------------------- | ---------------------------- |
+| baseline  | 4/4                               | 2/3                       | 5/3                     | 0/0                          |
+| P1        | 3/5                               | 2/4                       | 3/2                     | 0/0                          |
+| P2        | 3/4                               | 2/4                       | 4/4                     | 1/0                          |
+| P3        | 3/4                               | 2/3                       | 5/4                     | 1/0                          |
+| N1        | 3/4                               | 4/3                       | 4/2                     | 1/1                          |
+| N2        | 4/6                               | 4/6                       | 4/5                     | 0/1                          |
+
+**Why the raw six-case denominator is misleading for `qwen2.5-coder:7b` and
+`granite4.1:8b`, and what was read instead.** Per the spec's screening-set
+guidance, a case that failed cold-start under a model's own recorded 25-case
+baseline (`#### Shape coverage — …` above) cannot be "eroded" by this
+screen — it never worked. Checked against those baselines before reading
+the table:
+
+- `qwen2.5-coder:7b`: `table` failed cold-start in the 25-case baseline
+  (`wrong-shape`) and `carousel` was never produced under either condition
+  there — both excluded. The valid drift subset is `choice1`, `choice2`,
+  `date`, `gauge` (4 of 6); `choice2` is the model's one real eroded case
+  from that baseline.
+- `granite4.1:8b`: `choice2`, `table`, and `carousel` were all in that
+  model's "never produced under either condition" set — all three
+  excluded. The valid drift subset is `choice1`, `date`, `gauge` (3 of 6);
+  `choice1` is one of that model's four real eroded cases from the 25-case
+  baseline.
+
+Re-reading each candidate on its model's valid subset (with-history/cold-start):
+
+`qwen2.5-coder:7b` (valid-4: `choice1`, `choice2`, `date`, `gauge`):
+baseline 3/4, P1 3/4, P2 3/4, P3 3/4, N1 3/4, **N2 4/4**. On this subset
+`choice2` — the only real drift case in the six — fails both samples under
+baseline and every prompt candidate (P1/P2/P3), fails both samples under
+N1, and **passes both samples under N2**. Cold-start held at 4/4 throughout
+(no candidate dragged it down). The raw six-case table above shows N2 tied
+with baseline at with-history 4/6, not ahead — that tie is an artifact of
+`table` (excluded, not a drift case) coincidentally flipping from a warm
+pass under baseline to a warm fail under N2 while `choice2` flips from fail
+to pass in the same column; the two cancel in the untrimmed count and hide
+the real result. Read on the correct denominator, N2 is a clean win on the
+deciding model: with-history increases (3/4 → 4/4), cold-start does not
+decrease (4/4 → 4/4).
+
+`granite4.1:8b` (valid-3: `choice1`, `date`, `gauge`): baseline 2/3, P1 2/3,
+P2 2/3, P3 2/3, **N1 3/3**, **N2 3/3**. `choice1` — this model's clearest
+prose-erosion case — fails with history under baseline/P1/P2/P3 and passes
+under both N1 and N2, with cold-start unchanged at 3/3 throughout. Both
+mechanisms show real, unambiguous erosion reduction on this informing
+model's own valid subset, agreeing with each other.
+
+**Promotion decision.** Applying the Step 6 bar (with-history increases,
+cold-start does not decrease) to `qwen2.5-coder:7b`'s correctly-read
+numbers: **only N2 (`--seed-card`) qualifies.**
+
+**Advancing to the stacked run: `N2`.**
+
+**Concern to carry into the stacked run — harm signal on `gpt-oss:20b`.**
+N2 does not gate on the harm-control model, but it should not be ignored:
+`gpt-oss:20b`'s own fresh screening baseline scored with-history 5/6; under
+N2 it dropped to 4/6, `gauge` flipping from a clean `Chart.Gauge` pass to
+`broken: invalid JSON` with history present. `gauge` has flipped cold/warm
+pass status for this model before (it was an "inverted case" in the
+25-case baseline too — cold `broken`, warm passed), so this specific case
+carries real single-sample noise, but the _direction_ — an already-working
+with-history case breaking under N2 — is exactly the failure this
+informing model exists to catch and the wording around N2 should say so
+plainly rather than average it away. `qwen2.5-coder:7b`'s own N2 run shows
+a related pattern: `table` and `carousel` (both excluded, non-drift cases)
+also became newly unstable with history under N2 even as cold-start swept
+to 6/6 — the seed-card mechanism looks like it trades some already-fragile
+nested-shape stability for a clean fix on the actual prose-erosion case.
+
+**`N2` latency.** `shape_ab.dart` doesn't print per-run timing, so wall-clock
+was captured with the shell `time` builtin around two full runs each
+(`qwen2.5-coder:7b`, `--samples 2`, 24 live calls per run; `gpt-oss:20b`,
+`--samples 1`, 12 live calls per run):
+
+- `qwen2.5-coder:7b`: baseline 149.85s (≈6.24s/call) vs. N2 109.19s
+  (≈4.55s/call) — N2 ran **27% faster**, not slower.
+- `gpt-oss:20b`: baseline 167.16s (≈13.93s/call) vs. N2 120.92s
+  (≈10.08s/call) — N2 ran **28% faster**, not slower.
+
+This is the opposite of the expected direction (N2 adds a full extra
+system/user/assistant exchange to every request, which should cost more
+prompt tokens per call). Both directly-timed models moved the same way, so
+it is unlikely to be pure noise, but this is wall-clock across full probe
+runs, not a controlled token-only benchmark — reply length and retry/JSON-
+repair behavior dominate wall time more than the fixed seed-exchange
+overhead does, and N2's replies were shorter/cleaner on average (fewer
+malformed-JSON retries feeding back into narration). Read this as "N2 was
+not observed to be slower," not as proof the added tokens are free; a
+per-token benchmark was out of scope here. `granite4.1:8b` and
+`llama3-chatqa:8b` were not separately timed baseline-vs-N2 (the
+`llama3-chatqa:8b` N2 run alone completed in 6.2s for 12 calls, but with no
+timed baseline on that model the comparison isn't meaningful and is
+recorded only as a raw number, not a finding).
+
+**Candidates that did not advance, and why they are not worth retrying.**
+
+- **P1** (recency — shape-decision section appended last) scored
+  with-history 3/4 on `qwen2.5-coder:7b`'s valid subset, identical to
+  baseline's 3/4; `choice2` still fails both samples. Cold-start rose to
+  5/6 in the raw table only because `table` (excluded, non-drift) newly
+  passed cold — the valid-subset cold-start was unchanged at 4/4. On
+  `gpt-oss:20b` it is the worst-scoring candidate of the five: with-history
+  dropped from 5/6 to 3/6 and cold-start from 3/6 to 2/6, including a
+  `choice1` cold-start `HTTP 500` not seen under baseline/P2/P3. Appending
+  a whole extra section at the end of an already-long prompt does not fix
+  the deciding model's drift and actively degrades the harm-control model.
+  Not worth retrying as written.
+- **P2** (guard at the top of the Markdown-reply section) also scored
+  with-history 3/4 on `qwen2.5-coder:7b`'s valid subset — flat versus
+  baseline, `choice2` unmoved. On `granite4.1:8b`'s valid subset it is
+  likewise flat (2/3 both). It is the only prompt candidate that produced
+  any movement on `llama3-chatqa:8b` (1/6 with-history, `gauge`, matching
+  P3) but that is an informing-model, absolute-floor signal only, not
+  something that changes the qwen-gated outcome. Not worth retrying — a
+  guard placed immediately after the Markdown-shape heading did not stop
+  the model from choosing that heading's shape once history existed.
+- **P3** (narrowing the escape-hatch rationalization) is the closest of the
+  three prompt candidates to a wash: flat 3/4 on `qwen2.5-coder:7b`'s valid
+  subset, flat 2/3 on `granite4.1:8b`'s, and the only prompt candidate that
+  left `gpt-oss:20b`'s with-history score untouched at 5/6 (cold-start
+  actually rose 3→4, `gauge` newly passing cold). It is safe but inert on
+  the case that matters. Not worth retrying alone; if the escape-hatch
+  wording is revisited it should be paired with a mechanism that actually
+  moves `choice2`, not run solo.
+- **N1** (`--reinforce`, mid-conversation system reminder) showed **zero
+  measured movement on `qwen2.5-coder:7b`** — valid-subset with-history
+  flat at 3/4, `choice2` still failing both samples identically to
+  baseline. Per Task 3's delivery-check finding, `qwen2.5-coder:7b` is one
+  of the two models where second-`system`-message delivery is
+  **unconfirmed** (ambiguous: dropped, or arrived and ignored) — so this
+  null result must be read as "no measured effect; delivery unverified on
+  this model," not as proof the reminder doesn't work. It does not clear
+  the qwen-gated bar either way and is not advancing from this screen.
+  Separately — and this does not change the promotion decision, which is
+  qwen-only — N1 produced the **strongest clean result of any candidate on
+  `granite4.1:8b`**: valid-subset with-history 2/3 → 3/3, `choice1`
+  recovering fully with cold-start unchanged, and the raw with-history
+  score rose to 4/6 with zero erosion, the best warm-start number any
+  candidate produced on that model. That is itself evidence the reminder
+  _is_ delivered on `granite4.1:8b` (previously also unconfirmed) and has a
+  real, non-noise effect there. If `granite4.1:8b` becomes a target model
+  in its own right in a future task, N1 is worth revisiting specifically
+  for it; it is not worth retrying as a fix for `qwen2.5-coder:7b`, the
+  model this screen is gated on.
+
+**`llama3-chatqa:8b` read on the absolute-improvement floor, not erosion**
+(per the spec: all six subset cases sit outside its one 25-case cold-start
+pass, so 0/6 cold and 0/6 warm is the expected floor, not a run to
+discard). Movement observed: P2 and P3 each produced a lone with-history
+pass on `gauge` (0/6 → 1/6 with-history, cold-start unchanged at 0/6). N1
+produced the strongest single result — `gauge` passing on **both**
+conditions (0/6 → 1/6 cold **and** 0/6 → 1/6 with-history) — though with no
+established delivery-check baseline for this model (Task 3: "no suitable
+test case exists"), this can't be read as delivery-confirming the way a
+positive qwen/granite result would be; it is recorded as an observed,
+single-sample movement only. N2 produced a cold-start pass on `gauge` (0/6
+→ 1/6 cold) that then eroded with history (1/6 → 0/6 warm, `gauge` in the
+"eroded by history" set) — the first time this screen produced the actual
+erosion pattern on a model that otherwise has almost no cold-start card
+path to erode. None of these are large enough at `n=1` on a single case to
+change any conclusion, but they are exactly the kind of nonzero signal this
+model is in the screen to catch, and are recorded here rather than
+discarded as noise.
+
 ### Not a card test: the `format` canary
 
 `json_format_probe.dart` asks a different question — does this model honour Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.

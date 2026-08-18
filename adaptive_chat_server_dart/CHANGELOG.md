@@ -2,6 +2,25 @@
 
 ## [Unreleased]
 
+- Added: screening results for five warm-start drift candidates (P1 recency,
+  P2 Markdown-section guard, P3 escape-hatch narrowing, N1 mid-conversation
+  reminder, N2 card-shaped history seed), measured 2026-08-17 over a
+  six-case subset at `t=0` with `shape_ab.dart`. `qwen2.5-coder:7b` at
+  `--samples 2` decided; three informing models at `--samples 1`
+  (`granite4.1:8b`, `gpt-oss:20b`, `llama3-chatqa:8b`) informed the wording
+  and surfaced harm. Two subset cases (`table`, `carousel`) had already
+  failed cold-start under `qwen2.5-coder:7b`'s own recorded baseline and
+  were excluded from its erosion reading (a third, `choice2`, also excluded
+  for `granite4.1:8b`) — read on that corrected denominator rather than the
+  raw six-case count, `--seed-card` (N2) is the only candidate that
+  increases with-history passes without decreasing cold-start on the
+  deciding model. Advancing: `N2`. N2 also shows a with-history regression
+  on the harm-control model (`gpt-oss:20b`, 5/6 → 4/6) that the stacked run
+  should watch. Losers (P1, P2, P3, N1) are recorded with their numbers so
+  they are not retried; N1 separately showed a strong positive effect on
+  `granite4.1:8b` (an informing, non-deciding model) worth revisiting if
+  that model becomes a target in its own right.
+
 - Added: a delivery check for mid-conversation `system` messages, recorded in
   `ModelBehavior.md`. Ollama chat templates differ in whether a `system`
   message placed after the history reaches the model; measured per screening
