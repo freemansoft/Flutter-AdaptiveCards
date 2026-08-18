@@ -12,6 +12,7 @@ import 'dart:io';
 
 import 'package:adaptive_chat_server_dart/src/card_detect.dart';
 import 'package:adaptive_chat_server_dart/src/responder.dart';
+import 'package:adaptive_chat_server_dart/src/seed_card.dart';
 import 'package:adaptive_chat_server_dart/src/stats.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
@@ -394,6 +395,11 @@ class OllamaResponder implements Responder {
     if (systemPrompt != null) {
       messages.add({'role': 'system', 'content': systemPrompt});
     }
+    // Measured as candidate N2 — see seed_card.dart for why this is
+    // unconditional rather than a flag.
+    messages
+      ..add({'role': 'user', 'content': seedCardUser})
+      ..add({'role': 'assistant', 'content': seedCardAssistant});
     for (final (role, content) in _trimHistory(history)) {
       messages.add({'role': role, 'content': content});
     }

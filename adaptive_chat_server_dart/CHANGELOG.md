@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+- Fixed: `N2` (`--seed-card`) promoted after measurement —
+  `OllamaResponder.reply()` now unconditionally prepends a synthetic
+  card-shaped exchange (`lib/src/seed_card.dart`) ahead of the replayed
+  history on every request. On `qwen2.5-coder:7b` at `t=0`, with-history
+  shape coverage `18/25` → `19/25` on the full 25-case set at `--samples 2`,
+  cold-start `19/25` → `21/25`; regression gates clean (stress `10/10` at
+  both temperatures, code A/B `8/8`, though neither gate can exercise N2
+  directly — see `ModelBehavior.md`). This is a **broad** result, not a
+  narrow single-model fix: cold-start rose on all 6 measured models and
+  with-history rose on 5 of 6. Trade-offs recorded and not blocking: `table`
+  newly erodes with history on 5/6 models, `llama3-chatqa:8b` regressed
+  with-history (2/25 → 1/25), and the added per-request token cost has only
+  thin wall-clock latency evidence (not a controlled per-token benchmark).
+  `assets/card_system_prompt.txt` is unchanged — this is a code change, not
+  a prompt edit. Full numbers in `ModelBehavior.md`.
+
 - Added: regression-gate results for the warm-start drift survivor —
   `temperature_stress.dart` at both temperatures and `prompt_ab.dart`'s code
   set, each measured against a same-session baseline on `qwen2.5-coder:7b`.

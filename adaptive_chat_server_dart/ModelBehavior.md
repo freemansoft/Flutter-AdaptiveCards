@@ -1109,6 +1109,77 @@ performed, because the `codeblock` case already answers the question the
 approximation would have asked, on the real Stage 3 data rather than a new
 sample.
 
+#### Promoted: N2 (`--seed-card`) shipped, 2026-08-18
+
+**Decision: Path B.** N2 — prepending the synthetic `seedCardUser` /
+`seedCardAssistant` exchange ahead of the replayed history — is promoted into
+`OllamaResponder.reply()`. This is a code change, not a prompt edit:
+`assets/card_system_prompt.txt` is unmodified. The constants moved from
+`tool/model_probes/shape_cases.dart` (probe tooling) into
+`lib/src/seed_card.dart` (shipped library code, `lib/` does not depend on
+`tool/`); `shape_cases.dart` now re-exports them from that one shipped
+location instead of keeping a second copy, so the probe and the server are
+provably sending the same bytes rather than two hand-kept-in-sync strings.
+The seed is **unconditional**, matching how it was measured — every request
+now gets the seed pair prepended, with no flag to disable it, because nothing
+in the evidence pointed at a case where it should be withheld.
+
+This is a **broad result, not a narrow one**. The spec's narrow-win wording
+("improves the default model by N shapes") is for a candidate that moved only
+`qwen2.5-coder:7b`. N2 did not: cold-start shape coverage rose on **all six**
+measured models, and with-history coverage rose on **five of six** — see the
+"Warm-start drift — full-set confirmation, 2026-08-18" table above for the
+per-model numbers (`qwen2.5-coder:7b` 19→21 cold / 18→19 warm decides the
+promotion; `granite4.1:8b`, `gpt-oss:20b`, `llama3-groq-tool-use:8b`, and
+`nemotron-3.5-lightning:30b` all improved on both axes too).
+
+Three trade-offs that do not block promotion but must not be read past:
+
+1. **`table` newly erodes with history on 5 of the 6 measured models** — a
+   real, reproducible nested-shape fragility the full-set confirmation
+   surfaced that the six-case screen was too small to catch; only
+   `llama3-chatqa:8b` and `llama3-groq-tool-use:8b` are exempt, because
+   neither produces a real `Table` under any condition tested. See the
+   paragraph beginning "What full scale did **not** erase..." above for the
+   full per-model breakdown.
+2. **`llama3-chatqa:8b` regressed with-history, 2/25 → 1/25**, the one model
+   that got worse on the warm axis, even as its cold-start rose 1/25 → 3/25.
+   This is non-gating (only `qwen2.5-coder:7b` votes on the promotion
+   decision) but is recorded plainly rather than folded into the six-model
+   headline — see "Two regressions Stage 1 did not have the model list to
+   catch" above.
+3. **N2 costs tokens on every request, permanently** — it prepends a full
+   extra system/user/assistant-equivalent exchange ahead of every
+   conversation, which is a fixed context-budget and latency cost that scales
+   with every call, not a one-time setup cost. The latency evidence for this
+   is **thin**: wall-clock across two full probe runs each on
+   `qwen2.5-coder:7b` and `gpt-oss:20b` showed N2 running 27-28% *faster*,
+   not slower — the opposite of the expected direction — but that is
+   uncontrolled wall-clock across full runs (dominated by reply length and
+   retry/JSON-repair behavior), not a controlled per-token benchmark, and it
+   was never separately measured on the other four models. See "`N2`
+   latency." above for the full caveat. Token cost was not measured directly
+   at all; only wall-clock was.
+
+**Regression gates.** `temperature_stress.dart` (10/10 at `t=0` and `t=0.6`)
+and `prompt_ab.dart`'s code A/B set (8/8) are clean on the unmodified shipped
+prompt, but neither script can inject seed history, so neither actually
+exercises N2 — see "Regression gates against the warm-start survivor,
+2026-08-18" above. The evidence that actually covers the precedent regression
+risk (a code-plus-explanation reply degrading into raw JSON) is Stage 3's
+`codeblock` case: zero `broken:` / raw-JSON-leak failures across all six
+models, both history conditions, 24 samples total, under N2.
+
+**Implementation.** `OllamaResponder.reply()` now inserts the seed pair
+unconditionally, immediately after the system message (if any) and before
+`_trimHistory(history)`'s output — so the assembled order is: system prompt,
+`seedCardUser`, `seedCardAssistant`, the trimmed real history, then the
+current user turn. `test/ollama_responder_test.dart` has a dedicated test
+(`the N2 seed pair precedes real history, which precedes the current turn`)
+asserting that exact role and content order end to end, plus the two
+existing history-trimming tests were updated for the two extra messages
+every request now carries.
+
 ### Not a card test: the `format` canary
 
 `json_format_probe.dart` asks a different question — does this model honour Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.
