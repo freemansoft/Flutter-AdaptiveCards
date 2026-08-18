@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Added: regression-gate results for the warm-start drift survivor —
+  `temperature_stress.dart` at both temperatures and `prompt_ab.dart`'s code
+  set, each measured against a same-session baseline on `qwen2.5-coder:7b`.
+  Baseline clean (stress 10/10 at `t=0` and `t=0.6`; code A/B 8/8), but
+  neither gate can exercise N2 (`--seed-card`) since it is a message-assembly
+  change and neither script injects seed history — no candidate arm was run.
+  `shape_ab.dart`'s existing `codeblock` case from the Stage 3 full-set
+  confirmation covers the closest analogous risk instead: zero raw-JSON-leak
+  failures across six models, both history conditions, under N2.
+
 - Added: full-set confirmation of `--seed-card` (N2, the sole Stage 1
   survivor) across six models, all 25 cases, `t=0`, `--samples 2`. Held on
   the promotion-relevant claims and generalized further than the six-case

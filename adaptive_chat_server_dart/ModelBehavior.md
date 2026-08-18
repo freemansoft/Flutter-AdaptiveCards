@@ -1039,6 +1039,76 @@ promotion-relevant number on the deciding model, and none is being read past
 what it shows — they are recorded here as the trades the spec's decision
 rule says to put in front of the human rather than resolve silently.
 
+#### Regression gates against the warm-start survivor, 2026-08-18
+
+The two standing regression gates (`temperature_stress.dart`,
+`prompt_ab.dart`) exist to catch a candidate breaking something its own
+target metric doesn't see — the precedent is a prompt candidate that tied on
+its target set and silently turned _"what is a closure? show an example"_
+from a passing Markdown reply into raw JSON on screen, 8/8 → 7/8,
+deterministic across three repeats (the compare-and-comment candidate
+above, "A negative result, recorded so it isn't retried").
+
+**These gates cannot exercise N2.** Both scripts call `probeOnce` with a
+system prompt and a single user turn; neither accepts a `reminder` or seed
+history, and `shape_ab.dart`'s `--seed-card` flag (the mechanism N2 actually
+is) has no equivalent on either script. N2 is not a prompt edit — the
+shipped, unmodified `assets/card_system_prompt.txt` is the only prompt file
+in play throughout this stage — so running these gates against it measures a
+file the candidate never touches. A "clean" result here would be a fact
+about the shipped prompt, not evidence about N2.
+
+Baseline was still run, on `qwen2.5-coder:7b`, `--samples 2` for the stress
+set and `--samples 1` for the code A/B set, so the record has a same-session
+reference point:
+
+- Stress set, `t=0`: **10/10**, avg 13144ms.
+- Stress set, `t=0.6`: **10/10**, avg 12967ms.
+- Code A/B set (`prompt_ab.dart`, baseline only — no candidate prompt
+  exists to compare against): **8/8**, avg 2687ms. `what is a closure? show
+an example` — the compare-and-comment candidate's exact regression case
+  above — passed as clean prose.
+
+(A first attempt at the stress run raced two overlapping invocations against
+one output file and produced a corrupted 9/10 read with garbled
+interleaved lines; that file was discarded and the run repeated cleanly to a
+fresh path before recording the 10/10 above. No candidate run followed
+either baseline, per the reasoning above.)
+
+**Is the gap a real unmeasured risk, or does Stage 3 already cover it?**
+Checked against the raw per-case logs already on disk from Stage 3
+(`scratchpad/stage3/*.txt` from the task-6 run), not re-run here:
+`shape_cases.dart` includes a `codeblock` case — prompt _"Dart snippet that
+reads a JSON file and prints the "name" field, with a short explanation"_ —
+that is the same code-plus-explanation shape as the compare-and-comment
+regression case, and it was one of the 25 cases run under N2 (`--seed-card`)
+on all six Stage 3 models, both cold-start and with-history, `--samples 2`.
+Across all six models and both conditions (24 samples total), `codeblock`'s
+failures were only `prose` (clean Markdown, no card attempted —
+`qwen2.5-coder:7b` warm baseline, `llama3-chatqa:8b` both conditions,
+`llama3-groq-tool-use:8b` with-history) or `wrong-shape: got {TextBlock}`
+(`llama3-groq-tool-use:8b` cold-start). **Zero samples produced the
+`broken:` / "user sees raw JSON" label** that `judgeShape` would have
+surfaced had a card-shaped attempt failed to parse — the exact failure mode
+the compare-and-comment regression showed. Where a baseline comparison
+exists (`qwen2.5-coder:7b`, `granite4.1:8b`, `gpt-oss:20b`), N2 either held
+`codeblock`'s PASS/PASS or improved it (`granite4.1:8b`: previously
+never-produced, PASS/PASS under N2); it never turned a working `codeblock`
+reply into a broken one on any model.
+
+**Conclusion: not an unmeasured risk.** The specific failure category these
+gates exist to catch — a code-plus-explanation ask degrading from a clean
+reply into exposed raw JSON — is already covered by Stage 3's `codeblock`
+case at full scale (six models, both history conditions), and shows no
+occurrence under N2. Stage 3's 25-case × 6-model run is the evidence
+carrying this candidate, consistent with the honest reading the task brief
+calls for rather than a "gates clean" claim that would overstate what a
+same-prompt baseline run can show. No approximation run (e.g. piping
+`prompt_ab.dart`'s prompt set through `shape_ab.dart --seed-card`) was
+performed, because the `codeblock` case already answers the question the
+approximation would have asked, on the real Stage 3 data rather than a new
+sample.
+
 ### Not a card test: the `format` canary
 
 `json_format_probe.dart` asks a different question — does this model honour Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.
