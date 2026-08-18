@@ -217,6 +217,16 @@ const shapeCases = <ShapeCase>[
   ),
 ];
 
+/// N1's reminder, injected after the history by `shape_ab.dart --reinforce`.
+///
+/// Lives here rather than in the runner because Task 3's delivery check and
+/// the experiment itself must use the same bytes.
+const reinforceReminder =
+    'Reminder: decide the reply shape from the question you are about to '
+    'answer, not from the format of earlier turns. If it asks the user to '
+    'choose, enter, schedule, or rate something, or to see a table or chart, '
+    'reply with a card.';
+
 /// How one reply scored against one [ShapeCase].
 class ShapeResult {
   /// Creates a result.

@@ -142,6 +142,26 @@ class ProbeOutcome {
   final String reply;
 }
 
+/// Builds the `/api/chat` message list, mirroring `OllamaResponder`.
+///
+/// Extracted so the ordering is testable without an HTTP round trip. When
+/// [reminder] is given it is inserted as a second `system` message **after**
+/// the history and immediately before [userPrompt] — adjacency to generation
+/// is the entire hypothesis it exists to test, so its position is asserted in
+/// `test/probe_reinforce_test.dart` rather than left to inspection.
+List<Map<String, String>> buildProbeMessages({
+  required String systemPrompt,
+  required String userPrompt,
+  List<String> history = const [],
+  String? reminder,
+}) => [
+  {'role': 'system', 'content': systemPrompt},
+  for (final (i, turn) in history.indexed)
+    {'role': i.isEven ? 'user' : 'assistant', 'content': turn},
+  if (reminder != null) {'role': 'system', 'content': reminder},
+  {'role': 'user', 'content': userPrompt},
+];
+
 /// Sends one `/api/chat` request and judges the reply.
 ///
 /// [options] is merged into Ollama's `options` map, so a probe varies only
@@ -154,6 +174,7 @@ Future<ProbeOutcome> probeOnce({
   required String systemPrompt,
   required String userPrompt,
   List<String> history = const [],
+  String? reminder,
   Map<String, dynamic> options = const {},
   Object? format,
 }) async {
@@ -163,12 +184,12 @@ Future<ProbeOutcome> probeOnce({
   request.write(
     jsonEncode({
       'model': model,
-      'messages': [
-        {'role': 'system', 'content': systemPrompt},
-        for (final (i, turn) in history.indexed)
-          {'role': i.isEven ? 'user' : 'assistant', 'content': turn},
-        {'role': 'user', 'content': userPrompt},
-      ],
+      'messages': buildProbeMessages(
+        systemPrompt: systemPrompt,
+        userPrompt: userPrompt,
+        history: history,
+        reminder: reminder,
+      ),
       'stream': false,
       'think': false,
       'keep_alive': '30m',

@@ -56,6 +56,7 @@ Future<Set<String>> runCondition({
   required String systemPrompt,
   required List<ShapeCase> cases,
   required bool withHistory,
+  required bool reinforce,
   required ProbeArgs args,
   required HttpClient client,
 }) async {
@@ -73,6 +74,7 @@ Future<Set<String>> runCondition({
         history: withHistory
             ? const [shapeHistoryUser, shapeHistoryAssistant]
             : const [],
+        reminder: reinforce ? reinforceReminder : null,
         options: const {'temperature': 0.0},
       );
       final result = judgeShape(c, outcome);
@@ -95,15 +97,22 @@ Future<void> runPrompt({
   required String label,
   required String systemPrompt,
   required List<ShapeCase> cases,
+  required bool reinforce,
   required ProbeArgs args,
   required HttpClient client,
 }) async {
-  stdout.writeln('\n===== $label =====');
+  final flags = [
+    if (reinforce) 'reinforce',
+  ];
+  stdout.writeln(
+    '\n===== $label${flags.isEmpty ? '' : ' [${flags.join(', ')}]'} =====',
+  );
   final cold = await runCondition(
     label: 'cold-start',
     systemPrompt: systemPrompt,
     cases: cases,
     withHistory: false,
+    reinforce: reinforce,
     args: args,
     client: client,
   );
@@ -112,6 +121,7 @@ Future<void> runPrompt({
     systemPrompt: systemPrompt,
     cases: cases,
     withHistory: true,
+    reinforce: reinforce,
     args: args,
     client: client,
   );
@@ -133,6 +143,13 @@ Future<void> main(List<String> argv) async {
     )
     ..addOption('candidate', help: 'A second system prompt to compare.')
     ..addOption('only', help: 'Comma-separated case ids to run.')
+    ..addFlag(
+      'reinforce',
+      negatable: false,
+      help:
+          'N1: inject a shape reminder as a system message after the '
+          'history, immediately before the current user turn.',
+    )
     ..addOption('model')
     ..addOption('url')
     ..addOption('samples')
@@ -149,10 +166,12 @@ Future<void> main(List<String> argv) async {
 
   final cases = selectCases(parsed['only'] as String?);
   final client = HttpClient()..idleTimeout = const Duration(minutes: 10);
+  final reinforce = parsed['reinforce'] as bool;
   await runPrompt(
     label: 'baseline',
     systemPrompt: File(parsed['baseline'] as String).readAsStringSync().trim(),
     cases: cases,
+    reinforce: reinforce,
     args: args,
     client: client,
   );
@@ -162,6 +181,7 @@ Future<void> main(List<String> argv) async {
       label: 'candidate',
       systemPrompt: File(candidate).readAsStringSync().trim(),
       cases: cases,
+      reinforce: reinforce,
       args: args,
       client: client,
     );

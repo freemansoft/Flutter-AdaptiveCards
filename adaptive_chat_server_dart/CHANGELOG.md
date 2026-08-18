@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Added: `shape_ab.dart --reinforce` (candidate N1) injects a shape reminder
+  as a `system` message after the replayed history and immediately before the
+  current user turn. `probeOnce` gained an optional `reminder`, and its
+  message assembly moved into a testable `buildProbeMessages` — the
+  reminder's position is the whole hypothesis, so a unit test asserts it lands
+  after history rather than leaving that to inspection. Every other probe
+  passes no reminder, so their requests are unchanged.
+
 - Added: fourth `shape_ab.dart` baseline — `granite4.1:8b`, preceded by a
   five-case go/no-go screen confirming a real cold-start card path, then the
   full 25 cases, `t=0`, `--samples 1`, current shipped prompt: cold-start
