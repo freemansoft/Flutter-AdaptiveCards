@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+- Docs: measured the remaining seven pre-seed baselines
+  (`shape_ab.dart --no-seed-card --samples 2`, `t=0`), so **all fourteen**
+  models in `ModelBehavior.md` now carry a seed-dependence figure. The gain
+  from the seed runs +11 to −1: it rescues `nemotron-3-nano:4b` from unusable
+  (6/25 → 17/25) and carries most of the top group's score, but the two models
+  that need it least are the two best on the unaided axis, so a high seeded
+  score is not evidence of a good model until the pre-seed column is read
+  beside it. Pre-seed erosion is concentrated in the `choice*` cases — five of
+  eight models lose them to two prose turns — which names what the seed is
+  actually protecting.
+- Docs: **`qwen3.6:27b-coding-nvfp4` is now a live case to change the
+  `launch.json` set**, and the first challenger to survive the seed-dependence
+  test that rejected `nemotron-3.5-lightning:30b` and `qwen3-coder:30b`. It is
+  the only model of fourteen that scores _better without_ the seed: 24/25 with
+  history unaided, the highest with-history figure in the file under any
+  configuration, against `gpt-oss:20b`'s 22/25. Against it: 18.4 GB vs.
+  12.8 GB for no gain as the server actually runs (both 23/25 seeded), and it
+  silently ignores Ollama's `format`. **`launch.json` unchanged** — recorded as
+  a judgement call for whoever owns the debugger config, not a measurement
+  gap. A stress-set run for it is the measurement that would settle it.
+
 - Docs: measured `qwen3-coder:30b`'s pre-seed shape baseline
   (`shape_ab.dart --no-seed-card --samples 2`, `t=0`), the one open question
   left by the 2026-08-19 sweep. **16/25 cold, 14/25 with history** against
