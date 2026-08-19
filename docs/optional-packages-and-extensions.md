@@ -1,6 +1,10 @@
+---
+doc_type: explanation
+---
+
 # Optional Packages and Extensions
 
-**Status**: ✅ Current | **Category**: Architecture
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
 This document explains why the monorepo splits Adaptive Cards capabilities across multiple packages, and how host applications should opt in to features that pull in third-party dependencies.
 

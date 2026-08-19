@@ -11,11 +11,19 @@ void main() {
   late Directory tempDir;
   late String promptPath;
   late String schemaPath;
+  late String seedPath;
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync('preflight_test');
     promptPath = '${tempDir.path}/prompt.txt';
     File(promptPath).writeAsStringSync('You are helpful.');
+    seedPath = '${tempDir.path}/seed_card.json';
+    File(seedPath).writeAsStringSync(
+      jsonEncode([
+        {'role': 'user', 'content': 'seed-user'},
+        {'role': 'assistant', 'content': 'seed-assistant'},
+      ]),
+    );
     schemaPath = '${tempDir.path}/card_schema.json';
     File(schemaPath).writeAsStringSync(
       jsonEncode({r'$defs': <String, dynamic>{}, 'oneOf': <dynamic>[]}),
@@ -30,6 +38,7 @@ void main() {
   }) => OllamaResponder(
     ollamaUrl: 'http://127.0.0.1:11434',
     defaultSystemPromptPath: promptPath,
+    defaultSeedCardPath: seedPath,
     cardSchemaPath: schemaPath,
     client: client,
     model: model,
@@ -104,6 +113,7 @@ void main() {
     final responder = OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
       defaultSystemPromptPath: promptPath,
+      defaultSeedCardPath: seedPath,
       cardSchemaPath: schemaPath,
       ollamaTimeout: const Duration(seconds: 180),
     );

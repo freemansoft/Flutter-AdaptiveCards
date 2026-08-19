@@ -1,3 +1,7 @@
+---
+doc_type: explanation
+---
+
 # Reactive Riverpod in `flutter_adaptive_cards_fs`
 
 `flutter_adaptive_cards_fs` uses **Riverpod (v3.x)** internally as the reactive source of truth for:

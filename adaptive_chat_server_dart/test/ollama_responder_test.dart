@@ -11,11 +11,19 @@ void main() {
   late Directory tempDir;
   late String promptPath;
   late String schemaPath;
+  late String seedPath;
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync('ollama_responder_test');
     promptPath = '${tempDir.path}/prompt.txt';
     File(promptPath).writeAsStringSync('You are helpful.');
+    seedPath = '${tempDir.path}/seed_card.json';
+    File(seedPath).writeAsStringSync(
+      jsonEncode([
+        {'role': 'user', 'content': 'seed-user'},
+        {'role': 'assistant', 'content': 'seed-assistant'},
+      ]),
+    );
     schemaPath = '${tempDir.path}/card_schema.json';
     File(schemaPath).writeAsStringSync(
       jsonEncode({r'$defs': <String, dynamic>{}, 'oneOf': <dynamic>[]}),
@@ -35,6 +43,7 @@ void main() {
     return OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
       defaultSystemPromptPath: promptPath,
+      defaultSeedCardPath: seedPath,
       cardSchemaPath: schemaPath,
       client: client,
       jsonFormat: jsonFormat,
@@ -153,6 +162,7 @@ void main() {
     final responder = OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
       defaultSystemPromptPath: promptPath,
+      defaultSeedCardPath: seedPath,
       cardSchemaPath: schemaPath,
       client: client,
       keepAlive: '2h',
@@ -221,13 +231,15 @@ void main() {
     ];
     await responder.reply('turn3', history);
     final messages = capturedPayload['messages'] as List<dynamic>;
-    // system + last 1 turn (2 entries) + current turn = 4.
-    expect(messages.length, 4);
+    // system + N2 seed pair (2 entries) + last 1 turn (2 entries) + current
+    // turn = 6.
+    expect(messages.length, 6);
     expect((messages.last as Map<String, dynamic>)['content'], 'turn3');
-    expect((messages[1] as Map<String, dynamic>)['content'], 'turn2');
+    expect((messages[3] as Map<String, dynamic>)['content'], 'turn2');
   });
 
-  test('historyTurns <= 0 sends no prior history', () async {
+  test('historyTurns <= 0 sends no prior history, but the N2 seed still '
+      'goes out', () async {
     late Map<String, dynamic> capturedPayload;
     final client = MockClient((request) async {
       capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
@@ -239,9 +251,43 @@ void main() {
       ('assistant', 'earlier reply'),
     ]);
     final messages = capturedPayload['messages'] as List;
-    // system + current turn only = 2.
-    expect(messages.length, 2);
+    // system + N2 seed pair (2 entries) + current turn only = 4.
+    expect(messages.length, 4);
+    expect((messages[1] as Map<String, dynamic>)['content'], 'seed-user');
+    expect(
+      (messages[2] as Map<String, dynamic>)['content'],
+      'seed-assistant',
+    );
   });
+
+  test(
+    'the N2 seed pair precedes real history, which precedes the current '
+    'turn',
+    () async {
+      // Pins the promoted candidate's message order end to end: this fails
+      // if the seed lands after the real history, or after the current
+      // user turn, rather than strictly between the system prompt and the
+      // replayed conversation.
+      late Map<String, dynamic> capturedPayload;
+      final client = MockClient((request) async {
+        capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
+        return okResponse('ok');
+      });
+      final responder = makeResponder(client: client, historyTurns: 5);
+      final history = [('user', 'turn1'), ('assistant', 'reply1')];
+      await responder.reply('turn2', history);
+      final messages = (capturedPayload['messages'] as List)
+          .cast<Map<String, dynamic>>();
+      expect(
+        messages.map((m) => m['role']).toList(),
+        equals(['system', 'user', 'assistant', 'user', 'assistant', 'user']),
+      );
+      expect(
+        messages.skip(1).map((m) => m['content']).toList(),
+        equals(['seed-user', 'seed-assistant', 'turn1', 'reply1', 'turn2']),
+      );
+    },
+  );
 
   test(
     'missing system prompt file sends no system message and logs a warning',
@@ -254,6 +300,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: '${tempDir.path}/does_not_exist.txt',
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
       );
@@ -269,6 +316,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: '${tempDir.path}/missing_schema.json',
         client: MockClient((request) async => http.Response('', 200)),
         jsonFormat: 'schema',
@@ -590,6 +638,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -609,6 +658,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -633,6 +683,7 @@ void main() {
         final responder = OllamaResponder(
           ollamaUrl: 'http://127.0.0.1:11434',
           defaultSystemPromptPath: promptPath,
+          defaultSeedCardPath: seedPath,
           cardSchemaPath: schemaPath,
           client: client,
           numCtx: 1000,
@@ -656,6 +707,7 @@ void main() {
         final responder = OllamaResponder(
           ollamaUrl: 'http://127.0.0.1:11434',
           defaultSystemPromptPath: promptPath,
+          defaultSeedCardPath: seedPath,
           cardSchemaPath: schemaPath,
           client: client,
           numCtx: 1000,
@@ -676,6 +728,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -696,6 +749,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,

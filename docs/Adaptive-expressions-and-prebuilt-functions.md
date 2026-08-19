@@ -1,3 +1,7 @@
+---
+doc_type: reference
+---
+
 # Azure Bot Service Adaptive Expressions - Future Reference
 
 > [!NOTE] > **This document is for FUTURE REFERENCE ONLY** - Not part of standard Adaptive Cards specification.

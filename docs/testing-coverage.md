@@ -1,3 +1,7 @@
+---
+doc_type: how-to
+---
+
 # Test coverage gate
 
 CI measures **per-package line coverage** and enforces a **ratchet floor** for each

@@ -23,6 +23,7 @@ decision, not a pass/fail gate.
 | `dump_reply.dart`         | What did the model _literally_ emit, byte for byte? (use `--history` to replay prior turns) |
 | `prompt_ab.dart`          | Does an edited card system prompt beat the one we ship?                                     |
 | `choiceset_ab.dart`       | Does a pick-from-a-set question yield a clickable card?                                     |
+| `shape_ab.dart`           | Which element types does this model actually emit, cold vs with history?                    |
 | `probe_support.dart`      | Shared plumbing — not a probe.                                                              |
 
 All accept `--model`, `--url`, `--samples`, and `-h`. Defaults come from the
@@ -44,6 +45,59 @@ resolves `localhost` to IPv6 first. That is the default here.
 does. Sets 1–3 are all single-turn, so a bug that only appears after a few
 turns of conversation is invisible to them — reach for `--history` before
 concluding a reported bug does not reproduce.
+
+`shape_ab.dart` is the shape-aware probe: 25 cases, each naming the element
+types that would answer it acceptably (a set, not one type — "summarize these
+specs" is defensibly a `FactSet` or a `Table`). It runs every case twice,
+cold-start and after two prose turns, and prints which shapes were lost
+between the two. Use `--only carousel,gauge` to re-check one shape without
+paying for the other twenty-three, and `--candidate <file>` to A/B a prompt
+change per shape.
+
+Its failure labels distinguish five ways a card reply can be wrong:
+`wrong-shape` (a card, but not an accepted type — the line names what came
+back), `no-input` (a card with content but no `Input.*` where the prompt
+asked the user for a value), `prose` (no card at all), `unwanted-card` (the
+`prose` control case got a card back instead of the prose it expects), and
+`broken` (invalid JSON, duplicate keys, or prose wrapping a card).
+
+`choiceset_ab.dart`'s `_hasChoiceSet` deliberately judges differently: it
+checks only whether a parsed card contains an `Input.ChoiceSet`, ignoring
+`outcome.ok`. A duplicate-key-corrupted card containing a `ChoiceSet` counts
+as a pass there but scores `broken` in `shape_ab.dart`. This is not a bug in
+either script — the older reproducer stays frozen so its numbers stay
+comparable over time, and `shape_ab.dart`'s stricter rule (agreeing with the
+server's own verdict) is the one new probes should follow. If the two
+probes' choice-set numbers ever diverge, this is the first place to look.
+
+## Run one model at a time
+
+Local RAM holds one mid-size model. Load a model, run **all** of its probes,
+record the results, then switch — do not interleave models, and do not run
+probes against several models concurrently.
+
+```bash
+for m in qwen2.5-coder:7b granite4.1:8b; do
+  fvm dart run tool/model_probes/temperature_stress.dart --model "$m" --samples 3
+done
+```
+
+Interleaving makes Ollama evict and reload weights between calls, and a reload
+costs roughly **20x** the warm load time — the reason `defaultKeepAlive` is 30
+minutes rather than Ollama's 5. Concurrent runs are worse: the calls queue
+regardless, the memory pressure makes the whole set slower than running it
+serially, and the contention distorts the latency numbers you were trying to
+collect.
+
+This holds regardless of how much memory the host has. On the 64 GB
+development machine every model probed so far fits **individually**, but the
+two largest together (≈24 GB each) would sit near the usable Metal budget, and
+Ollama would still evict and reload when the tag changes. The rule is about
+reload cost and measurement noise, not only about a hard ceiling.
+
+Probing a model too large for a 16 GB host is expected and useful here — that
+is how `ModelBehavior.md`'s matrix gets filled in. What portability governs is
+what the server should _recommend_ as a default, not what is worth measuring.
 
 ## How a reply is judged
 
@@ -76,6 +130,11 @@ which model to reach for, which ones ignore `format`, and which settings beat
 their own vendor defaults. Add findings there as well as here: this section is
 about the probes, that file is about the models.
 
+- **Judging a reply as "renders or not" hides most of the palette.** Before
+  `shape_ab.dart`, exactly one of the 24 element types the card prompt
+  advertises was ever asserted (`Input.ChoiceSet`, by `choiceset_ab.dart`).
+  The everyday set's `table` case passed on a `TextBlock`; its `chart` case
+  passed on plain Markdown.
 - **`qwen3.6:27b-coding-nvfp4` scored worse at its own recommended
   temperature.** Its Modelfile ships `temperature 0.6`, but it passed 12/15
   hard cases at `0` versus 9/15 at `0.6`, the extra failures being long card

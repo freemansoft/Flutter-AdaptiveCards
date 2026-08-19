@@ -12,6 +12,7 @@ import 'dart:io';
 
 import 'package:adaptive_chat_server_dart/src/card_detect.dart';
 import 'package:adaptive_chat_server_dart/src/responder.dart';
+import 'package:adaptive_chat_server_dart/src/seed_card.dart';
 import 'package:adaptive_chat_server_dart/src/stats.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
@@ -203,9 +204,11 @@ class OllamaResponder implements Responder {
     required String ollamaUrl,
     required String defaultSystemPromptPath,
     required String cardSchemaPath,
+    required String defaultSeedCardPath,
     String model = defaultOllamaModel,
     http.Client? client,
     String? systemPromptFile,
+    String? seedCardFile,
     int historyTurns = defaultHistoryTurns,
     int numCtx = defaultNumCtx,
     String jsonFormat = defaultJsonFormat,
@@ -230,6 +233,7 @@ class OllamaResponder implements Responder {
        // ignore: prefer_initializing_formals
        _numCtx = numCtx,
        _systemPromptPath = systemPromptFile ?? defaultSystemPromptPath,
+       _seedCardPath = seedCardFile ?? defaultSeedCardPath,
        _jsonFormat = jsonFormat,
        _requestedJsonFormat = jsonFormat,
        // Same reason as _ollamaUrl above.
@@ -255,6 +259,7 @@ class OllamaResponder implements Responder {
   final int _historyTurns;
   final int _numCtx;
   final String _systemPromptPath;
+  final String _seedCardPath;
   final String _requestedJsonFormat;
   final Duration _ollamaTimeout;
   final String _keepAlive;
@@ -275,6 +280,11 @@ class OllamaResponder implements Responder {
       'historyTurns': _historyTurns,
       'jsonFormat': _jsonFormat,
       'systemPromptFile': p.basename(_systemPromptPath),
+      'seedCardFile': p.basename(_seedCardPath),
+      // 0 means the seed failed to load — the warning says why. Surfaced
+      // because a silently seedless server loses the measured drift
+      // protection while looking healthy.
+      'seedCardTurns': loadSeedCardMessages(_seedCardPath).length,
       'keepAlive': _keepAlive,
       'timeoutSeconds': _ollamaTimeout.inSeconds,
       'temperature': _temperature ?? 'model',
@@ -393,6 +403,11 @@ class OllamaResponder implements Responder {
     final systemPrompt = _loadSystemPrompt();
     if (systemPrompt != null) {
       messages.add({'role': 'system', 'content': systemPrompt});
+    }
+    // Measured as candidate N2 — see seed_card.dart for why the seed itself
+    // is unconditional and only its content is configurable.
+    for (final message in loadSeedCardMessages(_seedCardPath)) {
+      messages.add({'role': message.role, 'content': message.content});
     }
     for (final (role, content) in _trimHistory(history)) {
       messages.add({'role': role, 'content': content});

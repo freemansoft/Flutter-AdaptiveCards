@@ -1,6 +1,10 @@
+---
+doc_type: explanation
+---
+
 # Architecture Overview
 
-**Status**: ✅ Current | **Category**: Architecture
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
 This document provides a high-level overview of the system architecture for the Flutter Adaptive Cards monorepo.
 

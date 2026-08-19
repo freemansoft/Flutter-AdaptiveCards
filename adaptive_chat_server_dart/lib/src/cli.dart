@@ -99,6 +99,17 @@ ArgParser buildArgParser() {
           'server makes you say which one you want.',
     )
     ..addOption(
+      'seed-card-file',
+      help:
+          'Path to a JSON array of {"role","content"} turns prepended ahead '
+          'of every conversation, so a card is the established format before '
+          'any prose accumulates (measured as candidate N2 — see '
+          'ModelBehavior.md). Defaults to assets/seed_card.json; re-read per '
+          'request, so edits apply without restart. Override it to re-tune '
+          'the seed; there is no way to send no seed at all, because a seed '
+          'is what was measured.',
+    )
+    ..addOption(
       'num-ctx',
       defaultsTo: '$defaultNumCtx',
       help:

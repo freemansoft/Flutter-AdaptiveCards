@@ -1,6 +1,10 @@
+---
+doc_type: reference
+---
+
 # Documentation scope
 
-**Status**: ✅ Current | **Category**: Reference
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
 Rules for what belongs in `docs/`, how published packages are documented, and how the **widgetbook** sample app is referenced.
 

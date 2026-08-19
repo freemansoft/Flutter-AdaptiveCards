@@ -1,3 +1,7 @@
+---
+doc_type: how-to
+---
+
 # Pub score gate (pana)
 
 CI scores each **published** package with [`pana`](https://pub.dev/packages/pana),

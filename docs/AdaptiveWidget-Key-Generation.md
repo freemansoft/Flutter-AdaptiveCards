@@ -1,3 +1,7 @@
+---
+doc_type: reference
+---
+
 # Widget Key Generation for Adaptive Elements
 
 All implementers of `AdaptiveElementWidgetMixin` must generate their widget key

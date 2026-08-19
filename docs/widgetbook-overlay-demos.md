@@ -1,3 +1,7 @@
+---
+doc_type: how-to
+---
+
 # Widgetbook host-overlay demo pages (sample program)
 
 > **Example (widgetbook sample):** [`widgetbook/`](../widgetbook/) is a demonstration app, not a published package. This doc covers demo plumbing only. Library overlay APIs are in [`reactive-riverpod.md`](reactive-riverpod.md) and package tests. See [`documentation-scope.md`](documentation-scope.md).

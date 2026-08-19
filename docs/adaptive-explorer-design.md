@@ -1,3 +1,7 @@
+---
+doc_type: explanation
+---
+
 # Adaptive Explorer design (sample program)
 
 > **Example (adaptive_explorer sample):** [`adaptive_explorer/`](../adaptive_explorer/) is a desktop demonstration app, not a published package. It exercises [`flutter_adaptive_cards_fs`](../packages/flutter_adaptive_cards_fs/) and [`flutter_adaptive_template_fs`](../packages/flutter_adaptive_template_fs/). See [`documentation-scope.md`](documentation-scope.md).

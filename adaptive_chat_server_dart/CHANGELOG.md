@@ -2,6 +2,101 @@
 
 ## [Unreleased]
 
+- Changed: the seed exchange moved out of Dart source into
+  **`assets/seed_card.json`**, beside the system prompts, and is re-read per
+  request — so it can be re-tuned without a rebuild. `--seed-card-file`
+  (server) and `shape_ab.dart --seed-card-file` (probe) point at a candidate,
+  the way `--system-prompt-file` and `--candidate` already do for prompts;
+  both sides read the same asset by default, so a probe measures what the
+  server sends. The **content** is configurable but sending **no seed** is
+  not, because a seed is what every recorded measurement was taken with; a
+  missing or malformed file degrades to no seed with a `WARNING` rather than
+  refusing requests, and `GET /status` gained `seedCardFile` /
+  `seedCardTurns` so that degradation is visible instead of silent. Roles
+  must alternate from `user` — Ollama chat templates mangle a seed that opens
+  with an assistant turn, which would read as a model failure rather than a
+  bad asset. `test/seed_card_test.dart` pins the shipped bytes to the content
+  `ModelBehavior.md`'s numbers were measured against, so re-tuning the seed
+  fails the suite until the new content is measured and the record updated.
+
+- **Breaking:** `OllamaResponder.reply()` now prepends a synthetic
+  card-shaped exchange (`lib/src/seed_card.dart`) ahead of the replayed
+  history on every request — unconditionally, with no opt-out. This is a code
+  change, not a prompt edit: `assets/card_system_prompt.txt` is unmodified. It
+  won a five-candidate screen as the only mechanism that moved the server
+  default, then held across six models on the full 25-shape set — cold-start
+  coverage rose on 6 of 6 models and with-history on 5 of 6
+  (`qwen2.5-coder:7b` 19/25 → 21/25 cold, 18/25 → 19/25 warm). It also costs
+  tokens on every request, newly erodes `table` with history on 4 of the 6
+  models, and regressed `llama3-chatqa:8b`'s with-history score. Full numbers,
+  the four trade-offs, and what the standing regression gates can and cannot
+  cover are in `ModelBehavior.md` — "Warm-start prose drift" and "Promoted:
+  N2".
+
+- Added: `shape_ab.dart` and `shape_cases.dart` — a shape-aware probe that
+  asks whether a reply used the element type the question called for, not just
+  whether it rendered. 25 cases run cold-start and again after two prose
+  turns, judged by a seven-outcome classifier (`judgeShape`), with the shapes
+  a model produces cold and then loses with history derived from the two
+  pass-sets so the count can never disagree with its own list. It exists
+  because judging replies only as "renders or not" left 23 of 24 advertised
+  element types unverified and scored an unclickable Markdown options list as
+  a pass. `--reinforce` and `--seed-card` implement the two message-assembly
+  drift candidates; `--baseline`/`--candidate` A/B two prompt files.
+
+- Added: `collectElementTypes` and `cardContainsAnyType` in
+  `probe_support.dart` — one recursive element-type walker shared by the
+  probes, reporting every `type` present anywhere in a parsed card body
+  including inside `Carousel` pages, `Table` cells, and `Column` items.
+  `choiceset_ab.dart` now uses it instead of a private copy; its prompts,
+  conditions, and output are unchanged, so its recorded scores stay
+  reproducible.
+
+- Fixed: `judgeShape`'s negative-control branch could score a reply the server
+  itself calls broken (invalid JSON, duplicate keys, prose wrapping a card) as
+  `prose-ok`, because it checked `outcome.ok` only after already deciding the
+  reply wasn't a card. Also fixed: the doubled `broken: broken: invalid JSON…`
+  label (`judgeShape` re-prefixing what `judgeReply` had already prefixed),
+  and `--only` with a blank value silently running zero cases instead of
+  exiting 2.
+
+- Added: measurements, recorded in `ModelBehavior.md` rather than here — six
+  `shape_ab.dart` 25-case baselines (`qwen2.5-coder:7b`, `gpt-oss:20b`,
+  `llama3-chatqa:8b`, `granite4.1:8b`, `llama3-groq-tool-use:8b`,
+  `nemotron-3.5-lightning:30b`), the five-candidate warm-start drift screen
+  and its full-set confirmation, and a delivery check establishing that a
+  mid-conversation `system` message reaches `gpt-oss:20b` but is unconfirmed
+  on `qwen2.5-coder:7b` and `granite4.1:8b` — which is what makes a
+  scores-at-baseline result on those models unreadable rather than negative.
+
+- Changed: the top three is now `gpt-oss:20b`, `granite4.1:8b`, and
+  `qwen2.5-coder:7b`. `granite4.1:8b` replaces `qwen3.5:9b` in
+  `.vscode/launch.json` (both its card-prompt and markdown-prompt
+  configurations) on the strength of the 25-case sweep: 22/25 with history as
+  shipped, second only to `gpt-oss:20b`, in 5.0 GB. `qwen3.5:9b` has never
+  been run through `shape_ab.dart` at all — its only with-history number is a
+  six-prompt `choiceset_ab.dart` score — and its own notes already record it
+  as offering no reliability edge over `qwen2.5-coder:7b` at more latency and
+  memory. Rationale, and why `gpt-oss:20b` keeps the large-model slot over
+  `nemotron-3.5-lightning:30b`, are in `ModelBehavior.md`.
+
+- Changed: the `With history` column of `ModelBehavior.md`'s candidate table
+  now leads with each model's `shapes N/25` score **as the server ships** —
+  measured with the unconditional card seed in place — rather than the
+  pre-seed `N/6` choice-set score, which is retained beside it for the models
+  that have nothing better. Two rows read as self-contradictory as a result
+  (`nemotron-3.5-lightning:30b` and `llama3-groq-tool-use:8b` each scored 0/6
+  pre-seed and recover their whole choice-set path with the seed); the note
+  under the table says the shape figure is the current one.
+
+- Changed: `ModelBehavior.md`'s `With history` column uses one denominator for
+  every model. `qwen2.5-coder:7b` was the only cell measured at `--samples 2`,
+  so it read `6/12` in a column of `N/6` scores and invited a wrong
+  at-a-glance comparison. Re-run at `--samples 1` it scores 3/6, passing and
+  failing exactly the same three prompts each as the 12-trial run — a change
+  of resolution, not of finding. The `2/12 → 6/12` before/after is kept where
+  it justifies promoting the escape-hatch change.
+
 - Added: `ModelBehavior.md` now records the with-history probe of
   `qwen3.6:27b-coding-nvfp4` (18.4 GB), the sixth and last model in this
   sweep — its cold-start cell was already filled, only **With history** was
