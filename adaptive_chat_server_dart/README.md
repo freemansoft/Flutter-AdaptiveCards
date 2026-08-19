@@ -204,7 +204,7 @@ disable it**. This is a fixed per-request context cost, not a one-time setup
 cost: it counts toward `num_ctx` fill on every call. It exists because a
 conversation that has drifted to prose tends to stay in prose; seeding a
 card-shaped turn before history keeps a card the conversation's established
-format. See `ModelBehavior.md` ("Promoted: N2 (`--seed-card`) shipped") for
+format. See `ModelBehavior.md` ("The card seed, and what it costs") for
 the measurement behind it.
 
 The exchange itself lives in **`assets/seed_card.json`**, beside the system
@@ -229,8 +229,9 @@ recorded measurement was taken with. A missing or malformed file degrades to
 no seed with a `WARNING` rather than refusing requests, and `GET /status`
 reports `seedCardTurns: 0` so the loss is visible rather than silent.
 
-`shape_ab.dart --seed-card` reads this same asset, so a probe measures what
-the server sends. `test/seed_card_test.dart` pins the shipped bytes to the
+`shape_ab.dart` reads this same asset and seeds by default (`--no-seed-card`
+opts out), so a probe measures what the server sends.
+`test/seed_card_test.dart` pins the shipped bytes to the
 content `ModelBehavior.md`'s numbers were measured against — editing the
 asset fails that test until the new seed is measured and the record updated.
 

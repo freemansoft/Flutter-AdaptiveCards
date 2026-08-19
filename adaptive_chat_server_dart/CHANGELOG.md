@@ -2,6 +2,31 @@
 
 ## [Unreleased]
 
+- Changed: `shape_ab.dart`'s card seed is now **on by default**
+  (`--no-seed-card` opts out). The flag had been opt-in since before the seed
+  shipped, so a bare probe run measured a configuration
+  `OllamaResponder.reply()` had stopped using — the probe and the server could
+  drift apart silently, which is the one failure this directory exists to
+  prevent. No recorded number changes: every figure in `ModelBehavior.md` was
+  taken with the flag passed explicitly, and passing it still works.
+
+- Docs: `ModelBehavior.md`'s candidate table now carries an as-shipped 25-shape
+  score for **all fourteen** models, not six. The remaining eight were measured
+  on 2026-08-19 under the full-set table's own conditions (`--seed-card
+--samples 2`, `t=0`, both conditions), replacing the pre-seed
+  `choiceset_ab.dart` `N/6` figures the table had been carrying. Two of those
+  `N/6` scores turned out to badly under-predict the model:
+  `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` went 1/6 → 22/25 and
+  `qwen3-coder:30b` 2/6 → 23/25, both pre-seed collapses the seed recovers.
+  `qwen3-coder:30b` measures as the strongest candidate in the file (24/25
+  cold, 23/25 warm, no shape it fails under both conditions); `launch.json` is
+  **unchanged** pending a pre-seed baseline for it, since the case that kept
+  `gpt-oss:20b`'s slot over `nemotron-3.5-lightning:30b` was robustness without
+  the seed. Two findings generalized: `rating_ask` now fails on 8 of 14 models
+  with the identical show-vs-collect substitution (a prompt problem), and the
+  seed's over-carding of the `prose` control case is now 5 of 14 rather than
+  the single model the 2026-08-18 run flagged.
+
 - Changed: the seed exchange moved out of Dart source into
   **`assets/seed_card.json`**, beside the system prompts, and is re-read per
   request — so it can be re-tuned without a rebuild. `--seed-card-file`
