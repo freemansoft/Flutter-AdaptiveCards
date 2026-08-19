@@ -54,6 +54,13 @@ between the two. Use `--only carousel,gauge` to re-check one shape without
 paying for the other twenty-three, and `--candidate <file>` to A/B a prompt
 change per shape.
 
+Its card seed is **on by default**, matching `OllamaResponder.reply()`, which
+prepends the seed exchange unconditionally. That default was flipped on
+2026-08-19: the flag had been opt-in since before the seed shipped, so a bare
+run measured a configuration the server had stopped using. Pass
+`--no-seed-card` for the pre-seed baseline — useful for asking what the seed
+is worth, never for asking what a user gets.
+
 Its failure labels distinguish five ways a card reply can be wrong:
 `wrong-shape` (a card, but not an accepted type — the line names what came
 back), `no-input` (a card with content but no `Input.*` where the prompt
@@ -61,14 +68,13 @@ asked the user for a value), `prose` (no card at all), `unwanted-card` (the
 `prose` control case got a card back instead of the prose it expects), and
 `broken` (invalid JSON, duplicate keys, or prose wrapping a card).
 
-`choiceset_ab.dart`'s `_hasChoiceSet` deliberately judges differently: it
-checks only whether a parsed card contains an `Input.ChoiceSet`, ignoring
-`outcome.ok`. A duplicate-key-corrupted card containing a `ChoiceSet` counts
-as a pass there but scores `broken` in `shape_ab.dart`. This is not a bug in
-either script — the older reproducer stays frozen so its numbers stay
-comparable over time, and `shape_ab.dart`'s stricter rule (agreeing with the
-server's own verdict) is the one new probes should follow. If the two
-probes' choice-set numbers ever diverge, this is the first place to look.
+`choiceset_ab.dart` is the older, narrower reproducer for the same drift, kept
+because it is a cheap single-shape check. It judges more loosely: only whether
+a parsed card contains an `Input.ChoiceSet`, ignoring `outcome.ok`, so a
+duplicate-key-corrupted card counts as a pass there and `broken` in
+`shape_ab.dart`. `shape_ab.dart`'s stricter rule agrees with the server's own
+verdict and is the one new probes should follow — and it is the probe every
+per-model number in `ModelBehavior.md` now comes from.
 
 ## Run one model at a time
 
@@ -172,11 +178,10 @@ about the probes, that file is about the models.
   `dump_reply.dart --history` and `choiceset_ab.dart` existed to replay
   prior turns the way the server actually does. Reach for one of them before
   trusting a cold-start number for a bug reported mid-conversation.
-- **History erosion is per-model, not universal.** Running six models
-  through `choiceset_ab.dart` with two prior prose turns collapsed three of
-  six to 0/6, dropped two more to 3/6, and left one untouched at 6/6 — a
-  model's cold-start score did not predict which side it landed on. See
-  `ModelBehavior.md` for the per-model breakdown.
+- **History erosion is per-model, not universal.** Across the fourteen models
+  measured with `shape_ab.dart`, some lose four shapes to two prose turns and
+  others lose none, and a model's cold-start score does not predict which side
+  it lands on. See `ModelBehavior.md` for the per-model breakdown.
 
 ## Adding a probe
 

@@ -7,10 +7,16 @@
 /// between those two runs is the shapes a model loses once a conversation has
 /// gone to Markdown, which is the number a prompt fix has to move.
 ///
+/// The card seed is **on by default**, because `OllamaResponder.reply()`
+/// prepends it unconditionally — a bare run here measures what the server
+/// actually sends. `--no-seed-card` measures the pre-seed baseline, which no
+/// user gets; reach for it only when establishing what the seed is worth.
+///
 /// ```sh
 /// fvm dart run tool/model_probes/shape_ab.dart --model qwen2.5-coder:7b
 /// fvm dart run tool/model_probes/shape_ab.dart --only carousel,gauge
 /// fvm dart run tool/model_probes/shape_ab.dart --candidate /tmp/candidate.txt
+/// fvm dart run tool/model_probes/shape_ab.dart --no-seed-card  # pre-seed
 /// ```
 library;
 
@@ -158,12 +164,14 @@ Future<void> main(List<String> argv) async {
     )
     ..addFlag(
       'seed-card',
-      negatable: false,
+      defaultsTo: true,
       help:
-          'N2: prepend a synthetic card-shaped exchange ahead of the '
-          'replayed history, so a card is the established format. Reads the '
-          'same asset the server ships, so a measurement here is a '
-          'measurement of what runs.',
+          'Prepend the synthetic card-shaped exchange ahead of the replayed '
+          'history, so a card is the established format. Reads the same asset '
+          'the server ships, so a measurement here is a measurement of what '
+          'runs. On by default because OllamaResponder.reply() seeds '
+          'unconditionally — pass --no-seed-card only to measure the pre-seed '
+          'baseline, which is not what any user gets.',
     )
     ..addOption(
       'seed-card-file',
@@ -190,7 +198,7 @@ Future<void> main(List<String> argv) async {
   final client = HttpClient()..idleTimeout = const Duration(minutes: 10);
   final reinforce = parsed['reinforce'] as bool;
   // Flat alternating user/assistant contents, the shape `probeOnce` replays
-  // history in. Empty unless --seed-card asked for a seed.
+  // history in. Populated unless --no-seed-card opted out of the seed.
   final seedTurns = <String>[
     if (parsed['seed-card'] as bool)
       ...loadSeedCardMessages(
