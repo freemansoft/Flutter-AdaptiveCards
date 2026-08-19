@@ -70,6 +70,35 @@ comparable over time, and `shape_ab.dart`'s stricter rule (agreeing with the
 server's own verdict) is the one new probes should follow. If the two
 probes' choice-set numbers ever diverge, this is the first place to look.
 
+## Run one model at a time
+
+Local RAM holds one mid-size model. Load a model, run **all** of its probes,
+record the results, then switch — do not interleave models, and do not run
+probes against several models concurrently.
+
+```bash
+for m in qwen2.5-coder:7b granite4.1:8b; do
+  fvm dart run tool/model_probes/temperature_stress.dart --model "$m" --samples 3
+done
+```
+
+Interleaving makes Ollama evict and reload weights between calls, and a reload
+costs roughly **20x** the warm load time — the reason `defaultKeepAlive` is 30
+minutes rather than Ollama's 5. Concurrent runs are worse: the calls queue
+regardless, the memory pressure makes the whole set slower than running it
+serially, and the contention distorts the latency numbers you were trying to
+collect.
+
+This holds regardless of how much memory the host has. On the 64 GB
+development machine every model probed so far fits **individually**, but the
+two largest together (≈24 GB each) would sit near the usable Metal budget, and
+Ollama would still evict and reload when the tag changes. The rule is about
+reload cost and measurement noise, not only about a hard ceiling.
+
+Probing a model too large for a 16 GB host is expected and useful here — that
+is how `ModelBehavior.md`'s matrix gets filled in. What portability governs is
+what the server should _recommend_ as a default, not what is worth measuring.
+
 ## How a reply is judged
 
 Every probe judges replies with the server's **own** `tryParseCardBody`,

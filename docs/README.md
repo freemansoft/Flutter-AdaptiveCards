@@ -1,3 +1,7 @@
+---
+doc_type: reference
+---
+
 # Documentation Index
 
 This directory contains design documents, implementation guides, and architectural documentation for the Flutter Adaptive Cards **library packages**. See **[documentation-scope.md](./documentation-scope.md)** for what `docs/` covers vs sample apps (**widgetbook**, **adaptive_explorer**).
@@ -24,7 +28,7 @@ This directory contains design documents, implementation guides, and architectur
 
 ### [Implementation-Status.md](./Implementation-Status.md)
 
-**Status**: ✅ Current | **Category**: Status Matrix
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
 Comprehensive matrix tracking implementation status of all Adaptive Cards elements, containers, inputs, actions, HostConfig, and templating against the Microsoft v1.6 specification. Includes custom/extended elements, known gaps, priority recommendations, and a **Recently completed** rollup for the [June 2026 feature plan](./superpowers/plans/2026-06-08-refresh-icon-charts-text-features.plan.md).
 
@@ -40,7 +44,7 @@ End-to-end plan for `refresh`, hub **`Icon`**, chart chrome/colors/**`Chart.Gaug
 
 ### [documentation-scope.md](./documentation-scope.md)
 
-**Status**: ✅ Current | **Category**: Reference
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
 Defines what `docs/` describes (published packages under `packages/`) vs sample apps (`widgetbook`, `adaptive_explorer`). Rules for tagging **Example (widgetbook sample)** in canonical docs and **`widgetbook` in filenames** for widgetbook-only guides.
 
@@ -74,19 +78,19 @@ The invoke payload each action builds (Submit/Execute/OpenUrl/OpenUrlDialog/Http
 
 ### [adaptive-style.md](./adaptive-style.md)
 
-**Status**: ✅ Current | **Category**: Architecture
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
 Style pipeline: `ReferenceResolver` facade, container style inheritance via `ChildStyler`, TextBlock/Image style resolution, and canonical diagrams. Model parsing and theme fallbacks: [hostconfig.md](./hostconfig.md).
 
 ### [Architecture-Overview.md](./Architecture-Overview.md)
 
-**Status**: ✅ Current | **Category**: Architecture
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
 High-level system architecture: monorepo layout, **core component model** diagram (registries, overlays, style, handlers), widget hierarchy, state management, and [diagram canon](./Architecture-Overview.md#diagram-canon).
 
 ### [optional-packages-and-extensions.md](./optional-packages-and-extensions.md)
 
-**Status**: ✅ Current | **Category**: Architecture
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
 Why charts, templating, and **backend invoke** are separate packages, how to opt in via registries or `AdaptiveCardBackendHandlers`, and rules for future optional extension packages.
 
@@ -104,7 +108,7 @@ Wire-level reference: `associatedInputs` request payloads, PlainJson/Teams adapt
 
 ### [reactive-riverpod.md](./reactive-riverpod.md)
 
-**Status**: ✅ Current | **Category**: Architecture
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
 Riverpod scopes, document notifier, cached baseline on rebuild, **baseline + overlay** model, visibility, submit/reset without mutating host JSON. Per-type patch keys: [overlay-properties-by-type.md](./overlay-properties-by-type.md).
 
@@ -112,7 +116,7 @@ Riverpod scopes, document notifier, cached baseline on rebuild, **baseline + ove
 
 ### [overlay-properties-by-type.md](./overlay-properties-by-type.md)
 
-**Status**: ✅ Current | **Category**: Reference
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
 Host index of runtime patch keys (`applyUpdates`, `applyUpdatesFromMap`) by JSON `type` — which overlays affect UI, typed helpers, and contract tests.
 
@@ -122,7 +126,7 @@ Host index of runtime patch keys (`applyUpdates`, `applyUpdatesFromMap`) by JSON
 
 ### [AdaptiveWidget-Key-Generation.md](./AdaptiveWidget-Key-Generation.md)
 
-**Status**: ✅ Current | **Category**: Implementation Guide
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
 Widget key generation pattern using `generateWidgetKey()` for all AdaptiveElementWidget classes. Shows constructor pattern for reliable state binding.
 
@@ -146,7 +150,7 @@ Step-by-step recipe for implementing a custom action (`Generic*` interface + cus
 
 ### [backgroundImage.md](./backgroundImage.md)
 
-**Status**: ✅ Current | **Category**: Implementation Guide
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
 Describes support for `backgroundImage` in both string (URL) and object (URL + fillMode) forms. Both forms are implemented (`resolveBackgroundImage` in `adaptive_mixins.dart`) and tested (`test/elements/background_image_test.dart`).
 
@@ -188,7 +192,7 @@ Design for **`RichTextBlock`** / **`TextRun`** rendering and targeted **`TextBlo
 
 ### [Encoded-Image-Support.md](./Encoded-Image-Support.md)
 
-**Status**: ✅ Current | **Category**: Feature Spec
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
 Specification for base64 encoded inline image support using `Image.memory`. Includes JSON examples and implementation requirements.
 
@@ -210,7 +214,7 @@ How to write/run HostConfig serialization tests (one fixture per entity, convent
 
 ### Overlay / document notifier tests
 
-**Status**: ✅ Current | **Category**: Test Requirements
+**Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
 
 Riverpod document **overlay** tests (notifier unit tests + widget integration) are catalogued in [reactive-riverpod.md — Overlay test coverage](./reactive-riverpod.md#overlay-test-coverage). Run from `packages/flutter_adaptive_cards_fs` with `fvm flutter test` on the listed paths.
 

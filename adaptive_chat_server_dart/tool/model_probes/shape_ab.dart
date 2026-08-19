@@ -57,7 +57,7 @@ Future<Set<String>> runCondition({
   required List<ShapeCase> cases,
   required bool withHistory,
   required bool reinforce,
-  required bool seedCard,
+  required List<String> seedTurns,
   required ProbeArgs args,
   required HttpClient client,
 }) async {
@@ -73,7 +73,7 @@ Future<Set<String>> runCondition({
         systemPrompt: systemPrompt,
         userPrompt: c.prompt,
         history: [
-          if (seedCard) ...[seedCardUser, seedCardAssistant],
+          ...seedTurns,
           if (withHistory) ...[shapeHistoryUser, shapeHistoryAssistant],
         ],
         reminder: reinforce ? reinforceReminder : null,
@@ -100,13 +100,13 @@ Future<void> runPrompt({
   required String systemPrompt,
   required List<ShapeCase> cases,
   required bool reinforce,
-  required bool seedCard,
+  required List<String> seedTurns,
   required ProbeArgs args,
   required HttpClient client,
 }) async {
   final flags = [
     if (reinforce) 'reinforce',
-    if (seedCard) 'seed-card',
+    if (seedTurns.isNotEmpty) 'seed-card',
   ];
   stdout.writeln(
     '\n===== $label${flags.isEmpty ? '' : ' [${flags.join(', ')}]'} =====',
@@ -117,7 +117,7 @@ Future<void> runPrompt({
     cases: cases,
     withHistory: false,
     reinforce: reinforce,
-    seedCard: seedCard,
+    seedTurns: seedTurns,
     args: args,
     client: client,
   );
@@ -127,7 +127,7 @@ Future<void> runPrompt({
     cases: cases,
     withHistory: true,
     reinforce: reinforce,
-    seedCard: seedCard,
+    seedTurns: seedTurns,
     args: args,
     client: client,
   );
@@ -161,7 +161,16 @@ Future<void> main(List<String> argv) async {
       negatable: false,
       help:
           'N2: prepend a synthetic card-shaped exchange ahead of the '
-          'replayed history, so a card is the established format.',
+          'replayed history, so a card is the established format. Reads the '
+          'same asset the server ships, so a measurement here is a '
+          'measurement of what runs.',
+    )
+    ..addOption(
+      'seed-card-file',
+      help:
+          'Seed exchange to use with --seed-card (default: '
+          'assets/seed_card.json). Point it at a candidate file to measure a '
+          're-tuned seed the way prompt candidates use --candidate.',
     )
     ..addOption('model')
     ..addOption('url')
@@ -180,13 +189,29 @@ Future<void> main(List<String> argv) async {
   final cases = selectCases(parsed['only'] as String?);
   final client = HttpClient()..idleTimeout = const Duration(minutes: 10);
   final reinforce = parsed['reinforce'] as bool;
-  final seedCard = parsed['seed-card'] as bool;
+  // Flat alternating user/assistant contents, the shape `probeOnce` replays
+  // history in. Empty unless --seed-card asked for a seed.
+  final seedTurns = <String>[
+    if (parsed['seed-card'] as bool)
+      ...loadSeedCardMessages(
+        parsed['seed-card-file'] as String? ?? defaultSeedCardPath(),
+      ).map((m) => m.content),
+  ];
+  if ((parsed['seed-card'] as bool) && seedTurns.isEmpty) {
+    stderr.writeln(
+      'shape_ab: --seed-card was passed but the seed file loaded no turns; '
+      'see the warning above. Refusing to run, because the result would be '
+      'labelled seed-card while measuring no seed at all.',
+    );
+    exitCode = 2;
+    return;
+  }
   await runPrompt(
     label: 'baseline',
     systemPrompt: File(parsed['baseline'] as String).readAsStringSync().trim(),
     cases: cases,
     reinforce: reinforce,
-    seedCard: seedCard,
+    seedTurns: seedTurns,
     args: args,
     client: client,
   );
@@ -197,7 +222,7 @@ Future<void> main(List<String> argv) async {
       systemPrompt: File(candidate).readAsStringSync().trim(),
       cases: cases,
       reinforce: reinforce,
-      seedCard: seedCard,
+      seedTurns: seedTurns,
       args: args,
       client: client,
     );

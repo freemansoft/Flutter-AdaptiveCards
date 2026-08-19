@@ -22,6 +22,7 @@ void main() {
       final responder = buildResponder(
         model: 'test-model',
         defaultSystemPromptPath: 'assets/default_system_prompt.txt',
+        defaultSeedCardPath: 'assets/seed_card.json',
         cardSchemaPath: 'assets/card_schema.json',
         ollamaUrl: 'http://127.0.0.1:11434',
         keepAlive: '90m',
@@ -45,6 +46,7 @@ void main() {
       final responder = buildResponder(
         model: 'test-model',
         defaultSystemPromptPath: 'assets/default_system_prompt.txt',
+        defaultSeedCardPath: 'assets/seed_card.json',
         cardSchemaPath: 'assets/card_schema.json',
         ollamaUrl: 'http://127.0.0.1:11434',
         temperature: 0.6,
@@ -56,6 +58,7 @@ void main() {
       final responder = buildResponder(
         model: 'test-model',
         defaultSystemPromptPath: 'assets/default_system_prompt.txt',
+        defaultSeedCardPath: 'assets/seed_card.json',
         cardSchemaPath: 'assets/card_schema.json',
         ollamaUrl: 'http://127.0.0.1:11434',
         temperature: null,
@@ -108,6 +111,7 @@ void main() {
       final responder = buildResponder(
         model: 'test-model',
         defaultSystemPromptPath: 'assets/default_system_prompt.txt',
+        defaultSeedCardPath: 'assets/seed_card.json',
         cardSchemaPath: 'assets/card_schema.json',
         ollamaUrl: 'http://127.0.0.1:11434',
         ollamaTimeout: const Duration(seconds: 240),

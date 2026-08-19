@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "what timezone should I use for the nightly build?"
+  },
+  {
+    "role": "assistant",
+    "content": "[{\"type\":\"TextBlock\",\"text\":\"Pick a timezone for the nightly build:\",\"wrap\":true},{\"type\":\"Input.ChoiceSet\",\"id\":\"tz\",\"style\":\"compact\",\"choices\":[{\"title\":\"UTC\",\"value\":\"+0000\"},{\"title\":\"CET\",\"value\":\"+0100\"}]}]"
+  }
+]

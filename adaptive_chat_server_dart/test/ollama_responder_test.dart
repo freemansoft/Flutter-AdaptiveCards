@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:adaptive_chat_server_dart/src/ollama_responder.dart';
-import 'package:adaptive_chat_server_dart/src/seed_card.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:logging/logging.dart';
@@ -12,11 +11,19 @@ void main() {
   late Directory tempDir;
   late String promptPath;
   late String schemaPath;
+  late String seedPath;
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync('ollama_responder_test');
     promptPath = '${tempDir.path}/prompt.txt';
     File(promptPath).writeAsStringSync('You are helpful.');
+    seedPath = '${tempDir.path}/seed_card.json';
+    File(seedPath).writeAsStringSync(
+      jsonEncode([
+        {'role': 'user', 'content': 'seed-user'},
+        {'role': 'assistant', 'content': 'seed-assistant'},
+      ]),
+    );
     schemaPath = '${tempDir.path}/card_schema.json';
     File(schemaPath).writeAsStringSync(
       jsonEncode({r'$defs': <String, dynamic>{}, 'oneOf': <dynamic>[]}),
@@ -36,6 +43,7 @@ void main() {
     return OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
       defaultSystemPromptPath: promptPath,
+      defaultSeedCardPath: seedPath,
       cardSchemaPath: schemaPath,
       client: client,
       jsonFormat: jsonFormat,
@@ -154,6 +162,7 @@ void main() {
     final responder = OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
       defaultSystemPromptPath: promptPath,
+      defaultSeedCardPath: seedPath,
       cardSchemaPath: schemaPath,
       client: client,
       keepAlive: '2h',
@@ -244,10 +253,10 @@ void main() {
     final messages = capturedPayload['messages'] as List;
     // system + N2 seed pair (2 entries) + current turn only = 4.
     expect(messages.length, 4);
-    expect((messages[1] as Map<String, dynamic>)['content'], seedCardUser);
+    expect((messages[1] as Map<String, dynamic>)['content'], 'seed-user');
     expect(
       (messages[2] as Map<String, dynamic>)['content'],
-      seedCardAssistant,
+      'seed-assistant',
     );
   });
 
@@ -275,7 +284,7 @@ void main() {
       );
       expect(
         messages.skip(1).map((m) => m['content']).toList(),
-        equals([seedCardUser, seedCardAssistant, 'turn1', 'reply1', 'turn2']),
+        equals(['seed-user', 'seed-assistant', 'turn1', 'reply1', 'turn2']),
       );
     },
   );
@@ -291,6 +300,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: '${tempDir.path}/does_not_exist.txt',
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
       );
@@ -306,6 +316,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: '${tempDir.path}/missing_schema.json',
         client: MockClient((request) async => http.Response('', 200)),
         jsonFormat: 'schema',
@@ -627,6 +638,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -646,6 +658,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -670,6 +683,7 @@ void main() {
         final responder = OllamaResponder(
           ollamaUrl: 'http://127.0.0.1:11434',
           defaultSystemPromptPath: promptPath,
+          defaultSeedCardPath: seedPath,
           cardSchemaPath: schemaPath,
           client: client,
           numCtx: 1000,
@@ -693,6 +707,7 @@ void main() {
         final responder = OllamaResponder(
           ollamaUrl: 'http://127.0.0.1:11434',
           defaultSystemPromptPath: promptPath,
+          defaultSeedCardPath: seedPath,
           cardSchemaPath: schemaPath,
           client: client,
           numCtx: 1000,
@@ -713,6 +728,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -733,6 +749,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
+        defaultSeedCardPath: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,

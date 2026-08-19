@@ -95,6 +95,19 @@ String loadCardSystemPrompt() {
   ).readAsStringSync().trim();
 }
 
+/// Path to the bundled seed-card asset — the same file the server sends.
+///
+/// Returned as a path rather than parsed content so `--seed-card-file` can
+/// override it the same way the server's flag does, and so both sides go
+/// through `loadSeedCardMessages` rather than keeping separate copies.
+/// Resolved from the script location for the same reason as
+/// [loadCardSystemPrompt].
+String defaultSeedCardPath() {
+  final scriptDir = p.dirname(Platform.script.toFilePath());
+  final assets = p.normalize(p.join(scriptDir, '..', '..', 'assets'));
+  return p.join(assets, 'seed_card.json');
+}
+
 /// Reads the bundled card schema, for probes exercising `format: <schema>`.
 Map<String, dynamic> loadCardSchema() {
   final scriptDir = p.dirname(Platform.script.toFilePath());

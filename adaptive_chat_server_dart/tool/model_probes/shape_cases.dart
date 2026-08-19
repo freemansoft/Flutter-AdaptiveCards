@@ -10,12 +10,14 @@ import 'package:adaptive_chat_server_dart/src/card_detect.dart';
 // Relative: probe_support lives outside lib/, beside this file.
 import 'probe_support.dart';
 
-// `seedCardUser`/`seedCardAssistant` shipped into lib/src/ after N2 was
-// promoted (see ModelBehavior.md, "Multi-turn set — history replay") — this
-// export keeps the probe and the shipped `OllamaResponder` seeding the same
-// bytes rather than maintaining a second copy that could drift out of step.
+// N2's seed exchange lives in `assets/seed_card.json` and is read through the
+// shipped loader (see ModelBehavior.md, "Multi-turn set — history replay").
+// Re-exporting the loader rather than copying the strings keeps the probe and
+// the shipped `OllamaResponder` sending the same bytes: both read the same
+// file, so a re-tuned seed cannot be measured against one copy and shipped
+// as another.
 export 'package:adaptive_chat_server_dart/src/seed_card.dart'
-    show seedCardAssistant, seedCardUser;
+    show SeedCardMessage, loadSeedCardMessages;
 
 /// One prompt, the element types that would answer it acceptably, and whether
 /// it asks the user for a value.
@@ -234,9 +236,9 @@ const reinforceReminder =
     'choose, enter, schedule, or rate something, or to see a table or chart, '
     'reply with a card.';
 
-// N2's `seedCardUser`/`seedCardAssistant` were promoted into
-// `lib/src/seed_card.dart` and are re-exported above rather than duplicated
-// here — `OllamaResponder` now sends the same bytes unconditionally.
+// N2's seed exchange was promoted into `assets/seed_card.json` and is read
+// through the loader re-exported above rather than duplicated here —
+// `OllamaResponder` sends the same file's bytes unconditionally.
 
 /// How one reply scored against one [ShapeCase].
 class ShapeResult {

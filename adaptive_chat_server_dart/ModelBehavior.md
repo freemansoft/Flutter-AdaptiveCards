@@ -84,21 +84,7 @@ The `N/6` **choice-set** figure is a narrower, older measurement kept for the mo
 
 `qwen2.5-coder:7b`'s cell was the one exception until 2026-08-17: Task 7 had measured it at `--samples 2` (6 prompts × 2 = `6/12`), because that number gated a promote-or-revert decision and wanted two samples per prompt. It has since been re-run at `--samples 1` for comparability and scores **3/6** — the same three prompts passing and the same three failing as in the 12-trial run, so the normalization is a change of denominator, not of finding. The `2/12 → 6/12` before/after that justified the escape-hatch fix is preserved in §4.
 
-## Test one model at a time
-
-Local RAM holds one mid-size model. Load a model, run **all** of its tests, record the results, then switch — do not interleave models and do not run probes against several models concurrently.
-
-Interleaving makes Ollama evict and reload weights between calls, and a reload costs roughly **20x** the warm load time (the reason `defaultKeepAlive` is 30 minutes rather than Ollama's 5). Concurrent runs are worse still: the calls queue regardless, the memory pressure makes the whole set slower than running it serially, and the contention distorts the latency numbers you were trying to collect.
-
-This holds regardless of how much memory the host has. On the 64 GB development machine every model in the table fits **individually**, but the two largest together (≈24 GB each) would sit near the usable Metal budget, and Ollama would still evict and reload when the tag changes. The rule is about the reload cost and the measurement noise, not only about a hard ceiling.
-
-The **16 GB** column is not a gate on what to probe here — it records what a constrained host could run. Probing a ❌ model on this machine is expected and useful; it is how the matrix gets filled in. What the column governs is what the server should _recommend_ as a default, since a default that only runs on a 64 GB box is not much of a default.
-
-```bash
-for m in qwen2.5-coder:7b granite4.1:8b; do
-  fvm dart run tool/model_probes/temperature_stress.dart --model "$m" --samples 3
-done
-```
+The **16 GB** column is not a gate on what gets probed — it records what a constrained host could run. Probing a ❌ model on the 64 GB development machine is expected and useful; it is how this matrix gets filled in. What the column governs is what the server should _recommend_ as a default, since a default that only runs on a 64 GB box is not much of a default.
 
 ## Which system prompt produced the number
 
@@ -489,11 +475,18 @@ trimmed real history, so the assembled order is: system prompt,
 `seedCardUser`, `seedCardAssistant`, trimmed history, current user turn. There
 is no flag to disable it, because nothing in the evidence pointed at a case
 where it should be withheld. This is a code change, not a prompt edit:
-`assets/card_system_prompt.txt` is unmodified. The constants live in
-`lib/src/seed_card.dart` (shipped code; `lib/` cannot depend on `tool/`) and
-`shape_cases.dart` re-exports them, so the probe and the server provably send
-the same bytes. `test/ollama_responder_test.dart` pins that role and content
-order end to end.
+`assets/card_system_prompt.txt` is unmodified.
+
+The seed exchange itself lives in **`assets/seed_card.json`**, read per
+request through `loadSeedCardMessages` in `lib/src/seed_card.dart`. The probe
+reads the same asset, so `shape_ab.dart --seed-card` measures the bytes the
+server sends rather than a second copy that could drift. Its content is
+re-tunable without a rebuild — `--seed-card-file` on both sides points at a
+candidate — but every number in this file was measured against the shipped
+content, so `test/seed_card_test.dart` pins it: **re-tuning the seed fails
+that test until the new content is measured and the numbers above are
+updated.** `test/ollama_responder_test.dart` separately pins the role and
+content order end to end.
 
 It is a **broad** result, not a narrow one: cold-start shape coverage rose on
 all six measured models and with-history on five of six. Four trade-offs come
@@ -732,6 +725,8 @@ Retired as a default. Failed the shapes that matter: checkbox `isMultiSelect` 1/
 All of the above come from [`tool/model_probes/`](tool/model_probes/README.md), whose scripts judge replies with the server's **own** `tryParseCardBody` / `cardParseFailureReason` / `checkNoDuplicateJsonKeys`. A probe that applied its own idea of "looks like a card" could report a pass rate the running server disagrees with, which is worse than no measurement.
 
 A reply passes if it renders as a card **or** as clean prose — the card system prompt explicitly permits a Markdown answer, so only a _broken_ card is a failure.
+
+Every figure here was collected with **one model resident at a time** — load a model, run all of its probes, record, then switch. Interleaving models or running probes concurrently distorts both pass rates and latencies, so a number collected that way is not comparable to anything in this file. The procedure and the reasoning behind it are in [`tool/model_probes/README.md`](tool/model_probes/README.md#run-one-model-at-a-time).
 
 Measured on an M-series Mac against a local Ollama, August 2026. Latency figures include model load on a first call; re-run before trusting one.
 

@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+- Changed: the seed exchange moved out of Dart source into
+  **`assets/seed_card.json`**, beside the system prompts, and is re-read per
+  request — so it can be re-tuned without a rebuild. `--seed-card-file`
+  (server) and `shape_ab.dart --seed-card-file` (probe) point at a candidate,
+  the way `--system-prompt-file` and `--candidate` already do for prompts;
+  both sides read the same asset by default, so a probe measures what the
+  server sends. The **content** is configurable but sending **no seed** is
+  not, because a seed is what every recorded measurement was taken with; a
+  missing or malformed file degrades to no seed with a `WARNING` rather than
+  refusing requests, and `GET /status` gained `seedCardFile` /
+  `seedCardTurns` so that degradation is visible instead of silent. Roles
+  must alternate from `user` — Ollama chat templates mangle a seed that opens
+  with an assistant turn, which would read as a model failure rather than a
+  bad asset. `test/seed_card_test.dart` pins the shipped bytes to the content
+  `ModelBehavior.md`'s numbers were measured against, so re-tuning the seed
+  fails the suite until the new content is measured and the record updated.
+
 - **Breaking:** `OllamaResponder.reply()` now prepends a synthetic
   card-shaped exchange (`lib/src/seed_card.dart`) ahead of the replayed
   history on every request — unconditionally, with no opt-out. This is a code

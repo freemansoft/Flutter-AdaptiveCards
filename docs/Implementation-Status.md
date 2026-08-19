@@ -1,3 +1,7 @@
+---
+doc_type: reference
+---
+
 # Implementation Status Matrix
 
 This is the **index** of implementation status across the Flutter-AdaptiveCards packages, measured against the Microsoft Adaptive Cards v1.6 specification. The detailed per-component tables **and their legend and known-gaps** now live in each **package README** (so they publish to pub.dev); this page links to them and carries the project-level **Priority Recommendations** roadmap and **Recently completed** history.

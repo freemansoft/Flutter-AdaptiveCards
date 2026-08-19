@@ -1,6 +1,10 @@
+---
+doc_type: reference
+---
+
 # Overlay properties by element type
 
-**Status**: ✅ Current | **Category**: Reference
+**Status**: ✅ Current | **Category**: Reference (`doc_type: reference`)
 
 Host-facing index: which runtime patch keys affect which JSON `"type"` values. Architecture, merge rules, reset, and notifier APIs: [`reactive-riverpod.md`](reactive-riverpod.md). Input-focused flow: [`form-inputs.md`](form-inputs.md).
 

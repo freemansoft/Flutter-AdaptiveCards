@@ -1,6 +1,10 @@
+---
+doc_type: explanation
+---
+
 # HostConfig style pipeline
 
-**Status**: ✅ Current | **Category**: Architecture
+**Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
 How parsed HostConfig JSON flows through `ReferenceResolver` into element rendering: container style inheritance, text/image style resolution, and the resolver facade pattern widgets use at build time.
 
