@@ -26,6 +26,20 @@ const _defaultPrompt =
     'Show me a Dart snippet that reads a JSON file and prints the "name" '
     'field, with a short explanation above it.';
 
+/// Extracts `message.content`, or null when the body does not carry one.
+String? _contentOrNull(String body) {
+  try {
+    final data = jsonDecode(body);
+    if (data is! Map<String, dynamic>) return null;
+    final message = data['message'];
+    if (message is! Map<String, dynamic>) return null;
+    final content = message['content'];
+    return content is String ? content : null;
+  } on FormatException {
+    return null;
+  }
+}
+
 Future<void> main(List<String> argv) async {
   final promptParser = ArgParser()
     ..addOption('prompt', defaultsTo: _defaultPrompt)
@@ -77,11 +91,28 @@ Future<void> main(List<String> argv) async {
     }),
   );
   final response = await request.close();
-  final data =
-      jsonDecode(await response.transform(utf8.decoder).join())
-          as Map<String, dynamic>;
-  final content =
-      (data['message'] as Map<String, dynamic>)['content'] as String;
+  final body = await response.transform(utf8.decoder).join();
+  if (response.statusCode != 200) {
+    stderr
+      ..writeln('HTTP ${response.statusCode} from ${args.url}/api/chat')
+      ..writeln(body);
+    exitCode = 1;
+    client.close();
+    return;
+  }
+  // A 200 whose body carries no `message.content` is a thing to report, not
+  // to crash on: this probe's whole job is showing what came back.
+  final content = _contentOrNull(body);
+  if (content == null) {
+    stderr
+      ..writeln(
+        'Unexpected response: 200 with no message.content. Raw body follows.',
+      )
+      ..writeln(body);
+    exitCode = 1;
+    client.close();
+    return;
+  }
 
   stdout
     ..writeln('===== ${args.model} =====')

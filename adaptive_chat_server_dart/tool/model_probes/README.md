@@ -24,6 +24,7 @@ decision, not a pass/fail gate.
 | `prompt_ab.dart`          | Does an edited card system prompt beat the one we ship?                                     |
 | `choiceset_ab.dart`       | Does a pick-from-a-set question yield a clickable card?                                     |
 | `shape_ab.dart`           | Which element types does this model actually emit, cold vs with history?                    |
+| `cascade_ab.dart`         | Can a follow-up turn edit the card the model just sent, without losing its contents?        |
 | `probe_support.dart`      | Shared plumbing — not a probe.                                                              |
 
 All accept `--model`, `--url`, `--samples`, and `-h`. Defaults come from the
@@ -75,6 +76,21 @@ duplicate-key-corrupted card counts as a pass there and `broken` in
 `shape_ab.dart`. `shape_ab.dart`'s stricter rule agrees with the server's own
 verdict and is the one new probes should follow — and it is the probe every
 per-model number in `ModelBehavior.md` now comes from.
+
+`cascade_ab.dart` is the only probe that scores a **two-turn edit**. Every
+other script judges one reply; the server does not work that way, because a
+card reply's raw JSON is stored as `replyText` and replayed verbatim, so a
+follow-up arrives with the previous card literally in context. Turn 1 asks for
+a pick-one list, turn 2 asks to widen it to multi-select while referring back
+("more than one of _those_") rather than restating the items. A pass needs all
+three of: turn 1 is a card with an `Input.ChoiceSet`; turn 2's set is
+`isMultiSelect: true`; and turn 2 keeps **every** choice turn 1 offered.
+
+That third condition is the reason it exists. A model can cascade the format
+perfectly and quietly drop items off the list — observed dropping five states
+to three — and every shape-aware check in this directory scores that a pass,
+because the reply is a valid card of the requested type. Choices are compared
+case-insensitively, so re-casing a title is kept rather than counted as a loss.
 
 ## Run one model at a time
 
@@ -178,6 +194,13 @@ about the probes, that file is about the models.
   `dump_reply.dart --history` and `choiceset_ab.dart` existed to replay
   prior turns the way the server actually does. Reach for one of them before
   trusting a cold-start number for a bug reported mid-conversation.
+- **Cascade ability is gated on turn-1 card production, not on the cascade.**
+  Thirteen of fourteen models score 3/3 on `cascade_ab.dart`, including the
+  weakest card producers in the table; the only failure answers turn 1 in prose
+  and so never produces a card to edit. Follow-up editing is not a
+  discriminating axis between models — which is worth knowing before designing
+  a probe around it, and is why this one is kept as a regression check rather
+  than a ranking.
 - **History erosion is per-model, not universal.** Across the fourteen models
   measured with `shape_ab.dart`, some lose four shapes to two prose turns and
   others lose none, and a model's cold-start score does not predict which side
