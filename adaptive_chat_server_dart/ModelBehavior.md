@@ -48,9 +48,13 @@ Read on the shipped configuration, all fourteen candidates rank by with-history 
 
 The one thing `nemotron-3.5-lightning:30b` is genuinely best at is being the **regression canary for the seed mechanism itself**: nothing else in the table swings +9 warm shapes on it, so if `--seed-card` ever silently stops working, this model shows it first and loudest. That is a reason to keep probing it, not a reason to launch it.
 
-**Is `qwen3-coder:30b` the better large model? No — `gpt-oss:20b` keeps the slot, on the same grounds as above.** It looked like the strongest candidate in the table: 24/25 cold and 23/25 warm, matching `gpt-oss:20b` on both axes, the only model with no case it fails under both conditions, and a 5/5 stress sweep at both temperatures that `gpt-oss:20b` does not manage (4/5 at `t=0.6`). Measuring its seed-dependence settled it the other way. Without the seed it scores **16/25 cold and 14/25 warm** — a **+9** swing, tying `nemotron-3.5-lightning:30b` for the largest in the file, against `gpt-oss:20b`'s +1 from an already-strong 22/25. Its unaided failure mode is the worse one, too: 9 of 11 with-history failures are invalid JSON rather than a wrong shape, and four choice cases plus `date` erode under history that were fine cold.
+**Is `qwen3-coder:30b` the better large model? No.** It looked like the strongest candidate in the table: 24/25 cold and 23/25 warm, the only model with no case it fails under both conditions, and a 5/5 stress sweep at both temperatures that `gpt-oss:20b` does not manage (4/5 at `t=0.6`). Measuring its seed-dependence settled it the other way. Without the seed it scores **16/25 cold and 14/25 warm** — a +9 swing, against `gpt-oss:20b`'s +1 from an already-strong 22/25 — and its unaided failure mode is the worse one: 9 of 11 with-history failures are invalid JSON rather than a wrong shape. Same verdict as `nemotron-3.5-lightning:30b`, for the same reason.
 
-So the two large candidates that have challenged this slot both turn out to be models the seed is holding up, and `gpt-oss:20b` is the one that does not need it. It also weighs 12.8 GB against 17.3 GB. `launch.json` is unchanged.
+**But `qwen3.6:27b-coding-nvfp4` is a live case to change the set, and it is the first challenger that survives this test.** It is the only model of fourteen that is _better without the seed_ than with it: **24/25 with history unaided**, the highest with-history figure anywhere in this file, seeded or not, against `gpt-oss:20b`'s 22/25. It leads on the unaided cold-start axis too (23/25 vs. 20/25), ties the seeded warm score at 23/25, and erodes nothing under either condition. Every previous challenger for this slot was a model the seed was holding up; this one needs no help.
+
+Against it: **18.4 GB vs. 12.8 GB** — 44% more weight for a model that is not better as the server actually runs (they tie at 23/25 seeded) — and it silently ignores Ollama's `format` field, which makes `--json-format json|schema` inert for it. That second point costs nothing at the shipped `--json-format none` and everything to somebody who reaches for the constraint expecting a safety net.
+
+**`launch.json` is unchanged, and this is a judgement call rather than a measurement gap.** The evidence for the swap is on the axis this file says matters most, and the evidence against it is weight and a `format` blind spot. Whoever owns the debugger configuration should decide; the numbers to decide on are all in the table above. What would strengthen the case is a stress-set run for `qwen3.6:27b-coding-nvfp4` — it has never been measured there, and that set is what separates candidates.
 
 ## Candidate models
 
@@ -168,24 +172,37 @@ Two changes were made in response, both still shipped. The card system prompt's 
 
 | Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Eroded by history                            |
 | --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | -------------------------------------------- |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | **23/25**    | **24/25**      | none                                         |
 | `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | **23/25**    | 14/25          | `rating_ask`, `time` (2)                     |
 | `gpt-oss:20b`                                       | 12.8 GB | **24/25**  | **23/25**    | 22/25          | `gauge`, `table` (2)                         |
-| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | **23/25**    | —              | none                                         |
 | `granite4.1:8b`                                     | 5.0 GB  | 21/25      | 22/25        | 15/25          | `carousel`, `table` (2)                      |
 | `nemotron-3.5-lightning:30b`                        | 23.7 GB | 22/25      | 22/25        | 13/25          | `table` (1)                                  |
-| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | —              | none                                         |
-| `nemotron-3-nano:30b`                               | 22.6 GB | 19/25      | 20/25        | —              | none                                         |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 14/25          | none                                         |
+| `nemotron-3-nano:30b`                               | 22.6 GB | 19/25      | 20/25        | 15/25          | none                                         |
 | `qwen2.5-coder:7b`                                  | 4.4 GB  | 21/25      | 19/25        | 18/25          | `carousel`, `table` (2)                      |
-| `qwen3.5:9b`                                        | 6.1 GB  | 19/25      | 19/25        | —              | `badge`, `columnset` (2)                     |
-| `granite4.1:3b`                                     | 2.0 GB  | 16/25      | 17/25        | —              | `number`, `text` (2)                         |
-| `nemotron-3-nano:4b`                                | 2.6 GB  | 20/25      | 17/25        | —              | `codeblock`, `columnset`, `text`, `time` (4) |
+| `qwen3.5:9b`                                        | 6.1 GB  | 19/25      | 19/25        | 17/25          | `badge`, `columnset` (2)                     |
+| `granite4.1:3b`                                     | 2.0 GB  | 16/25      | 17/25        | 13/25          | `number`, `text` (2)                         |
+| `nemotron-3-nano:4b`                                | 2.6 GB  | 20/25      | 17/25        | 6/25           | `codeblock`, `columnset`, `text`, `time` (4) |
 | `llama3-groq-tool-use:8b`                           | 4.3 GB  | 15/25      | 16/25        | 9/25           | `progress`, `toggle` (2)                     |
-| `llama3.2:latest`                                   | 1.9 GB  | 16/25      | 14/25        | —              | `badge`, `table` (2)                         |
+| `llama3.2:latest`                                   | 1.9 GB  | 16/25      | 14/25        | 11/25          | `badge`, `table` (2)                         |
 | `llama3-chatqa:8b`                                  | 4.3 GB  | 3/25       | 1/25         | 2/25           | `gauge`, `progress` (2)                      |
 
-**Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence — the single most useful column here after the score itself. `qwen3-coder:30b` and `nemotron-3.5-lightning:30b` each gain **9** shapes from the seed and `granite4.1:8b` gains 7, while `gpt-oss:20b` gains 1: it was already at 22/25 without it. A model that scores well only with the seed is being held up rather than being robust, which is the distinction the [top-three rationale](#why-these-three-after-the-25-case-sweep) turns on. The seven remaining `—` cells were never measured pre-seed; `shape_ab.dart --no-seed-card` fills one in, in about three minutes per model.
+**Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence — the single most useful column here after the score itself, because a model that scores well only with the seed is being held up rather than being robust. That distinction is what the [top-three rationale](#why-these-three-after-the-25-case-sweep) turns on. All fourteen are now measured; the gain runs from **+11** to **−1**:
+
+| Gain from the seed | Models                                                                                                        |
+| ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| +8 to +11          | `nemotron-3-nano:4b` (+11), `qwen3-coder:30b` (+9), `nemotron-3.5-lightning:30b` (+9), `hf.co/unsloth/…` (+8) |
+| +4 to +7           | `granite4.1:8b` (+7), `llama3-groq-tool-use:8b` (+7), `nemotron-3-nano:30b` (+5), `granite4.1:3b` (+4)        |
+| +1 to +3           | `llama3.2:latest` (+3), `qwen3.5:9b` (+2), `gpt-oss:20b` (+1), `qwen2.5-coder:7b` (+1)                        |
+| negative           | `qwen3.6:27b-coding-nvfp4` (−1), `llama3-chatqa:8b` (−1)                                                      |
+
+Two readings follow, and they point opposite ways. **The seed earns its keep on the models that need it most**: `nemotron-3-nano:4b` is unusable without it (6/25) and ordinary with it (17/25), and the top group gains most of its score from a fixed two-turn prefix. **But the two models that need it least are the two best models on the unaided axis** — `qwen3.6:27b-coding-nvfp4` at 24/25 and `gpt-oss:20b` at 22/25 — so a high seeded score is not evidence of a good model until this column is read beside it. Four of the fourteen sit at +1 or below.
+
+**Pre-seed erosion is concentrated in the choice cases.** Five of the eight models measured here lose `choice*` shapes to two prose turns without the seed — `hf.co/unsloth/…` loses five of the six — and those are exactly the cases that recover once a card sits in front of the history. This reproduces the original 2026-08-14 discovery at full scale and names what the seed is actually protecting: a pick-from-a-set question is the shape a drifting conversation loses first.
 
 **What the seed repairs is JSON framing, not only shape choice.** `qwen3-coder:30b` is the clearest case: without the seed, 9 of its 11 with-history failures are `broken` — invalid JSON, the missing-array-brackets signature already on record for it — and four choice cases plus `date` erode that were fine cold. With the seed in front of history, all of that resolves. The seed is not merely establishing "answer with a card"; it is demonstrating a well-formed one, which is why re-tuning `assets/seed_card.json` is pinned by a test rather than left open.
+
+**It is not free on a model that does not need it.** `qwen3.6:27b-coding-nvfp4` scores 24/25 with history unaided and 23/25 with the seed, and `llama3-chatqa:8b` likewise loses a shape to it. Both losses are small enough to be call-to-call variance at `--samples 2` rather than a demonstrated harm, but the direction is consistent with the over-carding cost recorded below, and it is the reason the seed's unconditional application is worth revisiting if a strong-unaided model ever becomes the server default.
 
 How to read the rest of it:
 
@@ -374,7 +391,9 @@ alone would rank it at or above every other large candidate.
 
 **Silently ignores `format`.** It answers the `format: json` canary with prose and no error, so `--json-format json|schema` is inert for it. Check the canary (`tool/model_probes/json_format_probe.dart`) before relying on the constraint.
 
-It scores **23/25 cold and 23/25 with history** (2026-08-19, `--seed-card --samples 2`), eroding nothing — one of three in the 2026-08-19 sweep to erode no shape at all, alongside `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` and `nemotron-3-nano:30b`. Its two permanent misses are `carousel` and `columnset`, both invalid JSON: the same deeply-nested ceiling as `gpt-oss:20b`, and consistent with the truncation-on-long-generations weakness recorded above.
+**The one model the card seed does not help.** It scores 23/25 cold and 23/25 with history as the server ships, and **24/25 with history without the seed** — the highest with-history figure in this file under any configuration, and the only negative entry in the seed-dependence column alongside `llama3-chatqa:8b`. It erodes nothing under either condition, seeded or not. Its two permanent misses are `carousel` and `columnset`, both invalid JSON: the same deeply-nested ceiling as `gpt-oss:20b`, consistent with the truncation-on-long-generations weakness recorded above.
+
+That combination — top of the unaided ranking, no history erosion, no dependence on a mechanism every other strong model leans on — is the live argument for giving it a `launch.json` slot; see [the top-three rationale](#why-these-three-after-the-25-case-sweep) for what argues against. It has never been run through the stress set, which is the measurement that would settle it.
 
 ### `qwen3.5:9b`
 
