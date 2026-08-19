@@ -48,7 +48,9 @@ Read on the shipped configuration, all fourteen candidates rank by with-history 
 
 The one thing `nemotron-3.5-lightning:30b` is genuinely best at is being the **regression canary for the seed mechanism itself**: nothing else in the table swings +9 warm shapes on it, so if `--seed-card` ever silently stops working, this model shows it first and loudest. That is a reason to keep probing it, not a reason to launch it.
 
-**Open question: `qwen3-coder:30b` has a real case against `gpt-oss:20b`'s slot.** The 2026-08-19 sweep put it at 24/25 cold and 23/25 warm — matching `gpt-oss:20b` on both axes — and it is the only model measured with no case it fails under both conditions. It also swept the stress set 5/5 at both temperatures, which `gpt-oss:20b` does not (4/5 at `t=0.6`). Against it: 17.3 GB vs. 12.8 GB, both ❌ for a 16 GB host, and — decisively for now — **its seed-dependence is unmeasured**. `gpt-oss:20b` scored 22/25 warm without the seed, so its rank is robustness rather than support; nobody has run `shape_ab.dart --no-seed-card` against `qwen3-coder:30b`, so the same cannot be said of it. That is the distinction that settled the `nemotron-3.5-lightning:30b` question above. **No slot changes until that baseline exists**; `launch.json` is untouched.
+**Is `qwen3-coder:30b` the better large model? No — `gpt-oss:20b` keeps the slot, on the same grounds as above.** It looked like the strongest candidate in the table: 24/25 cold and 23/25 warm, matching `gpt-oss:20b` on both axes, the only model with no case it fails under both conditions, and a 5/5 stress sweep at both temperatures that `gpt-oss:20b` does not manage (4/5 at `t=0.6`). Measuring its seed-dependence settled it the other way. Without the seed it scores **16/25 cold and 14/25 warm** — a **+9** swing, tying `nemotron-3.5-lightning:30b` for the largest in the file, against `gpt-oss:20b`'s +1 from an already-strong 22/25. Its unaided failure mode is the worse one, too: 9 of 11 with-history failures are invalid JSON rather than a wrong shape, and four choice cases plus `date` erode under history that were fine cold.
+
+So the two large candidates that have challenged this slot both turn out to be models the seed is holding up, and `gpt-oss:20b` is the one that does not need it. It also weighs 12.8 GB against 17.3 GB. `launch.json` is unchanged.
 
 ## Candidate models
 
@@ -166,7 +168,7 @@ Two changes were made in response, both still shipped. The card system prompt's 
 
 | Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Eroded by history                            |
 | --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | -------------------------------------------- |
-| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | **23/25**    | —              | `rating_ask`, `time` (2)                     |
+| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | **23/25**    | 14/25          | `rating_ask`, `time` (2)                     |
 | `gpt-oss:20b`                                       | 12.8 GB | **24/25**  | **23/25**    | 22/25          | `gauge`, `table` (2)                         |
 | `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | **23/25**    | —              | none                                         |
 | `granite4.1:8b`                                     | 5.0 GB  | 21/25      | 22/25        | 15/25          | `carousel`, `table` (2)                      |
@@ -181,7 +183,9 @@ Two changes were made in response, both still shipped. The card system prompt's 
 | `llama3.2:latest`                                   | 1.9 GB  | 16/25      | 14/25        | —              | `badge`, `table` (2)                         |
 | `llama3-chatqa:8b`                                  | 4.3 GB  | 3/25       | 1/25         | 2/25           | `gauge`, `progress` (2)                      |
 
-**Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence: `granite4.1:8b` and `nemotron-3.5-lightning:30b` gain 7 and 9 shapes from it, while `gpt-oss:20b` was already at 22/25 without it. A model that scores well only with the seed is being held up rather than being robust, which is the distinction the [top-three rationale](#why-these-three-after-the-25-case-sweep) turns on. The eight `—` cells were never measured pre-seed; `shape_ab.dart --no-seed-card` fills one in.
+**Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence — the single most useful column here after the score itself. `qwen3-coder:30b` and `nemotron-3.5-lightning:30b` each gain **9** shapes from the seed and `granite4.1:8b` gains 7, while `gpt-oss:20b` gains 1: it was already at 22/25 without it. A model that scores well only with the seed is being held up rather than being robust, which is the distinction the [top-three rationale](#why-these-three-after-the-25-case-sweep) turns on. The seven remaining `—` cells were never measured pre-seed; `shape_ab.dart --no-seed-card` fills one in, in about three minutes per model.
+
+**What the seed repairs is JSON framing, not only shape choice.** `qwen3-coder:30b` is the clearest case: without the seed, 9 of its 11 with-history failures are `broken` — invalid JSON, the missing-array-brackets signature already on record for it — and four choice cases plus `date` erode that were fine cold. With the seed in front of history, all of that resolves. The seed is not merely establishing "answer with a card"; it is demonstrating a well-formed one, which is why re-tuning `assets/seed_card.json` is pinned by a test rather than left open.
 
 How to read the rest of it:
 

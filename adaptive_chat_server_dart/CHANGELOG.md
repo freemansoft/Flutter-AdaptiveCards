@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+- Docs: measured `qwen3-coder:30b`'s pre-seed shape baseline
+  (`shape_ab.dart --no-seed-card --samples 2`, `t=0`), the one open question
+  left by the 2026-08-19 sweep. **16/25 cold, 14/25 with history** against
+  24/25 and 23/25 with the seed — a +9 swing, tying
+  `nemotron-3.5-lightning:30b` for the largest seed-dependence in the file,
+  against `gpt-oss:20b`'s +1 from an already-strong 22/25. That settles the
+  `launch.json` slot in `gpt-oss:20b`'s favour on the grounds already used to
+  settle it once: it is the large model that does not need the seed.
+  `launch.json` unchanged. Also recorded a mechanism the comparison exposes —
+  9 of `qwen3-coder:30b`'s 11 unaided with-history failures are invalid JSON
+  (the missing-array-brackets signature), so the seed repairs JSON framing and
+  not only shape choice.
+
 - Changed: `shape_ab.dart`'s card seed is now **on by default**
   (`--no-seed-card` opts out). The flag had been opt-in since before the seed
   shipped, so a bare probe run measured a configuration
