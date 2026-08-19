@@ -134,8 +134,8 @@
     },
     {
       // Requires a local Ollama (`ollama serve`) with the model pulled
-      // (`ollama pull qwen3.5:9b`).
-      "name": "Adaptive Chat Server Dart (Ollama qwen3.5:9b, card prompt)",
+      // (`ollama pull granite4.1:8b`).
+      "name": "Adaptive Chat Server Dart (Ollama granite4.1:8b, card prompt)",
       "type": "dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
@@ -146,7 +146,7 @@
         "--log-level",
         "debug",
         "--ollama-model",
-        "qwen3.5:9b",
+        "granite4.1:8b",
         "--system-prompt-file",
         "assets/card_system_prompt.txt",
         "--num-ctx",
@@ -210,8 +210,8 @@
     },
     {
       // Requires a local Ollama (`ollama serve`) with the model pulled
-      // (`ollama pull qwen3.5:9b`).
-      "name": "Adaptive Chat Server Dart (Ollama qwen3.5:9b, markdown prompt)",
+      // (`ollama pull granite4.1:8b`).
+      "name": "Adaptive Chat Server Dart (Ollama granite4.1:8b, markdown prompt)",
       "type": "dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
@@ -222,7 +222,7 @@
         "--log-level",
         "debug",
         "--ollama-model",
-        "qwen3.5:9b",
+        "granite4.1:8b",
         "--system-prompt-file",
         "assets/default_system_prompt.txt",
         "--num-ctx",

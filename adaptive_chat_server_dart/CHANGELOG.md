@@ -2,234 +2,83 @@
 
 ## [Unreleased]
 
-- **Breaking:** `N2` (`--seed-card`) promoted after measurement —
-  `OllamaResponder.reply()` now unconditionally prepends a synthetic
+- **Breaking:** `OllamaResponder.reply()` now prepends a synthetic
   card-shaped exchange (`lib/src/seed_card.dart`) ahead of the replayed
-  history on every request, with no opt-out. Neither regression gate can
-  exercise N2 directly (`temperature_stress.dart` and `prompt_ab.dart` have
-  no seed-history mechanism), so their clean same-session baseline numbers
-  (stress `10/10` at both temperatures, code A/B `8/8`) are context, not
-  evidence for the candidate — see `ModelBehavior.md` for what does cover
-  it. On `qwen2.5-coder:7b` at `t=0`, with-history shape coverage `18/25` →
-  `19/25` on the full 25-case set at `--samples 2`, cold-start `19/25` →
-  `21/25`. This is a **broad** result, not a narrow single-model fix:
-  cold-start rose on all 6 measured models and with-history rose on 5 of 6.
-  Trade-offs recorded and not blocking: `table` newly erodes with history on
-  4/6 models, `llama3-chatqa:8b` regressed with-history (2/25 → 1/25), and
-  the added per-request token cost has only thin wall-clock latency evidence
-  (not a controlled per-token benchmark). `assets/card_system_prompt.txt` is
-  unchanged — this is a code change, not a prompt edit. Full numbers in
-  `ModelBehavior.md`.
+  history on every request — unconditionally, with no opt-out. This is a code
+  change, not a prompt edit: `assets/card_system_prompt.txt` is unmodified. It
+  won a five-candidate screen as the only mechanism that moved the server
+  default, then held across six models on the full 25-shape set — cold-start
+  coverage rose on 6 of 6 models and with-history on 5 of 6
+  (`qwen2.5-coder:7b` 19/25 → 21/25 cold, 18/25 → 19/25 warm). It also costs
+  tokens on every request, newly erodes `table` with history on 4 of the 6
+  models, and regressed `llama3-chatqa:8b`'s with-history score. Full numbers,
+  the four trade-offs, and what the standing regression gates can and cannot
+  cover are in `ModelBehavior.md` — "Warm-start prose drift" and "Promoted:
+  N2".
 
-- Added: regression-gate results for the warm-start drift survivor —
-  `temperature_stress.dart` at both temperatures and `prompt_ab.dart`'s code
-  set, each measured against a same-session baseline on `qwen2.5-coder:7b`.
-  Baseline clean (stress 10/10 at `t=0` and `t=0.6`; code A/B 8/8), but
-  neither gate can exercise N2 (`--seed-card`) since it is a message-assembly
-  change and neither script injects seed history — no candidate arm was run.
-  `shape_ab.dart`'s existing `codeblock` case from the Stage 3 full-set
-  confirmation covers the closest analogous risk instead: zero raw-JSON-leak
-  failures across six models, both history conditions, under N2.
-
-- Added: full-set confirmation of `--seed-card` (N2, the sole Stage 1
-  survivor) across six models, all 25 cases, `t=0`, `--samples 2`. Held on
-  the promotion-relevant claims and generalized further than the six-case
-  screen: cold-start rose on all six models (not just the four screened),
-  and both erosion-metric models (`qwen2.5-coder:7b`, `granite4.1:8b`)
-  recovered every one of their baseline-eroded cases, not only the one case
-  each the screen happened to include. Did not hold on the harm-control
-  claim: `gpt-oss:20b`'s six-case with-history drop (5/6 → 4/6) inverted to
-  a full-set gain (22/25 → 23/25). Two regressions the screen's four-model
-  list could not catch: `llama3-chatqa:8b`'s with-history score dropped one
-  case (2/25 → 1/25, non-gating), and `llama3-groq-tool-use:8b` picked up a
-  new cold-start over-carding failure on its `prose` case. Stage 2 is
-  recorded as not applicable — exactly one candidate survived Stage 1, so
-  there was nothing to stack.
-
-- Corrected: the warm-start drift candidate screen below conflated two
-  different exclusion criteria for reading `qwen2.5-coder:7b`'s six-case
-  subset. The screen excluded any case that "failed cold-start under the
-  baseline prompt"; the spec's own wording, three times, is narrower — a
-  shape the model **cannot produce** cold-start. `table` fails that
-  narrower test: the 25-case baseline recorded it as an unbucketed
-  _inverted_ case (cold `wrong-shape`, warm a real `Table`), this screen's
-  own baseline reproduced that inversion at `--samples 2`, and `table`
-  additionally passed cold under two of the five candidates. `ModelBehavior.md`
-  now records both readings: excluding `table` (as originally applied),
-  N2 (`--seed-card`) clears the Step 6 promotion bar; excluding only the
-  uncontested `carousel`, N2's with-history score ties baseline instead.
-  No measurements changed — every recorded number was already correct —
-  and the four losing candidates (P1/P2/P3/N1) remain losers under either
-  reading. Also corrected: a "coincidentally" characterization of
-  `table`'s warm regression under N2, which reproduced deterministically
-  across two independent runs and is not coincidental; and an inference
-  that byte-for-byte reproduction across `--samples 2` runs demonstrates
-  statistical robustness — at `t=0` decoding is close to deterministic
-  (71 of 72 sampled pairs in this screen agreed), so a second sample
-  mostly re-measures rather than re-samples.
-
-- Added: screening results for five warm-start drift candidates (P1 recency,
-  P2 Markdown-section guard, P3 escape-hatch narrowing, N1 mid-conversation
-  reminder, N2 card-shaped history seed), measured 2026-08-17 over a
-  six-case subset at `t=0` with `shape_ab.dart`. `qwen2.5-coder:7b` at
-  `--samples 2` decided; three informing models at `--samples 1`
-  (`granite4.1:8b`, `gpt-oss:20b`, `llama3-chatqa:8b`) informed the wording
-  and surfaced harm. Two subset cases (`table`, `carousel`) had already
-  failed cold-start under `qwen2.5-coder:7b`'s own recorded baseline and
-  were excluded from its erosion reading (a third, `choice2`, also excluded
-  for `granite4.1:8b`) — read on that corrected denominator rather than the
-  raw six-case count, `--seed-card` (N2) is the only candidate that
-  increases with-history passes without decreasing cold-start on the
-  deciding model. Advancing: `N2`. N2 also shows a with-history regression
-  on the harm-control model (`gpt-oss:20b`, 5/6 → 4/6) that the stacked run
-  should watch. Losers (P1, P2, P3, N1) are recorded with their numbers so
-  they are not retried; N1 separately showed a strong positive effect on
-  `granite4.1:8b` (an informing, non-deciding model) worth revisiting if
-  that model becomes a target in its own right.
-
-- Added: a delivery check for mid-conversation `system` messages, recorded in
-  `ModelBehavior.md`. Ollama chat templates differ in whether a `system`
-  message placed after the history reaches the model; measured per screening
-  model on 2026-08-18. A first attempt used a reminder that contradicted the
-  card system prompt and produced no positive result on any model — an
-  uninformative design, since a model preferring its main instructions over a
-  contradiction looks identical to a template that dropped the message. A
-  second, additive reminder (append a checkable `Badge` element rather than
-  override the reply) settled it: delivered on `gpt-oss:20b`, unconfirmed on
-  `qwen2.5-coder:7b` and `granite4.1:8b`, no suitable case on
-  `llama3-chatqa:8b`. Without this, a candidate scoring at baseline is
-  ambiguous between "did not help" and "never arrived".
-
-- Added: `shape_ab.dart --seed-card` (candidate N2) prepends a synthetic
-  card-shaped exchange ahead of the replayed history, so a card is the
-  conversation's established format before any prose accumulates. The seed's
-  subject (build timezones) is unrelated to every case prompt, so a pass
-  cannot come from the model copying its content — the format is what is
-  being seeded. Server-side this would be few-shot priming prepended to every
-  request, which also means it costs tokens on every request; N2's evaluation
-  records latency alongside pass rate.
-
-- Added: `shape_ab.dart --reinforce` (candidate N1) injects a shape reminder
-  as a `system` message after the replayed history and immediately before the
-  current user turn. `probeOnce` gained an optional `reminder`, and its
-  message assembly moved into a testable `buildProbeMessages` — the
-  reminder's position is the whole hypothesis, so a unit test asserts it lands
-  after history rather than leaving that to inspection. Every other probe
-  passes no reminder, so their requests are unchanged.
-
-- Added: fourth `shape_ab.dart` baseline — `granite4.1:8b`, preceded by a
-  five-case go/no-go screen confirming a real cold-start card path, then the
-  full 25 cases, `t=0`, `--samples 1`, current shipped prompt: cold-start
-  18/25 (third of the four baselines on record, behind `gpt-oss:20b`'s 20
-  and `qwen2.5-coder:7b`'s 19), with-history 15/25, 4 shapes eroded by
-  history (`choice1`, `choice5`, `columnset`, `number`). Recorded in
-  `ModelBehavior.md`: of those four, three eroded to prose — tying
-  `qwen2.5-coder:7b`'s 3 prose erosions — while the fourth (`columnset`)
-  eroded to a wrong element type, a different failure mechanism a
-  prose-drift fix may not touch. Verdict: a viable drift-fix validation
-  subject comparable to `qwen2.5-coder:7b`, not clearly better than it.
-
-- Added: third `shape_ab.dart` baseline — `llama3-chatqa:8b`, 25 cases,
-  `t=0`, `--samples 1`, current shipped prompt: cold-start 1/25,
-  with-history 2/25, zero shapes eroded by history. Recorded in
-  `ModelBehavior.md` alongside the `qwen2.5-coder:7b` and `gpt-oss:20b`
-  baselines: unlike either, this model is not cold-strong — 22 of its 23
-  failing cases scored a flat `prose` verdict under both conditions,
-  meaning it mostly never attempted card JSON at all rather than producing
-  it and losing it to drift or JSON invalidity, so its earlier 0/6
-  choice-set collapse does not generalize into broad shape erosion and it
-  is a weaker drift-fix validation subject than that narrower result
-  suggested.
-
-- Added: second `shape_ab.dart` baseline — `gpt-oss:20b`, 25 cases, `t=0`,
-  `--samples 1`, current shipped prompt: cold-start 20/25, with-history
-  22/25, zero shapes eroded by history. Recorded in `ModelBehavior.md`
-  alongside `qwen2.5-coder:7b`'s baseline for comparison: unlike qwen's
-  three prose-drift losses, every one of this model's 8 failing instances
-  (on `carousel`, `table`, and `columnset`) is malformed JSON on the most
-  structurally nested shapes, present under both conditions — a
-  JSON-validity ceiling rather than a prose-drift problem. Fixed: this run
-  exposed `judgeShape` re-prefixing a label `judgeReply` already prefixed
-  for parse failures, doubling to `broken: broken: invalid JSON…`; added
-  `brokenLabel()` and a regression test. Cosmetic only — bucket
-  classification and the recorded numbers are unaffected.
-
-- Fixed: `judgeShape`'s negative-control branch could score a reply the
-  server itself calls broken (invalid JSON, duplicate keys, prose wrapping a
-  card) as `prose-ok`, because it checked `outcome.ok` only after already
-  deciding the reply wasn't a card — the same class of bug the earlier
-  duplicate-key fix (`2d61c13`) closed for the branch's card path but missed
-  here. `--only` with an empty/blank value (e.g. an empty shell variable) now
-  exits 2 instead of silently running zero cases. Added a test pinning that
-  `shapeCases`' accepted types stay in sync with `card_schema.json`'s
-  element enum. Docs: `tool/model_probes/README.md` names duplicate keys and
-  `unwanted-card` and records the deliberate judging difference from
-  `choiceset_ab.dart`; `ModelBehavior.md`'s "every With history cell" claim
-  is narrowed to measured cells. The recorded `qwen2.5-coder:7b` baseline
-  (cold-start 19/25, with-history 18/25) is unaffected — its `prose` case
-  returned genuinely clean prose under both conditions.
-
-- Added: first `shape_ab.dart` baseline — `qwen2.5-coder:7b`, 25 cases,
-  `t=0`, `--samples 1`, current shipped prompt: cold-start 19/25,
-  with-history 18/25. Recorded in `ModelBehavior.md` alongside which shapes
-  were lost to history and which the model never produced under either
-  condition — the second group being capability gaps rather than drift, which
-  no anti-drift wording will move.
-
-- Added: `tool/model_probes/README.md` documents `shape_ab.dart`, its four
-  card-failure labels, and the finding that motivated it — that judging
-  replies only as "renders or not" left 23 of 24 advertised element types
-  unverified.
-- Added: `shape_ab.dart`, a shape-aware probe. It runs all 25 cases
-  cold-start and again after two prose turns, then prints the shapes a model
-  produces cold and loses with history — the number a prompt fix has to move.
-  A case counts as passing only when every sample passed, and the erosion
-  line is derived from the two pass-sets so its count can never disagree with
-  its own list. `--only` rejects unknown case ids rather than silently
-  shrinking the denominator; `--baseline`/`--candidate` A/B two prompts.
-
-- Added: `shape_cases.dart` — a 25-case table naming, for each prompt, the
-  element types that would answer it acceptably. Expectations are sets rather
-  than single types because several shapes are often equally correct
-  ("summarize these specs" is defensibly a `FactSet` or a `Table`), and this
-  file already records one case where a strict assertion was the bug rather
-  than the model. Tests assert every accepted type exists in
-  `card_schema.json`'s enum, so a typo cannot silently fail every model.
+- Added: `shape_ab.dart` and `shape_cases.dart` — a shape-aware probe that
+  asks whether a reply used the element type the question called for, not just
+  whether it rendered. 25 cases run cold-start and again after two prose
+  turns, judged by a seven-outcome classifier (`judgeShape`), with the shapes
+  a model produces cold and then loses with history derived from the two
+  pass-sets so the count can never disagree with its own list. It exists
+  because judging replies only as "renders or not" left 23 of 24 advertised
+  element types unverified and scored an unclickable Markdown options list as
+  a pass. `--reinforce` and `--seed-card` implement the two message-assembly
+  drift candidates; `--baseline`/`--candidate` A/B two prompt files.
 
 - Added: `collectElementTypes` and `cardContainsAnyType` in
-  `probe_support.dart` — a recursive element-type walker shared by the
+  `probe_support.dart` — one recursive element-type walker shared by the
   probes, reporting every `type` present anywhere in a parsed card body
   including inside `Carousel` pages, `Table` cells, and `Column` items.
   `choiceset_ab.dart` now uses it instead of a private copy; its prompts,
-  conditions, and output are unchanged, so the thirteen `N/6` scores in
-  `ModelBehavior.md` remain reproducible. New unit tests pin the walker's
-  behavior, which is what makes touching that reproducer safe.
+  conditions, and output are unchanged, so its recorded scores stay
+  reproducible.
 
-- Added: `judgeShape` in `shape_cases.dart`, a seven-outcome classifier
-  layered over the server's own card/prose verdict: `ok`, `prose-ok`,
-  `prose`, `no-input`, `wrong-shape`, `unwanted-card`, `broken`. `no-input`
-  is decided before `wrong-shape` so "asked for a date, got a bare
-  TextBlock" stays distinguishable from "asked for a date, got an
-  Input.Text" — different failures with different fixes.
+- Fixed: `judgeShape`'s negative-control branch could score a reply the server
+  itself calls broken (invalid JSON, duplicate keys, prose wrapping a card) as
+  `prose-ok`, because it checked `outcome.ok` only after already deciding the
+  reply wasn't a card. Also fixed: the doubled `broken: broken: invalid JSON…`
+  label (`judgeShape` re-prefixing what `judgeReply` had already prefixed),
+  and `--only` with a blank value silently running zero cases instead of
+  exiting 2.
 
-- Changed: `ModelBehavior.md`'s `With history` column now uses one denominator
-  for every model. `qwen2.5-coder:7b` was the only cell measured at
-  `--samples 2` (Task 7 wanted two samples per prompt because that number
-  gated a promote-or-revert decision), so it read `6/12` in a column of `N/6`
-  scores and invited a wrong at-a-glance comparison. Re-ran it at
-  `--samples 1` on 2026-08-17 against the current shipped prompt:
-  `qwen2.5-coder:7b` scores **3/6**, passing and failing exactly the same
-  three prompts each as the 12-trial run, so this is a change of resolution
-  rather than of finding. The `2/12 → 6/12` before/after is kept in §4 and in
-  the per-model section, since that pair is the evidence that justified
-  promoting the escape-hatch change in the first place.
+- Added: measurements, recorded in `ModelBehavior.md` rather than here — six
+  `shape_ab.dart` 25-case baselines (`qwen2.5-coder:7b`, `gpt-oss:20b`,
+  `llama3-chatqa:8b`, `granite4.1:8b`, `llama3-groq-tool-use:8b`,
+  `nemotron-3.5-lightning:30b`), the five-candidate warm-start drift screen
+  and its full-set confirmation, and a delivery check establishing that a
+  mid-conversation `system` message reaches `gpt-oss:20b` but is unconfirmed
+  on `qwen2.5-coder:7b` and `granite4.1:8b` — which is what makes a
+  scores-at-baseline result on those models unreadable rather than negative.
 
-  Normalizing adds a thirteenth model to the with-history band tally, which
-  moves it off the even three-way split it had at twelve: the bands are now
-  **4 collapse / 5 partial / 4 strong**, with `qwen2.5-coder:7b` joining the
-  `granite4.1` pair at 3/6 in the partial band. Still no model anywhere at
-  4/6, so the band boundaries remain a property of the scores rather than an
-  arbitrary cut.
+- Changed: the top three is now `gpt-oss:20b`, `granite4.1:8b`, and
+  `qwen2.5-coder:7b`. `granite4.1:8b` replaces `qwen3.5:9b` in
+  `.vscode/launch.json` (both its card-prompt and markdown-prompt
+  configurations) on the strength of the 25-case sweep: 22/25 with history as
+  shipped, second only to `gpt-oss:20b`, in 5.0 GB. `qwen3.5:9b` has never
+  been run through `shape_ab.dart` at all — its only with-history number is a
+  six-prompt `choiceset_ab.dart` score — and its own notes already record it
+  as offering no reliability edge over `qwen2.5-coder:7b` at more latency and
+  memory. Rationale, and why `gpt-oss:20b` keeps the large-model slot over
+  `nemotron-3.5-lightning:30b`, are in `ModelBehavior.md`.
+
+- Changed: the `With history` column of `ModelBehavior.md`'s candidate table
+  now leads with each model's `shapes N/25` score **as the server ships** —
+  measured with the unconditional card seed in place — rather than the
+  pre-seed `N/6` choice-set score, which is retained beside it for the models
+  that have nothing better. Two rows read as self-contradictory as a result
+  (`nemotron-3.5-lightning:30b` and `llama3-groq-tool-use:8b` each scored 0/6
+  pre-seed and recover their whole choice-set path with the seed); the note
+  under the table says the shape figure is the current one.
+
+- Changed: `ModelBehavior.md`'s `With history` column uses one denominator for
+  every model. `qwen2.5-coder:7b` was the only cell measured at `--samples 2`,
+  so it read `6/12` in a column of `N/6` scores and invited a wrong
+  at-a-glance comparison. Re-run at `--samples 1` it scores 3/6, passing and
+  failing exactly the same three prompts each as the 12-trial run — a change
+  of resolution, not of finding. The `2/12 → 6/12` before/after is kept where
+  it justifies promoting the escape-hatch change.
 
 - Added: `ModelBehavior.md` now records the with-history probe of
   `qwen3.6:27b-coding-nvfp4` (18.4 GB), the sixth and last model in this
