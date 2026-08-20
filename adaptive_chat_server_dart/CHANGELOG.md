@@ -2,6 +2,39 @@
 
 ## [Unreleased]
 
+- Fixed: every probe crashed with an unhandled
+  `type 'Null' is not a subtype of type 'Map<String, dynamic>'` when Ollama
+  answered `200` with a body carrying no `message.content` — an error object,
+  or a reply the runner cut short. `probeOnce` and `dump_reply.dart` both cast
+  straight through to `message.content`; they now report the unusable body the
+  way `OllamaResponder` already does, as
+  `unexpected-response (no message.content)`, and `dump_reply.dart` also stops
+  treating a non-200 as if it were a reply. Found on `gpt-oss:20b`, where the
+  stack trace named nothing about the actual condition.
+- Added: `cascade_ab.dart` and `cascade_cases.dart` — the first probe that
+  scores a **two-turn edit** rather than a single reply. The server stores a
+  card reply's raw JSON as `replyText` and replays it verbatim, so a follow-up
+  turn arrives with the previous card in context; turn 1 asks for a pick-one
+  list and turn 2 asks to widen it to multi-select, referring back rather than
+  restating the items. A pass needs the turn-2 `Input.ChoiceSet` to be
+  `isMultiSelect: true` **and** to keep every choice turn 1 offered. That last
+  condition is the point: a model can cascade the format perfectly and quietly
+  drop items off the list — observed dropping five states to three — and every
+  other probe here scores that a pass, because the reply is a valid card of the
+  requested type. Judged with the server's own `tryParseCardBody`; seed on by
+  default, as the server ships. `test/cascade_judge_test.dart` covers the
+  scoring without needing a model.
+- Docs: added a **Cascade** column to `ModelBehavior.md`'s model table and
+  measured every model for it. Thirteen score `3/3`; `llama3-chatqa:8b` is
+  `n/a`, not `0/3`, because it answers turn 1 in prose and so never produces a
+  card for turn 2 to edit — attributing that to the cascade would report a
+  turn-1 shortcoming twice. The column separates no two usable models and is
+  carried deliberately anyway: follow-up editing is the kind of behavior
+  everyone assumes and nobody had measured, and the column records that it was
+  checked on every model and holds wherever a card gets produced.
+  `cascade_ab.dart` reports the same distinction, summarising untestable cases
+  as "not exercised" rather than folding them into the failure count.
+
 - Docs: measured the remaining seven pre-seed baselines
   (`shape_ab.dart --no-seed-card --samples 2`, `t=0`), so **all fourteen**
   models in `ModelBehavior.md` now carry a seed-dependence figure. The gain

@@ -91,6 +91,15 @@ Sorted by model name, and within a family by parameter count ascending (so `nemo
 
 **Read the `shapes N/25` figure first.** It is the model's with-history score **as the server ships today** — all 25 shapes, `t=0`, `--samples 2`, measured with the unconditional card seed in place (`--seed-card`, promoted 2026-08-18) — so it describes what a user actually gets. Every model carries one, all measured under identical conditions — see [the full table](#shape-coverage--all-fourteen-models-as-shipped) for cold-start, seed-dependence, and per-model erosion. The ✅/⚠️/❌ is set from this figure (✅ ≥ 20/25, ⚠️ 10-19, ❌ < 10).
 
+**Cascade** is a different question and a much smaller one: can a follow-up
+turn edit the card the model just sent — widen a pick-one list to multi-select
+without losing its items? Thirteen of fourteen score `3/3`, so it separates no
+two usable models; it is carried as a column because "we checked, and it works
+wherever a card gets produced" is a fact worth being able to see. `n/a` means
+the model never produced a first card to edit, so the cascade was never
+exercised — not that it cascaded badly. See
+[the cascade section](#cascade--editing-the-card-the-model-just-sent).
+
 The **16 GB** column is not a gate on what gets probed — it records what a constrained host could run. Probing a ❌ model on the 64 GB development machine is expected and useful; it is how this matrix gets filled in. What the column governs is what the server should _recommend_ as a default, since a default that only runs on a 64 GB box is not much of a default.
 
 ## Which system prompt produced the number
@@ -170,22 +179,22 @@ Two changes were made in response, both still shipped. The card system prompt's 
 
 **This is the current, as-shipped picture**, and the only model comparison in this file that is: all 25 cases, `t=0`, `--samples 2`, both conditions, with the unconditional card seed in place. Six models were measured 2026-08-18, the other eight 2026-08-19 under identical conditions. Sorted by with-history coverage, which is what a user actually experiences.
 
-| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Eroded by history                            |
-| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | -------------------------------------------- |
-| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | **23/25**    | **24/25**      | none                                         |
-| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | **23/25**    | 14/25          | `rating_ask`, `time` (2)                     |
-| `gpt-oss:20b`                                       | 12.8 GB | **24/25**  | **23/25**    | 22/25          | `gauge`, `table` (2)                         |
-| `granite4.1:8b`                                     | 5.0 GB  | 21/25      | 22/25        | 15/25          | `carousel`, `table` (2)                      |
-| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 22/25      | 22/25        | 13/25          | `table` (1)                                  |
-| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 14/25          | none                                         |
-| `nemotron-3-nano:30b`                               | 22.6 GB | 19/25      | 20/25        | 15/25          | none                                         |
-| `qwen2.5-coder:7b`                                  | 4.4 GB  | 21/25      | 19/25        | 18/25          | `carousel`, `table` (2)                      |
-| `qwen3.5:9b`                                        | 6.1 GB  | 19/25      | 19/25        | 17/25          | `badge`, `columnset` (2)                     |
-| `granite4.1:3b`                                     | 2.0 GB  | 16/25      | 17/25        | 13/25          | `number`, `text` (2)                         |
-| `nemotron-3-nano:4b`                                | 2.6 GB  | 20/25      | 17/25        | 6/25           | `codeblock`, `columnset`, `text`, `time` (4) |
-| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 15/25      | 16/25        | 9/25           | `progress`, `toggle` (2)                     |
-| `llama3.2:latest`                                   | 1.9 GB  | 16/25      | 14/25        | 11/25          | `badge`, `table` (2)                         |
-| `llama3-chatqa:8b`                                  | 4.3 GB  | 3/25       | 1/25         | 2/25           | `gauge`, `progress` (2)                      |
+| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Cascade | Eroded by history                            |
+| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------- | -------------------------------------------- |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | **23/25**    | **24/25**      | 3/3     | none                                         |
+| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | **23/25**    | 14/25          | 3/3     | `rating_ask`, `time` (2)                     |
+| `gpt-oss:20b`                                       | 12.8 GB | **24/25**  | **23/25**    | 22/25          | 3/3     | `gauge`, `table` (2)                         |
+| `granite4.1:8b`                                     | 5.0 GB  | 21/25      | 22/25        | 15/25          | 3/3     | `carousel`, `table` (2)                      |
+| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 22/25      | 22/25        | 13/25          | 3/3     | `table` (1)                                  |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 14/25          | 3/3     | none                                         |
+| `nemotron-3-nano:30b`                               | 22.6 GB | 19/25      | 20/25        | 15/25          | 3/3     | none                                         |
+| `qwen2.5-coder:7b`                                  | 4.4 GB  | 21/25      | 19/25        | 18/25          | 3/3     | `carousel`, `table` (2)                      |
+| `qwen3.5:9b`                                        | 6.1 GB  | 19/25      | 19/25        | 17/25          | 3/3     | `badge`, `columnset` (2)                     |
+| `granite4.1:3b`                                     | 2.0 GB  | 16/25      | 17/25        | 13/25          | 3/3     | `number`, `text` (2)                         |
+| `nemotron-3-nano:4b`                                | 2.6 GB  | 20/25      | 17/25        | 6/25           | 3/3     | `codeblock`, `columnset`, `text`, `time` (4) |
+| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 15/25      | 16/25        | 9/25           | 3/3     | `progress`, `toggle` (2)                     |
+| `llama3.2:latest`                                   | 1.9 GB  | 16/25      | 14/25        | 11/25          | 3/3     | `badge`, `table` (2)                         |
+| `llama3-chatqa:8b`                                  | 4.3 GB  | 3/25       | 1/25         | 2/25           | n/a     | `gauge`, `progress` (2)                      |
 
 **Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence — the single most useful column here after the score itself, because a model that scores well only with the seed is being held up rather than being robust. That distinction is what the [top-three rationale](#why-these-three-after-the-25-case-sweep) turns on. All fourteen are now measured; the gain runs from **+11** to **−1**:
 
@@ -225,6 +234,55 @@ Four costs come with it and must not be read past:
 2. **`table` newly erodes with history on four of the six models it was A/B'd on.** The seed buys cold-start capability on nested shapes and then loses some of it warm.
 3. **It over-cards the negative control.** A plain question that wants prose comes back as a card cold-start on five of fourteen models. Confirmed causal, not incidental, by re-running the single case both ways on `granite4.1:3b`: `--no-seed-card` passes it, the seed fails it. It costs at most 1/25 on any model's score, but it is the seed's one visible harm.
 4. **It has never been measured above `t=0`.** Every shape run is greedy. `defaultCardTemperature` is `0.0` so an unconfigured server never leaves `t=0`, but this file records prompt fixes that held at `t=0` and failed at `t=0.6`, so the one is not a proxy for the other. Neither standing regression gate can cover this: `temperature_stress.dart` and `prompt_ab.dart` both send a single user turn and no seed history, so running them against the seed measures a file it never touches.
+
+#### Cascade — editing the card the model just sent
+
+The probes above all score one reply. A conversation does not work that way:
+the server stores a card reply's raw JSON as `replyText` and replays it
+verbatim, so a follow-up turn arrives with the previous card literally in
+context. `cascade_ab.dart` scores that — turn 1 asks for a pick-one list, turn
+2 asks to widen it to multi-select while referring back ("more than one of
+_those_") rather than restating the items. A pass needs the turn-2
+`Input.ChoiceSet` to be `isMultiSelect: true` **and** to keep every choice turn
+1 offered.
+
+All fourteen models, as the server ships (seed on), `t=0`, `--samples 2`, three
+cases each:
+
+| Result  | Models                                                               |
+| ------- | -------------------------------------------------------------------- |
+| **3/3** | Every model except the one below — thirteen of fourteen              |
+| **0/3** | `llama3-chatqa:8b`, prose on turn 1 in all three cases, both samples |
+
+**This axis does not discriminate, and that is the finding.** Every model that
+produces a card at all cascades correctly: flips `isMultiSelect`, keeps 100% of
+the turn-1 choices, and renames the input sensibly (`state` → `states`). That
+includes the weakest card producers in the table — `llama3.2:latest` (14/25
+shapes), `llama3-groq-tool-use:8b` (16/25), and `nemotron-3-nano:4b` (17/25)
+all score 3/3. The sole failure is the model that cannot produce a first card
+to edit, and it fails at turn 1, not at the cascade.
+
+So **cascade ability is gated entirely on turn-1 card production**, which the
+shape table already measures. It is deliberately _not_ a column here: a column
+reading `3/3` thirteen times would take space in the matrix without separating
+any two models. The probe earns its place as a regression check — if a prompt
+or seed change ever breaks follow-up editing, nothing else in this directory
+would notice.
+
+Two caveats on the numbers:
+
+- **A contents-loss failure was observed once and did not reproduce.** During
+  development `nemotron-3-nano:4b` returned five states on turn 1 and three on
+  turn 2 — the exact silent-drop failure the probe's third pass condition
+  exists to catch. At `--samples 2` it scored 3/3 with all five retained. The
+  condition is kept because the failure is real and invisible to every other
+  probe here, not because this sweep reproduced it.
+- **Model knowledge is not shape knowledge.** The `states` case asks for the
+  top five US states by population. `granite4.1:8b`, `gpt-oss:20b`, and
+  `qwen3.6:27b-coding-nvfp4` answer California/Texas/Florida/New York/
+  Pennsylvania, which is correct; `qwen2.5-coder:7b` — the server default —
+  and several others substitute Illinois, which is sixth. The probe scores the
+  cascade, not the facts, and passes both.
 
 ### Not a card test: the `format` canary
 

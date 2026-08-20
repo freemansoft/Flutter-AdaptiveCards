@@ -224,10 +224,40 @@ Future<ProbeOutcome> probeOnce({
       reply: body,
     );
   }
-  final data = jsonDecode(body) as Map<String, dynamic>;
-  final content =
-      (data['message'] as Map<String, dynamic>)['content'] as String;
+  // Ollama can answer 200 with a body carrying no `message.content` — an
+  // error object, or a reply the runner cut short. Casting straight through
+  // crashes the probe with a type error that names none of that, so the
+  // unusable body is reported the way `OllamaResponder` reports it instead.
+  final content = _contentOrNull(body);
+  if (content == null) {
+    return ProbeOutcome(
+      ok: false,
+      label: 'unexpected-response (no message.content)',
+      chars: body.length,
+      ms: ms,
+      hash: '-',
+      reply: body,
+    );
+  }
   return judgeReply(content, ms);
+}
+
+/// Pulls `message.content` out of an `/api/chat` body, or null if it is absent
+/// or not a string.
+///
+/// Shared by every probe: a 200 without usable content is a condition to
+/// report, never one to crash on.
+String? _contentOrNull(String body) {
+  try {
+    final data = jsonDecode(body);
+    if (data is! Map<String, dynamic>) return null;
+    final message = data['message'];
+    if (message is! Map<String, dynamic>) return null;
+    final content = message['content'];
+    return content is String ? content : null;
+  } on FormatException {
+    return null;
+  }
 }
 
 /// Applies the server's card-detection rules to [content].
