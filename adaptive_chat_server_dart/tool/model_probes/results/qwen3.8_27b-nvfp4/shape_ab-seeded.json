@@ -12,710 +12,809 @@
   },
   "summary": {
     "cases": 25,
-    "coldStart": 24,
-    "withHistory": 23
+    "coldStart": 11,
+    "withHistory": 24
   },
-  "notes": "Backfilled from the console logs of the 2026-08-20 sweep, which predates --json output. Per-call latency was not recorded by shape_ab or cascade_ab at that time, so those calls carry no ms.",
   "calls": [
     {
       "case": "date",
       "sample": 0,
-      "pass": true,
-      "label": "Input.Date, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120038
     },
     {
       "case": "date",
       "sample": 1,
-      "pass": true,
-      "label": "Input.Date, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120005
     },
     {
       "case": "time",
       "sample": 0,
-      "pass": true,
-      "label": "Input.Time",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120008
     },
     {
       "case": "time",
       "sample": 1,
-      "pass": true,
-      "label": "Input.Time",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120005
     },
     {
       "case": "toggle",
       "sample": 0,
-      "pass": true,
-      "label": "Input.Toggle",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120007
     },
     {
       "case": "toggle",
       "sample": 1,
-      "pass": true,
-      "label": "Input.Toggle",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120007
     },
     {
       "case": "text",
       "sample": 0,
-      "pass": true,
-      "label": "Input.Text",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120006
     },
     {
       "case": "text",
       "sample": 1,
-      "pass": true,
-      "label": "Input.Text",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120006
     },
     {
       "case": "number",
       "sample": 0,
-      "pass": true,
-      "label": "Input.Number, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120005
     },
     {
       "case": "number",
       "sample": 1,
-      "pass": true,
-      "label": "Input.Number, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120039
     },
     {
       "case": "choice1",
       "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120007
     },
     {
       "case": "choice1",
       "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120007
     },
     {
       "case": "choice2",
       "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120005
     },
     {
       "case": "choice2",
       "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120006
     },
     {
       "case": "choice3",
       "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120009
     },
     {
       "case": "choice3",
       "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120006
     },
     {
       "case": "choice4",
       "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120007
     },
     {
       "case": "choice4",
       "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120006
     },
     {
       "case": "choice5",
       "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120006
     },
     {
       "case": "choice5",
       "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120007
     },
     {
       "case": "choice6",
       "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120007
     },
     {
       "case": "choice6",
       "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120006
     },
     {
       "case": "pie",
       "sample": 0,
-      "pass": true,
-      "label": "Chart.Pie",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120008
     },
     {
       "case": "pie",
       "sample": 1,
-      "pass": true,
-      "label": "Chart.Pie",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120010
     },
     {
       "case": "bar",
       "sample": 0,
-      "pass": true,
-      "label": "Chart.VerticalBar",
-      "condition": "cold"
+      "pass": false,
+      "label": "broken: timeout (120s)",
+      "condition": "cold",
+      "ms": 120009
     },
     {
       "case": "bar",
       "sample": 1,
       "pass": true,
       "label": "Chart.VerticalBar",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 56495
     },
     {
       "case": "line",
       "sample": 0,
       "pass": true,
       "label": "Chart.Line",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 5697
     },
     {
       "case": "line",
       "sample": 1,
       "pass": true,
       "label": "Chart.Line",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 5264
     },
     {
       "case": "gauge",
       "sample": 0,
       "pass": true,
       "label": "Chart.Gauge",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 3470
     },
     {
       "case": "gauge",
       "sample": 1,
       "pass": true,
       "label": "Chart.Gauge",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 3243
     },
     {
       "case": "rating_show",
       "sample": 0,
       "pass": true,
       "label": "Rating",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 1528
     },
     {
       "case": "rating_show",
       "sample": 1,
       "pass": true,
       "label": "Rating",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 1477
     },
     {
       "case": "rating_ask",
       "sample": 0,
       "pass": false,
       "label": "no-input: got {TextBlock} want {Input.ChoiceSet, Input.Number}",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 1938
     },
     {
       "case": "rating_ask",
       "sample": 1,
       "pass": false,
       "label": "no-input: got {TextBlock} want {Input.ChoiceSet, Input.Number}",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 1696
     },
     {
       "case": "carousel",
       "sample": 0,
       "pass": true,
       "label": "Carousel, CarouselPage, TextBlock",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 13730
     },
     {
       "case": "carousel",
       "sample": 1,
       "pass": true,
       "label": "Carousel, CarouselPage, TextBlock",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 14079
     },
     {
       "case": "table",
       "sample": 0,
       "pass": true,
       "label": "Table, TableCell, TableRow, TextBlock",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 20927
     },
     {
       "case": "table",
       "sample": 1,
       "pass": true,
       "label": "Table, TableCell, TableRow, TextBlock",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 19581
     },
     {
       "case": "facts",
       "sample": 0,
       "pass": true,
       "label": "FactSet",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 10699
     },
     {
       "case": "facts",
       "sample": 1,
       "pass": true,
       "label": "FactSet",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 10106
     },
     {
       "case": "columnset",
       "sample": 0,
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 4381
     },
     {
       "case": "columnset",
       "sample": 1,
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 3997
     },
     {
       "case": "codeblock",
       "sample": 0,
       "pass": true,
       "label": "CodeBlock, TextBlock",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 7510
     },
     {
       "case": "codeblock",
       "sample": 1,
       "pass": true,
       "label": "CodeBlock, TextBlock",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 7160
     },
     {
       "case": "progress",
       "sample": 0,
       "pass": true,
       "label": "ProgressBar",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 1393
     },
     {
       "case": "progress",
       "sample": 1,
       "pass": true,
       "label": "ProgressBar",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 1125
     },
     {
       "case": "badge",
       "sample": 0,
       "pass": true,
       "label": "Badge",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 2125
     },
     {
       "case": "badge",
       "sample": 1,
       "pass": true,
       "label": "Badge",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 1708
     },
     {
       "case": "prose",
       "sample": 0,
       "pass": true,
       "label": "prose-ok",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 3450
     },
     {
       "case": "prose",
       "sample": 1,
       "pass": true,
       "label": "prose-ok",
-      "condition": "cold"
+      "condition": "cold",
+      "ms": 3312
     },
     {
       "case": "date",
       "sample": 0,
       "pass": true,
       "label": "Input.Date, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 2881
     },
     {
       "case": "date",
       "sample": 1,
       "pass": true,
       "label": "Input.Date, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1733
     },
     {
       "case": "time",
       "sample": 0,
       "pass": true,
       "label": "Input.Time, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 3261
     },
     {
       "case": "time",
       "sample": 1,
       "pass": true,
       "label": "Input.Time, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 2225
     },
     {
       "case": "toggle",
       "sample": 0,
       "pass": true,
       "label": "Input.Toggle",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1568
     },
     {
       "case": "toggle",
       "sample": 1,
       "pass": true,
       "label": "Input.Toggle",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1322
     },
     {
       "case": "text",
       "sample": 0,
       "pass": true,
       "label": "Input.Text, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 2160
     },
     {
       "case": "text",
       "sample": 1,
       "pass": true,
       "label": "Input.Text, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1989
     },
     {
       "case": "number",
       "sample": 0,
       "pass": true,
       "label": "Input.Number, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 2356
     },
     {
       "case": "number",
       "sample": 1,
       "pass": true,
       "label": "Input.Number, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 2109
     },
     {
       "case": "choice1",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 3587
     },
     {
       "case": "choice1",
       "sample": 1,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 3423
     },
     {
       "case": "choice2",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4778
     },
     {
       "case": "choice2",
       "sample": 1,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4556
     },
     {
       "case": "choice3",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 3692
     },
     {
       "case": "choice3",
       "sample": 1,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 3008
     },
     {
       "case": "choice4",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4994
     },
     {
       "case": "choice4",
       "sample": 1,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4801
     },
     {
       "case": "choice5",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 5195
     },
     {
       "case": "choice5",
       "sample": 1,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4981
     },
     {
       "case": "choice6",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4359
     },
     {
       "case": "choice6",
       "sample": 1,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4117
     },
     {
       "case": "pie",
       "sample": 0,
       "pass": true,
       "label": "Chart.Pie",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4153
     },
     {
       "case": "pie",
       "sample": 1,
       "pass": true,
       "label": "Chart.Pie",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4053
     },
     {
       "case": "bar",
       "sample": 0,
       "pass": true,
       "label": "Chart.VerticalBar",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4390
     },
     {
       "case": "bar",
       "sample": 1,
       "pass": true,
       "label": "Chart.VerticalBar",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4531
     },
     {
       "case": "line",
       "sample": 0,
       "pass": true,
       "label": "Chart.Line",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4760
     },
     {
       "case": "line",
       "sample": 1,
       "pass": true,
       "label": "Chart.Line",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 5052
     },
     {
       "case": "gauge",
       "sample": 0,
       "pass": true,
       "label": "Chart.Gauge",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 3677
     },
     {
       "case": "gauge",
       "sample": 1,
       "pass": true,
       "label": "Chart.Gauge",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 3415
     },
     {
       "case": "rating_show",
       "sample": 0,
       "pass": true,
       "label": "Rating",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1403
     },
     {
       "case": "rating_show",
       "sample": 1,
       "pass": true,
       "label": "Rating",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1128
     },
     {
       "case": "rating_ask",
       "sample": 0,
       "pass": false,
       "label": "no-input: got {Rating, TextBlock} want {Input.ChoiceSet, Input.Number}",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 2543
     },
     {
       "case": "rating_ask",
       "sample": 1,
       "pass": false,
       "label": "no-input: got {Rating, TextBlock} want {Input.ChoiceSet, Input.Number}",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 2253
     },
     {
       "case": "carousel",
       "sample": 0,
       "pass": true,
       "label": "Carousel, CarouselPage, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 8723
     },
     {
       "case": "carousel",
       "sample": 1,
       "pass": true,
       "label": "Carousel, CarouselPage, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 8541
     },
     {
       "case": "table",
       "sample": 0,
-      "pass": false,
-      "label": "wrong-shape: got {TextBlock} want {Table}",
-      "condition": "warm"
+      "pass": true,
+      "label": "Table, TableCell, TableRow, TextBlock",
+      "condition": "warm",
+      "ms": 21675
     },
     {
       "case": "table",
       "sample": 1,
       "pass": true,
       "label": "Table, TableCell, TableRow, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 21419
     },
     {
       "case": "facts",
       "sample": 0,
       "pass": true,
-      "label": "FactSet",
-      "condition": "warm"
+      "label": "FactSet, TextBlock",
+      "condition": "warm",
+      "ms": 9463
     },
     {
       "case": "facts",
       "sample": 1,
       "pass": true,
       "label": "FactSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 8018
     },
     {
       "case": "columnset",
       "sample": 0,
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4255
     },
     {
       "case": "columnset",
       "sample": 1,
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 4001
     },
     {
       "case": "codeblock",
       "sample": 0,
       "pass": true,
       "label": "CodeBlock, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 7456
     },
     {
       "case": "codeblock",
       "sample": 1,
       "pass": true,
       "label": "CodeBlock, TextBlock",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 7127
     },
     {
       "case": "progress",
       "sample": 0,
       "pass": true,
       "label": "ProgressBar",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1419
     },
     {
       "case": "progress",
       "sample": 1,
       "pass": true,
       "label": "ProgressBar",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1152
     },
     {
       "case": "badge",
       "sample": 0,
       "pass": true,
       "label": "Badge",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1753
     },
     {
       "case": "badge",
       "sample": 1,
       "pass": true,
       "label": "Badge",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 1521
     },
     {
       "case": "prose",
       "sample": 0,
       "pass": true,
       "label": "prose-ok",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 2675
     },
     {
       "case": "prose",
       "sample": 1,
       "pass": true,
       "label": "prose-ok",
-      "condition": "warm"
+      "condition": "warm",
+      "ms": 2550
     }
   ]
 }

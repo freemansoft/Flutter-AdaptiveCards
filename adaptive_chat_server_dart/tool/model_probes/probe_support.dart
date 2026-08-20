@@ -236,7 +236,29 @@ Future<ProbeOutcome> probeOnce({
   Duration timeout = defaultProbeTimeout,
 }) async {
   final started = DateTime.now();
-  final request = await client.postUrl(Uri.parse('$url/api/chat'));
+  ProbeOutcome timedOut() => ProbeOutcome(
+    ok: false,
+    label: 'timeout (${timeout.inSeconds}s)',
+    chars: 0,
+    ms: DateTime.now().difference(started).inMilliseconds,
+    hash: '-',
+    reply: '',
+  );
+
+  // Acquiring the connection is bounded too, and this is the subtle half.
+  // `Future.timeout` does not cancel the operation underneath it, so a call
+  // that timed out mid-response leaves its socket checked out of the pool
+  // forever. After enough of those, `postUrl` itself blocks waiting for a
+  // free slot — the timeout meant to bound a stall becomes the cause of an
+  // unbounded one. Observed as a sweep that sat for 3.5 hours using 1.9
+  // seconds of CPU. The fix is both halves: bound this, and `abort()` below
+  // so a timed-out request actually gives its connection back.
+  final HttpClientRequest request;
+  try {
+    request = await client.postUrl(Uri.parse('$url/api/chat')).timeout(timeout);
+  } on TimeoutException {
+    return timedOut();
+  }
   request.headers.contentType = ContentType.json;
   request.write(
     jsonEncode({
@@ -279,14 +301,12 @@ Future<ProbeOutcome> probeOnce({
     // bound a single stuck call hangs an entire multi-model sweep with no
     // indication of which model or case did it. Recorded as its own label so
     // it is never mistaken for a wrong shape or invalid JSON.
-    return ProbeOutcome(
-      ok: false,
-      label: 'timeout (${timeout.inSeconds}s)',
-      chars: 0,
-      ms: DateTime.now().difference(started).inMilliseconds,
-      hash: '-',
-      reply: '',
-    );
+    //
+    // `abort()` is what makes the bound real: without it the request keeps
+    // its connection, and a handful of timeouts exhausts the pool and hangs
+    // every later call.
+    request.abort();
+    return timedOut();
   }
   final ms = DateTime.now().difference(started).inMilliseconds;
 

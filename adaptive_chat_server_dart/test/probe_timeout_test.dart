@@ -41,6 +41,59 @@ void main() {
       expect(outcome.reply, isEmpty);
     });
 
+    test('gives its connection back, so a later call still succeeds', () async {
+      // The discriminating test. `Future.timeout` does not cancel the request
+      // underneath it, so without abort() a timed-out call keeps its socket
+      // checked out of the pool. With a two-connection pool, three timeouts
+      // exhaust it and every later call blocks — which is how a sweep came to
+      // sit for 3.5 hours having used 1.9 seconds of CPU.
+      //
+      // Bounding postUrl stops that being an infinite hang, but a leaked pool
+      // still turns a perfectly good reply into a timeout. So the assertion is
+      // that a call after the stalls actually SUCCEEDS, not merely that it
+      // returns: with abort() it does, without it the pool is empty and it
+      // times out acquiring a connection.
+      var seen = 0;
+      final stallThenAnswer =
+          await HttpServer.bind(
+              InternetAddress.loopbackIPv4,
+              0,
+            )
+            ..listen((req) async {
+              seen++;
+              if (seen <= 3) return; // stall: never respond
+              req.response
+                ..headers.contentType = ContentType.json
+                ..write(
+                  '{"message":{"content":"[{\\"type\\":\\"TextBlock\\"}]"}}',
+                );
+              await req.response.close();
+            });
+      addTearDown(() => stallThenAnswer.close(force: true));
+
+      final pooled = HttpClient()..maxConnectionsPerHost = 2;
+      addTearDown(() => pooled.close(force: true));
+
+      Future<ProbeOutcome> call() => probeOnce(
+        client: pooled,
+        url: 'http://127.0.0.1:${stallThenAnswer.port}',
+        model: 'stalls:1b',
+        systemPrompt: 'sys',
+        userPrompt: 'hi',
+        timeout: const Duration(milliseconds: 200),
+      );
+
+      for (var i = 0; i < 3; i++) {
+        expect((await call()).label, startsWith('timeout'), reason: 'stall $i');
+      }
+      final after = await call();
+      expect(
+        after.label,
+        isNot(startsWith('timeout')),
+        reason: 'the pool was never refilled — abort() did not run',
+      );
+    });
+
     test('returns rather than waiting for the full generation', () async {
       final sw = Stopwatch()..start();
       await probeOnce(
