@@ -329,8 +329,10 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
 > some; when it doesn't, you get an ordinary `200` with unconstrained text
 > and no error. Measured: `format: "json"` with the prompt "Say hello in
 > plain English prose" returns `{"text":"Hello!"}` on `qwen2.5-coder:7b` but
-> plain prose on `qwen3.6:27b-coding-nvfp4` — so `--json-format json|schema`
-> is **inert on that model** and buys nothing over `none`. The responder logs
+> plain prose on `qwen3.6:27b-coding-nvfp4` and on `qwen3.8:27b-nvfp4` — so
+> `--json-format json|schema` is **inert on those models** and buys nothing
+> over `none`. Both `nvfp4` builds measured so far ignore it, so check the
+> family rather than assuming it is one model's quirk. The responder logs
 > a `WARNING` naming the model whenever a reply fails to parse as JSON in
 > `json`/`schema` mode, which is the symptom. Check a candidate model with a
 > one-line `curl` before relying on the constraint, or run

@@ -2,6 +2,38 @@
 
 ## [Unreleased]
 
+- Docs: added **`qwen3.8:27b-nvfp4`** to `ModelBehavior.md` and measured it on
+  every probe in `tool/model_probes/` (2026-08-20, one model resident, 64 GB
+  M1) — the fifteenth model in the matrix, added with every axis measured in
+  one pass. Everyday 7/7 at all three temperatures;
+  stress **5/5 at `t=0` and 5/5 at `t=0.6`**, matched only by
+  `qwen3-coder:30b`; shapes **24/25 cold / 23/25 with history** seeded and
+  **23/25 / 24/25** unaided; cascade 3/3.
+- Docs: it is the **second usable model that is better without the card seed**
+  (−1; `llama3-chatqa:8b` is also negative but scores 1/25),
+  so it clears the seed-dependence bar that rejected `nemotron-3.5-lightning:30b`
+  and `qwen3-coder:30b`, and its 24/25 unaided with-history ties the highest
+  such figure in the file. It also **dominates its `qwen3.6:27b-coding-nvfp4`
+  sibling on every comparable axis** — better cold-start (24/25 vs. 23/25),
+  equal warm, 16.9 GB vs. 18.4 GB — and it produces `Carousel` and `ColumnSet`
+  cleanly on every sample, the two nested shapes `gpt-oss:20b` and
+  `qwen3.6:27b-coding-nvfp4` both permanently fail, showing that ceiling is not
+  a property of the weight class. (It is not free of permanent misses overall:
+  `rating_ask` fails under both conditions, so `qwen3-coder:30b` keeps its
+  distinction as the only model failing no case under both.) It
+  is additionally the first `nvfp4` model run through the stress set, which is
+  the measurement `ModelBehavior.md` had named as the open question blocking the
+  `qwen3.6` case. **`launch.json` unchanged** — recorded as a judgement call for
+  whoever owns the debugger config.
+- Docs: recorded two cautions with it rather than burying them. It **silently
+  ignores Ollama's `format`**, returning byte-identical output under `none`,
+  `json`, and `schema`, so `--json-format` is inert — two `nvfp4` builds now
+  share this and `README.md` and the probe README were updated to describe it as
+  a family trait to check rather than one model's quirk. And **four of its ten
+  stress cells passed as prose rather than as cards**, which the stress set
+  scores as a pass because the card prompt permits Markdown; the 5/5 means
+  "nothing broke", not "ten good cards".
+
 - Fixed: every probe crashed with an unhandled
   `type 'Null' is not a subtype of type 'Map<String, dynamic>'` when Ollama
   answered `200` with a body carrying no `message.content` — an error object,
