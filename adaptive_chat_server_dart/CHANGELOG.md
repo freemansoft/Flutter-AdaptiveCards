@@ -2,6 +2,67 @@
 
 ## [Unreleased]
 
+- Changed: **`.vscode/launch.json` now launches `qwen3.8:27b-nvfp4` instead of
+  `gpt-oss:20b`** as its large model. Both the card-prompt and Markdown-prompt
+  configurations were swapped, along with the two compounds that launch them, so
+  the grep `ModelBehavior.md` uses to derive the top three still yields exactly
+  three models (`granite4.1:8b`, `qwen2.5-coder:7b`, `qwen3.8:27b-nvfp4`). The
+  two models **tie on the figure the file says to read first** — 23/25 with
+  history as shipped, and 24/25 cold — and `qwen3.8:27b-nvfp4` wins every other
+  measured axis: everyday 21/21 vs. 17/21, stress 10/10 vs. 9/10, pre-seed warm
+  24/25 vs. 22/25, one eroded shape vs. two, and it produces `Carousel` and
+  `ColumnSet`, which `gpt-oss:20b` permanently fails as invalid JSON. Its seed
+  gain is −1 against +1, so it is the more robust of the two unaided. The cost is
+  **4.1 GB** (16.9 vs. 12.8), the one axis `gpt-oss:20b` still wins and the
+  reason it stays a probed candidate rather than being retired. `format` was not
+  traded away: neither model honours it, and `gpt-oss:20b` is the worse of the
+  two on it. **`defaultOllamaModel` is unchanged** — the compiled-in default is
+  still `qwen2.5-coder:7b`, which is a separate decision from what the debugger
+  launches.
+- Docs: added **`qwen3.8:27b-nvfp4`** to `ModelBehavior.md` and measured it on
+  every probe in `tool/model_probes/` (2026-08-20, one model resident, 64 GB
+  M1) — the fifteenth model in the matrix, added with every axis measured in
+  one pass. Everyday 7/7 at all three temperatures;
+  stress **5/5 at `t=0` and 5/5 at `t=0.6`**, matched only by
+  `qwen3-coder:30b`; shapes **24/25 cold / 23/25 with history** seeded and
+  **23/25 / 24/25** unaided; cascade 3/3.
+- Docs: it is the **second usable model that is better without the card seed**
+  (−1; `llama3-chatqa:8b` is also negative but scores 1/25),
+  so it clears the seed-dependence bar that rejected `nemotron-3.5-lightning:30b`
+  and `qwen3-coder:30b`, and its 24/25 unaided with-history ties the highest
+  such figure in the file. It also **dominates its `qwen3.6:27b-coding-nvfp4`
+  sibling on every comparable axis** — better cold-start (24/25 vs. 23/25),
+  equal warm, 16.9 GB vs. 18.4 GB — and it produces `Carousel` and `ColumnSet`
+  cleanly on every sample, the two nested shapes `gpt-oss:20b` and
+  `qwen3.6:27b-coding-nvfp4` both permanently fail, showing that ceiling is not
+  a property of the weight class. (It is not free of permanent misses overall:
+  `rating_ask` fails under both conditions, so `qwen3-coder:30b` keeps its
+  distinction as the only model failing no case under both.) It
+  is additionally the first `nvfp4` model run through the stress set, which is
+  the measurement `ModelBehavior.md` had named as the open question blocking the
+  `qwen3.6` case. **`launch.json` unchanged** — recorded as a judgement call for
+  whoever owns the debugger config.
+- Docs: measured **`gpt-oss:20b`'s `format` support for the first time** while
+  comparing it against `qwen3.8:27b-nvfp4` — it had never been probed, so the
+  `format` blind spot recorded against the `nvfp4` builds had no baseline to be
+  read against. It **also ignores `format`, and does so destructively**:
+  `format=json` returns a zero-character body and `format=schema` returns
+  non-card prose, where `qwen3.8:27b-nvfp4` returns the byte-identical good card
+  under all three modes. So the constraint does not merely fail to help on the
+  currently-shipped large model, it eliminates card production. `--json-format`
+  must stay `none` for `gpt-oss:20b`. Noted alongside it that
+  `json_format_probe.dart` scores all six of those calls `PASS`, because an
+  empty reply is not a _broken card_ — the verdict line, not the PASS, is the
+  output that matters for that probe.
+- Docs: recorded two cautions with it rather than burying them. It **silently
+  ignores Ollama's `format`**, returning byte-identical output under `none`,
+  `json`, and `schema`, so `--json-format` is inert — two `nvfp4` builds now
+  share this and `README.md` and the probe README were updated to describe it as
+  a family trait to check rather than one model's quirk. And **four of its ten
+  stress cells passed as prose rather than as cards**, which the stress set
+  scores as a pass because the card prompt permits Markdown; the 5/5 means
+  "nothing broke", not "ten good cards".
+
 - Fixed: every probe crashed with an unhandled
   `type 'Null' is not a subtype of type 'Map<String, dynamic>'` when Ollama
   answered `200` with a body carrying no `message.content` — an error object,

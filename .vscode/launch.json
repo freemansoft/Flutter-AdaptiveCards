@@ -109,8 +109,12 @@
     },
     {
       // Requires a local Ollama (`ollama serve`) with the model pulled
-      // (`ollama pull gpt-oss:20b`).
-      "name": "Adaptive Chat Server Dart (Ollama gpt-oss:20b, card prompt)",
+      // (`ollama pull qwen3.8:27b-nvfp4`). Swapped in for gpt-oss:20b on
+      // 2026-08-20: ties it on both shape scores and beats it on everyday,
+      // stress, seed-independence and the nested Carousel/ColumnSet shapes,
+      // for 4.1 GB more weight. See adaptive_chat_server_dart/ModelBehavior.md.
+      // Leave --json-format at none: this model ignores the constraint.
+      "name": "Adaptive Chat Server Dart (Ollama qwen3.8:27b-nvfp4, card prompt)",
       "type": "dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
@@ -121,7 +125,7 @@
         "--log-level",
         "debug",
         "--ollama-model",
-        "gpt-oss:20b",
+        "qwen3.8:27b-nvfp4",
         "--system-prompt-file",
         "assets/card_system_prompt.txt",
         "--num-ctx",
@@ -185,8 +189,8 @@
     },
     {
       // Requires a local Ollama (`ollama serve`) with the model pulled
-      // (`ollama pull gpt-oss:20b`).
-      "name": "Adaptive Chat Server Dart (Ollama gpt-oss:20b, markdown prompt)",
+      // (`ollama pull qwen3.8:27b-nvfp4`).
+      "name": "Adaptive Chat Server Dart (Ollama qwen3.8:27b-nvfp4, markdown prompt)",
       "type": "dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
@@ -197,7 +201,7 @@
         "--log-level",
         "debug",
         "--ollama-model",
-        "gpt-oss:20b",
+        "qwen3.8:27b-nvfp4",
         "--system-prompt-file",
         "assets/default_system_prompt.txt",
         "--num-ctx",
@@ -243,16 +247,16 @@
       ]
     },
     {
-      "name": "Adaptive Chat (card-mode Ollama gpt-oss server + web)",
+      "name": "Adaptive Chat (card-mode Ollama qwen3.8 server + web)",
       "configurations": [
-        "Adaptive Chat Server Dart (Ollama gpt-oss:20b, card prompt)",
+        "Adaptive Chat Server Dart (Ollama qwen3.8:27b-nvfp4, card prompt)",
         "Adaptive Chat Client - Web"
       ]
     },
     {
-      "name": "Adaptive Chat (markdown-mode Ollama gpt-oss server + web)",
+      "name": "Adaptive Chat (markdown-mode Ollama qwen3.8 server + web)",
       "configurations": [
-        "Adaptive Chat Server Dart (Ollama gpt-oss:20b, markdown prompt)",
+        "Adaptive Chat Server Dart (Ollama qwen3.8:27b-nvfp4, markdown prompt)",
         "Adaptive Chat Client - Web"
       ]
     }

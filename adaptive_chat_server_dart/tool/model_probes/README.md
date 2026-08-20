@@ -169,7 +169,9 @@ about the probes, that file is about the models.
   is a _stable failure mode_, not reproducible output.
 - **`format` is silently ignored by some models.** `qwen3.6:27b-coding-nvfp4`
   answers the `format: json` canary with prose and no error, so
-  `--json-format json|schema` is inert for it. `qwen2.5-coder:7b` honors it.
+  `--json-format json|schema` is inert for it. `qwen3.8:27b-nvfp4` does the
+  same, and returns byte-identical output under `none`, `json`, and `schema` —
+  both `nvfp4` builds probed so far share this. `qwen2.5-coder:7b` honors it.
   Check the canary before relying on the constraint.
 - **Forbidding a behavior moved it; giving it a home fixed it.** Asked to
   explain code, `qwen2.5-coder:7b` emitted a card and then appended the
