@@ -2,6 +2,68 @@
 
 ## [Unreleased]
 
+- Fixed: **`probeOnce` had no timeout, so one runaway generation hung a whole
+  sweep.** `granite4.1:3b` was observed generating for **16 minutes** on a
+  single `table` case with history and never returning; with several models
+  queued behind it, nothing would have finished and nothing would have said
+  which model or case was responsible. Calls now take a `--timeout` (default
+  180 s, well clear of the ~49 s longest legitimate generation on record) and
+  a stall is scored a failure labeled `timeout (Ns)` — its own label, so it is
+  never mistaken for a wrong shape or invalid JSON. Found while smoke-testing
+  the `--json` path, not by inspection.
+- Changed: **every probe takes `--json` and `--timeout`**, added to the shared
+  `parseProbeArgs` rather than per script, so recording a run is one flag
+  everywhere. `cascade_ab` records `exercised` separately from `cases`, since
+  a model whose turn 1 produced no card never cascaded at all.
+- Added: **recorded probe results** (`tool/model_probes/probe_results.dart`,
+  `shape_ab.dart --json`, `results/`). A probe run now writes every call it
+  made, the headline figures, the host, and the **digests of the prompt assets
+  it used** to a committed JSON file. Until now every number in
+  `ModelBehavior.md` was hand-copied out of console output, which is
+  unauditable three ways: a typo is invisible, a re-run cannot be diffed
+  against the original, and a figure carries no record of _which_ version of
+  `assets/card_system_prompt.txt` produced it — a file that has been edited six
+  times, each edit silently turning every number in the doc into a historical
+  one.
+- Added: **`check_results.dart`, and it runs in CI** — which needs stating
+  precisely, because the CI server cannot run a model. It checks the artifacts
+  a hand-run probe left behind, which covers the three ways a published figure
+  goes wrong unnoticed: **drift** (every score in the shape table is
+  re-derived from the recorded calls, and a run whose own summary disagrees
+  with its own calls is fatal), **staleness** (a result measured against a
+  prompt asset since edited — fatal for a model `launch.json` launches, a note
+  for the rest, because re-running fourteen models on every prompt edit is not
+  a gate anyone would keep), and **gaps** (a launched model with a probe never
+  run against it — the exact hole that let `gpt-oss:20b` hold a `launch.json`
+  slot with its `format` support unmeasured).
+- Changed: **`temperature_stress` now splits its pass count into cards and
+  prose** — `pass 5/5 (6 card, 4 prose)`. `ProbeOutcome.ok` is true for a
+  renderable card _and_ for clean prose, because the card prompt permits a
+  Markdown answer and only a broken card is a failure. That is right for "did
+  anything break" and wrong for "did we get cards", and the gap is not
+  hypothetical: `qwen3.8:27b-nvfp4` swept the set 5/5 with four of ten cells
+  answered in prose, and `llama3-chatqa:8b` swept both cold-start sets before
+  scoring 1/25 on shapes. The distinction was previously recoverable only by
+  reading the per-call labels by hand.
+- Changed: **`shape_ab.dart` records per-call latency**, which it previously
+  discarded — so the one fixed, identical-workload instrument in this
+  directory was the only one that could not answer "how fast is this model".
+- Added: a **Performance on this machine** section to `ModelBehavior.md`,
+  with the host stamped into every result file. Median is taken over warm
+  calls only: the first call after a model load costs 6-7x a warm one (51 s
+  against 8 s), a large enough outlier to move any average. A second full run
+  is deliberately _not_ taken — min-of-two is the usual noise filter, but the
+  dominant noise here is that known load event rather than jitter, and on a
+  laptop the second run is measured on a hotter, throttling machine, so
+  min-of-two would trade one uncontrolled bias for another.
+- Added: a **scope note at the top of `ModelBehavior.md`** saying none of this
+  measurement was required to ship the demo. The card path turned out to be an
+  unusually strict test problem — strict JSON, a closed element vocabulary, a
+  shape that must fit the question, and format stability across turns, each
+  with an unambiguous pass/fail — so the findings are about the models and
+  should transfer to any workload asking a local model for schema-shaped JSON.
+  Read it as a lab notebook, not a requirement.
+
 - Changed: **`.vscode/launch.json` now launches `qwen3.8:27b-nvfp4` instead of
   `gpt-oss:20b`** as its large model. Both the card-prompt and Markdown-prompt
   configurations were swapped, along with the two compounds that launch them, so
@@ -15,7 +77,7 @@
   gain is −1 against +1, so it is the more robust of the two unaided. The cost is
   **4.1 GB** (16.9 vs. 12.8), the one axis `gpt-oss:20b` still wins and the
   reason it stays a probed candidate rather than being retired. `format` was not
-  traded away: neither model honours it, and `gpt-oss:20b` is the worse of the
+  traded away: neither model honors it, and `gpt-oss:20b` is the worse of the
   two on it. **`defaultOllamaModel` is unchanged** — the compiled-in default is
   still `qwen2.5-coder:7b`, which is a separate decision from what the debugger
   launches.

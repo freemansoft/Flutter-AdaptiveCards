@@ -2,6 +2,14 @@
 
 Which local Ollama models produce renderable Adaptive Cards, what decoding settings they need, and what has already been measured about each.
 
+## Scope: none of this was required to ship the demo
+
+`adaptive_chat_server_dart` is the backend for an **SDUI demo**. The demo works without a single number in this file — pick a model, point the server at it, and it answers in cards. No measurement here was a prerequisite for that, and nobody needs to read this file to run the thing.
+
+It exists because the card path turned out to be an unusually **strict and discriminating test problem** for local models, and the results are worth more than the demo that produced them. Answering as an Adaptive Card demands strict JSON, a closed element vocabulary the model must not invent from, a shape chosen to fit the question, and format stability across a multi-turn conversation — four constraints most chat benchmarks do not apply at once, each with an unambiguous pass/fail. That combination separates models that ordinary prose benchmarks rank as equivalent: the clearest case in this file is a model that sweeps every easy set and produces a correct element type on **1 of 25** shape cases.
+
+So read this as a **lab notebook, not a requirement**. Its findings are about the models, and should transfer to any workload that asks a local model for constrained, schema-shaped JSON — the demo is the instrument, not the subject. What that also means: nothing here is a supported product surface. The probes are hand-run, the numbers age as models and prompts change, and none of it gates the demo working.
+
 ## Why this file exists
 
 Every finding here was originally recorded in a plan or a design spec. Those documents are dated records — they describe what was true during one piece of work and are archived when it ends. The _results_ outlive them: knowing that a model ignores `format`, or that its own recommended temperature scores worse than `0`, stays useful long after the plan that discovered it is history.
@@ -61,7 +69,7 @@ Most usefully, it closes the measurement gap the `qwen3.6` case is stuck on: it 
 
 **`launch.json` was changed on 2026-08-20: `gpt-oss:20b` out, `qwen3.8:27b-nvfp4` in.** Both the card-prompt and Markdown-prompt configurations were swapped, along with the two compounds that launch them, so the grep at the top of this section still yields exactly three models.
 
-The decision rests on `qwen3.8:27b-nvfp4` tying the incumbent on the figure this file says to read first (23/25 as shipped) and beating it on everything else measured, while being the more robust of the two unaided (−1 seed gain against +1). The cost is **4.1 GB** — the one axis `gpt-oss:20b` still wins, and the reason to keep probing it rather than treating it as retired. Neither model honours `format`, so nothing was traded away there; `gpt-oss:20b` is in fact the worse of the two on it.
+The decision rests on `qwen3.8:27b-nvfp4` tying the incumbent on the figure this file says to read first (23/25 as shipped) and beating it on everything else measured, while being the more robust of the two unaided (−1 seed gain against +1). The cost is **4.1 GB** — the one axis `gpt-oss:20b` still wins, and the reason to keep probing it rather than treating it as retired. Neither model honors `format`, so nothing was traded away there; `gpt-oss:20b` is in fact the worse of the two on it.
 
 Two things this swap does **not** settle. `qwen3.6:27b-coding-nvfp4` has still never been run through the stress set, so its own case is still argued on a partial record — it is simply moot now that a lighter, better-measured sibling holds the slot. And `qwen3.8:27b-nvfp4`'s stress sweep, like every other in this file, is `--samples 1`; the file's own warning about single samples at `t=0.6` applies to it as much as to anything else.
 
@@ -233,6 +241,31 @@ How to read the rest of it:
 - **`rating_ask` is the most-failed case in the file.** Nine of the fifteen answer "ask me to rate this" with a read-only `Rating` display instead of an `Input.*` — the same show-versus-collect substitution, under both conditions, across unrelated model families. A failure that uniform is a prompt problem, and it is the clearest remaining lever in `assets/card_system_prompt.txt`.
 - **`gauge` and `progress` never cross-contaminate**, on any model, despite sharing the "72%" wording.
 
+#### Performance on this machine
+
+All timings here are one host — **Apple M1 Max / 64 GB**, the machine every measurement in this file was taken on. Latency is a property of the model _and_ the box, so each recorded run now stamps the host into its result file; a figure that cannot name its machine does not belong in this section.
+
+**What is measured, and what is not.** The number to compare models on is **median ms per call on the fixed 25-case shape sweep** — identical workload for every model, so the case mix cancels. The number to plan with is **total wall clock**, which is what you wait for. They answer different questions and neither substitutes for the other.
+
+Two rules make the median mean something:
+
+- **The first call is dropped.** After a model load it costs roughly **6-7x** a warm one — 51 s against 8 s, measured directly — which is a large enough outlier to move any average on its own.
+- **A second full run is not taken.** Min-of-two is the usual way to filter benchmark noise, but the dominant noise here is that _known, identifiable_ load event rather than random jitter, so discarding it directly gets the same answer without paying twice. On a laptop the second run is also measured on a hotter, throttling machine, so min-of-two would trade one uncontrolled bias for another — and it would systematically favour run 1, which is the run carrying the load penalty.
+
+**Spread inside a run is case mix, not machine noise.** Warm calls span `p90/p50 ≈ 2.8` on a single model, because a 112-character rating and a 3614-character twelve-month table legitimately differ by more than 20x. That is why a latency figure is only comparable when the case set is identical, and why per-case comparison across models is the sound version of this question.
+
+Measured so far — the column is new, so it is mostly empty by construction rather than by neglect:
+
+| Model               | Probe                | Calls | Median/call (warm) | Total | First call |
+| ------------------- | -------------------- | ----- | ------------------ | ----- | ---------- |
+| `qwen3.8:27b-nvfp4` | `temperature_matrix` | 21    | 4.9 s              | 203 s | 50.9 s     |
+| `qwen3.8:27b-nvfp4` | `temperature_stress` | 10    | 14.9 s             | 179 s | 6.8 s      |
+| `qwen3.8:27b-nvfp4` | `json_format_probe`  | 6     | 7.9 s              | 90 s  | 51.4 s     |
+
+**`shape_ab` recorded no latency at all until 2026-08-20**, which is why the instrument this section says to use has no numbers in it yet. It does now, so the figures arrive as models are re-run.
+
+**`gpt-oss:20b`'s timings are deliberately absent.** Its only recorded run is the `format` canary, and four of those six calls returned an empty body or non-card prose — fast because they failed, not because the model is quick. Quoting 1.8 s/call from it would be quoting the latency of a broken reply.
+
 #### The card seed, and what it costs
 
 `OllamaResponder.reply()` prepends a synthetic card-shaped exchange — a short pick-from-a-set question and a bare card reply — ahead of the trimmed history on **every** request, so a card is the conversation's established format before any prose accumulates. Assembled order: system prompt, seed user turn, seed assistant turn, trimmed history, current user turn. There is no flag to disable it. The exchange lives in `assets/seed_card.json` and is read per request; `shape_ab.dart` reads the same asset and seeds by default, so a probe measures what the server sends.
@@ -297,7 +330,7 @@ Two caveats on the numbers:
 
 ### Not a card test: the `format` canary
 
-`json_format_probe.dart` asks a different question — does this model honour Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.
+`json_format_probe.dart` asks a different question — does this model honor Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.
 
 **Ignoring `format` is not one failure mode but two, and the worse one is on a top-three model.** Measured 2026-08-20:
 

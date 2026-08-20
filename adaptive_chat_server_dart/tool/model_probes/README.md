@@ -26,6 +26,8 @@ decision, not a pass/fail gate.
 | `shape_ab.dart`           | Which element types does this model actually emit, cold vs with history?                    |
 | `cascade_ab.dart`         | Can a follow-up turn edit the card the model just sent, without losing its contents?        |
 | `probe_support.dart`      | Shared plumbing — not a probe.                                                              |
+| `probe_results.dart`      | The recorded-result format — not a probe.                                                   |
+| `check_results.dart`      | Do the recorded results still agree with the docs, the assets, and each other?              |
 
 All accept `--model`, `--url`, `--samples`, and `-h`. Defaults come from the
 server's own constants, so a bare run probes the current default model.
@@ -91,6 +93,47 @@ perfectly and quietly drop items off the list — observed dropping five states
 to three — and every shape-aware check in this directory scores that a pass,
 because the reply is a valid card of the requested type. Choices are compared
 case-insensitively, so re-casing a title is kept rather than counted as a loss.
+
+## Recording a run
+
+`shape_ab.dart --json <file>` writes the run to [`results/`](results/): every
+call it made, the headline figures, the host it ran on, and the **digests of
+the prompt assets it used**. Commit the file.
+
+That last part is the point. `ModelBehavior.md` opens by saying every result in
+it was measured with `assets/card_system_prompt.txt` — but not with _which
+version_, and that prompt has been edited six times. Every edit silently turns
+every number in the file into a historical one, and nothing could detect it. A
+recorded digest can.
+
+```sh
+fvm dart run tool/model_probes/shape_ab.dart \
+  --model qwen3.8:27b-nvfp4 --samples 2 \
+  --json tool/model_probes/results/qwen3.8_27b-nvfp4/shape_ab-seeded.json
+```
+
+`check_results.dart` then reads them, and **runs in CI** — which is worth being
+precise about, because no model runs there. It checks the artifacts a hand-run
+probe left behind:
+
+- **Drift** — every figure in `ModelBehavior.md`'s shape table is re-derived
+  from the recorded calls. Hand-transcription is how those tables have always
+  been written, and a typo in one was previously invisible.
+- **Staleness** — a result measured against a prompt asset that has since
+  changed. Fatal for a model `launch.json` launches, a note for the rest:
+  re-running fourteen models on every prompt edit is not a gate anyone would
+  keep.
+- **Gaps** — a launched model with a probe never run against it. Not
+  hypothetical: `gpt-oss:20b` held a `launch.json` slot with its `format`
+  support unmeasured until someone happened to ask a question that needed it.
+
+```sh
+fvm dart run tool/model_probes/check_results.dart
+```
+
+Results are a _record_, not a fixture — `check_results.dart` never re-runs a
+model, so a committed file is only ever as true as the day it was measured. The
+digests are what stop that from being a silent problem.
 
 ## Run one model at a time
 

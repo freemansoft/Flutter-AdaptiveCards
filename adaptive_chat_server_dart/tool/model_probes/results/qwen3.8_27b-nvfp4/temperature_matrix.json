@@ -1,0 +1,188 @@
+{
+  "probe": "temperature_matrix",
+  "model": "qwen3.8:27b-nvfp4",
+  "measuredAt": "2026-08-20",
+  "machine": "Apple M1 Max / 64 GB",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 21,
+    "passed": 21,
+    "cards": 17,
+    "prose": 4
+  },
+  "notes": "Backfilled from the console logs of the 2026-08-20 sweep, which predates --json output. Per-call latency was not recorded by shape_ab or cascade_ab at that time, so those calls carry no ms.",
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "greedy(t=0)",
+      "ms": 50913
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 3716
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 9446
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 20935
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 4562
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 2204
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 5259
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "low(t=0.2)",
+      "ms": 4013
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 3408
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 9758
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 20964
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 4245
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "low(t=0.2)",
+      "ms": 5432
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 3343
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3858
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 5057
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 10150
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 21470
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 4260
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 5288
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 4834
+    }
+  ]
+}

@@ -61,6 +61,7 @@ Future<int> _run(
         userPrompt: prompt,
         history: const [_historyUser, _historyAssistant],
         options: const {'temperature': 0.0},
+        timeout: args.timeout,
       );
       final ok = _hasChoiceSet(outcome.reply);
       total++;

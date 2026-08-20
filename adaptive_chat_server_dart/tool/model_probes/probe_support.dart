@@ -12,6 +12,7 @@
 /// rate the running server does not agree with.
 library;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -24,6 +25,14 @@ import 'package:path/path.dart' as p;
 /// Default local Ollama endpoint (IPv4 — see the README's `localhost` note).
 const defaultProbeUrl = 'http://127.0.0.1:11434';
 
+/// How long one call may take before it is scored a failure.
+///
+/// Generous on purpose: the longest legitimate generation recorded here is a
+/// twelve-month table at roughly 49 s, so this leaves a wide margin and only
+/// catches a model that has genuinely run away. Without it a sweep is
+/// unbounded — one stuck call blocks every model queued behind it.
+const defaultProbeTimeout = Duration(seconds: 180);
+
 /// Options every probe accepts, so they can be pointed at another model or
 /// host without editing source.
 class ProbeArgs {
@@ -32,6 +41,8 @@ class ProbeArgs {
     required this.model,
     required this.url,
     required this.samples,
+    this.json,
+    this.timeout = defaultProbeTimeout,
   });
 
   /// Ollama model tag under test.
@@ -43,6 +54,17 @@ class ProbeArgs {
   /// Runs per cell. More samples cost time linearly; 3 is usually enough to
   /// see a deterministic failure repeat.
   final int samples;
+
+  /// Per-call ceiling before a reply is scored a timeout.
+  final Duration timeout;
+
+  /// Where to write the machine-readable record of this run, if anywhere.
+  ///
+  /// Shared across every probe so recording a run is one flag rather than a
+  /// per-script convention — the alternative is what this directory had
+  /// before, where the only durable copy of a measurement was whatever
+  /// someone pasted into a Markdown table by hand.
+  final String? json;
 }
 
 /// Parses the common `--model` / `--url` / `--samples` options.
@@ -62,6 +84,21 @@ ProbeArgs parseProbeArgs(List<String> argv, {int defaultSamples = 3}) {
       defaultsTo: '$defaultSamples',
       help: 'Runs per prompt per setting.',
     )
+    ..addOption(
+      'json',
+      help:
+          'Write the run to this JSON file: every call, plus the digests of '
+          'the prompt assets it used, so the result can be re-derived and '
+          'checked later instead of trusted.',
+    )
+    ..addOption(
+      'timeout',
+      defaultsTo: '${defaultProbeTimeout.inSeconds}',
+      help:
+          'Seconds one call may take before it is scored a timeout. Small '
+          'models loop on the nested shapes, and an unbounded call stalls '
+          'every model queued behind it.',
+    )
     ..addFlag('help', abbr: 'h', negatable: false);
   try {
     final args = parser.parse(argv);
@@ -73,6 +110,8 @@ ProbeArgs parseProbeArgs(List<String> argv, {int defaultSamples = 3}) {
       model: args['model'] as String,
       url: args['url'] as String,
       samples: int.parse(args['samples'] as String),
+      json: args['json'] as String?,
+      timeout: Duration(seconds: int.parse(args['timeout'] as String)),
     );
   } on FormatException catch (e) {
     stderr
@@ -83,17 +122,21 @@ ProbeArgs parseProbeArgs(List<String> argv, {int defaultSamples = 3}) {
   }
 }
 
-/// Reads the bundled card system prompt — the same file the server sends.
+/// Directory holding the bundled prompt assets.
 ///
 /// Resolved from the script location, not the working directory, so a probe
-/// runs the same from the package root or anywhere else.
-String loadCardSystemPrompt() {
-  final scriptDir = p.dirname(Platform.script.toFilePath());
-  final assets = p.normalize(p.join(scriptDir, '..', '..', 'assets'));
-  return File(
-    p.join(assets, 'card_system_prompt.txt'),
-  ).readAsStringSync().trim();
-}
+/// runs the same from the package root or anywhere else. Exposed rather than
+/// inlined because a probe writing a result file has to digest these same
+/// assets — a recorded digest and the prompt actually sent must come from one
+/// path, or the staleness check is checking the wrong file.
+String probeAssetsDir() => p.normalize(
+  p.join(p.dirname(Platform.script.toFilePath()), '..', '..', 'assets'),
+);
+
+/// Reads the bundled card system prompt — the same file the server sends.
+String loadCardSystemPrompt() => File(
+  p.join(probeAssetsDir(), 'card_system_prompt.txt'),
+).readAsStringSync().trim();
 
 /// Path to the bundled seed-card asset — the same file the server sends.
 ///
@@ -190,6 +233,7 @@ Future<ProbeOutcome> probeOnce({
   String? reminder,
   Map<String, dynamic> options = const {},
   Object? format,
+  Duration timeout = defaultProbeTimeout,
 }) async {
   final started = DateTime.now();
   final request = await client.postUrl(Uri.parse('$url/api/chat'));
@@ -210,20 +254,42 @@ Future<ProbeOutcome> probeOnce({
       'format': ?format,
     }),
   );
-  final response = await request.close();
-  final body = await response.transform(utf8.decoder).join();
-  final ms = DateTime.now().difference(started).inMilliseconds;
-
-  if (response.statusCode != 200) {
+  final String body;
+  try {
+    final response = await request.close().timeout(timeout);
+    if (response.statusCode != 200) {
+      final errorBody = await response
+          .transform(utf8.decoder)
+          .join()
+          .timeout(timeout);
+      return ProbeOutcome(
+        ok: false,
+        label: 'HTTP ${response.statusCode}',
+        chars: errorBody.length,
+        ms: DateTime.now().difference(started).inMilliseconds,
+        hash: '-',
+        reply: errorBody,
+      );
+    }
+    body = await response.transform(utf8.decoder).join().timeout(timeout);
+  } on TimeoutException {
+    // A generation that never returns is a failed reply, not a reason to
+    // stall. Small models loop on the nested shapes — `granite4.1:3b` was
+    // observed generating for 16 minutes on one `table` case — and without a
+    // bound a single stuck call hangs an entire multi-model sweep with no
+    // indication of which model or case did it. Recorded as its own label so
+    // it is never mistaken for a wrong shape or invalid JSON.
     return ProbeOutcome(
       ok: false,
-      label: 'HTTP ${response.statusCode}',
-      chars: body.length,
-      ms: ms,
+      label: 'timeout (${timeout.inSeconds}s)',
+      chars: 0,
+      ms: DateTime.now().difference(started).inMilliseconds,
       hash: '-',
-      reply: body,
+      reply: '',
     );
   }
+  final ms = DateTime.now().difference(started).inMilliseconds;
+
   // Ollama can answer 200 with a body carrying no `message.content` — an
   // error object, or a reply the runner cut short. Casting straight through
   // crashes the probe with a type error that names none of that, so the
@@ -297,10 +363,24 @@ ProbeOutcome judgeReply(String content, int ms) {
 /// Prints a per-setting summary line plus every failure under it.
 void printSummary(String setting, List<ProbeOutcome> outcomes) {
   final pass = outcomes.where((o) => o.ok).length;
+  final cards = outcomes
+      .where((o) => o.ok && o.label.startsWith('card['))
+      .length;
+  final prose = outcomes.where((o) => o.ok && o.label == 'prose').length;
   final avgMs =
       outcomes.map((o) => o.ms).reduce((a, b) => a + b) ~/ outcomes.length;
+  // The pass count alone cannot answer "is this model still producing
+  // cards?". `ok` is true for a renderable card *and* for clean prose,
+  // because the card prompt permits a Markdown answer and only a broken card
+  // is a failure — right for "did anything break", wrong for "did we get
+  // cards". A model has swept this set 5/5 with four of ten cells answered in
+  // prose, and reading that as ten good cards is the exact mistake
+  // `shape_ab.dart` was written to stop. Splitting the tally puts the
+  // distinction in the output instead of leaving it to whoever reads the
+  // per-call labels.
+  final split = pass == 0 ? '' : '  ($cards card, $prose prose)';
   stdout.writeln(
-    '== ${setting.padRight(20)} pass $pass/${outcomes.length}  '
+    '== ${setting.padRight(20)} pass $pass/${outcomes.length}$split  '
     'avg ${avgMs}ms ==',
   );
   for (final failure in outcomes.where((o) => !o.ok)) {

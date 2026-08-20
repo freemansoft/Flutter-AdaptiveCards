@@ -1,0 +1,67 @@
+{
+  "probe": "json_format_probe",
+  "model": "qwen3.8:27b-nvfp4",
+  "measuredAt": "2026-08-20",
+  "machine": "Apple M1 Max / 64 GB",
+  "samples": 2,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "honorsFormat": false,
+    "verdict": "ignored-harmlessly",
+    "detail": "byte-identical card under none/json/schema"
+  },
+  "notes": "Backfilled from the console logs of the 2026-08-20 sweep, which predates --json output. Per-call latency was not recorded by shape_ab or cascade_ab at that time, so those calls carry no ms.",
+  "calls": [
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=none",
+      "ms": 51410
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=none",
+      "ms": 7879
+    },
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=json",
+      "ms": 7483
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=json",
+      "ms": 7810
+    },
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=schema",
+      "ms": 7879
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=schema",
+      "ms": 7967
+    }
+  ]
+}

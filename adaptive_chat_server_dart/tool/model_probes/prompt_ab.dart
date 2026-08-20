@@ -63,6 +63,7 @@ Future<void> _run(
         systemPrompt: systemPrompt,
         userPrompt: userPrompt,
         options: const {'temperature': 0.0},
+        timeout: args.timeout,
       );
       outcomes.add(outcome);
       stdout.writeln(

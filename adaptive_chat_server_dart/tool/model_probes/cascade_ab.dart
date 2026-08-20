@@ -32,6 +32,7 @@ import 'package:adaptive_chat_server_dart/src/seed_card.dart';
 import 'package:args/args.dart';
 // Relative: these live outside lib/, beside this file.
 import 'cascade_cases.dart';
+import 'probe_results.dart';
 import 'probe_support.dart';
 
 /// The `Input.ChoiceSet` findings from one reply, or why there were none.
@@ -169,6 +170,7 @@ Future<void> main(List<String> argv) async {
           '--no-seed-card measures the unaided baseline.',
     )
     ..addOption('seed-card-file', help: 'Seed exchange to use.')
+    ..addOption('json', help: 'Write the run to this JSON file.')
     ..addOption('model')
     ..addOption('url')
     ..addOption('samples')
@@ -179,7 +181,7 @@ Future<void> main(List<String> argv) async {
     return;
   }
   final args = parseProbeArgs([
-    for (final option in ['model', 'url', 'samples'])
+    for (final option in ['model', 'url', 'samples', 'json'])
       if (parsed[option] != null) ...['--$option', parsed[option] as String],
   ], defaultSamples: 1);
 
@@ -192,7 +194,7 @@ Future<void> main(List<String> argv) async {
   if ((parsed['seed-card'] as bool) && seedTurns.isEmpty) {
     stderr.writeln(
       'cascade_ab: --seed-card is on but the seed file loaded no turns; '
-      'refusing to run, because the result would be labelled seed-card while '
+      'refusing to run, because the result would be labeled seed-card while '
       'measuring no seed at all.',
     );
     exitCode = 2;
@@ -212,6 +214,7 @@ Future<void> main(List<String> argv) async {
   // exercised the cascade, so scoring it as a cascade failure would blame this
   // probe's question for a shortcoming the shape probe already measures.
   var notExercised = 0;
+  final collect = <ProbeCall>[];
   for (final c in cases) {
     var allPassed = true;
     var everReachedTurnTwo = false;
@@ -224,6 +227,7 @@ Future<void> main(List<String> argv) async {
         userPrompt: c.first,
         history: seedTurns,
         options: const {'temperature': 0.0},
+        timeout: args.timeout,
       );
       // The server stores a card reply's raw JSON as replyText and replays it
       // verbatim, so the probe replays the model's own bytes rather than a
@@ -237,10 +241,20 @@ Future<void> main(List<String> argv) async {
         userPrompt: c.second,
         history: [...seedTurns, c.first, first.reply],
         options: const {'temperature': 0.0},
+        timeout: args.timeout,
       );
       final result = judgeCascade(first.reply, second.reply);
       if (!result.pass) allPassed = false;
       if (!result.detail.startsWith('t1 ')) everReachedTurnTwo = true;
+      collect.add(
+        ProbeCall(
+          caseId: c.id,
+          sample: i,
+          pass: result.pass,
+          label: result.detail,
+          ms: first.ms + second.ms,
+        ),
+      );
       stdout.writeln(
         '${result.pass ? "PASS" : "FAIL"}  ${c.id.padRight(10)} '
         '${result.detail}',
@@ -260,5 +274,27 @@ Future<void> main(List<String> argv) async {
               '${notExercised > 0 ? ' ($notExercised not exercised: '
                         'turn 1 produced no card)' : ''} ==',
   );
+  if (args.json != null) {
+    writeProbeRun(
+      path: args.json!,
+      probe: 'cascade_ab',
+      model: args.model,
+      variant: seedTurns.isEmpty ? 'unaided' : null,
+      samples: args.samples,
+      temperature: 0,
+      assetsDir: probeAssetsDir(),
+      summary: {
+        'cases': cases.length,
+        // `exercised` rather than `cases`: a model whose turn 1 never
+        // produced a card did not cascade badly, it never cascaded, and
+        // folding that into the denominator reports a turn-1 shortcoming
+        // twice.
+        'exercised': exercised,
+        'passed': passing,
+        'notExercised': notExercised,
+      },
+      calls: collect,
+    );
+  }
   client.close();
 }

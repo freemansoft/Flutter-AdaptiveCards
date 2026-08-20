@@ -22,6 +22,7 @@ import 'dart:io';
 
 // Relative: this file and its helper both live outside `lib/`, so there is
 // no `package:` URI for them.
+import 'probe_results.dart';
 import 'probe_support.dart';
 
 const _prompts = <String, String>{
@@ -53,6 +54,7 @@ Future<void> main(List<String> argv) async {
   final systemPrompt = loadCardSystemPrompt();
   final client = HttpClient()..idleTimeout = const Duration(minutes: 10);
 
+  final collect = <ProbeCall>[];
   for (final setting in _settings.entries) {
     final outcomes = <ProbeOutcome>[];
     for (final prompt in _prompts.entries) {
@@ -65,8 +67,19 @@ Future<void> main(List<String> argv) async {
           systemPrompt: systemPrompt,
           userPrompt: prompt.value,
           options: setting.value,
+          timeout: args.timeout,
         );
         outcomes.add(outcome);
+        collect.add(
+          ProbeCall(
+            caseId: prompt.key,
+            sample: i,
+            pass: outcome.ok,
+            label: outcome.label,
+            setting: setting.key,
+            ms: outcome.ms,
+          ),
+        );
         hashes.add(outcome.hash);
         stdout.writeln(
           '${setting.key.padRight(20)} ${prompt.key.padRight(10)} #$i  '
@@ -85,6 +98,17 @@ Future<void> main(List<String> argv) async {
       );
     }
     printSummary(setting.key, outcomes);
+  }
+  if (args.json != null) {
+    writeProbeRun(
+      path: args.json!,
+      probe: 'temperature_stress',
+      model: args.model,
+      samples: args.samples,
+      assetsDir: probeAssetsDir(),
+      summary: passSummary(collect),
+      calls: collect,
+    );
   }
   client.close();
 }
