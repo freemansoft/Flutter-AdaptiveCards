@@ -208,8 +208,13 @@ Future<void> main(List<String> argv) async {
     '${seedTurns.isEmpty ? ' [no-seed-card]' : ' [seed-card]'} =====',
   );
   var passing = 0;
+  // Counted apart from failures: a case whose turn 1 produced no card never
+  // exercised the cascade, so scoring it as a cascade failure would blame this
+  // probe's question for a shortcoming the shape probe already measures.
+  var notExercised = 0;
   for (final c in cases) {
     var allPassed = true;
+    var everReachedTurnTwo = false;
     for (var i = 0; i < args.samples; i++) {
       final first = await probeOnce(
         client: client,
@@ -235,13 +240,25 @@ Future<void> main(List<String> argv) async {
       );
       final result = judgeCascade(first.reply, second.reply);
       if (!result.pass) allPassed = false;
+      if (!result.detail.startsWith('t1 ')) everReachedTurnTwo = true;
       stdout.writeln(
         '${result.pass ? "PASS" : "FAIL"}  ${c.id.padRight(10)} '
         '${result.detail}',
       );
     }
-    if (allPassed) passing++;
+    if (allPassed) {
+      passing++;
+    } else if (!everReachedTurnTwo) {
+      notExercised++;
+    }
   }
-  stdout.writeln('== cascade $passing/${cases.length} ==');
+  final exercised = cases.length - notExercised;
+  stdout.writeln(
+    exercised == 0
+        ? '== cascade n/a — turn 1 produced no card in any case =='
+        : '== cascade $passing/$exercised'
+              '${notExercised > 0 ? ' ($notExercised not exercised: '
+                        'turn 1 produced no card)' : ''} ==',
+  );
   client.close();
 }

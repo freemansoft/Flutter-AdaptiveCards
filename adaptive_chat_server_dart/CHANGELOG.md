@@ -24,13 +24,16 @@
   requested type. Judged with the server's own `tryParseCardBody`; seed on by
   default, as the server ships. `test/cascade_judge_test.dart` covers the
   scoring without needing a model.
-- Docs: recorded the cascade result for all fourteen models in
-  `ModelBehavior.md`. Thirteen score 3/3; the only failure (`llama3-chatqa:8b`)
-  answers turn 1 in prose and never produces a card to edit. Follow-up editing
-  is therefore **not** a discriminating axis — it is gated entirely on turn-1
-  card production, which the shape table already measures — so it is recorded
-  as a finding rather than added as a matrix column that would read `3/3`
-  thirteen times.
+- Docs: added a **Cascade** column to `ModelBehavior.md`'s model table and
+  measured every model for it. Thirteen score `3/3`; `llama3-chatqa:8b` is
+  `n/a`, not `0/3`, because it answers turn 1 in prose and so never produces a
+  card for turn 2 to edit — attributing that to the cascade would report a
+  turn-1 shortcoming twice. The column separates no two usable models and is
+  carried deliberately anyway: follow-up editing is the kind of behavior
+  everyone assumes and nobody had measured, and the column records that it was
+  checked on every model and holds wherever a card gets produced.
+  `cascade_ab.dart` reports the same distinction, summarising untestable cases
+  as "not exercised" rather than folding them into the failure count.
 
 - Docs: measured the remaining seven pre-seed baselines
   (`shape_ab.dart --no-seed-card --samples 2`, `t=0`), so **all fourteen**

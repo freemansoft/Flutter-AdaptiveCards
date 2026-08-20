@@ -195,12 +195,12 @@ about the probes, that file is about the models.
   prior turns the way the server actually does. Reach for one of them before
   trusting a cold-start number for a bug reported mid-conversation.
 - **Cascade ability is gated on turn-1 card production, not on the cascade.**
-  Thirteen of fourteen models score 3/3 on `cascade_ab.dart`, including the
-  weakest card producers in the table; the only failure answers turn 1 in prose
-  and so never produces a card to edit. Follow-up editing is not a
-  discriminating axis between models — which is worth knowing before designing
-  a probe around it, and is why this one is kept as a regression check rather
-  than a ranking.
+  Every model that produces a first card scores 3/3 on `cascade_ab.dart`,
+  including the weakest card producers in the table; the one model that cannot
+  is reported `n/a` rather than 0/3, because turn 1 never gave it a card to
+  edit. Follow-up editing is not a discriminating axis between models — worth
+  knowing before designing a probe around it, and why this one is kept as a
+  regression check rather than a ranking.
 - **History erosion is per-model, not universal.** Across the fourteen models
   measured with `shape_ab.dart`, some lose four shapes to two prose turns and
   others lose none, and a model's cold-start score does not predict which side
