@@ -25,6 +25,18 @@
   the measurement `ModelBehavior.md` had named as the open question blocking the
   `qwen3.6` case. **`launch.json` unchanged** — recorded as a judgement call for
   whoever owns the debugger config.
+- Docs: measured **`gpt-oss:20b`'s `format` support for the first time** while
+  comparing it against `qwen3.8:27b-nvfp4` — it had never been probed, so the
+  `format` blind spot recorded against the `nvfp4` builds had no baseline to be
+  read against. It **also ignores `format`, and does so destructively**:
+  `format=json` returns a zero-character body and `format=schema` returns
+  non-card prose, where `qwen3.8:27b-nvfp4` returns the byte-identical good card
+  under all three modes. So the constraint does not merely fail to help on the
+  currently-shipped large model, it eliminates card production. `--json-format`
+  must stay `none` for `gpt-oss:20b`. Noted alongside it that
+  `json_format_probe.dart` scores all six of those calls `PASS`, because an
+  empty reply is not a _broken card_ — the verdict line, not the PASS, is the
+  output that matters for that probe.
 - Docs: recorded two cautions with it rather than burying them. It **silently
   ignores Ollama's `format`**, returning byte-identical output under `none`,
   `json`, and `schema`, so `--json-format` is inert — two `nvfp4` builds now
