@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+- Changed: **`.vscode/launch.json` now launches `qwen3.8:27b-nvfp4` instead of
+  `gpt-oss:20b`** as its large model. Both the card-prompt and Markdown-prompt
+  configurations were swapped, along with the two compounds that launch them, so
+  the grep `ModelBehavior.md` uses to derive the top three still yields exactly
+  three models (`granite4.1:8b`, `qwen2.5-coder:7b`, `qwen3.8:27b-nvfp4`). The
+  two models **tie on the figure the file says to read first** — 23/25 with
+  history as shipped, and 24/25 cold — and `qwen3.8:27b-nvfp4` wins every other
+  measured axis: everyday 21/21 vs. 17/21, stress 10/10 vs. 9/10, pre-seed warm
+  24/25 vs. 22/25, one eroded shape vs. two, and it produces `Carousel` and
+  `ColumnSet`, which `gpt-oss:20b` permanently fails as invalid JSON. Its seed
+  gain is −1 against +1, so it is the more robust of the two unaided. The cost is
+  **4.1 GB** (16.9 vs. 12.8), the one axis `gpt-oss:20b` still wins and the
+  reason it stays a probed candidate rather than being retired. `format` was not
+  traded away: neither model honours it, and `gpt-oss:20b` is the worse of the
+  two on it. **`defaultOllamaModel` is unchanged** — the compiled-in default is
+  still `qwen2.5-coder:7b`, which is a separate decision from what the debugger
+  launches.
 - Docs: added **`qwen3.8:27b-nvfp4`** to `ModelBehavior.md` and measured it on
   every probe in `tool/model_probes/` (2026-08-20, one model resident, 64 GB
   M1) — the fifteenth model in the matrix, added with every axis measured in
