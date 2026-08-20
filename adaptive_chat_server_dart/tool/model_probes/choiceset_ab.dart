@@ -109,5 +109,7 @@ Future<void> main(List<String> argv) async {
       client,
     );
   }
-  client.close();
+  // force: a socket still stuck mid-generation must not keep the
+  // process alive after its work is done and its result written.
+  client.close(force: true);
 }

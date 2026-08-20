@@ -124,7 +124,9 @@ Future<void> main(List<String> argv) async {
       calls: collect,
     );
   }
-  client.close();
+  // force: a socket still stuck mid-generation must not keep the
+  // process alive after its work is done and its result written.
+  client.close(force: true);
 }
 
 bool _isJson(String text) {

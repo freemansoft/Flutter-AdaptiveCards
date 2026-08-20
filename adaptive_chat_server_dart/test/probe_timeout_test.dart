@@ -65,7 +65,7 @@ void main() {
               req.response
                 ..headers.contentType = ContentType.json
                 ..write(
-                  '{"message":{"content":"[{\\"type\\":\\"TextBlock\\"}]"}}',
+                  r'{"message":{"content":"[{\"type\":\"TextBlock\"}]"}}',
                 );
               await req.response.close();
             });
