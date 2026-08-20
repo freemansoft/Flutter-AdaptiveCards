@@ -200,17 +200,17 @@ Two changes were made in response, both still shipped. The card system prompt's 
 | Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Cascade | Eroded by history                            |
 | --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------- | -------------------------------------------- |
 | `qwen3.8:27b-nvfp4`                                 | 16.9 GB | **24/25**  | **23/25**    | **24/25**      | 3/3     | `table` (1)                                  |
-| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | **23/25**    | **24/25**      | 3/3     | none                                         |
-| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | **23/25**    | 14/25          | 3/3     | `rating_ask`, `time` (2)                     |
 | `gpt-oss:20b`                                       | 12.8 GB | **24/25**  | **23/25**    | 22/25          | 3/3     | `gauge`, `table` (2)                         |
-| `granite4.1:8b`                                     | 5.0 GB  | 21/25      | 22/25        | 15/25          | 3/3     | `carousel`, `table` (2)                      |
+| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | **23/25**    | 14/25          | 3/3     | `rating_ask`, `time` (2)                     |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | **23/25**    | **24/25**      | 3/3     | none                                         |
 | `nemotron-3.5-lightning:30b`                        | 23.7 GB | 22/25      | 22/25        | 13/25          | 3/3     | `table` (1)                                  |
+| `granite4.1:8b`                                     | 5.0 GB  | 21/25      | 22/25        | 15/25          | 3/3     | `carousel`, `table` (2)                      |
 | `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 14/25          | 3/3     | none                                         |
 | `nemotron-3-nano:30b`                               | 22.6 GB | 19/25      | 20/25        | 15/25          | 3/3     | none                                         |
 | `qwen2.5-coder:7b`                                  | 4.4 GB  | 21/25      | 19/25        | 18/25          | 3/3     | `carousel`, `table` (2)                      |
 | `qwen3.5:9b`                                        | 6.1 GB  | 19/25      | 19/25        | 17/25          | 3/3     | `badge`, `columnset` (2)                     |
-| `granite4.1:3b`                                     | 2.0 GB  | 16/25      | 17/25        | 13/25          | 3/3     | `number`, `text` (2)                         |
 | `nemotron-3-nano:4b`                                | 2.6 GB  | 20/25      | 17/25        | 6/25           | 3/3     | `codeblock`, `columnset`, `text`, `time` (4) |
+| `granite4.1:3b`                                     | 2.0 GB  | 16/25      | 17/25        | 13/25          | 3/3     | `number`, `text` (2)                         |
 | `llama3-groq-tool-use:8b`                           | 4.3 GB  | 15/25      | 16/25        | 9/25           | 3/3     | `progress`, `toggle` (2)                     |
 | `llama3.2:latest`                                   | 1.9 GB  | 16/25      | 14/25        | 11/25          | 3/3     | `badge`, `table` (2)                         |
 | `llama3-chatqa:8b`                                  | 4.3 GB  | 3/25       | 1/25         | 2/25           | n/a     | `gauge`, `progress` (2)                      |
