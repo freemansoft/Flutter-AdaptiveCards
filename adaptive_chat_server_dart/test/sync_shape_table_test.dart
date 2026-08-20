@@ -148,6 +148,50 @@ void main() {
     });
   });
 
+  group('a seeded run without its unaided pair', () {
+    test('keeps the published pre-seed figure instead of blanking it', () {
+      // Mid-sweep the seeded run lands first. Rewriting the row then must not
+      // delete a pre-seed measurement somebody took, to replace it with an em
+      // dash that says nothing.
+      final rows = derivedRows(
+        [
+          ProbeRun(
+            probe: 'shape_ab',
+            model: 'm:1',
+            variant: 'seeded',
+            measuredAt: '2026-08-20',
+            samples: 1,
+            assets: const {},
+            calls: [
+              for (var i = 0; i < 25; i++)
+                ProbeCall(
+                  caseId: 'c$i',
+                  sample: 0,
+                  pass: i < 20,
+                  label: 'card[1]',
+                  condition: 'cold',
+                ),
+              for (var i = 0; i < 25; i++)
+                ProbeCall(
+                  caseId: 'c$i',
+                  sample: 0,
+                  pass: i < 18,
+                  label: 'card[1]',
+                  condition: 'warm',
+                ),
+            ],
+          ),
+        ],
+        const {},
+        published: const {'m:1': (21, 19, 13, 25)},
+      );
+      expect(rows['m:1']!.cold, 20);
+      expect(rows['m:1']!.warm, 18);
+      // Not re-measured, so the published figure stands.
+      expect(rows['m:1']!.preSeed, 13);
+    });
+  });
+
   group('rendering', () {
     test('sorts by with-history, the figure the file says to read first', () {
       const rows = [

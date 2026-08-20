@@ -1,7 +1,7 @@
 {
   "probe": "shape_ab",
-  "model": "qwen3.8:27b-nvfp4",
-  "variant": "unaided",
+  "model": "granite4.1:8b",
+  "variant": "seeded",
   "measuredAt": "2026-08-20",
   "machine": "Apple M1 Max / 64 GB",
   "samples": 2,
@@ -13,7 +13,7 @@
   "summary": {
     "cases": 25,
     "coldStart": 23,
-    "withHistory": 24
+    "withHistory": 21
   },
   "calls": [
     {
@@ -22,7 +22,7 @@
       "pass": true,
       "label": "Input.Date",
       "condition": "cold",
-      "ms": 49950
+      "ms": 831
     },
     {
       "case": "date",
@@ -30,7 +30,7 @@
       "pass": true,
       "label": "Input.Date",
       "condition": "cold",
-      "ms": 1202
+      "ms": 431
     },
     {
       "case": "time",
@@ -38,7 +38,7 @@
       "pass": true,
       "label": "Input.Time",
       "condition": "cold",
-      "ms": 1474
+      "ms": 535
     },
     {
       "case": "time",
@@ -46,7 +46,7 @@
       "pass": true,
       "label": "Input.Time",
       "condition": "cold",
-      "ms": 1382
+      "ms": 435
     },
     {
       "case": "toggle",
@@ -54,7 +54,7 @@
       "pass": true,
       "label": "Input.Toggle",
       "condition": "cold",
-      "ms": 2008
+      "ms": 710
     },
     {
       "case": "toggle",
@@ -62,23 +62,23 @@
       "pass": true,
       "label": "Input.Toggle",
       "condition": "cold",
-      "ms": 1271
+      "ms": 691
     },
     {
       "case": "text",
       "sample": 0,
-      "pass": true,
-      "label": "Input.Text",
+      "pass": false,
+      "label": "prose",
       "condition": "cold",
-      "ms": 1762
+      "ms": 549
     },
     {
       "case": "text",
       "sample": 1,
-      "pass": true,
-      "label": "Input.Text",
+      "pass": false,
+      "label": "prose",
       "condition": "cold",
-      "ms": 1795
+      "ms": 433
     },
     {
       "case": "number",
@@ -86,7 +86,7 @@
       "pass": true,
       "label": "Input.Number",
       "condition": "cold",
-      "ms": 2525
+      "ms": 883
     },
     {
       "case": "number",
@@ -94,7 +94,7 @@
       "pass": true,
       "label": "Input.Number",
       "condition": "cold",
-      "ms": 2501
+      "ms": 784
     },
     {
       "case": "choice1",
@@ -102,7 +102,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 6134
+      "ms": 2621
     },
     {
       "case": "choice1",
@@ -110,23 +110,23 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 6208
+      "ms": 2528
     },
     {
       "case": "choice2",
       "sample": 0,
-      "pass": false,
-      "label": "prose",
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 15551
+      "ms": 3358
     },
     {
       "case": "choice2",
       "sample": 1,
-      "pass": false,
-      "label": "prose",
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 16099
+      "ms": 3391
     },
     {
       "case": "choice3",
@@ -134,7 +134,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 5562
+      "ms": 2817
     },
     {
       "case": "choice3",
@@ -142,23 +142,23 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 5575
+      "ms": 2622
     },
     {
       "case": "choice4",
       "sample": 0,
       "pass": true,
-      "label": "Input.ChoiceSet",
+      "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 4568
+      "ms": 3128
     },
     {
       "case": "choice4",
       "sample": 1,
       "pass": true,
-      "label": "Input.ChoiceSet",
+      "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 4417
+      "ms": 3021
     },
     {
       "case": "choice5",
@@ -166,7 +166,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 7431
+      "ms": 3029
     },
     {
       "case": "choice5",
@@ -174,23 +174,23 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 7662
+      "ms": 2934
     },
     {
       "case": "choice6",
       "sample": 0,
       "pass": true,
-      "label": "Input.ChoiceSet",
+      "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 4610
+      "ms": 3140
     },
     {
       "case": "choice6",
       "sample": 1,
       "pass": true,
-      "label": "Input.ChoiceSet",
+      "label": "Input.ChoiceSet, TextBlock",
       "condition": "cold",
-      "ms": 4547
+      "ms": 3053
     },
     {
       "case": "pie",
@@ -198,7 +198,7 @@
       "pass": true,
       "label": "Chart.Pie",
       "condition": "cold",
-      "ms": 5361
+      "ms": 2863
     },
     {
       "case": "pie",
@@ -206,7 +206,7 @@
       "pass": true,
       "label": "Chart.Pie",
       "condition": "cold",
-      "ms": 4786
+      "ms": 2683
     },
     {
       "case": "bar",
@@ -214,7 +214,7 @@
       "pass": true,
       "label": "Chart.VerticalBar",
       "condition": "cold",
-      "ms": 4945
+      "ms": 2932
     },
     {
       "case": "bar",
@@ -222,7 +222,7 @@
       "pass": true,
       "label": "Chart.VerticalBar",
       "condition": "cold",
-      "ms": 4921
+      "ms": 2801
     },
     {
       "case": "line",
@@ -230,7 +230,7 @@
       "pass": true,
       "label": "Chart.Line",
       "condition": "cold",
-      "ms": 6290
+      "ms": 4010
     },
     {
       "case": "line",
@@ -238,7 +238,7 @@
       "pass": true,
       "label": "Chart.Line",
       "condition": "cold",
-      "ms": 6041
+      "ms": 3945
     },
     {
       "case": "gauge",
@@ -246,7 +246,7 @@
       "pass": true,
       "label": "Chart.Gauge",
       "condition": "cold",
-      "ms": 4301
+      "ms": 2728
     },
     {
       "case": "gauge",
@@ -254,7 +254,7 @@
       "pass": true,
       "label": "Chart.Gauge",
       "condition": "cold",
-      "ms": 4003
+      "ms": 2583
     },
     {
       "case": "rating_show",
@@ -262,7 +262,7 @@
       "pass": true,
       "label": "Rating",
       "condition": "cold",
-      "ms": 1420
+      "ms": 796
     },
     {
       "case": "rating_show",
@@ -270,23 +270,23 @@
       "pass": true,
       "label": "Rating",
       "condition": "cold",
-      "ms": 1145
+      "ms": 683
     },
     {
       "case": "rating_ask",
       "sample": 0,
       "pass": false,
-      "label": "no-input: got {Rating, TextBlock} want {Input.ChoiceSet, Input.Number}",
+      "label": "no-input: got {Rating} want {Input.ChoiceSet, Input.Number}",
       "condition": "cold",
-      "ms": 2383
+      "ms": 756
     },
     {
       "case": "rating_ask",
       "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet",
+      "pass": false,
+      "label": "no-input: got {Rating} want {Input.ChoiceSet, Input.Number}",
       "condition": "cold",
-      "ms": 4833
+      "ms": 593
     },
     {
       "case": "carousel",
@@ -294,7 +294,7 @@
       "pass": true,
       "label": "Carousel, CarouselPage, TextBlock",
       "condition": "cold",
-      "ms": 16872
+      "ms": 8277
     },
     {
       "case": "carousel",
@@ -302,23 +302,23 @@
       "pass": true,
       "label": "Carousel, CarouselPage, TextBlock",
       "condition": "cold",
-      "ms": 16628
+      "ms": 8372
     },
     {
       "case": "table",
       "sample": 0,
       "pass": true,
-      "label": "Table, TableCell, TableRow, TextBlock",
+      "label": "Table, TableRow, TextBlock",
       "condition": "cold",
-      "ms": 23286
+      "ms": 11194
     },
     {
       "case": "table",
       "sample": 1,
       "pass": true,
-      "label": "Table, TableCell, TableRow, TextBlock",
+      "label": "Table, TableRow, TextBlock",
       "condition": "cold",
-      "ms": 22871
+      "ms": 10900
     },
     {
       "case": "facts",
@@ -326,7 +326,7 @@
       "pass": true,
       "label": "FactSet",
       "condition": "cold",
-      "ms": 11019
+      "ms": 5727
     },
     {
       "case": "facts",
@@ -334,7 +334,7 @@
       "pass": true,
       "label": "FactSet",
       "condition": "cold",
-      "ms": 11294
+      "ms": 5422
     },
     {
       "case": "columnset",
@@ -342,7 +342,7 @@
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
       "condition": "cold",
-      "ms": 10578
+      "ms": 5017
     },
     {
       "case": "columnset",
@@ -350,7 +350,7 @@
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
       "condition": "cold",
-      "ms": 10346
+      "ms": 4902
     },
     {
       "case": "codeblock",
@@ -358,7 +358,7 @@
       "pass": true,
       "label": "CodeBlock, TextBlock",
       "condition": "cold",
-      "ms": 8378
+      "ms": 8295
     },
     {
       "case": "codeblock",
@@ -366,7 +366,7 @@
       "pass": true,
       "label": "CodeBlock, TextBlock",
       "condition": "cold",
-      "ms": 8270
+      "ms": 7847
     },
     {
       "case": "progress",
@@ -374,7 +374,7 @@
       "pass": true,
       "label": "ProgressBar",
       "condition": "cold",
-      "ms": 1420
+      "ms": 725
     },
     {
       "case": "progress",
@@ -382,7 +382,7 @@
       "pass": true,
       "label": "ProgressBar",
       "condition": "cold",
-      "ms": 1155
+      "ms": 599
     },
     {
       "case": "badge",
@@ -390,7 +390,7 @@
       "pass": true,
       "label": "Badge",
       "condition": "cold",
-      "ms": 1717
+      "ms": 867
     },
     {
       "case": "badge",
@@ -398,7 +398,7 @@
       "pass": true,
       "label": "Badge",
       "condition": "cold",
-      "ms": 1491
+      "ms": 752
     },
     {
       "case": "prose",
@@ -406,7 +406,7 @@
       "pass": true,
       "label": "prose-ok",
       "condition": "cold",
-      "ms": 5378
+      "ms": 2087
     },
     {
       "case": "prose",
@@ -414,79 +414,79 @@
       "pass": true,
       "label": "prose-ok",
       "condition": "cold",
-      "ms": 5386
+      "ms": 1969
     },
     {
       "case": "date",
       "sample": 0,
       "pass": true,
-      "label": "Input.Date, TextBlock",
+      "label": "Input.Date",
       "condition": "warm",
-      "ms": 3283
+      "ms": 801
     },
     {
       "case": "date",
       "sample": 1,
       "pass": true,
-      "label": "Input.Date, TextBlock",
+      "label": "Input.Date",
       "condition": "warm",
-      "ms": 2383
+      "ms": 476
     },
     {
       "case": "time",
       "sample": 0,
       "pass": true,
-      "label": "Input.Time, TextBlock",
+      "label": "Input.Time",
       "condition": "warm",
-      "ms": 3615
+      "ms": 639
     },
     {
       "case": "time",
       "sample": 1,
       "pass": true,
-      "label": "Input.Time, TextBlock",
+      "label": "Input.Time",
       "condition": "warm",
-      "ms": 2209
+      "ms": 517
     },
     {
       "case": "toggle",
       "sample": 0,
       "pass": true,
-      "label": "Input.Toggle",
+      "label": "Input.Toggle, TextBlock",
       "condition": "warm",
-      "ms": 1730
+      "ms": 1722
     },
     {
       "case": "toggle",
       "sample": 1,
       "pass": true,
-      "label": "Input.Toggle",
+      "label": "Input.Toggle, TextBlock",
       "condition": "warm",
-      "ms": 1474
+      "ms": 1645
     },
     {
       "case": "text",
       "sample": 0,
-      "pass": true,
-      "label": "Input.Text, TextBlock",
+      "pass": false,
+      "label": "prose",
       "condition": "warm",
-      "ms": 4386
+      "ms": 623
     },
     {
       "case": "text",
       "sample": 1,
-      "pass": true,
-      "label": "Input.Text, TextBlock",
+      "pass": false,
+      "label": "prose",
       "condition": "warm",
-      "ms": 4264
+      "ms": 455
     },
     {
       "case": "number",
       "sample": 0,
       "pass": true,
-      "label": "Input.Number",
+      "label": "Input.Number, TextBlock",
       "condition": "warm",
-      "ms": 2875
+      "ms": 1565
     },
     {
       "case": "number",
@@ -494,7 +494,7 @@
       "pass": true,
       "label": "Input.Number, TextBlock",
       "condition": "warm",
-      "ms": 2238
+      "ms": 1464
     },
     {
       "case": "choice1",
@@ -502,7 +502,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 5083
+      "ms": 2875
     },
     {
       "case": "choice1",
@@ -510,7 +510,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 5040
+      "ms": 2800
     },
     {
       "case": "choice2",
@@ -518,7 +518,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 11540
+      "ms": 3829
     },
     {
       "case": "choice2",
@@ -526,7 +526,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 10924
+      "ms": 3610
     },
     {
       "case": "choice3",
@@ -534,7 +534,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 4809
+      "ms": 2670
     },
     {
       "case": "choice3",
@@ -542,7 +542,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 4217
+      "ms": 2545
     },
     {
       "case": "choice4",
@@ -550,7 +550,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 5878
+      "ms": 3081
     },
     {
       "case": "choice4",
@@ -558,7 +558,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 5843
+      "ms": 2958
     },
     {
       "case": "choice5",
@@ -566,7 +566,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 6725
+      "ms": 3039
     },
     {
       "case": "choice5",
@@ -574,7 +574,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 6493
+      "ms": 2941
     },
     {
       "case": "choice6",
@@ -582,7 +582,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 5481
+      "ms": 2957
     },
     {
       "case": "choice6",
@@ -590,23 +590,23 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 4987
+      "ms": 2854
     },
     {
       "case": "pie",
       "sample": 0,
       "pass": true,
-      "label": "Chart.Pie, TextBlock",
+      "label": "Chart.Pie",
       "condition": "warm",
-      "ms": 6493
+      "ms": 2760
     },
     {
       "case": "pie",
       "sample": 1,
       "pass": true,
-      "label": "Chart.Pie, TextBlock",
+      "label": "Chart.Pie",
       "condition": "warm",
-      "ms": 6115
+      "ms": 2656
     },
     {
       "case": "bar",
@@ -614,7 +614,7 @@
       "pass": true,
       "label": "Chart.VerticalBar",
       "condition": "warm",
-      "ms": 5254
+      "ms": 3039
     },
     {
       "case": "bar",
@@ -622,23 +622,23 @@
       "pass": true,
       "label": "Chart.VerticalBar",
       "condition": "warm",
-      "ms": 4965
+      "ms": 2826
     },
     {
       "case": "line",
       "sample": 0,
       "pass": true,
-      "label": "Chart.Line, TextBlock",
+      "label": "Chart.Line",
       "condition": "warm",
-      "ms": 9086
+      "ms": 3365
     },
     {
       "case": "line",
       "sample": 1,
       "pass": true,
-      "label": "Chart.Line, TextBlock",
+      "label": "Chart.Line",
       "condition": "warm",
-      "ms": 8969
+      "ms": 3330
     },
     {
       "case": "gauge",
@@ -646,7 +646,7 @@
       "pass": true,
       "label": "Chart.Gauge",
       "condition": "warm",
-      "ms": 4360
+      "ms": 2585
     },
     {
       "case": "gauge",
@@ -654,87 +654,87 @@
       "pass": true,
       "label": "Chart.Gauge",
       "condition": "warm",
-      "ms": 4164
+      "ms": 2471
     },
     {
       "case": "rating_show",
       "sample": 0,
       "pass": true,
-      "label": "Rating, TextBlock",
+      "label": "Rating",
       "condition": "warm",
-      "ms": 3161
+      "ms": 775
     },
     {
       "case": "rating_show",
       "sample": 1,
       "pass": true,
-      "label": "Rating, TextBlock",
+      "label": "Rating",
       "condition": "warm",
-      "ms": 2667
+      "ms": 679
     },
     {
       "case": "rating_ask",
       "sample": 0,
-      "pass": false,
-      "label": "no-input: got {Rating, TextBlock} want {Input.ChoiceSet, Input.Number}",
+      "pass": true,
+      "label": "Input.Number, TextBlock",
       "condition": "warm",
-      "ms": 3044
+      "ms": 2285
     },
     {
       "case": "rating_ask",
       "sample": 1,
+      "pass": true,
+      "label": "Input.Number, TextBlock",
+      "condition": "warm",
+      "ms": 2311
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
       "pass": false,
-      "label": "no-input: got {Rating, TextBlock} want {Input.ChoiceSet, Input.Number}",
+      "label": "prose",
       "condition": "warm",
-      "ms": 2750
-    },
-    {
-      "case": "carousel",
-      "sample": 0,
-      "pass": true,
-      "label": "Carousel, CarouselPage, TextBlock",
-      "condition": "warm",
-      "ms": 16516
+      "ms": 6994
     },
     {
       "case": "carousel",
       "sample": 1,
-      "pass": true,
-      "label": "Carousel, CarouselPage, TextBlock",
+      "pass": false,
+      "label": "prose",
       "condition": "warm",
-      "ms": 17009
+      "ms": 7157
     },
     {
       "case": "table",
       "sample": 0,
-      "pass": true,
-      "label": "Table, TableCell, TableRow, TextBlock",
+      "pass": false,
+      "label": "prose",
       "condition": "warm",
-      "ms": 39646
+      "ms": 3437
     },
     {
       "case": "table",
       "sample": 1,
-      "pass": true,
-      "label": "Table, TableCell, TableRow, TextBlock",
+      "pass": false,
+      "label": "prose",
       "condition": "warm",
-      "ms": 35980
+      "ms": 3250
     },
     {
       "case": "facts",
       "sample": 0,
       "pass": true,
-      "label": "FactSet, TextBlock",
+      "label": "FactSet",
       "condition": "warm",
-      "ms": 15711
+      "ms": 4808
     },
     {
       "case": "facts",
       "sample": 1,
       "pass": true,
-      "label": "FactSet, TextBlock",
+      "label": "FactSet",
       "condition": "warm",
-      "ms": 15299
+      "ms": 4737
     },
     {
       "case": "columnset",
@@ -742,7 +742,7 @@
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
       "condition": "warm",
-      "ms": 11637
+      "ms": 5463
     },
     {
       "case": "columnset",
@@ -750,39 +750,39 @@
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
       "condition": "warm",
-      "ms": 11209
+      "ms": 5420
     },
     {
       "case": "codeblock",
       "sample": 0,
-      "pass": true,
-      "label": "CodeBlock, TextBlock",
+      "pass": false,
+      "label": "broken: prose-with-card (user sees raw JSON)",
       "condition": "warm",
-      "ms": 8591
+      "ms": 6076
     },
     {
       "case": "codeblock",
       "sample": 1,
-      "pass": true,
-      "label": "CodeBlock, TextBlock",
+      "pass": false,
+      "label": "broken: prose-with-card (user sees raw JSON)",
       "condition": "warm",
-      "ms": 8312
+      "ms": 5996
     },
     {
       "case": "progress",
       "sample": 0,
       "pass": true,
-      "label": "ProgressBar, TextBlock",
+      "label": "ProgressBar",
       "condition": "warm",
-      "ms": 2243
+      "ms": 705
     },
     {
       "case": "progress",
       "sample": 1,
       "pass": true,
-      "label": "ProgressBar, TextBlock",
+      "label": "ProgressBar",
       "condition": "warm",
-      "ms": 2188
+      "ms": 597
     },
     {
       "case": "badge",
@@ -790,7 +790,7 @@
       "pass": true,
       "label": "Badge",
       "condition": "warm",
-      "ms": 1791
+      "ms": 860
     },
     {
       "case": "badge",
@@ -798,7 +798,7 @@
       "pass": true,
       "label": "Badge",
       "condition": "warm",
-      "ms": 1524
+      "ms": 754
     },
     {
       "case": "prose",
@@ -806,7 +806,7 @@
       "pass": true,
       "label": "prose-ok",
       "condition": "warm",
-      "ms": 4070
+      "ms": 1985
     },
     {
       "case": "prose",
@@ -814,7 +814,7 @@
       "pass": true,
       "label": "prose-ok",
       "condition": "warm",
-      "ms": 3816
+      "ms": 1870
     }
   ]
 }

@@ -79,6 +79,13 @@ class ProbeCall {
   /// Whether the reply was prose the judge accepted.
   bool get isProse => label == 'prose' || label == 'prose-ok';
 
+  /// Whether the call hit the per-call ceiling rather than returning.
+  ///
+  /// The label can arrive wrapped — the shape judge reports a stalled call as
+  /// `broken: timeout (120s)` — so this matches anywhere in the string rather
+  /// than at the start.
+  bool get isTimeout => label.contains('timeout (');
+
   /// JSON form.
   Map<String, dynamic> toJson() => {
     'case': caseId,
@@ -204,15 +211,32 @@ class ProbeRun {
   /// short rating and a twelve-month table legitimately differ ~20x — not by
   /// machine noise.
   int? get medianMs {
-    final v = calls.skip(1).map((c) => c.ms).whereType<int>().toList()..sort();
+    final v =
+        calls
+            .skip(1)
+            .where((c) => !c.isTimeout)
+            .map((c) => c.ms)
+            .whereType<int>()
+            .toList()
+          ..sort();
     if (v.isEmpty) return null;
     return v[v.length ~/ 2];
   }
 
-  /// Total time across every recorded call, including the model load.
+  /// Calls that hit the ceiling instead of returning.
+  ///
+  /// Reported beside the latency rather than folded into it: a model that
+  /// stalls often is making a real statement about itself, but it is a
+  /// different statement from "this model is slow", and averaging the two
+  /// together would let the ceiling masquerade as a measurement.
+  int get timeouts => calls.where((c) => c.isTimeout).length;
+
+  /// Total time across every recorded call, including the model load and any
+  /// time spent stalled.
   ///
   /// The "how long will this sweep take me" number, as opposed to
-  /// [medianMs], which is the one comparable between models.
+  /// [medianMs], which is the one comparable between models. Timeouts are
+  /// deliberately included here — they are real wall clock somebody waited.
   int? get totalMs {
     final v = calls.map((c) => c.ms).whereType<int>();
     return v.isEmpty ? null : v.reduce((a, b) => a + b);

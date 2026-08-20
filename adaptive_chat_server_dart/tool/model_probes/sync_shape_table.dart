@@ -106,8 +106,9 @@ String cascadeCell(ProbeRun? run) {
 /// Builds the rows derivable from [results], keyed by model.
 Map<String, ShapeRow> derivedRows(
   List<ProbeRun> results,
-  Map<String, CarriedCells> carried,
-) {
+  Map<String, CarriedCells> carried, {
+  Map<String, (int, int, int, int)> published = const {},
+}) {
   ProbeRun? pick(String model, String probe, String? variant) {
     for (final r in results) {
       if (r.model == model && r.probe == probe && r.variant == variant) {
@@ -135,7 +136,13 @@ Map<String, ShapeRow> derivedRows(
       weights: carried[model]?.weights ?? '—',
       cold: shapesFor(seeded, 'cold'),
       warm: shapesFor(seeded, 'warm'),
-      preSeed: unaided == null ? -1 : shapesFor(unaided, 'warm'),
+      // A seeded run can land before its unaided pair — mid-sweep, or
+      // because only one was re-taken. Blanking the published pre-seed
+      // figure in that window would delete a real measurement to say
+      // nothing, so it is carried until a run replaces it.
+      preSeed: unaided != null
+          ? shapesFor(unaided, 'warm')
+          : (published[model]?.$3 ?? -1),
       // No recorded cascade run yet is not the same as a cascade that
       // failed, so the published cell stands until one exists.
       cascade: cascadeRun == null
@@ -265,7 +272,8 @@ Future<void> main(List<String> argv) async {
     p.join(root, 'tool', 'model_probes', 'results'),
   );
   final carried = carriedFromMarkdown(markdown);
-  final derived = derivedRows(results, carried);
+  final published = shapeTableRows(markdown);
+  final derived = derivedRows(results, carried, published: published);
 
   if (derived.isEmpty) {
     stdout.writeln('sync_shape_table: no complete shape runs recorded yet');
@@ -274,9 +282,8 @@ Future<void> main(List<String> argv) async {
 
   // Rows with no recorded run keep their published figures: a measurement
   // nobody has re-taken is still the best thing known.
-  final existing = shapeTableRows(markdown);
   final kept = <ShapeRow>[
-    for (final entry in existing.entries)
+    for (final entry in published.entries)
       if (!derived.containsKey(entry.key))
         ShapeRow(
           model: entry.key,

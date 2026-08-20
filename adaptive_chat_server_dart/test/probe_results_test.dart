@@ -152,6 +152,22 @@ void main() {
       expect(run.totalMs, 75410);
     });
 
+    test('excludes stalled calls, which measure the ceiling not the model', () {
+      // A model that stalls a lot would otherwise report a median of exactly
+      // the timeout, which says nothing about how fast it is when it works.
+      final run = runWith([
+        call('a', ms: 40000), // cold load, dropped as the first call
+        call('b', ms: 3000),
+        call('c', ms: 120000, pass: false, label: 'broken: timeout (120s)'),
+        call('d', ms: 120000, pass: false, label: 'broken: timeout (120s)'),
+        call('e', ms: 5000),
+      ]);
+      expect(run.medianMs, 5000);
+      expect(run.timeouts, 2);
+      // Total keeps them: that is real wall clock somebody waited through.
+      expect(run.totalMs, 288000);
+    });
+
     test('is null when no call recorded a time', () {
       expect(runWith([call('a')]).medianMs, isNull);
       expect(runWith([call('a')]).totalMs, isNull);

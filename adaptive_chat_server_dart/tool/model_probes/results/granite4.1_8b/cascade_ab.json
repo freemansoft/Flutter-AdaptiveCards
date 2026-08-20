@@ -1,6 +1,6 @@
 {
   "probe": "cascade_ab",
-  "model": "qwen3.8:27b-nvfp4",
+  "model": "granite4.1:8b",
   "measuredAt": "2026-08-20",
   "machine": "Apple M1 Max / 64 GB",
   "samples": 2,
@@ -21,42 +21,42 @@
       "sample": 0,
       "pass": true,
       "label": "multi, kept 5/5",
-      "ms": 10853
+      "ms": 8143
     },
     {
       "case": "states",
       "sample": 1,
       "pass": true,
       "label": "multi, kept 5/5",
-      "ms": 9451
+      "ms": 7754
     },
     {
       "case": "loglevel",
       "sample": 0,
       "pass": true,
       "label": "multi, kept 4/4",
-      "ms": 9972
+      "ms": 6703
     },
     {
       "case": "loglevel",
       "sample": 1,
       "pass": true,
       "label": "multi, kept 4/4",
-      "ms": 8501
+      "ms": 6605
     },
     {
       "case": "deploy",
       "sample": 0,
       "pass": true,
       "label": "multi, kept 2/2",
-      "ms": 7178
+      "ms": 5441
     },
     {
       "case": "deploy",
       "sample": 1,
       "pass": true,
       "label": "multi, kept 2/2",
-      "ms": 6738
+      "ms": 5333
     }
   ]
 }
