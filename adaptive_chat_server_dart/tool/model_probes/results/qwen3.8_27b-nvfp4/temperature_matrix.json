@@ -10,11 +10,10 @@
   },
   "summary": {
     "calls": 21,
-    "passed": 21,
+    "passed": 20,
     "cards": 17,
-    "prose": 4
+    "prose": 3
   },
-  "notes": "Backfilled from the console logs of the 2026-08-20 sweep, which predates --json output. Per-call latency was not recorded by shape_ab or cascade_ab at that time, so those calls carry no ms.",
   "calls": [
     {
       "case": "date",
@@ -22,7 +21,7 @@
       "pass": true,
       "label": "card[3]",
       "setting": "greedy(t=0)",
-      "ms": 50913
+      "ms": 78668
     },
     {
       "case": "choice",
@@ -30,7 +29,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 3716
+      "ms": 7060
     },
     {
       "case": "facts",
@@ -38,7 +37,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 9446
+      "ms": 18382
     },
     {
       "case": "table",
@@ -46,7 +45,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 20935
+      "ms": 41262
     },
     {
       "case": "chart",
@@ -54,7 +53,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 4562
+      "ms": 8978
     },
     {
       "case": "rating",
@@ -62,7 +61,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "greedy(t=0)",
-      "ms": 2204
+      "ms": 4317
     },
     {
       "case": "prose",
@@ -70,7 +69,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 5259
+      "ms": 10354
     },
     {
       "case": "date",
@@ -78,7 +77,7 @@
       "pass": true,
       "label": "card[3]",
       "setting": "low(t=0.2)",
-      "ms": 4013
+      "ms": 7856
     },
     {
       "case": "choice",
@@ -86,7 +85,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "low(t=0.2)",
-      "ms": 3408
+      "ms": 6523
     },
     {
       "case": "facts",
@@ -94,7 +93,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "low(t=0.2)",
-      "ms": 9758
+      "ms": 21479
     },
     {
       "case": "table",
@@ -102,7 +101,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "low(t=0.2)",
-      "ms": 20964
+      "ms": 39892
     },
     {
       "case": "chart",
@@ -110,15 +109,15 @@
       "pass": true,
       "label": "card[1]",
       "setting": "low(t=0.2)",
-      "ms": 4245
+      "ms": 8682
     },
     {
       "case": "rating",
       "sample": 0,
       "pass": true,
-      "label": "card[2]",
+      "label": "card[1]",
       "setting": "low(t=0.2)",
-      "ms": 5432
+      "ms": 8863
     },
     {
       "case": "prose",
@@ -126,7 +125,7 @@
       "pass": true,
       "label": "prose",
       "setting": "low(t=0.2)",
-      "ms": 3343
+      "ms": 9236
     },
     {
       "case": "date",
@@ -134,15 +133,15 @@
       "pass": true,
       "label": "card[3]",
       "setting": "recommended(t=0.6)",
-      "ms": 3858
+      "ms": 6424
     },
     {
       "case": "choice",
       "sample": 0,
       "pass": true,
-      "label": "card[2]",
+      "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 5057
+      "ms": 7126
     },
     {
       "case": "facts",
@@ -150,15 +149,15 @@
       "pass": true,
       "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 10150
+      "ms": 18961
     },
     {
       "case": "table",
       "sample": 0,
-      "pass": true,
-      "label": "card[1]",
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 1434)\n...ype\":\"TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"16\",\"wrap\":true}]}}]}\n                                                                           ^\n",
       "setting": "recommended(t=0.6)",
-      "ms": 21470
+      "ms": 41319
     },
     {
       "case": "chart",
@@ -166,15 +165,15 @@
       "pass": true,
       "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 4260
+      "ms": 8488
     },
     {
       "case": "rating",
       "sample": 0,
       "pass": true,
-      "label": "prose",
+      "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 5288
+      "ms": 3171
     },
     {
       "case": "prose",
@@ -182,7 +181,7 @@
       "pass": true,
       "label": "prose",
       "setting": "recommended(t=0.6)",
-      "ms": 4834
+      "ms": 8059
     }
   ]
 }

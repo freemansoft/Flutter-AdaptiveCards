@@ -207,6 +207,13 @@ Future<void> main(List<String> argv) async {
     ..addOption('model')
     ..addOption('url')
     ..addOption('samples')
+    ..addOption(
+      'timeout',
+      help:
+          'Seconds one call may take before it is scored a timeout. A model '
+          'that runs away generating otherwise stalls every model queued '
+          'behind it.',
+    )
     ..addFlag('help', abbr: 'h', negatable: false);
   final parsed = parser.parse(argv);
   if (parsed['help'] as bool) {
@@ -214,7 +221,13 @@ Future<void> main(List<String> argv) async {
     return;
   }
   final args = parseProbeArgs([
-    for (final option in ['model', 'url', 'samples'])
+    for (final option in [
+      'model',
+      'url',
+      'samples',
+      'json',
+      'timeout',
+    ])
       if (parsed[option] != null) ...['--$option', parsed[option] as String],
   ], defaultSamples: 1);
 

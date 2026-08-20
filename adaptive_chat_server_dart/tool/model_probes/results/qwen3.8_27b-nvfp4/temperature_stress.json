@@ -10,11 +10,10 @@
   },
   "summary": {
     "calls": 10,
-    "passed": 10,
-    "cards": 6,
+    "passed": 9,
+    "cards": 5,
     "prose": 4
   },
-  "notes": "Backfilled from the console logs of the 2026-08-20 sweep, which predates --json output. Per-call latency was not recorded by shape_ab or cascade_ab at that time, so those calls carry no ms.",
   "calls": [
     {
       "case": "codeblock",
@@ -22,7 +21,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "greedy(t=0)",
-      "ms": 6751
+      "ms": 17385
     },
     {
       "case": "bigtable",
@@ -30,7 +29,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 48722
+      "ms": 91947
     },
     {
       "case": "nested",
@@ -38,7 +37,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 20140
+      "ms": 36784
     },
     {
       "case": "multiline",
@@ -46,7 +45,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 14390
+      "ms": 25128
     },
     {
       "case": "mixed",
@@ -54,7 +53,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "greedy(t=0)",
-      "ms": 11619
+      "ms": 23411
     },
     {
       "case": "codeblock",
@@ -62,15 +61,15 @@
       "pass": true,
       "label": "card[2]",
       "setting": "recommended(t=0.6)",
-      "ms": 9197
+      "ms": 20716
     },
     {
       "case": "bigtable",
       "sample": 0,
-      "pass": true,
-      "label": "prose",
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 3523)\n...ableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"Christmas\",\"wrap\":true}]}}]}\n                                                                           ^\n",
       "setting": "recommended(t=0.6)",
-      "ms": 15663
+      "ms": 89532
     },
     {
       "case": "nested",
@@ -78,23 +77,23 @@
       "pass": true,
       "label": "prose",
       "setting": "recommended(t=0.6)",
-      "ms": 14922
+      "ms": 33757
     },
     {
       "case": "multiline",
       "sample": 0,
       "pass": true,
-      "label": "card[1]",
+      "label": "prose",
       "setting": "recommended(t=0.6)",
-      "ms": 6197
+      "ms": 25307
     },
     {
       "case": "mixed",
       "sample": 0,
       "pass": true,
-      "label": "card[3]",
+      "label": "card[2]",
       "setting": "recommended(t=0.6)",
-      "ms": 30938
+      "ms": 26107
     }
   ]
 }
