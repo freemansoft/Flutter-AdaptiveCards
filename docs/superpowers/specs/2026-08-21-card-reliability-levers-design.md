@@ -13,9 +13,14 @@ what remains **untried** and why it might work. That reasoning currently lives i
 conversation and is lost when the conversation ends — the same problem the
 "Why this file exists" section of `ModelBehavior.md` describes for findings.
 
-This document is that companion. It catalogues every remaining lever, predicts
+This document is that companion. It catalogues the remaining levers, predicts
 each one's outcome using the ledger's own heuristic, and nominates three for
 implementation.
+
+It does **not** claim to be exhaustive. An adversarial review of the first draft
+found three levers it had missed — K, L, and M below — each derivable from a
+finding already recorded in the ledger. Treat the catalogue as the levers
+identified so far, and add to it rather than assuming a gap means a dead end.
 
 It is an **evaluation spec, not an implementation spec**. The three nominated
 items are described well enough to plan; none is planned here.
@@ -56,22 +61,36 @@ primary reason for its verdict.
 
 ## The catalogue
 
-| Lever                                                         | Kind                     | Verdict       |
-| ------------------------------------------------------------- | ------------------------ | ------------- |
-| **A** — Ollama tool calling (`tools:` / `message.tool_calls`) | **Output channel** (new) | **Nominated** |
-| **B** — Registry-backed type validation in `card_detect.dart` | Server code              | **Nominated** |
-| **C** — Tighten `card_schema.json` past a bare `type` enum    | Decoding                 | Defer         |
-| **D** — One bounded repair round-trip on a broken card        | Server code              | Defer         |
-| **E** — Bake config into a Modelfile (`ollama create`)        | Context assembly         | Defer         |
-| **F** — Slot-filling into server-side card templates          | Architecture             | Reject        |
-| **G** — Fine-tune / LoRA                                      | Model                    | Reject        |
-| **H** — Reconcile `card_schema.json` with the registry        | Server assets            | **Nominated** |
-| **J** — Expand the prompt palette to the renderable set       | Context assembly         | Defer         |
+| Lever                                                         | Kind                    | Verdict       |
+| ------------------------------------------------------------- | ----------------------- | ------------- |
+| **A** — Ollama tool calling (`tools:` / `message.tool_calls`) | **Unknown** — see below | **Nominated** |
+| **B** — Registry-backed type validation in `card_detect.dart` | Server code             | **Nominated** |
+| **C** — Tighten `card_schema.json` past a bare `type` enum    | Decoding                | Defer         |
+| **D** — One bounded repair round-trip on a broken card        | Server code             | Defer         |
+| **E** — Bake config into a Modelfile (`ollama create`)        | Context assembly        | Defer         |
+| **F** — Slot-filling into server-side card templates          | Architecture            | Reject        |
+| **G** — Fine-tune / LoRA                                      | Model                   | Reject        |
+| **H** — Reconcile `card_schema.json` with the registry        | Server assets           | **Nominated** |
+| **J** — Expand the prompt palette to the renderable set       | Context assembly        | Defer         |
+| **K** — Fall back to a second model when a reply fails        | Server code + model     | Defer         |
+| **L** — Tell the model to always fence, instead of never      | Prompt wording          | Defer         |
+| **M** — Best-of-N sampling, take the first reply that parses  | Decoding                | Defer         |
 
-**A ranks first because the ledger makes no prediction about it.** Tool calling
-is neither a context-assembly change nor a wording change — it changes which
-channel the card arrives on. That is a Kind with no entries, which is exactly
-what makes it worth measuring rather than reasoning about.
+**A ranks first because the ledger's prediction for it is unclear.** The
+appealing framing is that tool calling changes which _channel_ the card arrives
+on, making it a Kind with no entries. That framing should not be trusted
+uncritically, and the strongest objection is this: the tool definition is itself
+content injected into the model's context before the question, and several
+Ollama chat templates implement tool support by rendering the tool list into the
+prompt rather than through any separate path. If that is what happens here, "did
+the model call the tool" is mechanically much closer to "did the model follow an
+instruction in its context" — the axis the ledger already has extensive and
+mostly negative data on.
+
+So A is not ranked first because a new Kind is established. It is ranked first
+because **which Kind it belongs to is itself unknown, and cheap to find out**.
+The phase-1 canary answers that as a side effect of answering whether tool
+calling works at all.
 
 Verified 2026-08-21: `tools`, `tool_calls`, and function calling appear nowhere in
 `lib/`, `bin/`, `assets/`, or `tool/model_probes/`. The only matches for "tool" in
@@ -265,12 +284,28 @@ The obvious source is wrong, and so are the alternatives. Measured 2026-08-21:
 
 - `assets/card_schema.json` enumerates **24** element types.
 - `packages/flutter_adaptive_cards_fs/lib/src/registry.dart` registers **30**.
-- The two are **not nested**. 18 types are common; 6 are schema-only and 12 are
-  registry-only.
+- `flutter_adaptive_charts_fs` registers **8**, so the renderable universe is
+  **38**.
+- No two of these are nested. 18 types are common to the schema and the core
+  registry; 6 are schema-only, 12 are core-registry-only, and 2 more are
+  chart-registry-only.
 
 The schema-only 6 are all `Chart.*`, which the core registry does not contain at
 all — they exist only if the client registered `flutter_adaptive_charts_fs`, which
 the server cannot observe.
+
+The chart-registry-only 2 are `Chart.VerticalBar.Grouped` and
+`Chart.HorizontalBar.Stacked`. **These are absent from the schema on purpose**,
+not by oversight: they need a nested `{legend, values:[{x,y}]}` shape, the card
+system prompt states outright that "there is no grouped or stacked chart here",
+and `card_schema_test.dart` already carries a test asserting the schema rejects
+them. They are counted here because a mirror of the registry has to account for
+every renderable type — including the ones it deliberately declines.
+
+A caution this number cost to learn: a naive `Chart\.[A-Za-z]+` regex silently
+truncates `Chart.HorizontalBar.Stacked` to `Chart.HorizontalBar` and dedupes it
+away, yielding 6. Any tooling that counts chart types must match the
+multi-segment form, as the existing `_chartTypesInPrompt()` helper already does.
 
 The registry-only 12 include `Container`. Neither list contains `Column`.
 **`cards.dart` emits both.** `_bubble` — the user bubble and the Markdown
@@ -321,14 +356,19 @@ Cases go in the existing `test/card_detect_test.dart`:
 ### What changes
 
 `$defs/Element` in `assets/card_schema.json` enumerates **24** types. The
-renderable universe is **36**: the 30 core types in `registry.dart` plus the 6
-`Chart.*` types from `flutter_adaptive_charts_fs`. Twelve are missing:
+renderable universe is **38**: the 30 core types in `registry.dart` plus the 8
+`Chart.*` types in `flutter_adaptive_charts_fs`. **Fourteen** are missing, and
+they do not all get the same treatment:
 
-`Media`, `Container`, `RichTextBlock`, `ActionSet`, `AdaptiveCard`, `ImageSet`,
-`Input.Rating`, `CompoundButton`, `CarouselPage`, `Accordion`, `TabSet`,
-`TabPage`
+| Missing type                                                                                                            | Where it goes                            |
+| ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `Media`, `Container`, `RichTextBlock`, `ActionSet`, `ImageSet`, `Input.Rating`, `CompoundButton`, `Accordion`, `TabSet` | Added to `Element` — 24 → **33**         |
+| `CarouselPage`, `TabPage`                                                                                               | `$defs/ChildElement` — child-only        |
+| `AdaptiveCard`                                                                                                          | Already `$defs/CardObject` — stays there |
+| `Chart.VerticalBar.Grouped`, `Chart.HorizontalBar.Stacked`                                                              | **Deliberately excluded** — see below    |
 
-Adding them makes the schema a complete mirror of what the client can render.
+So "complete mirror" means the schema **accounts for** every renderable type,
+not that every type lands in one flat enum.
 
 ### This is not palette expansion
 
@@ -351,9 +391,16 @@ validator's list of known types comes from, given that no existing list matched
 the renderable set. Once the schema mirrors the registry, the schema **is** that
 list — an asset the server already loads, with no second constant to drift.
 
+The dependency is sharper than "B needs a list to exist." B needs a list that
+covers **the server's own output**. `cards.dart` emits `Container` and `Column`
+in every envelope, and neither is in the schema today. Wire B up against the
+current schema and every single reply logs a false-positive warning on the
+server's own bubble — which does not merely look untidy, it destroys the
+fire-rate signal that is B's entire reason for landing warn-only first.
+
 That makes H a **prerequisite for B**, and it should be sequenced first.
 
-### Two members need care, not a blind append
+### Four members need care, not a blind append
 
 - **`AdaptiveCard`** is already represented as `$defs/CardObject`, via
   `"type": {"const": "AdaptiveCard"}`. Putting it in the `Element` enum would
@@ -366,8 +413,30 @@ That makes H a **prerequisite for B**, and it should be sequenced first.
   switch cases at all yet appear throughout the prompt's examples — `Column`,
   `TableRow`, and `TableCell` — which their parents' widgets handle directly.
 
+- **The two multi-series chart types** — `Chart.VerticalBar.Grouped` and
+  `Chart.HorizontalBar.Stacked` — are renderable but stay out. The prompt says
+  "there is no grouped or stacked chart here", and `card_schema_test.dart`
+  already asserts the schema rejects them. H must add them to an **explicitly
+  excluded** set with that reason attached, so the next person reading a
+  registry-vs-schema diff finds a decision rather than a gap.
+- **`ActionSet` is admitted, and the tension is real.** It is the one addition
+  that reopens a capability the prompt deliberately shut off — it ends by
+  banning actions outright, and lever J treats that ban as a decision rather
+  than an oversight. Because `Element` sets `additionalProperties: true`, the
+  schema does not constrain an `ActionSet`'s `actions` array at all, so under
+  `--json-format schema` a model that honors the constraint could emit real
+  action content.
+
+  It is admitted anyway, for two reasons. The schema records what the **client
+  can render**; the prompt governs what the **model is asked to produce**, and
+  those are the two surfaces H exists to stop conflating. And the practical
+  exposure is small: the model is never told `ActionSet` exists, `--json-format`
+  defaults to `none`, and only some models honor it at all. Constraining
+  `ActionSet` to an empty `actions` array would be more precise, but that is the
+  first per-element property schema in the file — which is lever C, deferred.
+
 Recommended resolution: a **second definition** (`$defs/ChildElement`, or an
-extended enum used only where nesting occurs) rather than flattening all 36 types
+extended enum used only where nesting occurs) rather than flattening every type
 into `Element`. Mirroring the registry is the goal; making every type legal in
 every position is not. Note that this also means the mirrored enum alone does not
 finish B's recursive case — `Column`, `TableRow`, and `TableCell` still need a
@@ -376,9 +445,22 @@ home.
 ### Consequence to accept
 
 Widening `Element` **loosens** `--json-format schema`, which exists to constrain.
-On models that honor `format`, the grammar will admit 36 types where it admitted 24. Because the prompt still offers only its own narrower palette, practical
+On models that honor `format`, the grammar will admit 33 types where it admitted 24. Because the prompt still offers only its own narrower palette, practical
 exposure is small — but it is a real change in direction and belongs in the
 changelog rather than being discovered later.
+
+**H also breaks an existing test, and the break is informative.**
+`test/shape_cases_test.dart` pins the probe's shape coverage to the `Element`
+enum, on the assumption that the enum means "the types we ask the model for."
+H changes it to mean "the types the client can render." Those are different
+sets, and H is what forces them apart.
+
+The fix is not to widen the exclusion list until the test goes quiet. It is to
+**repoint the pin at the prompt palette**, which is what shape coverage was
+always about — `card_schema_test.dart` already computes `promptTypes()` for its
+own checks. A shape case for `Accordion` would fail on every model forever,
+because the model is never told `Accordion` exists. Any work implementing H must
+carry this repoint in the same change, or the suite goes red between tasks.
 
 ### Testing
 
@@ -437,6 +519,32 @@ ever picked up: **the 25-case shape set contains no cases for any of these
 types.** Re-running it after a palette expansion would measure only the harm —
 longer prompt, more nesting temptation — and none of the benefit. New shape cases
 have to land with the new types, or the A/B is rigged against them.
+
+**K — fall back to a second model when a reply fails.** Lever D retries the
+**same** model; this routes a failed reply to a different one — most obviously
+the launch set's strongest performer. It is a standard reliability pattern and a
+Kind the catalogue otherwise has no entry for, combining server code with model
+selection. Deferred because it doubles worst-case latency and resident-memory
+pressure on a host that already cannot hold two mid-size models at once, which
+is a real constraint rather than a tuning preference.
+
+**L — tell the model to always fence, instead of never.** The ledger's own
+generalizable result is _redirect a behavior rather than forbidding it_, proven
+on the code-explanation case (6/10 → 15/15). The same file separately records
+that `qwen2.5-coder:7b`, the compiled-in default, fences its card anyway despite
+the prompt forbidding it in two places — harmless only because `_stripFence`
+recovers it, and fence-stripping has regressed before. Leaning into the pattern
+rather than fighting it is the exact move the ledger says works, applied to a
+quirk the ledger already documents. Deferred, not rejected, because it is a
+wording change and every wording change in the ledger needs `prompt_ab.dart`
+plus a stress re-run before it can be believed.
+
+**M — best-of-N sampling.** Key Findings states that `t=0` is not deterministic
+and that a broken card "never self-heals" on retry — so a broken card at `t=0`
+stays broken, but N samples at `t>0` might not all break the same way. Fire N in
+parallel, take the first that parses. Deferred because it multiplies cost per
+reply by N against a single local Ollama that serializes the calls anyway, which
+makes it far more attractive on hosted inference than here.
 
 ## Rejected
 

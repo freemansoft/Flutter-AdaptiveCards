@@ -40,6 +40,10 @@
 | `assets/card_tool_prompt.txt`            | **New.** System prompt for the tool channel                               | 5    |
 | `tool/model_probes/tool_call_probe.dart` | **New.** Tool-calling capability canary                                   | 5    |
 | `test/tool_call_probe_test.dart`         | **New.** Covers the pure verdict classifier                               | 5    |
+| `test/shape_cases_test.dart`             | Shape-coverage pin, repointed from the schema enum to the prompt palette  | 1    |
+| `tool/model_probes/shape_cases.dart`     | Doc comment naming what coverage is measured against                      | 1    |
+| `tool/model_probes/check_results.dart`   | Staleness checker's expected-probe set                                    | 6    |
+| `tool/model_probes/sweep.sh`             | Drives every per-model probe                                              | 6    |
 | `ModelBehavior.md`                       | Records the measurement                                                   | 6    |
 
 `card_detect.dart` is deliberately **not** modified. It is pure (`dart:convert` only) and stays that way; the new vocabulary check does file IO, so it lives in its own file.
@@ -75,7 +79,10 @@ Set<String> _coreRegistryElementTypes() {
   final source = File(
     '../packages/flutter_adaptive_cards_fs/lib/src/registry.dart',
   ).readAsStringSync();
-  return RegExp(r"case '([A-Za-z][A-Za-z.]*)':")
+  // Not a raw string: the pattern has no backslashes, and `r"…"` here trips
+  // very_good_analysis's unnecessary_raw_strings. Double quotes are correct
+  // under prefer_single_quotes because the pattern contains single quotes.
+  return RegExp("case '([A-Za-z][A-Za-z.]*)':")
       .allMatches(source)
       .map((m) => m.group(1)!)
       // The same switch carries action types; only elements belong here.
@@ -85,11 +92,15 @@ Set<String> _coreRegistryElementTypes() {
 
 /// `Chart.*` types, which live in the optional charts package and are
 /// renderable only when a host registered it.
+///
+/// The trailing-segment group is load-bearing: a bare `Chart\.[A-Za-z]+`
+/// truncates `Chart.HorizontalBar.Stacked` to `Chart.HorizontalBar` and
+/// dedupes it away, silently reporting 6 types where the registry declares 8.
 Set<String> _chartRegistryElementTypes() {
   final source = File(
     '../packages/flutter_adaptive_charts_fs/lib/src/card_chart_registry.dart',
   ).readAsStringSync();
-  return RegExp(r'Chart\.[A-Za-z]+')
+  return RegExp(r'Chart\.[A-Za-z]+(?:\.[A-Za-z]+)*')
       .allMatches(source)
       .map((m) => m.group(0)!)
       .toSet();
@@ -103,10 +114,23 @@ Set<String> _chartRegistryElementTypes() {
 /// let it match the wrong `oneOf` branch.
 const _notTopLevel = {'AdaptiveCard', 'CarouselPage', 'TabPage'};
 
+/// Renderable types the schema declines on purpose.
+///
+/// Grouped and stacked charts need a nested `{legend, values:[{x,y}]}` shape.
+/// The card system prompt says outright that there is no grouped or stacked
+/// chart, and the `does not allow multi-series chart types` test above asserts
+/// the schema rejects them. Listed here so a registry-vs-schema diff shows a
+/// decision rather than a gap.
+const _deliberatelyExcluded = {
+  'Chart.VerticalBar.Grouped',
+  'Chart.HorizontalBar.Stacked',
+};
+
 Set<String> _renderableTopLevelTypes() =>
     _coreRegistryElementTypes()
       ..addAll(_chartRegistryElementTypes())
-      ..removeAll(_notTopLevel);
+      ..removeAll(_notTopLevel)
+      ..removeAll(_deliberatelyExcluded);
 ```
 
 ```dart
@@ -117,8 +141,14 @@ Set<String> _renderableTopLevelTypes() =>
       expect(_coreRegistryElementTypes(), hasLength(30));
     });
 
-    test('the charts package contributes 6 chart types', () {
-      expect(_chartRegistryElementTypes(), hasLength(6));
+    test('the charts package declares 8 chart types', () {
+      // 8, not 6: the two multi-series types are renderable and are excluded
+      // from the schema by decision, not by absence.
+      expect(_chartRegistryElementTypes(), hasLength(8));
+      expect(
+        _chartRegistryElementTypes(),
+        containsAll(_deliberatelyExcluded),
+      );
     });
 
     test('the Element enum is exactly the renderable top-level set', () {
@@ -185,9 +215,86 @@ cd adaptive_chat_server_dart
 fvm dart test test/card_schema_test.dart
 ```
 
-Expected: PASS, all groups. The pre-existing `every type the prompt advertises is allowed by the schema enum` test still passes — it is a subset check, and the enum only grew.
+Expected: PASS, all groups. The pre-existing `every type the prompt advertises is allowed by the schema enum` test still passes — it is a subset check, and the enum only grew. The pre-existing `the schema does not allow multi-series chart types` test also still passes, because `_deliberatelyExcluded` keeps those two out.
 
-- [ ] **Step 5: Add the changelog entry**
+- [ ] **Step 5: Repoint the shape-coverage pin at the prompt palette**
+
+**Do not skip this and do not defer it to a later task.** `test/shape_cases_test.dart` pins the probe's shape coverage to the `Element` enum, so Step 3 has just broken it. Run it and see the failure first:
+
+```bash
+cd adaptive_chat_server_dart
+fvm dart test test/shape_cases_test.dart
+```
+
+Expected: FAIL on `accepted types cover exactly the schema enum minus TextBlock, Icon, and Image`, reporting `does not contain 'RichTextBlock'` among others.
+
+The failure is informative rather than mechanical. That pin assumed the `Element` enum means _"the types we ask the model for."_ Task 1 has changed it to mean _"the types the client can render."_ Those are different sets. Widening the exclusion list until the test goes quiet would be the wrong repair — a shape case for `Accordion` would fail on every model forever, because the card system prompt never tells the model `Accordion` exists.
+
+Repoint the pin at the prompt palette, which is what shape coverage was always about. In `test/shape_cases_test.dart`, replace the body of that test with:
+
+```dart
+        // Shape coverage is about what the model is *asked* to produce, so
+        // this pins against the prompt palette, not the schema enum. Task 1
+        // of the card-reliability-levers plan split those two meanings: the
+        // enum now records what the client can render, which is a superset
+        // the model is never told about and could not emit if it tried.
+        final allowed = promptElementTypes();
+        final documentedExclusions = {'TextBlock', 'Icon', 'Image'};
+        final expectedCoverage = allowed.difference(documentedExclusions);
+        final actualCoverage = shapeCases.expand((c) => c.accepted).toSet();
+        expect(
+          actualCoverage,
+          equals(expectedCoverage),
+          reason:
+              'shapeCases should cover every element type the card system '
+              'prompt advertises except the documented exclusions '
+              '(TextBlock, Icon, Image). If this fails because the prompt '
+              'gained a type, either add a case that exercises it or add it '
+              'to the documented exclusions here, in the doc comment above '
+              'shapeCases, and in README.md / the spec.',
+        );
+```
+
+Add this helper beside the existing `schemaElementTypes()` in the same file. It mirrors the `promptTypes()` logic already proven in `card_schema_test.dart`:
+
+```dart
+/// Element types the card system prompt actually advertises to the model.
+///
+/// A bullet heading alone is not proof of a type — the prompt uses headings
+/// like `- Charts —` to introduce a family. Requiring a matching `"type":"X"`
+/// example, which every real palette entry has and no section heading does,
+/// is what separates the two.
+Set<String> promptElementTypes() {
+  final prompt = File('assets/card_system_prompt.txt').readAsStringSync();
+  final exampled = RegExp('"type":"([A-Za-z.]+)"')
+      .allMatches(prompt)
+      .map((m) => m.group(1)!)
+      .toSet();
+  // Structural children and the card wrapper appear in examples but are not
+  // standalone palette entries a shape case could target.
+  return exampled
+    ..removeAll({
+      'AdaptiveCard',
+      'CarouselPage',
+      'TableRow',
+      'TableCell',
+      'Column',
+    });
+}
+```
+
+Then update the doc comment above `shapeCases` in `tool/model_probes/shape_cases.dart`: its "21 of 24" claim now refers to the prompt palette rather than the schema enum. Change the phrase `card_schema.json's enum` to `the card system prompt's palette` wherever it appears in that comment.
+
+- [ ] **Step 6: Verify both test files pass together**
+
+```bash
+cd adaptive_chat_server_dart
+fvm dart test test/card_schema_test.dart test/shape_cases_test.dart
+```
+
+Expected: PASS, both files. If `shape_cases_test.dart` still fails, the prompt palette and `shapeCases` genuinely disagree and that is a real coverage gap to report — do not widen `documentedExclusions` to hide it.
+
+- [ ] **Step 7: Add the changelog entry**
 
 Insert as the first bullet under `## [Unreleased]` in `adaptive_chat_server_dart/CHANGELOG.md`:
 
@@ -201,15 +308,26 @@ Insert as the first bullet under `## [Unreleased]` in `adaptive_chat_server_dart
   **loosens** `--json-format schema`: on models that honor `format`, the
   grammar now admits 33 types where it admitted 24. The system prompt is
   unchanged, so what the model is asked to produce is unchanged.
+  `Chart.VerticalBar.Grouped` and `Chart.HorizontalBar.Stacked` are renderable
+  but stay out by decision, now recorded as an explicit exclusion set rather
+  than an absence.
+- Changed: **shape coverage is pinned to the prompt palette, not the schema
+  enum.** Widening the enum split two meanings that had been one: the enum now
+  records what the client can render, while `shapeCases` is about what the
+  model is asked to produce. A shape case for a type the prompt never
+  advertises would fail on every model forever, so `shape_cases_test.dart`
+  now pins against the prompt.
 ```
 
-- [ ] **Step 6: Format and commit**
+- [ ] **Step 8: Format and commit**
+
+Both changes go in one commit: the enum growth breaks the shape pin, so splitting them would leave the suite red at the intermediate commit.
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
 fvm dart format adaptive_chat_server_dart/
 npm run format:md:chat
-git add adaptive_chat_server_dart/assets/card_schema.json adaptive_chat_server_dart/test/card_schema_test.dart adaptive_chat_server_dart/CHANGELOG.md
+git add adaptive_chat_server_dart/assets/card_schema.json adaptive_chat_server_dart/test/card_schema_test.dart adaptive_chat_server_dart/test/shape_cases_test.dart adaptive_chat_server_dart/tool/model_probes/shape_cases.dart adaptive_chat_server_dart/CHANGELOG.md
 git commit -m "feat(chat-server): mirror the renderable registry in card_schema.json"
 ```
 
@@ -461,7 +579,11 @@ void main() {
     });
 
     test('returns an empty set when ChildElement is absent', () {
-      File(schemaPath).writeAsStringSync(jsonEncode({r'$defs': {}}));
+      // Typed literal: a bare `{}` trips inference_failure_on_collection_literal,
+      // which is a warning and makes `dart analyze` exit non-zero.
+      File(schemaPath).writeAsStringSync(
+        jsonEncode({r'$defs': <String, dynamic>{}}),
+      );
       expect(loadKnownElementTypes(schemaPath), isEmpty);
     });
   });
@@ -659,7 +781,7 @@ cd adaptive_chat_server_dart
 fvm dart test test/element_types_test.dart
 ```
 
-Expected: PASS, 11 tests.
+Expected: PASS, 10 tests.
 
 - [ ] **Step 5: Analyze**
 
@@ -669,6 +791,8 @@ fvm dart analyze adaptive_chat_server_dart/
 ```
 
 Expected: `No issues found!`
+
+If any lint does fire, fix it rather than suppressing it. An adversarial review of this plan's first draft found four real violations in code it told the engineer to type verbatim — `unnecessary_raw_strings`, `inference_failure_on_collection_literal` (a _warning_, so `analyze` exits 2), `specify_nonobvious_property_types`, and `lines_longer_than_80_chars`. All four are fixed in the snippets above, but `very_good_analysis` is strict and the list is not guaranteed exhaustive.
 
 - [ ] **Step 6: Add the changelog entry and commit**
 
@@ -920,7 +1044,7 @@ Ollama accepts `tools` for every model but honors it only where the chat templat
 
 **Interfaces:**
 
-- Consumes: `parseProbeArgs`, `probeAssetsDir`, `judgeReply` from `probe_support.dart`; `ProbeCall`, `writeProbeRun`, `passSummary` from `probe_results.dart`; `tryParseCardBody` from `package:adaptive_chat_server_dart/src/card_detect.dart`.
+- Consumes: `parseProbeArgs`, `probeAssetsDir`, `loadCardSchema` from `probe_support.dart`; `ProbeCall`, `writeProbeRun`, `passSummary` from `probe_results.dart`; `tryParseCardBody` from `package:adaptive_chat_server_dart/src/card_detect.dart`.
 - Produces: `enum ToolVerdict { supported, unsupported, supportedButDeclines, overCalls }` and `ToolVerdict classifyToolSupport({required bool calledTrivialTool, required bool calledCardTool, required bool cardArgumentsRender, required bool calledOnNegativeControl})`.
 
 - [ ] **Step 1: Write the failing test**
@@ -1183,7 +1307,7 @@ Map<String, dynamic> _renderCardTool(Map<String, dynamic> schema) {
 /// something. Deliberately additive and prompt-compatible: an earlier probe
 /// that asked models to contradict their system prompt produced a null on
 /// every model and proved nothing.
-const _trivialTool = {
+const Map<String, dynamic> _trivialTool = {
   'type': 'function',
   'function': {
     'name': 'get_current_temperature',
@@ -1366,9 +1490,10 @@ Future<void> main(List<String> argv) async {
         setting: 'tools=card',
       ),
     );
-    stdout.writeln(
-      '  #$i ${toolArgs == null ? "no tool_calls" : (renders ? "renders" : "not renderable")}',
-    );
+    final what = toolArgs == null
+        ? 'no tool_calls'
+        : (renders ? 'renders' : 'not renderable');
+    stdout.writeln('  #$i $what');
   }
 
   stdout.writeln('=== check 2: negative control, a prose question ===');
@@ -1447,6 +1572,8 @@ fvm dart analyze adaptive_chat_server_dart/
 
 Expected: `No issues found!`
 
+If any lint does fire, fix it rather than suppressing it. An adversarial review of this plan's first draft found four real violations in code it told the engineer to type verbatim — `unnecessary_raw_strings`, `inference_failure_on_collection_literal` (a _warning_, so `analyze` exits 2), `specify_nonobvious_property_types`, and `lines_longer_than_80_chars`. All four are fixed in the snippets above, but `very_good_analysis` is strict and the list is not guaranteed exhaustive.
+
 Changelog entry:
 
 ```markdown
@@ -1513,7 +1640,10 @@ cd adaptive_chat_server_dart
 for m in $(grep -A1 '"--ollama-model"' ../.vscode/launch.json |
            grep -v -e 'ollama-model' -e '^--$' | tr -d ' ",' | sort -u); do
   echo "=== $m ==="
-  slug=$(echo "$m" | tr '/:' '__')
+  # Matches modelSlug() in probe_results.dart and slug() in sweep.sh:
+  # '/' becomes a DOUBLE underscore, ':' a single one. `tr '/:' '__'`
+  # collapses both to one and would misname any hf.co/... model.
+  slug=$(printf '%s' "$m" | sed -e 's#/#__#g' -e 's#:#_#g')
   mkdir -p "tool/model_probes/results/$slug"
   fvm dart run tool/model_probes/tool_call_probe.dart \
     --model "$m" --samples 2 \
@@ -1538,9 +1668,43 @@ grep -h '"verdict"' tool/model_probes/results/*/tool_call_probe.json
 
 Record which outcome occurred; it is the deliverable of this task either way.
 
-- [ ] **Step 5: Write the finding into `ModelBehavior.md`**
+- [ ] **Step 5: Register the probe so its results cannot go stale**
 
-Add a section after `### Not a card test: the format canary`, since it is the same kind of capability probe. Use this structure, filling in the measured values — do not invent numbers:
+Every other per-model probe is tracked by the staleness checker and driven by the sweep script. Without this step `tool_call_probe` results silently rot as `launch.json` and the prompts change.
+
+In `tool/model_probes/check_results.dart`, add `'tool_call_probe'` to the `expectedProbes` set:
+
+```dart
+const expectedProbes = {
+  'shape_ab-seeded',
+  'shape_ab-unaided',
+  'cascade_ab',
+  'temperature_stress',
+  'temperature_matrix',
+  'json_format_probe',
+  'tool_call_probe',
+};
+```
+
+In `tool/model_probes/sweep.sh`, add a `run` line beside the existing `json_format` one, following that file's established argument order:
+
+```bash
+  run "$M tool_call" "$D/tool_call_probe.json" \
+    tool/model_probes/tool_call_probe.dart --model "$M" --samples 2
+```
+
+Then confirm the checker is satisfied:
+
+```bash
+cd adaptive_chat_server_dart
+fvm dart run tool/model_probes/check_results.dart
+```
+
+Expected: no `missing probe` finding for `tool_call_probe` on any model whose results Step 3 wrote.
+
+- [ ] **Step 6: Write the finding into `ModelBehavior.md`**
+
+Add a section after ``### Not a card test: the `format` canary``, since it is the same kind of capability probe. Use this structure, filling in the measured values — do not invent numbers:
 
 ```markdown
 ### Not a card test: the tool-calling canary
@@ -1560,7 +1724,7 @@ local model for structured output through a tool.>**
 
 If the result generalizes, also add one bullet to `## Key findings`. If it does not, do not force one.
 
-- [ ] **Step 6: Update the changelog and commit**
+- [ ] **Step 7: Update the changelog and commit**
 
 ```markdown
 - Docs: **tool-calling capability measured across the launch set.**
@@ -1572,7 +1736,7 @@ If the result generalizes, also add one bullet to `## Key findings`. If it does 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
 npm run format:md:chat
-git add adaptive_chat_server_dart/ModelBehavior.md adaptive_chat_server_dart/CHANGELOG.md adaptive_chat_server_dart/tool/model_probes/results
+git add adaptive_chat_server_dart/ModelBehavior.md adaptive_chat_server_dart/CHANGELOG.md adaptive_chat_server_dart/tool/model_probes/results adaptive_chat_server_dart/tool/model_probes/check_results.dart adaptive_chat_server_dart/tool/model_probes/sweep.sh
 git commit -m "docs(chat-server): record tool-calling capability across the launch set"
 ```
 
@@ -1597,6 +1761,8 @@ fvm flutter analyze
 ```
 
 Expected: `No issues found!`
+
+If any lint does fire, fix it rather than suppressing it. An adversarial review of this plan's first draft found four real violations in code it told the engineer to type verbatim — `unnecessary_raw_strings`, `inference_failure_on_collection_literal` (a _warning_, so `analyze` exits 2), `specify_nonobvious_property_types`, and `lines_longer_than_80_chars`. All four are fixed in the snippets above, but `very_good_analysis` is strict and the list is not guaranteed exhaustive.
 
 - [ ] **Step 3: Both format gates**
 
