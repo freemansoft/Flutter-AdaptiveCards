@@ -94,5 +94,19 @@ void main() {
         ToolVerdict.supportedButDeclines,
       );
     });
+
+    test('unsupported outranks over-calling', () {
+      // A template with no tool support cannot have meaningfully over-called
+      // anything, so the discriminator wins over every other signal.
+      expect(
+        classifyToolSupport(
+          calledTrivialTool: false,
+          calledCardTool: true,
+          cardArgumentsRender: true,
+          calledOnNegativeControl: true,
+        ),
+        ToolVerdict.unsupported,
+      );
+    });
   });
 }
