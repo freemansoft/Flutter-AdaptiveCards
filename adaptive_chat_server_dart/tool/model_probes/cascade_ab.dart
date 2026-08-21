@@ -256,7 +256,23 @@ Future<void> main(List<String> argv) async {
         options: const {'temperature': 0.0},
         timeout: args.timeout,
       );
-      final result = judgeCascade(first.reply, second.reply);
+      // A stalled call returns an empty reply, and an empty reply looks
+      // exactly like prose to `judgeCascade` — it reported six of
+      // `granite4.1:3b`'s timeouts as "t1 prose (no card attempted)", which
+      // reads as "the model answered in Markdown" when the model in fact
+      // answered nothing at all. Checked before judging, so a stall is named
+      // as one and counted by `ProbeRun.timeouts` like every other probe's.
+      final stalled = first.label.startsWith('timeout (')
+          ? 'turn 1'
+          : (second.label.startsWith('timeout (') ? 'turn 2' : null);
+      final result = stalled == null
+          ? judgeCascade(first.reply, second.reply)
+          : CascadeResult(
+              pass: false,
+              detail:
+                  't1 ${stalled == 'turn 1' ? first.label : second.label}'
+                  ' on $stalled',
+            );
       if (!result.pass) allPassed = false;
       if (!result.detail.startsWith('t1 ')) everReachedTurnTwo = true;
       collect.add(
