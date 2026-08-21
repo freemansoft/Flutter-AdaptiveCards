@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:adaptive_chat_server_dart/src/card_detect.dart';
+import 'package:adaptive_chat_server_dart/src/element_types.dart';
 import 'package:adaptive_chat_server_dart/src/responder.dart';
 import 'package:adaptive_chat_server_dart/src/seed_card.dart';
 import 'package:adaptive_chat_server_dart/src/stats.dart';
@@ -247,6 +248,7 @@ class OllamaResponder implements Responder {
        // Same reason as _ollamaUrl above.
        // ignore: prefer_initializing_formals
        _temperature = temperature {
+    _knownElementTypes = loadKnownElementTypes(cardSchemaPath);
     if (_jsonFormat == 'schema') {
       _cardSchema = _loadCardSchema(cardSchemaPath);
       if (_cardSchema == null) {
@@ -273,6 +275,13 @@ class OllamaResponder implements Responder {
   String _jsonFormat;
   Map<String, dynamic>? _cardSchema;
 
+  /// Vocabulary for the unknown-type warning; empty means the check is off.
+  ///
+  /// Loaded unconditionally, unlike `_cardSchema`, which is read only under
+  /// `--json-format schema` — the warning has to work in the default
+  /// `format=none` configuration, which is the one that actually ships.
+  Set<String> _knownElementTypes = const {};
+
   @override
   Map<String, dynamic> describe() {
     final config = <String, dynamic>{
@@ -282,6 +291,9 @@ class OllamaResponder implements Responder {
       'numCtx': _numCtx,
       'historyTurns': _historyTurns,
       'jsonFormat': _jsonFormat,
+      // 0 means the vocabulary failed to load and the unknown-type warning
+      // is inert — surfaced because a silently disabled check looks healthy.
+      'knownElementTypes': _knownElementTypes.length,
       'systemPromptFile': p.basename(_systemPromptPath),
       'seedCard': _seedCardPath != null,
       'seedCardFile': _seedCardPath == null ? null : p.basename(_seedCardPath),
@@ -571,6 +583,19 @@ class OllamaResponder implements Responder {
           'Model reply looked like an Adaptive Card but was not '
           'usable (model=$_model, ${content.length} chars) — rendered as '
           'text instead. Reason: $reason',
+        );
+      }
+    } else {
+      final unknown = unknownElementTypes(cardBody, _knownElementTypes);
+      if (unknown.isNotEmpty) {
+        // Warned, not rejected: an unrecognized type renders as a blank, but
+        // suppressing the whole card over one bad nested element may be
+        // worse. The fire rate observed here is the evidence for whether to
+        // promote this to a rejection.
+        _log.warning(
+          'Model reply contains unrecognized element type(s) '
+          '(model=$_model): ${unknown.join(", ")} — these render as empty '
+          'blanks. Card rendered anyway.',
         );
       }
     }

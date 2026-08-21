@@ -10,6 +10,13 @@
   and no probe scores. A missing or malformed schema disables the check
   rather than failing requests.
 
+- Added: **`OllamaResponder` warns when a rendered card carries an
+  unrecognized element type.** Warning only — the card still renders, because
+  suppressing it over one bad nested element may be worse than an invisible
+  blank, and the observed fire rate is the evidence for whether to promote
+  this to a rejection. `/status` reports `knownElementTypes`, which is `0`
+  when the vocabulary failed to load and the check is inert.
+
 - Changed: **`card_schema.json` now mirrors the renderable registry.** The
   `Element` enum grew from 24 to 33 types, adding `Media`, `Container`,
   `RichTextBlock`, `ActionSet`, `ImageSet`, `Input.Rating`, `CompoundButton`,
