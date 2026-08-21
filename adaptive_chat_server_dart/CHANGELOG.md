@@ -2,6 +2,34 @@
 
 ## [Unreleased]
 
+- Docs: **`ModelBehavior.md` restructured to read from the outside.** The
+  generalizable results are hoisted into a `Key findings` section at the top,
+  followed by a **tuning ledger** — all thirteen levers ever pulled on this
+  workload, each described without assuming knowledge of this codebase, and
+  grouped by _kind_ (context assembly / decoding / prompt wording / server
+  code). The grouping is the finding: every change to what the model sees
+  before the question moved behavior, while almost every change to the wording
+  of the instructions did not. The file is now a candidate for a blog article
+  rather than only a lab notebook.
+- Docs: **redundancy removed from `ModelBehavior.md`.** The candidate table is
+  now a pure roster — model, weights, portability, role, and the everyday +
+  stress result that lives nowhere else — and no longer repeats the shape
+  score, seed gain, or cascade figures the shape-coverage table already owns.
+  Its `Cold start` column, which held everyday/stress numbers while the shape
+  table's identically-named column held 25-shape numbers, is renamed. All six
+  tables of three rows or fewer are inlined as prose, and the two superseded
+  dated sweeps (2026-08-14, 2026-08-16) collapse to the three findings that
+  outlived them — their per-model numbers disagreed with the current roster on
+  eight of ten models, having been `--samples 1` runs replaced by the
+  2026-08-20 re-measurement.
+- Fixed: **three contradictions in `ModelBehavior.md`.**
+  `qwen3.8:27b-nvfp4` was recorded as 24/25 with a seed gain of 0 in both
+  tables and as 23/25 with a gain of −1 in its own section; the tables are
+  authoritative and the section now matches. A claim that `granite4.1:8b`
+  erodes shapes "without the seed" contradicted the table it cited, which is
+  the seeded picture. And the `qwen2.5-coder:7b` section carried a stale
+  4.7 GB and ~9 s/call against the tables' 4.4 GB and 2.3 s.
+
 - Changed: **the seed is now opt-in — it is sent only when `--seed-card-file`
   names one.** There is no separate boolean and no implicit default, mirroring
   how the server already treats `--system-prompt-file`: a run says what it
@@ -12,7 +40,7 @@
   knowing: the Markdown-prompt launch targets no longer seed at all, and
   prepending a card-shaped exchange to a server whose prompt asks for Markdown
   was always working against itself.
-- Docs: **both `ModelBehavior.md` tables now carry a Seed column** tagging what
+- Docs: **`ModelBehavior.md`'s shape-coverage table carries a Seed column** tagging what
   the flag is worth per model — **needs it** (+5 or more), helps (+2 to +4), no
   effect (0 or +1), _hurts_ (negative) — derived from the recorded runs rather
   than written by hand, so it cannot disagree with the columns beside it. Ten
@@ -47,17 +75,6 @@
   three now asserts the invariants that actually matter — the compiled-in
   default is launchable, and no tag appears twice — rather than a count that
   churns.
-
-- Fixed: **five stale `granite4.1:3b` claims that shipped in the correction
-  itself.** The batch of edits correcting that model threw on its last
-  statement, so the file was never written, and only the edits re-applied
-  afterwards took effect. `ModelBehavior.md` consequently still described it as
-  12/25 with 46 stalls, called its figures wholly incomparable with its earlier
-  ones, said it dropped five shapes warm, and named it the slowest sweep in the
-  file — all of which the corrected measurement contradicts. It scores 17/25
-  cold and warm, stalls 13 times (11 of them unaided), and `gpt-oss:20b` at
-  48 minutes is the longest sweep. Found by checking whether the findings
-  claimed in review were actually in the document.
 
 - Fixed: **`granite4.1:3b`'s 2026-08-20 figures were a measurement artifact,
   and are corrected.** It was published at 12/25 seeded with `n/a` on cascade
@@ -132,18 +149,6 @@
   weakest of the four strong large models. The measurement its `launch.json`
   case was waiting on closed against it. It also reproduced all three shape
   figures exactly — the only model to do so.
-- Docs: added **Performance on this machine** with per-model latency, and a
-  note on the per-call timeout. Weight predicts neither coverage nor speed:
-  `granite4.1:3b` at 2.0 GB took **124 minutes with 46 stalls** while
-  `qwen3.8:27b-nvfp4` at eight times the size took 39 with none. Stall risk,
-  not gigabytes, is what a sweep should be budgeted by.
-- Docs: **`granite4.1:3b` is the one model whose figures are not comparable
-  across the sweep.** A 120-second per-call ceiling reclassifies its runaway
-  generations as failures: 17/25 → 12/25 warm, and cascade 3/3 → `n/a`. The
-  bounded figures are kept — the server has no timeout of its own, so a real
-  user simply waits, and a card nobody waits for has failed — but the change in
-  meaning is documented rather than published silently.
-
 - Fixed: **`probeOnce` had no timeout, so one runaway generation hung a whole
   sweep.** `granite4.1:3b` was observed generating for **16 minutes** on a
   single `table` case with history and never returning; with several models
@@ -174,7 +179,7 @@
   re-derived from the recorded calls, and a run whose own summary disagrees
   with its own calls is fatal), **staleness** (a result measured against a
   prompt asset since edited — fatal for a model `launch.json` launches, a note
-  for the rest, because re-running fourteen models on every prompt edit is not
+  for the rest, because re-running every probed model on each prompt edit is not
   a gate anyone would keep), and **gaps** (a launched model with a probe never
   run against it — the exact hole that let `gpt-oss:20b` hold a `launch.json`
   slot with its `format` support unmeasured).
@@ -206,46 +211,15 @@
   should transfer to any workload asking a local model for schema-shaped JSON.
   Read it as a lab notebook, not a requirement.
 
-- Changed: **`.vscode/launch.json` now launches `qwen3.8:27b-nvfp4` instead of
-  `gpt-oss:20b`** as its large model. Both the card-prompt and Markdown-prompt
-  configurations were swapped, along with the two compounds that launch them, so
-  the grep `ModelBehavior.md` uses to derive the top three still yields exactly
-  three models (`granite4.1:8b`, `qwen2.5-coder:7b`, `qwen3.8:27b-nvfp4`). The
-  two models **tie on the figure the file says to read first** — 23/25 with
-  history as shipped, and 24/25 cold — and `qwen3.8:27b-nvfp4` wins every other
-  measured axis: everyday 21/21 vs. 17/21, stress 10/10 vs. 9/10, pre-seed warm
-  24/25 vs. 22/25, one eroded shape vs. two, and it produces `Carousel` and
-  `ColumnSet`, which `gpt-oss:20b` permanently fails as invalid JSON. Its seed
-  gain is −1 against +1, so it is the more robust of the two unaided. The cost is
-  **4.1 GB** (16.9 vs. 12.8), the one axis `gpt-oss:20b` still wins and the
-  reason it stays a probed candidate rather than being retired. `format` was not
-  traded away: neither model honors it, and `gpt-oss:20b` is the worse of the
-  two on it. **`defaultOllamaModel` is unchanged** — the compiled-in default is
-  still `qwen2.5-coder:7b`, which is a separate decision from what the debugger
-  launches.
 - Docs: added **`qwen3.8:27b-nvfp4`** to `ModelBehavior.md` and measured it on
   every probe in `tool/model_probes/` (2026-08-20, one model resident, 64 GB
   M1) — the fifteenth model in the matrix, added with every axis measured in
   one pass. Everyday 7/7 at all three temperatures;
   stress **5/5 at `t=0` and 5/5 at `t=0.6`**, matched only by
-  `qwen3-coder:30b`; shapes **24/25 cold / 23/25 with history** seeded and
-  **23/25 / 24/25** unaided; cascade 3/3.
-- Docs: it is the **second usable model that is better without the card seed**
-  (−1; `llama3-chatqa:8b` is also negative but scores 1/25),
-  so it clears the seed-dependence bar that rejected `nemotron-3.5-lightning:30b`
-  and `qwen3-coder:30b`, and its 24/25 unaided with-history ties the highest
-  such figure in the file. It also **dominates its `qwen3.6:27b-coding-nvfp4`
-  sibling on every comparable axis** — better cold-start (24/25 vs. 23/25),
-  equal warm, 16.9 GB vs. 18.4 GB — and it produces `Carousel` and `ColumnSet`
-  cleanly on every sample, the two nested shapes `gpt-oss:20b` and
-  `qwen3.6:27b-coding-nvfp4` both permanently fail, showing that ceiling is not
-  a property of the weight class. (It is not free of permanent misses overall:
-  `rating_ask` fails under both conditions, so `qwen3-coder:30b` keeps its
-  distinction as the only model failing no case under both.) It
-  is additionally the first `nvfp4` model run through the stress set, which is
-  the measurement `ModelBehavior.md` had named as the open question blocking the
-  `qwen3.6` case. **`launch.json` unchanged** — recorded as a judgement call for
-  whoever owns the debugger config.
+  `qwen3-coder:30b`; shapes **24/25 both cold and with history**, seeded and
+  unaided alike — a seed gain of zero; cascade 3/3. It holds the large-model
+  `launch.json` slot on the strength of that with-history figure, the highest
+  in the file.
 - Docs: measured **`gpt-oss:20b`'s `format` support for the first time** while
   comparing it against `qwen3.8:27b-nvfp4` — it had never been probed, so the
   `format` blind spot recorded against the `nvfp4` builds had no baseline to be
@@ -289,106 +263,20 @@
   requested type. Judged with the server's own `tryParseCardBody`; seed on by
   default, as the server ships. `test/cascade_judge_test.dart` covers the
   scoring without needing a model.
-- Docs: added a **Cascade** column to `ModelBehavior.md`'s model table and
-  measured every model for it. Thirteen score `3/3`; `llama3-chatqa:8b` is
-  `n/a`, not `0/3`, because it answers turn 1 in prose and so never produces a
-  card for turn 2 to edit — attributing that to the cascade would report a
-  turn-1 shortcoming twice. The column separates no two usable models and is
-  carried deliberately anyway: follow-up editing is the kind of behavior
-  everyone assumes and nobody had measured, and the column records that it was
-  checked on every model and holds wherever a card gets produced.
-  `cascade_ab.dart` reports the same distinction, summarising untestable cases
-  as "not exercised" rather than folding them into the failure count.
-
-- Docs: measured the remaining seven pre-seed baselines
-  (`shape_ab.dart --no-seed-card --samples 2`, `t=0`), so **all fourteen**
-  models in `ModelBehavior.md` now carry a seed-dependence figure. The gain
-  from the seed runs +11 to −1: it rescues `nemotron-3-nano:4b` from unusable
-  (6/25 → 17/25) and carries most of the top group's score, but the two models
-  that need it least are the two best on the unaided axis, so a high seeded
-  score is not evidence of a good model until the pre-seed column is read
-  beside it. Pre-seed erosion is concentrated in the `choice*` cases — five of
-  eight models lose them to two prose turns — which names what the seed is
-  actually protecting.
-- Docs: **`qwen3.6:27b-coding-nvfp4` is now a live case to change the
-  `launch.json` set**, and the first challenger to survive the seed-dependence
-  test that rejected `nemotron-3.5-lightning:30b` and `qwen3-coder:30b`. It is
-  the only model of fourteen that scores _better without_ the seed: 24/25 with
-  history unaided, the highest with-history figure in the file under any
-  configuration, against `gpt-oss:20b`'s 22/25. Against it: 18.4 GB vs.
-  12.8 GB for no gain as the server actually runs (both 23/25 seeded), and it
-  silently ignores Ollama's `format`. **`launch.json` unchanged** — recorded as
-  a judgement call for whoever owns the debugger config, not a measurement
-  gap. A stress-set run for it is the measurement that would settle it.
-
-- Docs: measured `qwen3-coder:30b`'s pre-seed shape baseline
-  (`shape_ab.dart --no-seed-card --samples 2`, `t=0`), the one open question
-  left by the 2026-08-19 sweep. **16/25 cold, 14/25 with history** against
-  24/25 and 23/25 with the seed — a +9 swing, tying
-  `nemotron-3.5-lightning:30b` for the largest seed-dependence in the file,
-  against `gpt-oss:20b`'s +1 from an already-strong 22/25. That settles the
-  `launch.json` slot in `gpt-oss:20b`'s favour on the grounds already used to
-  settle it once: it is the large model that does not need the seed.
-  `launch.json` unchanged. Also recorded a mechanism the comparison exposes —
-  9 of `qwen3-coder:30b`'s 11 unaided with-history failures are invalid JSON
-  (the missing-array-brackets signature), so the seed repairs JSON framing and
-  not only shape choice.
-
-- Changed: `shape_ab.dart`'s card seed is now **on by default**
-  (`--no-seed-card` opts out). The flag had been opt-in since before the seed
-  shipped, so a bare probe run measured a configuration
-  `OllamaResponder.reply()` had stopped using — the probe and the server could
-  drift apart silently, which is the one failure this directory exists to
-  prevent. No recorded number changes: every figure in `ModelBehavior.md` was
-  taken with the flag passed explicitly, and passing it still works.
-
-- Docs: `ModelBehavior.md`'s candidate table now carries an as-shipped 25-shape
-  score for **all fourteen** models, not six. The remaining eight were measured
-  on 2026-08-19 under the full-set table's own conditions (`--seed-card
---samples 2`, `t=0`, both conditions), replacing the pre-seed
-  `choiceset_ab.dart` `N/6` figures the table had been carrying. Two of those
-  `N/6` scores turned out to badly under-predict the model:
-  `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` went 1/6 → 22/25 and
-  `qwen3-coder:30b` 2/6 → 23/25, both pre-seed collapses the seed recovers.
-  `qwen3-coder:30b` measures as the strongest candidate in the file (24/25
-  cold, 23/25 warm, no shape it fails under both conditions); `launch.json` is
-  **unchanged** pending a pre-seed baseline for it, since the case that kept
-  `gpt-oss:20b`'s slot over `nemotron-3.5-lightning:30b` was robustness without
-  the seed. Two findings generalized: `rating_ask` now fails on 8 of 14 models
-  with the identical show-vs-collect substitution (a prompt problem), and the
-  seed's over-carding of the `prose` control case is now 5 of 14 rather than
-  the single model the 2026-08-18 run flagged.
-
 - Changed: the seed exchange moved out of Dart source into
   **`assets/seed_card.json`**, beside the system prompts, and is re-read per
   request — so it can be re-tuned without a rebuild. `--seed-card-file`
   (server) and `shape_ab.dart --seed-card-file` (probe) point at a candidate,
   the way `--system-prompt-file` and `--candidate` already do for prompts;
   both sides read the same asset by default, so a probe measures what the
-  server sends. The **content** is configurable but sending **no seed** is
-  not, because a seed is what every recorded measurement was taken with; a
-  missing or malformed file degrades to no seed with a `WARNING` rather than
-  refusing requests, and `GET /status` gained `seedCardFile` /
+  server sends. A missing or malformed file degrades to no seed with a
+  `WARNING` rather than refusing requests, and `GET /status` gained `seedCardFile` /
   `seedCardTurns` so that degradation is visible instead of silent. Roles
   must alternate from `user` — Ollama chat templates mangle a seed that opens
   with an assistant turn, which would read as a model failure rather than a
   bad asset. `test/seed_card_test.dart` pins the shipped bytes to the content
   `ModelBehavior.md`'s numbers were measured against, so re-tuning the seed
   fails the suite until the new content is measured and the record updated.
-
-- **Breaking:** `OllamaResponder.reply()` now prepends a synthetic
-  card-shaped exchange (`lib/src/seed_card.dart`) ahead of the replayed
-  history on every request — unconditionally, with no opt-out. This is a code
-  change, not a prompt edit: `assets/card_system_prompt.txt` is unmodified. It
-  won a five-candidate screen as the only mechanism that moved the server
-  default, then held across six models on the full 25-shape set — cold-start
-  coverage rose on 6 of 6 models and with-history on 5 of 6
-  (`qwen2.5-coder:7b` 19/25 → 21/25 cold, 18/25 → 19/25 warm). It also costs
-  tokens on every request, newly erodes `table` with history on 4 of the 6
-  models, and regressed `llama3-chatqa:8b`'s with-history score. Full numbers,
-  the four trade-offs, and what the standing regression gates can and cannot
-  cover are in `ModelBehavior.md` — "Warm-start prose drift" and "Promoted:
-  N2".
 
 - Added: `shape_ab.dart` and `shape_cases.dart` — a shape-aware probe that
   asks whether a reply used the element type the question called for, not just
@@ -417,164 +305,6 @@
   and `--only` with a blank value silently running zero cases instead of
   exiting 2.
 
-- Added: measurements, recorded in `ModelBehavior.md` rather than here — six
-  `shape_ab.dart` 25-case baselines (`qwen2.5-coder:7b`, `gpt-oss:20b`,
-  `llama3-chatqa:8b`, `granite4.1:8b`, `llama3-groq-tool-use:8b`,
-  `nemotron-3.5-lightning:30b`), the five-candidate warm-start drift screen
-  and its full-set confirmation, and a delivery check establishing that a
-  mid-conversation `system` message reaches `gpt-oss:20b` but is unconfirmed
-  on `qwen2.5-coder:7b` and `granite4.1:8b` — which is what makes a
-  scores-at-baseline result on those models unreadable rather than negative.
-
-- Changed: the top three is now `gpt-oss:20b`, `granite4.1:8b`, and
-  `qwen2.5-coder:7b`. `granite4.1:8b` replaces `qwen3.5:9b` in
-  `.vscode/launch.json` (both its card-prompt and markdown-prompt
-  configurations) on the strength of the 25-case sweep: 22/25 with history as
-  shipped, second only to `gpt-oss:20b`, in 5.0 GB. `qwen3.5:9b` has never
-  been run through `shape_ab.dart` at all — its only with-history number is a
-  six-prompt `choiceset_ab.dart` score — and its own notes already record it
-  as offering no reliability edge over `qwen2.5-coder:7b` at more latency and
-  memory. Rationale, and why `gpt-oss:20b` keeps the large-model slot over
-  `nemotron-3.5-lightning:30b`, are in `ModelBehavior.md`.
-
-- Changed: the `With history` column of `ModelBehavior.md`'s candidate table
-  now leads with each model's `shapes N/25` score **as the server ships** —
-  measured with the unconditional card seed in place — rather than the
-  pre-seed `N/6` choice-set score, which is retained beside it for the models
-  that have nothing better. Two rows read as self-contradictory as a result
-  (`nemotron-3.5-lightning:30b` and `llama3-groq-tool-use:8b` each scored 0/6
-  pre-seed and recover their whole choice-set path with the seed); the note
-  under the table says the shape figure is the current one.
-
-- Changed: `ModelBehavior.md`'s `With history` column uses one denominator for
-  every model. `qwen2.5-coder:7b` was the only cell measured at `--samples 2`,
-  so it read `6/12` in a column of `N/6` scores and invited a wrong
-  at-a-glance comparison. Re-run at `--samples 1` it scores 3/6, passing and
-  failing exactly the same three prompts each as the 12-trial run — a change
-  of resolution, not of finding. The `2/12 → 6/12` before/after is kept where
-  it justifies promoting the escape-hatch change.
-
-- Added: `ModelBehavior.md` now records the with-history probe of
-  `qwen3.6:27b-coding-nvfp4` (18.4 GB), the sixth and last model in this
-  sweep — its cold-start cell was already filled, only **With history** was
-  blank. Measured 2026-08-16, `choiceset_ab.dart`, two prior prose turns,
-  `t=0`, `--samples 1`: ✅ 6/6, a clean sweep matching `gpt-oss:20b`'s —
-  every prompt returned a two-element card containing an `Input.ChoiceSet`.
-  This is the twelfth `N/6` with-history cell filled in this file
-  (re-counted, not incremented). With all twelve now on record, the scores
-  split evenly into three bands with real gaps between them (no model
-  scored 4/6): four collapsed to 0/6 prose, four landed partial at 1/6-3/6,
-  and four — including this one — held up strongly at 5/6 or 6/6. Weight
-  class doesn't predict the band (the five large 17-24 GB candidates split
-  1/2/2 across all three); family is more mixed — `nemotron-3-nano`'s three
-  sizes spread across all three bands, but `granite4.1`'s two sizes
-  (3b, 8b) land in the identical partial band at the identical 3/6 score —
-  see `ModelBehavior.md` §4 for the full breakdown.
-- Added: `ModelBehavior.md` now records the with-history probe of
-  `qwen3.5:9b` (6.1 GB) — its cold-start cell was already filled, only
-  **With history** was blank. Measured 2026-08-16, `choiceset_ab.dart`,
-  two prior prose turns, `t=0`, `--samples 1`, `think:false` (the probe
-  tooling's `probeOnce` hardcodes `think: false` unconditionally, so this
-  is the same thinking-off condition as the model's existing "usable only
-  with thinking disabled" cold-start note, not a thinking-on measurement).
-  Scored ⚠️ 5/6, one miss ("what build modes can I choose from?") where the
-  reply was a valid single-element card whose element was a `TextBlock`
-  Markdown list of the three modes rather than an `Input.ChoiceSet`,
-  confirmed with `dump_reply.dart`; the other five prompts each returned a
-  card containing the `Input.ChoiceSet`. Ties `nemotron-3-nano:30b` for the
-  second-best with-history score on record among candidate models — only
-  `gpt-oss:20b`'s 6/6 is higher. Also corrects this model's per-model
-  section, which stated it was "not currently installed locally"; it is
-  present in `ollama list`. This is the eleventh `N/6` with-history cell
-  filled in this file (re-counted, not incremented).
-- Added: `ModelBehavior.md` now records the first probe of `qwen3-coder:30b`
-  (17.3 GB), previously blank in every column. Measured 2026-08-16, one
-  model resident at a time, card system prompt, `--samples 1`: everyday set
-  7/7 · 6/7 · 7/7 across `t=0`/`0.2`/`0.6` (`temperature_matrix.dart`, one
-  loss — `rating` at `t=0.2`, missing array brackets around two elements),
-  a clean stress set 5/5 at both `t=0` and `t=0.6` (`temperature_stress.dart`
-  — the best large-candidate stress score on record, the only one of the
-  four large candidates to sweep every case), and 2/6 with two prior prose
-  turns (`choiceset_ab.dart`, `t=0`) — a new with-history failure signature:
-  all four failures attempted a card rather than dropping to prose, each
-  missing the wrapping `[ ]` around a `TextBlock`/`Input.ChoiceSet` pair,
-  and three of the four (including "help me pick a database engine", which
-  shares no wording with the topic) returned content that is, once the
-  missing `[ ]` and comma-for-newline swap are accounted for,
-  character-for-character identical to the worked example on line 28 of
-  `assets/card_system_prompt.txt` — same `TextBlock` text, same
-  `Input.ChoiceSet` id and `Staging`/`Production` choices — rather than
-  question-specific content; re-confirmed per-prompt with `dump_reply.dart`
-  and a direct string comparison against the prompt file. The best
-  large-candidate cold start on record did not predict either the
-  with-history score or its failure mode.
-- Added: `ModelBehavior.md` now records the first probe of
-  `nemotron-3.5-lightning:30b` (23.7 GB), previously blank in every column.
-  Measured 2026-08-16, one model resident at a time, card system prompt,
-  `--samples 1`: everyday set 6/7 · 6/7 · 5/7 across `t=0`/`0.2`/`0.6`
-  (`temperature_matrix.dart`, the weakest large-candidate everyday score so
-  far — `table` fails at all three temperatures rather than only `t=0.6`),
-  stress set 3/5 at `t=0` and 4/5 at `t=0.6` (`temperature_stress.dart`, the
-  best large-candidate stress score so far, three failures: two truncated
-  `bigtable` responses and one last-character `nested` malformation), and
-  0/6 with two prior prose turns (`choiceset_ab.dart`, `t=0`) — a total
-  collapse to prose on every prompt. A weaker everyday score and a stronger
-  stress score than either `nemotron` 30B build, on the same model, land on
-  opposite sides of the large-candidate ranking without predicting its
-  total with-history collapse.
-- Added: `ModelBehavior.md` now records the first probe of
-  `nemotron-3-nano:30b` (22.6 GB, the Ollama-library build), previously
-  blank in every column. Measured 2026-08-16, one model resident at a time,
-  card system prompt, `--samples 1`: everyday set 7/7 · 7/7 · 6/7 across
-  `t=0`/`0.2`/`0.6` (`temperature_matrix.dart`, the same single `t=0.6`
-  truncated-table loss as the `hf.co/unsloth` build), stress set 2/5 at
-  `t=0` and 1/5 at `t=0.6` (`temperature_stress.dart`, seven failures
-  spanning three distinct malformation types rather than one shared
-  pattern), and 5/6 with two prior prose turns (`choiceset_ab.dart`,
-  `t=0`). Despite a weaker cold start than the `hf.co/unsloth` build of the
-  same nominal model, this build scored far better with history (5/6 vs
-  1/6) — the two builds land at opposite ends of the with-history scale
-  under identical conditions.
-- Added: `ModelBehavior.md` now records the first probe of
-  `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` (22.9 GB), previously
-  blank in every column. Measured 2026-08-16, one model resident at a time,
-  card system prompt, `--samples 1`: everyday set 7/7 · 7/7 · 6/7 across
-  `t=0`/`0.2`/`0.6` (`temperature_matrix.dart`), stress set 3/5 at both `t=0`
-  and `t=0.6` (`temperature_stress.dart`, `bigtable` and `mixed` failing at
-  both temperatures with a repeated extra-closing-bracket pattern), and
-  1/6 with two prior prose turns (`choiceset_ab.dart`, `t=0`). Unlike
-  `llama3-chatqa:8b`'s collapse from a strong cold start, this model's
-  cold-start stress weakness already predicted the multi-turn result.
-- Fixed: findings from the final whole-branch review. `ModelBehavior.md`'s
-  six-model history sweep (2026-08-16) now says explicitly it was measured
-  _after_ Task 7's escape-hatch fix was already promoted, both in the sweep's
-  own paragraph and as a note next to the `With history` column, so the
-  6/12 (`--samples 2`) cell for `qwen2.5-coder:7b` no longer reads as the
-  odd one out among the other `N/6` (`--samples 1`) cells; that cell is now
-  labelled with its own sample count. `tool/model_probes/README.md`'s "What
-  these found" section gained the two probe-side findings this branch
-  actually produced — cold start not predicting multi-turn behavior, and
-  three of six models collapsing to 0/6 with prior prose turns — which its
-  own stated contract said belonged there. `-h`/`--help` now works in
-  `choiceset_ab.dart`, `prompt_ab.dart`, and `dump_reply.dart`; all three
-  declared the flag but never checked it, so it silently started a full
-  probe run instead of printing usage. `dump_reply.dart`'s `history turns`
-  summary line now aligns its colon with its siblings.
-- Added: `ModelBehavior.md` now records the `qwen2.5-coder:7b` fence rate and
-  the default-vs-card prompt comparison measured on 2026-08-14, which had
-  lived only in scratch reports until now. It also records this branch's own
-  measurements in full: the escape-hatch fix's real multi-turn numbers
-  (2/12 → 6/12 with history, `choiceset_ab.dart --samples 2`, `t=0` — not the
-  2026-08-14 investigation's original 0/6 reference figure, which was
-  superseded once the fix actually shipped and was re-measured) and the
-  compare-and-comment wording's negative result (tied baseline, then caught a
-  reproducible regression, not promoted). This is exactly the loss the file
-  exists to prevent.
-- Added: multi-turn (`With history`) results for the six models that already
-  had cold-start numbers. The column previously had one value out of fourteen,
-  which let cold-start figures read as though they described real
-  conversations. Measured with `choiceset_ab.dart` at `t=0`, `--samples 1`,
-  one model resident at a time.
 - Fixed: an ongoing Markdown conversation talked the model out of cards
   entirely. The escape hatch was keyed on confidence ("if you are unsure
   whether a card helps"), and two prose turns are enough to make it unsure —
@@ -587,26 +317,6 @@
   stress (`temperature_stress.dart --samples 2`) held 10/10 at both `t=0`
   and `t=0.6`, and code A/B (`prompt_ab.dart --samples 1`) held 8/8,
   including the closure case Task 6 regressed.
-- Measured, not promoted: tried adding a paragraph telling the model a
-  two-part request ("compare A and B, then tell me which you'd pick") is
-  still one message, plus a matching pre-send check-0 clause, to fix a
-  reported card-then-loose-paragraph failure. On `qwen2.5-coder:7b` at
-  `t=0` the candidate tied baseline on the compare-and-comment set
-  (10/10 → 10/10 — Task 2's corrected `judgeReply` already resolves the
-  originally-reported failure, so there was no headroom left to measure an
-  improvement against) and it _improved_ the stress set's `t=0.6` "mixed"
-  compare-then-choice-set case (9/10 → 10/10, `t=0` unchanged at 10/10).
-  But the Step 4 regression check on the built-in code A/B set caught a
-  real, reproducible regression the compare-and-comment set could not see:
-  "what is a closure? show an example" went from a passing plain-Markdown
-  reply to a `prose-with-card` reply — raw JSON shown to the user — 8/8 →
-  7/8, confirmed deterministic by repeating that one prompt 3 times at
-  `t=0` (baseline 3/3 pass, candidate 0/3 pass). Per the promote-only-if-
-  better rule, the candidate wording was reverted and not shipped;
-  `assets/card_system_prompt.txt` is unchanged. The trade-off (fix an
-  already-fixed case, break an unrelated one) is not worth taking, so this
-  wording is not something to retry without a materially different
-  approach.
 - Added: `prompt_ab.dart --prompts <file>` runs an external prompt set. The
   built-in list is code-flavoured and could not express the comparison or
   options shapes, so every investigation had to work around it.
