@@ -1,0 +1,62 @@
+{
+  "probe": "cascade_ab",
+  "model": "nemotron-3-nano:4b",
+  "measuredAt": "2026-08-20",
+  "machine": "Apple M1 Max / 64 GB",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 3,
+    "exercised": 3,
+    "passed": 3,
+    "notExercised": 0
+  },
+  "calls": [
+    {
+      "case": "states",
+      "sample": 0,
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 6468
+    },
+    {
+      "case": "states",
+      "sample": 1,
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 6717
+    },
+    {
+      "case": "loglevel",
+      "sample": 0,
+      "pass": true,
+      "label": "multi, kept 3/3",
+      "ms": 5816
+    },
+    {
+      "case": "loglevel",
+      "sample": 1,
+      "pass": true,
+      "label": "multi, kept 3/3",
+      "ms": 5812
+    },
+    {
+      "case": "deploy",
+      "sample": 0,
+      "pass": true,
+      "label": "multi, kept 2/2",
+      "ms": 5568
+    },
+    {
+      "case": "deploy",
+      "sample": 1,
+      "pass": true,
+      "label": "multi, kept 2/2",
+      "ms": 5542
+    }
+  ]
+}

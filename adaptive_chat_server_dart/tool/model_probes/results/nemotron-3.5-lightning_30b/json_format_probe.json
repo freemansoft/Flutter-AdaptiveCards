@@ -1,6 +1,6 @@
 {
   "probe": "json_format_probe",
-  "model": "gpt-oss:20b",
+  "model": "nemotron-3.5-lightning:30b",
   "measuredAt": "2026-08-20",
   "machine": "Apple M1 Max / 64 GB",
   "samples": 2,
@@ -9,12 +9,12 @@
     "seed_card.json": "4ac746114475"
   },
   "summary": {
-    "honorsFormat": false,
-    "verdict": "ignored-destructively",
+    "honorsFormat": true,
+    "verdict": "honored",
     "calls": 6,
     "passed": 6,
-    "cards": 2,
-    "prose": 4
+    "cards": 6,
+    "prose": 0
   },
   "calls": [
     {
@@ -23,7 +23,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "format=none",
-      "ms": 17145
+      "ms": 20625
     },
     {
       "case": "card-request",
@@ -31,39 +31,39 @@
       "pass": true,
       "label": "card[2]",
       "setting": "format=none",
-      "ms": 13479
+      "ms": 2834
     },
     {
       "case": "card-request",
       "sample": 0,
       "pass": true,
-      "label": "prose",
+      "label": "card[1]",
       "setting": "format=json",
-      "ms": 1602
+      "ms": 1009
     },
     {
       "case": "card-request",
       "sample": 1,
       "pass": true,
-      "label": "prose",
+      "label": "card[1]",
       "setting": "format=json",
-      "ms": 1597
+      "ms": 1078
     },
     {
       "case": "card-request",
       "sample": 0,
       "pass": true,
-      "label": "prose",
+      "label": "card[1]",
       "setting": "format=schema",
-      "ms": 739
+      "ms": 1002
     },
     {
       "case": "card-request",
       "sample": 1,
       "pass": true,
-      "label": "prose",
+      "label": "card[1]",
       "setting": "format=schema",
-      "ms": 730
+      "ms": 1266
     }
   ]
 }

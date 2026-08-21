@@ -2,6 +2,51 @@
 
 ## [Unreleased]
 
+- Docs: **re-measured every model in `ModelBehavior.md` end to end** — 15 models
+  × 6 probes, 90 recorded runs, ~3,700 calls, one model resident at a time on
+  the Apple M1 Max / 64 GB. Every figure in the file now derives from a
+  committed result under `tool/model_probes/results/`, and the shape-coverage
+  table is generated from those runs rather than transcribed.
+- Docs: **the published matrix largely held up.** Ten of the twelve steady
+  models reproduce within ±1 on every shape axis and two reproduce exactly, so
+  the numbers are stable at ±1 resolution — which also means a one-shape
+  difference between two models is noise, not a ranking, and the file now says
+  so where it used to imply otherwise.
+- Docs: **`gpt-oss:20b` produces a correct shape on all 25 cases unaided** —
+  the only perfect score in the file under any condition — while scoring 23/25
+  with the seed the server sends. The largest negative seed gain measured (−2),
+  on the model that needs help least. Recorded as a live argument for making
+  the seed conditional, and as a reason to revisit dropping it from
+  `launch.json` rather than treating that as settled.
+- Docs: **the card/prose split earned itself on the model that motivated the
+  shape probe.** `llama3-chatqa:8b` sweeps the stress set 10/10 with **zero
+  cards** — every pass is Markdown. That previously took a 100-call
+  `shape_ab` run to discover; the 10-call stress probe now reports it directly.
+  `granite4.1:8b`'s 10/10 is likewise 4 cards to 6 prose, while
+  `qwen2.5-coder:7b` and `qwen3-coder:30b` answer every stress case with a real
+  card.
+- Docs: **`qwen3-coder:30b` looks stronger than its rejection implied.** It is
+  the only model to answer both cold-start sets entirely in cards, it honors
+  `format`, and at **1.6 s/call it is the fastest model measured** — ahead of
+  models a quarter its weight. Its +9 seed dependence reproduced exactly and
+  remains the case against it; the rejection was right on the evidence then
+  available, and that evidence has changed.
+- Docs: **`qwen3.6:27b-coding-nvfp4`'s missing stress run came back 8/10**, the
+  weakest of the four strong large models. The measurement its `launch.json`
+  case was waiting on closed against it. It also reproduced all three shape
+  figures exactly — the only model to do so.
+- Docs: added **Performance on this machine** with per-model latency, and a
+  note on the per-call timeout. Weight predicts neither coverage nor speed:
+  `granite4.1:3b` at 2.0 GB took **124 minutes with 46 stalls** while
+  `qwen3.8:27b-nvfp4` at eight times the size took 39 with none. Stall risk,
+  not gigabytes, is what a sweep should be budgeted by.
+- Docs: **`granite4.1:3b` is the one model whose figures are not comparable
+  across the sweep.** A 120-second per-call ceiling reclassifies its runaway
+  generations as failures: 17/25 → 12/25 warm, and cascade 3/3 → `n/a`. The
+  bounded figures are kept — the server has no timeout of its own, so a real
+  user simply waits, and a card nobody waits for has failed — but the change in
+  meaning is documented rather than published silently.
+
 - Fixed: **`probeOnce` had no timeout, so one runaway generation hung a whole
   sweep.** `granite4.1:3b` was observed generating for **16 minutes** on a
   single `table` case with history and never returning; with several models
