@@ -39,6 +39,7 @@ void main() {
     String? systemPromptFile,
     Duration? ollamaTimeout,
     double? temperature = defaultCardTemperature,
+    bool seedCard = true,
   }) {
     return OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
@@ -51,6 +52,7 @@ void main() {
       systemPromptFile: systemPromptFile,
       ollamaTimeout: ollamaTimeout ?? const Duration(seconds: 60),
       temperature: temperature,
+      seedCard: seedCard,
     );
   }
 
@@ -760,6 +762,64 @@ void main() {
         logs.any((r) => r.message.contains('context near limit')),
         isFalse,
       );
+    });
+  });
+
+  group('--no-seed-card', () {
+    test('omits the seed pair, leaving system + history + current', () async {
+      late Map<String, dynamic> captured;
+      final client = MockClient((request) async {
+        captured = jsonDecode(request.body) as Map<String, dynamic>;
+        return okResponse('ok');
+      });
+      final responder = makeResponder(client: client, seedCard: false);
+      await responder.reply('turn', [
+        ('user', 'earlier'),
+        ('assistant', 'earlier reply'),
+      ]);
+      final messages = captured['messages'] as List;
+      // system + 2 history + current = 4, with no seed pair between the
+      // system prompt and the history.
+      expect(messages.length, 4);
+      expect((messages[1] as Map<String, dynamic>)['content'], 'earlier');
+      expect(
+        messages.map((m) => (m as Map<String, dynamic>)['content']).toList(),
+        isNot(contains('seed-user')),
+      );
+    });
+
+    test('is on by default, so the shipped server still seeds', () async {
+      // The flag exists to let a host opt out, not to change what ships:
+      // every figure in ModelBehavior.md is a seeded measurement.
+      late Map<String, dynamic> captured;
+      final client = MockClient((request) async {
+        captured = jsonDecode(request.body) as Map<String, dynamic>;
+        return okResponse('ok');
+      });
+      await makeResponder(client: client).reply('turn', []);
+      final messages = captured['messages'] as List;
+      expect(
+        messages.map((m) => (m as Map<String, dynamic>)['content']).toList(),
+        contains('seed-user'),
+      );
+    });
+
+    test('status reports the seed off, distinct from a failed load', () async {
+      // seedCardTurns is 0 both when the seed is switched off and when the
+      // asset fails to parse. Those are different problems, so `seedCard`
+      // has to say which one a reader is looking at.
+      final off = makeResponder(
+        client: MockClient((_) async => okResponse('ok')),
+        seedCard: false,
+      ).describe();
+      expect(off['seedCard'], isFalse);
+      expect(off['seedCardTurns'], 0);
+
+      final on = makeResponder(
+        client: MockClient((_) async => okResponse('ok')),
+      ).describe();
+      expect(on['seedCard'], isTrue);
+      expect(on['seedCardTurns'], 2);
     });
   });
 }

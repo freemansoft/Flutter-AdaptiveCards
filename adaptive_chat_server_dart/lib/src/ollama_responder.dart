@@ -209,6 +209,7 @@ class OllamaResponder implements Responder {
     http.Client? client,
     String? systemPromptFile,
     String? seedCardFile,
+    this.seedCard = true,
     int historyTurns = defaultHistoryTurns,
     int numCtx = defaultNumCtx,
     String jsonFormat = defaultJsonFormat,
@@ -260,6 +261,22 @@ class OllamaResponder implements Responder {
   final int _numCtx;
   final String _systemPromptPath;
   final String _seedCardPath;
+
+  /// Whether to prepend the seed exchange ahead of the replayed history.
+  ///
+  /// On by default, because the seed is what every figure in
+  /// `ModelBehavior.md` was measured against and turning it off silently
+  /// would make the shipped configuration differ from the measured one.
+  ///
+  /// It is switchable because its value is strongly model-dependent rather
+  /// than universal: measured across fifteen models it is worth **+10** shapes
+  /// to `nemotron-3-nano:4b` and **+9** to `qwen3-coder:30b`, exactly nothing
+  /// to `qwen2.5-coder:7b` and `qwen3.8:27b-nvfp4`, and **−2** to
+  /// `gpt-oss:20b`, which is the only model to answer all 25 shape cases
+  /// correctly and does so without it. A mechanism that ranges from essential
+  /// to mildly harmful depending on the model is one a host should be able to
+  /// turn off.
+  final bool seedCard;
   final String _requestedJsonFormat;
   final Duration _ollamaTimeout;
   final String _keepAlive;
@@ -280,11 +297,15 @@ class OllamaResponder implements Responder {
       'historyTurns': _historyTurns,
       'jsonFormat': _jsonFormat,
       'systemPromptFile': p.basename(_systemPromptPath),
+      'seedCard': seedCard,
       'seedCardFile': p.basename(_seedCardPath),
       // 0 means the seed failed to load — the warning says why. Surfaced
       // because a silently seedless server loses the measured drift
-      // protection while looking healthy.
-      'seedCardTurns': loadSeedCardMessages(_seedCardPath).length,
+      // protection while looking healthy. Also 0 when the seed is switched
+      // off, which `seedCard` distinguishes from a load failure.
+      'seedCardTurns': seedCard
+          ? loadSeedCardMessages(_seedCardPath).length
+          : 0,
       'keepAlive': _keepAlive,
       'timeoutSeconds': _ollamaTimeout.inSeconds,
       'temperature': _temperature ?? 'model',
@@ -404,10 +425,13 @@ class OllamaResponder implements Responder {
     if (systemPrompt != null) {
       messages.add({'role': 'system', 'content': systemPrompt});
     }
-    // Measured as candidate N2 — see seed_card.dart for why the seed itself
-    // is unconditional and only its content is configurable.
-    for (final message in loadSeedCardMessages(_seedCardPath)) {
-      messages.add({'role': message.role, 'content': message.content});
+    // Measured as candidate N2 — see seed_card.dart for what it is and what
+    // it costs. Skipped entirely under --no-seed-card, which is not the
+    // shipped default: the figures in ModelBehavior.md are seeded ones.
+    if (seedCard) {
+      for (final message in loadSeedCardMessages(_seedCardPath)) {
+        messages.add({'role': message.role, 'content': message.content});
+      }
     }
     for (final (role, content) in _trimHistory(history)) {
       messages.add({'role': role, 'content': content});

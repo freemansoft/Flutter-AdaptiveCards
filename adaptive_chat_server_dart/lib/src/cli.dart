@@ -106,8 +106,21 @@ ArgParser buildArgParser() {
           'any prose accumulates (measured as candidate N2 — see '
           'ModelBehavior.md). Defaults to assets/seed_card.json; re-read per '
           'request, so edits apply without restart. Override it to re-tune '
-          'the seed; there is no way to send no seed at all, because a seed '
-          'is what was measured.',
+          'the seed. Pass --no-seed-card to send none at all.',
+    )
+    ..addFlag(
+      'seed-card',
+      defaultsTo: true,
+      help:
+          'Prepend the seed exchange ahead of the replayed history. On by '
+          'default, because every figure in ModelBehavior.md was measured '
+          'with it and a silently seedless server would not match the '
+          'documented behavior. Switchable because its value is strongly '
+          'model-dependent: measured across fifteen models it is worth +10 '
+          'shapes to nemotron-3-nano:4b and +9 to qwen3-coder:30b, nothing at '
+          'all to qwen2.5-coder:7b and qwen3.8:27b-nvfp4, and -2 to '
+          'gpt-oss:20b, the only model that answers all 25 shape cases and '
+          'does so without it.',
     )
     ..addOption(
       'num-ctx',

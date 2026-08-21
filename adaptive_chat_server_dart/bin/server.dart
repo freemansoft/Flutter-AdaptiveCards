@@ -114,6 +114,7 @@ Future<void> main(List<String> arguments) async {
     defaultSeedCardPath: p.join(assetsDir, 'seed_card.json'),
     systemPromptFile: args['system-prompt-file'] as String?,
     seedCardFile: args['seed-card-file'] as String?,
+    seedCard: args['seed-card'] as bool,
     numCtx: int.parse(args['num-ctx'] as String),
     historyTurns: int.parse(args['history-turns'] as String),
     jsonFormat: args['json-format'] as String,

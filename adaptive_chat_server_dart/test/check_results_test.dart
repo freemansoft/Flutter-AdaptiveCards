@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:adaptive_chat_server_dart/src/ollama_responder.dart';
 import 'package:test/test.dart';
 
 // Relative: both files live outside lib/.
@@ -61,9 +62,14 @@ void main() {
       // source of truth, so a hardcoded copy going stale is the bug.
       final models = launchedModels('../.vscode/launch.json');
       expect(models, isNotEmpty);
-      expect(models, contains('qwen2.5-coder:7b'));
-      // Three unique models, per the derivation ModelBehavior.md documents.
-      expect(models, hasLength(3));
+      // The compiled-in default must stay launchable by hand, or it ships
+      // untested from the one place people start the server manually.
+      expect(models, contains(defaultOllamaModel));
+      // The set is expected to change, so its size is not asserted — only
+      // that the derivation returns each model once. A duplicate would mean
+      // two configs disagree about a tag, which is the failure worth
+      // catching.
+      expect(models.toSet(), hasLength(models.length));
     });
 
     test('returns empty rather than throwing when the file is absent', () {
