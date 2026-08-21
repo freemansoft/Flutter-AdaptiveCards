@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+- Fixed: **five stale `granite4.1:3b` claims that shipped in the correction
+  itself.** The batch of edits correcting that model threw on its last
+  statement, so the file was never written, and only the edits re-applied
+  afterwards took effect. `ModelBehavior.md` consequently still described it as
+  12/25 with 46 stalls, called its figures wholly incomparable with its earlier
+  ones, said it dropped five shapes warm, and named it the slowest sweep in the
+  file — all of which the corrected measurement contradicts. It scores 17/25
+  cold and warm, stalls 13 times (11 of them unaided), and `gpt-oss:20b` at
+  48 minutes is the longest sweep. Found by checking whether the findings
+  claimed in review were actually in the document.
+
 - Fixed: **`granite4.1:3b`'s 2026-08-20 figures were a measurement artifact,
   and are corrected.** It was published at 12/25 seeded with `n/a` on cascade
   and 52 stalled calls, which read as a small model collapsing under a per-call
