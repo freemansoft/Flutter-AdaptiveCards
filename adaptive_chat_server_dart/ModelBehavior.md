@@ -33,6 +33,7 @@ The generalizable results — the ones that should transfer to any workload aski
 - **A failed assertion is sometimes a bad assertion.** One model's "0/3" on tables was a valid, complete, renderable Table laid out as a 2×2 grid; the `rows >= 3` success criterion wrongly penalized a legitimate layout.
 - **A second `system` message is not universally delivered.** Ollama chat templates vary in whether a `system` message placed _after_ the conversation history reaches the model at all; some keep only the first. Checked 2026-08-18 on four screening models by injecting an additive reminder and reading the printed type list with and without it. **Delivered** on `gpt-oss:20b`. **Unconfirmed** on `qwen2.5-coder:7b` and `granite4.1:8b` — dropped-by-the-template and arrived-but-ignored are indistinguishable for them. Establish delivery before reading a null result from any candidate that relies on a second `system` message.
 - **A delivery probe must not contradict the system prompt.** Asking a model to "disregard the question, reply with only the word BANANA" produced a null on all four models tested — uninformative, because "the model resisted a contradiction" and "the message never arrived" look identical. An additive, prompt-compatible probe (add one harmless, checkable element) removes that confound.
+- **Tool-calling support is per-model and silent when absent, the same as `format`.** Measured 2026-08-21 across the four launched models: 2 of 4 (`qwen3-coder:30b`, `qwen3.8:27b-nvfp4`) return a card through Ollama's tool channel cleanly, one (`granite4.1:8b`) renders a good card through the tool but also leaks that tool onto a plain prose question, and one (`qwen2.5-coder:7b`) exposes no tool-calling path at all under an identical prompt and schema — see [the tool-calling canary](#not-a-card-test-the-tool-calling-canary).
 
 ### The tuning ledger — everything tried, and whether it helped
 
@@ -390,6 +391,42 @@ and `schema` alike. `gpt-oss:20b` returns a 401-character card under `none`, an
 `qwen3.8:27b-nvfp4` ignores the constraint **harmlessly** — byte-identical valid cards under all three modes, so setting `--json-format` changes nothing. `gpt-oss:20b` ignores it **destructively**: `json` returns a zero-character body and `schema` returns non-card prose, so reaching for the constraint there does not weaken card production, it eliminates it — worth knowing given `gpt-oss:20b` held the large-model slot until 2026-08-20. "Ignores `format`" in [the roster](#candidate-models) covers both kinds; check which one before relying on a model's entry.
 
 Note the probe scores all six of those calls `PASS`, because an empty reply is not a _broken card_ and the pass rule only fails broken cards. That is the judging rule working as designed for card quality and reading misleadingly here — the verdict line, not the PASS, is the output that matters for this probe.
+
+### Not a card test: the tool-calling canary
+
+`tool_call_probe.dart` asks whether a model can return a card through
+Ollama's **tool channel** instead of the prose channel. Like `format`, tool
+support is per-model and silent when absent, so this is a capability probe,
+not a quality score.
+
+Measured 2026-08-21, `--samples 2`, unseeded, `t=0`, on the four models
+`launch.json` currently launches:
+
+- `qwen3-coder:30b` — **`supported`**. Called the trivial tool on both
+  samples (the capability discriminator), called `render_adaptive_card`
+  with arguments that rendered on both card-request samples, and answered
+  the prose control in prose on both samples — no over-calling.
+- `qwen3.8:27b-nvfp4` — **`supported`**. Identical pattern to
+  `qwen3-coder:30b`: trivial tool called 2/2, card tool called and its
+  arguments rendered 2/2, prose control answered in prose 2/2.
+- `granite4.1:8b` — **`overCalls`**. Called the trivial tool 2/2 and
+  rendered a good card on request 2/2, but also called
+  `render_adaptive_card` on both prose-control samples ("What does SDUI
+  stand for?"), a plain prose question with nothing to render.
+- `qwen2.5-coder:7b` — **`unsupported`**. Never produced a `tool_calls`
+  entry on any of the six calls, including both trivial-tool samples. That
+  is the discriminator failing: with no evidence the model can call a tool
+  at all, "declined the card tool" and "the template never offered it"
+  cannot be told apart from the other two checks alone.
+
+**The phase-2 gate opened: 2 of 4 launched models (`qwen3-coder:30b`,
+`qwen3.8:27b-nvfp4`) verdict `supported`.** Tool-calling support is exactly
+as per-model and silent-when-absent as `format` support is: under an
+identical prompt and schema, one model renders a perfect card through the
+tool _and_ leaks that same tool onto a question that wanted prose, and
+another exposes no tool-calling path at all. Do not assume a model that
+accepts a `tools` array will use it correctly, or use it at all, without
+running this canary first.
 
 ### What counts as a pass
 

@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- Docs: **tool-calling capability measured across the launch set.**
+  `ModelBehavior.md` gains a tool-calling canary section recording which
+  models can return a card through Ollama's tool channel. 2 of 4 launched
+  models (`qwen3-coder:30b`, `qwen3.8:27b-nvfp4`) verdict `supported`, so the
+  phase-2 gate (a channel dimension in `shape_ab.dart`) opened; `granite4.1:8b`
+  over-calls the card tool on a prose question and `qwen2.5-coder:7b` exposes
+  no tool-calling path at all. `check_results.dart` and `sweep.sh` now track
+  `tool_call_probe` like every other per-model probe.
+
 - Added: **`tool_call_probe.dart`, a tool-calling capability canary.** Answers
   whether a model can return a card through Ollama's tool channel rather than
   the prose channel, using three checks — a card request, a prose negative

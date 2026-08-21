@@ -90,6 +90,8 @@ for M in $MODELS; do
   wait_for_idle
   run "$M json_format" "$D/json_format_probe.json" \
     tool/model_probes/json_format_probe.dart --model "$M" --samples 2
+  run "$M tool_call" "$D/tool_call_probe.json" \
+    tool/model_probes/tool_call_probe.dart --model "$M" --samples 2
   run "$M everyday" "$D/temperature_matrix.json" \
     tool/model_probes/temperature_matrix.dart --model "$M" --samples 1
   run "$M stress" "$D/temperature_stress.json" \
