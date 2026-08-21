@@ -84,23 +84,27 @@ curl -s http://127.0.0.1:11434/api/tags | python3 -c "import sys,json;[print(m['
 
 Sorted by model name, and within a family by parameter count ascending (so `nemotron-3-nano:4b` precedes `:30b`), which makes a tag quick to find. Role and verdict, not position, carry the meaning.
 
-| Model                                             | Weights | 16 GB | Role                 | Cold start                                                  | With history        |
-| ------------------------------------------------- | ------- | ----- | -------------------- | ----------------------------------------------------------- | ------------------- |
-| gpt-oss:20b                                       | 12.8 GB | ❌    | candidate            | ✅ everyday 19/21 · stress 9/10 · **breaks on `format`**    | ✅ shapes **23/25** |
-| granite4.1:3b                                     | 2.0 GB  | ✅    | candidate            | ⚠️ everyday 16/21 · stress 7/10 · stalls without the seed   | ⚠️ shapes **17/25** |
-| granite4.1:8b                                     | 5.0 GB  | ✅    | launch set (16 GB)   | ✅ everyday 19/21 · stress 10/10 but 6 prose                | ✅ shapes **21/25** |
-| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate            | ⚠️ everyday 15/21 · stress 5/10                             | ✅ shapes **22/25** |
-| llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate            | ❌ everyday 21/21, stress 10/10 — **all prose, 0 cards**    | ❌ shapes **1/25**  |
-| llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | candidate            | ⚠️ everyday 18/21 · stress 7/10                             | ⚠️ shapes **17/25** |
-| llama3.2:latest                                   | 1.9 GB  | ✅    | candidate            | ⚠️ everyday 19/21 · stress 7/10 — retired as default        | ⚠️ shapes **15/25** |
-| nemotron-3-nano:4b                                | 2.6 GB  | ✅    | candidate            | ⚠️ everyday 17/21 · stress 5/10                             | ⚠️ shapes **17/25** |
-| nemotron-3-nano:30b                               | 22.6 GB | ❌    | candidate            | ⚠️ everyday 18/21 · stress 6/10                             | ✅ shapes **21/25** |
-| nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    | candidate            | ✅ everyday 18/21 · stress 9/10                             | ✅ shapes **21/25** |
-| qwen2.5-coder:7b                                  | 4.4 GB  | ✅    | default + launch set | ✅ everyday 21/21 · stress 10/10, all cards                 | ⚠️ shapes **18/25** |
-| qwen3-coder:30b                                   | 17.3 GB | ❌    | launch set (large)   | ✅ everyday 20/21 · stress 10/10 — **all cards, both sets** | ✅ shapes **23/25** |
-| qwen3.5:9b                                        | 6.1 GB  | ⚠️    | candidate            | ✅ everyday 19/21 · stress 10/10, all cards                 | ⚠️ shapes **19/25** |
-| qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    | candidate            | ⚠️ everyday 21/21 · stress 8/10 · ignores `format`          | ✅ shapes **23/25** |
-| qwen3.8:27b-nvfp4                                 | 16.9 GB | ❌    | launch set (large)   | ✅ everyday 20/21 · stress 9/10 · ignores `format`          | ✅ shapes **24/25** |
+| Model                                             | Weights | 16 GB | Seed               | Role                 | Cold start                                                  | With history        |
+| ------------------------------------------------- | ------- | ----- | ------------------ | -------------------- | ----------------------------------------------------------- | ------------------- |
+| gpt-oss:20b                                       | 12.8 GB | ❌    | _hurts_ (-2)       | candidate            | ✅ everyday 19/21 · stress 9/10 · **breaks on `format`**    | ✅ shapes **23/25** |
+| granite4.1:3b                                     | 2.0 GB  | ✅    | **needs it** (+8)  | candidate            | ⚠️ everyday 16/21 · stress 7/10 · stalls without the seed   | ⚠️ shapes **17/25** |
+| granite4.1:8b                                     | 5.0 GB  | ✅    | **needs it** (+6)  | launch set (16 GB)   | ✅ everyday 19/21 · stress 10/10 but 6 prose                | ✅ shapes **21/25** |
+| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | **needs it** (+6)  | candidate            | ⚠️ everyday 15/21 · stress 5/10                             | ✅ shapes **22/25** |
+| llama3-chatqa:8b                                  | 4.3 GB  | ✅    | _hurts_ (-2)       | candidate            | ❌ everyday 21/21, stress 10/10 — **all prose, 0 cards**    | ❌ shapes **1/25**  |
+| llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | **needs it** (+8)  | candidate            | ⚠️ everyday 18/21 · stress 7/10                             | ⚠️ shapes **17/25** |
+| llama3.2:latest                                   | 1.9 GB  | ✅    | helps (+3)         | candidate            | ⚠️ everyday 19/21 · stress 7/10 — retired as default        | ⚠️ shapes **15/25** |
+| nemotron-3-nano:4b                                | 2.6 GB  | ✅    | **needs it** (+10) | candidate            | ⚠️ everyday 17/21 · stress 5/10                             | ⚠️ shapes **17/25** |
+| nemotron-3-nano:30b                               | 22.6 GB | ❌    | **needs it** (+5)  | candidate            | ⚠️ everyday 18/21 · stress 6/10                             | ✅ shapes **21/25** |
+| nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    | **needs it** (+8)  | candidate            | ✅ everyday 18/21 · stress 9/10                             | ✅ shapes **21/25** |
+| qwen2.5-coder:7b                                  | 4.4 GB  | ✅    | no effect (0)      | default + launch set | ✅ everyday 21/21 · stress 10/10, all cards                 | ⚠️ shapes **18/25** |
+| qwen3-coder:30b                                   | 17.3 GB | ❌    | **needs it** (+9)  | launch set (large)   | ✅ everyday 20/21 · stress 10/10 — **all cards, both sets** | ✅ shapes **23/25** |
+| qwen3.5:9b                                        | 6.1 GB  | ⚠️    | helps (+2)         | candidate            | ✅ everyday 19/21 · stress 10/10, all cards                 | ⚠️ shapes **19/25** |
+| qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    | _hurts_ (-1)       | candidate            | ⚠️ everyday 21/21 · stress 8/10 · ignores `format`          | ✅ shapes **23/25** |
+| qwen3.8:27b-nvfp4                                 | 16.9 GB | ❌    | no effect (0)      | launch set (large)   | ✅ everyday 20/21 · stress 9/10 · ignores `format`          | ✅ shapes **24/25** |
+
+**Seed** is what passing `--seed-card-file` is worth to that model — its with-history score seeded minus the same score unaided. Read it beside the score, never instead of it: **needs it** means most of the number came from a fixed two-turn prefix rather than from the model, and _hurts_ means the model does better with the flag left off. Four buckets: **needs it** (+5 or more), helps (+2 to +4), no effect (0 or +1), _hurts_ (negative).
+
+Ten of fifteen models gain something; five gain nothing or lose. The two extremes are worth knowing by name — `nemotron-3-nano:4b` goes 7/25 → 17/25 with the seed, and `gpt-oss:20b` goes 25/25 → 23/25 with it.
 
 **Cold start** is a single-turn probe. **With history** replays prior conversation turns the way the server actually does. These are different measurements and a model can pass one while failing the other — every result recorded before 2026-08-14 is a cold-start number, because no probe sent history at all.
 
@@ -194,23 +198,23 @@ Two changes were made in response, both still shipped. The card system prompt's 
 
 **This is the current, as-shipped picture**, and the only model comparison in this file that is: all 25 cases, `t=0`, `--samples 2`, both conditions, with the unconditional card seed in place. Six models were measured 2026-08-18, eight more 2026-08-19, and `qwen3.8:27b-nvfp4` on 2026-08-20, all under identical conditions. Sorted by with-history coverage, which is what a user actually experiences.
 
-| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Cascade | Eroded by history                    |
-| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------- | ------------------------------------ |
-| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | **24/25**  | **24/25**    | 24/25          | 3/3     | none                                 |
-| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | 23/25        | 14/25          | 3/3     | `rating_ask`, `time` (2)             |
-| `gpt-oss:20b`                                       | 12.8 GB | 23/25      | 23/25        | **25/25**      | 3/3     | `number`, `time` (2)                 |
-| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | 23/25        | 24/25          | 3/3     | none                                 |
-| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 16/25          | 3/3     | none                                 |
-| `granite4.1:8b`                                     | 5.0 GB  | 23/25      | 21/25        | 15/25          | 3/3     | `carousel`, `codeblock`, `table` (3) |
-| `nemotron-3-nano:30b`                               | 22.6 GB | 22/25      | 21/25        | 16/25          | 3/3     | `carousel`, `text` (2)               |
-| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 20/25      | 21/25        | 13/25          | 3/3     | `table` (1)                          |
-| `qwen3.5:9b`                                        | 6.1 GB  | 20/25      | 19/25        | 17/25          | 3/3     | `badge` (1)                          |
-| `qwen2.5-coder:7b`                                  | 4.4 GB  | 20/25      | 18/25        | 18/25          | 3/3     | `choice2`, `table` (2)               |
-| `nemotron-3-nano:4b`                                | 2.6 GB  | 19/25      | 17/25        | 7/25           | 3/3     | `carousel`, `gauge` (2)              |
-| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 18/25      | 17/25        | 9/25           | 3/3     | `date`, `progress`, `toggle` (3)     |
-| `granite4.1:3b`                                     | 2.0 GB  | 17/25      | 17/25        | 9/25           | 3/3     | `choice4`, `number`, `text` (3)      |
-| `llama3.2:latest`                                   | 1.9 GB  | 15/25      | 15/25        | 12/25          | 3/3     | `facts` (1)                          |
-| `llama3-chatqa:8b`                                  | 4.3 GB  | 4/25       | 1/25         | 3/25           | n/a     | `columnset`, `gauge`, `progress` (3) |
+| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Seed               | Cascade | Eroded by history                    |
+| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------------------ | ------- | ------------------------------------ |
+| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | **24/25**  | **24/25**    | 24/25          | no effect (0)      | 3/3     | none                                 |
+| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | 23/25        | 14/25          | **needs it** (+9)  | 3/3     | `rating_ask`, `time` (2)             |
+| `gpt-oss:20b`                                       | 12.8 GB | 23/25      | 23/25        | **25/25**      | _hurts_ (-2)       | 3/3     | `number`, `time` (2)                 |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | 23/25        | 24/25          | _hurts_ (-1)       | 3/3     | none                                 |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 16/25          | **needs it** (+6)  | 3/3     | none                                 |
+| `granite4.1:8b`                                     | 5.0 GB  | 23/25      | 21/25        | 15/25          | **needs it** (+6)  | 3/3     | `carousel`, `codeblock`, `table` (3) |
+| `nemotron-3-nano:30b`                               | 22.6 GB | 22/25      | 21/25        | 16/25          | **needs it** (+5)  | 3/3     | `carousel`, `text` (2)               |
+| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 20/25      | 21/25        | 13/25          | **needs it** (+8)  | 3/3     | `table` (1)                          |
+| `qwen3.5:9b`                                        | 6.1 GB  | 20/25      | 19/25        | 17/25          | helps (+2)         | 3/3     | `badge` (1)                          |
+| `qwen2.5-coder:7b`                                  | 4.4 GB  | 20/25      | 18/25        | 18/25          | no effect (0)      | 3/3     | `choice2`, `table` (2)               |
+| `nemotron-3-nano:4b`                                | 2.6 GB  | 19/25      | 17/25        | 7/25           | **needs it** (+10) | 3/3     | `carousel`, `gauge` (2)              |
+| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 18/25      | 17/25        | 9/25           | **needs it** (+8)  | 3/3     | `date`, `progress`, `toggle` (3)     |
+| `granite4.1:3b`                                     | 2.0 GB  | 17/25      | 17/25        | 9/25           | **needs it** (+8)  | 3/3     | `choice4`, `number`, `text` (3)      |
+| `llama3.2:latest`                                   | 1.9 GB  | 15/25      | 15/25        | 12/25          | helps (+3)         | 3/3     | `facts` (1)                          |
+| `llama3-chatqa:8b`                                  | 4.3 GB  | 4/25       | 1/25         | 3/25           | _hurts_ (-2)       | n/a     | `columnset`, `gauge`, `progress` (3) |
 
 **Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence — the single most useful column here after the score itself, because a model that scores well only with the seed is being held up rather than being robust. That distinction is what the [launch-set rationale](#why-these-four-after-the-25-case-sweep) turns on. All fifteen are now measured; the gain runs from **+10** to **−2**:
 
@@ -289,20 +293,24 @@ The ceiling is kept because the server has no timeout of its own — a real user
 
 #### The card seed, and what it costs
 
-`OllamaResponder.reply()` prepends a synthetic card-shaped exchange — a short pick-from-a-set question and a bare card reply — ahead of the trimmed history on **every** request, so a card is the conversation's established format before any prose accumulates. Assembled order: system prompt, seed user turn, seed assistant turn, trimmed history, current user turn. There is no flag to disable it. The exchange lives in `assets/seed_card.json` and is read per request; `shape_ab.dart` reads the same asset and seeds by default, so a probe measures what the server sends.
+`OllamaResponder.reply()` prepends a synthetic card-shaped exchange — a short pick-from-a-set question and a bare card reply — ahead of the trimmed history on every request **that named a `--seed-card-file`**, so a card is the conversation's established format before any prose accumulates. Assembled order: system prompt, seed user turn, seed assistant turn, trimmed history, current user turn. The exchange lives in `assets/seed_card.json` and is read per request; `shape_ab.dart` reads the same asset and seeds by default, so a probe measures what a seeded server sends.
 
 It is the only mechanism that worked. Three prompt edits and one message-assembly alternative were screened against the drift alongside it and all four failed — restating the shape rule last, guarding the Markdown section's heading, narrowing the escape-hatch wording, and injecting a per-turn `system` reminder after the history. **Do not retry them**, and note the general shape of that result: changing _where the model's context starts_ moved behavior; changing _what the system prompt says_ did not, in either direction that mattered. (The per-turn reminder is additionally unmeasurable on some models — Ollama chat templates vary in whether a second `system` message placed after the history reaches the model at all, so a null result there means nothing.)
 
-**It is a flag as of 2026-08-21 (`--seed-card` / `--no-seed-card`), defaulting on.** The default does not move, because every figure in this file is a seeded measurement and a silently seedless server would stop matching its own documentation. What changed is that a host can now opt out, and the reason is that the seed's value is **model-dependent rather than universal**:
+**It is opt-in as of 2026-08-21: the seed is sent only when `--seed-card-file` names one.** There is no separate boolean and no implicit default, which mirrors how the server already treats `--system-prompt-file` — a run says what it wants or gets nothing. Every figure in this file was measured **with `assets/seed_card.json` passed**, so quoting one against an unseeded server is quoting the wrong configuration.
 
-| Seed gain | Model                                   | What it means                                                         |
-| --------- | --------------------------------------- | --------------------------------------------------------------------- |
-| **+9**    | `qwen3-coder:30b`                       | 23/25 seeded, 14/25 without — the seed is most of its score           |
-| **+6**    | `granite4.1:8b`                         | 21/25 seeded, 15/25 without                                           |
-| **±0**    | `qwen2.5-coder:7b`, `qwen3.8:27b-nvfp4` | identical either way                                                  |
-| **−2**    | `gpt-oss:20b`                           | 23/25 seeded, **25/25** without — the only perfect score in this file |
+Making it opt-in rather than unconditional is a measurement result, not a preference. The seed's value is **model-dependent**:
 
-All four of those rows are launchable from `.vscode/launch.json`, which is deliberate: the launch set spans the range, so relaunching `qwen3-coder:30b` with `--no-seed-card` and watching it drop nine shapes is a two-click demonstration rather than a claim in a document. A mechanism that is essential to one model, irrelevant to two, and mildly harmful to a fourth is one a host should be able to switch.
+| Seed gain | Model                                   | What it means                                                          |
+| --------- | --------------------------------------- | ---------------------------------------------------------------------- |
+| **+9**    | `qwen3-coder:30b`                       | 23/25 with it, 14/25 without — the seed is most of its score           |
+| **+6**    | `granite4.1:8b`                         | 21/25 with it, 15/25 without                                           |
+| **±0**    | `qwen2.5-coder:7b`, `qwen3.8:27b-nvfp4` | identical either way                                                   |
+| **−2**    | `gpt-oss:20b`                           | 23/25 with it, **25/25** without — the only perfect score in this file |
+
+All four launch-set models span that range deliberately, and `.vscode/launch.json` carries a **`qwen3-coder:30b` target with the seed omitted** beside its seeded twin, so the nine-shape difference is two clicks rather than a claim in a document. A mechanism that is most of one model's score, irrelevant to two, and mildly harmful to a fourth is one a configuration should have to ask for.
+
+One side effect worth knowing: the Markdown-prompt launch targets no longer seed at all. Prepending a card-shaped exchange to a server whose prompt asks for Markdown was always working against itself, and the opt-in semantics fixed it without anyone having to notice.
 
 Four costs come with it and must not be read past:
 

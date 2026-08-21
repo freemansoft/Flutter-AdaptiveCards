@@ -36,11 +36,11 @@ flowchart TB
     RESP -. buildResponder(--echo) .-> ECHO
     RESP -. buildResponder(default) .-> OLLAMA
     PROMPT -. system message .-> OLLAMA
-    SEED -. seed user/assistant pair<br/>prepended to every request .-> OLLAMA
+    SEED -. seed user/assistant pair<br/>prepended when a file is named .-> OLLAMA
   end
   CLIENT["adaptive_chat_client (Flutter)"] -->|"POST interaction (X-Interaction-Id, PlainJson body)"| ROUTES
   ROUTES -->|"envelope: messages[] + links"| CLIENT
-  OLLAMA -->|"messages (system + seed pair + history + turn)"| LLM["local Ollama\n/api/chat"]
+  OLLAMA -->|"messages (system + optional seed pair + history + turn)"| LLM["local Ollama\n/api/chat"]
 ```
 
 ### Wire contract
@@ -107,12 +107,12 @@ second one.
 | `stats.dart`                              | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                                                                                                            |
 | `status.dart`                             | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                                                                                                                    |
 | `ollama_responder.dart`                   | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                                                                                                            |
-| `seed_card.dart`                          | `loadSeedCardMessages(path)` — reads the synthetic card-shaped exchange `OllamaResponder` prepends ahead of history on every request; degrades to no seed (with a warning) on a missing or malformed file (see **Seed-card prefix** below).               |
+| `seed_card.dart`                          | `loadSeedCardMessages(path)` — reads the synthetic card-shaped exchange `OllamaResponder` prepends ahead of history when `--seed-card-file` names one; degrades to no seed (with a warning) on a malformed file (see **Seed-card prefix** below).         |
 | `assets/default_system_prompt.txt`        | Bundled **Markdown** system prompt — opt in via `--system-prompt-file assets/default_system_prompt.txt`.                                                                                                                                                  |
 | `assets/card_system_prompt.txt`           | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                                                                                                         |
 | `assets/card_schema.json`                 | Bundled schema for `--json-format schema`.                                                                                                                                                                                                                |
 | `assets/expired_conversation_notice.json` | Bundled notice card body for an auto-vivified (expired) conversation.                                                                                                                                                                                     |
-| `assets/seed_card.json`                   | Bundled seed exchange prepended to every request — override with `--seed-card-file`. Pinned by `test/seed_card_test.dart` to the content the recorded numbers were measured with.                                                                         |
+| `assets/seed_card.json`                   | Bundled seed exchange, sent only when `--seed-card-file` names it. Pinned by `test/seed_card_test.dart` to the content the recorded numbers were measured with.                                                                                           |
 | `cli.dart`                                | `buildArgParser()` / `resolveLogLevel()` — the flag set, defaults, and allowed values. In `lib/` so the CLI surface is reachable from tests.                                                                                                              |
 | `bin/server.dart`                         | CLI entrypoint (`dart run bin/server.dart ...`) that selects the responder (Ollama by default, echo with `--echo`) and starts `shelf_io.serve`.                                                                                                           |
 
@@ -144,10 +144,10 @@ rebuilds the conversation's history from the store — walking
 `conversation.order` and emitting a `(user, text)` / `(assistant, replyText)`
 pair per prior interaction — and passes it to `responder.reply(text, history)`
 with the **full** history. `OllamaResponder` then sends **system prompt +
-seed pair + history + current turn** to `/api/chat` (see the request-flow
-diagrams above) — history trimmed to a recent window as described next, the
-seed pair a fixed two turns on every call (see **Seed-card prefix** below
-for what it costs and why it's there). Because history is built from one
+seed pair (if `--seed-card-file` named one) + history + current turn** to
+`/api/chat` (see the request-flow diagrams above) — history trimmed to a
+recent window as described next, the seed pair a fixed two turns on every
+call (see **Seed-card prefix** below for what it costs and why it's there). Because history is built from one
 conversation's `order`, each `conversationId` gets an independent context.
 
 **Retained in full; trimmed only on send.** The store keeps the **entire**
@@ -197,11 +197,11 @@ the otherwise-silent truncation Ollama performs once a prompt exceeds
 `num_ctx`. (`EchoResponder` ignores history entirely — it only echoes the
 current turn.)
 
-**Seed-card prefix.** `OllamaResponder` also prepends a synthetic
-card-shaped user/assistant exchange ahead of the replayed history on
-**every** request — two extra turns, unconditionally, with **no flag to
-disable it**. This is a fixed per-request context cost, not a one-time setup
-cost: it counts toward `num_ctx` fill on every call. It exists because a
+**Seed-card prefix.** When a run names `--seed-card-file`, `OllamaResponder`
+prepends a synthetic card-shaped user/assistant exchange ahead of the replayed
+history on every request — two extra turns. This is a fixed per-request
+context cost, not a one-time setup cost: it counts toward `num_ctx` fill on
+every call. It exists because a
 conversation that has drifted to prose tends to stay in prose; seeding a
 card-shaped turn before history keeps a card the conversation's established
 format. See `ModelBehavior.md` ("The card seed, and what it costs") for
@@ -223,14 +223,28 @@ rebuild, and `--seed-card-file` points at a candidate for A/B runs the way
 ]
 ```
 
-Note the asymmetry with `--system-prompt-file`: the seed's **content** is
-configurable, but sending **no seed** is not, because a seed is what every
-recorded measurement was taken with. A missing or malformed file degrades to
-no seed with a `WARNING` rather than refusing requests, and `GET /status`
-reports `seedCardTurns: 0` so the loss is visible rather than silent.
+**The seed is opt-in, exactly like the system prompt.** Omit
+`--seed-card-file` and the server sends no seed at all; there is no separate
+boolean and no implicit default, so a configuration cannot be seeded by
+accident or claim to be seeded while sending nothing. Every figure in
+`ModelBehavior.md` was measured with `assets/seed_card.json` passed, so quoting
+one against an unseeded server is quoting the wrong configuration.
+
+Whether the seed helps is strongly model-dependent, which is why it is a
+per-run decision rather than a constant: **+9** shapes to `qwen3-coder:30b`
+and **+6** to `granite4.1:8b`, exactly **zero** to `qwen2.5-coder:7b` and
+`qwen3.8:27b-nvfp4`, and **−2** to `gpt-oss:20b`, the only model that answers
+all 25 shape cases and does so without it. `.vscode/launch.json` carries a
+`qwen3-coder:30b` target with the seed omitted beside its seeded twin so the
+difference is two clicks.
+
+A named-but-malformed file degrades to no seed with a `WARNING` rather than
+refusing requests, and `GET /status` reports both `seedCard` and
+`seedCardTurns` — the boolean distinguishes "no file was named" from "the
+named file failed to load", which both read as `0` turns.
 
 `shape_ab.dart` reads this same asset and seeds by default (`--no-seed-card`
-opts out), so a probe measures what the server sends.
+opts out), so a probe measures what a seeded server sends.
 `test/seed_card_test.dart` pins the shipped bytes to the
 content `ModelBehavior.md`'s numbers were measured against — editing the
 asset fails that test until the new seed is measured and the record updated.
@@ -355,6 +369,7 @@ routes stay compact. Example payload:
     "historyTurns": 10,
     "jsonFormat": "none",
     "systemPromptFile": "card_system_prompt.txt",
+    "seedCard": true,
     "seedCardFile": "seed_card.json",
     "seedCardTurns": 2,
     "keepAlive": "30m",
@@ -461,13 +476,17 @@ sequenceDiagram
         F-->>O: exception or ""
         O->>O: log warning, send NO system message
     end
-    O->>N: loadSeedCardMessages() — read file (per request)
-    alt valid JSON, roles alternate from user
-        N-->>O: [user turn, assistant card turn]
-        O->>O: messages += seed pair (candidate N2 — see ModelBehavior.md)
-    else missing / malformed / bad roles
-        N-->>O: []
-        O->>O: log warning, send NO seed (status reports seedCardTurns: 0)
+    alt --seed-card-file named
+        O->>N: loadSeedCardMessages() — read file (per request)
+        alt valid JSON, roles alternate from user
+            N-->>O: [user turn, assistant card turn]
+            O->>O: messages += seed pair (candidate N2 — see ModelBehavior.md)
+        else malformed / bad roles
+            N-->>O: []
+            O->>O: log warning, send NO seed (status: seedCard true, turns 0)
+        end
+    else no --seed-card-file
+        O->>O: send NO seed (status: seedCard false, turns 0)
     end
     O->>O: _trimHistory() — keep last historyTurns exchanges
     O->>O: messages += history + {role: user, content: text}

@@ -44,7 +44,7 @@ void main() {
     return OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
       defaultSystemPromptPath: promptPath,
-      defaultSeedCardPath: seedPath,
+      seedCardFile: seedCard ? seedPath : null,
       cardSchemaPath: schemaPath,
       client: client,
       jsonFormat: jsonFormat,
@@ -52,7 +52,6 @@ void main() {
       systemPromptFile: systemPromptFile,
       ollamaTimeout: ollamaTimeout ?? const Duration(seconds: 60),
       temperature: temperature,
-      seedCard: seedCard,
     );
   }
 
@@ -164,7 +163,7 @@ void main() {
     final responder = OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
       defaultSystemPromptPath: promptPath,
-      defaultSeedCardPath: seedPath,
+      seedCardFile: seedPath,
       cardSchemaPath: schemaPath,
       client: client,
       keepAlive: '2h',
@@ -302,7 +301,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: '${tempDir.path}/does_not_exist.txt',
-        defaultSeedCardPath: seedPath,
+        seedCardFile: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
       );
@@ -318,7 +317,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
-        defaultSeedCardPath: seedPath,
+        seedCardFile: seedPath,
         cardSchemaPath: '${tempDir.path}/missing_schema.json',
         client: MockClient((request) async => http.Response('', 200)),
         jsonFormat: 'schema',
@@ -640,7 +639,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
-        defaultSeedCardPath: seedPath,
+        seedCardFile: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -660,7 +659,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
-        defaultSeedCardPath: seedPath,
+        seedCardFile: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -685,7 +684,7 @@ void main() {
         final responder = OllamaResponder(
           ollamaUrl: 'http://127.0.0.1:11434',
           defaultSystemPromptPath: promptPath,
-          defaultSeedCardPath: seedPath,
+          seedCardFile: seedPath,
           cardSchemaPath: schemaPath,
           client: client,
           numCtx: 1000,
@@ -709,7 +708,7 @@ void main() {
         final responder = OllamaResponder(
           ollamaUrl: 'http://127.0.0.1:11434',
           defaultSystemPromptPath: promptPath,
-          defaultSeedCardPath: seedPath,
+          seedCardFile: seedPath,
           cardSchemaPath: schemaPath,
           client: client,
           numCtx: 1000,
@@ -730,7 +729,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
-        defaultSeedCardPath: seedPath,
+        seedCardFile: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -751,7 +750,7 @@ void main() {
       final responder = OllamaResponder(
         ollamaUrl: 'http://127.0.0.1:11434',
         defaultSystemPromptPath: promptPath,
-        defaultSeedCardPath: seedPath,
+        seedCardFile: seedPath,
         cardSchemaPath: schemaPath,
         client: client,
         numCtx: 1000,
@@ -765,8 +764,8 @@ void main() {
     });
   });
 
-  group('--no-seed-card', () {
-    test('omits the seed pair, leaving system + history + current', () async {
+  group('seed only when a seed-card-file is named', () {
+    test('omits the seed pair when no file is named', () async {
       late Map<String, dynamic> captured;
       final client = MockClient((request) async {
         captured = jsonDecode(request.body) as Map<String, dynamic>;
@@ -788,9 +787,9 @@ void main() {
       );
     });
 
-    test('is on by default, so the shipped server still seeds', () async {
-      // The flag exists to let a host opt out, not to change what ships:
-      // every figure in ModelBehavior.md is a seeded measurement.
+    test('seeds when a file is named', () async {
+      // Naming the file is the whole opt-in: there is no separate boolean,
+      // so a configuration cannot claim to be seeded while sending nothing.
       late Map<String, dynamic> captured;
       final client = MockClient((request) async {
         captured = jsonDecode(request.body) as Map<String, dynamic>;
@@ -804,8 +803,8 @@ void main() {
       );
     });
 
-    test('status reports the seed off, distinct from a failed load', () async {
-      // seedCardTurns is 0 both when the seed is switched off and when the
+    test('status reports no seed, distinct from a failed load', () async {
+      // seedCardTurns is 0 both when no file was named and when the named
       // asset fails to parse. Those are different problems, so `seedCard`
       // has to say which one a reader is looking at.
       final off = makeResponder(

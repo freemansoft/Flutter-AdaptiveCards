@@ -40,6 +40,7 @@ class ShapeRow {
     required this.preSeed,
     required this.cascade,
     required this.eroded,
+    this.seedGain = 0,
   });
 
   /// Model tag, as the table prints it.
@@ -59,6 +60,13 @@ class ShapeRow {
 
   /// Cascade result, already formatted (`3/3`, `n/a`).
   final String cascade;
+
+  /// Shapes the seed is worth: with-history seeded minus with-history unaided.
+  ///
+  /// Its own column because it answers a question the score cannot — whether a
+  /// model earned its number or was carried to it. A host deciding whether to
+  /// pass `--seed-card-file` reads this, not the score.
+  final int seedGain;
 
   /// Shapes that pass cold and fail warm, already formatted.
   final String eroded;
@@ -149,9 +157,26 @@ Map<String, ShapeRow> derivedRows(
           ? (carried[model]?.cascade ?? '—')
           : cascadeCell(cascadeRun),
       eroded: erodedFor(seeded, total),
+      seedGain: unaided == null
+          ? 0
+          : shapesFor(seeded, 'warm') - shapesFor(unaided, 'warm'),
     );
   }
   return rows;
+}
+
+/// The seed column: what `--seed-card-file` is worth to this model.
+///
+/// Bucketed rather than printed raw, because the decision it informs is
+/// binary — pass the flag or don't — with the number beside it for anyone who
+/// doubts the verdict.
+String seedCell(ShapeRow r) {
+  if (r.preSeed < 0) return '—';
+  final n = r.seedGain;
+  if (n >= 5) return '**needs it** (+$n)';
+  if (n >= 2) return 'helps (+$n)';
+  if (n >= 0) return 'no effect (${n > 0 ? '+' : ''}$n)';
+  return '_hurts_ ($n)';
 }
 
 /// Renders the table body, best-first by with-history coverage.
@@ -177,14 +202,14 @@ String renderTable(List<ShapeRow> rows) {
   final buffer = StringBuffer()
     ..writeln(
       '| Model | Weights | Cold-start | With history | Warm, pre-seed | '
-      'Cascade | Eroded by history |',
+      'Seed | Cascade | Eroded by history |',
     )
-    ..writeln('| --- | --- | --- | --- | --- | --- | --- |');
+    ..writeln('| --- | --- | --- | --- | --- | --- | --- | --- |');
   for (final r in sorted) {
     buffer.writeln(
       '| `${r.model}` | ${r.weights} | ${cell(r.cold, bestCold)} | '
       '${cell(r.warm, bestWarm)} | ${cell(r.preSeed, bestPre)} | '
-      '${r.cascade} | ${r.eroded} |',
+      '${seedCell(r)} | ${r.cascade} | ${r.eroded} |',
     );
   }
   return buffer.toString();
@@ -220,12 +245,12 @@ Map<String, CarriedCells> carriedFromMarkdown(String markdown) {
   for (final line in markdown.split('\n')) {
     if (!line.startsWith('| `')) continue;
     final cells = line.split('|').map((c) => c.trim()).toList();
-    if (cells.length < 8) continue;
+    if (cells.length < 9) continue;
     if (!cells[2].endsWith('GB')) continue;
     out[cells[1].replaceAll('`', '')] = CarriedCells(
       weights: cells[2],
-      cascade: cells[6],
-      eroded: cells[7],
+      cascade: cells[7],
+      eroded: cells[8],
     );
   }
   return out;

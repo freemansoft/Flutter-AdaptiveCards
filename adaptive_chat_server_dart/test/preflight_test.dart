@@ -38,7 +38,7 @@ void main() {
   }) => OllamaResponder(
     ollamaUrl: 'http://127.0.0.1:11434',
     defaultSystemPromptPath: promptPath,
-    defaultSeedCardPath: seedPath,
+    seedCardFile: seedPath,
     cardSchemaPath: schemaPath,
     client: client,
     model: model,
@@ -113,7 +113,7 @@ void main() {
     final responder = OllamaResponder(
       ollamaUrl: 'http://127.0.0.1:11434',
       defaultSystemPromptPath: promptPath,
-      defaultSeedCardPath: seedPath,
+      seedCardFile: seedPath,
       cardSchemaPath: schemaPath,
       ollamaTimeout: const Duration(seconds: 180),
     );

@@ -102,6 +102,8 @@
         "qwen2.5-coder:7b",
         "--system-prompt-file",
         "assets/card_system_prompt.txt",
+        "--seed-card-file",
+        "assets/seed_card.json",
         "--num-ctx",
         "16384",
         "--history-turns",
@@ -131,6 +133,8 @@
         "qwen3.8:27b-nvfp4",
         "--system-prompt-file",
         "assets/card_system_prompt.txt",
+        "--seed-card-file",
+        "assets/seed_card.json",
         "--num-ctx",
         "16384",
         "--history-turns",
@@ -159,6 +163,8 @@
         "granite4.1:8b",
         "--system-prompt-file",
         "assets/card_system_prompt.txt",
+        "--seed-card-file",
+        "assets/seed_card.json",
         "--num-ctx",
         "16384",
         "--history-turns",
@@ -180,6 +186,40 @@
       // --no-seed-card to watch it fall apart, which is the point of the flag
       // existing. See adaptive_chat_server_dart/ModelBehavior.md.
       "name": "Adaptive Chat Server Dart (Ollama qwen3-coder:30b, card prompt)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen3-coder:30b",
+        "--system-prompt-file",
+        "assets/card_system_prompt.txt",
+        "--seed-card-file",
+        "assets/seed_card.json",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // The same model as above with the seed omitted, so the difference is
+      // two clicks rather than an assertion in a document. qwen3-coder:30b
+      // scores 23/25 shapes with the seed and 14/25 without it — the largest
+      // seed dependence in the launch set. Ask for a pick-from-a-set after a
+      // couple of prose turns and watch it answer in Markdown instead.
+      //
+      // Not a configuration to ship: it exists to demonstrate what
+      // --seed-card-file buys. Compare with the qwen3.8 target, which scores
+      // the same either way.
+      "name": "Adaptive Chat Server Dart (Ollama qwen3-coder:30b, card prompt, NO SEED)",
       "type": "dart",
       "request": "launch",
       "cwd": "${workspaceFolder}/adaptive_chat_server_dart",

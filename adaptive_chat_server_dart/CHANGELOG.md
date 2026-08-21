@@ -2,16 +2,31 @@
 
 ## [Unreleased]
 
-- Added: **`--seed-card` / `--no-seed-card`**, so a host can send no seed at
-  all. **The default does not move** — every figure in `ModelBehavior.md` is a
-  seeded measurement, and a silently seedless server would stop matching its
-  own documentation. What changed is that opting out is now possible, because
-  the seed's value turns out to be model-dependent rather than universal:
+- Changed: **the seed is now opt-in — it is sent only when `--seed-card-file`
+  names one.** There is no separate boolean and no implicit default, mirroring
+  how the server already treats `--system-prompt-file`: a run says what it
+  wants or gets nothing. One flag replaces the two this branch briefly had.
+  Every figure in `ModelBehavior.md` was measured with `assets/seed_card.json`
+  passed, so quoting one against an unseeded server quotes the wrong
+  configuration; the launch configs pass it explicitly. A side effect worth
+  knowing: the Markdown-prompt launch targets no longer seed at all, and
+  prepending a card-shaped exchange to a server whose prompt asks for Markdown
+  was always working against itself.
+- Docs: **both `ModelBehavior.md` tables now carry a Seed column** tagging what
+  the flag is worth per model — **needs it** (+5 or more), helps (+2 to +4), no
+  effect (0 or +1), _hurts_ (negative) — derived from the recorded runs rather
+  than written by hand, so it cannot disagree with the columns beside it. Ten
+  of fifteen models gain something; five gain nothing or lose. The extremes:
   **+9** shapes to `qwen3-coder:30b` and **+6** to `granite4.1:8b`, exactly
   **zero** to `qwen2.5-coder:7b` and `qwen3.8:27b-nvfp4`, and **−2** to
   `gpt-oss:20b`, the only model that answers all 25 shape cases and does so
   without it. A mechanism ranging from essential to mildly harmful depending on
   the model is one a host should be able to switch.
+- Docs: `README.md` audited end to end against the new flag surface — the
+  request-flow diagrams, the assembled-message description, the `/status`
+  sample, and the seed sequence diagram all now show the seed as conditional,
+  and the "sending no seed is not configurable" note is gone because it no
+  longer is.
 - Added: `/status` now reports `seedCard`. `seedCardTurns` reads 0 both when
   the seed is switched off and when the asset fails to parse, and those are
   different problems, so the boolean says which one a reader is looking at.

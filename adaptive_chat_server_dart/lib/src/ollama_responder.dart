@@ -204,12 +204,10 @@ class OllamaResponder implements Responder {
     required String ollamaUrl,
     required String defaultSystemPromptPath,
     required String cardSchemaPath,
-    required String defaultSeedCardPath,
     String model = defaultOllamaModel,
     http.Client? client,
     String? systemPromptFile,
     String? seedCardFile,
-    this.seedCard = true,
     int historyTurns = defaultHistoryTurns,
     int numCtx = defaultNumCtx,
     String jsonFormat = defaultJsonFormat,
@@ -227,6 +225,10 @@ class OllamaResponder implements Responder {
        // ignore: prefer_initializing_formals
        _model = model,
        _client = client ?? http.Client(),
+       // Null means "send no seed at all", mirroring how the server treats
+       // an absent --system-prompt-file: the seed is opt-in by naming a
+       // file, so a configuration cannot be seeded by accident.
+       _seedCardPath = seedCardFile,
        // Same reason as _ollamaUrl above.
        // ignore: prefer_initializing_formals
        _historyTurns = historyTurns,
@@ -234,7 +236,6 @@ class OllamaResponder implements Responder {
        // ignore: prefer_initializing_formals
        _numCtx = numCtx,
        _systemPromptPath = systemPromptFile ?? defaultSystemPromptPath,
-       _seedCardPath = seedCardFile ?? defaultSeedCardPath,
        _jsonFormat = jsonFormat,
        _requestedJsonFormat = jsonFormat,
        // Same reason as _ollamaUrl above.
@@ -260,23 +261,8 @@ class OllamaResponder implements Responder {
   final int _historyTurns;
   final int _numCtx;
   final String _systemPromptPath;
-  final String _seedCardPath;
+  final String? _seedCardPath;
 
-  /// Whether to prepend the seed exchange ahead of the replayed history.
-  ///
-  /// On by default, because the seed is what every figure in
-  /// `ModelBehavior.md` was measured against and turning it off silently
-  /// would make the shipped configuration differ from the measured one.
-  ///
-  /// It is switchable because its value is strongly model-dependent rather
-  /// than universal: measured across fifteen models it is worth **+10** shapes
-  /// to `nemotron-3-nano:4b` and **+9** to `qwen3-coder:30b`, exactly nothing
-  /// to `qwen2.5-coder:7b` and `qwen3.8:27b-nvfp4`, and **−2** to
-  /// `gpt-oss:20b`, which is the only model to answer all 25 shape cases
-  /// correctly and does so without it. A mechanism that ranges from essential
-  /// to mildly harmful depending on the model is one a host should be able to
-  /// turn off.
-  final bool seedCard;
   final String _requestedJsonFormat;
   final Duration _ollamaTimeout;
   final String _keepAlive;
@@ -297,15 +283,15 @@ class OllamaResponder implements Responder {
       'historyTurns': _historyTurns,
       'jsonFormat': _jsonFormat,
       'systemPromptFile': p.basename(_systemPromptPath),
-      'seedCard': seedCard,
-      'seedCardFile': p.basename(_seedCardPath),
+      'seedCard': _seedCardPath != null,
+      'seedCardFile': _seedCardPath == null ? null : p.basename(_seedCardPath),
       // 0 means the seed failed to load — the warning says why. Surfaced
       // because a silently seedless server loses the measured drift
       // protection while looking healthy. Also 0 when the seed is switched
       // off, which `seedCard` distinguishes from a load failure.
-      'seedCardTurns': seedCard
-          ? loadSeedCardMessages(_seedCardPath).length
-          : 0,
+      'seedCardTurns': _seedCardPath == null
+          ? 0
+          : loadSeedCardMessages(_seedCardPath).length,
       'keepAlive': _keepAlive,
       'timeoutSeconds': _ollamaTimeout.inSeconds,
       'temperature': _temperature ?? 'model',
@@ -428,8 +414,9 @@ class OllamaResponder implements Responder {
     // Measured as candidate N2 — see seed_card.dart for what it is and what
     // it costs. Skipped entirely under --no-seed-card, which is not the
     // shipped default: the figures in ModelBehavior.md are seeded ones.
-    if (seedCard) {
-      for (final message in loadSeedCardMessages(_seedCardPath)) {
+    final seedPath = _seedCardPath;
+    if (seedPath != null) {
+      for (final message in loadSeedCardMessages(seedPath)) {
         messages.add({'role': message.role, 'content': message.content});
       }
     }
