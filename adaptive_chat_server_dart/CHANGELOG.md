@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Added: **unknown-element-type detection (`lib/src/element_types.dart`).**
+  `loadKnownElementTypes` reads the schema's `ChildElement` vocabulary and
+  `unknownElementTypes` walks a parsed card body for anything outside it,
+  at any nesting depth. A misspelled type such as `Textblock` is valid JSON
+  that renders as an invisible blank, so it is the one failure a user sees
+  and no probe scores. A missing or malformed schema disables the check
+  rather than failing requests.
+
 - Changed: **`card_schema.json` now mirrors the renderable registry.** The
   `Element` enum grew from 24 to 33 types, adding `Media`, `Container`,
   `RichTextBlock`, `ActionSet`, `ImageSet`, `Input.Rating`, `CompoundButton`,
