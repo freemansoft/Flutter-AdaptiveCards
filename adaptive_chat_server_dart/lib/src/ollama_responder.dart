@@ -204,7 +204,6 @@ class OllamaResponder implements Responder {
     required String ollamaUrl,
     required String defaultSystemPromptPath,
     required String cardSchemaPath,
-    required String defaultSeedCardPath,
     String model = defaultOllamaModel,
     http.Client? client,
     String? systemPromptFile,
@@ -226,6 +225,10 @@ class OllamaResponder implements Responder {
        // ignore: prefer_initializing_formals
        _model = model,
        _client = client ?? http.Client(),
+       // Null means "send no seed at all", mirroring how the server treats
+       // an absent --system-prompt-file: the seed is opt-in by naming a
+       // file, so a configuration cannot be seeded by accident.
+       _seedCardPath = seedCardFile,
        // Same reason as _ollamaUrl above.
        // ignore: prefer_initializing_formals
        _historyTurns = historyTurns,
@@ -233,7 +236,6 @@ class OllamaResponder implements Responder {
        // ignore: prefer_initializing_formals
        _numCtx = numCtx,
        _systemPromptPath = systemPromptFile ?? defaultSystemPromptPath,
-       _seedCardPath = seedCardFile ?? defaultSeedCardPath,
        _jsonFormat = jsonFormat,
        _requestedJsonFormat = jsonFormat,
        // Same reason as _ollamaUrl above.
@@ -259,7 +261,8 @@ class OllamaResponder implements Responder {
   final int _historyTurns;
   final int _numCtx;
   final String _systemPromptPath;
-  final String _seedCardPath;
+  final String? _seedCardPath;
+
   final String _requestedJsonFormat;
   final Duration _ollamaTimeout;
   final String _keepAlive;
@@ -280,11 +283,15 @@ class OllamaResponder implements Responder {
       'historyTurns': _historyTurns,
       'jsonFormat': _jsonFormat,
       'systemPromptFile': p.basename(_systemPromptPath),
-      'seedCardFile': p.basename(_seedCardPath),
+      'seedCard': _seedCardPath != null,
+      'seedCardFile': _seedCardPath == null ? null : p.basename(_seedCardPath),
       // 0 means the seed failed to load — the warning says why. Surfaced
       // because a silently seedless server loses the measured drift
-      // protection while looking healthy.
-      'seedCardTurns': loadSeedCardMessages(_seedCardPath).length,
+      // protection while looking healthy. Also 0 when the seed is switched
+      // off, which `seedCard` distinguishes from a load failure.
+      'seedCardTurns': _seedCardPath == null
+          ? 0
+          : loadSeedCardMessages(_seedCardPath).length,
       'keepAlive': _keepAlive,
       'timeoutSeconds': _ollamaTimeout.inSeconds,
       'temperature': _temperature ?? 'model',
@@ -404,10 +411,14 @@ class OllamaResponder implements Responder {
     if (systemPrompt != null) {
       messages.add({'role': 'system', 'content': systemPrompt});
     }
-    // Measured as candidate N2 — see seed_card.dart for why the seed itself
-    // is unconditional and only its content is configurable.
-    for (final message in loadSeedCardMessages(_seedCardPath)) {
-      messages.add({'role': message.role, 'content': message.content});
+    // Measured as candidate N2 — see seed_card.dart for what it is and what
+    // it costs. Skipped entirely under --no-seed-card, which is not the
+    // shipped default: the figures in ModelBehavior.md are seeded ones.
+    final seedPath = _seedCardPath;
+    if (seedPath != null) {
+      for (final message in loadSeedCardMessages(seedPath)) {
+        messages.add({'role': message.role, 'content': message.content});
+      }
     }
     for (final (role, content) in _trimHistory(history)) {
       messages.add({'role': role, 'content': content});

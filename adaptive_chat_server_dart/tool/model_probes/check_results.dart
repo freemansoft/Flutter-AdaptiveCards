@@ -91,7 +91,7 @@ Map<String, (int, int, int, int)> shapeTableRows(String markdown) {
   for (final line in markdown.split('\n')) {
     if (!line.startsWith('| `')) continue;
     final cells = line.split('|').map((c) => c.trim()).toList();
-    if (cells.length < 7) continue;
+    if (cells.length < 8) continue;
     final model = cells[1].replaceAll('`', '');
     final parsed = [
       for (final i in [3, 4, 5]) cell.firstMatch(cells[i]),

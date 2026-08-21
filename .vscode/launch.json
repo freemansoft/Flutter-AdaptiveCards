@@ -84,7 +84,10 @@
     },
     {
       // Requires a local Ollama (`ollama serve`) with the model pulled
-      // (`ollama pull qwen2.5-coder:7b`).
+      // (`ollama pull qwen2.5-coder:7b`). 16 GB 2 of 2, and the compiled-in
+      // default (defaultOllamaModel), so it is the one configuration that
+      // must stay launchable by hand. Seed-neutral, and the most
+      // card-committed model measured: 10/10 stress with zero prose.
       "name": "Adaptive Chat Server Dart (Ollama qwen2.5-coder:7b, card prompt)",
       "type": "dart",
       "request": "launch",
@@ -99,6 +102,8 @@
         "qwen2.5-coder:7b",
         "--system-prompt-file",
         "assets/card_system_prompt.txt",
+        "--seed-card-file",
+        "assets/seed_card.json",
         "--num-ctx",
         "16384",
         "--history-turns",
@@ -109,11 +114,11 @@
     },
     {
       // Requires a local Ollama (`ollama serve`) with the model pulled
-      // (`ollama pull qwen3.8:27b-nvfp4`). Swapped in for gpt-oss:20b on
-      // 2026-08-20: ties it on both shape scores and beats it on everyday,
-      // stress, seed-independence and the nested Carousel/ColumnSet shapes,
-      // for 4.1 GB more weight. See adaptive_chat_server_dart/ModelBehavior.md.
-      // Leave --json-format at none: this model ignores the constraint.
+      // (`ollama pull qwen3.8:27b-nvfp4`). LARGE 1 of 2: the highest
+      // as-shipped shape score measured, 24/25, and seed-neutral — it scores
+      // the same with the seed and without it. Leave --json-format at none:
+      // this model ignores the constraint silently.
+      // See adaptive_chat_server_dart/ModelBehavior.md.
       "name": "Adaptive Chat Server Dart (Ollama qwen3.8:27b-nvfp4, card prompt)",
       "type": "dart",
       "request": "launch",
@@ -128,6 +133,8 @@
         "qwen3.8:27b-nvfp4",
         "--system-prompt-file",
         "assets/card_system_prompt.txt",
+        "--seed-card-file",
+        "assets/seed_card.json",
         "--num-ctx",
         "16384",
         "--history-turns",
@@ -138,7 +145,10 @@
     },
     {
       // Requires a local Ollama (`ollama serve`) with the model pulled
-      // (`ollama pull granite4.1:8b`).
+      // (`ollama pull granite4.1:8b`). 16 GB 1 of 2: the best portable model
+      // at 21/25, and one the seed does real work for — it scores 15/25
+      // without it. Launch this beside the qwen3-coder target below to see
+      // both halves of why --seed-card is a flag rather than a constant.
       "name": "Adaptive Chat Server Dart (Ollama granite4.1:8b, card prompt)",
       "type": "dart",
       "request": "launch",
@@ -151,6 +161,76 @@
         "debug",
         "--ollama-model",
         "granite4.1:8b",
+        "--system-prompt-file",
+        "assets/card_system_prompt.txt",
+        "--seed-card-file",
+        "assets/seed_card.json",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // Requires a local Ollama (`ollama serve`) with the model pulled
+      // (`ollama pull qwen3-coder:30b`). LARGE 2 of 2, added 2026-08-21.
+      // Chosen for demo qualities rather than raw coverage: at 1.6 s/call it
+      // is the fastest model measured, it honors --json-format (neither nvfp4
+      // build does), and it is the only model that answers BOTH cold-start
+      // sets entirely in cards, never falling back to Markdown.
+      //
+      // It is also the strongest demonstration of what the card seed buys:
+      // 23/25 with the seed, 14/25 without. Relaunch this target with
+      // --no-seed-card to watch it fall apart, which is the point of the flag
+      // existing. See adaptive_chat_server_dart/ModelBehavior.md.
+      "name": "Adaptive Chat Server Dart (Ollama qwen3-coder:30b, card prompt)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen3-coder:30b",
+        "--system-prompt-file",
+        "assets/card_system_prompt.txt",
+        "--seed-card-file",
+        "assets/seed_card.json",
+        "--num-ctx",
+        "16384",
+        "--history-turns",
+        "10",
+        "--port",
+        "8000"
+      ]
+    },
+    {
+      // The same model as above with the seed omitted, so the difference is
+      // two clicks rather than an assertion in a document. qwen3-coder:30b
+      // scores 23/25 shapes with the seed and 14/25 without it — the largest
+      // seed dependence in the launch set. Ask for a pick-from-a-set after a
+      // couple of prose turns and watch it answer in Markdown instead.
+      //
+      // Not a configuration to ship: it exists to demonstrate what
+      // --seed-card-file buys. Compare with the qwen3.8 target, which scores
+      // the same either way.
+      "name": "Adaptive Chat Server Dart (Ollama qwen3-coder:30b, card prompt, NO SEED)",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/adaptive_chat_server_dart",
+      "program": "bin/server.dart",
+      "args": [
+        "--ollama-url",
+        "http://127.0.0.1:11434",
+        "--log-level",
+        "debug",
+        "--ollama-model",
+        "qwen3-coder:30b",
         "--system-prompt-file",
         "assets/card_system_prompt.txt",
         "--num-ctx",

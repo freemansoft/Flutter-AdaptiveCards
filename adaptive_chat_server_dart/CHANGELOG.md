@@ -2,6 +2,52 @@
 
 ## [Unreleased]
 
+- Changed: **the seed is now opt-in — it is sent only when `--seed-card-file`
+  names one.** There is no separate boolean and no implicit default, mirroring
+  how the server already treats `--system-prompt-file`: a run says what it
+  wants or gets nothing. One flag replaces the two this branch briefly had.
+  Every figure in `ModelBehavior.md` was measured with `assets/seed_card.json`
+  passed, so quoting one against an unseeded server quotes the wrong
+  configuration; the launch configs pass it explicitly. A side effect worth
+  knowing: the Markdown-prompt launch targets no longer seed at all, and
+  prepending a card-shaped exchange to a server whose prompt asks for Markdown
+  was always working against itself.
+- Docs: **both `ModelBehavior.md` tables now carry a Seed column** tagging what
+  the flag is worth per model — **needs it** (+5 or more), helps (+2 to +4), no
+  effect (0 or +1), _hurts_ (negative) — derived from the recorded runs rather
+  than written by hand, so it cannot disagree with the columns beside it. Ten
+  of fifteen models gain something; five gain nothing or lose. The extremes:
+  **+9** shapes to `qwen3-coder:30b` and **+6** to `granite4.1:8b`, exactly
+  **zero** to `qwen2.5-coder:7b` and `qwen3.8:27b-nvfp4`, and **−2** to
+  `gpt-oss:20b`, the only model that answers all 25 shape cases and does so
+  without it. A mechanism ranging from essential to mildly harmful depending on
+  the model is one a host should be able to switch.
+- Docs: `README.md` audited end to end against the new flag surface — the
+  request-flow diagrams, the assembled-message description, the `/status`
+  sample, and the seed sequence diagram all now show the seed as conditional,
+  and the "sending no seed is not configurable" note is gone because it no
+  longer is.
+- Added: `/status` now reports `seedCard`. `seedCardTurns` reads 0 both when
+  the seed is switched off and when the asset fails to parse, and those are
+  different problems, so the boolean says which one a reader is looking at.
+- Changed: **`.vscode/launch.json` now launches four models rather than three**
+  — two large (`qwen3.8:27b-nvfp4`, `qwen3-coder:30b`) and two that fit a 16 GB
+  host (`granite4.1:8b`, `qwen2.5-coder:7b`). The four span the full range of
+  seed dependence by design, so relaunching `qwen3-coder:30b` with
+  `--no-seed-card` and watching it drop from 23/25 to 14/25 is a two-click
+  demonstration rather than a claim in a document.
+- Docs: **`qwen3-coder:30b` joins the launch set on demo qualities rather than
+  raw coverage.** At **1.6 s/call it is the fastest model measured**, ahead of
+  models a quarter its weight; it **honors `format`**, which neither `nvfp4`
+  build does; and it is the only model that answers both cold-start sets
+  entirely in cards, never falling back to Markdown. For a demo somebody clicks
+  through by hand, those beat a shape point.
+- Docs: `ModelBehavior.md` now says "launch set" rather than "top three", since
+  the set is four and expected to keep changing. The test that pinned it at
+  three now asserts the invariants that actually matter — the compiled-in
+  default is launchable, and no tag appears twice — rather than a count that
+  churns.
+
 - Fixed: **five stale `granite4.1:3b` claims that shipped in the correction
   itself.** The batch of edits correcting that model threw on its last
   statement, so the file was never written, and only the edits re-applied

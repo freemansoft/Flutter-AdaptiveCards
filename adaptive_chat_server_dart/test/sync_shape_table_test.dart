@@ -114,9 +114,9 @@ void main() {
 
   group('carried cells', () {
     const table = '''
-| Model | Weights | Cold-start | With history | Warm, pre-seed | Cascade | Eroded by history |
-| --- | --- | --- | --- | --- | --- | --- |
-| `m:1` | 4.4 GB | 21/25 | 19/25 | 18/25 | 3/3 | `carousel`, `table` (2) |
+| Model | Weights | Cold-start | With history | Warm, pre-seed | Seed | Cascade | Eroded by history |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `m:1` | 4.4 GB | 21/25 | 19/25 | 18/25 | helps (+1) | 3/3 | `carousel`, `table` (2) |
 ''';
 
     test('preserves what no probe can supply', () {
@@ -189,6 +189,57 @@ void main() {
       expect(rows['m:1']!.warm, 18);
       // Not re-measured, so the published figure stands.
       expect(rows['m:1']!.preSeed, 13);
+    });
+  });
+
+  group('the seed column', () {
+    ShapeRow row(int gain, {int preSeed = 18}) => ShapeRow(
+      model: 'm:1',
+      weights: '1 GB',
+      cold: 20,
+      warm: 20,
+      preSeed: preSeed,
+      cascade: '3/3',
+      eroded: 'none',
+      seedGain: gain,
+    );
+
+    test('buckets the gain into a verdict, keeping the number', () {
+      expect(seedCell(row(10)), '**needs it** (+10)');
+      expect(seedCell(row(5)), '**needs it** (+5)');
+      expect(seedCell(row(3)), 'helps (+3)');
+      expect(seedCell(row(1)), 'no effect (+1)');
+      expect(seedCell(row(0)), 'no effect (0)');
+      expect(seedCell(row(-2)), '_hurts_ (-2)');
+    });
+
+    test('is an em dash when no unaided run exists to compare against', () {
+      // A gain of 0 and "never measured" are different claims, and only the
+      // pre-seed column can tell them apart.
+      expect(seedCell(row(0, preSeed: -1)), '—');
+    });
+
+    test('is derived, so it cannot disagree with the columns beside it', () {
+      final rows = derivedRows(
+        [
+          shapeRun(
+            model: 'm:1',
+            variant: 'seeded',
+            cold: {for (var i = 0; i < 25; i++) 'c$i': i < 20},
+            warm: {for (var i = 0; i < 25; i++) 'c$i': i < 20},
+          ),
+          shapeRun(
+            model: 'm:1',
+            variant: 'unaided',
+            cold: {for (var i = 0; i < 25; i++) 'c$i': i < 12},
+            warm: {for (var i = 0; i < 25; i++) 'c$i': i < 12},
+          ),
+        ],
+        const {},
+      );
+      final r = rows['m:1']!;
+      expect(r.warm - r.preSeed, r.seedGain);
+      expect(seedCell(r), '**needs it** (+8)');
     });
   });
 

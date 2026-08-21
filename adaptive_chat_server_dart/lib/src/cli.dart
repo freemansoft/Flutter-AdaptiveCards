@@ -104,10 +104,14 @@ ArgParser buildArgParser() {
           'Path to a JSON array of {"role","content"} turns prepended ahead '
           'of every conversation, so a card is the established format before '
           'any prose accumulates (measured as candidate N2 — see '
-          'ModelBehavior.md). Defaults to assets/seed_card.json; re-read per '
-          'request, so edits apply without restart. Override it to re-tune '
-          'the seed; there is no way to send no seed at all, because a seed '
-          'is what was measured.',
+          'ModelBehavior.md). Re-read per request, so edits apply without '
+          'restart. There is no default: omit this and the server sends no '
+          'seed at all, the same way it sends no system prompt unless '
+          '--system-prompt-file names one. Pass assets/seed_card.json for the '
+          'seed every figure in ModelBehavior.md was measured with. Whether '
+          'the seed helps is strongly model-dependent — worth +9 shapes to '
+          'qwen3-coder:30b and +6 to granite4.1:8b, nothing at all to '
+          'qwen2.5-coder:7b and qwen3.8:27b-nvfp4, and -2 to gpt-oss:20b.',
     )
     ..addOption(
       'num-ctx',
