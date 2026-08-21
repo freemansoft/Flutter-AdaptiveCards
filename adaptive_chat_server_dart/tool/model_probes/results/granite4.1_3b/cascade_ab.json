@@ -1,7 +1,7 @@
 {
   "probe": "cascade_ab",
   "model": "granite4.1:3b",
-  "measuredAt": "2026-08-20",
+  "measuredAt": "2026-08-21",
   "machine": "Apple M1 Max / 64 GB",
   "samples": 2,
   "temperature": 0.0,
@@ -11,52 +11,52 @@
   },
   "summary": {
     "cases": 3,
-    "exercised": 0,
-    "passed": 0,
-    "notExercised": 3
+    "exercised": 3,
+    "passed": 3,
+    "notExercised": 0
   },
   "calls": [
     {
       "case": "states",
       "sample": 0,
-      "pass": false,
-      "label": "t1 prose (no card attempted)",
-      "ms": 240053
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 8814
     },
     {
       "case": "states",
       "sample": 1,
-      "pass": false,
-      "label": "t1 prose (no card attempted)",
-      "ms": 240013
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 3640
     },
     {
       "case": "loglevel",
       "sample": 0,
-      "pass": false,
-      "label": "t1 prose (no card attempted)",
-      "ms": 240009
+      "pass": true,
+      "label": "multi, kept 4/4",
+      "ms": 2655
     },
     {
       "case": "loglevel",
       "sample": 1,
-      "pass": false,
-      "label": "t1 prose (no card attempted)",
-      "ms": 240010
+      "pass": true,
+      "label": "multi, kept 4/4",
+      "ms": 2462
     },
     {
       "case": "deploy",
       "sample": 0,
-      "pass": false,
-      "label": "t1 prose (no card attempted)",
-      "ms": 240009
+      "pass": true,
+      "label": "multi, kept 2/2",
+      "ms": 1973
     },
     {
       "case": "deploy",
       "sample": 1,
-      "pass": false,
-      "label": "t1 prose (no card attempted)",
-      "ms": 240016
+      "pass": true,
+      "label": "multi, kept 2/2",
+      "ms": 1941
     }
   ]
 }

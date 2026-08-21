@@ -110,4 +110,40 @@ void main() {
       expect(reading.titles, equals(['A']));
     });
   });
+
+  group('a stalled call is not prose', () {
+    test('an empty reply would otherwise be judged prose', () {
+      // The defect this guards. A timed-out call returns '', and judgeCascade
+      // cannot tell that from a model that chose Markdown — it reported six
+      // of granite4.1:3b's timeouts as "t1 prose (no card attempted)", which
+      // reads as an answer the model never gave. cascade_ab now checks the
+      // outcome label before judging; this pins the ambiguity the judge has.
+      final result = judgeCascade('', '');
+      expect(result.pass, isFalse);
+      expect(result.detail, contains('prose'));
+      expect(
+        result.detail,
+        isNot(contains('timeout')),
+        reason: 'the judge sees only text, so the caller must name the stall',
+      );
+    });
+  });
+
+  group('a stalled call is not prose', () {
+    test('an empty reply is judged prose, not a stall', () {
+      // The defect this guards. A timed-out call returns '', and judgeCascade
+      // cannot tell that from a model that chose Markdown — it reported six of
+      // granite4.1:3b's timeouts as "t1 prose (no card attempted)", which reads
+      // as an answer the model never gave. cascade_ab now inspects the outcome
+      // label before judging; this pins the ambiguity that makes it necessary.
+      final result = judgeCascade('', '');
+      expect(result.pass, isFalse);
+      expect(result.detail, contains('prose'));
+      expect(
+        result.detail,
+        isNot(contains('timeout')),
+        reason: 'the judge sees only text, so the caller must name the stall',
+      );
+    });
+  });
 }

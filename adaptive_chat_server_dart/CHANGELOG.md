@@ -2,6 +2,46 @@
 
 ## [Unreleased]
 
+- Fixed: **`granite4.1:3b`'s 2026-08-20 figures were a measurement artifact,
+  and are corrected.** It was published at 12/25 seeded with `n/a` on cascade
+  and 52 stalled calls, which read as a small model collapsing under a per-call
+  timeout. A leaked Ollama runner process was competing for the GPU throughout —
+  `ollama stop` had returned while the model was still evicting, and the runner
+  never reaped. Re-run on an idle machine it scores **17/25 and 3/3**, matching
+  its earlier unbounded figures exactly. Two of the three "findings" reported
+  about that model were the busy machine, not the model.
+- Docs: what survives is narrower and more interesting. Seeded, the ceiling
+  costs it nothing (2 stalls in 100 calls, same score as unbounded). **Unaided
+  it stalls eleven times** and drops to 9/25 — without a card in front of the
+  history it does not pick the wrong shape, it answers at length in prose until
+  it hits the ceiling. That is what a +8 seed gain looks like from the inside,
+  and it reproduces on an idle machine.
+- Fixed: **`cascade_ab` reported a stalled call as prose.** A timed-out call
+  returns an empty reply, and `judgeCascade` cannot distinguish that from a
+  model that chose Markdown — six of `granite4.1:3b`'s timeouts were recorded
+  as `t1 prose (no card attempted)`, which reads as an answer the model never
+  gave, and were invisible to `ProbeRun.timeouts`. The probe now inspects the
+  outcome before judging, and preserves the `t1`/`t2` distinction so a turn-2
+  stall is not misreported as "never exercised".
+- Added: **`tool/model_probes/sweep.sh`** — the sweep driver, previously
+  unversioned. It encodes the two rules that are easy to get wrong: one model
+  resident at a time, and **wait for eviction to finish**. `ollama stop` is
+  asynchronous, and a probe started during the eviction window measured
+  **3171 ms/call against 1324 ms** for the same model and the same 25 cases on
+  a quiet machine. Waiting is not politeness; it is the difference between a
+  latency figure and a fiction. The wait is bounded and warns rather than
+  hanging, because a wedged runner must not stall a six-hour sweep.
+- Docs: added a **mermaid sequence diagram** of the sweep methodology to
+  `ModelBehavior.md`, covering model load, the serial call loop, the timeout
+  and `abort()` path, and the unload — with the unload called out as
+  load-bearing rather than housekeeping.
+- Docs: recorded that **idle co-residency and active eviction are not the same
+  hazard.** Across 3,555 calls the slow-but-successful rate was identical
+  whether or not the previous model had been unloaded (5.0% vs 5.1%), so the
+  published latency medians stand; but a runner actively evicting inflated a
+  median 2.4x. Only stalls, never ordinary call times, were affected by the
+  original sweep's missing unload.
+
 - Docs: **re-measured every model in `ModelBehavior.md` end to end** — 15 models
   × 6 probes, 90 recorded runs, ~3,700 calls, one model resident at a time on
   the Apple M1 Max / 64 GB. Every figure in the file now derives from a

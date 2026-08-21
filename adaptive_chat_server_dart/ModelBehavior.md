@@ -107,7 +107,7 @@ Sorted by model name, and within a family by parameter count ascending (so `nemo
 
 **Cascade** is a different question and a much smaller one: can a follow-up
 turn edit the card the model just sent — widen a pick-one list to multi-select
-without losing its items? Thirteen of fifteen score `3/3`, so it separates no
+without losing its items? Fourteen of fifteen score `3/3`, so it separates no
 two usable models; it is carried as a column because "we checked, and it works
 wherever a card gets produced" is a fact worth being able to see. `n/a` means
 the model never produced a first card to edit, so the cascade was never
@@ -193,23 +193,23 @@ Two changes were made in response, both still shipped. The card system prompt's 
 
 **This is the current, as-shipped picture**, and the only model comparison in this file that is: all 25 cases, `t=0`, `--samples 2`, both conditions, with the unconditional card seed in place. Six models were measured 2026-08-18, eight more 2026-08-19, and `qwen3.8:27b-nvfp4` on 2026-08-20, all under identical conditions. Sorted by with-history coverage, which is what a user actually experiences.
 
-| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Cascade | Eroded by history                                                 |
-| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------- | ----------------------------------------------------------------- |
-| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | **24/25**  | **24/25**    | 24/25          | 3/3     | none                                                              |
-| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | 23/25        | 14/25          | 3/3     | `rating_ask`, `time` (2)                                          |
-| `gpt-oss:20b`                                       | 12.8 GB | 23/25      | 23/25        | **25/25**      | 3/3     | `number`, `time` (2)                                              |
-| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | 23/25        | 24/25          | 3/3     | none                                                              |
-| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 16/25          | 3/3     | none                                                              |
-| `granite4.1:8b`                                     | 5.0 GB  | 23/25      | 21/25        | 15/25          | 3/3     | `carousel`, `codeblock`, `table` (3)                              |
-| `nemotron-3-nano:30b`                               | 22.6 GB | 22/25      | 21/25        | 16/25          | 3/3     | `carousel`, `text` (2)                                            |
-| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 20/25      | 21/25        | 13/25          | 3/3     | `table` (1)                                                       |
-| `qwen3.5:9b`                                        | 6.1 GB  | 20/25      | 19/25        | 17/25          | 3/3     | `badge` (1)                                                       |
-| `qwen2.5-coder:7b`                                  | 4.4 GB  | 20/25      | 18/25        | 18/25          | 3/3     | `choice2`, `table` (2)                                            |
-| `nemotron-3-nano:4b`                                | 2.6 GB  | 19/25      | 17/25        | 7/25           | 3/3     | `carousel`, `gauge` (2)                                           |
-| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 18/25      | 17/25        | 9/25           | 3/3     | `date`, `progress`, `toggle` (3)                                  |
-| `llama3.2:latest`                                   | 1.9 GB  | 15/25      | 15/25        | 12/25          | 3/3     | `facts` (1)                                                       |
-| `granite4.1:3b`                                     | 2.0 GB  | 17/25      | 12/25        | 9/25           | n/a     | `badge`, `choice4`, `codeblock`, `number`, `progress`, `text` (6) |
-| `llama3-chatqa:8b`                                  | 4.3 GB  | 4/25       | 1/25         | 3/25           | n/a     | `columnset`, `gauge`, `progress` (3)                              |
+| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Cascade | Eroded by history                    |
+| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------- | ------------------------------------ |
+| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | **24/25**  | **24/25**    | 24/25          | 3/3     | none                                 |
+| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | 23/25        | 14/25          | 3/3     | `rating_ask`, `time` (2)             |
+| `gpt-oss:20b`                                       | 12.8 GB | 23/25      | 23/25        | **25/25**      | 3/3     | `number`, `time` (2)                 |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | 23/25        | 24/25          | 3/3     | none                                 |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 16/25          | 3/3     | none                                 |
+| `granite4.1:8b`                                     | 5.0 GB  | 23/25      | 21/25        | 15/25          | 3/3     | `carousel`, `codeblock`, `table` (3) |
+| `nemotron-3-nano:30b`                               | 22.6 GB | 22/25      | 21/25        | 16/25          | 3/3     | `carousel`, `text` (2)               |
+| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 20/25      | 21/25        | 13/25          | 3/3     | `table` (1)                          |
+| `qwen3.5:9b`                                        | 6.1 GB  | 20/25      | 19/25        | 17/25          | 3/3     | `badge` (1)                          |
+| `qwen2.5-coder:7b`                                  | 4.4 GB  | 20/25      | 18/25        | 18/25          | 3/3     | `choice2`, `table` (2)               |
+| `nemotron-3-nano:4b`                                | 2.6 GB  | 19/25      | 17/25        | 7/25           | 3/3     | `carousel`, `gauge` (2)              |
+| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 18/25      | 17/25        | 9/25           | 3/3     | `date`, `progress`, `toggle` (3)     |
+| `granite4.1:3b`                                     | 2.0 GB  | 17/25      | 17/25        | 9/25           | 3/3     | `choice4`, `number`, `text` (3)      |
+| `llama3.2:latest`                                   | 1.9 GB  | 15/25      | 15/25        | 12/25          | 3/3     | `facts` (1)                          |
+| `llama3-chatqa:8b`                                  | 4.3 GB  | 4/25       | 1/25         | 3/25           | n/a     | `columnset`, `gauge`, `progress` (3) |
 
 **Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence — the single most useful column here after the score itself, because a model that scores well only with the seed is being held up rather than being robust. That distinction is what the [top-three rationale](#why-these-three-after-the-25-case-sweep) turns on. All fifteen are now measured; the gain runs from **+10** to **−2**:
 
@@ -250,8 +250,8 @@ A second full run is deliberately _not_ taken. Min-of-two is the usual noise fil
 | Model                                               | Weights | Median s/call | Full sweep | Stalls |
 | --------------------------------------------------- | ------- | ------------- | ---------- | ------ |
 | `llama3-chatqa:8b`                                  | 4.3 GB  | 0.3 s         | 3 min      | 0      |
-| `granite4.1:3b`                                     | 2.0 GB  | 1.0 s         | 124 min    | 46     |
-| `llama3.2:latest`                                   | 1.9 GB  | 1.3 s         | 12 min     | 2      |
+| `granite4.1:3b`                                     | 2.0 GB  | 1.1 s         | 34 min     | 13     |
+| `llama3.2:latest`                                   | 1.9 GB  | 1.4 s         | 12 min     | 2      |
 | `qwen3-coder:30b`                                   | 17.3 GB | 1.6 s         | 10 min     | 0      |
 | `llama3-groq-tool-use:8b`                           | 4.3 GB  | 1.8 s         | 9 min      | 0      |
 | `nemotron-3.5-lightning:30b`                        | 23.7 GB | 2.0 s         | 12 min     | 0      |
@@ -267,22 +267,24 @@ A second full run is deliberately _not_ taken. Min-of-two is the usual noise fil
 
 **Weight does not predict speed, and the exceptions are not small.** `qwen3-coder:30b` at 17.3 GB is the fastest real card producer measured — 1.6 s/call, ahead of `qwen2.5-coder:7b` at a quarter its size — while `gpt-oss:20b` at 12.8 GB is the slowest at 7.3 s. `llama3-chatqa:8b` tops the table only because it answers in short prose; a model that never builds a card is quick for the wrong reason.
 
-**Stalls, not token rate, decide how long a sweep takes.** `granite4.1:3b` is the second-smallest model here and by far the longest run: **124 minutes, 46 stalls** — roughly 92 of those minutes spent sitting in timeouts. `qwen3.8:27b-nvfp4` is eight times its size and finished in 39 minutes with none. Budget a sweep by stall risk, not by gigabytes.
+**Stalls, not token rate, decide how long a sweep takes.** `granite4.1:3b` is the second-smallest model here and takes 34 minutes against `qwen3-coder:30b`'s 10 at eight times the weight, because 13 of its calls sit in timeouts rather than generating. Budget a sweep by stall risk, not by gigabytes — and note that **all 13 are in the unaided condition**: seeded it stalls twice in 100 calls, unaided eleven times. Take the card seed away and it stops producing cards and starts rambling.
 
 #### A note on the per-call timeout
 
 Probes bound each call (`--timeout`, default 180 s; the 2026-08-20 sweep used 120 s for the shape and cascade sets) and score an over-run reply a failure labeled `timeout (Ns)`. Before that bound existed, a runaway generation could hang an entire multi-model sweep: `granite4.1:3b` was observed generating for **16 minutes** on one `table` case without returning.
 
-The bound changes what some numbers mean, and only one model materially:
+The bound changes what one figure means, and only for `granite4.1:3b` unaided:
 
-| `granite4.1:3b` | Unbounded (≤2026-08-19) | 120 s ceiling (2026-08-20) |
-| --------------- | ----------------------- | -------------------------- |
-| Shapes, warm    | 17/25                   | **12/25**                  |
-| Cascade         | 3/3                     | **n/a** — no turn-1 card   |
+| `granite4.1:3b`, warm | Unbounded (≤2026-08-19) | 120 s ceiling |
+| --------------------- | ----------------------- | ------------- |
+| Seeded                | 17/25                   | 17/25         |
+| Unaided               | 13/25                   | **9/25**      |
 
-Both are true, of different questions. "Does this model eventually produce a card?" and "does it produce one before a user gives up?" have different answers for it. The ceiling is kept because the server has no timeout of its own — a real user simply waits — so a card nobody waits for has failed in practice. Every other model is unaffected: nine of fifteen recorded zero stalls, and no other model recorded more than two.
+Seeded, the ceiling costs it nothing — it stalls twice in 100 calls and scores exactly what it scored unbounded. Unaided it stalls eleven times and loses four shapes, because without a card in front of the history it answers at length in prose instead of emitting one. That is a real property of the model under that condition, not an artifact: the stalls reproduce on an idle machine with nothing else resident.
 
-Read a cross-version comparison of a stall-prone model with this in mind, and do not compare a bounded figure with an unbounded one as though they measured the same thing.
+The ceiling is kept because the server has no timeout of its own — a real user simply waits — so a card nobody waits for has failed in practice. Nine of fifteen models recorded zero stalls and no other model recorded more than two, so this caveat applies to one row of one column.
+
+**A caution learned the hard way.** The first version of this sweep reported `granite4.1:3b` at 12/25 seeded and `n/a` on cascade, and both figures were wrong — a leaked Ollama runner process was competing for the GPU (see [the sweep diagram](#the-sweep-and-why-the-unload-step-is-load-bearing)). A stalling measurement looks identical whether the model is slow or the machine is busy. Before concluding that a model stalls, check `ollama ps` for anything resident that should not be, and re-run on an idle machine.
 
 #### The card seed, and what it costs
 
@@ -311,22 +313,19 @@ _those_") rather than restating the items. A pass needs the turn-2
 All fifteen models, as the server ships (seed on), `t=0`, `--samples 2`, three
 cases each:
 
-| Result  | Models                                                                   |
-| ------- | ------------------------------------------------------------------------ |
-| **3/3** | Every model except the two below — thirteen of fifteen                   |
-| `n/a`   | `llama3-chatqa:8b` and `granite4.1:3b` — turn 1 produced no card to edit |
+| Result  | Models                                                 |
+| ------- | ------------------------------------------------------ |
+| **3/3** | Every model except the one below — fourteen of fifteen |
+| `n/a`   | `llama3-chatqa:8b` — turn 1 produced no card to edit   |
 
 **This axis does not discriminate, and that is the finding.** Every model that
 produces a card at all cascades correctly: flips `isMultiSelect`, keeps 100% of
 the turn-1 choices, and renames the input sensibly (`state` → `states`). That
 includes the weakest card producers in the table — `llama3.2:latest` (15/25
 shapes), `llama3-groq-tool-use:8b` and `nemotron-3-nano:4b` (17/25) all score
-3/3. The two exceptions never produced a first card to edit, so they fail at
-turn 1 rather than at the cascade. `granite4.1:3b` joined that group on
-2026-08-20, when a per-call timeout was introduced: it had scored 3/3
-unbounded, and under a 120-second ceiling its turn-1 generations no longer
-return in time. That is a change in the measurement, not in the model — see
-[the timeout note](#a-note-on-the-per-call-timeout).
+3/3, and so does `granite4.1:3b` (17/25), the weakest model that produces
+cards at all. The sole exception never produced a first card to edit, so it
+fails at turn 1 rather than at the cascade.
 
 So **cascade ability is gated entirely on turn-1 card production**, which the
 shape table already measures. It is deliberately _not_ a column here: a column
@@ -595,9 +594,11 @@ cost 51 s; re-run before trusting a first-call number.
 
 ### `granite4.1:3b`
 
-**The only model whose numbers are not comparable across the 2026-08-20 sweep**, because it is the only one the per-call timeout materially affects. Bounded at 120 s it scores 12/25 with history and `n/a` on cascade; unbounded it scored 17/25 and 3/3. Its **46 stalls** are more than the other fourteen models combined, and they cost 92 of the 124 minutes its sweep took — the longest run in the file, from the second-smallest model. See [the timeout note](#a-note-on-the-per-call-timeout) for why the bounded figures are the ones kept.
+**The clearest case in this file of the seed doing real work.** Seeded it scores 17/25 both cold and with history and cascades 3/3, unchanged from its unbounded 2026-08-19 figures. Unaided it collapses to 9/25 — and, more tellingly, **stalls eleven times in 100 calls**, against twice with the seed. Without a card in front of the history it does not merely pick the wrong shape; it answers at length in prose until it hits the ceiling. That is what a +8 seed gain looks like from the inside.
 
-Read either figure as "weakest of the usable models" and neither as precise. It honors `format`, and 3 of its 7 stress passes are prose.
+It honors `format`, and 3 of its 7 stress passes are prose.
+
+**Its first 2026-08-20 measurement was wrong, and the way it was wrong is worth knowing.** It was recorded as 12/25 seeded with `n/a` on cascade and 52 stalls, which read as a model falling apart under a timeout. A leaked Ollama runner was competing for the GPU throughout. Re-run on an idle machine it scores 17/25 and 3/3. See [the sweep diagram](#the-sweep-and-why-the-unload-step-is-load-bearing) — a busy machine and a slow model are indistinguishable from the probe's side.
 
 ### `qwen3.5:9b`
 
@@ -651,6 +652,45 @@ Retired as a default. Failed the shapes that matter: checkbox `isMultiSelect` 1/
 ## How results are produced
 
 All of the above come from [`tool/model_probes/`](tool/model_probes/README.md), whose scripts judge replies with the server's **own** `tryParseCardBody` / `cardParseFailureReason` / `checkNoDuplicateJsonKeys`. A probe that applied its own idea of "looks like a card" could report a pass rate the running server disagrees with, which is worse than no measurement.
+
+### The sweep, and why the unload step is load-bearing
+
+```mermaid
+sequenceDiagram
+  participant D as sweep driver
+  participant P as probe script
+  participant O as Ollama
+  participant V as GPU memory
+
+  loop for each model M
+    Note over D: refuse to start if another probe is running —<br/>concurrent runs distort every number below
+    loop for each of the 6 probes
+      D->>P: dart run PROBE --model M --timeout N --json results/M/PROBE.json
+      P->>O: POST /api/chat, first call, keep_alive 30m
+      O->>V: load weights
+      Note over V: a cold call costs ~6-7x a warm one,<br/>51 s against 8 s — excluded from the median
+      O-->>P: reply
+      loop remaining calls, strictly serial
+        P->>O: POST /api/chat
+        alt reply arrives within --timeout
+          O-->>P: reply
+          Note over P: judged by the server's own tryParseCardBody()
+        else no reply in time
+          P->>O: abort() to release the connection
+          Note over P: scored a failure labeled timeout of N seconds.<br/>Without abort() the connection leaks<br/>and later calls hang waiting for the pool
+        end
+      end
+      P->>P: write JSON — every call, asset digests, host
+    end
+    D->>O: ollama stop M
+    O->>V: evict weights
+    Note over D,V: without this the finished model lingers for<br/>keep_alive 30m, two models sit resident,<br/>and Ollama thrashes between them
+  end
+```
+
+**The `ollama stop` at the end of each model is not housekeeping.** Probes send `keep_alive: 30m`, so a finished model stays resident while the next one loads. The first version of the 2026-08-20 sweep omitted the unload, two models sat in memory together, and Ollama thrashed between them: `granite4.1:3b` recorded **52 stalled calls**, scored 12/25 with history, and returned `n/a` on cascade. Re-run with the unload in place it scores **17/25 and 3/3**, matching its earlier published figures, and the whole sweep takes 7 minutes instead of 124.
+
+Nothing about the model changed. The measurement was wrong, in a way that looked exactly like a slow model — which is why the "one model at a time" rule below is a correctness requirement and not a performance tip.
 
 A reply passes if it renders as a card **or** as clean prose — the card system prompt explicitly permits a Markdown answer, so only a _broken_ card is a failure.
 
