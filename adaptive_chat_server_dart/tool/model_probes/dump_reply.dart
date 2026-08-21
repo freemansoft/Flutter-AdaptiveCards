@@ -97,7 +97,9 @@ Future<void> main(List<String> argv) async {
       ..writeln('HTTP ${response.statusCode} from ${args.url}/api/chat')
       ..writeln(body);
     exitCode = 1;
-    client.close();
+    // force: a socket still stuck mid-generation must not keep the
+    // process alive after its work is done and its result written.
+    client.close(force: true);
     return;
   }
   // A 200 whose body carries no `message.content` is a thing to report, not
@@ -110,7 +112,9 @@ Future<void> main(List<String> argv) async {
       )
       ..writeln(body);
     exitCode = 1;
-    client.close();
+    // force: a socket still stuck mid-generation must not keep the
+    // process alive after its work is done and its result written.
+    client.close(force: true);
     return;
   }
 
@@ -131,5 +135,7 @@ Future<void> main(List<String> argv) async {
     ..writeln('contains ``` fence   : ${content.contains('```')}')
     ..writeln('history turns        : ${history.length}')
     ..writeln('verdict              : ${judgeReply(content, 0).label}');
-  client.close();
+  // force: a socket still stuck mid-generation must not keep the
+  // process alive after its work is done and its result written.
+  client.close(force: true);
 }

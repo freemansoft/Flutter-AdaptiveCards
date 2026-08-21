@@ -2,6 +2,113 @@
 
 ## [Unreleased]
 
+- Docs: **re-measured every model in `ModelBehavior.md` end to end** — 15 models
+  × 6 probes, 90 recorded runs, ~3,700 calls, one model resident at a time on
+  the Apple M1 Max / 64 GB. Every figure in the file now derives from a
+  committed result under `tool/model_probes/results/`, and the shape-coverage
+  table is generated from those runs rather than transcribed.
+- Docs: **the published matrix largely held up.** Ten of the twelve steady
+  models reproduce within ±1 on every shape axis and two reproduce exactly, so
+  the numbers are stable at ±1 resolution — which also means a one-shape
+  difference between two models is noise, not a ranking, and the file now says
+  so where it used to imply otherwise.
+- Docs: **`gpt-oss:20b` produces a correct shape on all 25 cases unaided** —
+  the only perfect score in the file under any condition — while scoring 23/25
+  with the seed the server sends. The largest negative seed gain measured (−2),
+  on the model that needs help least. Recorded as a live argument for making
+  the seed conditional, and as a reason to revisit dropping it from
+  `launch.json` rather than treating that as settled.
+- Docs: **the card/prose split earned itself on the model that motivated the
+  shape probe.** `llama3-chatqa:8b` sweeps the stress set 10/10 with **zero
+  cards** — every pass is Markdown. That previously took a 100-call
+  `shape_ab` run to discover; the 10-call stress probe now reports it directly.
+  `granite4.1:8b`'s 10/10 is likewise 4 cards to 6 prose, while
+  `qwen2.5-coder:7b` and `qwen3-coder:30b` answer every stress case with a real
+  card.
+- Docs: **`qwen3-coder:30b` looks stronger than its rejection implied.** It is
+  the only model to answer both cold-start sets entirely in cards, it honors
+  `format`, and at **1.6 s/call it is the fastest model measured** — ahead of
+  models a quarter its weight. Its +9 seed dependence reproduced exactly and
+  remains the case against it; the rejection was right on the evidence then
+  available, and that evidence has changed.
+- Docs: **`qwen3.6:27b-coding-nvfp4`'s missing stress run came back 8/10**, the
+  weakest of the four strong large models. The measurement its `launch.json`
+  case was waiting on closed against it. It also reproduced all three shape
+  figures exactly — the only model to do so.
+- Docs: added **Performance on this machine** with per-model latency, and a
+  note on the per-call timeout. Weight predicts neither coverage nor speed:
+  `granite4.1:3b` at 2.0 GB took **124 minutes with 46 stalls** while
+  `qwen3.8:27b-nvfp4` at eight times the size took 39 with none. Stall risk,
+  not gigabytes, is what a sweep should be budgeted by.
+- Docs: **`granite4.1:3b` is the one model whose figures are not comparable
+  across the sweep.** A 120-second per-call ceiling reclassifies its runaway
+  generations as failures: 17/25 → 12/25 warm, and cascade 3/3 → `n/a`. The
+  bounded figures are kept — the server has no timeout of its own, so a real
+  user simply waits, and a card nobody waits for has failed — but the change in
+  meaning is documented rather than published silently.
+
+- Fixed: **`probeOnce` had no timeout, so one runaway generation hung a whole
+  sweep.** `granite4.1:3b` was observed generating for **16 minutes** on a
+  single `table` case with history and never returning; with several models
+  queued behind it, nothing would have finished and nothing would have said
+  which model or case was responsible. Calls now take a `--timeout` (default
+  180 s, well clear of the ~49 s longest legitimate generation on record) and
+  a stall is scored a failure labeled `timeout (Ns)` — its own label, so it is
+  never mistaken for a wrong shape or invalid JSON. Found while smoke-testing
+  the `--json` path, not by inspection.
+- Changed: **every probe takes `--json` and `--timeout`**, added to the shared
+  `parseProbeArgs` rather than per script, so recording a run is one flag
+  everywhere. `cascade_ab` records `exercised` separately from `cases`, since
+  a model whose turn 1 produced no card never cascaded at all.
+- Added: **recorded probe results** (`tool/model_probes/probe_results.dart`,
+  `shape_ab.dart --json`, `results/`). A probe run now writes every call it
+  made, the headline figures, the host, and the **digests of the prompt assets
+  it used** to a committed JSON file. Until now every number in
+  `ModelBehavior.md` was hand-copied out of console output, which is
+  unauditable three ways: a typo is invisible, a re-run cannot be diffed
+  against the original, and a figure carries no record of _which_ version of
+  `assets/card_system_prompt.txt` produced it — a file that has been edited six
+  times, each edit silently turning every number in the doc into a historical
+  one.
+- Added: **`check_results.dart`, and it runs in CI** — which needs stating
+  precisely, because the CI server cannot run a model. It checks the artifacts
+  a hand-run probe left behind, which covers the three ways a published figure
+  goes wrong unnoticed: **drift** (every score in the shape table is
+  re-derived from the recorded calls, and a run whose own summary disagrees
+  with its own calls is fatal), **staleness** (a result measured against a
+  prompt asset since edited — fatal for a model `launch.json` launches, a note
+  for the rest, because re-running fourteen models on every prompt edit is not
+  a gate anyone would keep), and **gaps** (a launched model with a probe never
+  run against it — the exact hole that let `gpt-oss:20b` hold a `launch.json`
+  slot with its `format` support unmeasured).
+- Changed: **`temperature_stress` now splits its pass count into cards and
+  prose** — `pass 5/5 (6 card, 4 prose)`. `ProbeOutcome.ok` is true for a
+  renderable card _and_ for clean prose, because the card prompt permits a
+  Markdown answer and only a broken card is a failure. That is right for "did
+  anything break" and wrong for "did we get cards", and the gap is not
+  hypothetical: `qwen3.8:27b-nvfp4` swept the set 5/5 with four of ten cells
+  answered in prose, and `llama3-chatqa:8b` swept both cold-start sets before
+  scoring 1/25 on shapes. The distinction was previously recoverable only by
+  reading the per-call labels by hand.
+- Changed: **`shape_ab.dart` records per-call latency**, which it previously
+  discarded — so the one fixed, identical-workload instrument in this
+  directory was the only one that could not answer "how fast is this model".
+- Added: a **Performance on this machine** section to `ModelBehavior.md`,
+  with the host stamped into every result file. Median is taken over warm
+  calls only: the first call after a model load costs 6-7x a warm one (51 s
+  against 8 s), a large enough outlier to move any average. A second full run
+  is deliberately _not_ taken — min-of-two is the usual noise filter, but the
+  dominant noise here is that known load event rather than jitter, and on a
+  laptop the second run is measured on a hotter, throttling machine, so
+  min-of-two would trade one uncontrolled bias for another.
+- Added: a **scope note at the top of `ModelBehavior.md`** saying none of this
+  measurement was required to ship the demo. The card path turned out to be an
+  unusually strict test problem — strict JSON, a closed element vocabulary, a
+  shape that must fit the question, and format stability across turns, each
+  with an unambiguous pass/fail — so the findings are about the models and
+  should transfer to any workload asking a local model for schema-shaped JSON.
+  Read it as a lab notebook, not a requirement.
+
 - Changed: **`.vscode/launch.json` now launches `qwen3.8:27b-nvfp4` instead of
   `gpt-oss:20b`** as its large model. Both the card-prompt and Markdown-prompt
   configurations were swapped, along with the two compounds that launch them, so
@@ -15,7 +122,7 @@
   gain is −1 against +1, so it is the more robust of the two unaided. The cost is
   **4.1 GB** (16.9 vs. 12.8), the one axis `gpt-oss:20b` still wins and the
   reason it stays a probed candidate rather than being retired. `format` was not
-  traded away: neither model honours it, and `gpt-oss:20b` is the worse of the
+  traded away: neither model honors it, and `gpt-oss:20b` is the worse of the
   two on it. **`defaultOllamaModel` is unchanged** — the compiled-in default is
   still `qwen2.5-coder:7b`, which is a separate decision from what the debugger
   launches.

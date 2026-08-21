@@ -1,0 +1,69 @@
+{
+  "probe": "json_format_probe",
+  "model": "hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest",
+  "measuredAt": "2026-08-20",
+  "machine": "Apple M1 Max / 64 GB",
+  "samples": 2,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "honorsFormat": false,
+    "verdict": "ignored-harmlessly",
+    "calls": 6,
+    "passed": 6,
+    "cards": 6,
+    "prose": 0
+  },
+  "calls": [
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=none",
+      "ms": 17625
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=none",
+      "ms": 2760
+    },
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=json",
+      "ms": 2753
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=json",
+      "ms": 2752
+    },
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=schema",
+      "ms": 2754
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=schema",
+      "ms": 2769
+    }
+  ]
+}

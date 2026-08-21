@@ -1,0 +1,187 @@
+{
+  "probe": "temperature_matrix",
+  "model": "gpt-oss:20b",
+  "measuredAt": "2026-08-20",
+  "machine": "Apple M1 Max / 64 GB",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 21,
+    "passed": 19,
+    "cards": 15,
+    "prose": 4
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "greedy(t=0)",
+      "ms": 6900
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 8995
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 12358
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 33023
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 8839
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 10067
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 5450
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "low(t=0.2)",
+      "ms": 6890
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "low(t=0.2)",
+      "ms": 10290
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 9182
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 26010
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 8870
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "low(t=0.2)",
+      "ms": 12588
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 9946
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "recommended(t=0.6)",
+      "ms": 9138
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": false,
+      "label": "HTTP 500",
+      "setting": "recommended(t=0.6)",
+      "ms": 8279
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 14067
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 1154)\n...e\":\"TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"14\",\"wrap\":true}]}]}]}}\n                                                                             ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 34795
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 15936
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 11753
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 15358
+    }
+  ]
+}

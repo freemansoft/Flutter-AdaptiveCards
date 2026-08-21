@@ -1,0 +1,99 @@
+{
+  "probe": "temperature_stress",
+  "model": "llama3-chatqa:8b",
+  "measuredAt": "2026-08-20",
+  "machine": "Apple M1 Max / 64 GB",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 10,
+    "cards": 0,
+    "prose": 10
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 341
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 3715
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 323
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 299
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 1863
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 3191
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 420
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 317
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 2604
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 3906
+    }
+  ]
+}

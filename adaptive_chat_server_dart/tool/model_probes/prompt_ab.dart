@@ -63,6 +63,7 @@ Future<void> _run(
         systemPrompt: systemPrompt,
         userPrompt: userPrompt,
         options: const {'temperature': 0.0},
+        timeout: args.timeout,
       );
       outcomes.add(outcome);
       stdout.writeln(
@@ -118,5 +119,7 @@ Future<void> main(List<String> argv) async {
       prompts,
     );
   }
-  client.close();
+  // force: a socket still stuck mid-generation must not keep the
+  // process alive after its work is done and its result written.
+  client.close(force: true);
 }

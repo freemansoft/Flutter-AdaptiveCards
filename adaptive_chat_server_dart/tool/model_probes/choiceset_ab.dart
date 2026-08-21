@@ -61,6 +61,7 @@ Future<int> _run(
         userPrompt: prompt,
         history: const [_historyUser, _historyAssistant],
         options: const {'temperature': 0.0},
+        timeout: args.timeout,
       );
       final ok = _hasChoiceSet(outcome.reply);
       total++;
@@ -108,5 +109,7 @@ Future<void> main(List<String> argv) async {
       client,
     );
   }
-  client.close();
+  // force: a socket still stuck mid-generation must not keep the
+  // process alive after its work is done and its result written.
+  client.close(force: true);
 }

@@ -1,0 +1,99 @@
+{
+  "probe": "temperature_stress",
+  "model": "llama3-groq-tool-use:8b",
+  "measuredAt": "2026-08-20",
+  "machine": "Apple M1 Max / 64 GB",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 7,
+    "cards": 5,
+    "prose": 2
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 3696
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 27643
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": false,
+      "label": "prose-with-card (user sees raw JSON)",
+      "setting": "greedy(t=0)",
+      "ms": 9809
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 3415
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 2, character 1)\n{\"type\":\"Input.ChoiceSet\",\"id\":\"choice\",\"style\":\"expanded\",\"isMultiSelect\":...\n^\n",
+      "setting": "greedy(t=0)",
+      "ms": 3612
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 2504
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 37348
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": false,
+      "label": "prose-with-card (user sees raw JSON)",
+      "setting": "recommended(t=0.6)",
+      "ms": 9630
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3126
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 2341
+    }
+  ]
+}

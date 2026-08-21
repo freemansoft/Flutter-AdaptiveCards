@@ -24,6 +24,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 // Relative: these live outside lib/, beside this file.
+import 'probe_results.dart';
 import 'probe_support.dart';
 import 'shape_cases.dart';
 
@@ -66,6 +67,7 @@ Future<Set<String>> runCondition({
   required List<String> seedTurns,
   required ProbeArgs args,
   required HttpClient client,
+  List<ProbeCall>? collect,
 }) async {
   stdout.writeln('\n########## $label ##########');
   final passing = <String>{};
@@ -84,12 +86,23 @@ Future<Set<String>> runCondition({
         ],
         reminder: reinforce ? reinforceReminder : null,
         options: const {'temperature': 0.0},
+        timeout: args.timeout,
       );
       final result = judgeShape(c, outcome);
       if (!result.pass) allPassed = false;
+      collect?.add(
+        ProbeCall(
+          caseId: c.id,
+          sample: i,
+          pass: result.pass,
+          label: result.describe(),
+          condition: withHistory ? 'warm' : 'cold',
+          ms: outcome.ms,
+        ),
+      );
       stdout.writeln(
         '${result.pass ? "PASS" : "FAIL"}  ${c.id.padRight(13)} '
-        '${result.describe()}',
+        '${outcome.ms.toString().padLeft(6)}ms  ${result.describe()}',
       );
     }
     if (allPassed) passing.add(c.id);
@@ -109,6 +122,7 @@ Future<void> runPrompt({
   required List<String> seedTurns,
   required ProbeArgs args,
   required HttpClient client,
+  List<ProbeCall>? collect,
 }) async {
   final flags = [
     if (reinforce) 'reinforce',
@@ -126,6 +140,7 @@ Future<void> runPrompt({
     seedTurns: seedTurns,
     args: args,
     client: client,
+    collect: collect,
   );
   final warm = await runCondition(
     label: 'with-history',
@@ -136,6 +151,7 @@ Future<void> runPrompt({
     seedTurns: seedTurns,
     args: args,
     client: client,
+    collect: collect,
   );
   // Derived from the two sets, so the count can never disagree with the list.
   final eroded = (cold.difference(warm).toList())..sort();
@@ -180,9 +196,24 @@ Future<void> main(List<String> argv) async {
           'assets/seed_card.json). Point it at a candidate file to measure a '
           're-tuned seed the way prompt candidates use --candidate.',
     )
+    ..addOption(
+      'json',
+      help:
+          'Write the run to this JSON file: every call, plus the digests of '
+          'the prompt assets it used. Written so a number in ModelBehavior.md '
+          'can be re-derived and diffed rather than trusted, and so CI can '
+          'detect a result gone stale without running a model.',
+    )
     ..addOption('model')
     ..addOption('url')
     ..addOption('samples')
+    ..addOption(
+      'timeout',
+      help:
+          'Seconds one call may take before it is scored a timeout. A model '
+          'that runs away generating otherwise stalls every model queued '
+          'behind it.',
+    )
     ..addFlag('help', abbr: 'h', negatable: false);
   final parsed = parser.parse(argv);
   if (parsed['help'] as bool) {
@@ -190,7 +221,13 @@ Future<void> main(List<String> argv) async {
     return;
   }
   final args = parseProbeArgs([
-    for (final option in ['model', 'url', 'samples'])
+    for (final option in [
+      'model',
+      'url',
+      'samples',
+      'json',
+      'timeout',
+    ])
       if (parsed[option] != null) ...['--$option', parsed[option] as String],
   ], defaultSamples: 1);
 
@@ -209,11 +246,12 @@ Future<void> main(List<String> argv) async {
     stderr.writeln(
       'shape_ab: --seed-card was passed but the seed file loaded no turns; '
       'see the warning above. Refusing to run, because the result would be '
-      'labelled seed-card while measuring no seed at all.',
+      'labeled seed-card while measuring no seed at all.',
     );
     exitCode = 2;
     return;
   }
+  final collect = <ProbeCall>[];
   await runPrompt(
     label: 'baseline',
     systemPrompt: File(parsed['baseline'] as String).readAsStringSync().trim(),
@@ -222,6 +260,7 @@ Future<void> main(List<String> argv) async {
     seedTurns: seedTurns,
     args: args,
     client: client,
+    collect: collect,
   );
   final candidate = parsed['candidate'] as String?;
   if (candidate != null) {
@@ -235,5 +274,43 @@ Future<void> main(List<String> argv) async {
       client: client,
     );
   }
-  client.close();
+  final jsonPath = parsed['json'] as String?;
+  if (jsonPath != null) {
+    final seeded = parsed['seed-card'] as bool;
+    final cold = collect.where((c) => c.condition == 'cold');
+    final warm = collect.where((c) => c.condition == 'warm');
+    // A case passes only if every sample of it passed, matching what the
+    // probe printed and what ModelBehavior.md quotes.
+    int shapes(Iterable<ProbeCall> calls) {
+      final byCase = <String, bool>{};
+      for (final c in calls) {
+        byCase[c.caseId] = (byCase[c.caseId] ?? true) && c.pass;
+      }
+      return byCase.values.where((v) => v).length;
+    }
+
+    final run = ProbeRun(
+      probe: 'shape_ab',
+      model: args.model,
+      variant: seeded ? 'seeded' : 'unaided',
+      measuredAt: DateTime.now().toIso8601String().split('T').first,
+      machine: detectMachine(),
+      samples: args.samples,
+      temperature: 0,
+      assets: currentAssetDigests(probeAssetsDir()),
+      summary: {
+        'cases': cases.length,
+        'coldStart': shapes(cold),
+        'withHistory': shapes(warm),
+      },
+      calls: collect,
+    )..write(File(jsonPath));
+    stdout.writeln(
+      '\nwrote $jsonPath  (median ${run.medianMs}ms/call, '
+      'total ${((run.totalMs ?? 0) / 1000).round()}s, on ${run.machine})',
+    );
+  }
+  // force: a socket still stuck mid-generation must not keep the
+  // process alive after its work is done and its result written.
+  client.close(force: true);
 }

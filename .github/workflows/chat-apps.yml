@@ -108,6 +108,17 @@ jobs:
         run: dart test
         working-directory: ./adaptive_chat_server_dart
 
+      # No model runs here -- this checks the *artifacts* a hand-run probe
+      # left behind, which is the only part of tool/model_probes/ CI can
+      # police without an Ollama. It catches three things that otherwise go
+      # unnoticed: a figure in ModelBehavior.md that disagrees with the
+      # recorded run behind it, a result measured against a prompt asset that
+      # has since been edited (fatal only for models launch.json launches),
+      # and a launched model with a probe never run against it.
+      - name: Check recorded probe results
+        run: dart run tool/model_probes/check_results.dart
+        working-directory: ./adaptive_chat_server_dart
+
       # See the note on the client job's formatting step. Covers lib/, bin/,
       # test/, and tool/ -- tool/model_probes/ is hand-run tooling, but it is
       # still source we read and edit, so it is held to the same bar.

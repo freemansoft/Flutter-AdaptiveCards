@@ -23,6 +23,7 @@ import 'dart:io';
 
 // Relative: this file and its helper both live outside `lib/`, so there is
 // no `package:` URI for them.
+import 'probe_results.dart';
 import 'probe_support.dart';
 
 const _canaryPrompt = 'Say hello in plain English prose.';
@@ -59,6 +60,7 @@ Future<void> main(List<String> argv) async {
     )
     ..writeln()
     ..writeln('=== card request through each --json-format mode ===');
+  final collect = <ProbeCall>[];
   for (final mode in const ['none', 'json', 'schema']) {
     for (var i = 0; i < args.samples; i++) {
       final outcome = await probeOnce(
@@ -73,6 +75,17 @@ Future<void> main(List<String> argv) async {
           'schema' => schema,
           _ => null,
         },
+        timeout: args.timeout,
+      );
+      collect.add(
+        ProbeCall(
+          caseId: 'card-request',
+          sample: i,
+          pass: outcome.ok,
+          label: outcome.label,
+          setting: 'format=$mode',
+          ms: outcome.ms,
+        ),
       );
       stdout.writeln(
         'format=${mode.padRight(6)} #$i  ${outcome.ok ? "PASS" : "FAIL"}  '
@@ -80,7 +93,40 @@ Future<void> main(List<String> argv) async {
       );
     }
   }
-  client.close();
+  if (args.json != null) {
+    // How a model ignores `format` matters as much as whether it does.
+    // Returning the same good card under all three modes is inert and
+    // harmless; returning an empty body under `json` destroys card
+    // production, and only the per-mode calls can tell those apart.
+    final byMode = <String, List<ProbeCall>>{};
+    for (final c in collect) {
+      byMode.putIfAbsent(c.setting!, () => []).add(c);
+    }
+    final noneCards = byMode['format=none']!.where((c) => c.isCard).length;
+    final constrainedCards = collect
+        .where((c) => c.setting != 'format=none' && c.isCard)
+        .length;
+    writeProbeRun(
+      path: args.json!,
+      probe: 'json_format_probe',
+      model: args.model,
+      samples: args.samples,
+      assetsDir: probeAssetsDir(),
+      summary: {
+        'honorsFormat': honored,
+        'verdict': honored
+            ? 'honored'
+            : (constrainedCards == 0 && noneCards > 0
+                  ? 'ignored-destructively'
+                  : 'ignored-harmlessly'),
+        ...passSummary(collect),
+      },
+      calls: collect,
+    );
+  }
+  // force: a socket still stuck mid-generation must not keep the
+  // process alive after its work is done and its result written.
+  client.close(force: true);
 }
 
 bool _isJson(String text) {

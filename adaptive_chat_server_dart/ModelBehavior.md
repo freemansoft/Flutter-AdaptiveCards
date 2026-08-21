@@ -2,6 +2,14 @@
 
 Which local Ollama models produce renderable Adaptive Cards, what decoding settings they need, and what has already been measured about each.
 
+## Scope: none of this was required to ship the demo
+
+`adaptive_chat_server_dart` is the backend for an **SDUI demo**. The demo works without a single number in this file — pick a model, point the server at it, and it answers in cards. No measurement here was a prerequisite for that, and nobody needs to read this file to run the thing.
+
+It exists because the card path turned out to be an unusually **strict and discriminating test problem** for local models, and the results are worth more than the demo that produced them. Answering as an Adaptive Card demands strict JSON, a closed element vocabulary the model must not invent from, a shape chosen to fit the question, and format stability across a multi-turn conversation — four constraints most chat benchmarks do not apply at once, each with an unambiguous pass/fail. That combination separates models that ordinary prose benchmarks rank as equivalent: the clearest case in this file is a model that sweeps every easy set and produces a correct element type on **1 of 25** shape cases.
+
+So read this as a **lab notebook, not a requirement**. Its findings are about the models, and should transfer to any workload that asks a local model for constrained, schema-shaped JSON — the demo is the instrument, not the subject. What that also means: nothing here is a supported product surface. The probes are hand-run, the numbers age as models and prompts change, and none of it gates the demo working.
+
 ## Why this file exists
 
 Every finding here was originally recorded in a plan or a design spec. Those documents are dated records — they describe what was true during one piece of work and are archived when it ends. The _results_ outlive them: knowing that a model ignores `format`, or that its own recommended temperature scores worse than `0`, stays useful long after the plan that discovered it is history.
@@ -31,39 +39,35 @@ The set above is the outcome of the sweep, not a historical accident: `qwen3.5:9
 
 Read on the shipped configuration, all fifteen candidates rank by with-history shape coverage — the [full table](#shape-coverage--all-fifteen-models-as-shipped) carries the cold-start and erosion figures behind these:
 
-`qwen3.8:27b-nvfp4` 23/25 · `qwen3-coder:30b` 23/25 · `gpt-oss:20b` 23/25 · `qwen3.6:27b-coding-nvfp4` 23/25 · `granite4.1:8b` 22/25 · `nemotron-3.5-lightning:30b` 22/25 · `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` 22/25 · `nemotron-3-nano:30b` 20/25 · `qwen2.5-coder:7b` 19/25 · `qwen3.5:9b` 19/25 · `granite4.1:3b` 17/25 · `nemotron-3-nano:4b` 17/25 · `llama3-groq-tool-use:8b` 16/25 · `llama3.2:latest` 14/25 · `llama3-chatqa:8b` 1/25.
+`qwen3.8:27b-nvfp4` 24/25 · `gpt-oss:20b` 23/25 · `qwen3-coder:30b` 23/25 · `qwen3.6:27b-coding-nvfp4` 23/25 · `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` 22/25 · `granite4.1:8b` 21/25 · `nemotron-3-nano:30b` 21/25 · `nemotron-3.5-lightning:30b` 21/25 · `qwen3.5:9b` 19/25 · `qwen2.5-coder:7b` 18/25 · `llama3-groq-tool-use:8b` 17/25 · `nemotron-3-nano:4b` 17/25 · `llama3.2:latest` 15/25 · `granite4.1:3b` 12/25 · `llama3-chatqa:8b` 1/25.
 
-**Among 16 GB-capable models the order is unchanged** — `granite4.1:8b` 22/25, then `qwen2.5-coder:7b` and `qwen3.5:9b` tied at 19/25 — so nothing here disturbs the two portable slots. Every model that outranks `granite4.1:8b` is 17 GB or larger.
+**Among 16 GB-capable models the order is unchanged** — `granite4.1:8b` 21/25, then `qwen3.5:9b` 19/25 and `qwen2.5-coder:7b` 18/25 — so nothing here disturbs the two portable slots. `gpt-oss:20b` at 12.8 GB outranks all three and is the exception the 16 GB column exists to flag.
 
-- **`gpt-oss:20b` — dropped 2026-08-20, replaced by `qwen3.8:27b-nvfp4`.** It held the slot for a year of this file's history as the strongest model measured (24/25 cold, 23/25 warm) and it is still strong; it lost the slot to a model that ties both of those and beats it everywhere else. Its remaining distinctions are being the lightest of the large models at 12.8 GB — the one axis where it still wins — and a JSON-validity ceiling on deeply nested shapes that its replacement does not have. Measured 2026-08-20 on the way out, it also **ignores `format` destructively** — `json` returns an empty body, `schema` returns prose — so any run that reaches for the constraint on it must stay at `none`; see [the canary section](#not-a-card-test-the-format-canary). Keep probing it: at 12.8 GB it is the fallback if the extra 4.1 GB ever matters.
-- **`qwen3.8:27b-nvfp4` — added 2026-08-20, and it is the first challenger to win this slot on the merits.** It **ties `gpt-oss:20b` on both shape scores** (24/25 cold, 23/25 warm) and beats it on every other measured axis: everyday 21/21 against 17/21, stress 10/10 against 9/10, pre-seed warm 24/25 against 22/25, one eroded shape against two, and it produces `Carousel` and `ColumnSet` — the two nested shapes `gpt-oss:20b` permanently fails as invalid JSON. Its seed gain is **−1** against `gpt-oss:20b`'s +1, so it is the more robust of the two unaided. The cost is **16.9 GB against 12.8 GB**, and it ignores `format` (harmlessly — identical good cards under all three modes, unlike the incumbent it replaced).
-- **`granite4.1:8b` — added.** 22/25 with history, second only to `gpt-oss:20b`, and it runs in 5.0 GB. It is the largest warm improvement of any 16 GB-capable model (15/25 → 22/25 under the seed) and it recovered every one of its baseline-eroded cases.
-- **`qwen2.5-coder:7b` — kept.** Not the strongest anymore (19/25 warm, fourth), but it is the compiled-in default, the model every promotion decision in this file is gated on, and the smallest at 4.4 GB. Dropping it from the debugger would mean the default ships untested from the one place people launch by hand.
-- **`qwen3.5:9b` — dropped, and the 2026-08-19 sweep confirms it.** The original reason was that it had never been run through `shape_ab.dart` at all. It has now: **19/25 with history**, an exact tie with `qwen2.5-coder:7b` — for 6.1 GB against 4.4 GB, more latency, and a thinking mode that has to be disabled to be usable at all (see its [per-model section](#qwen359b)). A tie at greater cost is not a case for the slot, so the decision stands on measurement rather than on absence of it.
+- **`gpt-oss:20b` — dropped 2026-08-20, replaced by `qwen3.8:27b-nvfp4`, and the full re-measurement complicates that call.** It scores 23/25 warm as shipped against `qwen3.8`'s 24/25, and it is the lightest large model at 12.8 GB. But the same sweep found it produces a correct shape on **all 25 cases unaided** — the only perfect score anywhere in this file, under any condition — while scoring 23/25 with the seed the server actually sends. It also **ignores `format` destructively**: `json` returns an empty body and `schema` returns prose, so a run that reaches for the constraint on it gets no cards at all (see [the canary section](#not-a-card-test-the-format-canary)). The swap is not obviously wrong, but the strongest unaided model in the file is no longer in `launch.json`, and that is worth revisiting rather than treating as settled.
+- **`qwen3.8:27b-nvfp4` — added 2026-08-20.** The **highest as-shipped score in the file at 24/25 warm**, it erodes nothing under either condition, and it is one of only two models whose seed gain is zero or better while still scoring above 20 — it neither needs the seed nor is hurt by it. It ignores `format` harmlessly (byte-identical good cards under all three modes). Its costs are 16.9 GB, a middling 9/10 stress of which **4 of 10 passes are prose**, and a `rating_ask` failure it shares with ten other models.
+- **`granite4.1:8b` — kept.** 21/25 with history, the best 16 GB-capable model, in 5.0 GB. It honors `format`, and the seed is worth +6 to it (15/25 → 21/25). One caveat the pass counts used to hide: its perfect 10/10 stress score is **4 cards to 6 prose**, so it clears that set largely by answering in Markdown.
+- **`qwen2.5-coder:7b` — kept.** Not the strongest (18/25 warm, tenth), but it is the compiled-in default, the model every promotion decision in this file is gated on, and the smallest at 4.4 GB. It has one distinction nothing else in the file matches: **10/10 stress and 21/21 everyday, with every stress pass an actual card**. It is the most card-committed model measured, which is a better argument for the default than the size that originally won it the slot.
+- **`qwen3.5:9b` — dropped, though the 2026-08-20 re-measurement narrows the gap.** It scores **19/25 with history against `qwen2.5-coder:7b`'s 18/25** — no longer the exact tie the original decision rested on — and posts the same 10/10 all-cards stress result. Against it: 6.1 GB versus 4.4 GB, **6.9 s/call versus 2.3 s** (third-slowest model measured), and a thinking mode that has to be disabled to be usable at all (see its [per-model section](#qwen359b)). One shape does not outweigh three times the latency, so the decision stands — but on cost now rather than on a tie.
 
-**Is `nemotron-3.5-lightning:30b` the better large model? No.** It was measured against `gpt-oss:20b`, which held the large-model slot until 2026-08-20; the rejection stands against its replacement too, which scores at or above `gpt-oss:20b` on every axis used below. The two tie on as-shipped warm coverage (22/25 vs. 23/25 is within the noise this file elsewhere refuses to read as a difference), so the tie has to be broken on everything else, and every other axis points the same way:
+**Is `nemotron-3.5-lightning:30b` the better large model? No.** It scores 21/25 warm against `qwen3.8:27b-nvfp4`'s 24/25, for 23.7 GB against 16.9 — more weight for less coverage. Its seed dependence is the deciding factor: **13/25 unaided**, a +8 gain, so most of its score comes from a fixed two-turn prefix rather than from the model.
 
-- **Half the weights.** 12.8 GB vs. 23.7 GB, for a better score.
-- **It does not depend on the seed to get there.** `gpt-oss:20b` scored 22/25 warm _before_ `--seed-card` existed, with zero shapes eroded by history. `nemotron-3.5-lightning:30b` scored 13/25 — the most severe erosion recorded anywhere in this file, losing all six choice cases plus two more — and only reaches 22/25 because the seed recovers all eight. One model is robust; the other is being held up.
-- **It is weaker cold, too.** Stress 3/5 at `t=0` against `gpt-oss:20b`'s 5/5, and a `table` case that fails at all three temperatures on the everyday set.
+The one thing it is genuinely best at is being the **regression canary for the seed mechanism itself**: an +8 swing is among the largest in the table, so if `--seed-card` ever silently stops working, this model shows it early and loudly. That is a reason to keep probing it, not a reason to launch it.
 
-The one thing `nemotron-3.5-lightning:30b` is genuinely best at is being the **regression canary for the seed mechanism itself**: nothing else in the table swings +9 warm shapes on it, so if `--seed-card` ever silently stops working, this model shows it first and loudest. That is a reason to keep probing it, not a reason to launch it.
+**Is `qwen3-coder:30b` the better large model? It is the most interesting case in the file.** On the axes this document says to read first it is mid-pack — 23/25 warm, tied with two others — and its seed dependence is severe: **14/25 unaided, a +9 gain**, the second-largest measured. That was the basis on which it was previously rejected, and it reproduces exactly.
 
-**Is `qwen3-coder:30b` the better large model? No.** It looked like the strongest candidate in the table: 24/25 cold and 23/25 warm, the only model with no case it fails under both conditions, and a 5/5 stress sweep at both temperatures that `gpt-oss:20b` does not manage (4/5 at `t=0.6`). Measuring its seed-dependence settled it the other way. Without the seed it scores **16/25 cold and 14/25 warm** — a +9 swing, against `gpt-oss:20b`'s +1 from an already-strong 22/25 — and its unaided failure mode is the worse one: 9 of 11 with-history failures are invalid JSON rather than a wrong shape. Same verdict as `nemotron-3.5-lightning:30b`, for the same reason.
+What the 2026-08-20 sweep adds is that it is the only model to answer **both** cold-start sets entirely in cards: 20/21 everyday and 10/10 stress, zero prose in either. It honors `format`, which neither `nvfp4` build does. And at **1.6 s/call it is the fastest model measured here**, ahead of models a quarter its weight. A model that is fast, `format`-honoring, and never falls back to Markdown is a different proposition from what the earlier rejection described — the rejection was correct on the evidence available then, and the evidence has changed. Its seed dependence is still the case against it.
 
-**`qwen3.6:27b-coding-nvfp4` was the first challenger to survive this test, and it is why the slot eventually moved — though not to it.** It was the first model found to be _better without the seed_ than with it: **24/25 with history unaided**, the highest with-history figure anywhere in this file, seeded or not — since tied by `qwen3.8:27b-nvfp4` — against `gpt-oss:20b`'s 22/25. It leads on the unaided cold-start axis too (23/25 vs. 20/25), ties the seeded warm score at 23/25, and erodes nothing under either condition. Every previous challenger for this slot was a model the seed was holding up; this one needs no help.
+**`qwen3.6:27b-coding-nvfp4` was the first challenger to survive the seed test, and it is why the slot eventually moved — though not to it.** It reproduces its published figures **exactly** (23/25 cold, 23/25 warm, 24/25 unaided), the only model in the file to do so on all three, which makes it the most reliably-measured entry here. It erodes nothing under either condition.
 
-Against it: **18.4 GB vs. 12.8 GB** — 44% more weight for a model that is not better as the server actually runs (they tie at 23/25 seeded) — and it silently ignores Ollama's `format` field, which makes `--json-format json|schema` inert for it. That second point costs nothing at the shipped `--json-format none` and everything to somebody who reaches for the constraint expecting a safety net.
-
-**`qwen3.8:27b-nvfp4` is the stronger version of that same argument, measured 2026-08-20 — and it is the model that took the slot.** It is the second usable model to be better without the seed (−1, 24/25 unaided warm; `llama3-chatqa:8b` is also negative but scores 1/25), so it clears the seed-dependence bar that rejected `nemotron-3.5-lightning:30b` and `qwen3-coder:30b`. What separates it from its `qwen3.6` sibling is that it dominates it on every axis the two can be compared on: **24/25 cold seeded** against 23/25, an equal 23/25 seeded warm and 24/25 unaided warm, and **16.9 GB against 18.4 GB** — smaller _and_ better. It also produces `Carousel` and `ColumnSet` cleanly on every sample under all four conditions — the two deeply-nested shapes that `qwen3.6:27b-coding-nvfp4` and `gpt-oss:20b` both permanently miss as invalid JSON — so the nested-shape ceiling those two share is not a property of the weight class.
-
-Most usefully, it closes the measurement gap the `qwen3.6` case is stuck on: it is the first `nvfp4` model run through the **stress set**, and it swept it — **5/5 at `t=0` and 5/5 at `t=0.6`**, a result only `qwen3-coder:30b` has matched. Against it: at 16.9 GB it is still a ❌ for a 16 GB host, and it inherits the family's `format` blind spot, so `--json-format json|schema` is inert for it exactly as for `qwen3.6:27b-coding-nvfp4`. Two readings of one stress number are worth keeping apart, though — four of its ten stress cells passed as _prose_ rather than as cards (`nested` and `multiline` at `t=0`, `bigtable` and `nested` at `t=0.6`), which the stress set scores as a pass because the prompt permits Markdown. The 5/5 means "nothing broke", not "ten good cards".
+Against it: **18.4 GB for 23/25**, against a lighter sibling at 24/25; a stress score of **8/10**, the measurement its case was previously stuck waiting on and the weakest of the four strong large models; and it silently ignores `format`. The gap it was waiting to close closed against it.
 
 **`launch.json` was changed on 2026-08-20: `gpt-oss:20b` out, `qwen3.8:27b-nvfp4` in.** Both the card-prompt and Markdown-prompt configurations were swapped, along with the two compounds that launch them, so the grep at the top of this section still yields exactly three models.
 
-The decision rests on `qwen3.8:27b-nvfp4` tying the incumbent on the figure this file says to read first (23/25 as shipped) and beating it on everything else measured, while being the more robust of the two unaided (−1 seed gain against +1). The cost is **4.1 GB** — the one axis `gpt-oss:20b` still wins, and the reason to keep probing it rather than treating it as retired. Neither model honours `format`, so nothing was traded away there; `gpt-oss:20b` is in fact the worse of the two on it.
+The decision rested on `qwen3.8:27b-nvfp4` leading the figure this file says to read first — 24/25 as shipped, the highest here — and on it neither needing the seed nor being hurt by it. The cost is **4.1 GB**, the one axis `gpt-oss:20b` still wins.
 
-Two things this swap does **not** settle. `qwen3.6:27b-coding-nvfp4` has still never been run through the stress set, so its own case is still argued on a partial record — it is simply moot now that a lighter, better-measured sibling holds the slot. And `qwen3.8:27b-nvfp4`'s stress sweep, like every other in this file, is `--samples 1`; the file's own warning about single samples at `t=0.6` applies to it as much as to anything else.
+**The full re-measurement on 2026-08-20 gives one reason to revisit it.** `gpt-oss:20b` turns out to produce a correct shape on **all 25 cases unaided**, the only perfect score in this file under any condition, while scoring 23/25 with the seed the server sends. So the outgoing model is the strongest of all on the unaided axis and is being held back by a mechanism applied unconditionally. That does not automatically reverse the swap — 23/25 is what a user actually gets today — but it makes "should the seed be conditional?" a live question rather than a footnote, and `gpt-oss:20b` is the model that would answer it.
+
+Two caveats on all of the above. Everyday and stress figures are `--samples 1`, and shape figures `--samples 2`, so a one-shape difference between two models is noise rather than a ranking — the re-measurement moved ten of twelve steady models by ±1 without anything about them changing. And `granite4.1:3b`'s numbers are not comparable with its earlier ones at all; see [the timeout note](#a-note-on-the-per-call-timeout).
 
 ## Candidate models
 
@@ -79,23 +83,23 @@ curl -s http://127.0.0.1:11434/api/tags | python3 -c "import sys,json;[print(m['
 
 Sorted by model name, and within a family by parameter count ascending (so `nemotron-3-nano:4b` precedes `:30b`), which makes a tag quick to find. Role and verdict, not position, carry the meaning.
 
-| Model                                             | Weights | 16 GB | Role                   | Cold start                                                          | With history        |
-| ------------------------------------------------- | ------- | ----- | ---------------------- | ------------------------------------------------------------------- | ------------------- |
-| gpt-oss:20b                                       | 12.8 GB | ❌    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`; breaks on `format` | ✅ shapes **23/25** |
-| granite4.1:3b                                     | 2.0 GB  | ✅    | candidate              | ❌ everyday 4/7 · stress 4/5 `t=0`, 3/5 `t=0.6` — weakest           | ⚠️ shapes **17/25** |
-| granite4.1:8b                                     | 5.0 GB  | ✅    | top 3 (`launch.json`)  | ⚠️ everyday 6/7 · stress 5/5 `t=0`, 4/5 `t=0.6`                     | ✅ shapes **22/25** |
-| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | ❌ everyday 7/7 · stress 3/5 `t=0`, 3/5 `t=0.6`                     | ✅ shapes **22/25** |
-| llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate              | ✅ everyday 7/7 all temps · stress 5/5 both — clean sweep           | ❌ shapes **1/25**  |
-| llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | candidate              | ⚠️ everyday 6/7 · stress 5/5 `t=0` but **1/5** at `t=0.6`           | ⚠️ shapes **16/25** |
-| llama3.2:latest                                   | 1.9 GB  | ✅    | candidate              | ❌ Retired as default — failed nested and multi-select              | ⚠️ shapes **14/25** |
-| nemotron-3-nano:4b                                | 2.6 GB  | ✅    | candidate              | ❌ everyday 6/7 but stress **2/5** `t=0`, 1/5 `t=0.6`               | ⚠️ shapes **17/25** |
-| nemotron-3-nano:30b                               | 22.6 GB | ❌    | candidate              | ❌ everyday 7/7 · stress 2/5 `t=0`, 1/5 `t=0.6`                     | ✅ shapes **20/25** |
-| nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    | candidate              | ❌ everyday 6/7 · stress 3/5 `t=0`, 4/5 `t=0.6`                     | ✅ shapes **22/25** |
-| qwen2.5-coder:7b                                  | 4.4 GB  | ✅    | server default + top 3 | ✅ Recommended — cleared every documented failure at `t=0`          | ⚠️ shapes **19/25** |
-| qwen3-coder:30b                                   | 17.3 GB | ❌    | candidate              | ⚠️ everyday 7/7 · stress 5/5 `t=0`, 5/5 `t=0.6`                     | ✅ shapes **23/25** |
-| qwen3.5:9b                                        | 6.1 GB  | ⚠️    | candidate              | ⚠️ Only with thinking off; no edge over the default                 | ⚠️ shapes **19/25** |
-| qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    | candidate              | ⚠️ Ignores `format`; better at `t=0` than its own `0.6`             | ✅ shapes **23/25** |
-| qwen3.8:27b-nvfp4                                 | 16.9 GB | ❌    | top 3 (`launch.json`)  | ✅ everyday 7/7 all temps · stress 5/5 both — clean sweep           | ✅ shapes **23/25** |
+| Model                                             | Weights | 16 GB | Role                   | Cold start                                                  | With history        |
+| ------------------------------------------------- | ------- | ----- | ---------------------- | ----------------------------------------------------------- | ------------------- |
+| gpt-oss:20b                                       | 12.8 GB | ❌    | candidate              | ✅ everyday 19/21 · stress 9/10 · **breaks on `format`**    | ✅ shapes **23/25** |
+| granite4.1:3b                                     | 2.0 GB  | ✅    | candidate              | ❌ everyday 16/21 · stress 7/10 · 46 stalls                 | ❌ shapes **12/25** |
+| granite4.1:8b                                     | 5.0 GB  | ✅    | top 3 (`launch.json`)  | ✅ everyday 19/21 · stress 10/10 but 6 prose                | ✅ shapes **21/25** |
+| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    | candidate              | ⚠️ everyday 15/21 · stress 5/10                             | ✅ shapes **22/25** |
+| llama3-chatqa:8b                                  | 4.3 GB  | ✅    | candidate              | ❌ everyday 21/21, stress 10/10 — **all prose, 0 cards**    | ❌ shapes **1/25**  |
+| llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    | candidate              | ⚠️ everyday 18/21 · stress 7/10                             | ⚠️ shapes **17/25** |
+| llama3.2:latest                                   | 1.9 GB  | ✅    | candidate              | ⚠️ everyday 19/21 · stress 7/10 — retired as default        | ⚠️ shapes **15/25** |
+| nemotron-3-nano:4b                                | 2.6 GB  | ✅    | candidate              | ⚠️ everyday 17/21 · stress 5/10                             | ⚠️ shapes **17/25** |
+| nemotron-3-nano:30b                               | 22.6 GB | ❌    | candidate              | ⚠️ everyday 18/21 · stress 6/10                             | ✅ shapes **21/25** |
+| nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    | candidate              | ✅ everyday 18/21 · stress 9/10                             | ✅ shapes **21/25** |
+| qwen2.5-coder:7b                                  | 4.4 GB  | ✅    | server default + top 3 | ✅ everyday 21/21 · stress 10/10, all cards                 | ⚠️ shapes **18/25** |
+| qwen3-coder:30b                                   | 17.3 GB | ❌    | candidate              | ✅ everyday 20/21 · stress 10/10 — **all cards, both sets** | ✅ shapes **23/25** |
+| qwen3.5:9b                                        | 6.1 GB  | ⚠️    | candidate              | ✅ everyday 19/21 · stress 10/10, all cards                 | ⚠️ shapes **19/25** |
+| qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    | candidate              | ⚠️ everyday 21/21 · stress 8/10 · ignores `format`          | ✅ shapes **23/25** |
+| qwen3.8:27b-nvfp4                                 | 16.9 GB | ❌    | top 3 (`launch.json`)  | ✅ everyday 20/21 · stress 9/10 · ignores `format`          | ✅ shapes **24/25** |
 
 **Cold start** is a single-turn probe. **With history** replays prior conversation turns the way the server actually does. These are different measurements and a model can pass one while failing the other — every result recorded before 2026-08-14 is a cold-start number, because no probe sent history at all.
 
@@ -103,7 +107,7 @@ Sorted by model name, and within a family by parameter count ascending (so `nemo
 
 **Cascade** is a different question and a much smaller one: can a follow-up
 turn edit the card the model just sent — widen a pick-one list to multi-select
-without losing its items? Fourteen of fifteen score `3/3`, so it separates no
+without losing its items? Thirteen of fifteen score `3/3`, so it separates no
 two usable models; it is carried as a column because "we checked, and it works
 wherever a card gets produced" is a fact worth being able to see. `n/a` means
 the model never produced a first card to edit, so the cascade was never
@@ -189,34 +193,36 @@ Two changes were made in response, both still shipped. The card system prompt's 
 
 **This is the current, as-shipped picture**, and the only model comparison in this file that is: all 25 cases, `t=0`, `--samples 2`, both conditions, with the unconditional card seed in place. Six models were measured 2026-08-18, eight more 2026-08-19, and `qwen3.8:27b-nvfp4` on 2026-08-20, all under identical conditions. Sorted by with-history coverage, which is what a user actually experiences.
 
-| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Cascade | Eroded by history                            |
-| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------- | -------------------------------------------- |
-| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | **24/25**  | **23/25**    | **24/25**      | 3/3     | `table` (1)                                  |
-| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | **23/25**    | **24/25**      | 3/3     | none                                         |
-| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | **23/25**    | 14/25          | 3/3     | `rating_ask`, `time` (2)                     |
-| `gpt-oss:20b`                                       | 12.8 GB | **24/25**  | **23/25**    | 22/25          | 3/3     | `gauge`, `table` (2)                         |
-| `granite4.1:8b`                                     | 5.0 GB  | 21/25      | 22/25        | 15/25          | 3/3     | `carousel`, `table` (2)                      |
-| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 22/25      | 22/25        | 13/25          | 3/3     | `table` (1)                                  |
-| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 14/25          | 3/3     | none                                         |
-| `nemotron-3-nano:30b`                               | 22.6 GB | 19/25      | 20/25        | 15/25          | 3/3     | none                                         |
-| `qwen2.5-coder:7b`                                  | 4.4 GB  | 21/25      | 19/25        | 18/25          | 3/3     | `carousel`, `table` (2)                      |
-| `qwen3.5:9b`                                        | 6.1 GB  | 19/25      | 19/25        | 17/25          | 3/3     | `badge`, `columnset` (2)                     |
-| `granite4.1:3b`                                     | 2.0 GB  | 16/25      | 17/25        | 13/25          | 3/3     | `number`, `text` (2)                         |
-| `nemotron-3-nano:4b`                                | 2.6 GB  | 20/25      | 17/25        | 6/25           | 3/3     | `codeblock`, `columnset`, `text`, `time` (4) |
-| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 15/25      | 16/25        | 9/25           | 3/3     | `progress`, `toggle` (2)                     |
-| `llama3.2:latest`                                   | 1.9 GB  | 16/25      | 14/25        | 11/25          | 3/3     | `badge`, `table` (2)                         |
-| `llama3-chatqa:8b`                                  | 4.3 GB  | 3/25       | 1/25         | 2/25           | n/a     | `gauge`, `progress` (2)                      |
+| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Cascade | Eroded by history                                                 |
+| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------- | ----------------------------------------------------------------- |
+| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | **24/25**  | **24/25**    | 24/25          | 3/3     | none                                                              |
+| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | 23/25        | 14/25          | 3/3     | `rating_ask`, `time` (2)                                          |
+| `gpt-oss:20b`                                       | 12.8 GB | 23/25      | 23/25        | **25/25**      | 3/3     | `number`, `time` (2)                                              |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | 23/25        | 24/25          | 3/3     | none                                                              |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 16/25          | 3/3     | none                                                              |
+| `granite4.1:8b`                                     | 5.0 GB  | 23/25      | 21/25        | 15/25          | 3/3     | `carousel`, `codeblock`, `table` (3)                              |
+| `nemotron-3-nano:30b`                               | 22.6 GB | 22/25      | 21/25        | 16/25          | 3/3     | `carousel`, `text` (2)                                            |
+| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 20/25      | 21/25        | 13/25          | 3/3     | `table` (1)                                                       |
+| `qwen3.5:9b`                                        | 6.1 GB  | 20/25      | 19/25        | 17/25          | 3/3     | `badge` (1)                                                       |
+| `qwen2.5-coder:7b`                                  | 4.4 GB  | 20/25      | 18/25        | 18/25          | 3/3     | `choice2`, `table` (2)                                            |
+| `nemotron-3-nano:4b`                                | 2.6 GB  | 19/25      | 17/25        | 7/25           | 3/3     | `carousel`, `gauge` (2)                                           |
+| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 18/25      | 17/25        | 9/25           | 3/3     | `date`, `progress`, `toggle` (3)                                  |
+| `llama3.2:latest`                                   | 1.9 GB  | 15/25      | 15/25        | 12/25          | 3/3     | `facts` (1)                                                       |
+| `granite4.1:3b`                                     | 2.0 GB  | 17/25      | 12/25        | 9/25           | n/a     | `badge`, `choice4`, `codeblock`, `number`, `progress`, `text` (6) |
+| `llama3-chatqa:8b`                                  | 4.3 GB  | 4/25       | 1/25         | 3/25           | n/a     | `columnset`, `gauge`, `progress` (3)                              |
 
-**Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence — the single most useful column here after the score itself, because a model that scores well only with the seed is being held up rather than being robust. That distinction is what the [top-three rationale](#why-these-three-after-the-25-case-sweep) turns on. All fifteen are now measured; the gain runs from **+11** to **−1**:
+**Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence — the single most useful column here after the score itself, because a model that scores well only with the seed is being held up rather than being robust. That distinction is what the [top-three rationale](#why-these-three-after-the-25-case-sweep) turns on. All fifteen are now measured; the gain runs from **+10** to **−2**:
 
-| Gain from the seed | Models                                                                                                        |
-| ------------------ | ------------------------------------------------------------------------------------------------------------- |
-| +8 to +11          | `nemotron-3-nano:4b` (+11), `qwen3-coder:30b` (+9), `nemotron-3.5-lightning:30b` (+9), `hf.co/unsloth/…` (+8) |
-| +4 to +7           | `granite4.1:8b` (+7), `llama3-groq-tool-use:8b` (+7), `nemotron-3-nano:30b` (+5), `granite4.1:3b` (+4)        |
-| +1 to +3           | `llama3.2:latest` (+3), `qwen3.5:9b` (+2), `gpt-oss:20b` (+1), `qwen2.5-coder:7b` (+1)                        |
-| negative           | `qwen3.6:27b-coding-nvfp4` (−1), `qwen3.8:27b-nvfp4` (−1), `llama3-chatqa:8b` (−1)                            |
+| Gain from the seed | Models                                                                                                                        |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| +8 to +10          | `nemotron-3-nano:4b` (+10), `qwen3-coder:30b` (+9), `llama3-groq-tool-use:8b` (+8), `nemotron-3.5-lightning:30b` (+8)         |
+| +5 to +6           | `granite4.1:8b` (+6), `hf.co/unsloth/…` (+6), `nemotron-3-nano:30b` (+5)                                                      |
+| +2 to +3           | `granite4.1:3b` (+3), `llama3.2:latest` (+3), `qwen3.5:9b` (+2)                                                               |
+| zero or negative   | `qwen2.5-coder:7b` (0), `qwen3.8:27b-nvfp4` (0), `qwen3.6:27b-coding-nvfp4` (−1), `gpt-oss:20b` (−2), `llama3-chatqa:8b` (−2) |
 
-Two readings follow, and they point opposite ways. **The seed earns its keep on the models that need it most**: `nemotron-3-nano:4b` is unusable without it (6/25) and ordinary with it (17/25), and the top group gains most of its score from a fixed two-turn prefix. **But the models that need it least are the best models on the unaided axis** — `qwen3.6:27b-coding-nvfp4` and `qwen3.8:27b-nvfp4` at 24/25, then `gpt-oss:20b` at 22/25 — so a high seeded score is not evidence of a good model until this column is read beside it. Five of the fifteen sit at +1 or below.
+Two readings follow, and they point opposite ways. **The seed earns its keep on the models that need it most**: `nemotron-3-nano:4b` is unusable without it (7/25) and ordinary with it (17/25), and the whole +8-and-above group gains most of its score from a fixed two-turn prefix. **But the models that need it least are the best models on the unaided axis** — `gpt-oss:20b` at **25/25**, then `qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` at 24/25 — so a high seeded score is not evidence of a good model until this column is read beside it. Five of the fifteen sit at zero or below.
+
+**`gpt-oss:20b` is now the sharpest case against the seed's unconditional application.** It is the only model to produce a correct shape on **all 25 cases** under any condition, and it does it _without_ the seed, after two prose turns — the hardest condition in this file. With the seed it scores 23/25. That is the largest negative gain measured (−2) on the model that needs help least, and it is the argument for making the seed conditional rather than unconditional if the server's default ever changes to a model of that class.
 
 **Pre-seed erosion is concentrated in the choice cases.** Five of the eight models measured here lose `choice*` shapes to two prose turns without the seed — `hf.co/unsloth/…` loses five of the six — and those are exactly the cases that recover once a card sits in front of the history. This reproduces the original 2026-08-14 discovery at full scale and names what the seed is actually protecting: a pick-from-a-set question is the shape a drifting conversation loses first.
 
@@ -226,12 +232,57 @@ Two readings follow, and they point opposite ways. **The seed earns its keep on 
 
 How to read the rest of it:
 
-- **Weight class does not predict coverage.** `granite4.1:8b` at 5.0 GB scores 22/25, above four models of 22 GB or more. The two best 16 GB-capable models are `granite4.1:8b` (22/25) and then `qwen2.5-coder:7b` / `qwen3.5:9b` tied at 19/25.
-- **Cold start does not predict with-history, in either direction.** `nemotron-3-nano:4b` drops three shapes warm while `nemotron-3-nano:30b` and `hf.co/unsloth/…` each gain one. Three models erode nothing at all. Judge on the with-history column.
-- **`llama3-chatqa:8b` is why this probe exists.** It sweeps the everyday and stress sets — 7/7 at three temperatures, 5/5 stress at two — and produces a correct shape on 1 of 25 cases. Nothing about the model changed between those results; the measuring stick did.
-- **Failure is concentrated in nested shapes.** `carousel`, `table`, and `columnset` account for most of what models never produce under either condition, almost always as invalid JSON rather than a wrong choice of element. `qwen3-coder:30b` is the only model measured with no case it fails under both conditions.
-- **`rating_ask` is the most-failed case in the file.** Nine of the fifteen answer "ask me to rate this" with a read-only `Rating` display instead of an `Input.*` — the same show-versus-collect substitution, under both conditions, across unrelated model families. A failure that uniform is a prompt problem, and it is the clearest remaining lever in `assets/card_system_prompt.txt`.
+- **Weight class does not predict coverage — or speed.** `granite4.1:8b` at 5.0 GB scores 21/25, matching two models four times its size. Weight predicts runtime even less: `qwen3-coder:30b` at 17.3 GB is the **fastest** model measured (1.6 s/call) while `granite4.1:3b` at 2.0 GB is the slowest sweep in the file — see [Performance on this machine](#performance-on-this-machine).
+- **Cold start does not predict with-history, in either direction.** `granite4.1:3b` drops five shapes warm while `hf.co/unsloth/…` and `nemotron-3.5-lightning:30b` each gain one. Two models erode nothing at all. Judge on the with-history column.
+- **`llama3-chatqa:8b` is why this probe exists.** It sweeps the everyday and stress sets — 21/21 and 10/10 on 2026-08-20 — and produces a correct shape on 1 of 25 cases. Since the stress set began splitting cards from prose, it no longer takes a 100-call shape run to see why: its perfect stress score is **0 cards and 10 prose**, and its everyday sweep is 2 cards to 19 prose. The cheap probe now catches what only the expensive one could.
+- **Failure is concentrated in nested shapes.** `carousel` (8 of 15 models) and `table` (6) account for most of what models never produce under either condition, almost always as invalid JSON rather than a wrong choice of element. No model measured is free of permanent misses: even `qwen3.8:27b-nvfp4` at 24/25 fails `rating_ask` under both conditions.
+- **`rating_ask` is the most-failed case in the file.** **Eleven of the fifteen** answer "ask me to rate this" with a read-only `Rating` display instead of an `Input.*` — the same show-versus-collect substitution, under both conditions, across unrelated model families. A failure that uniform is a prompt problem, and it is the clearest remaining lever in `assets/card_system_prompt.txt`. The next most-missed cases are `carousel` (8/15), `text` (7/15), then `time` and `table` (6/15).
 - **`gauge` and `progress` never cross-contaminate**, on any model, despite sharing the "72%" wording.
+
+#### Performance on this machine
+
+All timings are one host — **Apple M1 Max / 64 GB**, the machine every measurement in this file was taken on. Latency is a property of the model _and_ the box, so each recorded run stamps the host into its result file; a figure that cannot name its machine does not belong here.
+
+**Median s/call** is over the fixed 25-case shape sweep, so the case mix cancels and models are comparable. It excludes the first call after a model load, which costs roughly **6-7x** a warm one, and it excludes stalled calls, which measure the ceiling rather than the model. **Full sweep** is every probe for that model, stalls included — that is real wall clock somebody waited.
+
+A second full run is deliberately _not_ taken. Min-of-two is the usual noise filter, but the dominant noise here is the known load event rather than jitter, and on a laptop the second run is measured on a hotter, throttling machine, so min-of-two would trade one uncontrolled bias for another.
+
+| Model                                               | Weights | Median s/call | Full sweep | Stalls |
+| --------------------------------------------------- | ------- | ------------- | ---------- | ------ |
+| `llama3-chatqa:8b`                                  | 4.3 GB  | 0.3 s         | 3 min      | 0      |
+| `granite4.1:3b`                                     | 2.0 GB  | 1.0 s         | 124 min    | 46     |
+| `llama3.2:latest`                                   | 1.9 GB  | 1.3 s         | 12 min     | 2      |
+| `qwen3-coder:30b`                                   | 17.3 GB | 1.6 s         | 10 min     | 0      |
+| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 1.8 s         | 9 min      | 0      |
+| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 2.0 s         | 12 min     | 0      |
+| `nemotron-3-nano:30b`                               | 22.6 GB | 2.2 s         | 11 min     | 0      |
+| `qwen2.5-coder:7b`                                  | 4.4 GB  | 2.3 s         | 18 min     | 0      |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 2.3 s         | 15 min     | 2      |
+| `nemotron-3-nano:4b`                                | 2.6 GB  | 2.6 s         | 18 min     | 1      |
+| `granite4.1:8b`                                     | 5.0 GB  | 2.7 s         | 14 min     | 0      |
+| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | 4.4 s         | 39 min     | 0      |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 6.2 s         | 37 min     | 0      |
+| `qwen3.5:9b`                                        | 6.1 GB  | 6.9 s         | 34 min     | 0      |
+| `gpt-oss:20b`                                       | 12.8 GB | 7.3 s         | 48 min     | 1      |
+
+**Weight does not predict speed, and the exceptions are not small.** `qwen3-coder:30b` at 17.3 GB is the fastest real card producer measured — 1.6 s/call, ahead of `qwen2.5-coder:7b` at a quarter its size — while `gpt-oss:20b` at 12.8 GB is the slowest at 7.3 s. `llama3-chatqa:8b` tops the table only because it answers in short prose; a model that never builds a card is quick for the wrong reason.
+
+**Stalls, not token rate, decide how long a sweep takes.** `granite4.1:3b` is the second-smallest model here and by far the longest run: **124 minutes, 46 stalls** — roughly 92 of those minutes spent sitting in timeouts. `qwen3.8:27b-nvfp4` is eight times its size and finished in 39 minutes with none. Budget a sweep by stall risk, not by gigabytes.
+
+#### A note on the per-call timeout
+
+Probes bound each call (`--timeout`, default 180 s; the 2026-08-20 sweep used 120 s for the shape and cascade sets) and score an over-run reply a failure labeled `timeout (Ns)`. Before that bound existed, a runaway generation could hang an entire multi-model sweep: `granite4.1:3b` was observed generating for **16 minutes** on one `table` case without returning.
+
+The bound changes what some numbers mean, and only one model materially:
+
+| `granite4.1:3b` | Unbounded (≤2026-08-19) | 120 s ceiling (2026-08-20) |
+| --------------- | ----------------------- | -------------------------- |
+| Shapes, warm    | 17/25                   | **12/25**                  |
+| Cascade         | 3/3                     | **n/a** — no turn-1 card   |
+
+Both are true, of different questions. "Does this model eventually produce a card?" and "does it produce one before a user gives up?" have different answers for it. The ceiling is kept because the server has no timeout of its own — a real user simply waits — so a card nobody waits for has failed in practice. Every other model is unaffected: nine of fifteen recorded zero stalls, and no other model recorded more than two.
+
+Read a cross-version comparison of a stall-prone model with this in mind, and do not compare a bounded figure with an unbounded one as though they measured the same thing.
 
 #### The card seed, and what it costs
 
@@ -260,18 +311,22 @@ _those_") rather than restating the items. A pass needs the turn-2
 All fifteen models, as the server ships (seed on), `t=0`, `--samples 2`, three
 cases each:
 
-| Result  | Models                                                               |
-| ------- | -------------------------------------------------------------------- |
-| **3/3** | Every model except the one below — fourteen of fifteen               |
-| **0/3** | `llama3-chatqa:8b`, prose on turn 1 in all three cases, both samples |
+| Result  | Models                                                                   |
+| ------- | ------------------------------------------------------------------------ |
+| **3/3** | Every model except the two below — thirteen of fifteen                   |
+| `n/a`   | `llama3-chatqa:8b` and `granite4.1:3b` — turn 1 produced no card to edit |
 
 **This axis does not discriminate, and that is the finding.** Every model that
 produces a card at all cascades correctly: flips `isMultiSelect`, keeps 100% of
 the turn-1 choices, and renames the input sensibly (`state` → `states`). That
-includes the weakest card producers in the table — `llama3.2:latest` (14/25
-shapes), `llama3-groq-tool-use:8b` (16/25), and `nemotron-3-nano:4b` (17/25)
-all score 3/3. The sole failure is the model that cannot produce a first card
-to edit, and it fails at turn 1, not at the cascade.
+includes the weakest card producers in the table — `llama3.2:latest` (15/25
+shapes), `llama3-groq-tool-use:8b` and `nemotron-3-nano:4b` (17/25) all score
+3/3. The two exceptions never produced a first card to edit, so they fail at
+turn 1 rather than at the cascade. `granite4.1:3b` joined that group on
+2026-08-20, when a per-call timeout was introduced: it had scored 3/3
+unbounded, and under a 120-second ceiling its turn-1 generations no longer
+return in time. That is a change in the measurement, not in the model — see
+[the timeout note](#a-note-on-the-per-call-timeout).
 
 So **cascade ability is gated entirely on turn-1 card production**, which the
 shape table already measures. It is deliberately _not_ a column here: a column
@@ -297,7 +352,7 @@ Two caveats on the numbers:
 
 ### Not a card test: the `format` canary
 
-`json_format_probe.dart` asks a different question — does this model honour Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.
+`json_format_probe.dart` asks a different question — does this model honor Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.
 
 **Ignoring `format` is not one failure mode but two, and the worse one is on a top-three model.** Measured 2026-08-20:
 
@@ -471,9 +526,9 @@ alone would rank it at or above every other large candidate.
 
 **Silently ignores `format`.** It answers the `format: json` canary with prose and no error, so `--json-format json|schema` is inert for it. Check the canary (`tool/model_probes/json_format_probe.dart`) before relying on the constraint.
 
-**The seed does not help it.** It scores 23/25 cold and 23/25 with history as the server ships, and **24/25 with history without the seed** — tied with `qwen3.8:27b-nvfp4` for the highest with-history figure in this file under any configuration, and a negative entry in the seed-dependence column alongside `qwen3.8:27b-nvfp4` and `llama3-chatqa:8b`. It erodes nothing under either condition, seeded or not. Its two permanent misses are `carousel` and `columnset`, both invalid JSON: the same deeply-nested ceiling as `gpt-oss:20b`, consistent with the truncation-on-long-generations weakness recorded above.
+**The seed does not help it, and it is the most reliably measured model here.** It scores 23/25 cold and 23/25 with history as the server ships, and 24/25 with history without the seed — a −1 seed gain. Re-measured in full on 2026-08-20 it reproduced **all three figures exactly**, the only model in the file to do so, which makes it the best evidence available that these numbers are stable at all. It erodes nothing under either condition, seeded or not.
 
-That combination — top of the unaided ranking, no history erosion, no dependence on a mechanism every other strong model leans on — was the live argument for giving it a `launch.json` slot; see [the top-three rationale](#why-these-three-after-the-25-case-sweep) for what argues against. It has never been run through the stress set, which is the measurement that would settle it — and note that its successor `qwen3.8:27b-nvfp4` now beats it cold-start, matches it warm, runs 1.5 GB lighter, produces the two nested shapes it misses, and **has** been through the stress set. On the evidence in this file, a slot argued for on `qwen3.6:27b-coding-nvfp4`'s behalf was better spent on `qwen3.8:27b-nvfp4` — which is what happened on 2026-08-20, when that model took `gpt-oss:20b`'s place in `launch.json`.
+**The stress set, the measurement its case was waiting on, came back 8/10 on 2026-08-20** — the weakest of the four strong large models, against 10/10 for `qwen3-coder:30b` and `qwen3.5:9b`. The gap it needed to close closed against it. Combined with 18.4 GB for a score its lighter sibling beats, the `launch.json` case that was once live is now closed: the slot went to `qwen3.8:27b-nvfp4` on 2026-08-20.
 
 ### `qwen3.8:27b-nvfp4`
 
@@ -538,13 +593,19 @@ quirk.
 4-row table, ~49 s for the 12-month `bigtable`. The first call after a load
 cost 51 s; re-run before trusting a first-call number.
 
+### `granite4.1:3b`
+
+**The only model whose numbers are not comparable across the 2026-08-20 sweep**, because it is the only one the per-call timeout materially affects. Bounded at 120 s it scores 12/25 with history and `n/a` on cascade; unbounded it scored 17/25 and 3/3. Its **46 stalls** are more than the other fourteen models combined, and they cost 92 of the 124 minutes its sweep took — the longest run in the file, from the second-smallest model. See [the timeout note](#a-note-on-the-per-call-timeout) for why the bounded figures are the ones kept.
+
+Read either figure as "weakest of the usable models" and neither as precise. It honors `format`, and 3 of its 7 stress passes are prose.
+
 ### `qwen3.5:9b`
 
 Usable **only with thinking disabled**, and even then offers no reliability edge over `qwen2.5-coder:7b` while costing more latency and memory. Its thinking capability is a liability for constrained-JSON output.
 
 With server defaults of the time (temp 1, thinking on) it answered a checkbox request with a `CodeBlock` of raw HTML using invented keys (`codeLanguage`/`content` instead of `codeSnippet`), taking 77 s. The same model with `think:false` + `temperature:0` produced a clean `Input.ChoiceSet` and a clean 4-page Carousel in ~10 s.
 
-On the shape set it scores **19/25 cold and 19/25 with history** — an exact tie with `qwen2.5-coder:7b` for 1.7 GB more weight, which is why it does not hold a `launch.json` slot. Probe runs send `think: false` unconditionally, so that figure is the thinking-off condition described above, not a thinking-on one.
+On the shape set it scores **20/25 cold and 19/25 with history** (2026-08-20), one shape ahead of `qwen2.5-coder:7b` rather than the exact tie previously recorded — and it matches that model's 10/10 all-cards stress result. What keeps it out of `launch.json` is cost rather than coverage: 6.1 GB against 4.4, and **6.9 s/call against 2.3**, the third-slowest model measured. Probe runs send `think: false` unconditionally, so these are thinking-off figures.
 
 Not recommended as the default for this workload, and no longer in `launch.json` — it was swapped out for `granite4.1:8b` on 2026-08-19.
 
@@ -552,7 +613,7 @@ Not recommended as the default for this workload, and no longer in `launch.json`
 
 Retired as a default. Failed the shapes that matter: checkbox `isMultiSelect` 1/14, nested-array Carousel 0/5, table 1/4. FactSet and plain prose were reliable. The nested-array corruption family that motivated the duplicate-key guard reads as specific to this 3B model under hot sampling.
 
-**Probed with history for the first time on 2026-08-19** (`shape_ab.dart --seed-card --samples 2`), having been retired before any multi-turn probe existed: **16/25 cold, 14/25 with history**, fourteenth of fifteen. It stays retired, but the retirement note above was written against a three-shape sample and reads harsher than the full picture — this is ordinary weakness, not the collapse `llama3-chatqa:8b`'s 1/25 represents. Nine shapes it never produces under either condition, including `date`, `text`, `codeblock`, and `rating_show`; `badge` and `table` additionally erode with history. It is also the only model that fails the `prose` negative control under **both** conditions, returning a card where the question wanted prose.
+**Probed with history for the first time on 2026-08-19** and re-measured in full on 2026-08-20: **15/25 cold, 15/25 with history**, thirteenth of fifteen. It stays retired, but the retirement note above was written against a three-shape sample and reads harsher than the full picture — this is ordinary weakness, not the collapse `llama3-chatqa:8b`'s 1/25 represents. It answers 7/10 stress cases with actual cards and 19/21 everyday, so what it produces is usually a card; there are simply ten shapes it never gets right.
 
 ## Cross-model results
 
