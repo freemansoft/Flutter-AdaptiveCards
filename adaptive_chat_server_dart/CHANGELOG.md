@@ -2,6 +2,34 @@
 
 ## [Unreleased]
 
+- Docs: **`ModelBehavior.md` restructured to read from the outside.** The
+  generalizable results are hoisted into a `Key findings` section at the top,
+  followed by a **tuning ledger** — all thirteen levers ever pulled on this
+  workload, each described without assuming knowledge of this codebase, and
+  grouped by _kind_ (context assembly / decoding / prompt wording / server
+  code). The grouping is the finding: every change to what the model sees
+  before the question moved behavior, while almost every change to the wording
+  of the instructions did not. The file is now a candidate for a blog article
+  rather than only a lab notebook.
+- Docs: **redundancy removed from `ModelBehavior.md`.** The candidate table is
+  now a pure roster — model, weights, portability, role, and the everyday +
+  stress result that lives nowhere else — and no longer repeats the shape
+  score, seed gain, or cascade figures the shape-coverage table already owns.
+  Its `Cold start` column, which held everyday/stress numbers while the shape
+  table's identically-named column held 25-shape numbers, is renamed. All six
+  tables of three rows or fewer are inlined as prose, and the two superseded
+  dated sweeps (2026-08-14, 2026-08-16) collapse to the three findings that
+  outlived them — their per-model numbers disagreed with the current roster on
+  eight of ten models, having been `--samples 1` runs replaced by the
+  2026-08-20 re-measurement.
+- Fixed: **three contradictions in `ModelBehavior.md`.**
+  `qwen3.8:27b-nvfp4` was recorded as 24/25 with a seed gain of 0 in both
+  tables and as 23/25 with a gain of −1 in its own section; the tables are
+  authoritative and the section now matches. A claim that `granite4.1:8b`
+  erodes shapes "without the seed" contradicted the table it cited, which is
+  the seeded picture. And the `qwen2.5-coder:7b` section carried a stale
+  4.7 GB and ~9 s/call against the tables' 4.4 GB and 2.3 s.
+
 - Changed: **the seed is now opt-in — it is sent only when `--seed-card-file`
   names one.** There is no separate boolean and no implicit default, mirroring
   how the server already treats `--system-prompt-file`: a run says what it
@@ -12,7 +40,7 @@
   knowing: the Markdown-prompt launch targets no longer seed at all, and
   prepending a card-shaped exchange to a server whose prompt asks for Markdown
   was always working against itself.
-- Docs: **both `ModelBehavior.md` tables now carry a Seed column** tagging what
+- Docs: **`ModelBehavior.md`'s shape-coverage table carries a Seed column** tagging what
   the flag is worth per model — **needs it** (+5 or more), helps (+2 to +4), no
   effect (0 or +1), _hurts_ (negative) — derived from the recorded runs rather
   than written by hand, so it cannot disagree with the columns beside it. Ten
