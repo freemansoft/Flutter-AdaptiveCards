@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- Added: **`tool_call_probe.dart`, a tool-calling capability canary.** Answers
+  whether a model can return a card through Ollama's tool channel rather than
+  the prose channel, using three checks — a card request, a prose negative
+  control, and a trivial unrelated tool that separates "cannot call" from
+  "chose not to". Verdicts are `supported`, `unsupported`,
+  `supportedButDeclines`, and `overCalls`. Ships with
+  `assets/card_tool_prompt.txt`, the tool-channel recast of the card system
+  prompt. Runs unseeded: the seed card is a prose-channel artifact.
+
 - Added: **unknown-element-type detection (`lib/src/element_types.dart`).**
   `loadKnownElementTypes` reads the schema's `ChildElement` vocabulary and
   `unknownElementTypes` walks a parsed card body for anything outside it,
