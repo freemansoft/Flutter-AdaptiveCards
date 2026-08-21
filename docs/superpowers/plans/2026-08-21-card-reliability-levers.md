@@ -41,7 +41,6 @@
 | `tool/model_probes/tool_call_probe.dart` | **New.** Tool-calling capability canary                                   | 5    |
 | `test/tool_call_probe_test.dart`         | **New.** Covers the pure verdict classifier                               | 5    |
 | `test/shape_cases_test.dart`             | Shape-coverage pin, repointed from the schema enum to the prompt palette  | 1    |
-| `tool/model_probes/shape_cases.dart`     | Doc comment naming what coverage is measured against                      | 1    |
 | `tool/model_probes/check_results.dart`   | Staleness checker's expected-probe set                                    | 6    |
 | `tool/model_probes/sweep.sh`             | Drives every per-model probe                                              | 6    |
 | `ModelBehavior.md`                       | Records the measurement                                                   | 6    |
@@ -260,30 +259,52 @@ Add this helper beside the existing `schemaElementTypes()` in the same file. It 
 ```dart
 /// Element types the card system prompt actually advertises to the model.
 ///
-/// A bullet heading alone is not proof of a type — the prompt uses headings
-/// like `- Charts —` to introduce a family. Requiring a matching `"type":"X"`
-/// example, which every real palette entry has and no section heading does,
-/// is what separates the two.
+/// Reading only `"type":"X"` examples is not enough: several palette entries
+/// are advertised in prose alone. `Input.Text`, `Input.Number`, and
+/// `Input.Time` share one bullet with no example between them, and
+/// `Chart.Donut` and `Chart.HorizontalBar` are named beside a sibling's
+/// example. A type the model is told about counts whether or not it got its
+/// own example, so bullet headings are read too.
 Set<String> promptElementTypes() {
   final prompt = File('assets/card_system_prompt.txt').readAsStringSync();
-  final exampled = RegExp('"type":"([A-Za-z.]+)"')
-      .allMatches(prompt)
-      .map((m) => m.group(1)!)
-      .toSet();
-  // Structural children and the card wrapper appear in examples but are not
-  // standalone palette entries a shape case could target.
-  return exampled
-    ..removeAll({
-      'AdaptiveCard',
-      'CarouselPage',
-      'TableRow',
-      'TableCell',
-      'Column',
-    });
+  final types = <String>{
+    ...RegExp(
+      '"type":"([A-Za-z.]+)"',
+    ).allMatches(prompt).map((m) => m.group(1)!),
+  };
+  // Palette bullets name their types before an em dash, and one bullet may
+  // list several separated by commas or "and".
+  for (final bullet in RegExp(
+    r'^\s*- ([^\n—]+)—',
+    multiLine: true,
+  ).allMatches(prompt)) {
+    for (final token in bullet.group(1)!.split(RegExp(',| and '))) {
+      final candidate = token.trim();
+      if (RegExp(r'^[A-Z][A-Za-z]*(\.[A-Za-z]+)*$').hasMatch(candidate)) {
+        types.add(candidate);
+      }
+    }
+  }
+  return types..removeAll({
+    // Structural children and the card wrapper appear in examples but are
+    // not standalone palette entries a shape case could target.
+    'AdaptiveCard',
+    'CarouselPage',
+    'TableRow',
+    'TableCell',
+    'Column',
+    // `- Charts —` introduces the chart family; it is a heading, not a
+    // type, and no element may be spelled `Charts`.
+    'Charts',
+  });
 }
 ```
 
-Then update the doc comment above `shapeCases` in `tool/model_probes/shape_cases.dart`: its "21 of 24" claim now refers to the prompt palette rather than the schema enum. Change the phrase `card_schema.json's enum` to `the card system prompt's palette` wherever it appears in that comment.
+This helper yields **24** types. Minus the three documented exclusions that
+leaves 21, which is what `shapeCases` covers. If it yields 16, the bullet-
+heading loop is not firing and the prose-only entries are being missed.
+
+No change is needed in `tool/model_probes/shape_cases.dart`. Its doc comment already reads "21 of the 24 element types the card system prompt advertises" — the comment and the test disagreed before this repoint, and the repoint makes the test match the documentation that was already there. Confirm this rather than assuming it; if the comment does cite the schema enum, correct it.
 
 - [ ] **Step 6: Verify both test files pass together**
 
@@ -327,7 +348,7 @@ Both changes go in one commit: the enum growth breaks the shape pin, so splittin
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
 fvm dart format adaptive_chat_server_dart/
 npm run format:md:chat
-git add adaptive_chat_server_dart/assets/card_schema.json adaptive_chat_server_dart/test/card_schema_test.dart adaptive_chat_server_dart/test/shape_cases_test.dart adaptive_chat_server_dart/tool/model_probes/shape_cases.dart adaptive_chat_server_dart/CHANGELOG.md
+git add adaptive_chat_server_dart/assets/card_schema.json adaptive_chat_server_dart/test/card_schema_test.dart adaptive_chat_server_dart/test/shape_cases_test.dart adaptive_chat_server_dart/CHANGELOG.md
 git commit -m "feat(chat-server): mirror the renderable registry in card_schema.json"
 ```
 

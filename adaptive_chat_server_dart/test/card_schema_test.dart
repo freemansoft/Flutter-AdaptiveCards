@@ -33,7 +33,84 @@ Set<String> _schemaElementTypes() {
   return (type['enum'] as List).cast<String>().toSet();
 }
 
+/// Element types the core library can render, read from the registry source
+/// rather than from a copy kept here, so this test fails when the registry
+/// gains or loses a case.
+Set<String> _coreRegistryElementTypes() {
+  final source = File(
+    '../packages/flutter_adaptive_cards_fs/lib/src/registry.dart',
+  ).readAsStringSync();
+  // Not a raw string: the pattern has no backslashes, and `r"…"` here trips
+  // very_good_analysis's unnecessary_raw_strings. Double quotes are correct
+  // under prefer_single_quotes because the pattern contains single quotes.
+  return RegExp("case '([A-Za-z][A-Za-z.]*)':")
+      .allMatches(source)
+      .map((m) => m.group(1)!)
+      // The same switch carries action types; only elements belong here.
+      .where((t) => !t.startsWith('Action.'))
+      .toSet();
+}
+
+/// `Chart.*` types, which live in the optional charts package and are
+/// renderable only when a host registered it.
+///
+/// The trailing-segment group is load-bearing: a bare `Chart\.[A-Za-z]+`
+/// truncates `Chart.HorizontalBar.Stacked` to `Chart.HorizontalBar` and
+/// dedupes it away, silently reporting 6 types where the registry declares 8.
+Set<String> _chartRegistryElementTypes() {
+  final source = File(
+    '../packages/flutter_adaptive_charts_fs/lib/src/card_chart_registry.dart',
+  ).readAsStringSync();
+  return RegExp(
+    r'Chart\.[A-Za-z]+(?:\.[A-Za-z]+)*',
+  ).allMatches(source).map((m) => m.group(0)!).toSet();
+}
+
+/// Registered types that are never a top-level body item.
+///
+/// `CarouselPage` and `TabPage` are legal only inside their parent's array.
+/// `AdaptiveCard` is the wrapper and has its own `$defs/CardObject`; putting
+/// it in `Element` would additionally make a bare card a legal body item and
+/// let it match the wrong `oneOf` branch.
+const _notTopLevel = {'AdaptiveCard', 'CarouselPage', 'TabPage'};
+
+/// Renderable types the schema declines on purpose.
+///
+/// Grouped and stacked charts need a nested `{legend, values:[{x,y}]}` shape.
+/// The card system prompt says outright that there is no grouped or stacked
+/// chart, and the `does not allow multi-series chart types` test below asserts
+/// the schema rejects them. Listed here so a registry-vs-schema diff shows a
+/// decision rather than a gap.
+const _deliberatelyExcluded = {
+  'Chart.VerticalBar.Grouped',
+  'Chart.HorizontalBar.Stacked',
+};
+
+Set<String> _renderableTopLevelTypes() => _coreRegistryElementTypes()
+  ..addAll(_chartRegistryElementTypes())
+  ..removeAll(_notTopLevel)
+  ..removeAll(_deliberatelyExcluded);
+
 void main() {
+  group('the schema mirrors the renderable registry', () {
+    test('the core registry contributes 30 element types', () {
+      // Guards the regex itself: a change to registry.dart's switch style
+      // would otherwise silently yield an empty set and pass everything.
+      expect(_coreRegistryElementTypes(), hasLength(30));
+    });
+
+    test('the charts package declares 8 chart types', () {
+      // 8, not 6: the two multi-series types are renderable and are excluded
+      // from the schema by decision, not by absence.
+      expect(_chartRegistryElementTypes(), hasLength(8));
+      expect(_chartRegistryElementTypes(), containsAll(_deliberatelyExcluded));
+    });
+
+    test('the Element enum is exactly the renderable top-level set', () {
+      expect(_schemaElementTypes(), _renderableTopLevelTypes());
+    });
+  });
+
   group('card prompt and card schema agree on chart types', () {
     test('the prompt advertises the six flat-data chart types', () {
       expect(_chartTypesInPrompt(), {

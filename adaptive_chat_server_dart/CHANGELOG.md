@@ -2,6 +2,32 @@
 
 ## [Unreleased]
 
+- Changed: **`card_schema.json` now mirrors the renderable registry.** The
+  `Element` enum grew from 24 to 33 types, adding `Media`, `Container`,
+  `RichTextBlock`, `ActionSet`, `ImageSet`, `Input.Rating`, `CompoundButton`,
+  `Accordion`, and `TabSet`. `card_schema_test.dart` now reads `registry.dart`
+  and the charts registry as source text, so the schema and the renderable
+  vocabulary can no longer drift apart silently. Note this **loosens**
+  `--json-format schema`: on models that honor `format`, the grammar now admits
+  33 types where it admitted 24. The system prompt is unchanged, so what the
+  model is asked to produce is unchanged. `Chart.VerticalBar.Grouped` and
+  `Chart.HorizontalBar.Stacked` are renderable but stay out by decision, now
+  recorded as an explicit exclusion set rather than an absence.
+- Fixed: **the chart-type count was wrong wherever it was counted.** A
+  `Chart\.[A-Za-z]+` pattern truncates `Chart.HorizontalBar.Stacked` to
+  `Chart.HorizontalBar` and dedupes it away, reporting 6 types where the charts
+  registry declares 8. Anything counting chart types must match the
+  multi-segment form.
+- Changed: **shape coverage is pinned to the prompt palette, not the schema
+  enum.** Widening the enum split two meanings that had been one: the enum now
+  records what the client can render, while `shapeCases` is about what the model
+  is asked to produce. A shape case for a type the prompt never advertises would
+  fail on every model forever. This also makes the test agree with the
+  `shapeCases` doc comment, which already claimed the prompt as its reference.
+  The new `promptElementTypes()` reads bullet headings as well as `"type":"X"`
+  examples, because `Input.Text`, `Input.Number`, and `Input.Time` share one
+  bullet with no example between them.
+
 - Docs: **`ModelBehavior.md` restructured to read from the outside.** The
   generalizable results are hoisted into a `Key findings` section at the top,
   followed by a **tuning ledger** — all thirteen levers ever pulled on this
