@@ -28,6 +28,13 @@
   examples, because `Input.Text`, `Input.Number`, and `Input.Time` share one
   bullet with no example between them.
 
+- Added: **`$defs/ChildElement` in `card_schema.json`.** A 38-type vocabulary
+  covering every legal position — the 33 top-level types plus `CarouselPage`,
+  `TabPage`, `Column`, `TableRow`, and `TableCell`, which the prompt nests but
+  no registry switch declares. Nothing in the schema references it and
+  `--json-format schema` is unaffected; it exists so a validator can recognize
+  nested elements.
+
 - Docs: **`ModelBehavior.md` restructured to read from the outside.** The
   generalizable results are hoisted into a `Key findings` section at the top,
   followed by a **tuning ledger** — all thirteen levers ever pulled on this

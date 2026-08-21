@@ -45,6 +45,56 @@
         }
       }
     },
+    "ChildElement": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TextBlock",
+            "RichTextBlock",
+            "FactSet",
+            "Badge",
+            "Carousel",
+            "CarouselPage",
+            "Table",
+            "TableRow",
+            "TableCell",
+            "Container",
+            "ColumnSet",
+            "Column",
+            "ActionSet",
+            "ImageSet",
+            "Image",
+            "Media",
+            "Accordion",
+            "TabSet",
+            "TabPage",
+            "CompoundButton",
+            "Input.Date",
+            "Input.ChoiceSet",
+            "Input.Text",
+            "Input.Number",
+            "Input.Time",
+            "Input.Toggle",
+            "Input.Rating",
+            "Rating",
+            "Icon",
+            "ProgressBar",
+            "ProgressRing",
+            "CodeBlock",
+            "Chart.Pie",
+            "Chart.Donut",
+            "Chart.VerticalBar",
+            "Chart.HorizontalBar",
+            "Chart.Line",
+            "Chart.Gauge"
+          ]
+        }
+      }
+    },
     "CardObject": {
       "type": "object",
       "required": ["type", "body"],

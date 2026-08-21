@@ -66,6 +66,24 @@ Set<String> _chartRegistryElementTypes() {
   ).allMatches(source).map((m) => m.group(0)!).toSet();
 }
 
+/// The `type` enum covering every position, including nesting-only children.
+Set<String> _schemaChildElementTypes() {
+  final schema =
+      jsonDecode(File('assets/card_schema.json').readAsStringSync())
+          as Map<String, dynamic>;
+  final child =
+      (schema[r'$defs'] as Map<String, dynamic>)['ChildElement']
+          as Map<String, dynamic>;
+  final type =
+      (child['properties'] as Map<String, dynamic>)['type']
+          as Map<String, dynamic>;
+  return (type['enum'] as List).cast<String>().toSet();
+}
+
+/// Types the prompt's examples nest inside a parent but which no registry
+/// switch declares, because their parent widget builds them directly.
+const _structuralChildTypes = {'Column', 'TableRow', 'TableCell'};
+
 /// Registered types that are never a top-level body item.
 ///
 /// `CarouselPage` and `TabPage` are legal only inside their parent's array.
@@ -214,5 +232,30 @@ void main() {
         );
       },
     );
+  });
+
+  group('ChildElement covers every legal nested position', () {
+    test('it is the top-level set plus child-only and structural types', () {
+      expect(
+        _schemaChildElementTypes(),
+        _renderableTopLevelTypes()
+          ..addAll({'CarouselPage', 'TabPage'})
+          ..addAll(_structuralChildTypes),
+      );
+    });
+
+    test('it is a strict superset of Element', () {
+      expect(_schemaChildElementTypes(), containsAll(_schemaElementTypes()));
+      expect(
+        _schemaChildElementTypes().length,
+        greaterThan(_schemaElementTypes().length),
+      );
+    });
+
+    test('it excludes the AdaptiveCard wrapper', () {
+      // A nested card belongs to Action.ShowCard, which this palette does not
+      // offer; CardObject remains the only place the wrapper is legal.
+      expect(_schemaChildElementTypes(), isNot(contains('AdaptiveCard')));
+    });
   });
 }
