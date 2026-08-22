@@ -6,8 +6,11 @@ description: >
   exactly one quadrant (tutorial / how-to / reference / explanation) and flags
   mixed-mode drift. Use when writing or reviewing a doc under `docs/`, adding a
   `doc_type:` front-matter tag, auditing the doc set for gaps or violations, or
-  when the user mentions Diátaxis or documentation structure. Advisory only — it
-  proposes splits, it does not silently move or rewrite files.
+  when the user mentions Diátaxis or documentation structure. Also carries the
+  repo's documentation **register** rule — analyst, not publicist — so use it
+  when asked to make a doc less dramatic, tone down a write-up, or sweep prose
+  for hype. Advisory only — it proposes splits, it does not silently move or
+  rewrite files.
 ---
 
 # Diátaxis Documentation Governance (Flutter-AdaptiveCards)
@@ -113,10 +116,48 @@ This is the lightweight, repo-native alternative to reorganizing `docs/` into fo
 moves would break the many relative links from `AGENTS.md`, package READMEs, and skills. Prefer the
 tag; do not restructure the directory tree without an explicit, separately-scoped request.
 
+## Register — how the prose reads, in every quadrant
+
+Quadrant is *what* a doc does; register is *how* it reads. They are independent:
+a Reference table and an Explanation essay can both be written in hype. The repo
+rule is in [`AGENTS.md`](../../../AGENTS.md) under **Documentation tone** —
+**analyst, not publicist** — and it applies to all four quadrants.
+
+Register also applies **wider than this skill's classification scope**. The
+measurement notebooks (`adaptive_chat_server_dart/ModelBehavior.md`) and the
+`CHANGELOG.md` files are out of scope for quadrant classification — they are
+dated records — but they are squarely in scope for tone, and they are where
+this drift shows up most, because a measurement write-up is the easiest place
+to start selling a result.
+
+Worked before/after, all from real sweeps of this repo's docs:
+
+| Smell | Before | After |
+| ----- | ------ | ----- |
+| Rhetorical question as a heading | "Is `nemotron-3.5-lightning:30b` the better large model? No." | "`nemotron-3.5-lightning:30b` is not the better large model." |
+| Amplified verb | "collapses to 9/25", "helped decisively" | "falls to 9/25", "helped" |
+| Vague superlative | "the only perfect score in this file" | "the only 25/25 in this file" |
+| Inference stated as measurement | "Filling a schema argument **pulls** a model toward the cheapest filler" | "…**appears to favour** the cheapest filler" |
+| Verdict heading | "The canary over-predicted, and that is a lesson about the canary" | "The phase-1 canary over-predicted willingness" |
+| Closing flourish | "…and on this channel the gap between them is where the failures moved." | (cut — end on the last factual sentence) |
+| Emphasis bold | "erodes **nothing**", "did **not** help" | "erodes nothing", "did not help" |
+
+Two rules that keep a tone sweep honest:
+
+1. **Wording only.** Never change a figure, date, verdict, or claim while
+   adjusting register. After sweeping a file, diff its numeric tokens against
+   the previous commit and account for every difference — the only legitimate
+   delta is a superlative replaced by the figure it stood for, which *adds* a
+   number rather than changing one.
+2. **Keep load-bearing bold and load-bearing claims.** "This axis does not
+   discriminate, and that is the finding" asserts something the data supports;
+   it is not hype. Strip amplification, not substance. Structural bold on topic
+   sentences is what makes a long file scannable — reduce it, do not eliminate it.
+
 ## Integration with the review gate
 
 The `adaptive-cards-code-review` skill's "Documentation impact" check should also ask: **does each touched in-scope
-doc stay within one Diátaxis quadrant, and is its `doc_type:` correct?** A mixed-mode doc is a review
+doc stay within one Diátaxis quadrant, is its `doc_type:` correct, and does newly added prose hold the analyst register above?** A mixed-mode doc is a review
 comment, not a blocker on its own — but a *newly introduced* mode-mix in a doc that was previously
 pure is drift worth fixing in the same change.
 
@@ -126,6 +167,7 @@ pure is drift worth fixing in the same change.
 - Does not move, split, or rewrite files without confirmation.
 - Does not touch out-of-scope process/archive docs.
 - Does not override repo style rules (`AGENTS.md`, `adaptive-cards-public-api-docs`) — it composes with them.
+- Does not rewrite a doc's register unasked. A tone sweep changes wording across a whole file, so propose it and get confirmation the same way a quadrant split is proposed.
 
 ## Attribution
 
