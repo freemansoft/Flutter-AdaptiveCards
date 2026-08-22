@@ -17,6 +17,14 @@
   15 already-recorded `tool_call_probe.json` files were corrected in place to
   digest the asset they actually used — no model was re-run, since the asset
   has not changed since those runs were measured.
+- Added: **`shape_ab.dart --channel prose|tool`.** The tool arm offers a
+  `render_adaptive_card` function and converts its arguments into the reply
+  string a prose answer would have carried, so `judgeShape` and every existing
+  scoring rule — including the negative control — apply unchanged rather than
+  growing a parallel set that could drift from the path it is compared against.
+  The shared tool definition moves to `tool_channel.dart` so the canary and the
+  A/B cannot disagree about what they offered. `--channel tool` refuses to run
+  with the seed card and defaults to `card_tool_prompt.txt`.
 
 - Docs: **tool-calling capability measured across all fifteen models.**
   `ModelBehavior.md` gains a tool-calling canary section recording which
