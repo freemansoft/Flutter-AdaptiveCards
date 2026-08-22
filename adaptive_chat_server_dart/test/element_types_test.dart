@@ -121,5 +121,69 @@ void main() {
       ];
       expect(unknownElementTypes(body, known), isEmpty);
     });
+
+    test(
+      'AdaptiveCard, TextRun, and Action.* are tolerated non-element '
+      'positions, not unknown element types',
+      () {
+        // RichTextBlock and ActionSet are ordinary body elements, so they
+        // belong in the known set. TextRun, Action.ShowCard, and AdaptiveCard
+        // are legal `type` values in a fully renderable card, but in
+        // positions ChildElement never lists: TextRun inside a
+        // RichTextBlock's inlines, Action.ShowCard inside an actions array,
+        // and AdaptiveCard nested inside that Action.ShowCard's `card`.
+        final known2 = {...known, 'RichTextBlock', 'ActionSet'};
+        final body = [
+          {
+            'type': 'RichTextBlock',
+            'inlines': [
+              {'type': 'TextRun', 'text': 'hi'},
+            ],
+          },
+          {
+            'type': 'ActionSet',
+            'actions': [
+              {
+                'type': 'Action.ShowCard',
+                'card': {
+                  'type': 'AdaptiveCard',
+                  'body': [
+                    {'type': 'TextBlock', 'text': 'nested'},
+                  ],
+                },
+              },
+              {'type': 'Action.OpenUrl', 'url': 'https://example.com'},
+              {'type': 'Action.ToggleVisibility', 'targetElements': <String>[]},
+            ],
+          },
+        ];
+        expect(unknownElementTypes(body, known2), isEmpty);
+      },
+    );
+
+    test(
+      'a genuine misspelling is still flagged alongside tolerated types',
+      () {
+        // The fix must not blanket-disable detection: a real typo sitting
+        // next to legal non-element types must still be caught.
+        final known2 = {...known, 'RichTextBlock', 'ActionSet'};
+        final body = [
+          {
+            'type': 'RichTextBlock',
+            'inlines': [
+              {'type': 'TextRun', 'text': 'hi'},
+            ],
+          },
+          {
+            'type': 'ActionSet',
+            'actions': [
+              {'type': 'Action.OpenUrl', 'url': 'https://example.com'},
+            ],
+          },
+          {'type': 'Textblock', 'text': 'oops'},
+        ];
+        expect(unknownElementTypes(body, known2), {'Textblock'});
+      },
+    );
   });
 }

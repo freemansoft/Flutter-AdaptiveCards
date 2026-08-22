@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+- Fixed: **unknown-element-type detection no longer flags types the client
+  renders perfectly.** `TextRun`, `AdaptiveCard`, and every `Action.*` type
+  are legal `type` values in positions `$defs/ChildElement` never lists —
+  `RichTextBlock.inlines`, `Action.ShowCard.card`, and an `actions` array,
+  respectively — because that enum is an element vocabulary, not every legal
+  `type` value. `unknownElementTypes` now tolerates these explicitly instead
+  of flagging them, which matters because false positives on a warn-only
+  check corrupt the fire-rate metric the check exists to collect.
+- Fixed: **`tool_call_probe.dart` recorded digests for assets it never sent.**
+  `writeProbeRun`/`currentAssetDigests` hardcoded `card_system_prompt.txt` and
+  `seed_card.json`, but the tool-calling probe runs unseeded against
+  `card_tool_prompt.txt` instead. Both now take an `assetNames` list, and the
+  15 already-recorded `tool_call_probe.json` files were corrected in place to
+  digest the asset they actually used — no model was re-run, since the asset
+  has not changed since those runs were measured.
+
 - Docs: **tool-calling capability measured across all fifteen models.**
   `ModelBehavior.md` gains a tool-calling canary section recording which
   models can return a card through Ollama's tool channel. 8 of 15 verdict
@@ -48,7 +64,12 @@
   33 types where it admitted 24. The system prompt is unchanged, so what the
   model is asked to produce is unchanged. `Chart.VerticalBar.Grouped` and
   `Chart.HorizontalBar.Stacked` are renderable but stay out by decision, now
-  recorded as an explicit exclusion set rather than an absence.
+  recorded as an explicit exclusion set rather than an absence. `ActionSet` is
+  the one entry where the widened enum and the prompts now disagree: both
+  `card_system_prompt.txt` and `card_tool_prompt.txt` tell the model not to
+  include an `ActionSet`, but the enum admits it because mirroring the
+  registry — what the client can render — is this task's stated intent, while
+  the prompt separately governs what the model is asked to produce.
 - Fixed: **the chart-type count was wrong wherever it was counted.** A
   `Chart\.[A-Za-z]+` pattern truncates `Chart.HorizontalBar.Stacked` to
   `Chart.HorizontalBar` and dedupes it away, reporting 6 types where the charts

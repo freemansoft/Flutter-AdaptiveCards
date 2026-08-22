@@ -75,7 +75,23 @@ Set<String> _disabled(String path) {
   return const {};
 }
 
-/// Every `type` value in [body], at any depth, that is absent from [known].
+/// `type` values that are legal in a card but absent from `$defs/ChildElement`
+/// on purpose, because that enum is an *element* vocabulary and these are not
+/// elements.
+///
+/// `ChildElement` only names things that can occupy a body/child position.
+/// `TextRun` occupies a `RichTextBlock.inlines` slot, `AdaptiveCard` occupies
+/// `Action.ShowCard.card`, and every `Action.*` occupies an `actions` array —
+/// none of those is a body element, so the enum rightly excludes them. But a
+/// walker over a whole reply cannot tell "excluded because illegal" from
+/// "excluded because it belongs somewhere else": flagging these produces
+/// exactly the false positive this check exists to avoid, on cards the client
+/// renders perfectly.
+bool _isTolerableNonElement(String type) =>
+    type == 'AdaptiveCard' || type == 'TextRun' || type.startsWith('Action.');
+
+/// Every `type` value in [body], at any depth, that is absent from [known]
+/// and not a [_isTolerableNonElement] value.
 ///
 /// Walks nested arrays and objects, so a bad type inside a `Column`, a
 /// `TableCell`, or a `Carousel` page is caught — that is where deep nesting
@@ -94,7 +110,10 @@ Set<String> unknownElementTypes(
       final type = node['type'];
       // Only a `type` key names an element; an ordinary string value that
       // happens to look like a type name must not be flagged.
-      if (type is String && type.isNotEmpty && !known.contains(type)) {
+      if (type is String &&
+          type.isNotEmpty &&
+          !known.contains(type) &&
+          !_isTolerableNonElement(type)) {
         unknown.add(type);
       }
       node.values.forEach(walk);

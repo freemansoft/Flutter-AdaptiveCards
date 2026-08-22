@@ -51,7 +51,7 @@
 
 ### Task 1: Widen the schema `Element` enum to every renderable top-level type
 
-The schema enumerates 24 types. The client renders 36 — the 30 element cases in the core registry plus 6 `Chart.*` types. Three of the 30 are not top-level body items (`AdaptiveCard` is the wrapper with its own `$defs/CardObject`; `CarouselPage` and `TabPage` are child-only), so `Element` should hold **33**.
+The schema enumerates 24 types. The client renders 38 — the 30 element cases in the core registry plus 8 `Chart.*` types. Three of the 30 are not top-level body items (`AdaptiveCard` is the wrapper with its own `$defs/CardObject`; `CarouselPage` and `TabPage` are child-only), so `Element` should hold **35** — except two multi-series chart types (`Chart.VerticalBar.Grouped`, `Chart.HorizontalBar.Stacked`) are deliberately excluded, leaving **33**.
 
 The test reads both registries **as source text**, so it fails when either gains a case. That is stronger than the hand-maintained list the spec proposed, and needs no generator.
 

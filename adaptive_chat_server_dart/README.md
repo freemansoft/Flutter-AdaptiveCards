@@ -368,6 +368,7 @@ routes stay compact. Example payload:
     "numCtx": 16384,
     "historyTurns": 10,
     "jsonFormat": "none",
+    "knownElementTypes": 38,
     "systemPromptFile": "card_system_prompt.txt",
     "seedCard": true,
     "seedCardFile": "seed_card.json",

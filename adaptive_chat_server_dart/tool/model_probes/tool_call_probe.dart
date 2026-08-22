@@ -304,7 +304,11 @@ Future<void> main(List<String> argv) async {
         ...passSummary(calls),
       },
       calls: calls,
-      notes: 'Unseeded by design: the seed card is a prose-channel artifact.',
+      assetNames: const ['card_tool_prompt.txt'],
+      notes:
+          'Unseeded by design: the seed card is a prose-channel artifact. '
+          'cards/prose read 0: this probe labels by tool channel, not card '
+          'shape.',
     );
   }
   // force: a socket stuck mid-generation must not outlive the run.
