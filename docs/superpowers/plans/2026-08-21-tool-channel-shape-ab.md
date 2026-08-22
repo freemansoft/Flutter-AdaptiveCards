@@ -29,16 +29,16 @@
 
 ## File Structure
 
-| File                                                   | Responsibility                                                                  | Task |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------- | ---- |
-| `tool/model_probes/tool_channel.dart`                  | **New.** Shared tool definition + tool-call extraction, reusable by both probes | 1    |
-| `tool/model_probes/tool_call_probe.dart`               | Drops its private copies, imports the shared ones                               | 1    |
-| `tool/model_probes/shape_ab.dart`                      | `--channel prose\|tool`, tool-path call                                         | 1    |
-| `test/tool_channel_test.dart`                          | **New.** Covers extraction and the prose-equivalence conversion                 | 1    |
-| `tool/model_probes/results/<model>/shape_ab-tool.json` | Per-model tool-arm results                                                      | 2    |
-| `ModelBehavior.md`                                     | The comparison column and its finding                                           | 2    |
-| `tool/model_probes/cascade_ab.dart`                    | `--channel`, plus correct tool-call history replay                              | 3    |
-| `test/cascade_judge_test.dart`                         | Extends existing coverage to the tool path                                      | 3    |
+| File                                                           | Responsibility                                                                  | Task |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---- |
+| `tool/model_probes/tool_channel.dart`                          | **New.** Shared tool definition + tool-call extraction, reusable by both probes | 1    |
+| `tool/model_probes/tool_call_probe.dart`                       | Drops its private copies, imports the shared ones                               | 1    |
+| `tool/model_probes/shape_ab.dart`                              | `--channel prose\|tool`, tool-path call                                         | 1    |
+| `test/tool_channel_test.dart`                                  | **New.** Covers extraction and the prose-equivalence conversion                 | 1    |
+| `tool/model_probes/results/<model>/shape_ab-channel-tool.json` | Per-model tool-arm results                                                      | 2    |
+| `ModelBehavior.md`                                             | The comparison column and its finding                                           | 2    |
+| `tool/model_probes/cascade_ab.dart`                            | `--channel`, plus correct tool-call history replay                              | 3    |
+| `test/cascade_judge_test.dart`                                 | Extends existing coverage to the tool path                                      | 3    |
 
 ---
 
@@ -434,7 +434,7 @@ Use `defaultPrompt` when `--baseline` was not explicitly passed. The prose-chann
 Finally, record the channel in the run so a result file cannot be misread:
 
 ```dart
-      variant: channel == 'tool' ? 'tool' : (seeded ? 'seeded' : 'unaided'),
+      variant: channel == 'tool' ? 'channel-tool' : (seeded ? 'seeded' : 'unaided'),
 ```
 
 and pass `assetNames: const ['card_tool_prompt.txt']` to the run when the channel is tool, matching what it actually sent.
@@ -488,7 +488,7 @@ git commit -m "feat(chat-server): add a tool channel to the shape A/B probe"
 
 **Files:**
 
-- Create: `adaptive_chat_server_dart/tool/model_probes/results/<model>/shape_ab-tool.json` (×8)
+- Create: `adaptive_chat_server_dart/tool/model_probes/results/<model>/shape_ab-channel-tool.json` (×8)
 - Modify: `adaptive_chat_server_dart/ModelBehavior.md`, `tool/model_probes/check_results.dart`, `tool/model_probes/sweep.sh`, `CHANGELOG.md`
 
 **Interfaces:** consumes Task 1's `--channel tool`.
@@ -533,7 +533,7 @@ print('\n'.join(json.load(open(f))['model'] for f in sorted(glob.glob('tool/mode
   slug=$(printf '%s' "$m" | sed -e 's#/#__#g' -e 's#:#_#g')
   fvm dart run tool/model_probes/shape_ab.dart \
     --channel tool --no-seed-card --model "$m" --samples 2 \
-    --json "tool/model_probes/results/$slug/shape_ab-tool.json"
+    --json "tool/model_probes/results/$slug/shape_ab-channel-tool.json"
   ollama stop "$m" || true
 done
 ```
@@ -542,14 +542,14 @@ If a model times out or errors, record what happened and continue to the next. O
 
 - [ ] **Step 4: Build the comparison**
 
-For each model, compare `shape_ab-tool.json` against the recorded `shape_ab-unaided.json` — **not** `shape_ab-seeded.json`. The tool arm ran unseeded, and comparing it to a seeded prose score hands prose an advantage the tool arm structurally cannot have.
+For each model, compare `shape_ab-channel-tool.json` against the recorded `shape_ab-unaided.json` — **not** `shape_ab-seeded.json`. The tool arm ran unseeded, and comparing it to a seeded prose score hands prose an advantage the tool arm structurally cannot have.
 
 ```bash
 cd adaptive_chat_server_dart
 python3 - <<'PY'
 import json, glob, os
 print(f"{'model':46} {'prose cold':>10} {'tool cold':>9} {'prose warm':>10} {'tool warm':>9}")
-for f in sorted(glob.glob('tool/model_probes/results/*/shape_ab-tool.json')):
+for f in sorted(glob.glob('tool/model_probes/results/*/shape_ab-channel-tool.json')):
     d = os.path.dirname(f)
     tool = json.load(open(f))['summary']
     base = os.path.join(d, 'shape_ab-unaided.json')
@@ -564,14 +564,14 @@ PY
 
 - [ ] **Step 5: Register the new variant**
 
-Add `'shape_ab-tool'` to `expectedProbes` in `tool/model_probes/check_results.dart`, and a `run` line to `sweep.sh` beside the existing `shapes-unaided` one. Then:
+Add `'shape_ab-channel-tool'` to `expectedProbes` in `tool/model_probes/check_results.dart`, and a `run` line to `sweep.sh` beside the existing `shapes-unaided` one. Then:
 
 ```bash
 cd adaptive_chat_server_dart
 fvm dart run tool/model_probes/check_results.dart
 ```
 
-Expected: no `missing probe` finding for a model that has a `shape_ab-tool.json`. Models that are not `supported` will legitimately lack one — if `check_results.dart` flags those as missing, make the expectation conditional rather than recording a fake run.
+Expected: no `missing probe` finding for a model that has a `shape_ab-channel-tool.json`. Models that are not `supported` will legitimately lack one — if `check_results.dart` flags those as missing, make the expectation conditional rather than recording a fake run.
 
 - [ ] **Step 6: Write the finding, and apply the phase 3 gate**
 
@@ -592,6 +592,19 @@ npm run format:md:chat
 Commit the results, the `ModelBehavior.md` section, the registration changes, and a CHANGELOG bullet naming the outcome.
 
 ---
+
+> **GATE CLOSED — Tasks 3 and 4 were not built.**
+>
+> Task 2 ran on 2026-08-21. On the 8 `supported` models the tool channel
+> scored **2 wins, 2 unaffected, 4 losses** against the recorded unaided prose
+> runs, against a bar of "never worse on either condition". The gate required
+> the tool arm to be at least as good on a majority; it was not. Per the gate's
+> own terms, if the channel does not hold up single-turn its multi-turn
+> behaviour is moot, so phase 3 was not built and no `--reply-channel` flag was
+> added. The two tasks below are left in place as the design that _would_ have
+> been executed, including the history-representation prerequisite in Task 3,
+> which remains the correct starting point if a future roster ever changes the
+> answer. See `ModelBehavior.md`.
 
 ### Task 3: Teach `cascade_ab.dart` the tool channel — GATED on Task 2 Step 6
 

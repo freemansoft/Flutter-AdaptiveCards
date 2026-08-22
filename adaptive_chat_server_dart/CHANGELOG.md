@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+- Measured: **the tool channel does not pay, and nothing ships.** `shape_ab.dart`
+  gained `--channel prose|tool`, and the 25 shape cases were run through Ollama's
+  tool channel on the 8 models that can use it at all, scored against each
+  model's recorded unaided prose run. Result: **2 wins, 2 unaffected, 4 losses**,
+  two of the losses by 5 shapes. Half the capable models get materially worse, so
+  it could never be a default, and two beneficiaries out of fifteen roster models
+  did not justify a second code path through the reply loop. There is **no
+  `--reply-channel` flag** and the server is unchanged. What ships is the
+  measurement — `tool/model_probes/tool_channel.dart` and the `--channel` option —
+  so the finding is re-checkable when models change. Full table and a do-not-retry
+  note in `ModelBehavior.md`.
+- Added: **`shape_ab-channel-tool` is registered conditionally.** Only a model
+  whose `tool_call_probe` verdict is `supported` can produce this run, so
+  `check_results.dart` gates the expectation on that verdict and `sweep.sh` skips
+  the rest — otherwise `qwen2.5-coder:7b`, the compiled-in default, would report a
+  permanently missing result for a run it can never perform.
+
 - Fixed: **unknown-element-type detection no longer flags types the client
   renders perfectly.** `TextRun`, `AdaptiveCard`, and every `Action.*` type
   are legal `type` values in positions `$defs/ChildElement` never lists —

@@ -58,6 +58,7 @@ better than the specific change does.
 | **Prompt wording**   | Make the Markdown-permission section's heading less prominent, so it reads as a narrow exception rather than an available mode                                                                                          | **No effect**                | Same screening; failed.                                                                             |
 | **Prompt wording**   | Narrow the escape-hatch wording further still                                                                                                                                                                           | **No effect**                | Same screening; failed.                                                                             |
 | **Server code**      | Repair the bracketless form in `card_detect.dart` — accept two elements emitted without the wrapping `[ ]` that should surround them                                                                                    | **The only durable fix**     | Prompt wording cut that failure to near zero at `t=0` but not at `t=0.6`; the detector covers both. |
+| **Output channel**   | Ask for the card through Ollama's **tool channel** — a `render_adaptive_card` function whose arguments carry the body — instead of asking for card JSON in the message body                                             | **Failed — not shipped**     | On the 8 models that can use it at all: 2 wins, 2 unaffected, 4 losses (two by 5 shapes). No code.  |
 
 **Read the Kind column and the pattern falls out.** Every change to _what the
 model sees before the question_ moved behavior, one of them more than any other
@@ -454,6 +455,67 @@ perfect card, a model that never touches the card tool, and a model that
 fires it where it does not belong. Do not assume a model that can call a
 tool will use it for the right thing, or leave it alone for the wrong one,
 without running this canary first.
+
+### The tool channel, measured against prose — it did not pay
+
+The canary above answered _availability_. This answers the question that
+decides anything: does a card that arrives through the tool channel come out
+**better** than one asked for in the message body?
+
+`shape_ab.dart --channel tool` runs the same 25 shape cases through a
+`render_adaptive_card` function and converts its arguments into the reply
+string a prose answer would have carried, so both arms are scored by
+identical code. Run 2026-08-21 on the 8 `supported` models, `--samples 2`,
+unseeded, `t=0`, cold-start and with-history.
+
+**Compared against each model's recorded `shape_ab-unaided` run, never the
+seeded one.** The tool arm cannot be seeded — the seed card is a synthetic
+assistant turn holding raw card JSON, which is not what a tool-channel
+history looks like — so scoring it against a seeded prose baseline would
+hand prose an advantage the tool arm structurally cannot have.
+
+A model counts as a **win** only if the tool channel never made it worse on
+either condition.
+
+**Reading the variant names.** Each names one dimension and leaves the other
+implicit: `seeded` and `unaided` are both **prose**-channel runs differing by
+seed, while `channel-tool` is a **tool**-channel run that is always
+**unseeded**. So the pairing here is `channel-tool` against `unaided` — the
+two unseeded arms. That asymmetry is tolerable at two dimensions; a third
+would call for a structured `variant` rather than a longer naming
+convention.
+
+| Model                        | Tool cold | Prose cold |   Δ | Tool warm | Prose warm |   Δ | Verdict    |
+| ---------------------------- | --------: | ---------: | --: | --------: | ---------: | --: | ---------- |
+| `qwen3-coder:30b`            |        19 |         16 |  +3 |        20 |         14 |  +6 | **win**    |
+| `qwen3.5:9b`                 |        17 |         17 |   0 |        21 |         17 |  +4 | **win**    |
+| `qwen3.6:27b-coding-nvfp4`   |        24 |         23 |  +1 |        24 |         24 |   0 | unaffected |
+| `qwen3.8:27b-nvfp4`          |        22 |         23 |  −1 |        24 |         24 |   0 | unaffected |
+| `nemotron-3.5-lightning:30b` |        18 |         21 |  −3 |         9 |         13 |  −4 | loss       |
+| `gpt-oss:20b`                |        20 |         18 |  +2 |        20 |         25 |  −5 | loss       |
+| `nemotron-3-nano:30b`        |        12 |         16 |  −4 |        11 |         16 |  −5 | loss       |
+| `nemotron-3-nano:4b`         |         4 |          9 |  −5 |         5 |          7 |  −2 | loss       |
+
+**2 wins, 2 unaffected, 4 losses.**
+
+The two `unaffected` rows are the same result on either side of an arbitrary
+line: ±1 is inside this file's own noise floor — the 2026-08-20
+re-measurement moved ten of twelve steady models by ±1 with nothing about
+them changing. Only `qwen3-coder:30b`'s +6 and `qwen3.5:9b`'s +4 are gains
+worth relying on, and only the four losses are large enough to act on.
+
+**Nothing shipped.** There is no `--reply-channel` flag and the server still
+asks for card JSON in the message body. Half the models that _can_ use the
+channel get materially worse on it, so it could never be a default; two
+beneficiaries out of fifteen roster models did not justify a second code
+path through the reply loop. What ships is the measurement:
+`tool/model_probes/tool_channel.dart` and `shape_ab.dart --channel tool`,
+so the finding is re-checkable when models change.
+
+**Do not re-run this speculatively.** It is ~800 serial model calls across
+eight models, three of them 18–25 GB, and it took hours of wall clock. Re-run
+it when the roster changes materially or a model's tool support does — not to
+re-confirm a result already recorded here.
 
 ### What counts as a pass
 

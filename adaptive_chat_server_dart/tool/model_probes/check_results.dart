@@ -44,6 +44,16 @@ const expectedProbes = {
   'tool_call_probe',
 };
 
+/// Probes only some models can run, and the recorded fact that decides it.
+///
+/// `shape_ab-channel-tool` sends the card request through Ollama's tool
+/// channel, which a model whose chat template has no tool support simply
+/// cannot answer — `qwen2.5-coder:7b`, the compiled-in default, is one such
+/// model. Demanding it of every launched model would report a permanent
+/// missing result for a run that can never exist, so the expectation is
+/// gated on that model's own `tool_call_probe` verdict.
+const conditionalProbes = {'shape_ab-channel-tool': 'supported'};
+
 /// One thing wrong, and whether it should fail the build.
 class Finding {
   /// Creates a finding.
@@ -271,7 +281,17 @@ List<Finding> check({
       for (final r in results.where((r) => r.model == model))
         '${r.probe}${r.variant == null ? '' : '-${r.variant}'}',
     };
-    final missing = expectedProbes.difference(have).toList()..sort();
+    // Conditional probes join the expectation only for models whose
+    // recorded capability verdict says the run is possible at all.
+    final expected = {...expectedProbes};
+    for (final entry in conditionalProbes.entries) {
+      final verdict = results
+          .where((r) => r.model == model && r.probe == 'tool_call_probe')
+          .map((r) => r.summary['verdict'])
+          .firstOrNull;
+      if (verdict == entry.value) expected.add(entry.key);
+    }
+    final missing = expected.difference(have).toList()..sort();
     if (missing.isNotEmpty) {
       findings.add(
         Finding(

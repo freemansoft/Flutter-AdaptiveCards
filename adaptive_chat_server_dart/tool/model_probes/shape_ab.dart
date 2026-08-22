@@ -362,7 +362,9 @@ Future<void> main(List<String> argv) async {
     final run = ProbeRun(
       probe: 'shape_ab',
       model: args.model,
-      variant: channel == 'tool' ? 'tool' : (seeded ? 'seeded' : 'unaided'),
+      variant: channel == 'tool'
+          ? 'channel-tool'
+          : (seeded ? 'seeded' : 'unaided'),
       measuredAt: DateTime.now().toIso8601String().split('T').first,
       machine: detectMachine(),
       samples: args.samples,
