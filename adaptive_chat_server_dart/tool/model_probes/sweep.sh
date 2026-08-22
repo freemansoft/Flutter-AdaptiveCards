@@ -101,6 +101,16 @@ for M in $MODELS; do
   run "$M shapes-unaided" "$D/shape_ab-unaided.json" \
     tool/model_probes/shape_ab.dart --model "$M" --samples 2 --timeout 120 \
     --no-seed-card
+
+  # Tool channel: only models whose tool_call_probe verdict is `supported`
+  # can answer here at all, so skip the rest rather than record a run that
+  # was never possible. Always unseeded — the seed is a prose-channel
+  # artifact and cannot be sent down this channel.
+  if grep -q '"verdict": "supported"' "$D/tool_call_probe.json" 2>/dev/null; then
+    run "$M shapes-channel-tool" "$D/shape_ab-channel-tool.json" \
+      tool/model_probes/shape_ab.dart --model "$M" --samples 2 --timeout 120 \
+      --channel tool --no-seed-card
+  fi
   run "$M cascade" "$D/cascade_ab.json" \
     tool/model_probes/cascade_ab.dart --model "$M" --samples 2 --timeout 120
   ollama stop "$M" >/dev/null 2>&1

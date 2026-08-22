@@ -36,30 +36,12 @@ import 'package:path/path.dart' as p;
 // `package:` URI for them.
 import 'probe_results.dart';
 import 'probe_support.dart';
+import 'tool_channel.dart';
 
 const _cardPrompt =
     'What deployment targets can I choose from for this service?';
 const _proseControlPrompt = 'What does SDUI stand for?';
 const _trivialToolPrompt = 'What is the current temperature in Paris?';
-
-/// The card tool the server would offer, wrapping the schema's element array.
-Map<String, dynamic> _renderCardTool(Map<String, dynamic> schema) {
-  final defs = schema[r'$defs'] as Map<String, dynamic>;
-  return {
-    'type': 'function',
-    'function': {
-      'name': 'render_adaptive_card',
-      'description':
-          'Render the reply as an Adaptive Card. Use when a structured '
-          'input or layout helps the user.',
-      'parameters': {
-        'type': 'object',
-        'required': ['body'],
-        'properties': {'body': defs['ElementArray']},
-      },
-    },
-  };
-}
 
 /// A tool no card prompt mentions, used only to prove the model *can* call
 /// something. Deliberately additive and prompt-compatible: an earlier probe
@@ -146,33 +128,6 @@ Future<Map<String, dynamic>> _callWithTools({
   return message is Map<String, dynamic> ? message : <String, dynamic>{};
 }
 
-/// The arguments of the first call to [name] in [message], or null.
-Map<String, dynamic>? _toolCallArguments(
-  Map<String, dynamic> message,
-  String name,
-) {
-  final calls = message['tool_calls'];
-  if (calls is! List) return null;
-  for (final call in calls) {
-    if (call is! Map<String, dynamic>) continue;
-    final function = call['function'];
-    if (function is! Map<String, dynamic>) continue;
-    if (function['name'] != name) continue;
-    final args = function['arguments'];
-    // Ollama returns arguments already decoded; some builds return a string.
-    if (args is Map<String, dynamic>) return args;
-    if (args is String) {
-      try {
-        final decoded = jsonDecode(args);
-        if (decoded is Map<String, dynamic>) return decoded;
-      } on FormatException {
-        return null;
-      }
-    }
-  }
-  return null;
-}
-
 /// Whether the tool arguments hold a body the running server would render.
 bool _argumentsRender(Map<String, dynamic>? args) {
   if (args == null) return false;
@@ -187,7 +142,7 @@ Future<void> main(List<String> argv) async {
   final toolPrompt = File(
     p.join(probeAssetsDir(), 'card_tool_prompt.txt'),
   ).readAsStringSync().trim();
-  final cardTool = _renderCardTool(schema);
+  final cardTool = renderCardTool(schema);
   final client = HttpClient()..idleTimeout = const Duration(minutes: 5);
 
   final calls = <ProbeCall>[];
@@ -208,7 +163,7 @@ Future<void> main(List<String> argv) async {
       timeout: args.timeout,
     );
     final called =
-        _toolCallArguments(message, 'get_current_temperature') != null;
+        toolCallArguments(message, 'get_current_temperature') != null;
     calledTrivialTool = calledTrivialTool || called;
     calls.add(
       ProbeCall(
@@ -233,7 +188,7 @@ Future<void> main(List<String> argv) async {
       tools: [cardTool],
       timeout: args.timeout,
     );
-    final toolArgs = _toolCallArguments(message, 'render_adaptive_card');
+    final toolArgs = toolCallArguments(message, 'render_adaptive_card');
     final renders = _argumentsRender(toolArgs);
     calledCardTool = calledCardTool || toolArgs != null;
     cardArgumentsRender = cardArgumentsRender || renders;
@@ -265,7 +220,7 @@ Future<void> main(List<String> argv) async {
       tools: [cardTool],
       timeout: args.timeout,
     );
-    final called = _toolCallArguments(message, 'render_adaptive_card') != null;
+    final called = toolCallArguments(message, 'render_adaptive_card') != null;
     calledOnNegativeControl = calledOnNegativeControl || called;
     calls.add(
       ProbeCall(

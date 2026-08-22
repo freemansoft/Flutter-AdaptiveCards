@@ -17,7 +17,12 @@
 /// fvm dart run tool/model_probes/shape_ab.dart --only carousel,gauge
 /// fvm dart run tool/model_probes/shape_ab.dart --candidate /tmp/candidate.txt
 /// fvm dart run tool/model_probes/shape_ab.dart --no-seed-card  # pre-seed
+/// fvm dart run tool/model_probes/shape_ab.dart --channel tool --no-seed-card
 /// ```
+///
+/// `--channel tool` runs the same 25 cases through the `render_adaptive_card`
+/// tool (see `tool_channel.dart`) instead of asking for raw JSON in prose.
+/// Only models `tool_call_probe.dart` verdicts `supported` can answer there.
 library;
 
 import 'dart:io';
@@ -27,6 +32,7 @@ import 'package:args/args.dart';
 import 'probe_results.dart';
 import 'probe_support.dart';
 import 'shape_cases.dart';
+import 'tool_channel.dart';
 
 /// Resolves `--only` to a case list, rejecting unknown ids.
 ///
@@ -67,6 +73,8 @@ Future<Set<String>> runCondition({
   required List<String> seedTurns,
   required ProbeArgs args,
   required HttpClient client,
+  required String channel,
+  required Map<String, dynamic> cardTool,
   List<ProbeCall>? collect,
 }) async {
   stdout.writeln('\n########## $label ##########');
@@ -74,20 +82,35 @@ Future<Set<String>> runCondition({
   for (final c in cases) {
     var allPassed = true;
     for (var i = 0; i < args.samples; i++) {
-      final outcome = await probeOnce(
-        client: client,
-        url: args.url,
-        model: args.model,
-        systemPrompt: systemPrompt,
-        userPrompt: c.prompt,
-        history: [
-          ...seedTurns,
-          if (withHistory) ...[shapeHistoryUser, shapeHistoryAssistant],
-        ],
-        reminder: reinforce ? reinforceReminder : null,
-        options: const {'temperature': 0.0},
-        timeout: args.timeout,
-      );
+      final outcome = channel == 'tool'
+          ? await probeOnceViaTool(
+              client: client,
+              url: args.url,
+              model: args.model,
+              systemPrompt: systemPrompt,
+              userPrompt: c.prompt,
+              tool: cardTool,
+              history: [
+                ...seedTurns,
+                if (withHistory) ...[shapeHistoryUser, shapeHistoryAssistant],
+              ],
+              options: const {'temperature': 0.0},
+              timeout: args.timeout,
+            )
+          : await probeOnce(
+              client: client,
+              url: args.url,
+              model: args.model,
+              systemPrompt: systemPrompt,
+              userPrompt: c.prompt,
+              history: [
+                ...seedTurns,
+                if (withHistory) ...[shapeHistoryUser, shapeHistoryAssistant],
+              ],
+              reminder: reinforce ? reinforceReminder : null,
+              options: const {'temperature': 0.0},
+              timeout: args.timeout,
+            );
       final result = judgeShape(c, outcome);
       if (!result.pass) allPassed = false;
       collect?.add(
@@ -122,11 +145,14 @@ Future<void> runPrompt({
   required List<String> seedTurns,
   required ProbeArgs args,
   required HttpClient client,
+  required String channel,
+  required Map<String, dynamic> cardTool,
   List<ProbeCall>? collect,
 }) async {
   final flags = [
     if (reinforce) 'reinforce',
     if (seedTurns.isNotEmpty) 'seed-card',
+    if (channel == 'tool') 'channel=tool',
   ];
   stdout.writeln(
     '\n===== $label${flags.isEmpty ? '' : ' [${flags.join(', ')}]'} =====',
@@ -140,6 +166,8 @@ Future<void> runPrompt({
     seedTurns: seedTurns,
     args: args,
     client: client,
+    channel: channel,
+    cardTool: cardTool,
     collect: collect,
   );
   final warm = await runCondition(
@@ -150,6 +178,8 @@ Future<void> runPrompt({
     reinforce: reinforce,
     seedTurns: seedTurns,
     args: args,
+    channel: channel,
+    cardTool: cardTool,
     client: client,
     collect: collect,
   );
@@ -166,11 +196,24 @@ Future<void> main(List<String> argv) async {
   final parser = ArgParser()
     ..addOption(
       'baseline',
-      defaultsTo: 'assets/card_system_prompt.txt',
-      help: 'System prompt treated as the shipped one.',
+      help:
+          'System prompt treated as the shipped one. Defaults to '
+          'card_system_prompt.txt on the prose channel and '
+          'card_tool_prompt.txt on the tool channel — the two are not '
+          'interchangeable, since only the latter mentions the tool.',
     )
     ..addOption('candidate', help: 'A second system prompt to compare.')
     ..addOption('only', help: 'Comma-separated case ids to run.')
+    ..addOption(
+      'channel',
+      defaultsTo: 'prose',
+      allowed: ['prose', 'tool'],
+      help:
+          'Reply channel. prose asks for card JSON in the message body and '
+          'guesses whether it is a card; tool offers a render_adaptive_card '
+          'function and reads its arguments. Only models verdicted supported '
+          'by tool_call_probe.dart can answer on the tool channel.',
+    )
     ..addFlag(
       'reinforce',
       negatable: false,
@@ -231,9 +274,23 @@ Future<void> main(List<String> argv) async {
       if (parsed[option] != null) ...['--$option', parsed[option] as String],
   ], defaultSamples: 1);
 
+  final channel = parsed['channel'] as String;
+  if (channel == 'tool' && (parsed['seed-card'] as bool)) {
+    stderr.writeln(
+      'shape_ab: --channel tool cannot be combined with the seed card. The '
+      'seed is a prose-channel artifact — a synthetic assistant turn holding '
+      'raw card JSON — so seeding the tool channel measures neither channel '
+      'cleanly. Pass --no-seed-card; the tool arm is compared against the '
+      'recorded unaided prose run.',
+    );
+    exitCode = 2;
+    return;
+  }
+
   final cases = selectCases(parsed['only'] as String?);
   final client = HttpClient()..idleTimeout = const Duration(minutes: 10);
   final reinforce = parsed['reinforce'] as bool;
+  final cardTool = renderCardTool(loadCardSchema());
   // Flat alternating user/assistant contents, the shape `probeOnce` replays
   // history in. Populated unless --no-seed-card opted out of the seed.
   final seedTurns = <String>[
@@ -251,15 +308,26 @@ Future<void> main(List<String> argv) async {
     exitCode = 2;
     return;
   }
+  // The prose-channel prompt tells the model the entire reply must be raw
+  // JSON, which is false when a tool is offered instead — pairing them would
+  // measure a contradiction, not the tool channel.
+  final defaultPrompt = channel == 'tool'
+      ? 'assets/card_tool_prompt.txt'
+      : 'assets/card_system_prompt.txt';
+  final baselinePath = parsed.wasParsed('baseline')
+      ? parsed['baseline'] as String
+      : defaultPrompt;
   final collect = <ProbeCall>[];
   await runPrompt(
     label: 'baseline',
-    systemPrompt: File(parsed['baseline'] as String).readAsStringSync().trim(),
+    systemPrompt: File(baselinePath).readAsStringSync().trim(),
     cases: cases,
     reinforce: reinforce,
     seedTurns: seedTurns,
     args: args,
     client: client,
+    channel: channel,
+    cardTool: cardTool,
     collect: collect,
   );
   final candidate = parsed['candidate'] as String?;
@@ -272,6 +340,8 @@ Future<void> main(List<String> argv) async {
       seedTurns: seedTurns,
       args: args,
       client: client,
+      channel: channel,
+      cardTool: cardTool,
     );
   }
   final jsonPath = parsed['json'] as String?;
@@ -292,12 +362,19 @@ Future<void> main(List<String> argv) async {
     final run = ProbeRun(
       probe: 'shape_ab',
       model: args.model,
-      variant: seeded ? 'seeded' : 'unaided',
+      variant: channel == 'tool'
+          ? 'channel-tool'
+          : (seeded ? 'seeded' : 'unaided'),
       measuredAt: DateTime.now().toIso8601String().split('T').first,
       machine: detectMachine(),
       samples: args.samples,
       temperature: 0,
-      assets: currentAssetDigests(probeAssetsDir()),
+      assets: currentAssetDigests(
+        probeAssetsDir(),
+        assetNames: channel == 'tool'
+            ? const ['card_tool_prompt.txt']
+            : defaultProbeAssetNames,
+      ),
       summary: {
         'cases': cases.length,
         'coldStart': shapes(cold),
