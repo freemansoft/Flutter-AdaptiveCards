@@ -33,7 +33,7 @@ The generalizable results — the ones that should transfer to any workload aski
 - **A failed assertion is sometimes a bad assertion.** One model's "0/3" on tables was a valid, complete, renderable Table laid out as a 2×2 grid; the `rows >= 3` success criterion wrongly penalized a legitimate layout.
 - **A second `system` message is not universally delivered.** Ollama chat templates vary in whether a `system` message placed _after_ the conversation history reaches the model at all; some keep only the first. Checked 2026-08-18 on four screening models by injecting an additive reminder and reading the printed type list with and without it. **Delivered** on `gpt-oss:20b`. **Unconfirmed** on `qwen2.5-coder:7b` and `granite4.1:8b` — dropped-by-the-template and arrived-but-ignored are indistinguishable for them. Establish delivery before reading a null result from any candidate that relies on a second `system` message.
 - **A delivery probe must not contradict the system prompt.** Asking a model to "disregard the question, reply with only the word BANANA" produced a null on all four models tested — uninformative, because "the model resisted a contradiction" and "the message never arrived" look identical. An additive, prompt-compatible probe (add one harmless, checkable element) removes that confound.
-- **Tool-calling support is per-model and silent when absent, the same as `format`.** Measured 2026-08-21 across the four launched models: 2 of 4 (`qwen3-coder:30b`, `qwen3.8:27b-nvfp4`) return a card through Ollama's tool channel cleanly, one (`granite4.1:8b`) renders a good card through the tool but also leaks that tool onto a plain prose question, and one (`qwen2.5-coder:7b`) exposes no tool-calling path at all under an identical prompt and schema — see [the tool-calling canary](#not-a-card-test-the-tool-calling-canary).
+- **Tool-calling support is per-model and silent when absent, the same as `format` — and "can call a tool" is a separate capability from "uses it correctly for a card."** Measured 2026-08-21 across all fifteen models: 8 return a card through Ollama's tool channel cleanly (`supported`), 3 can call a tool but never reach for the card tool at all (`supportedButDeclines`, including `llama3-groq-tool-use:8b`, a model fine-tuned specifically for tool use), 2 call tools freely enough to leak the card tool onto a plain prose question (`overCalls`), and 2 — including `qwen2.5-coder:7b`, the server's own compiled-in default model — expose no tool-calling path at all under an identical prompt and schema. See [the tool-calling canary](#not-a-card-test-the-tool-calling-canary).
 
 ### The tuning ledger — everything tried, and whether it helped
 
@@ -399,34 +399,61 @@ Ollama's **tool channel** instead of the prose channel. Like `format`, tool
 support is per-model and silent when absent, so this is a capability probe,
 not a quality score.
 
-Measured 2026-08-21, `--samples 2`, unseeded, `t=0`, on the four models
-`launch.json` currently launches:
+Measured 2026-08-21, `--samples 2`, unseeded, `t=0`, all fifteen models.
+Every model gave the same result on both samples of a given check, so each
+cell below covers 2/2:
 
-- `qwen3-coder:30b` — **`supported`**. Called the trivial tool on both
-  samples (the capability discriminator), called `render_adaptive_card`
-  with arguments that rendered on both card-request samples, and answered
-  the prose control in prose on both samples — no over-calling.
-- `qwen3.8:27b-nvfp4` — **`supported`**. Identical pattern to
-  `qwen3-coder:30b`: trivial tool called 2/2, card tool called and its
-  arguments rendered 2/2, prose control answered in prose 2/2.
-- `granite4.1:8b` — **`overCalls`**. Called the trivial tool 2/2 and
-  rendered a good card on request 2/2, but also called
-  `render_adaptive_card` on both prose-control samples ("What does SDUI
-  stand for?"), a plain prose question with nothing to render.
-- `qwen2.5-coder:7b` — **`unsupported`**. Never produced a `tool_calls`
-  entry on any of the six calls, including both trivial-tool samples. That
-  is the discriminator failing: with no evidence the model can call a tool
-  at all, "declined the card tool" and "the template never offered it"
-  cannot be told apart from the other two checks alone.
+| Model                                               | Verdict                | Trivial tool (discriminator) | Card request      | Prose control     |
+| --------------------------------------------------- | ---------------------- | ---------------------------- | ----------------- | ----------------- |
+| `qwen3-coder:30b`                                   | `supported`            | called                       | tool body renders | answered in prose |
+| `qwen3.8:27b-nvfp4`                                 | `supported`            | called                       | tool body renders | answered in prose |
+| `qwen3.6:27b-coding-nvfp4`                          | `supported`            | called                       | tool body renders | answered in prose |
+| `qwen3.5:9b`                                        | `supported`            | called                       | tool body renders | answered in prose |
+| `gpt-oss:20b`                                       | `supported`            | called                       | tool body renders | answered in prose |
+| `nemotron-3-nano:30b`                               | `supported`            | called                       | tool body renders | answered in prose |
+| `nemotron-3.5-lightning:30b`                        | `supported`            | called                       | tool body renders | answered in prose |
+| `nemotron-3-nano:4b`                                | `supported`            | called                       | tool body renders | answered in prose |
+| `granite4.1:3b`                                     | `supportedButDeclines` | called                       | no tool_calls     | answered in prose |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | `supportedButDeclines` | called                       | no tool_calls     | answered in prose |
+| `llama3-groq-tool-use:8b`                           | `supportedButDeclines` | called                       | no tool_calls     | answered in prose |
+| `granite4.1:8b`                                     | `overCalls`            | called                       | tool body renders | **over-called**   |
+| `llama3.2:latest`                                   | `overCalls`            | called                       | no tool_calls     | **over-called**   |
+| `qwen2.5-coder:7b`                                  | `unsupported`          | **no tool_calls**            | no tool_calls     | answered in prose |
+| `llama3-chatqa:8b`                                  | `unsupported`          | **no tool_calls**            | no tool_calls     | answered in prose |
 
-**The phase-2 gate opened: 2 of 4 launched models (`qwen3-coder:30b`,
-`qwen3.8:27b-nvfp4`) verdict `supported`.** Tool-calling support is exactly
-as per-model and silent-when-absent as `format` support is: under an
-identical prompt and schema, one model renders a perfect card through the
-tool _and_ leaks that same tool onto a question that wanted prose, and
-another exposes no tool-calling path at all. Do not assume a model that
-accepts a `tools` array will use it correctly, or use it at all, without
-running this canary first.
+8 `supported`, 3 `supportedButDeclines`, 2 `overCalls`, 2 `unsupported`.
+
+**`qwen2.5-coder:7b` — [`defaultOllamaModel`](lib/src/ollama_responder.dart),
+the model every promotion decision in this file is gated on — is
+`unsupported`.** It produced zero `tool_calls` on any of its six calls,
+including both trivial-tool samples that ask about the current temperature
+in Paris, a question it cannot answer without the tool. That is the
+discriminator failing outright: this chat template exposes no tool-calling
+path for this model at all, on the server's own compiled-in default.
+
+**"Can call a tool" and "uses the tool channel correctly for a card" are
+separate capabilities, not one.** `llama3-groq-tool-use:8b` — named and
+fine-tuned specifically for tool use, and one of the weaker card producers
+in [the shape table](#shape-coverage--all-fifteen-models-as-shipped) at
+17/25 — passes the discriminator cleanly (it can call a tool) but never
+once reaches for `render_adaptive_card` on a question that plainly wants
+one; tool-use training did not transfer to this schema. `granite4.1:3b`
+and `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` show the identical
+pattern. Meanwhile `granite4.1:8b` and `llama3.2:latest` show the opposite
+failure: both call tools freely enough to leak `render_adaptive_card` onto
+a plain prose question ("What does SDUI stand for?") that has nothing to
+render — `granite4.1:8b` while also rendering a correct card on request,
+`llama3.2:latest` without ever rendering one at all.
+
+**The phase-2 gate opened: 8 of 15 models verdict `supported`**, well past
+the two-model threshold. Tool-calling support is exactly as per-model and
+silent-when-absent as `format` support is, and — the sharper finding —
+"accepts a `tools` array" says nothing about whether a model reaches for it
+appropriately: the same discriminator pass covers a model that renders a
+perfect card, a model that never touches the card tool, and a model that
+fires it where it does not belong. Do not assume a model that can call a
+tool will use it for the right thing, or leave it alone for the wrong one,
+without running this canary first.
 
 ### What counts as a pass
 
