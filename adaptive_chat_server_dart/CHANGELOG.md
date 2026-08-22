@@ -2,6 +2,96 @@
 
 ## [Unreleased]
 
+- Fixed: **unknown-element-type detection no longer flags types the client
+  renders perfectly.** `TextRun`, `AdaptiveCard`, and every `Action.*` type
+  are legal `type` values in positions `$defs/ChildElement` never lists —
+  `RichTextBlock.inlines`, `Action.ShowCard.card`, and an `actions` array,
+  respectively — because that enum is an element vocabulary, not every legal
+  `type` value. `unknownElementTypes` now tolerates these explicitly instead
+  of flagging them, which matters because false positives on a warn-only
+  check corrupt the fire-rate metric the check exists to collect.
+- Fixed: **`tool_call_probe.dart` recorded digests for assets it never sent.**
+  `writeProbeRun`/`currentAssetDigests` hardcoded `card_system_prompt.txt` and
+  `seed_card.json`, but the tool-calling probe runs unseeded against
+  `card_tool_prompt.txt` instead. Both now take an `assetNames` list, and the
+  15 already-recorded `tool_call_probe.json` files were corrected in place to
+  digest the asset they actually used — no model was re-run, since the asset
+  has not changed since those runs were measured.
+
+- Docs: **tool-calling capability measured across all fifteen models.**
+  `ModelBehavior.md` gains a tool-calling canary section recording which
+  models can return a card through Ollama's tool channel. 8 of 15 verdict
+  `supported`, so the phase-2 gate (a channel dimension in `shape_ab.dart`)
+  opened; 3 can call a tool but never reach for the card tool
+  (`supportedButDeclines`, including `llama3-groq-tool-use:8b`, fine-tuned
+  for tool use), 2 leak the card tool onto a plain prose question
+  (`overCalls`), and 2 — including `qwen2.5-coder:7b`, the compiled-in
+  default model — expose no tool-calling path at all (`unsupported`).
+  `check_results.dart` and `sweep.sh` now track `tool_call_probe` like every
+  other per-model probe.
+
+- Added: **`tool_call_probe.dart`, a tool-calling capability canary.** Answers
+  whether a model can return a card through Ollama's tool channel rather than
+  the prose channel, using three checks — a card request, a prose negative
+  control, and a trivial unrelated tool that separates "cannot call" from
+  "chose not to". Verdicts are `supported`, `unsupported`,
+  `supportedButDeclines`, and `overCalls`. Ships with
+  `assets/card_tool_prompt.txt`, the tool-channel recast of the card system
+  prompt. Runs unseeded: the seed card is a prose-channel artifact.
+
+- Added: **unknown-element-type detection (`lib/src/element_types.dart`).**
+  `loadKnownElementTypes` reads the schema's `ChildElement` vocabulary and
+  `unknownElementTypes` walks a parsed card body for anything outside it,
+  at any nesting depth. A misspelled type such as `Textblock` is valid JSON
+  that renders as an invisible blank, so it is the one failure a user sees
+  and no probe scores. A missing or malformed schema disables the check
+  rather than failing requests.
+
+- Added: **`OllamaResponder` warns when a rendered card carries an
+  unrecognized element type.** Warning only — the card still renders, because
+  suppressing it over one bad nested element may be worse than an invisible
+  blank, and the observed fire rate is the evidence for whether to promote
+  this to a rejection. `/status` reports `knownElementTypes`, which is `0`
+  when the vocabulary failed to load and the check is inert.
+
+- Changed: **`card_schema.json` now mirrors the renderable registry.** The
+  `Element` enum grew from 24 to 33 types, adding `Media`, `Container`,
+  `RichTextBlock`, `ActionSet`, `ImageSet`, `Input.Rating`, `CompoundButton`,
+  `Accordion`, and `TabSet`. `card_schema_test.dart` now reads `registry.dart`
+  and the charts registry as source text, so the schema and the renderable
+  vocabulary can no longer drift apart silently. Note this **loosens**
+  `--json-format schema`: on models that honor `format`, the grammar now admits
+  33 types where it admitted 24. The system prompt is unchanged, so what the
+  model is asked to produce is unchanged. `Chart.VerticalBar.Grouped` and
+  `Chart.HorizontalBar.Stacked` are renderable but stay out by decision, now
+  recorded as an explicit exclusion set rather than an absence. `ActionSet` is
+  the one entry where the widened enum and the prompts now disagree: both
+  `card_system_prompt.txt` and `card_tool_prompt.txt` tell the model not to
+  include an `ActionSet`, but the enum admits it because mirroring the
+  registry — what the client can render — is this task's stated intent, while
+  the prompt separately governs what the model is asked to produce.
+- Fixed: **the chart-type count was wrong wherever it was counted.** A
+  `Chart\.[A-Za-z]+` pattern truncates `Chart.HorizontalBar.Stacked` to
+  `Chart.HorizontalBar` and dedupes it away, reporting 6 types where the charts
+  registry declares 8. Anything counting chart types must match the
+  multi-segment form.
+- Changed: **shape coverage is pinned to the prompt palette, not the schema
+  enum.** Widening the enum split two meanings that had been one: the enum now
+  records what the client can render, while `shapeCases` is about what the model
+  is asked to produce. A shape case for a type the prompt never advertises would
+  fail on every model forever. This also makes the test agree with the
+  `shapeCases` doc comment, which already claimed the prompt as its reference.
+  The new `promptElementTypes()` reads bullet headings as well as `"type":"X"`
+  examples, because `Input.Text`, `Input.Number`, and `Input.Time` share one
+  bullet with no example between them.
+
+- Added: **`$defs/ChildElement` in `card_schema.json`.** A 38-type vocabulary
+  covering every legal position — the 33 top-level types plus `CarouselPage`,
+  `TabPage`, `Column`, `TableRow`, and `TableCell`, which the prompt nests but
+  no registry switch declares. Nothing in the schema references it and
+  `--json-format schema` is unaffected; it exists so a validator can recognize
+  nested elements.
+
 - Docs: **`ModelBehavior.md` restructured to read from the outside.** The
   generalizable results are hoisted into a `Key findings` section at the top,
   followed by a **tuning ledger** — all thirteen levers ever pulled on this

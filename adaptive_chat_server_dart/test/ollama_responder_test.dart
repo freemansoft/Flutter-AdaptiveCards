@@ -821,4 +821,83 @@ void main() {
       expect(on['seedCardTurns'], 2);
     });
   });
+
+  group('unrecognized element types', () {
+    /// Replaces the temp schema with one whose ChildElement enum is [types].
+    void writeVocabulary(List<String> types) {
+      File(schemaPath).writeAsStringSync(
+        jsonEncode({
+          r'$defs': {
+            'ChildElement': {
+              'type': 'object',
+              'properties': {
+                'type': {'type': 'string', 'enum': types},
+              },
+            },
+          },
+          'oneOf': <dynamic>[],
+        }),
+      );
+    }
+
+    Future<List<LogRecord>> replyCapturingLogs(OllamaResponder r) async {
+      final records = <LogRecord>[];
+      Logger.root.level = Level.ALL;
+      final sub = Logger.root.onRecord.listen(records.add);
+      await r.reply('hi', const []);
+      await sub.cancel();
+      return records;
+    }
+
+    test('a misspelled type is warned about and still rendered', () async {
+      writeVocabulary(['TextBlock', 'Badge']);
+      final client = MockClient(
+        (request) async =>
+            okResponse('{"type":"Textblock","text":"hi","wrap":true}'),
+      );
+      final logs = await replyCapturingLogs(makeResponder(client: client));
+      final match = logs.where(
+        (r) => r.message.contains('unrecognized element type'),
+      );
+      expect(match, isNotEmpty);
+      expect(match.first.message, contains('Textblock'));
+    });
+
+    test('the card is still returned, not downgraded to text', () async {
+      writeVocabulary(['TextBlock', 'Badge']);
+      final client = MockClient(
+        (request) async =>
+            okResponse('{"type":"Textblock","text":"hi","wrap":true}'),
+      );
+      final reply = await makeResponder(client: client).reply('hi', const []);
+      expect(reply.cardBody, isNotNull);
+      expect(reply.cardBody!.single['type'], 'Textblock');
+    });
+
+    test('a card of known types produces no warning', () async {
+      writeVocabulary(['TextBlock', 'Badge']);
+      final client = MockClient(
+        (request) async =>
+            okResponse('{"type":"TextBlock","text":"hi","wrap":true}'),
+      );
+      final logs = await replyCapturingLogs(makeResponder(client: client));
+      expect(
+        logs.where((r) => r.message.contains('unrecognized element type')),
+        isEmpty,
+      );
+    });
+
+    test('an empty vocabulary disables the warning', () async {
+      // The default setUp schema has no ChildElement, so the check is off.
+      final client = MockClient(
+        (request) async =>
+            okResponse('{"type":"Textblock","text":"hi","wrap":true}'),
+      );
+      final logs = await replyCapturingLogs(makeResponder(client: client));
+      expect(
+        logs.where((r) => r.message.contains('unrecognized element type')),
+        isEmpty,
+      );
+    });
+  });
 }

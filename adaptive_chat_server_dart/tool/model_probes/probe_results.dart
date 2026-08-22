@@ -341,6 +341,7 @@ void writeProbeRun({
   double? temperature,
   Map<String, dynamic> summary = const {},
   String? notes,
+  List<String> assetNames = defaultProbeAssetNames,
 }) {
   final run = ProbeRun(
     probe: probe,
@@ -350,7 +351,7 @@ void writeProbeRun({
     machine: detectMachine(),
     samples: samples,
     temperature: temperature,
-    assets: currentAssetDigests(assetsDir),
+    assets: currentAssetDigests(assetsDir, assetNames: assetNames),
     summary: summary,
     notes: notes,
     calls: calls,
@@ -395,13 +396,26 @@ String? assetDigest(File file) {
   return sha256.convert(file.readAsBytesSync()).toString().substring(0, 12);
 }
 
+/// The two assets every probe except `tool_call_probe` sends: the card
+/// system prompt and the seed card.
+const defaultProbeAssetNames = ['card_system_prompt.txt', 'seed_card.json'];
+
 /// Digests of the prompt assets a probe run depends on.
 ///
-/// Both are read from the same place the server reads them, so a recorded
-/// digest is a fact about what was actually sent.
-Map<String, String> currentAssetDigests(String assetsDir) {
+/// [assetNames] defaults to [defaultProbeAssetNames] — the pair every probe
+/// except `tool_call_probe` sends. `tool_call_probe` runs unseeded against
+/// `card_tool_prompt.txt` instead, so it passes its own list; without that,
+/// a recorded digest would name assets the run never sent and omit the one
+/// it did, which is what happened before this parameter existed.
+///
+/// Read from the same place the server reads them, so a recorded digest is a
+/// fact about what was actually sent.
+Map<String, String> currentAssetDigests(
+  String assetsDir, {
+  List<String> assetNames = defaultProbeAssetNames,
+}) {
   final out = <String, String>{};
-  for (final name in ['card_system_prompt.txt', 'seed_card.json']) {
+  for (final name in assetNames) {
     final digest = assetDigest(File(p.join(assetsDir, name)));
     if (digest != null) out[name] = digest;
   }

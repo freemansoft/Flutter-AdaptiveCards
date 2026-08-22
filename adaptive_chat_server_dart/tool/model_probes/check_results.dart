@@ -41,6 +41,7 @@ const expectedProbes = {
   'temperature_stress',
   'temperature_matrix',
   'json_format_probe',
+  'tool_call_probe',
 };
 
 /// One thing wrong, and whether it should fail the build.
