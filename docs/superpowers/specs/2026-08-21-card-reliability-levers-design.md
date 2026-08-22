@@ -239,15 +239,91 @@ Both change what the numbers mean, so both are recorded with the results:
   the tool_ versus _answer in Markdown_ is a deliverable of this work, not an
   afterthought.
 
+### Phase 1 result — the gate opened
+
+Measured 2026-08-21 across all fifteen roster models, `--samples 2`, unseeded,
+`t=0`. Per-model detail lives in
+[`ModelBehavior.md`](../../../adaptive_chat_server_dart/ModelBehavior.md#not-a-card-test-the-tool-calling-canary);
+this is only what the gate turned on:
+
+**`supported` 8 · `supportedButDeclines` 3 · `overCalls` 2 · `unsupported` 2.**
+
+Three results shape everything below:
+
+- **The compiled-in default cannot use the channel at all.** `qwen2.5-coder:7b`
+  failed to call even a trivial unrelated tool. Whatever tool calling turns out to
+  be worth, it cannot be the server's only path.
+- **"Can call tools" and "uses the tool channel correctly" are separate
+  capabilities.** Five models call tools and still get this workload wrong — three
+  never reach for the card tool, two fire it on a prose question. The three-check
+  design exists precisely to tell those apart, and it earned its place.
+- **Tool-use training did not predict tool-channel capability.**
+  `llama3-groq-tool-use:8b`, the only model in the roster fine-tuned for tool use,
+  scored `supportedButDeclines`.
+
 ### Phase 2 — the shape A/B, gated
 
-Runs only on models verdicted `supported`, and only if at least two such models
-exist — one model is not a comparison. If the gate does not open, phase 1's result
-is the finding and phase 2 is not built.
+The gate required at least two `supported` models, because one model is not a
+comparison. Eight qualified, so phase 2 is warranted.
 
 Phase 2 adds a channel dimension (prose versus tool) to the 25 cases in
 `shape_ab.dart`, so the notebook gains a **column on the existing shape-coverage
 table** rather than an orphan table beside it.
+
+**Only the tool arm is run.** `shape_ab-unaided.json` already exists for all
+fifteen models, so the prose baseline is on disk and re-running it would burn
+hours to reproduce numbers we have. That halves the work to roughly 8 models × 25
+cases × 2 samples ≈ 400 calls.
+
+**The baseline must be the _unaided_ prose run, not the seeded one.** The tool arm
+runs unseeded because the seed card is a prose-channel artifact — a synthetic
+assistant turn containing raw card JSON, which is not what a tool-channel history
+looks like. Comparing an unseeded tool arm against a seeded prose arm would hand
+prose an advantage the tool arm structurally cannot have, and would produce a
+confidently wrong conclusion. This is the single easiest way to get phase 2 wrong.
+
+Scoring carries over unchanged: `collectElementTypes` and `cardContainsAnyType`
+already operate on a parsed body, so only the **source** of that body changes —
+`tool_calls[].function.arguments.body` instead of `message.content`. A reply with
+no tool call is prose, which passes only the one negative-control case whose
+`accepted` set is empty. That control does double duty here, since failing it is
+exactly the `overCalls` behavior phase 1 found on two models.
+
+### Phase 3 — multi-turn, and the question phases 1 and 2 cannot reach
+
+Every case in phases 1 and 2 is **single-turn**. The ledger's most expensive
+multi-turn finding is that a conversation answered once in Markdown tends to stay
+in Markdown — "warm-start prose drift" — and the entire reason `--seed-card-file`
+exists is to pre-empt it. So a channel that looks clean cold-start may still erode
+across a real conversation, and nothing measured so far would see it.
+
+Phase 3 asks three questions, in increasing order of how much they could change
+the design:
+
+1. **Does tool calling survive prose turns?** Replay N prose exchanges, then ask a
+   pick-from-a-set question. Reuses the existing `--history` mechanism.
+2. **Does cascade editing still work?** `cascade_ab.dart` asks a model to widen the
+   card it just sent ("more than one of _those_") without restating the items. In
+   the prose channel this axis did **not** discriminate — fourteen of fifteen
+   models scored 3/3 — so it is a regression check there. On the tool channel it is
+   genuinely open, for the reason below.
+3. **Is there a tool-channel equivalent of the seed card, and does it help?** The
+   seed is the one mechanism that ever moved warm-start drift; three prompt edits
+   and a message-assembly alternative all failed. Its tool-channel analogue would
+   be a synthetic `tool_calls` turn rather than an assistant text turn. Whether
+   that works is unmeasured and is the finding most likely to generalize.
+
+**Phase 3 has a correctness prerequisite the earlier phases do not.** The server
+today stores a card reply's raw JSON as `replyText` and replays it verbatim as an
+assistant text turn. That representation is wrong for the tool channel: a prior
+tool call belongs in history as an assistant message carrying `tool_calls`, not as
+text that happens to contain JSON. Replaying it as text would measure a model
+reading its own output in the wrong format, which answers no useful question. Any
+phase 3 work must settle the history representation **before** it collects a
+single number, or the numbers are meaningless.
+
+Phase 3 is gated on phase 2 the way phase 2 was gated on phase 1: if the tool
+channel does not hold up single-turn, its multi-turn behavior is moot.
 
 ### Operating constraints
 
