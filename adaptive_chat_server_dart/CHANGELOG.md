@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Docs: **tone pass over `ModelBehavior.md`, `README.md`, and this file — analyst
+  register, not publicist.** Wording only: no figure, date, verdict, or claim
+  changed, verified by diffing the numeric tokens of each file against the
+  previous commit. Rhetorical framing became statements ("Is X the better large
+  model? No." → "X is not the better large model"), amplifiers were dropped
+  ("helped decisively" → "helped", "collapses to 9/25" → "falls to 9/25"), and
+  vague superlatives were replaced with the figure they stood for ("the only
+  perfect score in this file" → "the only 25/25"). Two headings were renamed and
+  their inbound links updated. Bold is now reserved for section claims and
+  figures rather than for emphasis.
 - Measured: **why the tool channel did not pay — a failure decomposition, no new
   model calls.** Re-scored both arms of the shape A/B from the shipped results
   JSON, bucketing every failed call by the judge's own `label`. Malformed JSON
@@ -22,7 +32,7 @@
   tool channel on the 8 models that can use it at all, scored against each
   model's recorded unaided prose run. Result: **2 wins, 2 unaffected, 4 losses**,
   two of the losses by 5 shapes. Half the capable models get materially worse, so
-  it could never be a default, and two beneficiaries out of fifteen roster models
+  it could not be a default, and two beneficiaries out of fifteen roster models
   did not justify a second code path through the reply loop. There is **no
   `--reply-channel` flag** and the server is unchanged. What ships is the
   measurement — `tool/model_probes/tool_channel.dart` and the `--channel` option —
@@ -35,7 +45,7 @@
   permanently missing result for a run it can never perform.
 
 - Fixed: **unknown-element-type detection no longer flags types the client
-  renders perfectly.** `TextRun`, `AdaptiveCard`, and every `Action.*` type
+  renders correctly.** `TextRun`, `AdaptiveCard`, and every `Action.*` type
   are legal `type` values in positions `$defs/ChildElement` never lists —
   `RichTextBlock.inlines`, `Action.ShowCard.card`, and an `actions` array,
   respectively — because that enum is an element vocabulary, not every legal
@@ -198,8 +208,8 @@
   raw coverage.** At **1.6 s/call it is the fastest model measured**, ahead of
   models a quarter its weight; it **honors `format`**, which neither `nvfp4`
   build does; and it is the only model that answers both cold-start sets
-  entirely in cards, never falling back to Markdown. For a demo somebody clicks
-  through by hand, those beat a shape point.
+  entirely in cards, never falling back to Markdown. For a demo someone clicks
+  through by hand, those matter more than a single shape point.
 - Docs: `ModelBehavior.md` now says "launch set" rather than "top three", since
   the set is four and expected to keep changing. The test that pinned it at
   three now asserts the invariants that actually matter — the compiled-in
@@ -208,18 +218,18 @@
 
 - Fixed: **`granite4.1:3b`'s 2026-08-20 figures were a measurement artifact,
   and are corrected.** It was published at 12/25 seeded with `n/a` on cascade
-  and 52 stalled calls, which read as a small model collapsing under a per-call
+  and 52 stalled calls, which read as a small model failing under a per-call
   timeout. A leaked Ollama runner process was competing for the GPU throughout —
   `ollama stop` had returned while the model was still evicting, and the runner
   never reaped. Re-run on an idle machine it scores **17/25 and 3/3**, matching
   its earlier unbounded figures exactly. Two of the three "findings" reported
   about that model were the busy machine, not the model.
-- Docs: what survives is narrower and more interesting. Seeded, the ceiling
+- Docs: what survives is narrower. Seeded, the ceiling
   costs it nothing (2 stalls in 100 calls, same score as unbounded). **Unaided
   it stalls eleven times** and drops to 9/25 — without a card in front of the
   history it does not pick the wrong shape, it answers at length in prose until
-  it hits the ceiling. That is what a +8 seed gain looks like from the inside,
-  and it reproduces on an idle machine.
+  it hits the ceiling. That is the mechanism behind its +8 seed gain, and it
+  reproduces on an idle machine.
 - Fixed: **`cascade_ab` reported a stalled call as prose.** A timed-out call
   returns an empty reply, and `judgeCascade` cannot distinguish that from a
   model that chose Markdown — six of `granite4.1:3b`'s timeouts were recorded
@@ -232,8 +242,8 @@
   resident at a time, and **wait for eviction to finish**. `ollama stop` is
   asynchronous, and a probe started during the eviction window measured
   **3171 ms/call against 1324 ms** for the same model and the same 25 cases on
-  a quiet machine. Waiting is not politeness; it is the difference between a
-  latency figure and a fiction. The wait is bounded and warns rather than
+  a quiet machine. Waiting is what separates a usable latency figure from a
+  meaningless one. The wait is bounded and warns rather than
   hanging, because a wedged runner must not stall a six-hour sweep.
 - Docs: added a **mermaid sequence diagram** of the sweep methodology to
   `ModelBehavior.md`, covering model load, the serial call loop, the timeout
@@ -257,12 +267,12 @@
   difference between two models is noise, not a ranking, and the file now says
   so where it used to imply otherwise.
 - Docs: **`gpt-oss:20b` produces a correct shape on all 25 cases unaided** —
-  the only perfect score in the file under any condition — while scoring 23/25
+  the only 25/25 in the file under any condition — while scoring 23/25
   with the seed the server sends. The largest negative seed gain measured (−2),
   on the model that needs help least. Recorded as a live argument for making
   the seed conditional, and as a reason to revisit dropping it from
   `launch.json` rather than treating that as settled.
-- Docs: **the card/prose split earned itself on the model that motivated the
+- Docs: **the card/prose split paid off on the model that motivated the
   shape probe.** `llama3-chatqa:8b` sweeps the stress set 10/10 with **zero
   cards** — every pass is Markdown. That previously took a 100-call
   `shape_ab` run to discover; the 10-call stress probe now reports it directly.
@@ -334,8 +344,8 @@
   laptop the second run is measured on a hotter, throttling machine, so
   min-of-two would trade one uncontrolled bias for another.
 - Added: a **scope note at the top of `ModelBehavior.md`** saying none of this
-  measurement was required to ship the demo. The card path turned out to be an
-  unusually strict test problem — strict JSON, a closed element vocabulary, a
+  measurement was required to ship the demo. The card path turned out to be a
+  strict test problem — strict JSON, a closed element vocabulary, a
   shape that must fit the question, and format stability across turns, each
   with an unambiguous pass/fail — so the findings are about the models and
   should transfer to any workload asking a local model for schema-shaped JSON.
@@ -362,7 +372,7 @@
   `json_format_probe.dart` scores all six of those calls `PASS`, because an
   empty reply is not a _broken card_ — the verdict line, not the PASS, is the
   output that matters for that probe.
-- Docs: recorded two cautions with it rather than burying them. It **silently
+- Docs: recorded two cautions with it. It **silently
   ignores Ollama's `format`**, returning byte-identical output under `none`,
   `json`, and `schema`, so `--json-format` is inert — two `nvfp4` builds now
   share this and `README.md` and the probe README were updated to describe it as
@@ -387,7 +397,7 @@
   list and turn 2 asks to widen it to multi-select, referring back rather than
   restating the items. A pass needs the turn-2 `Input.ChoiceSet` to be
   `isMultiSelect: true` **and** to keep every choice turn 1 offered. That last
-  condition is the point: a model can cascade the format perfectly and quietly
+  condition is the point: a model can cascade the format correctly and silently
   drop items off the list — observed dropping five states to three — and every
   other probe here scores that a pass, because the reply is a valid card of the
   requested type. Judged with the server's own `tryParseCardBody`; seed on by
@@ -435,8 +445,8 @@
   and `--only` with a blank value silently running zero cases instead of
   exiting 2.
 
-- Fixed: an ongoing Markdown conversation talked the model out of cards
-  entirely. The escape hatch was keyed on confidence ("if you are unsure
+- Fixed: an ongoing Markdown conversation stopped the model producing cards.
+  The escape hatch was keyed on confidence ("if you are unsure
   whether a card helps"), and two prose turns are enough to make it unsure —
   measured 2/12 on options questions with prior prose turns on
   `qwen2.5-coder:7b` at `t=0`. The hatch is now keyed on capability ("if no
@@ -466,10 +476,9 @@
   echo demo; anything else exits `2` with a message listing all three. The two
   bundled prompts produce the largest single effect on record for this workload
   — **8/8 cards versus 0/8** on the same model at `t=0`, bigger than any model
-  or temperature difference — so whichever one had been implicit, somebody
-  would eventually run the server, get the other kind of reply, and blame the
-  model. Refusing to guess costs one flag and removes that entire class of
-  confusion. The chat client is the only consumer, so nothing external breaks.
+  or temperature difference — so whichever one had been implicit would
+  eventually hand someone the other kind of reply with no indication why.
+  Refusing to guess costs one flag and removes that confusion. The chat client is the only consumer, so nothing external breaks.
 
   `--ollama-url` now defaults to `http://127.0.0.1:11434`, so naming a prompt
   is enough to talk to Ollama; `--echo` withholds the URL and selects the echo
@@ -498,7 +507,7 @@
 - Fixed: probes scored a prose-wrapped card as a passing `prose` reply. A model
   that writes "Sure, here you go:" before a fenced card produces a message the
   server renders as Markdown, so the user sees raw JSON in a code block — the
-  exact symptom people report, scored green by every probe. `card_detect.dart`
+  symptom people report, scored as a pass by every probe. `card_detect.dart`
   gained `replyWrapsCardInProse`, and `judgeReply` now returns
   `prose-with-card` as a failure. Prose that merely contains a non-card code
   fence is still a legitimate pass, so a Markdown answer with a Dart snippet is
@@ -602,7 +611,7 @@
 - Fixed: a failed turn's diagnostic (`"(Ollama unreachable …)"` and friends) is
   no longer replayed to the model as an assistant turn. Failed exchanges are
   skipped whole when history is rebuilt, so one transient Ollama failure no
-  longer poisons the rest of the conversation.
+  longer carries into the rest of the conversation.
 - Fixed: a client retry that arrives while the first call is still running now
   joins the in-flight call instead of running the model a second time and
   recording a duplicate entry in the conversation order.

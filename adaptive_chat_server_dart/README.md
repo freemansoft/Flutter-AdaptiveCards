@@ -125,9 +125,8 @@ selects the echo demo; otherwise the server talks to Ollama at `--ollama-url`
 
 The server refuses to start unless the invocation names a reply mode — either
 `--system-prompt-file` or `--echo`. That is deliberate: the bundled prompts
-produce 8/8 cards versus 0/8 on the same model, so any implicit choice
-guarantees somebody eventually gets the other kind of reply and blames the
-model.
+produce 8/8 cards versus 0/8 on the same model, so an implicit choice would
+eventually hand someone the other kind of reply with no indication why.
 
 ### Conversation context
 
@@ -230,8 +229,8 @@ accident or claim to be seeded while sending nothing. Every figure in
 `ModelBehavior.md` was measured with `assets/seed_card.json` passed, so quoting
 one against an unseeded server is quoting the wrong configuration.
 
-Whether the seed helps is strongly model-dependent, which is why it is a
-per-run decision rather than a constant: **+9** shapes to `qwen3-coder:30b`
+Whether the seed helps is model-dependent, which is why it is a per-run
+decision rather than a constant: **+9** shapes to `qwen3-coder:30b`
 and **+6** to `granite4.1:8b`, exactly **zero** to `qwen2.5-coder:7b` and
 `qwen3.8:27b-nvfp4`, and **−2** to `gpt-oss:20b`, the only model that answers
 all 25 shape cases and does so without it. `.vscode/launch.json` carries a
@@ -314,8 +313,8 @@ render-only for now.
 **Charts need a chart-aware client.** `Chart.*` elements render only if the
 client registered `flutter_adaptive_charts_fs` — `adaptive_chat_client` does
 this in `lib/src/chat_card_registry.dart`. A client without it renders each
-chart as a broken-image icon and a `Type Chart.Pie not found` message, not a
-blank space, so the failure is visible but ugly.
+chart as a broken-image icon and a `Type Chart.Pie not found` message rather
+than a blank space, so the failure is visible rather than silent.
 
 ### Structured output (`--json-format`)
 
@@ -351,7 +350,7 @@ fvm dart run bin/server.dart --ollama-url http://127.0.0.1:11434 \
 > `json`/`schema` mode, which is the symptom. Check a candidate model with a
 > one-line `curl` before relying on the constraint, or run
 > [`tool/model_probes/json_format_probe.dart`](tool/model_probes/README.md),
-> whose canary answers exactly this question.
+> whose canary answers this question.
 
 ### Status endpoint
 
