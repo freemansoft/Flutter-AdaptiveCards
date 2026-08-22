@@ -196,7 +196,7 @@ Write findings and prose documentation in a flat analytical register — **sound
 - **Restate verdict-flavoured headings as findings.** "The canary over-predicted willingness", not "the canary over-predicted, and that is a lesson about the canary".
 - **End on the last factual sentence.** No closing flourish.
 
-This is a wording rule only: never change a figure, date, or claim while adjusting register. When sweeping an existing document, verify that by diffing its numeric tokens against the previous commit. See the **`adaptive-cards-diataxis-docs`** skill for worked before/after examples and how this composes with the Diátaxis quadrants.
+This is a wording rule only: never change a figure, date, or claim while adjusting register. When sweeping an existing document, verify that by diffing its numeric tokens against the previous commit — the only legitimate difference is a superlative replaced by the figure it stood for, which adds a number rather than changing one. Strip amplification, not substance: a claim the data supports is not hype, and structural bold on topic sentences is what makes a long file scannable.
 
 ## Analysis Options
 
