@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Measured: **why the tool channel did not pay — a failure decomposition, no new
+  model calls.** Re-scored both arms of the shape A/B from the shipped results
+  JSON, bucketing every failed call by the judge's own `label`. Malformed JSON
+  went to zero on all eight models, which is what the channel was expected to
+  fix, but two costs replace it: declining to call the tool (0–4% of card cases
+  on the four qwen models, 11–50% on the four losses) and weaker element choice
+  (`nemotron-3-nano:30b` +12 wrong-shape, `:4b` +22). The outcome is a
+  subtraction rather than a model category — malformed failures recovered minus
+  declines and shape regressions gained — which accounts for all eight rows,
+  including the two the ±1 noise floor leaves unexplained. Architecture does not
+  separate the groups (`qwen3-coder:30b` and `nemotron-3-nano:30b` are the same
+  class with opposite results); thinking is untested, since every probe sends
+  `think: false`. Also records that the phase-1 canary over-predicted
+  willingness by testing a single card request, and that the channel converts
+  detected failures into silent ones. In `ModelBehavior.md`.
 - Measured: **the tool channel does not pay, and nothing ships.** `shape_ab.dart`
   gained `--channel prose|tool`, and the 25 shape cases were run through Ollama's
   tool channel on the 8 models that can use it at all, scored against each

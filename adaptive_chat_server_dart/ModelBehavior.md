@@ -43,22 +43,22 @@ the failures — they are recorded here so the negative results are not
 rediscovered. The **Kind** column is doing real work: it predicts the outcome
 better than the specific change does.
 
-| Kind                 | What was changed                                                                                                                                                                                                        | Verdict                      | Evidence                                                                                            |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------- |
-| **Context assembly** | Point the server at the **card system prompt** — which describes the element palette and the rules for using it — instead of the Markdown-only prompt, which never mentions cards                                       | **Largest effect measured**  | 0/8 → 8/8 cards, same model and same eight questions. Larger than any model or temperature gap.     |
-| **Context assembly** | Prepend a **seed card**: a synthetic two-turn exchange — a short pick-one question, and a bare card answering it — inserted ahead of the real history, so a card is the established format before any prose accumulates | **Model-dependent**          | +10 shapes to −2 across fifteen models. This spread is why it is now opt-in.                        |
-| **Context assembly** | Repeat the instructions in a second `system` message placed _after_ the conversation history, instead of only before it                                                                                                 | **No effect / unmeasurable** | Ollama chat templates vary in whether a second `system` message is delivered to the model at all.   |
-| **Decoding**         | `temperature: 0` — greedy decoding instead of sampling                                                                                                                                                                  | **Helped, promoted**         | Cleared card failure modes that defeated models outright at their own default temperature.          |
-| **Decoding**         | `think: false` — suppress the model's chain-of-thought preamble                                                                                                                                                         | **Helped, promoted**         | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off.         |
-| **Decoding**         | `format: json` / `format: schema` — Ollama's own constrained-decoding flag, which is meant to force valid JSON                                                                                                          | **Per-model, unreliable**    | Honored by some models, silently ignored by others, and _destructive_ on `gpt-oss:20b`.             |
-| **Prompt wording**   | Tell the model **where an explanation goes** — a `TextBlock` beside the `CodeBlock` — instead of forbidding it from appending prose after the card                                                                      | **Helped, promoted**         | Hard cases 6/10 → 15/15 at `t=0`. The "redirect, don't forbid" result.                              |
-| **Prompt wording**   | Re-key the **escape hatch** — the clause permitting a plain Markdown answer — from _confidence_ ("if you are unsure whether a card helps") to _capability_ ("if no element type fits")                                  | **Helped, promoted**         | Clean on both regression checks; this is the wording shipped today.                                 |
-| **Prompt wording**   | Teach it that a two-part request ("compare A and B, then tell me which you'd pick") is still a single message                                                                                                           | **Regressed — reverted**     | 8/8 → 7/8, deterministic on repeat. Caught only by the code A/B set.                                |
-| **Prompt wording**   | Restate the element-shape rule again at the **end** of the prompt, for recency                                                                                                                                          | **No effect**                | One of three wording edits screened against conversational drift. All three failed.                 |
-| **Prompt wording**   | Make the Markdown-permission section's heading less prominent, so it reads as a narrow exception rather than an available mode                                                                                          | **No effect**                | Same screening; failed.                                                                             |
-| **Prompt wording**   | Narrow the escape-hatch wording further still                                                                                                                                                                           | **No effect**                | Same screening; failed.                                                                             |
-| **Server code**      | Repair the bracketless form in `card_detect.dart` — accept two elements emitted without the wrapping `[ ]` that should surround them                                                                                    | **The only durable fix**     | Prompt wording cut that failure to near zero at `t=0` but not at `t=0.6`; the detector covers both. |
-| **Output channel**   | Ask for the card through Ollama's **tool channel** — a `render_adaptive_card` function whose arguments carry the body — instead of asking for card JSON in the message body                                             | **Failed — not shipped**     | On the 8 models that can use it at all: 2 wins, 2 unaffected, 4 losses (two by 5 shapes). No code.  |
+| Kind                 | What was changed                                                                                                                                                                                                        | Verdict                      | Evidence                                                                                                                                                                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Context assembly** | Point the server at the **card system prompt** — which describes the element palette and the rules for using it — instead of the Markdown-only prompt, which never mentions cards                                       | **Largest effect measured**  | 0/8 → 8/8 cards, same model and same eight questions. Larger than any model or temperature gap.                                                                                                                                                |
+| **Context assembly** | Prepend a **seed card**: a synthetic two-turn exchange — a short pick-one question, and a bare card answering it — inserted ahead of the real history, so a card is the established format before any prose accumulates | **Model-dependent**          | +10 shapes to −2 across fifteen models. This spread is why it is now opt-in.                                                                                                                                                                   |
+| **Context assembly** | Repeat the instructions in a second `system` message placed _after_ the conversation history, instead of only before it                                                                                                 | **No effect / unmeasurable** | Ollama chat templates vary in whether a second `system` message is delivered to the model at all.                                                                                                                                              |
+| **Decoding**         | `temperature: 0` — greedy decoding instead of sampling                                                                                                                                                                  | **Helped, promoted**         | Cleared card failure modes that defeated models outright at their own default temperature.                                                                                                                                                     |
+| **Decoding**         | `think: false` — suppress the model's chain-of-thought preamble                                                                                                                                                         | **Helped, promoted**         | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off.                                                                                                                                                    |
+| **Decoding**         | `format: json` / `format: schema` — Ollama's own constrained-decoding flag, which is meant to force valid JSON                                                                                                          | **Per-model, unreliable**    | Honored by some models, silently ignored by others, and _destructive_ on `gpt-oss:20b`.                                                                                                                                                        |
+| **Prompt wording**   | Tell the model **where an explanation goes** — a `TextBlock` beside the `CodeBlock` — instead of forbidding it from appending prose after the card                                                                      | **Helped, promoted**         | Hard cases 6/10 → 15/15 at `t=0`. The "redirect, don't forbid" result.                                                                                                                                                                         |
+| **Prompt wording**   | Re-key the **escape hatch** — the clause permitting a plain Markdown answer — from _confidence_ ("if you are unsure whether a card helps") to _capability_ ("if no element type fits")                                  | **Helped, promoted**         | Clean on both regression checks; this is the wording shipped today.                                                                                                                                                                            |
+| **Prompt wording**   | Teach it that a two-part request ("compare A and B, then tell me which you'd pick") is still a single message                                                                                                           | **Regressed — reverted**     | 8/8 → 7/8, deterministic on repeat. Caught only by the code A/B set.                                                                                                                                                                           |
+| **Prompt wording**   | Restate the element-shape rule again at the **end** of the prompt, for recency                                                                                                                                          | **No effect**                | One of three wording edits screened against conversational drift. All three failed.                                                                                                                                                            |
+| **Prompt wording**   | Make the Markdown-permission section's heading less prominent, so it reads as a narrow exception rather than an available mode                                                                                          | **No effect**                | Same screening; failed.                                                                                                                                                                                                                        |
+| **Prompt wording**   | Narrow the escape-hatch wording further still                                                                                                                                                                           | **No effect**                | Same screening; failed.                                                                                                                                                                                                                        |
+| **Server code**      | Repair the bracketless form in `card_detect.dart` — accept two elements emitted without the wrapping `[ ]` that should surround them                                                                                    | **The only durable fix**     | Prompt wording cut that failure to near zero at `t=0` but not at `t=0.6`; the detector covers both.                                                                                                                                            |
+| **Output channel**   | Ask for the card through Ollama's **tool channel** — a `render_adaptive_card` function whose arguments carry the body — instead of asking for card JSON in the message body                                             | **Failed — not shipped**     | On the 8 models that can use it at all: 2 wins, 2 unaffected, 4 losses (two by 5 shapes). Malformed JSON went to zero on every model; [declines and weaker element choice cost more](#why-it-did-not-pay--the-failure-decomposition). No code. |
 
 **Read the Kind column and the pattern falls out.** Every change to _what the
 model sees before the question_ moved behavior, one of them more than any other
@@ -516,6 +516,99 @@ so the finding is re-checkable when models change.
 eight models, three of them 18–25 GB, and it took hours of wall clock. Re-run
 it when the roster changes materially or a model's tool support does — not to
 re-confirm a result already recorded here.
+
+#### Why it did not pay — the failure decomposition
+
+The table above records what happened. This records why. It is a re-scoring
+of the same results JSON, bucketing every failed call by the `label` the
+judge already wrote, so it costs no model calls. Each arm is 100 calls —
+25 cases × 2 samples × cold and with-history — of which 96 ask for a card and
+4 are the negative control. The headline `n/25` counts a case as passing only
+when every sample of it passed, so these per-call buckets are a finer view of
+the same runs, not a second metric.
+
+Four buckets, by `label` prefix: `malformed` (`broken: invalid JSON`,
+`broken: duplicate-key`), `declined` (`label == prose` on a case that wanted a
+card), `wrong-shape` (`wrong-shape:`, `no-input:`, `unwanted-card:`), and
+`infra` (`broken: HTTP 500`, `broken: timeout`), which is not attributable to
+the channel and is listed separately for that reason.
+
+| Model                        | Verdict    | Prose mal / dec / shape / infra | Tool mal / dec / shape / infra | Tool decline rate |
+| ---------------------------- | ---------- | ------------------------------: | -----------------------------: | ----------------: |
+| `qwen3-coder:30b`            | win        |                 21 / 0 / 18 / 0 |                 0 / 3 / 18 / 0 |                3% |
+| `qwen3.5:9b`                 | win        |                 18 / 0 / 14 / 0 |                 0 / 2 / 22 / 0 |                2% |
+| `qwen3.6:27b-coding-nvfp4`   | unaffected |                   6 / 0 / 0 / 0 |                  0 / 0 / 4 / 0 |                0% |
+| `qwen3.8:27b-nvfp4`          | unaffected |                   0 / 2 / 3 / 0 |                  0 / 4 / 4 / 0 |                4% |
+| `nemotron-3.5-lightning:30b` | loss       |                  8 / 16 / 8 / 0 |                0 / 30 / 16 / 0 |               31% |
+| `gpt-oss:20b`                | loss       |                   1 / 4 / 3 / 3 |                 0 / 11 / 3 / 5 |               11% |
+| `nemotron-3-nano:30b`        | loss       |                 10 / 4 / 22 / 0 |                0 / 20 / 34 / 0 |               21% |
+| `nemotron-3-nano:4b`         | loss       |                 6 / 52 / 10 / 0 |                0 / 48 / 32 / 2 |               50% |
+
+**Malformed JSON went to zero on all eight models.** No unexpected-character
+errors, no arrays missing their `[ ]`, no cards truncated mid-generation, no
+duplicate keys. Moving the card out of the message body removes the
+serialization burden, which is what it was expected to do.
+
+Two costs replace it:
+
+1. **Declining to call the tool.** In the prose channel the model has already
+   committed to emitting something; the tool channel adds a decision point
+   before every card. The four qwen models decline on 0–4% of card cases; the
+   four losses decline on 11%, 21%, 31%, and 50%.
+2. **Weaker element choice.** Filling a schema argument appears to favour the
+   cheapest legal filler. `nemotron-3-nano:30b` gains 12 wrong-shape failures
+   — `{TextBlock} want {Chart.Line}`, `{TextBlock} want {CodeBlock}`,
+   `{} want {FactSet, Table}` — and `nemotron-3-nano:4b` gains 22.
+
+**The outcome is therefore a subtraction rather than a model category:
+malformed failures recovered, minus declines and shape regressions gained.**
+That accounts for all eight rows, including the two the ±1 noise floor leaves
+unexplained on the headline numbers:
+
+- `qwen3-coder:30b` recovers 21 and pays 3.
+- `qwen3.5:9b` recovers 18 and pays 10.
+- `qwen3.6:27b-coding-nvfp4` recovers 6 and pays 4; the net falls inside the
+  noise floor, which is why it reads as unaffected.
+- `qwen3.8:27b-nvfp4` had no malformed failures in prose, so it has nothing to
+  recover and only costs to pay. Its "unaffected" is a small loss the noise
+  floor absorbs.
+- `gpt-oss:20b` had one, with the same result.
+- The three nemotrons recover 8, 10, and 6 while paying 22, 28, and 18.
+
+As a rule for the next roster: the tool channel helps a model that selects the
+right card but fails to serialize it. It does not help a model whose failures
+are about selecting the wrong card, and it costs a model that is reluctant to
+commit to a card at all.
+
+**Architecture does not separate the two groups.** `qwen3-coder:30b` (30B, 3B
+active) is a win and `nemotron-3-nano:30b` (30B, 3B active) is a loss — same
+architecture class, opposite results. The chat template is the better
+predictor: `nemotron-3-nano:30b` and
+`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` are the same base weights
+under different packaging, and [the canary](#not-a-card-test-the-tool-calling-canary)
+rates one `supported` and the other `supportedButDeclines`; separately,
+`llama3-groq-tool-use:8b`, fine-tuned for tool use, does not reach for the
+card tool at all. **Thinking is untested rather than ruled out**: every probe
+in this file sends `think: false` unconditionally, so all sixteen runs above
+are thinking-off. A thinking-on arm is the one variant of this measurement
+not yet covered.
+
+**The phase-1 canary over-predicted willingness.** It rated all eight of these
+models `supported` on a single card request; across 25 cases, four of them
+decline on 11–50% of card requests. "Will call the card tool once" and "will
+reach for it reliably" are separate properties, in the same way the canary
+itself found "can call a tool" and "uses it for a card" to be separate. A
+one-request gate measures the weaker of the two.
+
+**The channel also converts detected failures into silent ones**, which is
+worth carrying forward if this is revisited. A malformed prose card is caught
+by [`card_detect.dart`](lib/src/card_detect.dart) and surfaces as `broken`. A
+tool call carrying an invented element type is well-formed arguments that
+render as an invisible blank: `nemotron-3-nano:4b`'s tool arm produced eight
+calls labelled `no-input: got {Input, TextBlock}`, where `Input` is not an
+element type. The shape probe catches it only because it scores against an
+expected element set; a user would see nothing. Zero malformed JSON is not the
+same as zero broken cards.
 
 ### What counts as a pass
 
