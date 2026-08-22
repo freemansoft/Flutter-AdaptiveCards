@@ -185,6 +185,19 @@ Procedure:
 
 For examples and a review checklist, see the **`adaptive-cards-public-api-docs`** skill.
 
+## Documentation tone
+
+Write findings and prose documentation in a flat analytical register — **sound like an analyst, not a publicist**. Applies to `docs/`, package READMEs, every `CHANGELOG.md`, and the measurement notebooks (`adaptive_chat_server_dart/ModelBehavior.md`). Amplified prose obscures the line between what was measured and what was inferred, which is the opposite of what these documents are for.
+
+- **State results plainly** — no amplifying adverbs, no "without exception", no collapse-or-triumph verbs.
+- **Replace vague superlatives with the figure they stand for.**
+- **Reserve bold for a section's load-bearing claim and for figures** — never for adverbs, and never to mark which table rows matter.
+- **Hedge inferred mechanisms.** Counts are measured; the explanation for them usually is not.
+- **Write headings as findings, not verdicts.**
+- **End on the last factual sentence.**
+
+Wording only: never change a figure, date, or claim while adjusting register — when sweeping a document, verify that by diffing its numeric tokens against the previous commit. Strip amplification, not substance: a claim the data supports is not hype, and structural bold on topic sentences is what makes a long file scannable.
+
 ## Analysis Options
 
 Strictly follow `very_good_analysis`.
