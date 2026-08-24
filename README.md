@@ -250,7 +250,7 @@ Many!
 
 ## LLM Agent Support
 
-Claude Code is the primary supported agent, with CoPilot and ~~Cursor~~ also supported. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
+Claude Code is the only supported agent. ~~Antigravity~~, ~~CoPilot~~ and ~~Cursor~~ were supported until August 2026. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
 
 ### Always-on rules — [AGENTS.md](AGENTS.md)
 
@@ -258,10 +258,8 @@ Always-on project guardrails (FVM, monorepo hygiene, Very Good Analysis, Riverpo
 
 ### Task playbooks — [`.claude/skills/`](.claude/skills/)
 
-Modular skills loaded when a task matches. This directory holds the 18 project-authored `adaptive-cards-*` skills; the Dart and Flutter team skills arrive through a plugin instead (see below).
+Modular skills loaded when a task matches. This directory holds the 18 project-authored `adaptive-cards-*` skills; the Dart and Flutter team skills arrive through a plugin instead (see below). Claude Code reads this directory directly — there is no symlink or setup script to run.
 
-> **Other agents:** Opening this workspace in VS Code or Cursor automatically links `.claude/skills/` into `.agents/skills/` via a `folderOpen` task in [`.vscode/tasks.json`](.vscode/tasks.json), so Cursor and Copilot can still discover the same skills. You will be prompted to _Allow_ the task once; after that it runs silently on every workspace open. To run it manually: `sh scripts/setup-claude.sh` (Mac/Linux) or `powershell scripts/setup-claude.ps1` (Windows).
->
 > Only built in skills show up when typing `/` in the Claude Code prompt. Superpowers and other customized skills do not show up in the `/` list in the VSCode plugin but do in a terminal command line. Claude itself says that the list shouldn't work but it did this morning in my terminal window
 
 | Source               | Delivery                                                       | Count |
@@ -287,15 +285,7 @@ Claude Code plugins are declared at project scope in [`.claude/settings.json`](.
 
 Plugin skills are namespaced where the plugin declares it — invoke `superpowers:brainstorming`, not `brainstorming`.
 
-`superpowers` is also configured for Cursor:
-
-| Tool           | Project-level plugin declaration | Config file                            |
-| -------------- | -------------------------------- | -------------------------------------- |
-| Claude Code    | ✅ Yes                           | .claude/settings.json → enabledPlugins |
-| Cursor         | ✅ Yes                           | .cursor/settings.json → plugins        |
-| GitHub Copilot | ❌ No                            | No project-scoped config exists        |
-
-Cursor and Copilot do not read Claude Code plugins, so they see the `adaptive-cards-*` skills only. Installing the Dart/Flutter skills for those agents is a user-level step — see [docs/ai-agent-skills-install.md](docs/ai-agent-skills-install.md).
+To use any of these skills in a different tool, or in Claude Code across all your projects, install them at user level — see [docs/ai-agent-skills-install.md](docs/ai-agent-skills-install.md). Do not vendor them back into `.claude/skills/`; Claude Code would then load two copies.
 
 ### Quick install (from repo root)
 

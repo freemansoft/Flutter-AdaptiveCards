@@ -15,7 +15,9 @@ This repository's goal is **all Dart and Flutter** for executable programs, exam
 The project's AI instructions are organized into two layers to keep context efficient:
 
 1. **Root `AGENTS.md`**: Always-on project guardrails (FVM, monorepo hygiene, analysis).
-2. **`.claude/skills/`**: Project-authored, task-specific playbooks (spec compliance, UI best practices, code review). Mirrored to `.agents/skills/` for other agents (Cursor, Copilot) via a generated symlink. The Dart and Flutter team skills are **not** in this directory — they arrive through the `dart-flutter` Claude Code plugin ([`flutter/agent-plugins`](https://github.com/flutter/agent-plugins)), enabled at project scope in `.claude/settings.json`.
+2. **`.claude/skills/`**: Project-authored, task-specific playbooks (spec compliance, UI best practices, code review). The Dart and Flutter team skills are **not** in this directory — they arrive through the `dart-flutter` Claude Code plugin ([`flutter/agent-plugins`](https://github.com/flutter/agent-plugins)), enabled at project scope in `.claude/settings.json`.
+
+**Claude Code is the only supported agent.** Do not add per-agent config directories, mirror `.claude/skills/` to another location, or re-vendor the plugin's skills into the repo.
 
 ## Documentation scope
 

@@ -1,5 +1,11 @@
 # Plan: Auto-link `.agents/skills` to `.claude/skills` on workspace open
 
+> **Status: superseded (August 2026).** Claude Code is now the only supported agent, so the bridge
+> this plan built — the `.agents` symlink, `scripts/setup-claude.sh`/`.ps1`, and the `folderOpen`
+> task in `.vscode/tasks.json` — was removed. `.claude/skills/` is the source of truth and Claude
+> Code reads it directly. Kept as a record of why the link existed. See
+> [`AI-Agent-Support.md`](../AI-Agent-Support.md).
+
 ## Context
 
 This repo uses `.agents/skills/` as the single source of truth for all AI agent skills

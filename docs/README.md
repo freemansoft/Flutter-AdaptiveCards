@@ -10,8 +10,7 @@ This directory contains design documents, implementation guides, and architectur
 
 - **Documentation scope** (packages vs widgetbook samples): [documentation-scope.md](./documentation-scope.md)
 - **Widgetbook overlay demos** (sample program): [widgetbook-overlay-demos.md](./widgetbook-overlay-demos.md)
-- **Agent created plans** copied from ~/.cursor/plans : [plans](/docs/plans/) (superseded duplicates in [archive/plans](/docs/archive/plans/))
-- **Copilot created plans** _no documentation exists at this time_
+- **Agent created plans** [plans](/docs/plans/) (superseded duplicates in [archive/plans](/docs/archive/plans/))
 - **Superpowers created specs** [specs](/docs/superpowers/specs/) (implemented duplicates in [archive/specs](/docs/archive/specs/))
 - **AI / LLM agents**: [AI-Agent-Support.md](/docs/AI-Agent-Support.md)
 - **Main Project**: [Repository README](/README.md)
@@ -52,13 +51,13 @@ Defines what `docs/` describes (published packages under `packages/`) vs sample 
 
 **Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-Explains how LLM agents are configured for this repo: `AGENTS.md`, the project-authored `.claude/skills/` (mirrored to `.agents/skills/` for other agents), the Claude Code plugins that supply everything else — the official [`dart-flutter`](https://github.com/flutter/agent-plugins) plugin for Dart/Flutter skills and [Superpowers](https://github.com/obra/superpowers) for the development methodology — and how agents load skills. Install / update commands: [ai-agent-skills-install.md](./ai-agent-skills-install.md).
+Explains how Claude Code — the only supported agent — is configured for this repo: `AGENTS.md`, the project-authored `.claude/skills/`, the Claude Code plugins that supply everything else — the official [`dart-flutter`](https://github.com/flutter/agent-plugins) plugin for Dart/Flutter skills and [Superpowers](https://github.com/obra/superpowers) for the development methodology — and how agents load skills. Install / update commands: [ai-agent-skills-install.md](./ai-agent-skills-install.md).
 
 ### [ai-agent-skills-install.md](./ai-agent-skills-install.md)
 
 **Status**: ✅ Current | **Category**: How-to (`doc_type: how-to`)
 
-Install and update commands for agent skills: the `dart-flutter`, Superpowers, and skill-creator Claude Code plugins, plus user-level installs for Cursor and Copilot. Extracted from [AI-Agent-Support.md](./AI-Agent-Support.md).
+Install and update commands for agent skills: the `dart-flutter`, Superpowers, and skill-creator Claude Code plugins, plus user-level installs for use outside this repo. Extracted from [AI-Agent-Support.md](./AI-Agent-Support.md).
 
 ---
 

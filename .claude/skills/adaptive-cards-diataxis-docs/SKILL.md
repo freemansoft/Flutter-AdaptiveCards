@@ -131,4 +131,4 @@ pure is drift worth fixing in the same change.
 
 Diátaxis is the work of Daniele Procida. Authoritative source: [diataxis.fr](https://diataxis.fr).
 Compass and quadrant framing adapted from the framework; skill structure follows this repo's
-`.agents/skills/*/SKILL.md` convention.
+`.claude/skills/*/SKILL.md` convention.

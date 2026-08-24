@@ -2,21 +2,6 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Link .agents to .claude",
-      "type": "shell",
-      "command": "sh scripts/setup-claude.sh",
-      "windows": {
-        "command": "powershell scripts/setup-claude.ps1"
-      },
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "reveal": "silent",
-        "panel": "shared"
-      }
-    },
-    {
       "label": "Setup pana",
       "detail": "Activates the pinned pana CLI used by the pub-score gate.",
       "type": "shell",

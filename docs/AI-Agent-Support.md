@@ -4,19 +4,20 @@ doc_type: explanation
 
 # AI Agent Support
 
-This document describes how LLM agents (Claude Code, Cursor, Copilot, and others) are configured for the Flutter-AdaptiveCards monorepo. For the install / update commands, see [ai-agent-skills-install.md](ai-agent-skills-install.md).
+**Claude Code is the only supported agent.** This document describes how it is configured for the Flutter-AdaptiveCards monorepo. For the install / update commands, see [ai-agent-skills-install.md](ai-agent-skills-install.md).
+
+Cursor, Antigravity, and Copilot were supported until August 2026. The `.agents` → `.claude` symlink, the `scripts/setup-claude.sh`/`.ps1` scripts, the `folderOpen` VS Code task, and `.cursor/settings.json` existed only to feed those agents, and were removed with them. Nothing in the repo is arranged for a second agent now; adding one back means re-creating that bridge.
 
 ## Overview
 
 AI instructions are organized in two layers:
 
-| Layer           | Location                                | Purpose                                                                                                                                                                                                          |
-| --------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Always-on rules | [`AGENTS.md`](../AGENTS.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation                                                                                                                             |
-| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Link to `Agents.md` to support the same guardrails. Claude doesn't support `AGENTS.md`                                                                                                                           |
-| Task playbooks  | [`.claude/skills/`](../.claude/skills/) | Project-authored skills loaded when a task matches (spec compliance, HostConfig theming, element registry, testing, release engineering, …). Claude Code is the primary supported agent and reads this directly. |
-| Task playbooks  | [`.agents/skills`](../.agents/)         | Generated symlink to `.claude/skills` (via a vscode task, or `scripts/setup-claude.sh`/`.ps1`), so other agents (Cursor, Copilot) can still discover the same skills.                                            |
-| Task playbooks  | Claude Code plugins                     | Dart/Flutter team skills, Superpowers, and skill-creator. Installed from marketplaces declared in [`.claude/settings.json`](../.claude/settings.json) — not checked into this repo.                              |
+| Layer           | Location                                | Purpose                                                                                                                                                                             |
+| --------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Always-on rules | [`AGENTS.md`](../AGENTS.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation                                                                                                |
+| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Link to `AGENTS.md` to support the same guardrails. Claude Code reads `CLAUDE.md`, not `AGENTS.md`                                                                                  |
+| Task playbooks  | [`.claude/skills/`](../.claude/skills/) | Project-authored skills loaded when a task matches (spec compliance, HostConfig theming, element registry, testing, release engineering, …). Claude Code reads this directly.       |
+| Task playbooks  | Claude Code plugins                     | Dart/Flutter team skills, Superpowers, and skill-creator. Installed from marketplaces declared in [`.claude/settings.json`](../.claude/settings.json) — not checked into this repo. |
 
 Supporting files:
 
@@ -29,7 +30,7 @@ Supporting files:
 
 ## Skill sources
 
-Skills come from two places: the `.claude/skills/` directory in this repo (mirrored to `.agents/skills/` for other agents), and Claude Code plugins installed from external marketplaces.
+Skills come from two places: the `.claude/skills/` directory in this repo, and Claude Code plugins installed from external marketplaces.
 
 ### 1. Dart and Flutter teams — the `dart-flutter` plugin
 
@@ -106,9 +107,9 @@ The plugin is a superset of what was vendored. Every one of the 19 removed skill
 - **The MCP entry invokes a bare `dart`.** This repo pins its SDK through FVM, so whichever `dart` is first on `PATH` is what the MCP server runs — not necessarily the pinned SDK. Treat MCP-server output as advisory when SDK version matters, and run the authoritative commands through `fvm` yourself.
 - **Rules are not bundled.** Claude Code plugins cannot ship rules files, so the `rules/` directory in `flutter/agent-plugins` does not come along. That is not a gap here: [`AGENTS.md`](../AGENTS.md) already carries this repo's guardrails, and it was derived from the same [Flutter AI rules](https://docs.flutter.dev/ai/ai-rules).
 
-### Consequence for non-Claude agents
+### Do not vendor these back
 
-Cursor and Copilot do not read Claude Code plugins, and the vendored copies are gone, so those agents now see the project-specific `adaptive-cards-*` skills only. Collaborators who need the Dart/Flutter skills in another agent can install them at user level with the `skills` CLI — see [ai-agent-skills-install.md](ai-agent-skills-install.md). Installing them back into `.agents/skills/` at project scope would put a second copy in front of Claude Code alongside the plugin, which is the duplication this change removed.
+Copying the plugin's skills into `.claude/skills/` puts a second copy in front of Claude Code alongside the plugin, so every session loads and pays for both. That duplication is what removing the vendored copies fixed. If you want these skills in some other tool, install them at **user level** — see [ai-agent-skills-install.md](ai-agent-skills-install.md).
 
 ---
 
@@ -128,20 +129,11 @@ It is **not** vendored into `.claude/skills/`. It is installed as a Claude Code 
 
 Because it is enabled at **project scope**, Claude Code prompts each collaborator to install it the first time they trust the repository folder — no manual setup, but also no silent install (plugins can execute arbitrary code). If it has not been installed yet, Claude Code reports the plugin as not installed and prints the `claude plugin install` command to run.
 
-Two consequences:
-
-- **Skills are namespaced.** Invoke `superpowers:brainstorming`, not `brainstorming`.
-- **Claude Code only.** Cursor, Copilot, and other agents do not read Claude Code plugins. They still get the project-specific skills from `.claude/skills/` (mirrored via `.agents/skills`), but not Superpowers. Cursor users who want it can install it at user level — see [ai-agent-skills-install.md](ai-agent-skills-install.md).
+One consequence worth remembering: **skills are namespaced.** Invoke `superpowers:brainstorming`, not `brainstorming`.
 
 Rationale for un-vendoring: the vendored copies drifted out of date against upstream and were loaded _alongside_ the plugin, so every session paid for both. The same reasoning applies to the [`dart-flutter` plugin](#dart-and-flutter-skills--the-dart-flutter-plugin-not-vendored).
 
 ---
-
-### Token usage tweaking
-
-#### Cursor
-
-- I (Joe) currently have `Cursor Settings --> Agents --> Start Agent Review on Commit` disabled because of token costs.
 
 ## Installing and updating skills
 

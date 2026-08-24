@@ -13,7 +13,7 @@ Run everything below from the **repository root**.
 
 Nothing needs a manual step on a fresh clone. Two mechanisms cover it:
 
-- **Project-authored skills** (`adaptive-cards-*`) are committed under `.claude/skills/`. `.agents` is a generated symlink to `.claude` (recreated by `scripts/setup-claude.sh`/`.ps1`, or the `folderOpen` task in `.vscode/tasks.json`), so Cursor and Copilot find the same files at `.agents/skills/`.
+- **Project-authored skills** (`adaptive-cards-*`) are committed under `.claude/skills/`, which Claude Code reads directly. Nothing generates or links them.
 - **Claude Code plugins** are declared at project scope in [`.claude/settings.json`](../.claude/settings.json), and `SessionStart` hooks in that same file run the marketplace-add and install commands each session. Claude Code prompts you to trust the repository folder the first time; plugins can execute arbitrary code, so the install is never silent.
 
 The manual equivalents are below, for when a hook fails or you want to install outside this repo.
@@ -51,55 +51,22 @@ namespaced — `superpowers:brainstorming`, not `brainstorming`.
 
 Source: [github.com/obra/superpowers](https://github.com/obra/superpowers)
 
-## Dart and Flutter skills for non-Claude agents
+## Using these skills outside this repo
 
-Cursor and Copilot do not read Claude Code plugins, so they see the project-authored
-`adaptive-cards-*` skills only. To get the Dart and Flutter skills in one of those agents, install
-them at **user level** with the [`skills` CLI](https://www.npmjs.com/package/skills):
+Claude Code is the only agent this repo is set up for, and the plugins above are scoped to it. If you
+want the Dart and Flutter skills in a different tool, or in Claude Code across all your projects,
+install them at **user level** with the [`skills` CLI](https://www.npmjs.com/package/skills):
 
 ```bash
 npx skills add dart-lang/skills --skill '*' --agent universal --global --yes
 npx skills add flutter/agent-plugins --skill '*' --agent universal --global --yes
 ```
 
-`--global` writes to `~/.agents/skills/`. Install them at project scope instead and Claude Code
-loads a second copy alongside the plugin, paying for both every session — which is what removing the
+`--global` writes to `~/.agents/skills/`. Do not install them at project scope — Claude Code would
+load a second copy alongside the plugin and pay for both every session, which is what removing the
 vendored copies fixed.
 
 > `flutter/skills` was renamed to `flutter/agent-plugins`; GitHub redirects the old URL.
-
-### Superpowers at user level
-
-For Superpowers in **all** projects when using Cursor:
-
-```bash
-npx skills add obra/superpowers --skill '*' --agent cursor --global --yes
-```
-
-#### Optional: Cursor plugin (hooks and commands)
-
-Cursor **\* support will eventually be removed with the purchase of xAI **
-
-For automatic skill activation via Cursor hooks (recommended when using Cursor Agent):
-
-1. Open **Agent** chat (`Cmd+L` / `Ctrl+L`).
-2. Run:
-
-   ```text
-   /add-plugin superpowers
-   ```
-
-3. Start a new Agent session and verify with: `Do you have superpowers?`
-
-Update or remove the plugin:
-
-```text
-/plugin-update superpowers
-/plugin-remove superpowers
-```
-
-- See [Superpowers — Install on Cursor](https://obra-superpowers.mintlify.app/installation/cursor).
-- See [Superpowers - Install for Claude Code](https://obra-superpowers.mintlify.app/installation/claude-code).
 
 ## Updating
 
