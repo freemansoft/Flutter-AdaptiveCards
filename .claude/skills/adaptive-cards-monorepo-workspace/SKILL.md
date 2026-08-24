@@ -62,8 +62,9 @@ fvm install
 ```
 
 > **Important:** Always use `fvm flutter` / `fvm dart` to ensure the correct
-> SDK version. Antigravity MCP tools (`mcp_dart-mcp-server_*`) use the system
-> Flutter, so prefer shell commands via `fvm` when SDK version matters.
+> SDK version. The Dart MCP server (`mcp_dart-mcp-server_*`) launches a bare
+> `dart`, so it uses the system SDK — prefer shell commands via `fvm` when the
+> SDK version matters.
 
 ---
 
