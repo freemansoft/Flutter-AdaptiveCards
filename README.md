@@ -252,7 +252,7 @@ Many!
 
 Claude Code is the only supported agent. ~~Antigravity~~, ~~CoPilot~~ and ~~Cursor~~ were supported until August 2026. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
 
-### Always-on rules — [AGENTS.md](AGENTS.md)
+### Always-on rules — [CLAUDE.md](CLAUDE.md)
 
 Always-on project guardrails (FVM, monorepo hygiene, Very Good Analysis, Riverpod document overlays, semantic labels, localization). Derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules).
 

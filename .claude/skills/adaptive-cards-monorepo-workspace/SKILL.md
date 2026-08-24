@@ -218,7 +218,7 @@ fvm flutter analyze
 
 Whenever you make changes to a package or app:
 
-1. **Always** document changes under the `## [Unreleased]` section at the top of that package's `CHANGELOG.md` (and in `adaptive_explorer` / `widgetbook` changelogs when those apps change) — per the root `AGENTS.md` changelog rule.
+1. **Always** document changes under the `## [Unreleased]` section at the top of that package's `CHANGELOG.md` (and in `adaptive_explorer` / `widgetbook` changelogs when those apps change) — per the root `CLAUDE.md` changelog rule.
 2. During a development cycle, keep appending to the single `## [Unreleased]` section; do not add a second heading. At release time it is promoted to `## [<version>]` (see **`adaptive-cards-release-engineer`** §3.1).
 
 After a release is published to pub.dev, follow the **`adaptive-cards-release-engineer`** skill §6: minor version bump across all `pubspec.yaml` files, new `## [<version>]` sections in all **six** changelogs, and `flutter_adaptive_cards_fs: ^<version>` in `flutter_adaptive_charts_fs` and `flutter_adaptive_cards_host_fs`.

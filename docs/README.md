@@ -51,7 +51,7 @@ Defines what `docs/` describes (published packages under `packages/`) vs sample 
 
 **Status**: ✅ Current | **Category**: Explanation (`doc_type: explanation`)
 
-Explains how Claude Code — the only supported agent — is configured for this repo: `AGENTS.md`, the project-authored `.claude/skills/`, the Claude Code plugins that supply everything else — the official [`dart-flutter`](https://github.com/flutter/agent-plugins) plugin for Dart/Flutter skills and [Superpowers](https://github.com/obra/superpowers) for the development methodology — and how agents load skills. Install / update commands: [ai-agent-skills-install.md](./ai-agent-skills-install.md).
+Explains how Claude Code — the only supported agent — is configured for this repo: `CLAUDE.md`, the project-authored `.claude/skills/`, the Claude Code plugins that supply everything else — the official [`dart-flutter`](https://github.com/flutter/agent-plugins) plugin for Dart/Flutter skills and [Superpowers](https://github.com/obra/superpowers) for the development methodology — and how agents load skills. Install / update commands: [ai-agent-skills-install.md](./ai-agent-skills-install.md).
 
 ### [ai-agent-skills-install.md](./ai-agent-skills-install.md)
 

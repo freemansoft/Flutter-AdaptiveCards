@@ -38,7 +38,7 @@ for **date/number formatting only** (`DateFormat`, `NumberFormat`), never for
 message translation. An `intl` dependency is *not* evidence that strings are
 localized.
 
-> The root `AGENTS.md` previously claimed "all UI strings must be localized in
+> The root `CLAUDE.md` previously claimed "all UI strings must be localized in
 > `.arb` files." That was aspirational and never true of the packages. This skill
 > supersedes it.
 

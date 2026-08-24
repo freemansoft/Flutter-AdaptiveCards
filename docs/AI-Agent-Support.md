@@ -14,17 +14,18 @@ AI instructions are organized in two layers:
 
 | Layer           | Location                                | Purpose                                                                                                                                                                             |
 | --------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Always-on rules | [`AGENTS.md`](../AGENTS.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation                                                                                                |
-| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Link to `AGENTS.md` to support the same guardrails. Claude Code reads `CLAUDE.md`, not `AGENTS.md`                                                                                  |
+| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation. Claude Code loads it every session.                                                           |
 | Task playbooks  | [`.claude/skills/`](../.claude/skills/) | Project-authored skills loaded when a task matches (spec compliance, HostConfig theming, element registry, testing, release engineering, …). Claude Code reads this directly.       |
 | Task playbooks  | Claude Code plugins                     | Dart/Flutter team skills, Superpowers, and skill-creator. Installed from marketplaces declared in [`.claude/settings.json`](../.claude/settings.json) — not checked into this repo. |
 
 Supporting files:
 
 - [`.claude/settings.json`](../.claude/settings.json) — declares the plugin marketplaces and enabled plugins at project scope, plus the `SessionStart` hooks that install them
-- [`.claude/rules/README.md`](../.claude/rules/README.md) — pointer to `AGENTS.md` and `.claude/skills/`
+- [`.claude/rules/README.md`](../.claude/rules/README.md) — pointer to `CLAUDE.md` and `.claude/skills/`
 
-`AGENTS.md` is derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules) and customized for this repo (Very Good Analysis, Adaptive Cards architecture, semantic labels, localization, FVM). `CLAUDE.md` has an internal link to `AGENTS.md`
+`CLAUDE.md` is derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules) and customized for this repo (Very Good Analysis, Adaptive Cards architecture, semantic labels, localization, FVM).
+
+It used to live in `AGENTS.md`, with `CLAUDE.md` holding a one-line `@AGENTS.md` import — the split the [Claude Code memory docs](https://code.claude.com/docs/en/memory) recommend for a repo that serves several agents. With Claude Code the only agent, the indirection bought nothing, so the content moved into `CLAUDE.md` and `AGENTS.md` was deleted. Note the import only works in that direction: `@path` is a `CLAUDE.md` feature, so an `AGENTS.md` holding `@CLAUDE.md` would resolve for nothing.
 
 ---
 
@@ -105,7 +106,7 @@ The plugin is a superset of what was vendored. Every one of the 19 removed skill
 ### Two caveats
 
 - **The MCP entry invokes a bare `dart`.** This repo pins its SDK through FVM, so whichever `dart` is first on `PATH` is what the MCP server runs — not necessarily the pinned SDK. Treat MCP-server output as advisory when SDK version matters, and run the authoritative commands through `fvm` yourself.
-- **Rules are not bundled.** Claude Code plugins cannot ship rules files, so the `rules/` directory in `flutter/agent-plugins` does not come along. That is not a gap here: [`AGENTS.md`](../AGENTS.md) already carries this repo's guardrails, and it was derived from the same [Flutter AI rules](https://docs.flutter.dev/ai/ai-rules).
+- **Rules are not bundled.** Claude Code plugins cannot ship rules files, so the `rules/` directory in `flutter/agent-plugins` does not come along. That is not a gap here: [`CLAUDE.md`](../CLAUDE.md) already carries this repo's guardrails, and it was derived from the same [Flutter AI rules](https://docs.flutter.dev/ai/ai-rules).
 
 ### Do not vendor these back
 
@@ -145,7 +146,7 @@ user-level skills for non-Claude agents) and the update commands live in the how
 
 ## How agents use skills
 
-1. **Always-on:** `AGENTS.md` is injected every session (FVM, naming, Riverpod document overlays, lint rules).
+1. **Always-on:** `CLAUDE.md` is injected every session (FVM, naming, Riverpod document overlays, lint rules).
 2. **On demand:** Agents read `SKILL.md` when the task matches the skill description (e.g. “add a widget test” → `flutter-add-widget-test`, from the `dart-flutter` plugin).
 3. **Superpowers workflow:** For new features, Superpowers skills encourage design → plan → TDD implementation → review before merge. Start with `superpowers:brainstorming` when kicking off substantial work. These come from the [Claude Code plugin](#superpowers--claude-code-plugin-not-vendored), so they are namespaced and available in Claude Code only.
 
@@ -160,9 +161,9 @@ claude plugin marketplace list
 
 ## Related documentation
 
-- [`AGENTS.md`](../AGENTS.md) — always-on agent rules
-- [`doc/reactive-riverpod.md`](./reactive-riverpod.md) — Riverpod patterns referenced in `AGENTS.md`
-- [Flutter AI rules](https://docs.flutter.dev/ai/ai-rules) — upstream `AGENTS.md` template
+- [`CLAUDE.md`](../CLAUDE.md) — always-on agent rules
+- [`doc/reactive-riverpod.md`](./reactive-riverpod.md) — Riverpod patterns referenced in `CLAUDE.md`
+- [Flutter AI rules](https://docs.flutter.dev/ai/ai-rules) — upstream rules template
 - [Get started developing with AI](https://docs.flutter.dev/ai/get-started) — official plugin install instructions
 - [flutter/agent-plugins README](https://github.com/flutter/agent-plugins#readme) — the `dart-flutter` plugin
 - [dart-lang/skills README](https://github.com/dart-lang/skills#installation) — `dart-*` skills outside the plugin

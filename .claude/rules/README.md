@@ -4,7 +4,7 @@ trigger: always_on
 
 # AI Rules
 
-Always-on project instructions live in the root [`AGENTS.md`](../../AGENTS.md).
+Always-on project instructions live in the root [`CLAUDE.md`](../../CLAUDE.md).
 
 Task-specific playbooks live in [`.claude/skills/`](../skills/).
 

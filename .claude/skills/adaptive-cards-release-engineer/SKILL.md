@@ -70,7 +70,7 @@ Before tagging and publishing:
 
 ## 3.1 Promote `[Unreleased]` to the Release Version
 
-During development, AGENTS.md instructs contributors to append bullets to `## [Unreleased]` in each `CHANGELOG.md`. Before tagging you must collapse that section into the versioned heading. For each of the **six** changelog files:
+During development, `CLAUDE.md` instructs contributors to append bullets to `## [Unreleased]` in each `CHANGELOG.md`. Before tagging you must collapse that section into the versioned heading. For each of the **six** changelog files:
 
 1. **Check whether `## [<release-version>]` already exists** in the file.
 
