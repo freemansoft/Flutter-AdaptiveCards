@@ -246,54 +246,57 @@ Many!
 
 - See [Defects](/packages/flutter_adaptive_cards_fs/README.md#defects)
 - [Microsoft learning authoring cards text features](https://learn.microsoft.com/en-us/adaptive-cards/authoring-cards/text-features) may not all be implemented
+- **The `dart-flutter` plugin's MCP server ignores FVM.** Its bundled `.mcp.json` launches `dart mcp-server` with a bare `dart`, so the Dart MCP server runs whichever SDK is first on `PATH` rather than the FVM-pinned one. Claude Code has no per-project override for a plugin's MCP entry, so fixing this needs a repo-level `.mcp.json` that shadows it with `fvm dart mcp-server`. Not yet written — until then, treat MCP-server output as advisory and run authoritative `analyze`/`test`/`build` commands yourself through `fvm`. See [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md#two-caveats).
 
 ## LLM Agent Support
 
-Claude Code is the primary supported agent, with Antigravity, CoPilot and ~~Cursor~~ also supported. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
+Claude Code is the only supported agent. ~~Antigravity~~, ~~CoPilot~~ and ~~Cursor~~ were supported until August 2026. Full setup, install commands, and update procedures are in **[docs/AI-Agent-Support.md](docs/AI-Agent-Support.md)**.
 
-### Always-on rules — [AGENTS.md](AGENTS.md)
+### Always-on rules — [CLAUDE.md](CLAUDE.md)
 
-Always-on project guardrails (FVM, monorepo hygiene, Very Good Analysis, Riverpod document overlays, semantic labels, localization). Derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules), trimmed for Antigravity’s ~12K character limit.
+Always-on project guardrails (FVM, monorepo hygiene, Very Good Analysis, Riverpod document overlays, semantic labels, localization). Derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules).
 
 ### Task playbooks — [`.claude/skills/`](.claude/skills/)
 
-Modular skills loaded when a task matches. Vendored upstream skills are tracked in [`skills-lock.json`](skills-lock.json).
+Modular skills loaded when a task matches. This directory holds the 18 project-authored `adaptive-cards-*` skills; the Dart and Flutter team skills arrive through a plugin instead (see below). Claude Code reads this directory directly — there is no symlink or setup script to run.
 
-> **Other agents:** Opening this workspace in VS Code or Cursor automatically links `.claude/skills/` into `.agents/skills/` via a `folderOpen` task in [`.vscode/tasks.json`](.vscode/tasks.json), so Cursor, Antigravity, and Copilot can still discover the same skills. You will be prompted to _Allow_ the task once; after that it runs silently on every workspace open. To run it manually: `sh scripts/setup-claude.sh` (Mac/Linux) or `powershell scripts/setup-claude.ps1` (Windows).
->
 > Only built in skills show up when typing `/` in the Claude Code prompt. Superpowers and other customized skills do not show up in the `/` list in the VSCode plugin but do in a terminal command line. Claude itself says that the list shouldn't work but it did this morning in my terminal window
 
-| Source           | Repository                                              | Count |
-| ---------------- | ------------------------------------------------------- | ----- |
-| Dart team        | [dart-lang/skills](https://github.com/dart-lang/skills) | 9     |
-| Flutter team     | [flutter/skills](https://github.com/flutter/skills)     | 10    |
-| Project-specific | (authored in-repo)                                      | 17    |
+| Source               | Delivery                                                       | Count |
+| -------------------- | -------------------------------------------------------------- | ----- |
+| Dart + Flutter teams | `dart-flutter` plugin ([flutter/agent-plugins][agent-plugins]) | 22    |
+| Project-specific     | Committed to `.claude/skills/`                                 | 18    |
+
+[agent-plugins]: https://github.com/flutter/agent-plugins
 
 #### Project-specific skills
 
-`adaptive-cards-accessibility`, `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-localization`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-backend-host`, `adaptive-cards-testing`, `adaptive-cards-public-api-docs`, `adaptive-cards-diataxis-docs`, `adaptive-cards-widgetbook-overlay-demos`, `adaptive-cards-code-review`, `adaptive-cards-release-engineer`, `adaptive-cards-release-flutter-upgrade-sdk`.
+`adaptive-cards-accessibility`, `adaptive-cards-backend-host`, `adaptive-cards-chat-prompt-tuning`, `adaptive-cards-code-review`, `adaptive-cards-dart-flutter-fvm`, `adaptive-cards-diataxis-docs`, `adaptive-cards-element-registry`, `adaptive-cards-flutter-standard-practices`, `adaptive-cards-hostconfig-theme`, `adaptive-cards-localization`, `adaptive-cards-monorepo-workspace`, `adaptive-cards-public-api-docs`, `adaptive-cards-release-engineer`, `adaptive-cards-release-flutter-upgrade-sdk`, `adaptive-cards-spec-compliance`, `adaptive-cards-templating`, `adaptive-cards-testing`, `adaptive-cards-widgetbook-overlay-demos`.
 
-#### Superpowers
+#### Plugins
 
-`superpowers` plugins are auto configured and loaded in the workspace for `cursor` and `claude`.
+Claude Code plugins are declared at project scope in [`.claude/settings.json`](.claude/settings.json) and installed by a `SessionStart` hook, so a fresh clone picks them up on first trusted open.
 
-| Tool              | Project-level plugin declaration | Config file                                                                           |
-| ----------------- | -------------------------------- | ------------------------------------------------------------------------------------- |
-| Claude Code       | ✅ Yes                           | .claude/settings.json → enabledPlugins                                                |
-| Cursor            | ✅ Yes                           | .cursor/settings.json → plugins                                                       |
-| GitHub Copilot    | ❌ No                            | No project-scoped config exists                                                       |
-| Antigravity (agy) | ❌ No                            | No project-scoped config exists; all plugin state lives in ~/.gemini/antigravity-cli/ |
+| Plugin          | Marketplace                          | Provides                                                |
+| --------------- | ------------------------------------ | ------------------------------------------------------- |
+| `dart-flutter`  | `flutter/agent-plugins`              | 12 `dart-*` + 10 `flutter-*` skills, Dart MCP server    |
+| `superpowers`   | `anthropics/claude-plugins-official` | Brainstorming, plans, TDD, systematic debugging, review |
+| `skill-creator` | `anthropics/claude-plugins-official` | Authoring and evaluating skills                         |
 
-See [docs/AI-Agent-Support.md](docs/AI-Agent-Support.md).
+Plugin skills are namespaced where the plugin declares it — invoke `superpowers:brainstorming`, not `brainstorming`.
+
+To use any of these skills in a different tool, or in Claude Code across all your projects, install them at user level — see [docs/ai-agent-skills-install.md](docs/ai-agent-skills-install.md). Do not vendor them back into `.claude/skills/`; Claude Code would then load two copies.
 
 ### Quick install (from repo root)
 
+Only needed if the `SessionStart` hook did not run:
+
 ```bash
-npx skills add dart-lang/skills --skill '*' --agent universal --yes
-npx skills add flutter/skills --skill '*' --agent universal --yes
+claude plugin marketplace add flutter/agent-plugins
+claude plugin install dart-flutter@dart-flutter
 ```
 
-Update vendored skills: `npx skills update`.
+Update: `claude plugin marketplace update dart-flutter && claude plugin update dart-flutter@dart-flutter`.
 
 ## More about adaptive cards and available SDKs
 

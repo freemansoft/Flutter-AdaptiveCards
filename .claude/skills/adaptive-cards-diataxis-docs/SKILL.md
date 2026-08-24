@@ -86,8 +86,8 @@ Infer the mode from the request; ask if genuinely ambiguous.
   tutorial-poor).
 - **restructure** — propose splitting a mixed doc into one-doc-per-quadrant with cross-links.
   **Present the plan and get confirmation before moving or rewriting any file.** Respect the
-  "Architecture documentation sync gate" in `AGENTS.md` — splitting a doc that other docs / skills /
-  `AGENTS.md` link to means updating those links in the same change.
+  "Architecture documentation sync gate" in `CLAUDE.md` — splitting a doc that other docs / skills /
+  `CLAUDE.md` link to means updating those links in the same change.
 - **generate** — only with a stated or confirmed target quadrant; apply that quadrant's rules
   strictly and refuse to blend.
 
@@ -110,7 +110,7 @@ doc_type: reference   # reference | how-to | explanation | tutorial
 ```
 
 This is the lightweight, repo-native alternative to reorganizing `docs/` into four folders — folder
-moves would break the many relative links from `AGENTS.md`, package READMEs, and skills. Prefer the
+moves would break the many relative links from `CLAUDE.md`, package READMEs, and skills. Prefer the
 tag; do not restructure the directory tree without an explicit, separately-scoped request.
 
 ## Integration with the review gate
@@ -125,10 +125,10 @@ pure is drift worth fixing in the same change.
 - Does not invent documentation strategy or information architecture.
 - Does not move, split, or rewrite files without confirmation.
 - Does not touch out-of-scope process/archive docs.
-- Does not override repo style rules (`AGENTS.md`, `adaptive-cards-public-api-docs`) — it composes with them.
+- Does not override repo style rules (`CLAUDE.md`, `adaptive-cards-public-api-docs`) — it composes with them.
 
 ## Attribution
 
 Diátaxis is the work of Daniele Procida. Authoritative source: [diataxis.fr](https://diataxis.fr).
 Compass and quadrant framing adapted from the framework; skill structure follows this repo's
-`.agents/skills/*/SKILL.md` convention.
+`.claude/skills/*/SKILL.md` convention.

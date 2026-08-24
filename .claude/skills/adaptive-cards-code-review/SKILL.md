@@ -24,7 +24,7 @@ Use this skill as a "Final Gate" for any PR or significant change. Cross-referen
 
 ### Documentation impact (canonical `docs/`)
 
-Architecture docs drift silently. If this change touches any of the triggers below, `git grep` the affected symbols in `docs/` and confirm the canonical docs were updated **in this change** (see the "Architecture documentation sync gate" in `AGENTS.md`).
+Architecture docs drift silently. If this change touches any of the triggers below, `git grep` the affected symbols in `docs/` and confirm the canonical docs were updated **in this change** (see the "Architecture documentation sync gate" in `CLAUDE.md`).
 
 - [ ] **Providers / scopes**: Did it add/remove/rename a Riverpod provider or `ProviderScope` (including nested scopes), or move a provider between scopes? → Update [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md) (provider scopes + diagram) and [`docs/Architecture-Overview.md`](../../../docs/Architecture-Overview.md) (scope diagram).
 - [ ] **Mixin contracts**: Did it change what a mixin watches or how effective state is computed (e.g. `AdaptiveVisibilityMixin.isVisible`, `AdaptiveInputMixin`)? → Update the relevant section of [`docs/reactive-riverpod.md`](../../../docs/reactive-riverpod.md).

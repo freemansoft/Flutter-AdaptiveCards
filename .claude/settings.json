@@ -20,6 +20,18 @@
             "command": "claude plugin install skill-creator@claude-plugins-official --scope project",
             "timeout": 30,
             "statusMessage": "Checking required plugins are installed..."
+          },
+          {
+            "type": "command",
+            "command": "claude plugin marketplace add flutter/agent-plugins --scope project",
+            "timeout": 30,
+            "statusMessage": "Checking required plugins are installed..."
+          },
+          {
+            "type": "command",
+            "command": "claude plugin install dart-flutter@dart-flutter --scope project",
+            "timeout": 30,
+            "statusMessage": "Checking required plugins are installed..."
           }
         ]
       }
@@ -27,13 +39,20 @@
   },
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "dart-flutter@dart-flutter": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
       "source": {
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "dart-flutter": {
+      "source": {
+        "source": "github",
+        "repo": "flutter/agent-plugins"
       }
     }
   }

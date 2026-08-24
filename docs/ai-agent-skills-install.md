@@ -2,100 +2,89 @@
 doc_type: how-to
 ---
 
-# Install & update vendored AI skills
+# Install & update AI agent skills
 
-Commands to install and update the vendored agent skills for this repo. For what the skills are,
-where they come from, and how agents load them, see [`AI-Agent-Support.md`](AI-Agent-Support.md).
+Commands to install and update the agent skills this repo relies on. For what the skills are, where
+they come from, and how agents load them, see [`AI-Agent-Support.md`](AI-Agent-Support.md).
 
-## Installation
+Run everything below from the **repository root**.
 
-All vendored skills are installed with the [`skills` CLI](https://www.npmjs.com/package/skills) (`npx skills`). The `--agent universal` flag installs into `.agents/skills/`, which Cursor, Antigravity, and other agents recognize. `.agents` is a generated symlink to `.claude` (recreated by `scripts/setup-claude.sh`/`.ps1`), so these writes land in `.claude/skills/`, the git-tracked source of truth.
+## What installs itself
 
-Run these commands from the **repository root**.
+Nothing needs a manual step on a fresh clone. Two mechanisms cover it:
 
-### Dart team skills
+- **Project-authored skills** (`adaptive-cards-*`) are committed under `.claude/skills/`, which Claude Code reads directly. Nothing generates or links them.
+- **Claude Code plugins** are declared at project scope in [`.claude/settings.json`](../.claude/settings.json), and `SessionStart` hooks in that same file run the marketplace-add and install commands each session. Claude Code prompts you to trust the repository folder the first time; plugins can execute arbitrary code, so the install is never silent.
+
+The manual equivalents are below, for when a hook fails or you want to install outside this repo.
+
+## Claude Code plugins
+
+### Dart and Flutter team skills
+
+The official plugin from the Dart and Flutter teams. Marketplace and plugin are both named
+`dart-flutter`. It carries 12 `dart-*` skills, 10 `flutter-*` skills, and an MCP server entry for
+`dart mcp-server`.
 
 ```bash
-npx skills add dart-lang/skills --skill '*' --agent universal --yes
+claude plugin marketplace add flutter/agent-plugins
+claude plugin install dart-flutter@dart-flutter
 ```
 
-Source: [github.com/dart-lang/skills](https://github.com/dart-lang/skills)
+Source: [github.com/flutter/agent-plugins](https://github.com/flutter/agent-plugins) ·
+Docs: [Get started developing with AI](https://docs.flutter.dev/ai/get-started)
 
-### Flutter team skills
+> The plugin's MCP entry launches a bare `dart`, which may not be the FVM-pinned SDK. Run the
+> authoritative build, test, and analyze commands yourself with an `fvm` prefix.
 
-```bash
-npx skills add flutter/skills --skill '*' --agent universal --yes
-```
+### Superpowers and skill-creator
 
-Source: [github.com/flutter/skills](https://github.com/flutter/skills)
-
-### Superpowers (Claude Code — plugin, not vendored)
-
-Superpowers is **not** installed with `npx skills` and is **not** in `skills-lock.json`. It ships as a Claude Code plugin that this repo enables at **project scope** in [`.claude/settings.json`](../.claude/settings.json), so Claude Code offers to install it when you trust the repo folder.
-
-If it did not install automatically:
+Both come from the official Anthropic marketplace:
 
 ```bash
 claude plugin install superpowers@claude-plugins-official --scope project
+claude plugin install skill-creator@claude-plugins-official --scope project
 ```
 
-Then `/reload-plugins` (or restart). Verify with `/plugin` → **Installed**. Skills are namespaced — `superpowers:brainstorming`, not `brainstorming`.
+Then `/reload-plugins` (or restart). Verify with `/plugin` → **Installed**. Skills from plugins are
+namespaced — `superpowers:brainstorming`, not `brainstorming`.
 
 Source: [github.com/obra/superpowers](https://github.com/obra/superpowers)
 
-### Superpowers (everyone but Claude — user-level)
+## Using these skills outside this repo
 
-For skills available in **all** projects when using Cursor:
-
-```bash
-npx skills add obra/superpowers --skill '*' --agent cursor --global --yes
-```
-
-Skills are copied to `~/.agents/skills/`.
-
-#### Optional: Cursor plugin (hooks and commands)
-
-Cursor **\* support will eventually be removed with the purchase of xAI **
-
-For automatic skill activation via Cursor hooks (recommended when using Cursor Agent):
-
-1. Open **Agent** chat (`Cmd+L` / `Ctrl+L`).
-2. Run:
-
-   ```text
-   /add-plugin superpowers
-   ```
-
-3. Start a new Agent session and verify with: `Do you have superpowers?`
-
-Update or remove the plugin:
-
-```text
-/plugin-update superpowers
-/plugin-remove superpowers
-```
-
-- See [Superpowers — Install on Cursor](https://obra-superpowers.mintlify.app/installation/cursor).
-- See [Superpowers - Install for Claude Code](https://obra-superpowers.mintlify.app/installation/claude-code).
-
-## Updating vendored skills
-
-From the repository root:
+Claude Code is the only agent this repo is set up for, and the plugins above are scoped to it. If you
+want the Dart and Flutter skills in a different tool, or in Claude Code across all your projects,
+install them at **user level** with the [`skills` CLI](https://www.npmjs.com/package/skills):
 
 ```bash
-npx skills update
+npx skills add dart-lang/skills --skill '*' --agent universal --global --yes
+npx skills add flutter/agent-plugins --skill '*' --agent universal --global --yes
 ```
 
-Or update a single upstream repo:
+`--global` writes to `~/.agents/skills/`. Do not install them at project scope — Claude Code would
+load a second copy alongside the plugin and pay for both every session, which is what removing the
+vendored copies fixed.
+
+> `flutter/skills` was renamed to `flutter/agent-plugins`; GitHub redirects the old URL.
+
+## Updating
+
+Plugins update from their marketplaces:
 
 ```bash
-npx skills update dart-add-unit-test flutter-add-widget-test
+claude plugin marketplace update dart-flutter
+claude plugin update dart-flutter@dart-flutter
 ```
 
-Review diffs under `.claude/skills/` (visible through `.agents/skills/` too, via the symlink) after updating. Reconcile project-specific overrides (for example `adaptive-cards-dart-flutter-fvm` wrapping bare `flutter` commands from upstream skills).
-
-Restore from lock file after a fresh clone:
+List what is installed and where it came from:
 
 ```bash
-npx skills experimental_install
+claude plugin list
+claude plugin marketplace list
 ```
+
+User-level skills installed through the `skills` CLI update with `npx skills update`.
+
+Project-authored `adaptive-cards-*` skills have no upstream — edit them directly under
+`.claude/skills/`.

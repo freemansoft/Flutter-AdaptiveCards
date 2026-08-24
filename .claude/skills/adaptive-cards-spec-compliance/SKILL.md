@@ -66,7 +66,7 @@ documented — for auditing whether a type exists in the spec and jumping to its
 page. It is **not** the source of truth for what this library implements.
 
 > **Implementation / tests / per-component gaps are owned by the package READMEs**,
-> not this skill (see the "Architecture documentation sync gate" in `AGENTS.md`).
+> not this skill (see the "Architecture documentation sync gate" in `CLAUDE.md`).
 > Read status there, and update it there:
 >
 > - Core elements, containers, inputs, actions, HostConfig →

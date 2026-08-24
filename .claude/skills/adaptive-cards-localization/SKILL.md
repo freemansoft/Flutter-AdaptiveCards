@@ -38,11 +38,11 @@ for **date/number formatting only** (`DateFormat`, `NumberFormat`), never for
 message translation. An `intl` dependency is *not* evidence that strings are
 localized.
 
-> The root `AGENTS.md` previously claimed "all UI strings must be localized in
+> The root `CLAUDE.md` previously claimed "all UI strings must be localized in
 > `.arb` files." That was aspirational and never true of the packages. This skill
 > supersedes it.
 
-The vendored **`flutter-setup-localization`** skill teaches app-level gen-l10n
+The `dart-flutter` plugin's **`flutter-setup-localization`** skill teaches app-level gen-l10n
 setup (`l10n.yaml`, `AppLocalizations.of(context)`). That is correct for
 **`widgetbook/` and the sample apps**, and **wrong for the published packages** —
 see the decision below. (It also shows bare `flutter` commands; run them with

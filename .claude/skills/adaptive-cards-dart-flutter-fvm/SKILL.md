@@ -2,9 +2,9 @@
 name: adaptive-cards-dart-flutter-fvm
 description: >
   FVM rules for the Flutter-AdaptiveCards monorepo. Prefix every `flutter` and
-  `dart` shell command with `fvm`. Use when vendored dart/flutter skills show
-  bare commands, when installing or switching the pinned SDK, or before
-  analyze, test, pub, or build_runner workflows.
+  `dart` shell command with `fvm`. Use when the `dart-flutter` plugin's
+  dart/flutter skills show bare commands, when installing or switching the
+  pinned SDK, or before analyze, test, pub, or build_runner workflows.
 ---
 
 # FVM — Pinned Flutter SDK
@@ -20,7 +20,10 @@ For **which directory** to run a command from, see
 
 ## Command substitutions
 
-When a vendored skill, doc, or tool shows a bare command, translate it:
+When a plugin skill, doc, or tool shows a bare command, translate it. The
+`dart-*`/`flutter-*` skills come from the `dart-flutter` plugin and live in the
+plugin cache, not in this repo — there is nothing here to patch, so the
+translation happens at the moment you run the command:
 
 | Shown | Run in this repo |
 | --- | --- |
@@ -61,8 +64,10 @@ cat .fvmrc
 
 ## Tooling notes
 
-- **MCP Dart tools** may use the system Flutter, not the fvm-pinned SDK. Prefer
-  shell commands via `fvm` when the pinned version matters.
+- **MCP Dart tools** do not honor the pin. The `dart-flutter` plugin registers
+  `dart-mcp-server` as a bare `dart mcp-server`, so it runs whichever SDK is
+  first on `PATH`. Treat its output as advisory and run the authoritative
+  command via `fvm` when the pinned version matters.
 - **VS Code** should set `dart.flutterSdkPath` to `.fvm/versions/<version>`.
 
 ---

@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- chore: removed the Antigravity section and plugin entry from the README development-tools list. Antigravity is no longer a supported agent for this repo.
+
 ## [0.17.0]
 
 - chore: add consumer-minimal `.pubignore` so pub.dev archives exclude `test/` and other non-consumer files.

@@ -642,10 +642,6 @@ Notes:
 
 1. VSCode told me to enable `Developer Mode` in **Windows** settings in order to run the examples. Is that for the Windows app or the Web app?
 
-### Antigravity
-
-A fair amoiunt of development has been done using Antigravity
-
 #### Plugins used during coding
 
 - Flutter
@@ -657,7 +653,6 @@ A fair amoiunt of development has been done using Antigravity
 - AdaptiveCards
 - GitHub Actions
 - GitLens
-- Antigravity
 
 ## Widget Hierarchy with Flutter-AdaptiveCards
 

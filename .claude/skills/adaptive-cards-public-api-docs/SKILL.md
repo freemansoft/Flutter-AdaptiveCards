@@ -161,5 +161,5 @@ When reviewing or authoring public API docs:
 - [ ] No comment would become wrong if the implementation were refactored
       (sign of narrating "how" instead of "why/how to use").
 
-See also **`adaptive-cards-code-review`** (Exports / public API section) and root **`AGENTS.md`**
+See also **`adaptive-cards-code-review`** (Exports / public API section) and root **`CLAUDE.md`**
 (Documentation Philosophy).
