@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Runs every result-producing probe against every model, recording each run to
-# tool/model_probes/results/.
+# $SWEEP_RESULTS (default tool/model_probes/results/).
 #
 # This exists because the methodology is easy to get wrong in ways that look
 # like a bad model rather than a bad measurement. Two rules are load-bearing:
@@ -23,10 +23,18 @@
 #   cd adaptive_chat_server_dart
 #   tool/model_probes/sweep.sh                # every model
 #   tool/model_probes/sweep.sh granite4.1:8b  # just one
+#
+#   # a different host: record beside the archive, never into it
+#   SWEEP_RESULTS=tool/model_probes/results-m5-16gb tool/model_probes/sweep.sh
 set -u
 
 cd "$(dirname "$0")/../.." || exit 1
-RES=tool/model_probes/results
+# Overridable so a second host records beside the archive rather than into it.
+# `tool/model_probes/results/` holds the Apple M1 Max / 64 GB runs that
+# check_results.dart re-derives ModelBehavior.md's shape table from, and run()
+# skips any (model, probe) whose JSON already exists -- so a sweep on another
+# machine pointed here would silently skip every model and record nothing.
+RES=${SWEEP_RESULTS:-tool/model_probes/results}
 LOG=${SWEEP_LOG:-/tmp/sweep-logs}
 mkdir -p "$LOG"
 
