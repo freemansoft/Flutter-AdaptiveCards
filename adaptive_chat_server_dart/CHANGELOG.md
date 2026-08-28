@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+- Changed: **probe results are stored per host.** `tool/model_probes/results/`
+  is now `results-m1max-64gb/`, beside `results-m5-16gb/`. The old name read as
+  "the results" when it was always one machine's, which mattered little while
+  there was one and misleads once there are two. `check_results.dart`,
+  `sync_shape_table.dart`, and their tests follow the rename; the dated entries
+  below still name the old path, which is where those runs lived at the time.
+- Changed: **`sweep.sh` requires `SWEEP_RESULTS`** rather than defaulting. There
+  is no directory that is right for every host, and a wrong one fails quietly
+  in both directions: run() skips models whose JSON already exists, so a sweep
+  aimed at another host's directory records nothing, and aimed at a fresh one it
+  files these timings under that host's name. This mirrors `--system-prompt-file`
+  and `--seed-card-file` -- a run says what it wants or gets nothing.
+
 - Docs: **tone pass over `ModelBehavior.md`, `README.md`, and this file — analyst
   register, not publicist.** Wording only: no figure, date, verdict, or claim
   changed, verified by diffing the numeric tokens of each file against the

@@ -96,7 +96,8 @@ case-insensitively, so re-casing a title is kept rather than counted as a loss.
 
 ## Recording a run
 
-`shape_ab.dart --json <file>` writes the run to [`results/`](results/): every
+`shape_ab.dart --json <file>` writes the run to a per-host results directory
+([`results-m1max-64gb/`](results-m1max-64gb/), [`results-m5-16gb/`](results-m5-16gb/)): every
 call it made, the headline figures, the host it ran on, and the **digests of
 the prompt assets it used**. Commit the file.
 
@@ -109,7 +110,7 @@ recorded digest can.
 ```sh
 fvm dart run tool/model_probes/shape_ab.dart \
   --model qwen3.8:27b-nvfp4 --samples 2 \
-  --json tool/model_probes/results/qwen3.8_27b-nvfp4/shape_ab-seeded.json
+  --json tool/model_probes/results-m1max-64gb/qwen3.8_27b-nvfp4/shape_ab-seeded.json
 ```
 
 `check_results.dart` then reads them, and **runs in CI** — which is worth being

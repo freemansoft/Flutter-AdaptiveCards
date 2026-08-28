@@ -21,9 +21,9 @@ rows, and two of them are easy to get wrong:
   Stalls         Calls that hit the per-call ceiling, same seven probes.
                  Reported beside the latency, never folded into it.
 
-    python3 tool/model_probes/perf_table.py tool/model_probes/results
+    python3 tool/model_probes/perf_table.py tool/model_probes/results-m1max-64gb
     python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb \
-        --compare tool/model_probes/results
+        --compare tool/model_probes/results-m1max-64gb
 """
 
 import argparse

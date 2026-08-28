@@ -798,7 +798,7 @@ sequenceDiagram
   loop for each model M
     Note over D: refuse to start if another probe is running —<br/>concurrent runs distort every number below
     loop for each of the 6 probes
-      D->>P: dart run PROBE --model M --timeout N --json results/M/PROBE.json
+      D->>P: dart run PROBE --model M --timeout N --json $SWEEP_RESULTS/M/PROBE.json
       P->>O: POST /api/chat, first call, keep_alive 30m
       O->>V: load weights
       Note over V: a cold call costs ~6-7x a warm one,<br/>51 s against 8 s — excluded from the median
