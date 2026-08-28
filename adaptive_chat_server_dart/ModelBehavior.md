@@ -284,7 +284,7 @@ A second full run is deliberately _not_ taken. Min-of-two is the usual noise fil
 | `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 2.3 s         | 15 min     | 2      |
 | `nemotron-3-nano:4b`                                | 2.6 GB  | 2.6 s         | 18 min     | 1      |
 | `granite4.1:8b`                                     | 5.0 GB  | 2.7 s         | 14 min     | 0      |
-| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | 4.4 s         | 39 min     | 0      |
+| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | 4.3 s         | 39 min     | 0      |
 | `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 6.2 s         | 37 min     | 0      |
 | `qwen3.5:9b`                                        | 6.1 GB  | 6.9 s         | 34 min     | 0      |
 | `gpt-oss:20b`                                       | 12.8 GB | 7.3 s         | 48 min     | 1      |
