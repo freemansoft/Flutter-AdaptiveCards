@@ -182,6 +182,7 @@ void main() {
         variant: 'unaided',
         measuredAt: '2026-08-20',
         machine: 'Apple M1 Max / 64 GB',
+        ollama: '0.33.1',
         samples: 2,
         temperature: 0,
         assets: const {'card_system_prompt.txt': 'abc123def456'},
@@ -193,7 +194,40 @@ void main() {
       expect(back.toJson(), run.toJson());
       expect(back.variant, 'unaided');
       expect(back.machine, 'Apple M1 Max / 64 GB');
+      expect(back.ollama, '0.33.1');
       expect(back.calls.single.condition, 'cold');
+    });
+
+    test('reads a run recorded before the version was stamped', () {
+      // The archive holds 113 of these. A new field must not make them
+      // unreadable, or check_results.dart stops being able to police them.
+      final legacy = <String, dynamic>{
+        'probe': 'shape_ab',
+        'model': 'qwen2.5-coder:7b',
+        'measuredAt': '2026-08-20',
+        'machine': 'Apple M1 Max / 64 GB',
+        'samples': 2,
+        'assets': {'card_system_prompt.txt': 'abc123def456'},
+        'summary': <String, dynamic>{},
+        'calls': [
+          {'case': 'date', 'sample': 0, 'pass': true, 'label': 'card[2]'},
+        ],
+      };
+      final run = ProbeRun.fromJson(legacy);
+      expect(run.ollama, isNull);
+      // Absent rather than null-valued: an unstamped run should read as "not
+      // recorded", which is true, where an explicit null invites being read
+      // as a measured absence.
+      expect(run.toJson().containsKey('ollama'), isFalse);
+    });
+  });
+
+  group('ollama version detection', () {
+    test('reads a version, or reports that it could not', () {
+      final v = detectOllamaVersion();
+      if (v != null) {
+        expect(v, matches(r'^\d+\.\d+\.\d+$'));
+      }
     });
   });
 
