@@ -54,6 +54,89 @@ const expectedProbes = {
 /// gated on that model's own `tool_call_probe` verdict.
 const conditionalProbes = {'shape_ab-channel-tool': 'supported'};
 
+/// The host whose runs the shape-coverage table in `ModelBehavior.md`
+/// reports.
+///
+/// The table is one machine's measurement, not a consensus across machines:
+/// its cold-start and with-history figures come from the Apple M1 Max runs,
+/// and the M5 columns of the *performance* table are latency only. Checking
+/// the shape table against every host would key two runs by the same model
+/// and report a mismatch that is not one.
+const shapeTableHost = 'Apple M1 Max / 64 GB';
+
+/// Every per-host results directory under [probesDir].
+///
+/// Results are stored per host -- `results-m1max-64gb/`, `results-m5-16gb/` --
+/// because latency is a property of the box as much as the model. Discovered
+/// rather than listed so adding a host is a directory, not an edit here.
+List<String> resultsDirs(String probesDir) {
+  final dir = Directory(probesDir);
+  if (!dir.existsSync()) return const [];
+  return [
+    for (final e in dir.listSync().whereType<Directory>())
+      if (p.basename(e.path).startsWith('results-')) e.path,
+  ]..sort();
+}
+
+/// The distinct hosts recorded in each per-host results directory.
+Map<String, Set<String>> hostsByDirectory(String probesDir) => {
+  for (final d in resultsDirs(probesDir))
+    p.basename(d): {
+      for (final r in readAllResults(d))
+        if (r.machine != null) r.machine!,
+    },
+};
+
+/// Fails a directory that mixes hosts.
+///
+/// The per-host layout is what keeps the table check meaningful, and nothing
+/// else enforces it: `sweep.sh` writes wherever `SWEEP_RESULTS` points, so a
+/// sweep aimed at the wrong directory files one machine's timings under
+/// another's name and no figure looks wrong until someone compares hosts.
+List<Finding> checkOneHostPerDirectory(Map<String, Set<String>> byDir) => [
+  for (final e in byDir.entries)
+    if (e.value.length > 1)
+      Finding(
+        fatal: true,
+        message:
+            '${e.key} holds runs from ${e.value.length} hosts '
+            '(${(e.value.toList()..sort()).join(', ')}) — results are stored '
+            'per host, so one of these was swept into the wrong directory',
+      ),
+];
+
+/// Fails a directory that stamps the Ollama version on some runs but not all.
+///
+/// Written after `shape_ab.dart` was found building `ProbeRun` directly and
+/// missing the stamp its five sibling probes applied: 18 of one sweep's 58
+/// files recorded no runtime, including the file every published median
+/// derives from. A directory where some runs know their runtime and others do
+/// not is that bug, and nothing else catches it. Directories where *no* run is
+/// stamped are left alone -- runs recorded before the field existed cannot be
+/// repaired, and their version is not recoverable.
+List<Finding> checkVersionStampConsistency(String probesDir) {
+  final findings = <Finding>[];
+  for (final d in resultsDirs(probesDir)) {
+    final runs = readAllResults(d);
+    final unstamped = runs.where((r) => r.ollama == null).toList();
+    if (unstamped.isEmpty || unstamped.length == runs.length) continue;
+    final names =
+        (unstamped.map((r) => '${r.model} ${runLabel(r)}').toSet().toList()
+          ..sort());
+    findings.add(
+      Finding(
+        fatal: true,
+        message:
+            '${p.basename(d)}: ${unstamped.length} of ${runs.length} runs '
+            'record no Ollama version while the rest do — '
+            '${names.take(3).join('; ')}'
+            '${names.length > 3 ? '; and ${names.length - 3} more' : ''}',
+      ),
+    );
+  }
+  return findings;
+}
+
 /// One thing wrong, and whether it should fail the build.
 class Finding {
   /// Creates a finding.
@@ -150,8 +233,22 @@ List<Finding> check({
   required List<String> launched,
   required Map<String, String> currentAssets,
   required String markdown,
+  String tableHost = shapeTableHost,
 }) {
   final findings = <Finding>[];
+
+  // Checks 1 and 2 run over every host: a run that disagrees with its own
+  // calls, or was measured against a prompt the tree no longer has, is wrong
+  // on any machine. Checks 3 and 4 are scoped to [tableHost], because the
+  // shape table and the launch-set coverage expectation both describe one
+  // machine.
+  // A run that never recorded its host is included rather than skipped. Older
+  // runs predate the stamp, and silently dropping them from the table check
+  // would turn a missing field into missing coverage -- the failure mode this
+  // checker exists to prevent.
+  final canonical = results
+      .where((r) => r.machine == null || r.machine == tableHost)
+      .toList();
 
   // 1. Each run must agree with its own calls. A probe whose printed summary
   //    disagrees with the calls it made is the one error a human reading the
@@ -202,13 +299,13 @@ List<Finding> check({
   // 3. The published tables must match the recorded runs.
   final rows = shapeTableRows(markdown);
   final seeded = {
-    for (final r in results.where(
+    for (final r in canonical.where(
       (r) => r.probe == 'shape_ab' && r.variant == 'seeded',
     ))
       r.model: r,
   };
   final unaided = {
-    for (final r in results.where(
+    for (final r in canonical.where(
       (r) => r.probe == 'shape_ab' && r.variant == 'unaided',
     ))
       r.model: r,
@@ -278,14 +375,14 @@ List<Finding> check({
   //    be looked at rather than discovered by accident.
   for (final model in launched) {
     final have = {
-      for (final r in results.where((r) => r.model == model))
+      for (final r in canonical.where((r) => r.model == model))
         '${r.probe}${r.variant == null ? '' : '-${r.variant}'}',
     };
     // Conditional probes join the expectation only for models whose
     // recorded capability verdict says the run is possible at all.
     final expected = {...expectedProbes};
     for (final entry in conditionalProbes.entries) {
-      final verdict = results
+      final verdict = canonical
           .where((r) => r.model == model && r.probe == 'tool_call_probe')
           .map((r) => r.summary['verdict'])
           .firstOrNull;
@@ -309,24 +406,31 @@ List<Finding> check({
 
 Future<void> main(List<String> argv) async {
   final root = Directory.current.path;
-  final results = readAllResults(
-    p.join(root, 'tool', 'model_probes', 'results-m1max-64gb'),
-  );
+  final probesDir = p.join(root, 'tool', 'model_probes');
+  final results = [
+    for (final d in resultsDirs(probesDir)) ...readAllResults(d),
+  ];
   final launched = launchedModels(p.join(root, '..', '.vscode', 'launch.json'));
   final currentAssets = currentAssetDigests(p.join(root, 'assets'));
   final markdown = File(p.join(root, 'ModelBehavior.md')).readAsStringSync();
 
+  final byDir = hostsByDirectory(probesDir);
   stdout.writeln(
-    'check_results: ${results.length} recorded run(s), '
+    'check_results: ${results.length} recorded run(s) across '
+    '${byDir.length} host director(ies), '
     '${launched.length} model(s) in launch.json',
   );
 
-  final findings = check(
-    results: results,
-    launched: launched,
-    currentAssets: currentAssets,
-    markdown: markdown,
-  );
+  final findings = [
+    ...checkOneHostPerDirectory(byDir),
+    ...checkVersionStampConsistency(probesDir),
+    ...check(
+      results: results,
+      launched: launched,
+      currentAssets: currentAssets,
+      markdown: markdown,
+    ),
+  ];
 
   for (final f in findings) {
     stdout.writeln('${f.fatal ? "FAIL" : "note"}  ${f.message}');
