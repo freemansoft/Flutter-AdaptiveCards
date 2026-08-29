@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Changed: **`check_results.dart` reads every host, not one.** It read only
+  `results-m1max-64gb/`, so the 58 files of the Apple M5 sweep were committed
+  without CI ever checking them. It now discovers every `results-*` directory
+  and checks 171 runs. Self-consistency and asset staleness apply to all hosts;
+  the shape-table and launch-set-coverage checks stay scoped to the host the
+  table describes, since running them across hosts would key two runs by the
+  same model and report a mismatch that is not one.
+- Added: **two checks that guard the per-host layout.** A results directory
+  holding runs from more than one host now fails — `sweep.sh` writes wherever
+  `SWEEP_RESULTS` points, so a sweep aimed at the wrong directory files one
+  machine's timings under another's name and nothing looks wrong until someone
+  compares hosts. And a directory that stamps the Ollama version on some runs
+  but not all now fails, which is the shape of the `shape_ab.dart` bug that left
+  18 of one sweep's 58 files without a runtime.
+
 - Added: **`ModelBehavior.md` records latency for a second host.** The eight
   models the roster marks 16 GB-capable were swept on an **Apple M5 / 16 GB**
   MacBook Air on Ollama 0.33.1, and the performance table now carries both hosts

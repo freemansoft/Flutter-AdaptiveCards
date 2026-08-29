@@ -287,23 +287,173 @@ void main() {
     });
   });
 
+  group('host awareness', () {
+    ProbeRun shapeRun({
+      required String model,
+      required String machine,
+      required String variant,
+      required int cold,
+      required int warm,
+    }) => ProbeRun(
+      probe: 'shape_ab',
+      model: model,
+      variant: variant,
+      measuredAt: '2026-08-28',
+      machine: machine,
+      samples: 2,
+      assets: const {'card_system_prompt.txt': 'abc123def456'},
+      summary: {'cases': 2, 'coldStart': cold, 'withHistory': warm},
+      calls: [
+        for (var i = 0; i < 2; i++)
+          ProbeCall(
+            caseId: 'c$i',
+            sample: 0,
+            pass: i < cold,
+            label: 'card[1]',
+            condition: 'cold',
+          ),
+        for (var i = 0; i < 2; i++)
+          ProbeCall(
+            caseId: 'c$i',
+            sample: 0,
+            pass: i < warm,
+            label: 'card[1]',
+            condition: 'warm',
+          ),
+      ],
+    );
+
+    const table = '''
+| Model | Weights | Cold-start | With history | Warm, pre-seed | Seed | Cascade | Eroded by history |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `m:1` | 1.0 GB | **2/2** | 2/2 | 1/2 | no effect (0) | 3/3 | none |
+''';
+
+    test('a second host does not overwrite the table check', () {
+      // The shape table is one host's measurement. Another host's runs are
+      // keyed by the same model, so without a host filter they replace the
+      // canonical run and the table reports a mismatch that is not one.
+      final findings = check(
+        results: [
+          shapeRun(
+            model: 'm:1',
+            machine: 'Host A',
+            variant: 'seeded',
+            cold: 2,
+            warm: 2,
+          ),
+          shapeRun(
+            model: 'm:1',
+            machine: 'Host B',
+            variant: 'seeded',
+            cold: 1,
+            warm: 1,
+          ),
+        ],
+        launched: const [],
+        currentAssets: const {'card_system_prompt.txt': 'abc123def456'},
+        markdown: table,
+        tableHost: 'Host A',
+      );
+      expect(findings.where((f) => f.fatal).map((f) => f.message), isEmpty);
+    });
+
+    test('a second host is still checked against its own calls', () {
+      // Self-consistency is host-independent: a run whose summary disagrees
+      // with the calls it made is wrong on any machine, and skipping the
+      // non-canonical host would leave 58 files unchecked.
+      const bad = ProbeRun(
+        probe: 'shape_ab',
+        model: 'm:1',
+        variant: 'seeded',
+        measuredAt: '2026-08-28',
+        machine: 'Host B',
+        samples: 2,
+        assets: {'card_system_prompt.txt': 'abc123def456'},
+        summary: {'cases': 2, 'coldStart': 9, 'withHistory': 2},
+        calls: [
+          ProbeCall(
+            caseId: 'c0',
+            sample: 0,
+            pass: true,
+            label: 'card[1]',
+            condition: 'cold',
+          ),
+        ],
+      );
+      final findings = check(
+        results: [bad],
+        launched: const [],
+        currentAssets: const {'card_system_prompt.txt': 'abc123def456'},
+        markdown: table,
+        tableHost: 'Host A',
+      );
+      expect(
+        findings.where((f) => f.fatal).map((f) => f.message).join(),
+        contains('summary.coldStart says 9'),
+      );
+    });
+
+    test('a second host is still checked for stale assets', () {
+      final findings = check(
+        results: [
+          shapeRun(
+            model: 'm:1',
+            machine: 'Host B',
+            variant: 'seeded',
+            cold: 2,
+            warm: 2,
+          ),
+        ],
+        launched: const ['m:1'],
+        currentAssets: const {'card_system_prompt.txt': 'newdigest0000'},
+        markdown: table,
+        tableHost: 'Host A',
+      );
+      expect(
+        findings.map((f) => f.message).join(),
+        contains('tree has newdigest0000'),
+      );
+    });
+
+    test('one results directory must hold one host', () {
+      // The per-host layout is the invariant that keeps the table check
+      // meaningful. A sweep aimed at the wrong directory breaks it silently.
+      final findings = checkOneHostPerDirectory({
+        'results-one-host': {'Host A'},
+        'results-two-hosts': {'Host A', 'Host B'},
+      });
+      expect(findings.where((f) => f.fatal), hasLength(1));
+      expect(
+        findings.single.message,
+        allOf(contains('results-two-hosts'), contains('2 hosts')),
+      );
+    });
+  });
+
   group('the committed results', () {
     test('every recorded run parses and agrees with itself', () {
       // Guards the backfilled files themselves: a hand-written JSON that no
-      // probe produced is exactly where a typo would hide.
-      final runs = readAllResults('tool/model_probes/results-m1max-64gb');
-      expect(runs, isNotEmpty);
-      for (final run in runs) {
-        expect(run.model, isNotEmpty, reason: run.probe);
-        expect(run.calls, isNotEmpty, reason: run.model);
-        expect(run.assets, isNotEmpty, reason: run.model);
-        expect(run.machine, isNotNull, reason: run.model);
+      // probe produced is exactly where a typo would hide. Both hosts, so
+      // the M5 sweep is covered too.
+      for (final dir in resultsDirs('tool/model_probes')) {
+        final runs = readAllResults(dir);
+        expect(runs, isNotEmpty, reason: dir);
+        for (final run in runs) {
+          expect(run.model, isNotEmpty, reason: run.probe);
+          expect(run.calls, isNotEmpty, reason: run.model);
+          expect(run.assets, isNotEmpty, reason: run.model);
+          expect(run.machine, isNotNull, reason: run.model);
+        }
       }
     });
 
     test('the checker passes against the real tree', () {
       final findings = check(
-        results: readAllResults('tool/model_probes/results-m1max-64gb'),
+        results: [
+          for (final d in resultsDirs('tool/model_probes'))
+            ...readAllResults(d),
+        ],
         launched: launchedModels('../.vscode/launch.json'),
         currentAssets: currentAssetDigests('assets'),
         markdown: File('ModelBehavior.md').readAsStringSync(),
@@ -312,6 +462,22 @@ void main() {
         findings.where((f) => f.fatal).map((f) => f.message).toList(),
         isEmpty,
       );
+    });
+
+    test('each committed results directory holds exactly one host', () {
+      final findings = checkOneHostPerDirectory(
+        hostsByDirectory('tool/model_probes'),
+      );
+      expect(findings.map((f) => f.message).toList(), isEmpty);
+    });
+
+    test('a directory that stamps the Ollama version stamps it everywhere', () {
+      // Not "every run names its runtime": the M1 Max archive predates the
+      // field and cannot be repaired. The defect worth catching is a
+      // directory where some probes stamp and others do not, which is how
+      // shape_ab.dart went 18 files without one.
+      final findings = checkVersionStampConsistency('tool/model_probes');
+      expect(findings.map((f) => f.message).toList(), isEmpty);
     });
   });
 }
