@@ -24,6 +24,20 @@ rows, and two of them are easy to get wrong:
     python3 tool/model_probes/perf_table.py tool/model_probes/results-m1max-64gb
     python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb \
         --compare tool/model_probes/results-m1max-64gb
+    python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb \
+        --compare tool/model_probes/results-m1max-64gb --by-probe
+
+`--by-probe` splits the wall clock per probe instead of summing it. It exists
+because the summed columns can disagree in a way that looks like an error and is
+not: `llama3-chatqa:8b` matches the M1 Max median at 1.0x while its full sweep
+goes 3 min to 5, because the median is one greedy probe and the sweep is seven.
+Stalls are excluded here -- they measure the ceiling rather than throughput, and
+one stalled call at 120 s would swamp a probe that otherwise runs in seconds.
+
+Do not read a probe-class pattern off this without checking it across models. The
+greedy/sampled split looks large on `llama3-chatqa:8b` (1.30x against 2.16x) and
+nearly vanishes over all eight (mean 1.25x against 1.33x), with two models
+running the other way.
 """
 
 import argparse
@@ -82,6 +96,71 @@ def read_model(model_dir):
     }
 
 
+PROBE_ORDER = [
+    "json_format_probe",
+    "tool_call_probe",
+    "temperature_matrix",
+    "temperature_stress",
+    "shape_ab-seeded",
+    "shape_ab-unaided",
+    "cascade_ab",
+]
+
+
+def read_model_probes(model_dir):
+    """Wall clock per probe, stalls excluded, keyed by probe file stem."""
+    out = {}
+    model = None
+    for path in sorted(model_dir.glob("*.json")):
+        if path.name == CHANNEL_PROBE:
+            continue
+        run = json.loads(path.read_text())
+        model = run["model"]
+        out[path.stem] = sum(
+            c["ms"]
+            for c in run["calls"]
+            if c.get("ms") is not None and not is_stall(c)
+        )
+    return model, out
+
+
+def print_by_probe(results_dir, compare_dir):
+    rows = []
+    for model_dir in sorted(pathlib.Path(results_dir).iterdir()):
+        if not model_dir.is_dir():
+            continue
+        model, probes = read_model_probes(model_dir)
+        if not model:
+            continue
+        base = {}
+        if compare_dir:
+            bd = pathlib.Path(compare_dir) / model_dir.name
+            if bd.is_dir():
+                _, base = read_model_probes(bd)
+        rows.append((model, probes, base))
+    if not rows:
+        sys.exit(f"no recorded runs under {results_dir}")
+
+    seen = [p for p in PROBE_ORDER if any(p in r[1] for r in rows)]
+    seen += sorted({p for r in rows for p in r[1]} - set(seen))
+
+    for model, probes, base in sorted(rows, key=lambda r: r[0]):
+        print(f"\n{model}")
+        for p in seen:
+            cur = probes.get(p)
+            if cur is None:
+                continue
+            line = f"  {p:22s} {cur / 1000:8.1f}s"
+            b = base.get(p)
+            if b:
+                line += f"  vs {b / 1000:8.1f}s   {cur / b:.2f}x"
+            elif base:
+                # A zero baseline is real: tool_call_probe records no per-call
+                # ms on either host, so a ratio there would be invented.
+                line += f"  vs {(b or 0) / 1000:8.1f}s        n/a"
+            print(line)
+
+
 def read_dir(results_dir):
     rows = []
     for model_dir in sorted(pathlib.Path(results_dir).iterdir()):
@@ -97,7 +176,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("results_dir")
     ap.add_argument("--compare", help="second results dir, adds a ratio column")
+    ap.add_argument(
+        "--by-probe",
+        action="store_true",
+        help="split wall clock per probe instead of summing it",
+    )
     args = ap.parse_args()
+
+    if args.by_probe:
+        print_by_probe(args.results_dir, args.compare)
+        return
 
     rows = read_dir(args.results_dir)
     if not rows:
@@ -118,14 +206,24 @@ def main():
     head = "| Model | Median s/call | Full sweep | Stalls |"
     rule = "| ----- | ------------- | ---------- | ------ |"
     if baseline:
-        head = head[:-1] + " vs baseline |"
-        rule = rule[:-1] + " ------------ |"
+        # Append a column, keeping the trailing pipe: stripping it merges the
+        # new header into the previous cell and the table stops parsing.
+        head += " vs baseline |"
+        rule += " ------------ |"
     print(head)
     print(rule)
     for r in sorted(
         rows, key=lambda r: (r["median_s"] is None, r["median_s"] or 0)
     ):
-        med = "n/a" if r["median_s"] is None else f"{r['median_s']:.1f} s"
+        # Two decimals under a second: at 253 ms vs 248 ms -- a 2% difference --
+        # one-decimal rounding straddles 0.25 and prints "0.3 s" against "0.2 s",
+        # which reads as 33% and contradicts the ratio column beside it.
+        if r["median_s"] is None:
+            med = "n/a"
+        elif r["median_s"] < 1:
+            med = f"{r['median_s']:.2f} s"
+        else:
+            med = f"{r['median_s']:.1f} s"
         line = f"| `{r['model']}` | {med} | {r['sweep_min']} min | {r['stalls']} |"
         if baseline:
             b = baseline.get(r["model"])

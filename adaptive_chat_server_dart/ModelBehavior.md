@@ -273,7 +273,7 @@ A second full run is deliberately _not_ taken. Min-of-two is the usual noise fil
 
 | Model                                               | Weights | Median s/call | Full sweep | Stalls |
 | --------------------------------------------------- | ------- | ------------- | ---------- | ------ |
-| `llama3-chatqa:8b`                                  | 4.3 GB  | 0.3 s         | 3 min      | 0      |
+| `llama3-chatqa:8b`                                  | 4.3 GB  | 0.25 s        | 3 min      | 0      |
 | `granite4.1:3b`                                     | 2.0 GB  | 1.1 s         | 34 min     | 13     |
 | `llama3.2:latest`                                   | 1.9 GB  | 1.4 s         | 12 min     | 2      |
 | `qwen3-coder:30b`                                   | 17.3 GB | 1.6 s         | 10 min     | 0      |
