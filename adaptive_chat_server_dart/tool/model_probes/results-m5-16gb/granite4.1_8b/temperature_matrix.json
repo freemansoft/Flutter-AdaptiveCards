@@ -22,7 +22,7 @@
       "pass": true,
       "label": "card[3]",
       "setting": "greedy(t=0)",
-      "ms": 18880
+      "ms": 16217
     },
     {
       "case": "choice",
@@ -30,7 +30,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "greedy(t=0)",
-      "ms": 4404
+      "ms": 3791
     },
     {
       "case": "facts",
@@ -38,7 +38,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 7557
+      "ms": 6236
     },
     {
       "case": "table",
@@ -46,7 +46,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 7637
+      "ms": 6244
     },
     {
       "case": "chart",
@@ -54,7 +54,7 @@
       "pass": false,
       "label": "prose-with-card (user sees raw JSON)",
       "setting": "greedy(t=0)",
-      "ms": 8400
+      "ms": 6844
     },
     {
       "case": "rating",
@@ -62,7 +62,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 1085
+      "ms": 868
     },
     {
       "case": "prose",
@@ -70,7 +70,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 2877
+      "ms": 2365
     },
     {
       "case": "date",
@@ -78,7 +78,7 @@
       "pass": true,
       "label": "card[3]",
       "setting": "low(t=0.2)",
-      "ms": 3406
+      "ms": 2804
     },
     {
       "case": "choice",
@@ -86,7 +86,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "low(t=0.2)",
-      "ms": 4496
+      "ms": 3684
     },
     {
       "case": "facts",
@@ -94,7 +94,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "low(t=0.2)",
-      "ms": 6722
+      "ms": 8155
     },
     {
       "case": "table",
@@ -102,7 +102,7 @@
       "pass": true,
       "label": "prose",
       "setting": "low(t=0.2)",
-      "ms": 9671
+      "ms": 6085
     },
     {
       "case": "chart",
@@ -110,62 +110,6 @@
       "pass": false,
       "label": "prose-with-card (user sees raw JSON)",
       "setting": "low(t=0.2)",
-      "ms": 8346
-    },
-    {
-      "case": "rating",
-      "sample": 0,
-      "pass": true,
-      "label": "card[1]",
-      "setting": "low(t=0.2)",
-      "ms": 1060
-    },
-    {
-      "case": "prose",
-      "sample": 0,
-      "pass": true,
-      "label": "prose",
-      "setting": "low(t=0.2)",
-      "ms": 3043
-    },
-    {
-      "case": "date",
-      "sample": 0,
-      "pass": true,
-      "label": "card[3]",
-      "setting": "recommended(t=0.6)",
-      "ms": 4477
-    },
-    {
-      "case": "choice",
-      "sample": 0,
-      "pass": true,
-      "label": "card[2]",
-      "setting": "recommended(t=0.6)",
-      "ms": 4615
-    },
-    {
-      "case": "facts",
-      "sample": 0,
-      "pass": true,
-      "label": "card[1]",
-      "setting": "recommended(t=0.6)",
-      "ms": 11960
-    },
-    {
-      "case": "table",
-      "sample": 0,
-      "pass": true,
-      "label": "prose",
-      "setting": "recommended(t=0.6)",
-      "ms": 7279
-    },
-    {
-      "case": "chart",
-      "sample": 0,
-      "pass": true,
-      "label": "prose",
-      "setting": "recommended(t=0.6)",
       "ms": 6774
     },
     {
@@ -173,8 +117,64 @@
       "sample": 0,
       "pass": true,
       "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 881
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 2493
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
       "setting": "recommended(t=0.6)",
-      "ms": 1113
+      "ms": 2428
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3696
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 7437
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 6718
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 5729
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 912
     },
     {
       "case": "prose",
@@ -182,7 +182,7 @@
       "pass": true,
       "label": "prose",
       "setting": "recommended(t=0.6)",
-      "ms": 2347
+      "ms": 2646
     }
   ]
 }

@@ -11,8 +11,8 @@
   },
   "summary": {
     "calls": 10,
-    "passed": 8,
-    "cards": 3,
+    "passed": 10,
+    "cards": 5,
     "prose": 5
   },
   "calls": [
@@ -22,7 +22,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 9831
+      "ms": 8769
     },
     {
       "case": "bigtable",
@@ -30,7 +30,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 10299
+      "ms": 8975
     },
     {
       "case": "nested",
@@ -38,7 +38,7 @@
       "pass": true,
       "label": "card[9]",
       "setting": "greedy(t=0)",
-      "ms": 21409
+      "ms": 18952
     },
     {
       "case": "multiline",
@@ -46,7 +46,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 7596
+      "ms": 6585
     },
     {
       "case": "mixed",
@@ -54,15 +54,15 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 14452
+      "ms": 12513
     },
     {
       "case": "codeblock",
       "sample": 0,
       "pass": true,
-      "label": "prose",
+      "label": "card[2]",
       "setting": "recommended(t=0.6)",
-      "ms": 6662
+      "ms": 6663
     },
     {
       "case": "bigtable",
@@ -70,15 +70,15 @@
       "pass": true,
       "label": "prose",
       "setting": "recommended(t=0.6)",
-      "ms": 11083
+      "ms": 9083
     },
     {
       "case": "nested",
       "sample": 0,
-      "pass": false,
-      "label": "duplicate-key (duplicate key \"type\")",
+      "pass": true,
+      "label": "card[9]",
       "setting": "recommended(t=0.6)",
-      "ms": 25934
+      "ms": 19733
     },
     {
       "case": "multiline",
@@ -86,15 +86,15 @@
       "pass": true,
       "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 7915
+      "ms": 8048
     },
     {
       "case": "mixed",
       "sample": 0,
-      "pass": false,
-      "label": "prose-with-card (user sees raw JSON)",
+      "pass": true,
+      "label": "prose",
       "setting": "recommended(t=0.6)",
-      "ms": 16551
+      "ms": 13334
     }
   ]
 }
