@@ -10,6 +10,17 @@ It exists because the card path turned out to be a strict and discriminating tes
 
 So read this as a **lab notebook, not a requirement**. Its findings are about the models, and should transfer to any workload that asks a local model for constrained, schema-shaped JSON — the demo is the instrument, not the subject. What that also means: nothing here is a supported product surface. The probes are hand-run, the numbers age as models and prompts change, and none of it gates the demo working.
 
+## The words this file uses
+
+Three terms carry most of the weight below, and they are the vocabulary of
+[`tool/model_probes/`](tool/model_probes/README.md) rather than of Adaptive Cards.
+
+- A **probe** is one script in that directory. It sends a fixed set of questions to one model over Ollama's `/api/chat`, judges each reply with the server's own parser, and writes every call to a JSON file. `shape_ab.dart` asks whether the reply used the right element type; `temperature_stress.dart` asks whether hard requests survive three temperatures. Seven of them produce a per-model result; the rest are shared plumbing or debugging aids, and [the README](tool/model_probes/README.md) lists which is which.
+- A **sweep** means one of two things, and which one is usually clear from the number beside it. A model's sweep is its seven probes end to end — that is the `Full sweep` column, minutes. The sweep is all models end to end, one after another, which takes hours.
+- The **sweep driver** is [`sweep.sh`](tool/model_probes/sweep.sh), which runs the second of those. Its job is mostly sequencing: one model resident at a time, unload and wait for idle between models, skip any `(model, probe)` already recorded so an interrupted run resumes. Those rules are not housekeeping — [a sweep that skipped the unload produced a wrong answer that looked like a slow model](#the-sweep-and-why-the-unload-step-matters).
+
+A **case** is one question inside a probe, and **samples** is how many times each case is asked. Most figures here are `--samples 2`, which is why a one-point difference between two models is noise rather than a ranking.
+
 ## Why this file exists
 
 Every finding here was originally recorded in a plan or a design spec. Those documents are dated records — they describe what was true during one piece of work and are archived when it ends. The _results_ outlive them: knowing that a model ignores `format`, or that its own recommended temperature scores worse than `0`, stays useful long after the plan that discovered it is history.
@@ -810,6 +821,14 @@ All of the above come from [`tool/model_probes/`](tool/model_probes/README.md), 
 
 ### The sweep, and why the unload step matters
 
+`sweep.sh` walks the model list, runs every probe against one model, unloads it,
+and moves on. The diagram below is that loop. Two of its steps look like
+housekeeping and are not: the `ollama stop` after each model, and the wait for
+the GPU to go idle before the next one starts. Both exist because a probe cannot
+tell a slow model from a busy machine — the reply just takes longer — so a
+measurement taken while something else is resident is wrong in a way that reads
+as a model result.
+
 ```mermaid
 sequenceDiagram
   participant D as sweep driver
@@ -819,7 +838,7 @@ sequenceDiagram
 
   loop for each model M
     Note over D: refuse to start if another probe is running —<br/>concurrent runs distort every number below
-    loop for each of the 6 probes
+    loop for each of the 7 standard probes
       D->>P: dart run PROBE --model M --timeout N --json $SWEEP_RESULTS/M/PROBE.json
       P->>O: POST /api/chat, first call, keep_alive 30m
       O->>V: load weights

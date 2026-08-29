@@ -17,6 +17,16 @@
   sitting on a floor that size is not cleanly separable from it. Thermal
   throttling stays plausible and unproven: no die temperature or clock frequency
   was read, and server uptime, ambient temperature, and OS state all varied.
+- Fixed: **the sweep diagram said 6 probes when there are 7.** It had gone stale
+  when a probe was added; `expectedProbes` in `check_results.dart` carries the
+  real count.
+- Docs: **`ModelBehavior.md` defines probe, sweep, and sweep driver.** It used
+  "probe" 61 times and "sweep" 43 without introducing either, and "sweep driver"
+  appeared once, as an unexplained label in a sequence diagram. The vocabulary
+  now sits before first use, including that "sweep" means both one model's seven
+  probes and all models end to end — the two senses the `Full sweep` column and
+  the four-hour figure each use. The sweep section also opens with prose rather
+  than with a mermaid diagram.
 
 - Changed: **`check_results.dart` reads every host, not one.** It read only
   `results-m1max-64gb/`, so the 58 files of the Apple M5 sweep were committed
