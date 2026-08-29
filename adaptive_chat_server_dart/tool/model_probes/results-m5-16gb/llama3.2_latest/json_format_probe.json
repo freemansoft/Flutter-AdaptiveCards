@@ -1,0 +1,70 @@
+{
+  "probe": "json_format_probe",
+  "model": "llama3.2:latest",
+  "measuredAt": "2026-08-28",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.33.1",
+  "samples": 2,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "honorsFormat": true,
+    "verdict": "honored",
+    "calls": 6,
+    "passed": 6,
+    "cards": 6,
+    "prose": 0
+  },
+  "calls": [
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "format=none",
+      "ms": 8701
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "format=none",
+      "ms": 3580
+    },
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=json",
+      "ms": 1630
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=json",
+      "ms": 1629
+    },
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=schema",
+      "ms": 1506
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "format=schema",
+      "ms": 1503
+    }
+  ]
+}
