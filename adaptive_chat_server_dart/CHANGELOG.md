@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+- Docs: **`ModelBehavior.md` deduplicated and reorganized for reuse.** Each
+  headline story now has one home, with links replacing repeated tellings: the
+  seed's model-dependence in the card-seed section, `gpt-oss:20b`'s unaided
+  25/25 in its per-model notes, the busy-machine mismeasurement in the sweep
+  section, and the 0/8-vs-8/8 prompt result stated once instead of twice. The
+  three meta sections at the top merged into one; four measurement-methodology
+  lessons moved from Key findings to a new "Measurement lessons" subsection;
+  the M5 position-bias caveats compressed from five paragraphs to three; a new
+  "Open questions and future work" section collects items previously scattered
+  as asides; roster cells now carry figures rather than editorial annotations;
+  and the inline 15-model ranking that duplicated the shape table's sort
+  column was removed. Also removed a stale paragraph claiming the launch.json
+  grep yields three models — it yields four, as the same section says. The
+  "words this file uses" section moved to a Glossary at the end of the file
+  and gained entries for the rest of the file's vocabulary (shape, warm,
+  erosion, cascade, stall, canary, escape hatch, and others), with a pointer
+  left at the top. No figure changed.
 - Fixed: **the M5 thermal claim was overstated, and `granite4.1:8b`'s row is
   back to its in-sweep run.** A hot re-run made that model 1.20x its own cold
   run, and the row was swapped to the hot figure on the reasoning that it made
