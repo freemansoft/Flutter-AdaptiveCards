@@ -155,10 +155,11 @@ regardless, the memory pressure makes the whole set slower than running it
 serially, and the contention distorts the latency numbers you were trying to
 collect.
 
-This holds regardless of how much memory the host has. On the 64 GB
-development machine every model probed so far fits **individually**, but the
-two largest together (≈24 GB each) would sit near the usable Metal budget, and
-Ollama would still evict and reload when the tag changes. The rule is about
+This holds regardless of how much memory the host has. On the 64 GB host every
+model probed so far fits **individually**, but the two largest together (≈24 GB
+each) would sit near the usable Metal budget, and Ollama would still evict and
+reload when the tag changes. On the 16 GB host only the roster's 16 GB-capable
+models fit at all. The rule is about
 reload cost and measurement noise, not only about a hard ceiling.
 
 Probing a model too large for a 16 GB host is expected and useful here — that

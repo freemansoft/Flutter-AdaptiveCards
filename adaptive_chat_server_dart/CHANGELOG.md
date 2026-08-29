@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+- Added: **`ModelBehavior.md` records latency for a second host.** The eight
+  models the roster marks 16 GB-capable were swept on an **Apple M5 / 16 GB**
+  MacBook Air on Ollama 0.33.1, and the performance table now carries both hosts
+  in one table rather than asserting one. Seven of the eight cost 1.0-1.5x the
+  Apple M1 Max / 64 GB figures; `qwen3.5:9b` runs faster on the smaller host.
+  Shape coverage reproduced the M1 Max on six of eight exactly, which is what
+  says the difference is the box and not the measurement.
+- Added: **the fanless M5 throttles 1.20x over a four-hour sweep**, measured by
+  re-running `granite4.1:8b` 13 seconds after the sweep ended and comparing with
+  its cold first run. Uniform at every percentile with zero stalls either way,
+  so a clock reduction rather than slow outliers. Its hot run is the published
+  one, so all eight M5 rows are comparable; no correction factor is applied to
+  any row.
+- Fixed: **`llama3-chatqa:8b`'s median read 0.3 s** where 253 ms and 248 ms — a
+  2% difference across hosts — printed as "0.3 s" against "0.2 s" beside a 1.0x
+  ratio. Sub-second medians now print two decimals.
+
 - Changed: **probe results are stored per host.** `tool/model_probes/results/`
   is now `results-m1max-64gb/`, beside `results-m5-16gb/`. The old name read as
   "the results" when it was always one machine's, which mattered little while
