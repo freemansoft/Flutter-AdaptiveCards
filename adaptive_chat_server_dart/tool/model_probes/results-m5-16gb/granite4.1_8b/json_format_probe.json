@@ -24,7 +24,7 @@
       "pass": true,
       "label": "prose",
       "setting": "format=none",
-      "ms": 20611
+      "ms": 20363
     },
     {
       "case": "card-request",
@@ -32,7 +32,7 @@
       "pass": true,
       "label": "prose",
       "setting": "format=none",
-      "ms": 8239
+      "ms": 8288
     },
     {
       "case": "card-request",
@@ -40,7 +40,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "format=json",
-      "ms": 1754
+      "ms": 1777
     },
     {
       "case": "card-request",
@@ -48,7 +48,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "format=json",
-      "ms": 1746
+      "ms": 1739
     },
     {
       "case": "card-request",
@@ -56,7 +56,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "format=schema",
-      "ms": 1749
+      "ms": 1738
     },
     {
       "case": "card-request",
@@ -64,7 +64,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "format=schema",
-      "ms": 1748
+      "ms": 1744
     }
   ]
 }

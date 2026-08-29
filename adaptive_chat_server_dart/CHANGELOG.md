@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+- Fixed: **the M5 thermal claim was overstated, and `granite4.1:8b`'s row is
+  back to its in-sweep run.** A hot re-run made that model 1.20x its own cold
+  run, and the row was swapped to the hot figure on the reasoning that it made
+  the eight rows comparable. It did the opposite: the hot run was taken at 4h05m,
+  more exposed than any row in the sweep, and the only row not drawn from the
+  sweep at all. The rows sit on a 17-minute-to-3h52m gradient rather than being
+  hot or cold, so the table now uses each model's own sweep slot and documents
+  the gradient. `granite4.1:8b` reads 3.3 s / 17 min again.
+- Changed: **the 1.20x figure is reported as unreplicated.**
+  `qwen2.5-coder:7b` does not reproduce it — 1.03x, slightly slower cold — and a
+  third `granite4.1:8b` run after 7h37m idle came back 1.12x its first, so two
+  nominally cold measurements differ by 12% systematically. An effect that size
+  sitting on a floor that size is not cleanly separable from it. Thermal
+  throttling stays plausible and unproven: no die temperature or clock frequency
+  was read, and server uptime, ambient temperature, and OS state all varied.
+
 - Changed: **`check_results.dart` reads every host, not one.** It read only
   `results-m1max-64gb/`, so the 58 files of the Apple M5 sweep were committed
   without CI ever checking them. It now discovers every `results-*` directory

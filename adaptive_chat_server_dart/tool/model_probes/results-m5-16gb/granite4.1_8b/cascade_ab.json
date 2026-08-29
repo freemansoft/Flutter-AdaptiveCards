@@ -22,42 +22,42 @@
       "sample": 0,
       "pass": true,
       "label": "multi, kept 5/5",
-      "ms": 11604
+      "ms": 10390
     },
     {
       "case": "states",
       "sample": 1,
       "pass": true,
       "label": "multi, kept 5/5",
-      "ms": 10839
+      "ms": 10146
     },
     {
       "case": "loglevel",
       "sample": 0,
       "pass": true,
       "label": "multi, kept 4/4",
-      "ms": 9566
+      "ms": 8888
     },
     {
       "case": "loglevel",
       "sample": 1,
       "pass": true,
       "label": "multi, kept 4/4",
-      "ms": 9547
+      "ms": 8392
     },
     {
       "case": "deploy",
       "sample": 0,
       "pass": true,
       "label": "multi, kept 2/2",
-      "ms": 9057
+      "ms": 7131
     },
     {
       "case": "deploy",
       "sample": 1,
       "pass": true,
       "label": "multi, kept 2/2",
-      "ms": 13509
+      "ms": 7376
     }
   ]
 }
