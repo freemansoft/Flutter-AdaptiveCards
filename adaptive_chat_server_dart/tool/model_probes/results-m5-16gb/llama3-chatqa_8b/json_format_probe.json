@@ -1,0 +1,70 @@
+{
+  "probe": "json_format_probe",
+  "model": "llama3-chatqa:8b",
+  "measuredAt": "2026-08-28",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.33.1",
+  "samples": 2,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "honorsFormat": true,
+    "verdict": "honored",
+    "calls": 6,
+    "passed": 4,
+    "cards": 0,
+    "prose": 4
+  },
+  "calls": [
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "format=none",
+      "ms": 11121
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "prose",
+      "setting": "format=none",
+      "ms": 52
+    },
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: valid JSON but not a renderable card (empty body, missing 'type', or empty/mixed array)",
+      "setting": "format=json",
+      "ms": 1568
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: valid JSON but not a renderable card (empty body, missing 'type', or empty/mixed array)",
+      "setting": "format=json",
+      "ms": 1707
+    },
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "format=schema",
+      "ms": 604
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "prose",
+      "setting": "format=schema",
+      "ms": 597
+    }
+  ]
+}

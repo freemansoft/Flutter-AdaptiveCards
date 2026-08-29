@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "granite4.1:3b",
+  "measuredAt": "2026-08-28",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.33.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 6,
+    "cards": 4,
+    "prose": 2
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 4736
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 271)\n...ew Year's Day (US)\",\"wrap\":true}]}]}},{\"type\":\"TableCell\",\"items\":[{\"typ...\n                                       ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 16226
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[7]",
+      "setting": "greedy(t=0)",
+      "ms": 7185
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 3478
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 125)\n...text\":\"**Flutter**\",\"wrap\":true}]}]},{\"type\":\"Column\",\"width\":1,\"items\":...\n                                       ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 1912
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 4709
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 193)\n...ock\",\"text\":\"January\",\"wrap\":true}]}},{type\":\"TableCell\",\"items\":[{\"type...\n                                       ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 25254
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[4]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3151
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3480
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 269)\n....\"},{\"title\":\"React Native\",\"value=\"Runtimes bridge calls between JavaSc...\n                                       ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 3925
+    }
+  ]
+}

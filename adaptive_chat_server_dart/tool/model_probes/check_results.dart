@@ -310,7 +310,7 @@ List<Finding> check({
 Future<void> main(List<String> argv) async {
   final root = Directory.current.path;
   final results = readAllResults(
-    p.join(root, 'tool', 'model_probes', 'results'),
+    p.join(root, 'tool', 'model_probes', 'results-m1max-64gb'),
   );
   final launched = launchedModels(p.join(root, '..', '.vscode', 'launch.json'));
   final currentAssets = currentAssetDigests(p.join(root, 'assets'));

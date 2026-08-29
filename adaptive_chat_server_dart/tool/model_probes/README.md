@@ -96,7 +96,8 @@ case-insensitively, so re-casing a title is kept rather than counted as a loss.
 
 ## Recording a run
 
-`shape_ab.dart --json <file>` writes the run to [`results/`](results/): every
+`shape_ab.dart --json <file>` writes the run to a per-host results directory
+([`results-m1max-64gb/`](results-m1max-64gb/), [`results-m5-16gb/`](results-m5-16gb/)): every
 call it made, the headline figures, the host it ran on, and the **digests of
 the prompt assets it used**. Commit the file.
 
@@ -109,7 +110,7 @@ recorded digest can.
 ```sh
 fvm dart run tool/model_probes/shape_ab.dart \
   --model qwen3.8:27b-nvfp4 --samples 2 \
-  --json tool/model_probes/results/qwen3.8_27b-nvfp4/shape_ab-seeded.json
+  --json tool/model_probes/results-m1max-64gb/qwen3.8_27b-nvfp4/shape_ab-seeded.json
 ```
 
 `check_results.dart` then reads them, and **runs in CI** — which is worth being
@@ -154,10 +155,11 @@ regardless, the memory pressure makes the whole set slower than running it
 serially, and the contention distorts the latency numbers you were trying to
 collect.
 
-This holds regardless of how much memory the host has. On the 64 GB
-development machine every model probed so far fits **individually**, but the
-two largest together (≈24 GB each) would sit near the usable Metal budget, and
-Ollama would still evict and reload when the tag changes. The rule is about
+This holds regardless of how much memory the host has. On the 64 GB host every
+model probed so far fits **individually**, but the two largest together (≈24 GB
+each) would sit near the usable Metal budget, and Ollama would still evict and
+reload when the tag changes. On the 16 GB host only the roster's 16 GB-capable
+models fit at all. The rule is about
 reload cost and measurement noise, not only about a hard ceiling.
 
 Probing a model too large for a 16 GB host is expected and useful here — that

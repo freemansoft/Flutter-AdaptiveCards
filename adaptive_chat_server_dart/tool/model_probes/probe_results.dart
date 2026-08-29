@@ -109,6 +109,7 @@ class ProbeRun {
     required this.assets,
     required this.calls,
     this.machine,
+    this.ollama,
     this.variant,
     this.temperature,
     this.summary = const {},
@@ -127,6 +128,7 @@ class ProbeRun {
         ProbeCall.fromJson(c as Map<String, dynamic>),
     ],
     machine: json['machine'] as String?,
+    ollama: json['ollama'] as String?,
     variant: json['variant'] as String?,
     temperature: (json['temperature'] as num?)?.toDouble(),
     summary: Map<String, dynamic>.from(
@@ -166,6 +168,19 @@ class ProbeRun {
   /// of the model. A column that silently mixed two Macs would be worse than
   /// no column, and this file is the only place that can rule it out.
   final String? machine;
+
+  /// The Ollama version that served the calls, where it could be read.
+  ///
+  /// Recorded for the same reason [machine] is: a latency figure is a joint
+  /// property of the model, the box, and the runtime. The first cross-host
+  /// comparison in this directory was taken across an Ollama upgrade with no
+  /// record of which version produced which half, so the difference could not
+  /// be attributed to the box rather than to the runtime.
+  ///
+  /// Null on runs recorded before this field existed -- the archive is full of
+  /// them, and their version is not recoverable -- and on any run where the
+  /// daemon did not answer.
+  final String? ollama;
 
   /// A distinguishing label where one probe is run two ways.
   ///
@@ -285,6 +300,7 @@ class ProbeRun {
     if (variant != null) 'variant': variant,
     'measuredAt': measuredAt,
     if (machine != null) 'machine': machine,
+    if (ollama != null) 'ollama': ollama,
     'samples': samples,
     if (temperature != null) 'temperature': temperature,
     'assets': assets,
@@ -324,6 +340,24 @@ String detectMachine() {
   }
 }
 
+/// Reads the running Ollama version, or null if it cannot be determined.
+///
+/// Null rather than a throw or a placeholder string: a probe that can reach
+/// Ollama well enough to run is the normal case, and one that cannot is
+/// already failing louder elsewhere. An absent field reads as "not recorded",
+/// which is true, where `unknown` would read as a measured value.
+String? detectOllamaVersion() {
+  try {
+    final r = Process.runSync('ollama', ['--version']);
+    final m = RegExp(
+      r'(\d+\.\d+\.\d+)',
+    ).firstMatch((r.stdout as String).trim());
+    return m?.group(1);
+  } on ProcessException {
+    return null;
+  }
+}
+
 /// Builds and writes a run, given the calls a probe collected.
 ///
 /// Centralised so every probe stamps the same things — host, asset digests,
@@ -349,6 +383,7 @@ void writeProbeRun({
     variant: variant,
     measuredAt: DateTime.now().toIso8601String().split('T').first,
     machine: detectMachine(),
+    ollama: detectOllamaVersion(),
     samples: samples,
     temperature: temperature,
     assets: currentAssetDigests(assetsDir, assetNames: assetNames),

@@ -291,7 +291,7 @@ void main() {
     test('every recorded run parses and agrees with itself', () {
       // Guards the backfilled files themselves: a hand-written JSON that no
       // probe produced is exactly where a typo would hide.
-      final runs = readAllResults('tool/model_probes/results');
+      final runs = readAllResults('tool/model_probes/results-m1max-64gb');
       expect(runs, isNotEmpty);
       for (final run in runs) {
         expect(run.model, isNotEmpty, reason: run.probe);
@@ -303,7 +303,7 @@ void main() {
 
     test('the checker passes against the real tree', () {
       final findings = check(
-        results: readAllResults('tool/model_probes/results'),
+        results: readAllResults('tool/model_probes/results-m1max-64gb'),
         launched: launchedModels('../.vscode/launch.json'),
         currentAssets: currentAssetDigests('assets'),
         markdown: File('ModelBehavior.md').readAsStringSync(),
