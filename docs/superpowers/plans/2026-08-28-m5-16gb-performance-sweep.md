@@ -781,6 +781,222 @@ git commit -m "test(chat-server): record the eight 16 GB-capable models on Apple
 
 ---
 
+### Task 4c: Hot re-run of `granite4.1:8b` — is the M5 throttling?
+
+**Run this first, within minutes of `SWEEP COMPLETE`, before the machine cools.**
+Its value is entirely in the thermal state, and that decays.
+
+`granite4.1:8b` ran **first** in the sweep, on a machine idle for hours, and
+scored 1.20x the M1 Max median. Re-running the same model on the same host and
+runtime after ~4 hours of sustained GPU load isolates one variable: heat. This
+is a fanless `Mac17,3`, so the hypothesis is reasonable on its face even though
+the sweep data argues against it -- ratios do not trend with position (1.20,
+1.28, 0.82, 1.11, 0.98, 1.45), and `llama3-chatqa:8b` posted the second-best
+ratio immediately after the sweep's longest hot stretch.
+
+A measurement settles it either way, which is cheaper than continuing to reason
+about it.
+
+**Files:**
+
+- Create: scratch only. `tool/model_probes/results-m5-16gb/` is **not** touched.
+
+- [ ] **Step 1: Record the thermal state, then start immediately**
+
+Do not wait, do not let the machine idle, do not run the cooldown first.
+
+```bash
+cd adaptive_chat_server_dart
+HOT=/private/tmp/claude-502/-Users-joefreemanjoe-Documents-Flutter-AdaptiveCards/82d6c3aa-9437-4d58-a4fe-2c7fe331ef6f/scratchpad/granite-hot
+mkdir -p "$HOT"
+date; pmset -g therm; uptime
+SWEEP_RESULTS="$HOT" SWEEP_LOG=/tmp/sweep-logs-m5-hot \
+  caffeinate -is tool/model_probes/sweep.sh granite4.1:8b 2>&1 | tee /tmp/sweep-m5-granite-hot.log
+date; pmset -g therm
+```
+
+The run goes to a scratch directory, not into the results tree. The cold run is
+the one that belongs in the table -- it is the run taken in sequence with the
+other seven -- so the hot run must not overwrite it. Using a separate
+`SWEEP_RESULTS` avoids moving files at all, which is where this kind of
+experiment usually goes wrong.
+
+- [ ] **Step 2: Compare cold against hot**
+
+```bash
+cd adaptive_chat_server_dart
+HOT=/private/tmp/claude-502/-Users-joefreemanjoe-Documents-Flutter-AdaptiveCards/82d6c3aa-9437-4d58-a4fe-2c7fe331ef6f/scratchpad/granite-hot
+python3 - <<'EOF'
+import json, os, statistics
+def prof(p, label):
+    j = json.load(open(p))
+    v = sorted(c['ms'] for c in j['calls'][1:]
+               if c.get('ms') and 'timeout (' not in c['label'])
+    to = sum(1 for c in j['calls'] if 'timeout (' in c['label'])
+    print(f"{label:6s} n={len(v)} p25={v[len(v)//4]} med={v[len(v)//2]} "
+          f"p75={v[3*len(v)//4]} max={v[-1]} mean={statistics.mean(v):.0f} stalls={to}")
+    return v[len(v)//2]
+cold = prof('tool/model_probes/results-m5-16gb/granite4.1_8b/shape_ab-seeded.json', 'cold')
+hot  = prof(f"{os.environ['HOT']}/granite4.1_8b/shape_ab-seeded.json", 'hot')
+print(f"\nhot/cold = {hot/cold:.2f}x   (M1 Max baseline median 2728 ms)")
+print(f"cold vs M1 Max {cold/2728:.2f}x   hot vs M1 Max {hot/2728:.2f}x")
+EOF
+```
+
+- [ ] **Step 3: Read the result**
+
+- **hot/cold within ~1.05x** -- no measurable throttling across a 4-hour sweep. The fanless caveat stays in the write-up as a stated limitation, but cooldowns are not warranted and the existing figures need no adjustment.
+- **hot/cold above ~1.15x** -- throttling is real and position in the sweep biases every row. Say so in the write-up, note that models measured later are penalised, and recommend cooldowns for any future sweep on this host. Do **not** retrofit a correction factor onto the published figures; a measured bias is reportable, an estimated correction is not.
+- **hot/cold between** -- report the figure and draw no conclusion. One model at `--samples 2` is not enough to resolve a 10% effect.
+
+Whatever the outcome, the number goes in the write-up. "We checked whether the
+fanless chassis throttled and here is what we measured" is worth more than the
+caveat alone.
+
+- [ ] **Step 4: Let the machine idle 30 minutes before Task 4b**
+
+Task 4b tests whether `llama3.2:latest`'s stalls were transient, which requires a
+settled machine. Running it straight after this one would confound the two
+experiments.
+
+Thirty rather than fifteen so the idle period is not itself a confound. The risk
+is one-directional: if the stalls reproduce, a short cooldown leaves "the machine
+was still warm" available as an explanation, and the experiment answers nothing.
+A longer idle costs fifteen minutes and removes that escape.
+
+```bash
+ollama ps    # nothing resident before starting the idle period
+```
+
+---
+
+### Task 4b: Re-run `llama3.2:latest` on a settled machine
+
+Its first M5 run recorded **40 stalls** against the M1 Max's 2, and its unaided
+`coldStart` fell 15 -> 5 -- a score set by the 120 s ceiling rather than by the
+model. The stalls were not spread through the run: all 28 in the unaided probe
+landed in calls 0-27, and the remaining 72 completed without one. A transient
+that clears partway through a probe is the signature `ModelBehavior.md` already
+tells you to re-test rather than publish:
+
+> Before concluding that a model stalls, check `ollama ps` for anything resident
+> that should not be, and re-run on an idle machine.
+
+`granite4.1:3b` set this precedent -- its first measurement was wrong for
+exactly this reason, and re-running it restored figures matching earlier runs.
+
+**Files:**
+
+- Move: `tool/model_probes/results-m5-16gb/llama3.2_latest/` (7 files) to a scratch archive
+- Create: `tool/model_probes/results-m5-16gb/llama3.2_latest/` (re-run output)
+
+- [ ] **Step 1: Confirm the sweep is finished and the machine is idle**
+
+```bash
+cd adaptive_chat_server_dart
+tail -1 /tmp/sweep-m5.log          # expect: ##### SWEEP COMPLETE
+ollama ps                          # expect: nothing resident
+pgrep -fl "model_probes/.*[.]dart" # expect: nothing
+vm_stat | head -2                  # and see the memory precondition below
+```
+
+Do not start while anything is resident. Re-running under the same contention
+that may have caused the stalls would answer nothing.
+
+**Free system memory is the precondition that matters, and it is checkable.**
+Ollama logs it at every load, and run 1 is an outlier: `llama3.2:latest` loaded
+with **3.9 GiB free** where every model after it got 8.3-8.7 GiB. Metal's GPU
+budget was 11.3 GiB throughout, so this was host RAM pressure, not GPU. That fits
+the evidence better than thermal or co-residency -- it is model-specific, and it
+explains stalls clearing mid-probe, which a thermal cause (worsens with time)
+does not.
+
+Co-residency is ruled out: Ollama's scheduler logged `loaded runners count=1` on
+all 22 loads of the sweep, so `ollama stop` worked every time.
+
+Before starting, confirm the load reports ~8 GiB free:
+
+```bash
+grep -a 'msg="system memory' ~/.ollama/logs/server.log | tail -1
+```
+
+If it reports under ~6 GiB, something is holding memory. Find it and stop it
+first; a re-run under the same pressure repeats the original measurement rather
+than testing it.
+
+- [ ] **Step 2: Preserve run 1 rather than overwrite it**
+
+`run()` skips any (model, probe) whose JSON already exists, so the re-run needs
+these out of the way -- and run 1 is evidence, not garbage: whether the stalls
+reproduce is the finding.
+
+```bash
+cd adaptive_chat_server_dart
+ARCHIVE=/private/tmp/claude-502/-Users-joefreemanjoe-Documents-Flutter-AdaptiveCards/82d6c3aa-9437-4d58-a4fe-2c7fe331ef6f/scratchpad/llama3.2-run1
+mkdir -p "$ARCHIVE"
+mv tool/model_probes/results-m5-16gb/llama3.2_latest/*.json "$ARCHIVE/"
+ls "$ARCHIVE"                      # expect 7 files
+```
+
+Archive outside the results tree, not beside it: `perf_table.py` reads every
+directory under the results root and takes the model name from the JSON, so a
+sibling `llama3.2_latest-run1/` would render a second row also labelled
+`llama3.2:latest`.
+
+- [ ] **Step 3: Re-run just that model**
+
+```bash
+cd adaptive_chat_server_dart
+SWEEP_RESULTS=tool/model_probes/results-m5-16gb SWEEP_LOG=/tmp/sweep-logs-m5-rerun   caffeinate -is tool/model_probes/sweep.sh llama3.2:latest 2>&1 | tee /tmp/sweep-m5-llama32-rerun.log
+```
+
+Budget 12-90 minutes: 12 if the stalls were transient and it behaves like its
+M1 Max run, ~90 if they reproduce.
+
+- [ ] **Step 4: Compare the two runs**
+
+```bash
+cd adaptive_chat_server_dart
+ARCHIVE=/private/tmp/claude-502/-Users-joefreemanjoe-Documents-Flutter-AdaptiveCards/82d6c3aa-9437-4d58-a4fe-2c7fe331ef6f/scratchpad/llama3.2-run1
+python3 - <<'EOF'
+import json, glob, os
+def stats(d, label):
+    tot = to = 0
+    for f in glob.glob(f'{d}/*.json'):
+        if os.path.basename(f) == 'shape_ab-channel-tool.json':
+            continue
+        j = json.load(open(f))
+        tot += sum(c['ms'] for c in j['calls'] if c.get('ms'))
+        to  += sum(1 for c in j['calls'] if 'timeout (' in c['label'])
+    u = json.load(open(f'{d}/shape_ab-unaided.json'))
+    idx = [i for i, c in enumerate(u['calls']) if 'timeout (' in c['label']]
+    print(f"{label:8s} sweep={tot/60000:5.0f} min  stalls={to:3d}  "
+          f"unaided={u['summary']}  stalled idx {idx[:3]}..{idx[-3:] if idx else []}")
+stats(os.environ['ARCHIVE'], 'run 1')
+stats('tool/model_probes/results-m5-16gb/llama3.2_latest', 'run 2')
+EOF
+```
+
+- [ ] **Step 5: Decide which run the table publishes**
+
+Three outcomes, and the write-up differs for each:
+
+- **Stalls do not reproduce** (run 2 near the M1 Max's 2, `coldStart` back near 15). Run 1 was a bad measurement. Publish run 2 and record in the changelog that the first run stalled 40 times and did not reproduce -- the same disposition `granite4.1:3b` got.
+- **Stalls reproduce** (run 2 also ~40, again front-loaded). It is a property of this model on this host. Publish run 2 and say the score is ceiling-bound and not comparable with the M1 Max's.
+- **Stalls reproduce but scattered rather than front-loaded.** Publish run 2, and drop the warm-up hypothesis explicitly -- it survives only if the clustering repeats.
+
+Do not average the two runs, and do not publish the better one because it is
+better. Say which run the table carries and why.
+
+- [ ] **Step 6: Commit** (diff + confirmation first)
+
+```bash
+git add adaptive_chat_server_dart/tool/model_probes/results-m5-16gb/llama3.2_latest/
+git commit -m "test(chat-server): re-run llama3.2:latest on an idle M5"
+```
+
+---
+
 ### Task 5: Update `ModelBehavior.md`
 
 **Files:**
@@ -803,24 +1019,26 @@ python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb \
 Keep this output open — every figure in the following steps comes from it, and
 nothing else. Do not round differently, reorder, or "tidy" a value.
 
-- [ ] **Step 2: Restructure the performance section**
+- [ ] **Step 2: Rewrite the section intro for two hosts**
 
-The heading `#### Performance on this machine` and its opening sentence ("All
-timings are one host — **Apple M1 Max / 64 GB**, the machine every measurement
-in this file was taken on") both stop being true once a second host is recorded.
-Replace the heading and the first paragraph, keep the two methodology paragraphs
-that follow, and put the existing fifteen-row table under a host sub-heading
-with the M5 table beside it.
+One table carries both hosts; the M5 columns sit beside the M1 Max ones so the
+comparison is read across a row rather than between two tables. The heading
+`#### Performance on this machine` and its opening sentence ("All timings are one
+host — **Apple M1 Max / 64 GB**, the machine every measurement in this file was
+taken on") both stop being true, so replace them. Keep the two methodology
+paragraphs that follow.
 
-Replace lines 266–270 (heading through the "A second full run" paragraph's
-predecessor) with:
+Replace the heading and its first paragraph with:
 
 ```markdown
 #### Performance, by host
 
-Latency is a property of the model _and_ the box, so each recorded run stamps
-the host into its result file; a figure that cannot name its machine does not
-belong here. Two hosts are recorded, and their figures are not interchangeable.
+Latency is a property of the model, the box, **and** the runtime, so each
+recorded run stamps the host and the Ollama version into its result file; a
+figure that cannot name its machine does not belong here. Two hosts are
+recorded. The M1 Max columns cover all fifteen models; the M5 columns cover the
+eight the [roster](#candidate-models) marks 16 GB-capable, and are blank for the
+rest.
 
 **Median s/call** is over the fixed 25-case shape sweep, so the case mix cancels
 and models are comparable. It excludes the first call after a model load, which
@@ -829,64 +1047,69 @@ the ceiling rather than the model. **Full sweep** is the seven standard probes
 for that model, stalls included — that is wall clock someone waited. The
 tool-channel run is excluded from it, because only tool-capable models have one
 and a column that means different things on different rows is not a column.
-
-A second full run is deliberately _not_ taken. Min-of-two is the usual noise
-filter, but the dominant noise here is the known load event rather than jitter,
-and on a laptop the second run is measured on a hotter, throttling machine, so
-min-of-two would trade one uncontrolled bias for another.
-
-All three figures are derived from the recorded runs by
-[`perf_table.py`](tool/model_probes/perf_table.py) rather than transcribed, so a
-re-run diffs against the table rather than against somebody's typing.
-
-##### Apple M1 Max / 64 GB
-
-The host every shape, cascade, everyday, and stress figure elsewhere in this
-file was measured on. All fifteen models, 2026-08-20.
 ```
 
-Then the existing fifteen-row table, **unchanged**, followed by its existing two
-paragraphs ("**Weight does not predict speed.**" and "**Stalls, not token rate,
-decide how long a sweep takes.**"), also unchanged.
-
-- [ ] **Step 3: Add the M5 sub-section after those two paragraphs**
+Keep the existing "A second full run is deliberately _not_ taken" paragraph, then
+add:
 
 ```markdown
-##### Apple M5 / 16 GB
+All figures are derived from the recorded runs by
+[`perf_table.py`](tool/model_probes/perf_table.py) rather than transcribed, so a
+re-run diffs against the table rather than against somebody's typing.
+```
 
-A fanless MacBook Air (`Mac17,3`), 16 GB unified memory, macOS 26.6.2, Ollama
-0.33.1, measured <DATE>. Only the eight models the [roster](#candidate-models)
-marks 16 GB-capable were run: `gpt-oss:20b` at 12.8 GB is the roster's flagged
-exception on coverage, but its weights plus KV cache sit above the default Metal
-budget on a 16 GB host, so it is not a model this box can measure honestly.
+- [ ] **Step 3: Widen the table and footnote the runtime**
 
-The **vs M1 Max** column is the median ratio, and is the reason this table
-exists — the shape, cascade, and stress figures elsewhere in the file are
-host-independent at `t=0`, and latency is not.
+Add three columns to the existing fifteen-row table, keeping its current sort
+(ascending M1 Max median) so the two paragraphs below it still describe the order
+they refer to. Rows with no M5 run take `—`, which reads as "not measured" rather
+than as a value.
 
-**The two hosts also differ in Ollama version, and the ratio cannot separate the
-two causes.** The 2026-08-20 runs did not record their runtime, so the version
-behind them is not recoverable; these were taken on 0.33.1. Read the ratio as
-"this host, this runtime, against that one", not as a property of the silicon.
-Runs recorded from now on stamp the version.
+Header and rule become:
 
-<paste the perf_table.py table here verbatim>
+```markdown
+| Model | Weights | M1 Max s/call | M5 s/call | M1 Max sweep | M5 sweep | M1 Max stalls | M5 stalls |
+| ----- | ------- | ------------- | --------- | ------------ | -------- | ------------- | --------- |
+```
 
-<Findings paragraphs — write these from the generated figures. Each must be a
-claim the numbers support, in the file's register: state the figure, hedge the
-mechanism. The three the data will bear on are:>
+Fill the M5 cells from Step 1's output. Then, immediately under the table, the
+footnote — this is the load-bearing part, because the two column groups were not
+measured against the same runtime:
 
-- Whether the ratio is roughly uniform across the eight models or scales with weights. A uniform ratio points at memory bandwidth; a ratio that grows with model size points at the Metal budget. Say which the numbers show, and hedge the mechanism.
-- Whether `granite4.1:3b`'s stall count moved. On the M1 Max it stalled 13 times under the 120 s ceiling, and the ceiling is fixed, so a higher count on a slower host is expected rather than a new property of the model — say so explicitly, because that row is the one most likely to be misread.
-- Whether the M1 Max ordering survives. If two models swap places, name them; if the order holds, say that a single ordering describes both hosts.
+```markdown
+**The two column groups were measured on different Ollama versions, and the
+difference is not only the hardware.** The M1 Max columns were recorded
+2026-08-20/21 on a version the runs did not stamp — result files carried the
+host but not the runtime until 2026-08-28, so it is not recoverable. The M5
+columns were recorded 2026-08-28 on **Ollama 0.33.1**. A ratio between the two
+therefore spans a runtime change of unknown size as well as a change of machine,
+and `qwen3.5:9b` is the row where that shows: it runs **faster** on the smaller
+host, and four of its shape calls change verdict at `t=0` greedy, which hardware
+alone does not readily explain. Re-measuring the M1 Max on 0.33.1 would separate
+the two; until that happens, read a per-row ratio as a comparison of two
+configurations rather than of two machines.
+```
+
+Then rewrite the two paragraphs below the table so they say which host they
+describe — "**Weight does not predict speed**" and "**Stalls, not token rate,
+decide how long a sweep takes**" are both M1 Max observations, and both should
+name that host now that a second one is in the table. Change no figure in them.
+
+- [ ] **Step 3b: Add the M5 findings paragraphs after the table**
+
+Write these from Step 1's generated figures, in the file's register: state the
+figure, hedge the mechanism. The claims the data will bear on:
+
+- Whether the ratio is roughly uniform across the eight models or scales with weights. A uniform ratio points at a general per-token cost; one that grows with model size points at the Metal budget. Say which the numbers show, and hedge the mechanism.
+- Whether `granite4.1:3b`'s stall count moved. It stalled 13 times on the M1 Max under a fixed 120 s ceiling, so a higher count on a slower host is the ceiling moving rather than a new property of the model — say so explicitly, because that row is the one most likely to be misread.
+- Whether the M1 Max ordering survives among the eight. If two models swap places, name them; if it holds, say one ordering describes both hosts.
 
 **Sustained load on a fanless host is a caveat these figures carry and the M1
 Max figures do not.** The sweep runs the GPU for hours in a chassis with no fan,
 so later models are measured on a hotter machine than earlier ones. The
 methodology note above rejects min-of-two for exactly this reason; here the bias
-is inside a single run, ordered by the sweep's stall-risk sequence rather than
-by weight. Read a small difference between two adjacent rows as noise.
-```
+is inside a single run, ordered by the sweep's stall-risk sequence rather than by
+weight. Read a small difference between two adjacent rows as noise.
 
 - [ ] **Step 4: Fix the two anchor references the renamed heading breaks**
 
@@ -1057,6 +1280,14 @@ git commit -m "docs(chat-server): changelog for the M5 / 16 GB performance sweep
 | `granite4.1:3b` stalls far more than 13 times                            | Its `Full sweep` figure balloons                                      | Expected under a fixed 120 s ceiling on a slower host. Report it, and say the ceiling — not the model — moved.                    |
 | A model OOMs or Ollama evicts mid-run                                    | `rc=` non-zero, or a shape delta well below −1                        | Confirm nothing else was resident (`ollama ps`), delete that model's directory, re-run it alone.                                  |
 | Sweep interrupted                                                        | Log ends without `SWEEP COMPLETE`                                     | Re-run the identical Task 4 Step 2 command. Completed pairs are skipped; the sweep resumes.                                       |
+
+## Follow-up, agreed but not in this plan
+
+**Re-measure the M1 Max on Ollama 0.33.1.** The archive was recorded on an
+unstamped earlier runtime, so every cross-host ratio in this plan's table spans
+a runtime change as well as a hardware one. Re-running the fifteen-model sweep on
+the current Ollama would separate the two and turn the footnote into a figure.
+Wants its own plan: it is a full sweep on a machine this one cannot reach.
 
 ## Deliberately out of scope
 
