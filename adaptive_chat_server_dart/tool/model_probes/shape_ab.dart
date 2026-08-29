@@ -367,6 +367,7 @@ Future<void> main(List<String> argv) async {
           : (seeded ? 'seeded' : 'unaided'),
       measuredAt: DateTime.now().toIso8601String().split('T').first,
       machine: detectMachine(),
+      ollama: detectOllamaVersion(),
       samples: args.samples,
       temperature: 0,
       assets: currentAssetDigests(
