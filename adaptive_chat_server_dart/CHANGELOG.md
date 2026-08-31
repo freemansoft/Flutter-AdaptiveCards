@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+- Added: **`blog/` directory — a series plan and drafts of the first three
+  articles** derived from `ModelBehavior.md`. `blog/README.md` is the plan:
+  it assigns each article a topic it owns outright and records what it defers
+  to the others, so no two articles tell the same story, and it carries the
+  conventions once — figures traced to a named `ModelBehavior.md` commit and
+  transcribed verbatim, every score named with its test set and condition,
+  the ±1 noise floor, the do-not-quote ban on the superseded 2026-08-14/16
+  sweeps, the repo's documentation register, and three attribution placements
+  using absolute GitHub URLs. It also names articles 4 (the tool channel) and
+  5 (measurement hygiene), which the drafts commit to by naming them. Drafted:
+  article 1 frames the demo as a local-model benchmark, article 2 covers the
+  tuning process (the fourteen-lever ledger, the card seed, and the open
+  `rating_ask` lever), article 3 compares the two measurement hosts and owns
+  the 16 GB-fit question, article 4 carries the tool-channel failure
+  decomposition, and article 5 the measurement-hygiene lessons — the
+  co-residency mismeasurement, the delivery check behind an unmeasurable null,
+  and what survived discarding the superseded sweeps. Articles 1–4 each carry
+  an HTML-comment placeholder for the one visual they still need; article 5
+  carries a mermaid diagram of the sweep loop. Every link in the directory
+  points at this repository: `ModelBehavior.md` references are pinned to the
+  commit the figures were read at, and code and asset links track `main`.
+
 - Docs: **`ModelBehavior.md` deduplicated and reorganized for reuse.** Each
   headline story now has one home, with links replacing repeated tellings: the
   seed's model-dependence in the card-seed section, `gpt-oss:20b`'s unaided
