@@ -690,6 +690,13 @@ as-shipped figure in the file — see
 [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped).
 Probed end-to-end on 2026-08-20, one model resident throughout.
 
+**`qwen3.8:27b-mlx` is the same weights under a second tag, not a second model.**
+Both tags resolve to digest `5642e97495e1`, report quantization `nvfp4`, and
+occupy 16.9 GiB; pulling one after the other adds no blobs. The `-mlx` name
+invites the reading that it is an Apple MLX build measured separately, and it is
+not — every figure recorded here under `qwen3.8:27b-nvfp4` describes both names.
+Verified on 2026-09-01 by comparing `/api/tags` digests on a host holding both.
+
 **Tuning tried, and what it bought:**
 
 - **`--seed-card` on / off — no effect, and no harm.** Identical score either
