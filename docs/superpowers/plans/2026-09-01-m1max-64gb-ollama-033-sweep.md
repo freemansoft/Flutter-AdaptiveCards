@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- **Ollama server must be ≥ 0.33.1 for every recorded call.** The user set this floor. **Satisfied as of 2026-09-01T07:42 — the server is 0.33.2 on Metal** (Task 1 records the evidence). It must be re-verified before each sweep, not assumed: Ollama's update checker runs hourly and moved this box's version three times in one morning.
+- **Ollama server must be ≥ 0.33.1 for every recorded call.** The user set this floor. **Satisfied as of 2026-09-01T07:42 — the server is 0.33.2 on Metal** (Task 1 records the evidence). The user updated Ollama manually for this test and it will not auto-update during the run, so a quick re-check before each sweep is confirmation rather than a guard against drift.
 - **`ollama --version` can print two versions, and the first one is the server.** It agrees today (`ollama version is 0.33.2`, one line). When client and server skew it prints a second `Warning: client version is …` line, and the **server** — what `/api/version` reports — is what runs inference and what `detectOllamaVersion()` records. Trust `curl -s http://127.0.0.1:11434/api/version`, never the warning line.
 - **Host is fixed and must be recorded verbatim.** `detectMachine()` on this box returns `Apple M1 Max / 64 GB`. Every result file stamps it automatically; do not hand-edit the field.
 - **Prefix every `flutter` and `dart` command with `fvm`.** `sweep.sh` already does. Bare `dart` may not be the pinned SDK.
@@ -84,20 +84,12 @@ about 34 minutes, before the remaining fourteen models are swept in Task 5. The
 answer arrives in half an hour rather than after a six-hour sweep, and if it is
 negative the rest of the plan can be re-scoped rather than run blind.
 
-## Two hazards specific to this host, both observed today
-
-**Ollama auto-updates itself and its update checker runs hourly.** `app-1.log`
-records `performing update at startup` and `beginning update checker
-interval=1h0m0s` at 07:27 today. The version moved 0.32.14 → 0.33.2 → 0.32.15
-inside ten minutes. A sweep that takes six hours can therefore have its runtime
-changed underneath it, which would silently produce a directory mixing two
-runtimes. Task 4 Step 6 and Task 5 Step 4 check every result file's stamp rather
-than trusting that it held.
+## One hazard specific to this host, observed today
 
 **The 0.33.2 server that ran this morning failed GPU discovery and fell back to
 CPU.** From `server-1.log`:
 
-```
+```text
 level=WARN  msg="llama-server GPU discovery watchdog timed out"
 level=INFO  msg="inference compute" id=cpu library=cpu ... total="64.0 GiB"
 level=INFO  msg="vram-based default context" total_vram="0 B" default_num_ctx=4096
@@ -107,7 +99,7 @@ A CPU-bound sweep would produce numbers that look like catastrophic thermal
 throttling and mean nothing. The healthy line, logged by both the 0.32.14
 archive run and the current 0.33.2 server, is:
 
-```
+```text
 msg="inference compute" id=0 library=Metal name=MTL0 description="Apple M1 Max" type=iGPU total="51.8 GiB" available="51.8 GiB"
 ```
 
@@ -133,12 +125,11 @@ Task 1 gates on seeing `library=Metal` and `51.8 GiB` before any model runs.
 are therefore a re-verification rather than a change, and Step 2's restart
 should be skipped unless Step 1 shows the version has slipped.
 
-Do not skip the task. The version floor is a property of the moment each call is
-recorded, not of the plan's start: Ollama's update checker runs hourly, this box
-changed version three times in one morning, and `app-1.log` records an `upgrade
-failed error="failed to lookup downloads"` at 07:42 — a pending update that may
-retry. The second half matters as much as the first: a 0.33.2 server ran on this
-box today **on CPU**, and a sweep in that state is worthless.
+Do not skip the task, but expect it to pass. The user updated Ollama by hand for
+this test and it will not auto-update during the run, so Steps 1-4 confirm a
+known-good state rather than guard against drift. Step 3 is the one that earns
+its place: a 0.33.2 server ran on this box today **on CPU**, and a sweep in that
+state is worthless.
 
 **Files:**
 
@@ -754,7 +745,7 @@ This is the only task that cannot be retried cheaply.
 
 - [ ] **Step 1: Re-quiesce and re-verify the runtime**
 
-Task 4 may have taken an hour, and Ollama's update checker fires hourly.
+A cheap confirmation before committing six hours. Ollama will not auto-update during this run, so this is expected to pass unchanged.
 
 ```bash
 curl -s http://127.0.0.1:11434/api/version; echo    # must still be >= 0.33.1
@@ -1217,22 +1208,22 @@ git commit -m "docs(chat-server): changelog for the M1 Max Ollama 0.33.x sweep"
 
 ## Risks and what to do about them
 
-| Risk                                                        | Signal                                                                   | Response                                                                                                                                         |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Ollama auto-updates mid-sweep                               | Result files in one directory carry two `ollama` values                  | Task 5 Step 4 asserts a single runtime. Move the odd files aside, restore the runtime, re-run those pairs. Never average across the boundary.    |
-| The 0.33.x server falls back to CPU                         | `library=cpu`, `total_vram="0 B"`, or a GPU discovery watchdog timeout   | Observed on this box today. Restart Ollama and re-check before measuring; do not sweep in that state.                                            |
-| `check_results.dart` fails after the sweep                  | Shape-table mismatch naming a model measured twice                       | Task 3 did not take effect. Do not "fix" it by editing the shape table — re-check that `main()` passes `tableResults`.                           |
-| Sweep writes into an archive                                | `>>> SKIP` lines; `git status` shows changes under `results-m1max-64gb/` | Stop. `SWEEP_RESULTS` is wrong. `git checkout --` the archive and re-check Task 4 Step 1.                                                        |
-| `qwen3.5:9b` reproduces 0.32.14 exactly                     | No median change and no `choice*` flip                                   | A real answer, not a failed run. Report it; do not re-run hunting for a better result unless a precondition was violated.                        |
-| Archive-era server logs rotate away                         | `server-3/4/5.log` no longer contain a 2026-08-2x listen line            | Why Task 2 runs before the sweep. If already lost, say so in `PROVENANCE.md` rather than asserting 0.32.14 without a citation.                   |
-| Sweep interrupted                                           | Log ends without `SWEEP COMPLETE`                                        | Re-run the identical Task 5 Step 2 command. Completed pairs are skipped; the sweep resumes.                                                      |
-| A model behaves differently enough to change shape coverage | Task 5 Step 5 prints `INVESTIGATE`                                       | Resolve before publishing. Many differing calls is a runtime behavior change worth naming; a large delta with few differing calls is arithmetic. |
+| Risk                                                        | Signal                                                                   | Response                                                                                                                                                      |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ollama version changes mid-sweep                            | Result files in one directory carry two `ollama` values                  | Not expected — Ollama was updated by hand for this test and will not auto-update. Task 5 Step 4 still asserts a single runtime, because it is one cheap line. |
+| The 0.33.x server falls back to CPU                         | `library=cpu`, `total_vram="0 B"`, or a GPU discovery watchdog timeout   | Observed on this box today. Restart Ollama and re-check before measuring; do not sweep in that state.                                                         |
+| `check_results.dart` fails after the sweep                  | Shape-table mismatch naming a model measured twice                       | Task 3 did not take effect. Do not "fix" it by editing the shape table — re-check that `main()` passes `tableResults`.                                        |
+| Sweep writes into an archive                                | `>>> SKIP` lines; `git status` shows changes under `results-m1max-64gb/` | Stop. `SWEEP_RESULTS` is wrong. `git checkout --` the archive and re-check Task 4 Step 1.                                                                     |
+| `qwen3.5:9b` reproduces 0.32.14 exactly                     | No median change and no `choice*` flip                                   | A real answer, not a failed run. Report it; do not re-run hunting for a better result unless a precondition was violated.                                     |
+| Archive-era server logs rotate away                         | `server-3/4/5.log` no longer contain a 2026-08-2x listen line            | Why Task 2 runs before the sweep. If already lost, say so in `PROVENANCE.md` rather than asserting 0.32.14 without a citation.                                |
+| Sweep interrupted                                           | Log ends without `SWEEP COMPLETE`                                        | Re-run the identical Task 5 Step 2 command. Completed pairs are skipped; the sweep resumes.                                                                   |
+| A model behaves differently enough to change shape coverage | Task 5 Step 5 prints `INVESTIGATE`                                       | Resolve before publishing. Many differing calls is a runtime behavior change worth naming; a large delta with few differing calls is arithmetic.              |
 
 ## Deliberately out of scope
 
 - **Backfilling `ollama: 0.32.14` into the 113 archived result files.** The version is now known, but a result file records what the probe stamped. Writing a reconstruction into the same field as a measurement makes the two indistinguishable, and `check_results.dart` explicitly leaves wholly-unstamped directories alone. `PROVENANCE.md` plus a same-host 0.33.x directory answers the question better.
 - **Re-deriving the shape-coverage table from the 0.33.x runs.** Task 5 Step 5 uses coverage as a sanity gate, not as a published figure. The canonical shape table stays the 0.32.14 measurement that `sync_shape_table.dart` generates.
-- **Pinning Ollama's version or disabling its auto-updater.** Tempting, given it moved three times today, but it changes the user's machine configuration beyond what this sweep needs. The plan detects a mid-sweep change instead.
+- **Pinning Ollama's version or disabling its auto-updater.** The user updated Ollama manually for this test and it will not auto-update during the run, so there is nothing to pin. The plan still asserts a single runtime stamp per directory, which costs one line and catches the case anyway.
 - **Re-measuring the M5 on a newer runtime.** That host is not reachable from here, and the M5 archive is already stamped 0.33.1, which is inside the floor this plan works to.
 - **Explaining what changed in Ollama between 0.32.14 and 0.33.x.** This plan measures that something did. Attributing it to a specific change would need the release notes and the source, which is a different investigation.
 
