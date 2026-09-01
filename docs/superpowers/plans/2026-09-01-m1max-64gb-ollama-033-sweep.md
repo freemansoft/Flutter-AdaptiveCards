@@ -968,6 +968,98 @@ results tree. Its figures go into Task 6's write-up and Task 8's changelog.
 
 ---
 
+### Task 5c: Re-run the two stalling models on a settled machine
+
+**Run after Task 5b and a 30-minute cooldown.** 5b needs heat, 5c needs quiet;
+the order is not interchangeable.
+
+Added mid-execution. Two models recorded stall counts their medians contradict:
+
+| Model             | Stalls 0.32.14 -> 0.33.2 | Sweep ratio | Median ratio |
+| ----------------- | ------------------------ | ----------- | ------------ |
+| `llama3.2:latest` | 2 -> 31                  | 5.76x       | 0.94x        |
+| `granite4.1:3b`   | 2 -> 14                  | 3.67x       | 0.86x        |
+
+A model whose median is unchanged has not become slower, and a 120 s ceiling
+against a 1326 ms median is a 90x excursion, which throttling does not produce.
+The stall **positions** identify a window rather than a property: `llama3.2`
+stalled on seeded calls 88-99 (the last twelve, contiguous) and unaided calls
+0-13 (the first fourteen, contiguous). Those blocks are adjacent in wall clock,
+so one continuous window of stalling straddles the probe boundary.
+`granite4.1:3b` shows the same shape at seeded 86-99.
+
+Memory is excluded: `llama3.2:latest` loaded with **44.7 GiB free**, swap at
+0.00 MB, and Ollama logged `loaded runners count=1` on every load, excluding
+co-residency too. This is the signature `ModelBehavior.md` already requires a
+re-run for, and both of these models have failed to reproduce a stall count
+before.
+
+**Files:**
+
+- Move: `results-m1max-64gb-ollama033/llama3.2_latest/` and `.../granite4.1_3b/` to a scratch archive
+- Create: those two directories again, from the re-run
+
+- [ ] **Step 1: Confirm the machine is settled**
+
+```bash
+ollama ps                          # expect nothing resident
+pgrep -fl "model_probes/.*[.]dart" # expect nothing
+```
+
+Re-running under the same contention that may have caused the stalls answers
+nothing.
+
+- [ ] **Step 2: Preserve run 1 rather than overwrite it**
+
+`run()` skips any `(model, probe)` whose JSON already exists, so the re-run needs
+these out of the way — and run 1 is evidence: whether the stalls reproduce is
+the finding.
+
+```bash
+cd adaptive_chat_server_dart
+ARCHIVE=/private/tmp/claude-501/-Users-joefreeman-Documents-GitHub-freemansoft-Flutter-AdaptiveCards/4b3344d9-829b-47c1-a3c8-64fecf58b705/scratchpad/stall-run1
+mkdir -p "$ARCHIVE"
+for m in llama3.2_latest granite4.1_3b; do
+  mkdir -p "$ARCHIVE/$m"
+  mv tool/model_probes/results-m1max-64gb-ollama033/$m/*.json "$ARCHIVE/$m/"
+done
+```
+
+Archive outside the results tree: `perf_table.py` reads every directory under
+the results root and takes the model name from the JSON, so a sibling
+`llama3.2_latest-run1/` would render a second row under the same name.
+
+- [ ] **Step 3: Re-run both models**
+
+```bash
+cd adaptive_chat_server_dart
+SWEEP_RESULTS=tool/model_probes/results-m1max-64gb-ollama033 \
+SWEEP_LOG=/tmp/sweep-logs-m1max-033-rerun \
+  caffeinate -is tool/model_probes/sweep.sh llama3.2:latest granite4.1:3b \
+  2>&1 | tee /tmp/sweep-m1max-033-rerun.log
+```
+
+Budget 25 minutes if the stalls were transient, far longer if they reproduce.
+
+- [ ] **Step 4: Compare the two runs**
+
+Report, for each model and each run: total sweep minutes, stall count, seeded
+summary, and the indices of the stalled calls. The indices are the diagnostic —
+contiguity is what distinguishes a window from a property.
+
+- [ ] **Step 5: Decide which run the table publishes**
+
+- **Stalls do not reproduce.** Run 1 was a bad measurement. Publish run 2 and record that run 1 stalled and did not reproduce.
+- **Stalls reproduce, again contiguous.** A stalling window is a real property of this host under sustained load, and the sweep methodology is at fault rather than either runtime. Publish run 2, say the sweep column is not comparable for these rows, and do not attribute the difference to 0.33.2.
+- **Stalls reproduce, scattered.** Publish run 2 and drop the window hypothesis.
+
+Do not average the two runs, and do not publish the better one because it is
+better. Say which run the table carries and why.
+
+- [ ] **Step 6: Commit** (diff + confirmation first)
+
+---
+
 ### Task 6: Update `ModelBehavior.md`
 
 Three things change: the runtime footnote becomes a measurement instead of a
