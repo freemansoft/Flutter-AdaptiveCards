@@ -881,6 +881,93 @@ git commit -m "test(chat-server): sweep all fifteen models on the M1 Max under O
 
 ---
 
+### Task 5b: Measure the thermal/position bias before publishing any ratio
+
+**Run this immediately after Task 5 prints `SWEEP COMPLETE`, before the machine
+cools.** Its value is entirely in the thermal state, and that decays.
+
+Added mid-execution, after the user observed the fans running at full speed and
+the first four ratios came back ordered exactly by position in the run:
+
+| Model               | Started | Machine state             | Ratio |
+| ------------------- | ------- | ------------------------- | ----- |
+| `qwen3.5:9b`        | 08:11   | idle ~29 min, cold        | 0.71x |
+| `qwen3.8:27b-nvfp4` | 08:51   | 85 s after a 38-min sweep | 0.93x |
+| `granite4.1:8b`     | 09:38   | 47 min sustained load     | 1.04x |
+| `qwen2.5-coder:7b`  | 09:53   | 62 min sustained load     | 1.05x |
+
+Baseline-latency order and thermal-position order are **identical** across those
+four rows, so the data cannot separate "0.33.2 helps slow models most" from
+"later positions are penalised". Worse, the headline result is the row with the
+most favourable position: `qwen3.5:9b` ran in its own standalone sweep on a cold
+machine, while its 0.32.14 counterpart was measured somewhere inside a
+fifteen-model sweep whose per-model position is not recoverable — result files
+carry `measuredAt` as a date only, and the 2026-08-20 Ollama logs have rotated.
+
+A measurement settles it; further reasoning does not.
+
+**Files:**
+
+- Create: scratch only. `tool/model_probes/results-m1max-64gb-ollama033/` is **not** touched.
+
+- [ ] **Step 1: Re-run `qwen3.5:9b` hot, immediately**
+
+Do not wait, do not let the machine idle first.
+
+```bash
+cd adaptive_chat_server_dart
+HOT=/private/tmp/claude-501/-Users-joefreeman-Documents-GitHub-freemansoft-Flutter-AdaptiveCards/4b3344d9-829b-47c1-a3c8-64fecf58b705/scratchpad/qwen35-hot
+mkdir -p "$HOT"
+date; pmset -g therm; uptime
+SWEEP_RESULTS="$HOT" SWEEP_LOG=/tmp/sweep-logs-m1max-033-hot \
+  caffeinate -is tool/model_probes/sweep.sh qwen3.5:9b 2>&1 | tee /tmp/sweep-m1max-033-qwen35-hot.log
+date
+```
+
+The run goes to a scratch directory, not into the results tree. The cold run is
+the one the table publishes — it is the run taken under the same conditions the
+sweep gives every other model — so the hot run must not overwrite it. A separate
+`SWEEP_RESULTS` avoids moving files at all, which is where this kind of
+experiment usually goes wrong.
+
+- [ ] **Step 2: Compare cold against hot, same runtime, same box**
+
+```bash
+cd adaptive_chat_server_dart
+HOT=/private/tmp/claude-501/-Users-joefreeman-Documents-GitHub-freemansoft-Flutter-AdaptiveCards/4b3344d9-829b-47c1-a3c8-64fecf58b705/scratchpad/qwen35-hot
+python3 - <<'EOF'
+import json, os, statistics
+def prof(p, label):
+    j = json.load(open(p))
+    v = sorted(c['ms'] for c in j['calls'][1:]
+               if c.get('ms') and 'timeout (' not in c['label'])
+    print(f"{label:6s} n={len(v)} p25={v[len(v)//4]} med={v[len(v)//2]} "
+          f"p75={v[3*len(v)//4]} mean={statistics.mean(v):.0f}")
+    return v[len(v)//2]
+cold = prof('tool/model_probes/results-m1max-64gb-ollama033/qwen3.5_9b/shape_ab-seeded.json', 'cold')
+hot  = prof(f"{os.environ['HOT']}/qwen3.5_9b/shape_ab-seeded.json", 'hot')
+print(f"\nhot/cold = {hot/cold:.2f}x")
+print(f"cold vs 0.32.14 archive (6903 ms) = {cold/6903:.2f}x")
+print(f"hot  vs 0.32.14 archive (6903 ms) = {hot/6903:.2f}x")
+EOF
+```
+
+- [ ] **Step 3: Read the result**
+
+- **hot/cold within ~1.05x** — position is not driving the ratios. The 0.71x stands as a runtime effect, and the four-row ordering above is coincidence or a real model-dependent effect. Say the control was run and report the figure.
+- **hot/cold at or above ~1.15x** — position bias is real and comparable to the effect being measured. Then `qwen3.5:9b`'s 0.71x is partly positional, every ratio in the table carries the same bias, and the write-up must say so. Report `hot vs 0.32.14` alongside `cold vs 0.32.14` as a range rather than publishing the flattering end.
+- **between** — report the figure and draw no conclusion beyond "the bias is of order X".
+
+Do **not** retrofit a correction factor onto any published row. A measured bias
+is reportable; an estimated correction is not.
+
+- [ ] **Step 4: No commit of results**
+
+The hot run is a control, not a published measurement, and it stays out of the
+results tree. Its figures go into Task 6's write-up and Task 8's changelog.
+
+---
+
 ### Task 6: Update `ModelBehavior.md`
 
 Three things change: the runtime footnote becomes a measurement instead of a
