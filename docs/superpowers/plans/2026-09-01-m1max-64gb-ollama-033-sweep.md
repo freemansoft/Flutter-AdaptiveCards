@@ -87,7 +87,9 @@ negative the rest of the plan can be re-scoped rather than run blind.
 ## One hazard specific to this host, observed today
 
 **The 0.33.2 server that ran this morning failed GPU discovery and fell back to
-CPU.** From `server-1.log`:
+CPU.** From the rotated server log covering that start (it was `server-1.log`
+when this plan was written and had rotated to `server-3.log` hours later — grep
+the rotation set rather than a fixed filename):
 
 ```text
 level=WARN  msg="llama-server GPU discovery watchdog timed out"
