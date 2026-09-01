@@ -3,9 +3,10 @@
 ## Two machines, one probe set
 
 Two Apple machines ran the same probes and the same prompts, against
-byte-identical prompt and seed digests: an M1 Max with 64 GB, where the shape,
-cascade, everyday, and stress figures behind the first two articles in this
-series were measured, and a fanless 16 GB M5 MacBook Air (`Mac17,3`).
+byte-identical prompt and seed digests: a 64 GB M1 Max MacBook Pro 14-inch
+(`MacBookPro18,4`), where the shape, cascade, everyday, and stress figures
+behind the first two articles in this series were measured, and a fanless 16 GB
+M5 MacBook Air (`Mac17,3`).
 
 The reason for the second host is narrow. A server default that only runs on a
 64 GB box is not much of a default, so the 16 GB column answers what can
