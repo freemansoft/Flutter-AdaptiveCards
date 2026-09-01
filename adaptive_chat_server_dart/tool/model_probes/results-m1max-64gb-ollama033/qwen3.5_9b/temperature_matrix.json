@@ -1,0 +1,188 @@
+{
+  "probe": "temperature_matrix",
+  "model": "qwen3.5:9b",
+  "measuredAt": "2026-09-01",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.2",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 21,
+    "passed": 19,
+    "cards": 16,
+    "prose": 3
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 16146
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 7137
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 7758
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 18079
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 6539
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 5149
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 6152
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "low(t=0.2)",
+      "ms": 5137
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "low(t=0.2)",
+      "ms": 7244
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 8371
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 1194)\n...TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"14 moons\",\"wrap\":true}]}]}]\n                                                                              ^\n",
+      "setting": "low(t=0.2)",
+      "ms": 17857
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 7347
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 4304
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 6062
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 4443
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 7020
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 8264
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 1194)\n...TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"14 moons\",\"wrap\":true}]}]}]\n                                                                              ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 17619
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 6234
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 4596
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 5599
+    }
+  ]
+}
