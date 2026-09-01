@@ -416,6 +416,54 @@ void main() {
       );
     });
 
+    test('a second directory for the same host does not double the table', () {
+      // The M1 Max has been measured under two Ollama versions, so two
+      // directories legitimately record the same `machine`. Selecting the
+      // shape-table runs by host would key two runs by one model and report a
+      // mismatch that is not one.
+      final archive = shapeRun(
+        model: 'm:1',
+        machine: 'Host A',
+        variant: 'seeded',
+        cold: 2,
+        warm: 2,
+      );
+      final rerun = shapeRun(
+        model: 'm:1',
+        machine: 'Host A',
+        variant: 'seeded',
+        cold: 1,
+        warm: 1,
+      );
+
+      final scoped = check(
+        results: [archive, rerun],
+        tableResults: [archive],
+        launched: const [],
+        currentAssets: const {'card_system_prompt.txt': 'abc123def456'},
+        markdown: table,
+        tableHost: 'Host A',
+      );
+      expect(
+        scoped.where((f) => f.fatal),
+        isEmpty,
+        reason: 'the table agrees with the run the table is derived from',
+      );
+
+      final unscoped = check(
+        results: [archive, rerun],
+        launched: const [],
+        currentAssets: const {'card_system_prompt.txt': 'abc123def456'},
+        markdown: table,
+        tableHost: 'Host A',
+      );
+      expect(
+        unscoped.where((f) => f.fatal),
+        isNotEmpty,
+        reason: 'without scoping, the second run is compared to the same row',
+      );
+    });
+
     test('one results directory must hold one host', () {
       // The per-host layout is the invariant that keeps the table check
       // meaningful. A sweep aimed at the wrong directory breaks it silently.
