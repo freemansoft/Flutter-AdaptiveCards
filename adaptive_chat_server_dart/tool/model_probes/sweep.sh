@@ -21,14 +21,14 @@
 # interrupted sweep continues rather than restarting.
 #
 #   cd adaptive_chat_server_dart
-#   export SWEEP_RESULTS=tool/model_probes/results-m5-16gb
+#   export SWEEP_RESULTS=tool/model_probes/results-m5-16gb-ollama033
 #   tool/model_probes/sweep.sh                # every model
 #   tool/model_probes/sweep.sh granite4.1:8b  # just one
 set -u
 
 cd "$(dirname "$0")/../.." || exit 1
-# Required, not defaulted. Results are per host -- results-m1max-64gb/,
-# results-m5-16gb/ -- because latency is a property of the box as much as the
+# Required, not defaulted. Results are per host -- results-m1max-64gb-ollama032/,
+# results-m5-16gb-ollama033/ -- because latency is a property of the box as much as the
 # model, and there is no directory that is right for every machine.
 #
 # A wrong default here is worse than no default. run() skips any (model, probe)
@@ -39,7 +39,7 @@ cd "$(dirname "$0")/../.." || exit 1
 # server also refuses to guess at: a run says what it wants or gets nothing.
 if [[ -z ${SWEEP_RESULTS:-} ]]; then
   echo "sweep.sh: set SWEEP_RESULTS to this host's results directory, e.g."
-  echo "  SWEEP_RESULTS=tool/model_probes/results-m5-16gb $0 $*"
+  echo "  SWEEP_RESULTS=tool/model_probes/results-m5-16gb-ollama033 $0 $*"
   exit 2
 fi
 RES=$SWEEP_RESULTS

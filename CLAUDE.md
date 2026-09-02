@@ -90,6 +90,33 @@ See [`docs/optional-packages-and-extensions.md`](docs/optional-packages-and-exte
 - **Logging:** `dart:developer` `log`, never `print`.
 - **Serialization:** models are **hand-written** — `factory X.fromJson(Map<String, dynamic>)` + manual `toJson()`. No `json_serializable`/`json_annotation`, no `@JsonSerializable`, no `.g.dart`. The plugin's `flutter-implement-json-serialization` skill is directionally right, but follow this repo's conventions (Adaptive Cards camelCase keys, null-safe defaults, immutable value types) per **`adaptive-cards-flutter-standard-practices`** — which also covers theming elements from HostConfig rather than `ThemeData`. Element theming detail: **`adaptive-cards-hostconfig-theme`**.
 
+## Sibling directory and file naming
+
+When a second directory or file joins an existing one and its name has to carry
+a new dimension to stay unambiguous, **rename the existing sibling to carry that
+dimension too**. Do not leave one name implicit and the other explicit.
+
+`tool/model_probes/results-*` is the worked example. A single host needed only
+`results/`. A second host made the host explicit — `results-m1max-64gb/`,
+`results-m5-16gb/`. Measuring one host under a second Ollama version then forced
+the runtime into the name, and for a while the tree held
+`results-m1max-64gb-ollama033/` beside a bare `results-m1max-64gb/` whose runtime
+was recoverable only from a log. The bare name silently meant "the other one".
+
+Both the old and the new name must state every dimension that now distinguishes
+them: `results-m1max-64gb-ollama032/`, `results-m1max-64gb-ollama033/`,
+`results-m5-16gb-ollama033/`.
+
+Renaming is not free — grep first and fix in the same change:
+
+- code that hardcodes a path (`check_results.dart`'s `shapeTableDir`, `sync_shape_table.dart`)
+- **tests that reconstruct the same path or the same scoping**, which fail later than the code does
+- doc comments, `README.md`, `perf_table.py` usage strings, `sweep.sh` examples
+- the active plan under `docs/superpowers/plans/`
+
+Leave completed plan documents and dated `CHANGELOG.md` entries alone — they are
+records of what the tree was called at the time, not references that must resolve.
+
 ## Git commit and push gate
 
 **Never commit or push without explicit user confirmation.** Before any `git commit` or `git push` (including tag pushes):

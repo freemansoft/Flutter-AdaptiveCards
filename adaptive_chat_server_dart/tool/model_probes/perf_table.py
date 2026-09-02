@@ -21,11 +21,11 @@ rows, and two of them are easy to get wrong:
   Stalls         Calls that hit the per-call ceiling, same seven probes.
                  Reported beside the latency, never folded into it.
 
-    python3 tool/model_probes/perf_table.py tool/model_probes/results-m1max-64gb
-    python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb \
-        --compare tool/model_probes/results-m1max-64gb
-    python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb \
-        --compare tool/model_probes/results-m1max-64gb --by-probe
+    python3 tool/model_probes/perf_table.py tool/model_probes/results-m1max-64gb-ollama032
+    python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb-ollama033 \
+        --compare tool/model_probes/results-m1max-64gb-ollama032
+    python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb-ollama033 \
+        --compare tool/model_probes/results-m1max-64gb-ollama032 --by-probe
 
 `--by-probe` splits the wall clock per probe instead of summing it. It exists
 because the summed columns can disagree in a way that looks like an error and is

@@ -294,7 +294,7 @@ Future<void> main(List<String> argv) async {
   final mdPath = p.join(root, 'ModelBehavior.md');
   final markdown = File(mdPath).readAsStringSync();
   final results = readAllResults(
-    p.join(root, 'tool', 'model_probes', 'results-m1max-64gb'),
+    p.join(root, 'tool', 'model_probes', 'results-m1max-64gb-ollama032'),
   );
   final carried = carriedFromMarkdown(markdown);
   final published = shapeTableRows(markdown);

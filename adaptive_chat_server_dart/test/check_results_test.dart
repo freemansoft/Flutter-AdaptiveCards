@@ -497,11 +497,16 @@ void main() {
     });
 
     test('the checker passes against the real tree', () {
+      // `tableResults` mirrors main(): the shape table is derived from one
+      // directory, not one host. Without it this falls back to the host
+      // filter, and the two Apple M1 Max directories -- 0.32.14 and 0.33.x --
+      // key two runs by the same model, reporting a mismatch that is not one.
       final findings = check(
         results: [
           for (final d in resultsDirs('tool/model_probes'))
             ...readAllResults(d),
         ],
+        tableResults: readAllResults('tool/model_probes/$shapeTableDir'),
         launched: launchedModels('../.vscode/launch.json'),
         currentAssets: currentAssetDigests('assets'),
         markdown: File('ModelBehavior.md').readAsStringSync(),

@@ -67,16 +67,16 @@ const shapeTableHost = 'Apple M1 Max / 64 GB';
 /// The directory the shape table is derived from.
 ///
 /// Scoped by directory rather than by [shapeTableHost] because one host can be
-/// recorded more than once: `results-m1max-64gb/` holds the 2026-08-20/21 runs
+/// recorded more than once: `results-m1max-64gb-ollama032/` holds the 2026-08-20/21 runs
 /// on Ollama 0.32.14 and `results-m1max-64gb-ollama033/` the same machine on
 /// 0.33.x. Both stamp the same `machine`, so a host filter would key two runs
 /// by one model and report a mismatch that is not one. The table is one
 /// measurement, and this names which.
-const shapeTableDir = 'results-m1max-64gb';
+const shapeTableDir = 'results-m1max-64gb-ollama032';
 
 /// Every per-host results directory under [probesDir].
 ///
-/// Results are stored per host -- `results-m1max-64gb/`, `results-m5-16gb/` --
+/// Results are stored per host -- `results-m1max-64gb-ollama032/`, `results-m5-16gb-ollama033/` --
 /// because latency is a property of the box as much as the model. Discovered
 /// rather than listed so adding a host is a directory, not an edit here.
 List<String> resultsDirs(String probesDir) {

@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+- Changed: **every per-host results directory now names its Ollama version.**
+  `results-m1max-64gb/` became `results-m1max-64gb-ollama032/` and
+  `results-m5-16gb/` became `results-m5-16gb-ollama033/`, beside the
+  `results-m1max-64gb-ollama033/` added by the 0.33.x sweep. A bare
+  `results-m1max-64gb/` sitting next to an `-ollama033` sibling read as "the
+  other one", and its runtime was recoverable only from a rotating server log.
+  `shapeTableDir` and `sync_shape_table.dart` follow the rename.
+- Fixed: **`check_results_test.dart`'s real-tree check compared the shape table
+  against two runtimes at once.** It called `check()` without `tableResults`, so
+  it fell back to the host filter and keyed two runs by the same model once a
+  second Apple M1 Max directory held real data. It now mirrors `main()` and
+  scopes to `shapeTableDir`.
+
 - Added: **`blog/` directory — a series plan and drafts of the first three
   articles** derived from `ModelBehavior.md`. `blog/README.md` is the plan:
   it assigns each article a topic it owns outright and records what it defers
