@@ -4,13 +4,16 @@
 
 Two Apple machines ran the same probes and the same prompts, against
 byte-identical prompt and seed digests: a 64 GB M1 Max MacBook Pro 14-inch
-(`MacBookPro18,4`), where the shape, cascade, everyday, and stress figures
-behind the first two articles in this series were measured, and a fanless 16 GB
-M5 MacBook Air (`Mac17,3`).
+(`MacBookPro18,4`), where the shape, drift (cascade), everyday, and stress
+figures behind the first two articles in this series were measured, and a
+fanless 16 GB M5 MacBook Air (`Mac17,3`).
 
 The reason for the second host is narrow. A server default that only runs on a
 64 GB box is not much of a default, so the 16 GB column answers what can
-reasonably be recommended, not what can be measured.
+reasonably be recommended, not what can be measured. The rest of the article is
+the latency comparison that comes with a second host, and why no single row of
+it should be read closely: a same-host control puts a 1.54x position bias under
+every ratio, so the recommendation reduces to fit plus model choice.
 
 Every figure below is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md),
@@ -45,7 +48,7 @@ seven do not.** The marginal row matters later, so it is worth keeping separate
 from the seven.
 
 Weights are not the memory budget. `gpt-oss:20b` at **12.8 GB** is a ❌ on a 16 GB
-host and outscores every model that fits, at **23/25**. The notebook calls it
+host and outscores every model that fits, at **25/25**. The notebook calls it
 "the exception the 16 GB column exists to flag".
 
 Read ❌ as "do not make this the recommended default", not "cannot be probed".
@@ -53,12 +56,12 @@ The 64 GB host is where the ❌ rows get measured at all; the 16 GB host is wher
 the column gets checked rather than asserted.
 
 The best 16 GB-capable model is `granite4.1:8b` at **21/25 in 5.0 GB**, against
-**24/25 at 16.9 GB** for the best model in the ❌ class. That 21/25 is a
+**25/25 at 12.8 GB** for the best model in the ❌ class. That 21/25 is a
 _seeded_, with-history figure: unaided, `granite4.1:8b` scores **15/25**, a **+6**
 seed gain, while `qwen2.5-coder:7b` scores **18/25** either way. A 16 GB
 recommendation has to name the configuration, not just the model.
 
-## Every model is slower on the M5, from 1.15x to 2.32x
+## All eight rows read slower on the M5, 1.15x to 2.32x, most inside the position bias
 
 | Model                     | Weights | M1 Max s/call | M5 s/call | M5 ÷ M1 Max | M1 Max sweep | M5 sweep | M1 Max stalls | M5 stalls |
 | ------------------------- | ------- | ------------- | --------- | ----------- | ------------ | -------- | ------------- | --------- |
@@ -67,17 +70,17 @@ recommendation has to name the configuration, not just the model.
 | `qwen2.5-coder:7b`        | 4.4 GB  | 2.38 s        | 2.90 s    | 1.22x       | 19 min       | 22 min   | 0             | 0         |
 | `llama3.2:latest`         | 1.9 GB  | 1.34 s        | 1.65 s    | 1.23x       | 13 min       | 15 min   | 2             | 2         |
 | `nemotron-3-nano:4b`      | 2.6 GB  | 2.54 s        | 3.54 s    | 1.40x       | 16 min       | 30 min   | 1             | 4         |
-| `granite4.1:3b`           | 2.0 GB  | 0.98 s        | 1.40 s    | 1.43x       | 32 min       | 6 min    | 14            | 0         |
+| `granite4.1:3b`           | 2.0 GB  | 0.98 s        | 1.40 s    | 1.43x       | 32 min       | 13 min   | 14            | 1         |
 | `llama3-groq-tool-use:8b` | 4.3 GB  | 1.85 s        | 2.67 s    | 1.44x       | 9 min        | 13 min   | 0             | 0         |
 | `llama3-chatqa:8b`        | 4.3 GB  | 0.11 s        | 0.25 s    | 2.32x       | 3 min        | 5 min    | 0             | 0         |
 
 Both hosts are read at the same runtime line here — M1 Max on Ollama 0.33.2,
-M5 on 0.33.1, a patch-level difference — for the first time. Doing that
-removes an anomaly rather than explaining one: an earlier draft of this table
-compared the two hosts across a runtime gap of unknown size and read
-`qwen3.5:9b` as the one model that ran faster on the smaller host. At matched
-runtime it reads **1.15x**, unremarkable, mid-pack. It is not a subject this
-article needs a section for.
+M5 on 0.33.1, a patch-level difference — so a per-row ratio is close to a
+same-runtime, cross-host comparison. A comparison across a runtime gap of
+unknown size is a different measurement, and one that produced a sub-1.0x row
+for `qwen3.5:9b` before both hosts were on the 0.33 line. At matched runtime
+that row reads **1.15x**, but which of two M1 Max measurements sits in the
+table decides its direction; the caveats below say which one is there.
 
 <!--
 CHART (to be produced): horizontal bar chart, "M5 ÷ M1 Max median s/call,
@@ -98,25 +101,32 @@ alone — larger than six of these eight ratios — so read a single row's ratio
 as a direction, not a precise figure.
 -->
 
-**Every model is slower on the M5, 1.15x to 2.32x, seven of the eight inside
+**All eight rows read slower on the M5, 1.15x to 2.32x, seven of them inside
 1.0-1.5x.** That is roughly what the memory-bandwidth gap between the two
-chips predicts — about 150 GB/s on the M5 against about 400 GB/s on the M1
-Max — so the result needs no special explanation.
+chips would predict — about 150 GB/s on the M5 against about 400 GB/s on the
+M1 Max — so the direction needs no special explanation; the per-row figures
+are a different matter, since most of them are smaller than the 1.54x position
+bias measured below.
 
 The widest ratio is the least meaningful one. `llama3-chatqa:8b` at **2.32x**
 is 0.11 s against 0.25 s: 140 ms of absolute difference on the fastest model
 in this table, where load and scheduling overhead are a larger share of the
 call than the model's own compute.
 
-Two caveats travel with the table rather than any one row. The M1 Max figures
-for `granite4.1:3b` and `llama3.2:latest` were measured after a runner
-eviction fix described later in this series; the other six were measured
-before it. Eviction is a no-op unless a call times out, and those six recorded
-zero stalls on both hosts, so the comparison holds for them — stated rather
-than assumed. And `granite4.1:3b`'s sweep column, 32 minutes against the M5's
-6, is its genuine with-history timeouts, not a speed difference: its per-call
-median is faster on the M1 Max than on the M5, 0.98 s against 1.40 s. Read
-that row's sweep time as failures, not latency.
+Three caveats travel with the table rather than any one row. The M1 Max
+figures for `granite4.1:3b` and `llama3.2:latest` were measured **after runner
+eviction** — a harness change the measurement-hygiene article in this series
+describes — and the other six **before runner eviction**. Eviction is a no-op
+unless a call times out, and those six recorded zero stalls on both hosts, so
+the comparison holds for them — stated rather than assumed. `granite4.1:3b`'s
+M1 Max sweep and stall cells, 32 minutes and 14, are cascade-damaged and are
+not model figures: that run's stall positions still carry the queue-cascade
+signature the measurement-hygiene article describes, so read only the median
+from that row — 0.98 s against 1.40 s, faster on the M1 Max. And the
+`qwen3.5:9b` M1 Max figure is the standalone cold position-0 control, while the
+other seven M1 Max figures are in-sweep; measured hot on the same host it
+medians 7563 ms, which would put its row below 1.0x, so its direction sits
+inside the 1.54x position bias measured below and is not a finding either way.
 
 Weight does not predict speed on either host: the fastest real card producer
 measured is `qwen3-coder:30b` at **1.5 s/call** on the M1 Max, ahead of
@@ -126,16 +136,21 @@ in short prose — quick for the wrong reason.)
 
 ## One row was an artifact: 89 minutes became 15
 
-`llama3.2:latest` first recorded **89 minutes and 40 stalls** on the M5. Re-run
-on an idle machine it takes **15 minutes with 2 stalls** and reproduces the M1
-Max exactly — **seeded 15/15, unaided 15/12**. Its median barely moved, from
-**1559 ms to 1650 ms**, so the model's speed was never what changed. The second
-run is the one published, and it is the one in the table above.
+`llama3.2:latest` first recorded **89 minutes and 40 stalls** on the M5, with
+unaided cold-start collapsing 15 to 5 and all 28 unaided stalls falling in
+calls 0-27. Re-run on an idle machine it takes **15 minutes with 2 stalls** and
+reproduces the M1 Max exactly — **seeded 15/15, unaided 15/12**. Its median
+barely moved, from **1559 ms to 1650 ms**, so the model's speed was never what
+changed. The second run is the one published, and it is the one in the table
+above.
 
 The cause is not identified. Co-residency is ruled out: Ollama logged one
-resident runner on all 22 loads of the sweep. And **a 1.20x throttling factor is
-far too small to account for the gap**, which also bounds what throttling can
-be blamed for.
+resident runner on all 22 loads of the sweep. A 1.20x throttling factor is too
+small to account for the gap, which also bounds what throttling can be blamed
+for. A contiguous block of 28 stalls opening a probe matches the queue-cascade
+signature the measurement-hygiene article describes, and that run was taken
+before runner eviction; the M5 server log was not checked for the queue-drain
+pattern, so the match is consistent with a cascade rather than proof of one.
 
 The rule that follows is stated as a requirement, not as advice: re-run a
 suspicious row on an idle machine before publishing it. This is the second time
@@ -208,7 +223,7 @@ It does not rule throttling out on the M5; it means a swing this size does not
 require a thermal explanation to make sense.
 
 Thermal throttling on a fanless `Mac17,3` remains plausible and unproven, and
-the honest way to state that is to name what was not measured: **no die
+stating that means naming what was not measured: **no die
 temperature or clock frequency was read**, and Ollama server uptime, ambient
 temperature, and accumulated OS state all differed between those runs, none of
 them excluded.
@@ -235,8 +250,8 @@ Three measurement rules came out of running the same probes twice on different
 hardware. Stamp the host and the runtime version into every result file; a
 figure that cannot name its machine and its runtime is not comparable to
 anything. Derive published tables from the recorded runs rather than
-transcribing them — the derivation script caught two figures that had silently
-drifted. And report a bias you cannot correct for instead of correcting for it.
+transcribing them — the measurement-hygiene article records what that caught.
+And report a bias you cannot correct for instead of correcting for it.
 
 The remaining harness lessons — bad assertions, and `system` messages that
 never reach the model — belong to the next article in this series.

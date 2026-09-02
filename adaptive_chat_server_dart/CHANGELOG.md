@@ -15,22 +15,28 @@
   explain. Read at matched runtime instead, every model is slower on the M5,
   1.15x to 2.32x; see the same-runtime host comparison in
   [`ModelBehavior.md`](ModelBehavior.md).
-- Fixed: **`probe_support.dart` now evicts the runner (`keep_alive: 0`) after
-  a probe call times out**, so an abandoned generation actually stops instead
-  of continuing to occupy the single Ollama worker
-  (`OLLAMA_NUM_PARALLEL=1`) and queuing every later call behind it.
-  Re-measuring the two models with the most stalls confirms what this
-  bought: `llama3.2:latest` reproduces the 0.32.14 archive exactly (seeded 12
-  stalls/15-12 -> 2 stalls/15-15; unaided 19 stalls/9-12 -> 0 stalls/15-12),
-  so its 31 recorded stalls were 2 real and 29 queued. Why `request.abort()`
-  alone was insufficient is NOT established — an isolated reproduction of the
-  runaway call cancels correctly, and the sweep's did not.
+- Changed: **`probe_support.dart` now sends an unload (`keep_alive: 0`) after
+  a probe call times out**, and results are labelled before and after runner
+  eviction. What was measured: `llama3.2:latest` re-run after runner eviction
+  reproduces the 0.32.14 archive exactly (seeded 12 stalls/15-12 -> 2
+  stalls/15-15; unaided 19 stalls/9-12 -> 0 stalls/15-12), so its 31 recorded
+  stalls were 2 real and 29 queued. `granite4.1:3b` re-run the same way does
+  not move (14 seeded stalls before and after), and its unaided stalls still
+  sit in contiguous blocks at calls 0-20 and 89-99. The unload is not shown
+  to cancel a running generation: sent 3 s into an 18 s generation in a
+  direct test it completed at 20.9 s (`ollama stop`: 16.3 s), and 53 unloads
+  answered in ~8 ms each did not stop a 70-minute generation during the
+  granite run. Why `request.abort()` alone was insufficient is NOT
+  established — an isolated reproduction of the runaway call cancels
+  correctly, and the sweep's did not. `evictModel` closes its client on every
+  path and writes one stderr line naming the model when the unload fails.
 - Changed: **the shape-coverage table in `ModelBehavior.md` now derives from
   the Ollama 0.33.2 runs instead of the 0.32.14 archive.** Eleven of fifteen
   models have identical coverage across the two runtimes, which is what makes
   the move safe. Four moved: `gpt-oss:20b`, `granite4.1:3b`,
   `qwen3.6:27b-coding-nvfp4`, and `qwen3.8:27b-nvfp4` — see their per-model
-  notes for the figures.
+  notes for the figures. `granite4.1:3b`'s row is labelled cascade-damaged
+  in the notebook and is not a model measurement (next bullet but one).
 - Docs: **`gpt-oss:20b`'s seed direction reversed between runtimes.** Under
   0.32.14 it scored 25/25 unaided and 23/25 seeded — the only 25/25 in the
   file, with the seed costing it 2 shapes. Under 0.33.2 it scores 25/25
@@ -40,14 +46,18 @@
   `ModelBehavior.md` claims built on the old direction ("the only 25/25 in
   this file", "the strongest unaided model", "the sole 25/25 under any
   condition") are corrected accordingly.
-- Known issue: **`granite4.1:3b` has a with-history regression under Ollama
-  0.33.2, recorded as OPEN.** It records 14 seeded and 32 unaided timeouts
-  under 0.33.2 against 2 and 11 under 0.32.14, unchanged by runner eviction
-  (14 stalls before eviction and 14 after), so the stalls are genuine rather
-  than queue cascade. Seeded coverage reads 17/12 against 17/17 under
-  0.32.14; cold-start coverage is unchanged. No mechanism is established —
-  one model is one data point, and whether Ollama 0.33.2, this model, or an
-  interaction between them is the cause is unresolved. It gets its own plan.
+- Known issue: **`granite4.1:3b`'s 0.33.2 figures differ from 0.32.14, cause
+  not established; recorded as OPEN.** It records 14 seeded and 32 unaided
+  timeouts under 0.33.2 against 2 and 11 under 0.32.14, and seeded coverage
+  reads 17/12 against 17/17. Re-running it after runner eviction changed none
+  of that, but the re-run's unaided stalls sit at calls 0-20 (the probe's cold
+  opening cases) and 89-99, 21 cold and 11 warm, with the first non-stalled
+  call taking 86 s — the queue-cascade signature — and the unload is not
+  shown to cancel a generation, so "unchanged by eviction" does not separate
+  a model property from a cascade. No regression is established; its 0.33.2
+  shape and stall figures are recorded as cascade-damaged, not as a model
+  measurement. The open question is whether a runaway generation can be
+  cancelled at all, and how.
 - Changed: **every per-host results directory now names its Ollama version.**
   `results-m1max-64gb/` became `results-m1max-64gb-ollama032/` and
   `results-m5-16gb/` became `results-m5-16gb-ollama033/`, beside the
@@ -55,6 +65,18 @@
   `results-m1max-64gb/` sitting next to an `-ollama033` sibling read as "the
   other one", and its runtime was recoverable only from a rotating server log.
   `shapeTableDir` and `sync_shape_table.dart` follow the rename.
+- Added: **`results-m1max-64gb-ollama032/PROVENANCE.md` recovers the
+  archive's runtime as Ollama 0.32.14** from the one surviving server-log
+  line (`Listening on [::]:11434 (version 0.32.14)`, 2026-08-21T13:34:28).
+  That line covers 2026-08-21T13:34 onward; the archive spans 2026-08-20 and
+  2026-08-21, and the two earlier server restarts in that window are not
+  corroborated by anything on disk. The 113 archived result files are not
+  backfilled — each records what the probe stamped.
+- Changed: **`check_results.dart` scopes the shape-table check to one
+  directory.** `check()` takes a `tableResults` parameter and `main()` passes
+  the runs under `shapeTableDir` (`results-m1max-64gb-ollama033`), so a
+  second directory for the same host no longer keys two runs by one model;
+  the host filter remains the fallback for single-directory data.
 - Fixed: **`check_results_test.dart`'s real-tree check compared the shape table
   against two runtimes at once.** It called `check()` without `tableResults`, so
   it fell back to the host filter and keyed two runs by the same model once a

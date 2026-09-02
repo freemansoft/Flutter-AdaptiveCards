@@ -73,7 +73,7 @@ of the notebook.
 | `nemotron-3-nano:4b`         |         4 |          9 |  −5 |         5 |          7 |  −2 | loss       |
 
 The two `unaffected` rows are the same result on either side of an arbitrary
-line. **±1 is inside this file's own noise floor** — the 2026-08-20
+line. **±1 is inside the notebook's own noise floor** — the 2026-08-20
 re-measurement moved ten of twelve steady models by ±1 with nothing about them
 changing — so a row that reads `+1` and a row that reads `−1` are not
 distinguishable from each other or from zero. Only `qwen3-coder:30b`'s +6 and

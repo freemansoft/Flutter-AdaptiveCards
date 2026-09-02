@@ -90,16 +90,20 @@ as setup. Its figures are the only unseeded shape figures in the series, which
 it states rather than assumes.
 
 **Article 5 — measurement hygiene.** The `granite4.1:3b` stall-signature
-account that articles 1 and 3 only name — co-residency and a queue cascade
-both produce the identical 52-stall signature, and which one caused the
-original incident is not recoverable. **The queue-cascade material outright**:
+account in full — article 1 names it in one sentence and defers here; article 3
+carries the 2026-09-01 reproduction and the two-mechanism summary in one
+paragraph and defers the account here — co-residency and a queue cascade both
+produce the identical 52-stall signature, and which one caused the original
+incident is not recoverable. **The queue-cascade material outright**:
 how one abandoned generation is recorded as many stalls, how that was proven
-from the server log rather than assumed, and how the same runner-eviction fix
-separated an artifact (`llama3.2:latest`, fully recovered) from a real,
-unresolved regression (`granite4.1:3b`, unchanged) — two models that cannot be
-described together as "the stalling models". Why a stall is the most misread
-measurement in the set, and what the per-call timeout changes, including why
-raising the ceiling was never the fix. Suspect the harness before the model —
+from the server log rather than assumed, and how the same harness change — an
+unload on timeout, with runs labelled before and after runner eviction —
+reproduced the archive for one model (`llama3.2:latest`) and not the other
+(`granite4.1:3b`, whose run still shows the cascade), with the unload itself
+not shown to cancel a generation and the difference unexplained. Why a stall
+is the most misread measurement in the set, and what the per-call timeout
+changes, including why raising the ceiling was never the answer. Suspect the
+harness before the model —
 a fence-stripping bug and a bad assertion, both blamed on models first. A null
 result means nothing until delivery is established, and a delivery probe must
 not contradict the system prompt. Judge with the parser you ship; derive
@@ -116,19 +120,20 @@ isolate the confound, measure it, do not read a mechanism off a net number.
 ### Figures
 
 - **Every figure traces to `ModelBehavior.md`.** The drafts were originally
-  written against commit `ba02fd98`. Articles 1, 3, 4, and 5 are re-pinned to
+  written against commit `ba02fd98`. Articles 1, 3, 4, and 5 link
   `fd1e4732`, the commit that corrected the `gpt-oss:20b` seed-direction
-  reversal and folded in the Ollama 0.33.2 sweep; their figures were checked
-  against it first. **Article 2 stays pinned to `ba02fd98`**: it quotes
-  `gpt-oss:20b`'s pre-sweep figures (25/25 unaided, 23/25 seeded, "the only
-  25/25 in the notebook") and the pre-sweep claim that `qwen3.8:27b-nvfp4`
-  holds the notebook's highest as-shipped score — both now read the opposite
-  way at `fd1e4732`, where `gpt-oss:20b` is 25/25 seeded and 22/25 unaided.
-  Re-pinning article 2 without rewriting its prose would point a reader at
-  numbers that contradict what the article says. Re-check against the file at
-  head before publishing, and when drafting a new article, verify each figure
-  in the notebook directly — do not trust an intermediate document that
-  quotes it.
+  reversal and folded in the Ollama 0.33.2 sweep, and their `gpt-oss:20b`
+  figures were brought to that commit's values (25/25 seeded, 22/25 unaided,
+  +3) on 2026-09-02. **Article 2 still links `ba02fd98`** but its
+  `gpt-oss:20b` row and prose were corrected to the same values on the same
+  date, so its prose no longer matches the commit it links. No article is
+  re-pinned yet: the 2026-09-02 retraction of the `granite4.1:3b` regression
+  and eviction claims changed `ModelBehavior.md` again, and the shape table's
+  source directory is a pending decision, so every article's links move
+  together once the notebook settles. Re-check against the file at head
+  before publishing, and when drafting a new article, verify each figure in
+  the notebook directly — do not trust an intermediate document that quotes
+  it.
 - **Transcribe verbatim.** Do not round, paraphrase, or recompute a score.
 - **Every score carries its test set and its condition.** An `n/m` is
   uninterpretable without both. Everyday and stress figures are cold-start;
@@ -206,7 +211,7 @@ order, a word budget per section, the figures each section quotes, and explicit
 once the drafts existed and were verified — maintaining a second description of
 an article that already exists is drift waiting to happen.
 
-The structure is worth reusing for articles 4 and 5:
+The structure is worth reusing for any further article:
 
 - A section list with a word budget each, summing to the target length.
 - The figures each section quotes, with the arithmetic behind any denominator

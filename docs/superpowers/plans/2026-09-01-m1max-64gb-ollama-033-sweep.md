@@ -970,6 +970,8 @@ results tree. Its figures go into Task 6's write-up and Task 8's changelog.
 
 ### Task 5c: Re-run the two stalling models on a settled machine
 
+> **Superseded on-branch, 2026-09-02.** This task ran as written, but what was published diverged from it and the ledger (`.superpowers/sdd/2026-09-01-m1max-64gb-ollama-033-sweep/FIGURES.md`, last section, "CORRECTION 2026-09-02") is the record: Step 5's "publish run 2" was not followed — run 1 was published, then replaced by a 2026-09-02 re-run after runner eviction (`probe_support.dart` sends `keep_alive: 0` on timeout); the `granite4.1:3b` row below ("2 -> 14 / 3.67x") was corrected to 13 -> 52 / 3.64x on the full sweep; and the reading that `granite4.1:3b`'s unchanged count after eviction proved a genuine regression was retracted, since its after-eviction stalls still sit in contiguous blocks (calls 0-20 and 89-99) and the unload is not shown to cancel a generation. The text below is left as it was executed.
+
 **Run after Task 5b and a 30-minute cooldown.** 5b needs heat, 5c needs quiet;
 the order is not interchangeable.
 
@@ -1433,6 +1435,7 @@ git commit -m "docs(chat-server): changelog for the M1 Max Ollama 0.33.x sweep"
 
 - **Backfilling `ollama: 0.32.14` into the 113 archived result files.** The version is now known, but a result file records what the probe stamped. Writing a reconstruction into the same field as a measurement makes the two indistinguishable, and `check_results.dart` explicitly leaves wholly-unstamped directories alone. `PROVENANCE.md` plus a same-host 0.33.x directory answers the question better.
 - **Re-deriving the shape-coverage table from the 0.33.x runs.** Task 5 Step 5 uses coverage as a sanity gate, not as a published figure. The canonical shape table stays the 0.32.14 measurement that `sync_shape_table.dart` generates.
+  > **Superseded on-branch, 2026-09-02.** Commit `d5f6d6b` re-derived the table from the 0.33.2 runs (`shapeTableDir` = `results-m1max-64gb-ollama033`), against this bullet. The `granite4.1:3b` row is labelled cascade-damaged in `ModelBehavior.md`, and which directory the table should derive from is a pending decision; see the ledger (`.superpowers/sdd/2026-09-01-m1max-64gb-ollama-033-sweep/FIGURES.md`, "CORRECTION 2026-09-02").
 - **Pinning Ollama's version or disabling its auto-updater.** The user updated Ollama manually for this test and it will not auto-update during the run, so there is nothing to pin. The plan still asserts a single runtime stamp per directory, which costs one line and catches the case anyway.
 - **Re-measuring the M5 on a newer runtime.** That host is not reachable from here, and the M5 archive is already stamped 0.33.1, which is inside the floor this plan works to.
 - **Explaining what changed in Ollama between 0.32.14 and 0.33.x.** This plan measures that something did. Attributing it to a specific change would need the release notes and the source, which is a different investigation.

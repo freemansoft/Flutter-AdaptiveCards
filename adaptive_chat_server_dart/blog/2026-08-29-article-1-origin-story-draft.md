@@ -76,7 +76,7 @@ report a pass rate the running server disagrees with, which is worse than no
 measurement at all. The scripts are in
 [`tool/model_probes`](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_chat_server_dart/tool/model_probes).
 
-Everything here was measured in August 2026 against a local Ollama on an Apple
+Everything here was measured in August and September 2026 against a local Ollama on an Apple
 M1 Max with 64 GB. A latency or coverage figure that cannot name its machine is
 not comparable to one from another box, which is a later article's subject.
 
@@ -104,7 +104,7 @@ why every score below carries its condition.
 A fourth set exists — a prompt A/B set that compares two system prompts rather
 than two models — and it belongs to the tuning article.
 
-## Strict-shaped output spreads fifteen models from 24/25 to 1/25
+## Strict-shaped output spreads fifteen models from 25/25 to 1/25
 
 Before any score: these are all measured on the configuration the server ships
 — `t=0`, `think: false`, and a synthetic two-turn card seed prepended to the
@@ -112,10 +112,11 @@ context. What that seed is worth varies by model, from +10 shapes to −2, and i
 the tuning article's subject. Read the figures below as seeded figures.
 
 With-history shape coverage across the fifteen models measured runs from
-**24/25 to 1/25**. Five of them:
+**25/25 to 1/25**. Six of them:
 
 | Model               | Weights | Cold-start | With history |
 | ------------------- | ------- | ---------- | ------------ |
+| `gpt-oss:20b`       | 12.8 GB | 25/25      | 25/25        |
 | `qwen3.8:27b-nvfp4` | 16.9 GB | 24/25      | 24/25        |
 | `granite4.1:8b`     | 5.0 GB  | 23/25      | 21/25        |
 | `qwen2.5-coder:7b`  | 4.4 GB  | 20/25      | 18/25        |
@@ -186,7 +187,7 @@ correct. Measure with conversation history, not only cold start, since one prose
 turn was enough to change the answer here. And state the test set and the
 condition beside every score, because `18/25` without them is not interpretable.
 
-Three articles follow: the tuning process — fourteen levers tried on this
+Four articles follow: the tuning process — fourteen levers tried on this
 workload, which shipped, and what is still open; the two-host comparison, the
 same benchmark on a 64 GB M1 Max and a 16 GB M5; and then the tool channel and
 measurement hygiene.
