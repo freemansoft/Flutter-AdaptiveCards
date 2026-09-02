@@ -2,6 +2,52 @@
 
 ## [Unreleased]
 
+- Docs: **the M1 Max Ollama 0.33.2 sweep is a null result on latency.** All
+  fifteen models were re-measured on the same machine with identical weights
+  under 0.33.2 against the 0.32.14 archive; 13 of 15 per-model median ratios
+  land in 0.86-1.05x. No latency difference between the two Ollama versions
+  was demonstrated.
+- Docs: **the sweep's premise did not survive its own control.** It was run
+  to test whether `qwen3.5:9b` running faster on the M5 than the M1 Max (an
+  earlier 0.8x reading) was a runtime effect. A same-host, same-runtime
+  control on `qwen3.5:9b` — hot against cold, position 0 against warm — found
+  a **1.54x position bias**, larger than the 0.8x gap it was offered to
+  explain. Read at matched runtime instead, every model is slower on the M5,
+  1.15x to 2.32x; see the same-runtime host comparison in
+  [`ModelBehavior.md`](ModelBehavior.md).
+- Fixed: **`probe_support.dart` now evicts the runner (`keep_alive: 0`) after
+  a probe call times out**, so an abandoned generation actually stops instead
+  of continuing to occupy the single Ollama worker
+  (`OLLAMA_NUM_PARALLEL=1`) and queuing every later call behind it.
+  Re-measuring the two models with the most stalls confirms what this
+  bought: `llama3.2:latest` reproduces the 0.32.14 archive exactly (seeded 12
+  stalls/15-12 -> 2 stalls/15-15; unaided 19 stalls/9-12 -> 0 stalls/15-12),
+  so its 31 recorded stalls were 2 real and 29 queued. Why `request.abort()`
+  alone was insufficient is NOT established — an isolated reproduction of the
+  runaway call cancels correctly, and the sweep's did not.
+- Changed: **the shape-coverage table in `ModelBehavior.md` now derives from
+  the Ollama 0.33.2 runs instead of the 0.32.14 archive.** Eleven of fifteen
+  models have identical coverage across the two runtimes, which is what makes
+  the move safe. Four moved: `gpt-oss:20b`, `granite4.1:3b`,
+  `qwen3.6:27b-coding-nvfp4`, and `qwen3.8:27b-nvfp4` — see their per-model
+  notes for the figures.
+- Docs: **`gpt-oss:20b`'s seed direction reversed between runtimes.** Under
+  0.32.14 it scored 25/25 unaided and 23/25 seeded — the only 25/25 in the
+  file, with the seed costing it 2 shapes. Under 0.33.2 it scores 25/25
+  seeded and 22/25 unaided — still the only 25/25, now reached with the seed
+  rather than without it, a +3 gain rather than −2. Same machine, same
+  weights; no mechanism for the reversal is established. Four
+  `ModelBehavior.md` claims built on the old direction ("the only 25/25 in
+  this file", "the strongest unaided model", "the sole 25/25 under any
+  condition") are corrected accordingly.
+- Known issue: **`granite4.1:3b` has a with-history regression under Ollama
+  0.33.2, recorded as OPEN.** It records 14 seeded and 32 unaided timeouts
+  under 0.33.2 against 2 and 11 under 0.32.14, unchanged by runner eviction
+  (14 stalls before eviction and 14 after), so the stalls are genuine rather
+  than queue cascade. Seeded coverage reads 17/12 against 17/17 under
+  0.32.14; cold-start coverage is unchanged. No mechanism is established —
+  one model is one data point, and whether Ollama 0.33.2, this model, or an
+  interaction between them is the cause is unresolved. It gets its own plan.
 - Changed: **every per-host results directory now names its Ollama version.**
   `results-m1max-64gb/` became `results-m1max-64gb-ollama032/` and
   `results-m5-16gb/` became `results-m5-16gb-ollama033/`, beside the
