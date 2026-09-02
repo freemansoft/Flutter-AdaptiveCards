@@ -218,20 +218,26 @@ List<Map<String, String>> buildProbeMessages({
   {'role': 'user', 'content': userPrompt},
 ];
 
-/// Unloads [model] so a generation abandoned by a timeout actually stops.
+/// Asks Ollama to unload [model] after a call has timed out.
 ///
 /// Ollama keeps generating an abandoned request under conditions this
 /// directory has observed but not reproduced, and it serves one request at a
 /// time -- so a runaway left running turns every later call in the probe into
-/// a timeout it never reached the model to earn. A zero `keep_alive` evicts
-/// the runner and takes the generation with it.
+/// a timeout it never reached the model to earn. A zero `keep_alive` asks the
+/// server to evict the runner. Whether that cancels the generation in flight
+/// is not shown: a direct test sent this request 3 s into an 18 s generation
+/// and the generation ran to 20.9 s (`ollama stop` from the CLI: 16.3 s), and
+/// one recorded run answered 53 of these unloads in ~8 ms each while a
+/// 70-minute generation kept going behind them.
 ///
 /// Best effort by design: this runs on the failure path, and a probe that
-/// cannot reach Ollama to evict is already reporting that through the timeout
-/// it just recorded. Throwing here would replace a usable result with a crash.
+/// cannot reach Ollama is already reporting that through the timeout it just
+/// recorded. Throwing here would replace a usable result with a crash, so a
+/// failure is written to stderr as one line naming the model and otherwise
+/// ignored.
 Future<void> evictModel(String url, String model) async {
+  final client = HttpClient();
   try {
-    final client = HttpClient();
     final req = await client
         .postUrl(Uri.parse('$url/api/generate'))
         .timeout(const Duration(seconds: 10));
@@ -239,9 +245,10 @@ Future<void> evictModel(String url, String model) async {
     req.write(jsonEncode({'model': model, 'keep_alive': 0}));
     final resp = await req.close().timeout(const Duration(seconds: 30));
     await resp.drain<void>().timeout(const Duration(seconds: 10));
+  } on Object catch (e) {
+    stderr.writeln('evictModel: unload of $model failed: $e');
+  } finally {
     client.close();
-  } on Object {
-    // Deliberately swallowed -- see above.
   }
 }
 
@@ -342,24 +349,33 @@ Future<ProbeOutcome> probeOnce({
     // of stalls.
     //
     // Results either side of this call are labelled **before runner eviction**
-    // and **after runner eviction**; everything else is held constant. What it
-    // bought, re-running the two affected models on Ollama 0.33.2:
+    // and **after runner eviction**; everything else is held constant. The
+    // two affected models re-run on Ollama 0.33.2:
     //
     //   llama3.2:latest seeded   12 stalls / 15-12  ->   2 stalls / 15-15
     //   llama3.2:latest unaided  19 stalls /  9-12  ->   0 stalls / 15-12
     //   granite4.1:3b   seeded   14 stalls / 17-12  ->  14 stalls / 17-12
+    //                            (after row cascade-damaged; see below)
     //
     // `llama3.2:latest` reproduces the earlier 0.32.14 archive exactly, so its
     // 31 stalls were 2 real ones and 29 queue. `granite4.1:3b` does not move,
-    // which is how its stalls were shown to be genuine rather than cascade --
-    // the same measurement separating an artifact from a finding.
+    // and its after-eviction unaided run still carries the cascade signature:
+    // stalls at idx 0-20 (the probe's cold opening cases) then 89-99, with
+    // the first non-stall taking 86 s -- a queued call draining, not a
+    // reload. The server log for that run answered 53 unloads in ~8 ms each
+    // while one generation ran for 70 minutes. Nothing about granite under
+    // 0.33.2 is established by these runs.
     //
-    // Why `abort()` alone was not enough is not established -- an isolated
-    // reproduction cancels correctly and the sweep's did not. Evicting the
-    // runner does not depend on knowing which: unloading the model tears the
-    // generation down whatever state the socket is in. It costs a reload on
-    // the next call, which is the right trade against losing the rest of a
-    // probe to a queue.
+    // The unload is not shown to cancel a running generation. A direct test
+    // sent `keep_alive: 0` 3 s into an 18 s generation and it completed at
+    // 20.9 s; `ollama stop` gave 16.3 s. For `llama3.2:latest` the two stalled
+    // calls terminated server-side at 2m0s in the same second as an unload,
+    // and no runaway followed; whether the unload caused that is not
+    // established, and why it coincided for one model and not the other is
+    // unexplained. Why `abort()` alone was not enough is also not established
+    // -- an isolated reproduction cancels correctly and the sweep's did not.
+    // The unload stays because it is cheap (~8-80 ms observed) and makes the
+    // harness state explicit either side of the label; it is not a fix.
     await evictModel(url, model);
     return timedOut();
   }
