@@ -218,6 +218,33 @@ List<Map<String, String>> buildProbeMessages({
   {'role': 'user', 'content': userPrompt},
 ];
 
+/// Unloads [model] so a generation abandoned by a timeout actually stops.
+///
+/// Ollama keeps generating an abandoned request under conditions this
+/// directory has observed but not reproduced, and it serves one request at a
+/// time -- so a runaway left running turns every later call in the probe into
+/// a timeout it never reached the model to earn. A zero `keep_alive` evicts
+/// the runner and takes the generation with it.
+///
+/// Best effort by design: this runs on the failure path, and a probe that
+/// cannot reach Ollama to evict is already reporting that through the timeout
+/// it just recorded. Throwing here would replace a usable result with a crash.
+Future<void> evictModel(String url, String model) async {
+  try {
+    final client = HttpClient();
+    final req = await client
+        .postUrl(Uri.parse('$url/api/generate'))
+        .timeout(const Duration(seconds: 10));
+    req.headers.contentType = ContentType.json;
+    req.write(jsonEncode({'model': model, 'keep_alive': 0}));
+    final resp = await req.close().timeout(const Duration(seconds: 30));
+    await resp.drain<void>().timeout(const Duration(seconds: 10));
+    client.close();
+  } on Object {
+    // Deliberately swallowed -- see above.
+  }
+}
+
 /// Sends one `/api/chat` request and judges the reply.
 ///
 /// [options] is merged into Ollama's `options` map, so a probe varies only
@@ -306,6 +333,34 @@ Future<ProbeOutcome> probeOnce({
     // its connection, and a handful of timeouts exhausts the pool and hangs
     // every later call.
     request.abort();
+    // Aborting is necessary and, on its own, has proved insufficient. Ollama
+    // serves one request at a time (`OLLAMA_NUM_PARALLEL=1`), and the
+    // 2026-09-01 sweep recorded abandoned calls the server nonetheless ran to
+    // completion and logged `200` for, an hour later. Every probe call issued
+    // meanwhile queued behind that generation and hit this same timeout
+    // without ever reaching the model, so one runaway was recorded as dozens
+    // of stalls.
+    //
+    // Results either side of this call are labelled **before runner eviction**
+    // and **after runner eviction**; everything else is held constant. What it
+    // bought, re-running the two affected models on Ollama 0.33.2:
+    //
+    //   llama3.2:latest seeded   12 stalls / 15-12  ->   2 stalls / 15-15
+    //   llama3.2:latest unaided  19 stalls /  9-12  ->   0 stalls / 15-12
+    //   granite4.1:3b   seeded   14 stalls / 17-12  ->  14 stalls / 17-12
+    //
+    // `llama3.2:latest` reproduces the earlier 0.32.14 archive exactly, so its
+    // 31 stalls were 2 real ones and 29 queue. `granite4.1:3b` does not move,
+    // which is how its stalls were shown to be genuine rather than cascade --
+    // the same measurement separating an artifact from a finding.
+    //
+    // Why `abort()` alone was not enough is not established -- an isolated
+    // reproduction cancels correctly and the sweep's did not. Evicting the
+    // runner does not depend on knowing which: unloading the model tears the
+    // generation down whatever state the socket is in. It costs a reload on
+    // the next call, which is the right trade against losing the rest of a
+    // probe to a queue.
+    await evictModel(url, model);
     return timedOut();
   }
   final ms = DateTime.now().difference(started).inMilliseconds;
