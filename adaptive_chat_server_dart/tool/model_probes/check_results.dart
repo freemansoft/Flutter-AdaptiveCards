@@ -72,7 +72,7 @@ const shapeTableHost = 'Apple M1 Max / 64 GB';
 /// 0.33.x. Both stamp the same `machine`, so a host filter would key two runs
 /// by one model and report a mismatch that is not one. The table is one
 /// measurement, and this names which.
-const shapeTableDir = 'results-m1max-64gb-ollama032';
+const shapeTableDir = 'results-m1max-64gb-ollama033';
 
 /// Every per-host results directory under [probesDir].
 ///

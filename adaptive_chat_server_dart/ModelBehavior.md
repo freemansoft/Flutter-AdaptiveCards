@@ -203,23 +203,23 @@ Two changes were made in response, both still shipped. The card system prompt's 
 
 All of it runs on the Apple M1 Max archive, recovered as **Ollama 0.32.14** in [`results-m1max-64gb-ollama032/PROVENANCE.md`](tool/model_probes/results-m1max-64gb-ollama032/PROVENANCE.md). Moving this table to the newer 0.33.2 runtime is blocked until `granite4.1:3b` and `llama3.2:latest` are re-measured with the runner evicted after a timeout: their raw 0.33.2 shape scores (17/17 → 17/12 and 15/15 → 15/12) are queue-cascade backlog, not model failure — see [the cascade section](#stalls-are-a-queueing-cascade-not-a-runtime-difference).
 
-| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Seed               | Cascade | Eroded by history                    |
-| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------------------ | ------- | ------------------------------------ |
-| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | **24/25**  | **24/25**    | 24/25          | no effect (0)      | 3/3     | none                                 |
-| `qwen3-coder:30b`                                   | 17.3 GB | **24/25**  | 23/25        | 14/25          | **needs it** (+9)  | 3/3     | `rating_ask`, `time` (2)             |
-| `gpt-oss:20b`                                       | 12.8 GB | 23/25      | 23/25        | **25/25**      | _hurts_ (-2)       | 3/3     | `number`, `time` (2)                 |
-| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | 23/25        | 24/25          | _hurts_ (-1)       | 3/3     | none                                 |
-| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 16/25          | **needs it** (+6)  | 3/3     | none                                 |
-| `granite4.1:8b`                                     | 5.0 GB  | 23/25      | 21/25        | 15/25          | **needs it** (+6)  | 3/3     | `carousel`, `codeblock`, `table` (3) |
-| `nemotron-3-nano:30b`                               | 22.6 GB | 22/25      | 21/25        | 16/25          | **needs it** (+5)  | 3/3     | `carousel`, `text` (2)               |
-| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 20/25      | 21/25        | 13/25          | **needs it** (+8)  | 3/3     | `table` (1)                          |
-| `qwen3.5:9b`                                        | 6.1 GB  | 20/25      | 19/25        | 17/25          | helps (+2)         | 3/3     | `badge` (1)                          |
-| `qwen2.5-coder:7b`                                  | 4.4 GB  | 20/25      | 18/25        | 18/25          | no effect (0)      | 3/3     | `choice2`, `table` (2)               |
-| `nemotron-3-nano:4b`                                | 2.6 GB  | 19/25      | 17/25        | 7/25           | **needs it** (+10) | 3/3     | `carousel`, `gauge` (2)              |
-| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 18/25      | 17/25        | 9/25           | **needs it** (+8)  | 3/3     | `date`, `progress`, `toggle` (3)     |
-| `granite4.1:3b`                                     | 2.0 GB  | 17/25      | 17/25        | 9/25           | **needs it** (+8)  | 3/3     | `choice4`, `number`, `text` (3)      |
-| `llama3.2:latest`                                   | 1.9 GB  | 15/25      | 15/25        | 12/25          | helps (+3)         | 3/3     | `facts` (1)                          |
-| `llama3-chatqa:8b`                                  | 4.3 GB  | 4/25       | 1/25         | 3/25           | _hurts_ (-2)       | n/a     | `columnset`, `gauge`, `progress` (3) |
+| Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Seed               | Cascade | Eroded by history                                                 |
+| --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------------------ | ------- | ----------------------------------------------------------------- |
+| `gpt-oss:20b`                                       | 12.8 GB | **25/25**  | **25/25**    | 22/25          | helps (+3)         | 3/3     | none                                                              |
+| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | 24/25      | 24/25        | **24/25**      | no effect (0)      | 3/3     | none                                                              |
+| `qwen3-coder:30b`                                   | 17.3 GB | 24/25      | 23/25        | 14/25          | **needs it** (+9)  | 3/3     | `rating_ask`, `time` (2)                                          |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 23/25      | 23/25        | 23/25          | no effect (0)      | 3/3     | none                                                              |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 21/25      | 22/25        | 16/25          | **needs it** (+6)  | 3/3     | none                                                              |
+| `granite4.1:8b`                                     | 5.0 GB  | 23/25      | 21/25        | 15/25          | **needs it** (+6)  | 3/3     | `carousel`, `codeblock`, `table` (3)                              |
+| `nemotron-3-nano:30b`                               | 22.6 GB | 22/25      | 21/25        | 16/25          | **needs it** (+5)  | 3/3     | `carousel`, `text` (2)                                            |
+| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 20/25      | 21/25        | 13/25          | **needs it** (+8)  | 3/3     | `table` (1)                                                       |
+| `qwen3.5:9b`                                        | 6.1 GB  | 20/25      | 19/25        | 17/25          | helps (+2)         | 3/3     | `badge` (1)                                                       |
+| `qwen2.5-coder:7b`                                  | 4.4 GB  | 20/25      | 18/25        | 18/25          | no effect (0)      | 3/3     | `choice2`, `table` (2)                                            |
+| `nemotron-3-nano:4b`                                | 2.6 GB  | 19/25      | 17/25        | 7/25           | **needs it** (+10) | 3/3     | `carousel`, `gauge` (2)                                           |
+| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 18/25      | 17/25        | 9/25           | **needs it** (+8)  | 3/3     | `date`, `progress`, `toggle` (3)                                  |
+| `llama3.2:latest`                                   | 1.9 GB  | 15/25      | 15/25        | 12/25          | helps (+3)         | 3/3     | `facts` (1)                                                       |
+| `granite4.1:3b`                                     | 2.0 GB  | 17/25      | 12/25        | 9/25           | helps (+3)         | n/a     | `badge`, `choice4`, `codeblock`, `number`, `progress`, `text` (6) |
+| `llama3-chatqa:8b`                                  | 4.3 GB  | 4/25       | 1/25         | 3/25           | _hurts_ (-2)       | n/a     | `columnset`, `gauge`, `progress` (3)                              |
 
 **Warm, pre-seed** is the same measurement without the card seed, and it is the model's seed-dependence — the most useful column here after the score itself, since a model that scores well only with the seed is being held up rather than being robust. That distinction is what the [launch-set rationale](#why-these-four-after-the-25-case-sweep) turns on. The full reading of the **Seed** column — who needs it, who is hurt by it, what it protects, and what it costs — is in [the card-seed section](#the-card-seed-and-what-it-costs).
 

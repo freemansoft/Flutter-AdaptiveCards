@@ -1273,6 +1273,35 @@ ratios. If the same-runtime comparison changes any of them:
 The chart is a `<!-- CHART (to be produced) -->` comment, not a rendered image,
 so it is text like any other and must not be left stale.
 
+- [ ] **Step 4b: Extend article 5 with the cascade, and correct its 52-stall attribution**
+
+Article 5 is titled "The measurement was wrong, in a way that looked exactly
+like a slow model", which is this sweep's finding restated. It is the home for
+this material — decided with the user rather than opening a sixth article,
+because a standalone technique piece would duplicate that thesis.
+
+**It also contains a claim this sweep challenges.** Its opening section,
+"Fifty-two stalled calls, and nothing about the model had changed", attributes
+`granite4.1:3b`'s original 52 stalls to a leaked co-resident runner. On
+2026-09-01 the same model recorded **52 stalls again** while Ollama logged
+`loaded runners count=1` on all 48 loads of the day — co-residency excluded. The
+queue cascade explains both occurrences and does not require a leaked runner.
+
+Do not delete the co-residency account; it may still be what happened in August,
+and that run's logs are gone. Add the cascade as the better-supported
+explanation for the 2026-09-01 recurrence, note that the two are
+indistinguishable from the recorded results alone, and say the exact repeat of
+52 is unexplained.
+
+Then add, in the article's register:
+
+- **The cascade mechanism.** One runaway generation holds Ollama's only slot (`OLLAMA_NUM_PARALLEL=1`); the probe abandons it at 120 s and `request.abort()` frees the client socket, but generation continues, so every later call queues and is scored as a stall. Stall count ≈ runaway duration / 120 s.
+- **How it was proven**, since that is the transferable part: contiguous stall blocks rather than scattered ones; a queue-drain signature in the server log (27 requests completing within 37 s, start times exactly 120 s apart, durations descending in 2-minute steps); then a long-timeout re-run that resolved 31 recorded stalls into **2** genuinely slow calls of 64.4 and 62.1 minutes, with the following probe's 19 stalls resolving to **zero**.
+- **The position bias**, measured at **1.54x** for one model on one runtime, hot against cold — larger than the runtime effect it was meant to isolate.
+- **The timeout conclusion.** The 120 s ceiling was not the problem and should not be raised; a 60-minute generation has already failed for a chat server. The fix is to evict the runner after a timeout so the abandoned generation actually stops.
+
+Figures come from `FIGURES.md`; do not recompute them.
+
 - [ ] **Step 5: Check articles 2, 4, 5 and the blog README**
 
 ```bash
