@@ -1,7 +1,7 @@
 {
   "probe": "temperature_stress",
   "model": "llama3.2:latest",
-  "measuredAt": "2026-09-01",
+  "measuredAt": "2026-09-02",
   "machine": "Apple M1 Max / 64 GB",
   "ollama": "0.33.2",
   "samples": 1,
@@ -22,7 +22,7 @@
       "pass": true,
       "label": "card[3]",
       "setting": "greedy(t=0)",
-      "ms": 3157
+      "ms": 3304
     },
     {
       "case": "bigtable",
@@ -30,7 +30,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 16091
+      "ms": 16875
     },
     {
       "case": "nested",
@@ -38,7 +38,7 @@
       "pass": true,
       "label": "card[7]",
       "setting": "greedy(t=0)",
-      "ms": 7482
+      "ms": 7962
     },
     {
       "case": "multiline",
@@ -46,7 +46,7 @@
       "pass": true,
       "label": "card[4]",
       "setting": "greedy(t=0)",
-      "ms": 4068
+      "ms": 4464
     },
     {
       "case": "mixed",
@@ -54,47 +54,47 @@
       "pass": true,
       "label": "card[2]",
       "setting": "greedy(t=0)",
-      "ms": 2558
+      "ms": 2773
     },
     {
       "case": "codeblock",
       "sample": 0,
       "pass": true,
-      "label": "card[3]",
+      "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 3482
+      "ms": 5006
     },
     {
       "case": "bigtable",
       "sample": 0,
-      "pass": true,
-      "label": "card[1]",
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 4, character 74)\n    {\"width\": 1, \"items\": [{\"type\": \"TextBlock\", \"text\": \"Month\"}, \"wrap\": ...\n                                                                         ^\n",
       "setting": "recommended(t=0.6)",
-      "ms": 16962
+      "ms": 27524
     },
     {
       "case": "nested",
       "sample": 0,
       "pass": true,
-      "label": "card[6]",
+      "label": "card[7]",
       "setting": "recommended(t=0.6)",
-      "ms": 7178
+      "ms": 7688
     },
     {
       "case": "multiline",
       "sample": 0,
-      "pass": false,
-      "label": "prose-with-card (user sees raw JSON)",
+      "pass": true,
+      "label": "card[3]",
       "setting": "recommended(t=0.6)",
-      "ms": 7259
+      "ms": 3135
     },
     {
       "case": "mixed",
       "sample": 0,
       "pass": false,
-      "label": "duplicate-key (duplicate key \"columns\")",
+      "label": "prose-with-card (user sees raw JSON)",
       "setting": "recommended(t=0.6)",
-      "ms": 11227
+      "ms": 6220
     }
   ]
 }

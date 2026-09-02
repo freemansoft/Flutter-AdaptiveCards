@@ -1,7 +1,7 @@
 {
   "probe": "temperature_stress",
   "model": "granite4.1:3b",
-  "measuredAt": "2026-09-01",
+  "measuredAt": "2026-09-02",
   "machine": "Apple M1 Max / 64 GB",
   "ollama": "0.33.2",
   "samples": 1,
@@ -22,7 +22,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 3293
+      "ms": 3258
     },
     {
       "case": "bigtable",
@@ -30,7 +30,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 271)\n...ew Year's Day (US)\",\"wrap\":true}]}]}},{\"type\":\"TableCell\",\"items\":[{\"typ...\n                                       ^\n",
       "setting": "greedy(t=0)",
-      "ms": 12325
+      "ms": 12574
     },
     {
       "case": "nested",
@@ -38,7 +38,7 @@
       "pass": true,
       "label": "card[6]",
       "setting": "greedy(t=0)",
-      "ms": 5635
+      "ms": 5687
     },
     {
       "case": "multiline",
@@ -46,7 +46,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 2663
+      "ms": 2681
     },
     {
       "case": "mixed",
@@ -54,7 +54,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 125)\n...text\":\"**Flutter**\",\"wrap\":true}]}]},{\"type\":\"Column\",\"width\":1,\"items\":...\n                                       ^\n",
       "setting": "greedy(t=0)",
-      "ms": 1422
+      "ms": 1426
     },
     {
       "case": "codeblock",
@@ -62,15 +62,15 @@
       "pass": true,
       "label": "prose",
       "setting": "recommended(t=0.6)",
-      "ms": 4149
+      "ms": 3067
     },
     {
       "case": "bigtable",
       "sample": 0,
       "pass": false,
-      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 65)\n{\"type\":\"Table\",\"columns\":[{\"width\":2},{\"width\":2},{\"width\":3}]}\"\n                                                                ^\n",
+      "label": "duplicate-key (duplicate key \"type\")",
       "setting": "recommended(t=0.6)",
-      "ms": 464
+      "ms": 17164
     },
     {
       "case": "nested",
@@ -78,7 +78,7 @@
       "pass": true,
       "label": "card[6]",
       "setting": "recommended(t=0.6)",
-      "ms": 5934
+      "ms": 5663
     },
     {
       "case": "multiline",
@@ -86,15 +86,15 @@
       "pass": true,
       "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 2658
+      "ms": 2627
     },
     {
       "case": "mixed",
       "sample": 0,
       "pass": false,
-      "label": "duplicate-key (duplicate key \"cells\")",
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 125)\n...text\":\"**Flutter**\",\"wrap\":true}]}]},{\"type\":\"Column\",\"width\":1,\"items\":...\n                                       ^\n",
       "setting": "recommended(t=0.6)",
-      "ms": 8752
+      "ms": 5580
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "probe": "json_format_probe",
   "model": "llama3.2:latest",
-  "measuredAt": "2026-09-01",
+  "measuredAt": "2026-09-02",
   "machine": "Apple M1 Max / 64 GB",
   "ollama": "0.33.2",
   "samples": 2,
@@ -24,7 +24,7 @@
       "pass": true,
       "label": "card[3]",
       "setting": "format=none",
-      "ms": 8264
+      "ms": 6461
     },
     {
       "case": "card-request",
@@ -32,7 +32,7 @@
       "pass": true,
       "label": "card[3]",
       "setting": "format=none",
-      "ms": 3403
+      "ms": 3262
     },
     {
       "case": "card-request",
@@ -40,7 +40,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "format=json",
-      "ms": 1578
+      "ms": 1452
     },
     {
       "case": "card-request",
@@ -48,7 +48,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "format=json",
-      "ms": 1617
+      "ms": 1426
     },
     {
       "case": "card-request",
@@ -56,7 +56,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "format=schema",
-      "ms": 1434
+      "ms": 1328
     },
     {
       "case": "card-request",
@@ -64,7 +64,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "format=schema",
-      "ms": 1442
+      "ms": 1327
     }
   ]
 }

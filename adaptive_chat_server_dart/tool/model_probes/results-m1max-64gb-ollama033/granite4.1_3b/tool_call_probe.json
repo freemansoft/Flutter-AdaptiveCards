@@ -1,7 +1,7 @@
 {
   "probe": "tool_call_probe",
   "model": "granite4.1:3b",
-  "measuredAt": "2026-09-01",
+  "measuredAt": "2026-09-02",
   "machine": "Apple M1 Max / 64 GB",
   "ollama": "0.33.2",
   "samples": 2,

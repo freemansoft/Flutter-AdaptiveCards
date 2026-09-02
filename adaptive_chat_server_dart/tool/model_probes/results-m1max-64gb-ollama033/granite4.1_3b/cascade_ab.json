@@ -1,7 +1,7 @@
 {
   "probe": "cascade_ab",
   "model": "granite4.1:3b",
-  "measuredAt": "2026-09-01",
+  "measuredAt": "2026-09-02",
   "machine": "Apple M1 Max / 64 GB",
   "ollama": "0.33.2",
   "samples": 2,
@@ -22,42 +22,42 @@
       "sample": 0,
       "pass": false,
       "label": "t1 timeout (120s) on turn 1",
-      "ms": 240054
+      "ms": 240090
     },
     {
       "case": "states",
       "sample": 1,
       "pass": false,
       "label": "t1 timeout (120s) on turn 1",
-      "ms": 240017
+      "ms": 240065
     },
     {
       "case": "loglevel",
       "sample": 0,
       "pass": false,
       "label": "t1 timeout (120s) on turn 1",
-      "ms": 240015
+      "ms": 240037
     },
     {
       "case": "loglevel",
       "sample": 1,
       "pass": false,
       "label": "t1 timeout (120s) on turn 1",
-      "ms": 239996
+      "ms": 240038
     },
     {
       "case": "deploy",
       "sample": 0,
       "pass": false,
       "label": "t1 timeout (120s) on turn 1",
-      "ms": 240013
+      "ms": 240040
     },
     {
       "case": "deploy",
       "sample": 1,
       "pass": false,
       "label": "t1 timeout (120s) on turn 1",
-      "ms": 240014
+      "ms": 240032
     }
   ]
 }

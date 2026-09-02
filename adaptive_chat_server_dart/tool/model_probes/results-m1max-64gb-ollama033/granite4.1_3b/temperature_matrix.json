@@ -1,7 +1,7 @@
 {
   "probe": "temperature_matrix",
   "model": "granite4.1:3b",
-  "measuredAt": "2026-09-01",
+  "measuredAt": "2026-09-02",
   "machine": "Apple M1 Max / 64 GB",
   "ollama": "0.33.2",
   "samples": 1,
@@ -22,7 +22,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "greedy(t=0)",
-      "ms": 5894
+      "ms": 5893
     },
     {
       "case": "choice",
@@ -30,7 +30,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 1171
+      "ms": 1191
     },
     {
       "case": "facts",
@@ -38,7 +38,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 4052
+      "ms": 4120
     },
     {
       "case": "table",
@@ -46,7 +46,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 170)\n...ck\",\"text\":\"Planet\",\"wrap\":true}]}],[{ \"type\":\"TableCell\",\"items\":[ { \"t...\n                                       ^\n",
       "setting": "greedy(t=0)",
-      "ms": 6373
+      "ms": 6484
     },
     {
       "case": "chart",
@@ -54,7 +54,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "greedy(t=0)",
-      "ms": 1366
+      "ms": 1415
     },
     {
       "case": "rating",
@@ -62,7 +62,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 578
+      "ms": 581
     },
     {
       "case": "prose",
@@ -70,7 +70,7 @@
       "pass": true,
       "label": "prose",
       "setting": "greedy(t=0)",
-      "ms": 1108
+      "ms": 1123
     },
     {
       "case": "date",
@@ -78,7 +78,7 @@
       "pass": true,
       "label": "card[2]",
       "setting": "low(t=0.2)",
-      "ms": 455
+      "ms": 464
     },
     {
       "case": "choice",
@@ -86,7 +86,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "low(t=0.2)",
-      "ms": 1231
+      "ms": 1251
     },
     {
       "case": "facts",
@@ -94,7 +94,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "low(t=0.2)",
-      "ms": 4016
+      "ms": 3861
     },
     {
       "case": "table",
@@ -102,7 +102,7 @@
       "pass": false,
       "label": "duplicate-key (duplicate key \"cells\")",
       "setting": "low(t=0.2)",
-      "ms": 6132
+      "ms": 5669
     },
     {
       "case": "chart",
@@ -110,7 +110,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "low(t=0.2)",
-      "ms": 1381
+      "ms": 1402
     },
     {
       "case": "rating",
@@ -118,7 +118,7 @@
       "pass": true,
       "label": "prose",
       "setting": "low(t=0.2)",
-      "ms": 584
+      "ms": 1147
     },
     {
       "case": "prose",
@@ -126,15 +126,15 @@
       "pass": true,
       "label": "prose",
       "setting": "low(t=0.2)",
-      "ms": 1132
+      "ms": 1111
     },
     {
       "case": "date",
       "sample": 0,
-      "pass": false,
-      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 2, character 1)\n{\"type\":\"Input.Time\",\"id\":\"meeting_time\",\"wrap\":true,\"text\":\"What time work...\n^\n",
+      "pass": true,
+      "label": "card[2]",
       "setting": "recommended(t=0.6)",
-      "ms": 1125
+      "ms": 463
     },
     {
       "case": "choice",
@@ -142,23 +142,23 @@
       "pass": true,
       "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 1225
+      "ms": 1222
     },
     {
       "case": "facts",
       "sample": 0,
-      "pass": true,
-      "label": "card[1]",
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 686)\n...ion, ProRAW, ProRes video up to 8K\"}},{\"title\":\"Battery\",\"value\":\"Non\\u2...\n                                       ^\n",
       "setting": "recommended(t=0.6)",
-      "ms": 7780
+      "ms": 9048
     },
     {
       "case": "table",
       "sample": 0,
       "pass": false,
-      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 183)\n...k\",\"text\":\"Jupiter\",\"wrap\":true}]}],[{type:\"TableCell\",items:[{type:\"Tex...\n                                       ^\n",
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 171)\n...k\",\"text\":\"Jupiter\",\"wrap\":true}]}],},{\"type\":\"TableCell\",\"items\":[{\"typ...\n                                       ^\n",
       "setting": "recommended(t=0.6)",
-      "ms": 5860
+      "ms": 5328
     },
     {
       "case": "chart",
@@ -166,7 +166,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 1368
+      "ms": 1304
     },
     {
       "case": "rating",
@@ -174,7 +174,7 @@
       "pass": true,
       "label": "card[1]",
       "setting": "recommended(t=0.6)",
-      "ms": 350
+      "ms": 368
     },
     {
       "case": "prose",
@@ -182,7 +182,7 @@
       "pass": true,
       "label": "prose",
       "setting": "recommended(t=0.6)",
-      "ms": 627
+      "ms": 1039
     }
   ]
 }

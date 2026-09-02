@@ -2,7 +2,7 @@
   "probe": "shape_ab",
   "model": "llama3.2:latest",
   "variant": "seeded",
-  "measuredAt": "2026-09-01",
+  "measuredAt": "2026-09-02",
   "machine": "Apple M1 Max / 64 GB",
   "ollama": "0.33.2",
   "samples": 2,
@@ -14,7 +14,7 @@
   "summary": {
     "cases": 25,
     "coldStart": 15,
-    "withHistory": 12
+    "withHistory": 15
   },
   "calls": [
     {
@@ -23,7 +23,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 179)\n...\":true},{\"type\":\"Input.Date\",\"id\":\"when\",\"placeholder\":\"Choose a date\"}}]}]\n                                                                          ^\n",
       "condition": "cold",
-      "ms": 807
+      "ms": 782
     },
     {
       "case": "date",
@@ -31,7 +31,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 179)\n...\":true},{\"type\":\"Input.Date\",\"id\":\"when\",\"placeholder\":\"Choose a date\"}}]}]\n                                                                          ^\n",
       "condition": "cold",
-      "ms": 819
+      "ms": 891
     },
     {
       "case": "time",
@@ -39,7 +39,7 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Time}",
       "condition": "cold",
-      "ms": 1857
+      "ms": 1849
     },
     {
       "case": "time",
@@ -47,31 +47,31 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Time}",
       "condition": "cold",
-      "ms": 1752
+      "ms": 1805
     },
     {
       "case": "toggle",
       "sample": 0,
+      "pass": true,
+      "label": "Input.Toggle, TextBlock",
+      "condition": "cold",
+      "ms": 818
+    },
+    {
+      "case": "toggle",
+      "sample": 1,
       "pass": true,
       "label": "Input.Toggle, TextBlock",
       "condition": "cold",
       "ms": 825
     },
     {
-      "case": "toggle",
-      "sample": 1,
-      "pass": true,
-      "label": "Input.Toggle, TextBlock",
-      "condition": "cold",
-      "ms": 778
-    },
-    {
       "case": "text",
       "sample": 0,
       "pass": false,
       "label": "no-input: got {TextBlock} want {Input.Text}",
       "condition": "cold",
-      "ms": 482
+      "ms": 495
     },
     {
       "case": "text",
@@ -79,7 +79,7 @@
       "pass": false,
       "label": "no-input: got {TextBlock} want {Input.Text}",
       "condition": "cold",
-      "ms": 481
+      "ms": 496
     },
     {
       "case": "number",
@@ -87,7 +87,7 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Number, Input.Text}",
       "condition": "cold",
-      "ms": 1740
+      "ms": 1808
     },
     {
       "case": "number",
@@ -95,167 +95,167 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Number, Input.Text}",
       "condition": "cold",
-      "ms": 1691
+      "ms": 1641
     },
     {
       "case": "choice1",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1250
-    },
-    {
-      "case": "choice1",
-      "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1200
-    },
-    {
-      "case": "choice2",
-      "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1779
-    },
-    {
-      "case": "choice2",
-      "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1663
-    },
-    {
-      "case": "choice3",
-      "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1307
-    },
-    {
-      "case": "choice3",
-      "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1198
-    },
-    {
-      "case": "choice4",
-      "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1326
-    },
-    {
-      "case": "choice4",
-      "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1368
-    },
-    {
-      "case": "choice5",
-      "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 2693
-    },
-    {
-      "case": "choice5",
-      "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 2542
-    },
-    {
-      "case": "choice6",
-      "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1267
-    },
-    {
-      "case": "choice6",
-      "sample": 1,
-      "pass": true,
-      "label": "Input.ChoiceSet, TextBlock",
-      "condition": "cold",
-      "ms": 1177
-    },
-    {
-      "case": "pie",
-      "sample": 0,
-      "pass": true,
-      "label": "Chart.Pie",
-      "condition": "cold",
-      "ms": 1180
-    },
-    {
-      "case": "pie",
-      "sample": 1,
-      "pass": true,
-      "label": "Chart.Pie",
-      "condition": "cold",
-      "ms": 1166
-    },
-    {
-      "case": "bar",
-      "sample": 0,
-      "pass": true,
-      "label": "Chart.VerticalBar",
-      "condition": "cold",
-      "ms": 1549
-    },
-    {
-      "case": "bar",
-      "sample": 1,
-      "pass": true,
-      "label": "Chart.VerticalBar",
-      "condition": "cold",
-      "ms": 1434
-    },
-    {
-      "case": "line",
-      "sample": 0,
-      "pass": true,
-      "label": "Chart.Line",
-      "condition": "cold",
-      "ms": 1348
-    },
-    {
-      "case": "line",
-      "sample": 1,
-      "pass": true,
-      "label": "Chart.Line",
-      "condition": "cold",
-      "ms": 1295
-    },
-    {
-      "case": "gauge",
-      "sample": 0,
-      "pass": true,
-      "label": "Chart.Gauge",
       "condition": "cold",
       "ms": 1328
     },
     {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1291
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1846
+    },
+    {
+      "case": "choice2",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1674
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1392
+    },
+    {
+      "case": "choice3",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1290
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1433
+    },
+    {
+      "case": "choice4",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1392
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 2899
+    },
+    {
+      "case": "choice5",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 2878
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1345
+    },
+    {
+      "case": "choice6",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1258
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Pie",
+      "condition": "cold",
+      "ms": 1251
+    },
+    {
+      "case": "pie",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Pie",
+      "condition": "cold",
+      "ms": 1230
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "cold",
+      "ms": 1465
+    },
+    {
+      "case": "bar",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "cold",
+      "ms": 1343
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "cold",
+      "ms": 1403
+    },
+    {
+      "case": "line",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "cold",
+      "ms": 1268
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "cold",
+      "ms": 1283
+    },
+    {
       "case": "gauge",
       "sample": 1,
       "pass": true,
       "label": "Chart.Gauge",
       "condition": "cold",
-      "ms": 1263
+      "ms": 1248
     },
     {
       "case": "rating_show",
@@ -263,7 +263,7 @@
       "pass": false,
       "label": "wrong-shape: got {Badge} want {Rating}",
       "condition": "cold",
-      "ms": 753
+      "ms": 764
     },
     {
       "case": "rating_show",
@@ -271,7 +271,7 @@
       "pass": false,
       "label": "wrong-shape: got {Badge} want {Rating}",
       "condition": "cold",
-      "ms": 645
+      "ms": 707
     },
     {
       "case": "rating_ask",
@@ -279,7 +279,7 @@
       "pass": false,
       "label": "no-input: got {Rating, TextBlock} want {Input.ChoiceSet, Input.Number}",
       "condition": "cold",
-      "ms": 739
+      "ms": 781
     },
     {
       "case": "rating_ask",
@@ -287,7 +287,7 @@
       "pass": false,
       "label": "no-input: got {Rating, TextBlock} want {Input.ChoiceSet, Input.Number}",
       "condition": "cold",
-      "ms": 685
+      "ms": 698
     },
     {
       "case": "carousel",
@@ -295,7 +295,7 @@
       "pass": false,
       "label": "wrong-shape: got {Column, ColumnSet, TextBlock} want {Carousel}",
       "condition": "cold",
-      "ms": 3611
+      "ms": 3507
     },
     {
       "case": "carousel",
@@ -303,7 +303,7 @@
       "pass": false,
       "label": "wrong-shape: got {Column, ColumnSet, TextBlock} want {Carousel}",
       "condition": "cold",
-      "ms": 3373
+      "ms": 3563
     },
     {
       "case": "table",
@@ -311,7 +311,7 @@
       "pass": false,
       "label": "broken: duplicate-key (duplicate key \"columns\")",
       "condition": "cold",
-      "ms": 1648
+      "ms": 1725
     },
     {
       "case": "table",
@@ -319,7 +319,7 @@
       "pass": false,
       "label": "broken: duplicate-key (duplicate key \"columns\")",
       "condition": "cold",
-      "ms": 1602
+      "ms": 1624
     },
     {
       "case": "facts",
@@ -327,7 +327,7 @@
       "pass": true,
       "label": "FactSet",
       "condition": "cold",
-      "ms": 2307
+      "ms": 2354
     },
     {
       "case": "facts",
@@ -343,7 +343,7 @@
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
       "condition": "cold",
-      "ms": 1589
+      "ms": 1582
     },
     {
       "case": "columnset",
@@ -351,7 +351,7 @@
       "pass": true,
       "label": "Column, ColumnSet, TextBlock",
       "condition": "cold",
-      "ms": 1498
+      "ms": 1502
     },
     {
       "case": "codeblock",
@@ -359,7 +359,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Control character in string (at line 3, character 41)\n  \"codeSnippet\": \"import 'dart:convert';\n                                        ^\n",
       "condition": "cold",
-      "ms": 1379
+      "ms": 1230
     },
     {
       "case": "codeblock",
@@ -367,7 +367,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Control character in string (at line 3, character 41)\n  \"codeSnippet\": \"import 'dart:convert';\n                                        ^\n",
       "condition": "cold",
-      "ms": 1260
+      "ms": 1169
     },
     {
       "case": "progress",
@@ -375,7 +375,7 @@
       "pass": true,
       "label": "ProgressBar",
       "condition": "cold",
-      "ms": 395
+      "ms": 358
     },
     {
       "case": "progress",
@@ -383,7 +383,7 @@
       "pass": true,
       "label": "ProgressBar",
       "condition": "cold",
-      "ms": 354
+      "ms": 333
     },
     {
       "case": "badge",
@@ -391,7 +391,7 @@
       "pass": true,
       "label": "Badge",
       "condition": "cold",
-      "ms": 403
+      "ms": 438
     },
     {
       "case": "badge",
@@ -399,7 +399,7 @@
       "pass": true,
       "label": "Badge",
       "condition": "cold",
-      "ms": 352
+      "ms": 364
     },
     {
       "case": "prose",
@@ -407,7 +407,7 @@
       "pass": false,
       "label": "broken: duplicate-key (duplicate key \"type\")",
       "condition": "cold",
-      "ms": 1675
+      "ms": 1737
     },
     {
       "case": "prose",
@@ -415,7 +415,7 @@
       "pass": false,
       "label": "broken: duplicate-key (duplicate key \"type\")",
       "condition": "cold",
-      "ms": 1660
+      "ms": 1753
     },
     {
       "case": "date",
@@ -423,7 +423,7 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Date}",
       "condition": "warm",
-      "ms": 1567
+      "ms": 1652
     },
     {
       "case": "date",
@@ -431,7 +431,7 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Date}",
       "condition": "warm",
-      "ms": 1427
+      "ms": 1540
     },
     {
       "case": "time",
@@ -439,7 +439,7 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Time}",
       "condition": "warm",
-      "ms": 1759
+      "ms": 1705
     },
     {
       "case": "time",
@@ -447,7 +447,7 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Time}",
       "condition": "warm",
-      "ms": 1631
+      "ms": 1841
     },
     {
       "case": "toggle",
@@ -455,7 +455,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1407
+      "ms": 1543
     },
     {
       "case": "toggle",
@@ -463,7 +463,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1357
+      "ms": 1439
     },
     {
       "case": "text",
@@ -471,7 +471,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 136)\n...ces:\",\"wrap\":true},{\"type\":\"Input.Text\",\"id\":\"bugdesc\",\"style\":\"expanded\"}}\n                                                                             ^\n",
       "condition": "warm",
-      "ms": 792
+      "ms": 776
     },
     {
       "case": "text",
@@ -479,7 +479,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 136)\n...ces:\",\"wrap\":true},{\"type\":\"Input.Text\",\"id\":\"bugdesc\",\"style\":\"expanded\"}}\n                                                                             ^\n",
       "condition": "warm",
-      "ms": 704
+      "ms": 737
     },
     {
       "case": "number",
@@ -487,7 +487,7 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Number, Input.Text}",
       "condition": "warm",
-      "ms": 1625
+      "ms": 1722
     },
     {
       "case": "number",
@@ -495,7 +495,7 @@
       "pass": false,
       "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Input.Number, Input.Text}",
       "condition": "warm",
-      "ms": 1597
+      "ms": 1623
     },
     {
       "case": "choice1",
@@ -503,7 +503,7 @@
       "pass": true,
       "label": "Input.ChoiceSet",
       "condition": "warm",
-      "ms": 940
+      "ms": 954
     },
     {
       "case": "choice1",
@@ -511,7 +511,7 @@
       "pass": true,
       "label": "Input.ChoiceSet",
       "condition": "warm",
-      "ms": 857
+      "ms": 902
     },
     {
       "case": "choice2",
@@ -519,7 +519,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1656
+      "ms": 1699
     },
     {
       "case": "choice2",
@@ -527,7 +527,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1632
+      "ms": 1640
     },
     {
       "case": "choice3",
@@ -535,7 +535,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1284
+      "ms": 1304
     },
     {
       "case": "choice3",
@@ -543,7 +543,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1204
+      "ms": 1283
     },
     {
       "case": "choice4",
@@ -551,7 +551,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1405
+      "ms": 1409
     },
     {
       "case": "choice4",
@@ -559,7 +559,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1319
+      "ms": 1425
     },
     {
       "case": "choice5",
@@ -567,7 +567,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1778
+      "ms": 1956
     },
     {
       "case": "choice5",
@@ -575,7 +575,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1862
+      "ms": 1855
     },
     {
       "case": "choice6",
@@ -583,7 +583,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1238
+      "ms": 1326
     },
     {
       "case": "choice6",
@@ -591,7 +591,7 @@
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock",
       "condition": "warm",
-      "ms": 1202
+      "ms": 1191
     },
     {
       "case": "pie",
@@ -599,7 +599,7 @@
       "pass": true,
       "label": "Chart.Pie",
       "condition": "warm",
-      "ms": 1395
+      "ms": 1464
     },
     {
       "case": "pie",
@@ -607,7 +607,7 @@
       "pass": true,
       "label": "Chart.Pie",
       "condition": "warm",
-      "ms": 1406
+      "ms": 1410
     },
     {
       "case": "bar",
@@ -615,7 +615,7 @@
       "pass": true,
       "label": "Chart.VerticalBar",
       "condition": "warm",
-      "ms": 1476
+      "ms": 1441
     },
     {
       "case": "bar",
@@ -623,31 +623,31 @@
       "pass": true,
       "label": "Chart.VerticalBar",
       "condition": "warm",
-      "ms": 1360
+      "ms": 1358
     },
     {
       "case": "line",
       "sample": 0,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "warm",
+      "ms": 1263
+    },
+    {
+      "case": "line",
+      "sample": 1,
       "pass": true,
       "label": "Chart.Line",
       "condition": "warm",
       "ms": 1289
     },
     {
-      "case": "line",
-      "sample": 1,
-      "pass": true,
-      "label": "Chart.Line",
-      "condition": "warm",
-      "ms": 1222
-    },
-    {
       "case": "gauge",
       "sample": 0,
       "pass": true,
       "label": "Chart.Gauge",
       "condition": "warm",
-      "ms": 1240
+      "ms": 1246
     },
     {
       "case": "gauge",
@@ -655,7 +655,7 @@
       "pass": true,
       "label": "Chart.Gauge",
       "condition": "warm",
-      "ms": 1192
+      "ms": 1183
     },
     {
       "case": "rating_show",
@@ -663,7 +663,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 157)\n...\":true},{\"type\":\"Badge\",\"text\":\"4.5/5\",\"style\":\"accent\",\"shape\":\"rounded\"]}\n                                                                            ^\n",
       "condition": "warm",
-      "ms": 890
+      "ms": 916
     },
     {
       "case": "rating_show",
@@ -671,7 +671,7 @@
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 157)\n...\":true},{\"type\":\"Badge\",\"text\":\"4.5/5\",\"style\":\"accent\",\"shape\":\"rounded\"]}\n                                                                            ^\n",
       "condition": "warm",
-      "ms": 834
+      "ms": 859
     },
     {
       "case": "rating_ask",
@@ -679,7 +679,7 @@
       "pass": false,
       "label": "no-input: got {Rating} want {Input.ChoiceSet, Input.Number}",
       "condition": "warm",
-      "ms": 664
+      "ms": 616
     },
     {
       "case": "rating_ask",
@@ -687,7 +687,7 @@
       "pass": false,
       "label": "no-input: got {Rating} want {Input.ChoiceSet, Input.Number}",
       "condition": "warm",
-      "ms": 579
+      "ms": 557
     },
     {
       "case": "carousel",
@@ -695,7 +695,7 @@
       "pass": false,
       "label": "wrong-shape: got {TextBlock} want {Carousel}",
       "condition": "warm",
-      "ms": 1042
+      "ms": 1096
     },
     {
       "case": "carousel",
@@ -703,7 +703,7 @@
       "pass": false,
       "label": "wrong-shape: got {TextBlock} want {Carousel}",
       "condition": "warm",
-      "ms": 1034
+      "ms": 1007
     },
     {
       "case": "table",
@@ -711,7 +711,7 @@
       "pass": true,
       "label": "Table, TableCell, TableRow, TextBlock",
       "condition": "warm",
-      "ms": 9107
+      "ms": 8795
     },
     {
       "case": "table",
@@ -719,7 +719,7 @@
       "pass": true,
       "label": "Table, TableCell, TableRow, TextBlock",
       "condition": "warm",
-      "ms": 8820
+      "ms": 8662
     },
     {
       "case": "facts",
@@ -727,7 +727,7 @@
       "pass": false,
       "label": "broken: timeout (120s)",
       "condition": "warm",
-      "ms": 120010
+      "ms": 120028
     },
     {
       "case": "facts",
@@ -735,87 +735,87 @@
       "pass": false,
       "label": "broken: timeout (120s)",
       "condition": "warm",
-      "ms": 120004
+      "ms": 120018
     },
     {
       "case": "columnset",
       "sample": 0,
-      "pass": false,
-      "label": "broken: timeout (120s)",
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
       "condition": "warm",
-      "ms": 120019
+      "ms": 6499
     },
     {
       "case": "columnset",
       "sample": 1,
-      "pass": false,
-      "label": "broken: timeout (120s)",
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
       "condition": "warm",
-      "ms": 120006
+      "ms": 1399
     },
     {
       "case": "codeblock",
       "sample": 0,
       "pass": false,
-      "label": "broken: timeout (120s)",
+      "label": "broken: invalid JSON: FormatException: Control character in string (at line 4, character 41)\n  \"codeSnippet\": \"import 'dart:convert';\n                                        ^\n",
       "condition": "warm",
-      "ms": 120006
+      "ms": 1950
     },
     {
       "case": "codeblock",
       "sample": 1,
       "pass": false,
-      "label": "broken: timeout (120s)",
+      "label": "broken: invalid JSON: FormatException: Control character in string (at line 4, character 41)\n  \"codeSnippet\": \"import 'dart:convert';\n                                        ^\n",
       "condition": "warm",
-      "ms": 120007
+      "ms": 1967
     },
     {
       "case": "progress",
       "sample": 0,
-      "pass": false,
-      "label": "broken: timeout (120s)",
+      "pass": true,
+      "label": "ProgressBar",
       "condition": "warm",
-      "ms": 120005
+      "ms": 343
     },
     {
       "case": "progress",
       "sample": 1,
-      "pass": false,
-      "label": "broken: timeout (120s)",
+      "pass": true,
+      "label": "ProgressBar",
       "condition": "warm",
-      "ms": 120005
+      "ms": 297
     },
     {
       "case": "badge",
       "sample": 0,
-      "pass": false,
-      "label": "broken: timeout (120s)",
+      "pass": true,
+      "label": "Badge",
       "condition": "warm",
-      "ms": 120007
+      "ms": 385
     },
     {
       "case": "badge",
       "sample": 1,
-      "pass": false,
-      "label": "broken: timeout (120s)",
+      "pass": true,
+      "label": "Badge",
       "condition": "warm",
-      "ms": 120006
+      "ms": 347
     },
     {
       "case": "prose",
       "sample": 0,
       "pass": false,
-      "label": "broken: timeout (120s)",
+      "label": "broken: duplicate-key (duplicate key \"type\")",
       "condition": "warm",
-      "ms": 120005
+      "ms": 1290
     },
     {
       "case": "prose",
       "sample": 1,
       "pass": false,
-      "label": "broken: timeout (120s)",
+      "label": "broken: duplicate-key (duplicate key \"type\")",
       "condition": "warm",
-      "ms": 120006
+      "ms": 1296
     }
   ]
 }

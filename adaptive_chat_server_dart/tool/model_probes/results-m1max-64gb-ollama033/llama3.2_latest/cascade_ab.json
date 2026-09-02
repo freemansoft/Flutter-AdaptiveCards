@@ -1,7 +1,7 @@
 {
   "probe": "cascade_ab",
   "model": "llama3.2:latest",
-  "measuredAt": "2026-09-01",
+  "measuredAt": "2026-09-02",
   "machine": "Apple M1 Max / 64 GB",
   "ollama": "0.33.2",
   "samples": 2,
@@ -22,42 +22,42 @@
       "sample": 0,
       "pass": true,
       "label": "multi, kept 5/5",
-      "ms": 2446
+      "ms": 2475
     },
     {
       "case": "states",
       "sample": 1,
       "pass": true,
       "label": "multi, kept 5/5",
-      "ms": 2501
+      "ms": 2599
     },
     {
       "case": "loglevel",
       "sample": 0,
       "pass": true,
       "label": "multi, kept 5/5",
-      "ms": 3440
+      "ms": 3528
     },
     {
       "case": "loglevel",
       "sample": 1,
       "pass": true,
       "label": "multi, kept 5/5",
-      "ms": 3426
+      "ms": 3533
     },
     {
       "case": "deploy",
       "sample": 0,
       "pass": true,
       "label": "multi, kept 2/2",
-      "ms": 2501
+      "ms": 2543
     },
     {
       "case": "deploy",
       "sample": 1,
       "pass": true,
       "label": "multi, kept 2/2",
-      "ms": 2480
+      "ms": 2488
     }
   ]
 }
