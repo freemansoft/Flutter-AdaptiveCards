@@ -16,10 +16,10 @@ it should be read closely: a same-host control puts a 1.54x position bias under
 every ratio, so the recommendation reduces to fit plus model choice.
 
 Every figure below is transcribed from
-[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md),
+[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md),
 a lab notebook in the
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-repository, read at commit `fd1e4732`.
+repository, read at commit `757bf7c`.
 Shape figures are `--samples 2`, which is why a one-point difference between two
 models is noise rather than a ranking.
 
@@ -97,7 +97,7 @@ eight 16 GB-capable models, same runtime line". One bar per model, baseline at
 Caption: every model is slower on the M5, 1.15x-2.32x, consistent with the
 memory-bandwidth gap between the two chips (~150 GB/s against ~400 GB/s). A
 separate, same-host control (below) measures a 1.54x swing from sweep position
-alone — larger than six of these eight ratios — so read a single row's ratio
+alone — larger than seven of these eight ratios — so read a single row's ratio
 as a direction, not a precise figure.
 -->
 
@@ -176,7 +176,7 @@ serial sweep. A same-runtime, same-host control isolates that effect directly.
 Measured cold on the M1 Max — position 0, 29 minutes idle — `qwen3.5:9b`
 medians **4924 ms**; measured hot, seven seconds after an eight-hour sweep, it
 medians **7563 ms**. That is a **1.54x** spread from position alone, on one
-machine, one runtime, one model — larger than six of the eight ratios in the
+machine, one runtime, one model — larger than seven of the eight ratios in the
 host table above. Behavior was unaffected by the swing: 0 of 100 calls
 differed cold versus hot, so this is a latency effect only, not a coverage
 one.
@@ -259,4 +259,4 @@ never reach the model — belong to the next article in this series.
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook these figures are read from is
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).

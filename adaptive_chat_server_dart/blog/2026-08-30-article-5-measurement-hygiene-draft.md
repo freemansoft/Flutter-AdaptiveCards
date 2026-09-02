@@ -59,10 +59,10 @@ and Ollama thrashed between them — the working explanation at the time for the
 idle machine, `granite4.1:3b` scores **17/25 and 3/3**, matching its earlier
 published figures, and the whole sweep takes **7 minutes instead of 124**.
 
-That the unload step fixed it is not a hedged inference — the bad numbers came
-from one run with the unload missing, the good numbers from the same probes
-against the same model with it restored, and the second set matches figures
-recorded before either run. Which failure the missing unload actually let
+That the unload step was the cause is an inference the re-run does not
+establish — the bad numbers came from one run with the unload missing, the
+good numbers from the same probes against the same model with it restored,
+and the second set matches figures recorded before either run. Which failure the missing unload actually let
 through is less certain than it looked at the time. The `ollama stop` between
 models is itself a runner eviction — whether it cancels a generation already
 running is not shown (below) — so the unload step does not by itself
@@ -82,7 +82,7 @@ So the rule the notebook states is a correctness requirement rather than a
 performance tip: **one model resident at a time** — load a model, run all of its
 probes, record, unload, wait, switch. A number collected any other way is not
 comparable to anything. The full account is in
-[the sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
+[the sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
 of the notebook, and the procedure in
 [`tool/model_probes/README.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/README.md).
 
@@ -359,4 +359,4 @@ history.
 This is the last article in the series. The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above is read from is at
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).

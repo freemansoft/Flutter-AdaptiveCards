@@ -119,18 +119,12 @@ isolate the confound, measure it, do not read a mechanism off a net number.
 
 ### Figures
 
-- **Every figure traces to `ModelBehavior.md`.** The drafts were originally
-  written against commit `ba02fd98`. Articles 1, 3, 4, and 5 link
-  `fd1e4732`, the commit that corrected the `gpt-oss:20b` seed-direction
-  reversal and folded in the Ollama 0.33.2 sweep, and their `gpt-oss:20b`
-  figures were brought to that commit's values (25/25 seeded, 22/25 unaided,
-  +3) on 2026-09-02. **Article 2 still links `ba02fd98`** but its
-  `gpt-oss:20b` row and prose were corrected to the same values on the same
-  date, so its prose no longer matches the commit it links. No article is
-  re-pinned yet: the 2026-09-02 retraction of the `granite4.1:3b` regression
-  and eviction claims changed `ModelBehavior.md` again, and the shape table's
-  source directory is a pending decision, so every article's links move
-  together once the notebook settles. Re-check against the file at head
+- **Every figure traces to `ModelBehavior.md`.** All five articles link
+  commit `757bf7c`, the commit holding the final `ModelBehavior.md` this
+  collection cites. It folds in the `gpt-oss:20b` seed-direction correction
+  (25/25 seeded, 22/25 unaided, +3) and the Ollama 0.33.2 sweep, and, as of
+  2026-09-02, the retraction of the `granite4.1:3b` regression and
+  eviction-as-fix claims. Re-check against the file at head
   before publishing, and when drafting a new article, verify each figure in
   the notebook directly — do not trust an intermediate document that quotes
   it.
@@ -185,10 +179,9 @@ bare filenames.
 **Two link targets, and the distinction is deliberate.** References to
 `ModelBehavior.md` are pinned to the commit the figures were read at,
 including the one in the closing paragraph, so a quoted figure still resolves
-after the notebook changes — `/blob/fd1e4732/…` for articles 1, 3, 4, and 5,
-`/blob/ba02fd98/…` for article 2 (see the Figures section above for why it
-was not moved). Links to code and assets track `/blob/main/` — a reader
-following them wants the current file, not an archived one.
+after the notebook changes — `/blob/757bf7c/…` for all five articles. Links
+to code and assets track `/blob/main/` — a reader following them wants the
+current file, not an archived one.
 
 ### Presentation
 
