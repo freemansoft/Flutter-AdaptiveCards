@@ -1,0 +1,63 @@
+{
+  "probe": "cascade_ab",
+  "model": "gpt-oss:20b",
+  "measuredAt": "2026-09-01",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.2",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 3,
+    "exercised": 3,
+    "passed": 3,
+    "notExercised": 0
+  },
+  "calls": [
+    {
+      "case": "states",
+      "sample": 0,
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 9659
+    },
+    {
+      "case": "states",
+      "sample": 1,
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 8336
+    },
+    {
+      "case": "loglevel",
+      "sample": 0,
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 8064
+    },
+    {
+      "case": "loglevel",
+      "sample": 1,
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 7849
+    },
+    {
+      "case": "deploy",
+      "sample": 0,
+      "pass": true,
+      "label": "multi, kept 4/4",
+      "ms": 13157
+    },
+    {
+      "case": "deploy",
+      "sample": 1,
+      "pass": true,
+      "label": "multi, kept 4/4",
+      "ms": 13109
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest",
+  "measuredAt": "2026-09-01",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.2",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 7,
+    "cards": 7,
+    "prose": 0
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 2688
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 3473)\n...s\":[{\"type\":\"TextBlock\",\"text\":\"December\\n31\\nChristmas\",\"wrap\":true}]}]}]}\n                                                                              ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 22372
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 256)\n...der\":\"Enter amount\",\"style\":\"text\"}]},{\"type\":\"Input.ChoiceSet\",\"id\":\"ca...\n                                       ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 4938
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 2400
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 2045
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 2136
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 23518
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 755)\n...ns\":[{\"type\":\"Action.Submit\",\"title\":\"Submit\"},{\"type\":\"Action.Cancel\"}]}]}\n                                                                             ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 4721
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 2398
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 2145
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "nemotron-3-nano:4b",
+  "measuredAt": "2026-09-01",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.2",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 5,
+    "cards": 5,
+    "prose": 0
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 4177
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 455)\n...een |\\n| November | 30 | Thanksgiving |\\n| December | 31 | Christmas |\\n|\"]\n                                                                             ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 5578
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[6]",
+      "setting": "greedy(t=0)",
+      "ms": 6340
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 4160
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 5924
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 111)\n...ts the \\\"name\\\" field.\",\"wrap\":true},{\"type\":\"CodeBlock\",\"codeSnippet\":\"...\n                                       ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 4631
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[12]",
+      "setting": "recommended(t=0.6)",
+      "ms": 5005
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 8, character 1)\n]\n^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 6380
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 392)\n...tection does not conflict with the First or Second Law.\\\"**\\n,\"wrap\":true}]\n                                                                  ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 4339
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 485)\n...k one: Flutter or React Native?\\n[{\"title\":\"Flutter\",\"value\":\"flutter\"},...\n                                       ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 5535
+    }
+  ]
+}

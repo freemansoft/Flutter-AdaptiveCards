@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "nemotron-3-nano:30b",
+  "measuredAt": "2026-09-01",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.2",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 6,
+    "cards": 6,
+    "prose": 0
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 3606
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 20095
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 511)\n...title\":\"Software\",\"value\":\"software\"},{\"title\":\"Other\",\"value\":\"other\"}]}]}\n                                                                             ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 4497
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 3520
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 344)\n...ll\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"React Native\",\"wrap\":true}]}]}]}]}\n                                                                             ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 3664
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 4271
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 19258
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 117)\n...o submit your expense.\",\"wrap\":true},{\"type\":\"Input.Date\",\"id\":\"date\"},{...\n                                       ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 5419
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3195
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 289)\n...\"type\":\"TextBlock\",\"text\":\"Dimension\\\\n(React Native)\",\"wrap\":true}]}]}]}]}\n                                                                             ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 3013
+    }
+  ]
+}
