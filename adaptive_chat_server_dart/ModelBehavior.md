@@ -201,6 +201,8 @@ Two changes were made in response, both still shipped. The card system prompt's 
 
 **This is the current, as-shipped picture**, and the only model comparison in this file that is: all 25 cases, `t=0`, `--samples 2`, both conditions, with the unconditional card seed in place. Six models were measured 2026-08-18, eight more 2026-08-19, and `qwen3.8:27b-nvfp4` on 2026-08-20, all under identical conditions. Sorted by with-history coverage, which is what a user actually experiences.
 
+All of it runs on the Apple M1 Max archive, recovered as **Ollama 0.32.14** in [`results-m1max-64gb-ollama032/PROVENANCE.md`](tool/model_probes/results-m1max-64gb-ollama032/PROVENANCE.md). Moving this table to the newer 0.33.2 runtime is blocked until `granite4.1:3b` and `llama3.2:latest` are re-measured with the runner evicted after a timeout: their raw 0.33.2 shape scores (17/17 → 17/12 and 15/15 → 15/12) are queue-cascade backlog, not model failure — see [the cascade section](#stalls-are-a-queueing-cascade-not-a-runtime-difference).
+
 | Model                                               | Weights | Cold-start | With history | Warm, pre-seed | Seed               | Cascade | Eroded by history                    |
 | --------------------------------------------------- | ------- | ---------- | ------------ | -------------- | ------------------ | ------- | ------------------------------------ |
 | `qwen3.8:27b-nvfp4`                                 | 16.9 GB | **24/25**  | **24/25**    | 24/25          | no effect (0)      | 3/3     | none                                 |
@@ -223,16 +225,16 @@ Two changes were made in response, both still shipped. The card system prompt's 
 
 How to read the rest of it:
 
-- **Weight class does not predict coverage — or speed.** `granite4.1:8b` at 5.0 GB scores 21/25, matching two models four times its size. Weight predicts runtime even less: `qwen3-coder:30b` at 17.3 GB runs a full sweep in 10 minutes while `gpt-oss:20b` at 12.8 GB takes 48 — see [Performance, by host](#performance-by-host).
+- **Weight class does not predict coverage — or speed.** `granite4.1:8b` at 5.0 GB scores 21/25, matching two models four times its size. Weight predicts runtime even less: `qwen3-coder:30b` at 17.3 GB runs a full sweep in 10 minutes while `gpt-oss:20b` at 12.8 GB takes 42 — see [Performance, by host and runtime](#performance-by-host-and-runtime).
 - **Cold start does not predict with-history, in either direction.** `hf.co/unsloth/…` and `nemotron-3.5-lightning:30b` each gain a shape warm, while `granite4.1:8b`, `qwen2.5-coder:7b`, and `nemotron-3-nano:4b` each lose two. Five models score the same under both. Judge on the with-history column.
 - **`llama3-chatqa:8b` is the case this probe exists for.** It sweeps the everyday and stress sets — 21/21 and 10/10 on 2026-08-20 — and produces a correct shape on 1 of 25 cases. Since the stress set began splitting cards from prose, it no longer takes a 100-call shape run to see why: its 10/10 stress score is **0 cards and 10 prose**, and its everyday sweep is 2 cards to 19 prose. The cheap probe now catches what only the expensive one could.
 - **Failure is concentrated in nested shapes.** `carousel` (8 of 15 models) and `table` (6) account for most of what models never produce under either condition, almost always as invalid JSON rather than a wrong choice of element. No model measured is free of permanent misses: even `qwen3.8:27b-nvfp4` at 24/25 fails `rating_ask` under both conditions.
 - **`rating_ask` is the most-failed case in the file.** **Eleven of the fifteen** answer "ask me to rate this" with a read-only `Rating` display instead of an `Input.*` — the same show-versus-collect substitution, under both conditions, across unrelated model families. A failure that uniform is a prompt problem, and it is the largest remaining lever in `assets/card_system_prompt.txt`. The next most-missed cases are `carousel` (8/15), `text` (7/15), then `time` and `table` (6/15).
 - **`gauge` and `progress` never cross-contaminate**, on any model, despite sharing the "72%" wording.
 
-#### Performance, by host
+#### Performance, by host and runtime
 
-Latency is a property of the model, the box, **and** the runtime, so each recorded run stamps the host and the Ollama version into its result file; a figure that cannot name its machine does not belong here. Two hosts are recorded: **Apple M1 Max / 64 GB**, a MacBook Pro 14-inch (`MacBookPro18,4`), which every shape, cascade, everyday, and stress figure elsewhere in this file was measured on, and **Apple M5 / 16 GB**, a fanless MacBook Air (`Mac17,3`). The M1 Max columns cover all fifteen models; the M5 columns cover the eight the [roster](#candidate-models) marks 16 GB-capable, and read `—` for the rest.
+Latency is a property of the model, the box, **and** the runtime, so each recorded run stamps the host and the Ollama version into its result file; a figure that cannot name its machine does not belong here. Two configurations are recorded here: **Apple M1 Max / 64 GB** on **Ollama 0.33.2**, a MacBook Pro 14-inch (`MacBookPro18,4`), and **Apple M5 / 16 GB** on **Ollama 0.33.1**, a fanless MacBook Air (`Mac17,3`). The M1 Max columns cover all fifteen models; the M5 columns cover the eight the [roster](#candidate-models) marks 16 GB-capable, and read `—` for the rest. The shape-coverage, cascade, everyday, and stress figures elsewhere in this file remain the older **Ollama 0.32.14** measurement on the same M1 Max — see [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped) and the 0.32.14 comparison below for why.
 
 **Median s/call** is over the fixed 25-case shape sweep, so the case mix cancels and models are comparable. It excludes the first call after a model load, which costs roughly **6-7x** a warm one, and it excludes stalled calls, which measure the ceiling rather than the model. "Warm" there is the **call**, not the machine — a distinct axis. Both columns come from serial sweeps in which each model was measured at a different point, so machine state varies down a column rather than being constant; see the position note below the table. **Full sweep** is the seven standard probes for that model, stalls included — that is wall clock someone waited. The tool-channel run is excluded from it, because only tool-capable models have one and a column that means different things on different rows is not a column.
 
@@ -242,41 +244,102 @@ Every figure is derived from the recorded runs by [`perf_table.py`](tool/model_p
 
 | Model                                               | Weights | M1 Max s/call | M5 s/call | M1 Max sweep | M5 sweep | M1 Max stalls | M5 stalls |
 | --------------------------------------------------- | ------- | ------------- | --------- | ------------ | -------- | ------------- | --------- |
-| `llama3-chatqa:8b`                                  | 4.3 GB  | 0.25 s        | 0.25 s    | 3 min        | 5 min    | 0             | 0         |
-| `granite4.1:3b`                                     | 2.0 GB  | 1.1 s         | 1.4 s     | 34 min       | 13 min   | 13            | 1         |
-| `llama3.2:latest`                                   | 1.9 GB  | 1.4 s         | 1.6 s     | 12 min       | 15 min   | 2             | 2         |
-| `qwen3-coder:30b`                                   | 17.3 GB | 1.6 s         | —         | 10 min       | —        | 0             | —         |
-| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 1.8 s         | 2.7 s     | 9 min        | 13 min   | 0             | 0         |
-| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 2.0 s         | —         | 12 min       | —        | 0             | —         |
-| `nemotron-3-nano:30b`                               | 22.6 GB | 2.2 s         | —         | 11 min       | —        | 0             | —         |
-| `qwen2.5-coder:7b`                                  | 4.4 GB  | 2.3 s         | 2.9 s     | 18 min       | 22 min   | 0             | 0         |
-| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 2.3 s         | —         | 15 min       | —        | 2             | —         |
-| `nemotron-3-nano:4b`                                | 2.6 GB  | 2.6 s         | 3.5 s     | 18 min       | 30 min   | 1             | 4         |
-| `granite4.1:8b`                                     | 5.0 GB  | 2.7 s         | 3.3 s     | 14 min       | 17 min   | 0             | 0         |
-| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | 4.3 s         | —         | 39 min       | —        | 0             | —         |
-| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 6.2 s         | —         | 37 min       | —        | 0             | —         |
-| `qwen3.5:9b`                                        | 6.1 GB  | 6.9 s         | 5.6 s     | 34 min       | 29 min   | 0             | 0         |
-| `gpt-oss:20b`                                       | 12.8 GB | 7.3 s         | —         | 48 min       | —        | 1             | —         |
+| `llama3-chatqa:8b`                                  | 4.3 GB  | 0.11 s        | 0.25 s    | 3.0 min      | 5 min    | 0             | 0         |
+| `granite4.1:3b`                                     | 2.0 GB  | 0.97 s        | 1.4 s     | 123.5 min    | 13 min   | 52            | 1         |
+| `llama3.2:latest`                                   | 1.9 GB  | 1.3 s         | 1.6 s     | 70.6 min     | 15 min   | 31            | 2         |
+| `qwen3-coder:30b`                                   | 17.3 GB | 1.5 s         | —         | 10.2 min     | —        | 0             | —         |
+| `llama3-groq-tool-use:8b`                           | 4.3 GB  | 1.8 s         | 2.7 s     | 8.9 min      | 13 min   | 0             | 0         |
+| `nemotron-3.5-lightning:30b`                        | 23.7 GB | 1.9 s         | —         | 13.4 min     | —        | 0             | —         |
+| `nemotron-3-nano:30b`                               | 22.6 GB | 2.0 s         | —         | 10.7 min     | —        | 0             | —         |
+| `qwen2.5-coder:7b`                                  | 4.4 GB  | 2.4 s         | 2.9 s     | 19.4 min     | 22 min   | 0             | 0         |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | 2.1 s         | —         | 17.3 min     | —        | 3             | —         |
+| `nemotron-3-nano:4b`                                | 2.6 GB  | 2.5 s         | 3.5 s     | 15.8 min     | 30 min   | 1             | 4         |
+| `granite4.1:8b`                                     | 5.0 GB  | 2.8 s         | 3.3 s     | 14.6 min     | 17 min   | 0             | 0         |
+| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | 4.0 s         | —         | 30.1 min     | —        | 0             | —         |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | 5.9 s         | —         | 37.5 min     | —        | 0             | —         |
+| `qwen3.5:9b`                                        | 6.1 GB  | 4.9 s         | 5.6 s     | 24.3 min     | 29 min   | 0             | 0         |
+| `gpt-oss:20b`                                       | 12.8 GB | 7.2 s         | —         | 42.1 min     | —        | 0             | —         |
 
-**The two column groups were measured on different Ollama versions, and the gap between them is not only hardware.** The M1 Max columns were recorded 2026-08-20/21 on a version the runs did not stamp — result files carried the host but not the runtime until 2026-08-28 — so it is not recoverable. The M5 columns were recorded 2026-08-28 on **Ollama 0.33.1**, against byte-identical prompt and seed digests. A per-row ratio therefore compares two configurations, not two machines. `qwen3.5:9b` is where that shows: it runs **faster** on the smaller host, and two `choice*` cases emit an `Input.ChoiceSet` under 0.33.1 where the M1 Max emitted only a `TextBlock`, consistently across both samples at `t=0` greedy. Re-measuring the M1 Max on 0.33.1 would separate the two.
+**The M1 Max was re-measured on Ollama 0.33.2 to test whether an earlier cross-host anomaly was a runtime effect, and it was not.** 13 of the 15 medians land in **0.86-1.05x** of the same host's earlier 0.32.14 figures — no material latency difference. Those earlier figures are kept on disk rather than in the table above, in [`results-m1max-64gb-ollama032/`](tool/model_probes/results-m1max-64gb-ollama032), whose [`PROVENANCE.md`](tool/model_probes/results-m1max-64gb-ollama032/PROVENANCE.md) recovers the archive's runtime as **0.32.14** from a single surviving Ollama server-log line (`Listening on [::]:11434 (version 0.32.14)`, 2026-08-21T13:34:28) — a line that covers only 2026-08-21T13:34 onward, while the archive itself spans runs dated 2026-08-20 and 2026-08-21, so the two earlier server restarts in that window are not independently corroborated by anything on disk.
 
-**The M5 rows cost 1.0-1.5x the M1 Max, and the spread does not track weight.** Seven of the eight sit in that band; `qwen3.5:9b` at 0.8x is the exception the footnote above covers. The two 4.3 GB models land at opposite ends — `llama3-chatqa:8b` at 1.0x and `llama3-groq-tool-use:8b` at 1.5x — so a single "the M5 is 1.2x slower" would be the wrong summary. What drives the per-model spread is not established here.
+**The one apparent improvement, and the one apparent cross-runtime behavior change, were both measurement artifacts.** `qwen3.5:9b` measured **0.71x** against the 0.32.14 archive — the second-largest deviation, after `llama3-chatqa:8b`'s **0.42x**, whose 107-253 ms latencies sit close to the noise floor for a model that answers in short prose rather than a card. A same-runtime, hot-versus-cold control re-run of `qwen3.5:9b` alone measured a **1.54x** position bias, larger than the 0.71x effect it was read against: cold (position 0, idle 29 min) medians 4924 ms, hot (7 s after an 8-hour sweep) medians 7563 ms, against the archive's 6903 ms — cold-against-archive reads 0.71x and hot-against-archive reads 1.10x, purely from where the model sat in its sweep. Separately, a same-host comparison of 0.32.14 against 0.33.2 for `qwen3.5:9b` found **0 of 100 calls differ** between runtimes — consistent with it being one of 9 of 15 models measured byte-identical (0 label differences) across the two runtimes — so the runtime is ruled out as the explanation for the `Input.ChoiceSet`-versus-`TextBlock` verdict change previously read against the M5 columns.
 
-**The median and the sweep can move in opposite directions, and neither is wrong.** `llama3-chatqa:8b` matches the M1 Max median exactly at 0.25 s while its full sweep goes 3 min to 5. The median is one greedy probe; the sweep is seven, including the two that sample at `t=0.2` and `t=0.6`. `perf_table.py --by-probe` splits them when a row looks contradictory. Read no probe-class rule off that split: it looks large on `llama3-chatqa:8b` (1.30x greedy against 2.16x sampled) and nearly vanishes across all eight models (1.25x against 1.33x), with two running the other way.
+**With both columns now on the same runtime line, the host comparison reads cleanly for the first time.** 0.33.2 on the M1 Max and 0.33.1 on the M5 differ only at the patch level, so a per-row ratio is close to a same-runtime, cross-host comparison — the earlier caveat that it "compares two configurations, not two machines" no longer applies beyond that patch difference. Every row is still one point in a serial sweep, and the one model measured for position sensitivity showed a 1.54x hot/cold spread — larger than most of the differences a hardware comparison would want to read — so a single-point row comparison anywhere in this table carries that magnitude of position bias, not only for `qwen3.5:9b`. A precise M5-versus-0.33.2 ratio band is not recomputed here: doing it properly needs `perf_table.py` against the 0.33.2 result files, not hand arithmetic on the rounded s/call figures above.
+
+**The median and the sweep can move in opposite directions, and neither is wrong.** The median is one greedy probe; the full sweep is seven, including two that sample at `t=0.2` and `t=0.6`, so a model fast at `t=0` is not guaranteed to be fast everywhere. `perf_table.py --by-probe` splits the two apart when a row looks contradictory; that breakdown has not been re-run against the 0.33.2 figures, so the specific by-probe ratios published against the earlier 0.32.14 archive are not repeated here.
 
 **Every M5 row is the run taken at that model's position in one serial sweep, and those positions are not equivalent.** The sweep ran 10:27 to 14:32 — `granite4.1:8b` started at 0:00 on a machine idle for hours, `qwen2.5-coder:7b` at 0:17, and `granite4.1:3b` at 3:52 on a machine that had been generating for nearly four hours — so later rows carry more of whatever sustained load costs, and no row is a "cold" figure except the first. How much that is remains unestablished, and two models disagree: re-running `granite4.1:8b` 13 seconds after the sweep ended made it **1.20x** slower than its own position-0 run, matched call for call with byte-identical labels, while `qwen2.5-coder:7b` — its published figure taken 17 minutes in — measured **1.03x** after 31 minutes idle, slightly _slower_ cold. Two models moving in opposite directions is not a machine property.
 
 **The reproducibility floor is the reason to be careful with all of it.** `granite4.1:8b` was measured a third time after 7h37m idle and came back **1.12x** its first run — two nominally cold measurements, twelve hours apart, differing by 12% with a tight per-call spread (p25 1.07, p75 1.15), so systematic rather than noisy. An effect of 1.20x sitting on a floor of 1.12x is not cleanly separable from it. Thermal throttling remains plausible on a fanless `Mac17,3` and is unproven: no die temperature or clock frequency was read, and Ollama server uptime, ambient temperature, and accumulated OS state all differed between those runs and none was excluded.
 
-Read the M5 column, then, as one sweep's figures with a position-dependent bias of roughly the same size as its reproducibility floor. Comparing two M5 rows that sat far apart in the sweep carries that bias; comparing an M5 row with its M1 Max neighbour carries it too, on top of the runtime difference already noted. No correction factor is applied to any row: a measured bias would be reportable, and this one is not yet measured well enough to correct for.
+Read the M5 column, then, as one sweep's figures with a position-dependent bias of roughly the same size as its reproducibility floor. Comparing two M5 rows that sat far apart in the sweep carries that bias; comparing an M5 row with its M1 Max neighbour carries it too. No correction factor is applied to any row: a measured bias would be reportable, and this one is not yet measured well enough to correct for.
 
-**`granite4.1:3b` is no longer the file's worst staller, and the M1 Max column is the reason.** It stalls once on the M5 against 13 on the M1 Max, and its sweep is 13 minutes against 34. Its `+3` on unaided with-history follows from that: eleven M1 Max calls hit the 120 s ceiling and scored as failures, so three cases that were ceiling-bound there return real answers here. The seeded figures, where neither host stalled, match exactly.
+**On the archived 0.32.14 measurement, `granite4.1:3b` was not the worst staller — the M5 was ahead there too.** It stalled once on the M5 against 13 on the M1 Max archive, with a 13-minute sweep against 34. That comparison predates the discovery that 0.33.2 stall counts are a queueing cascade (below); on 0.33.2 the M1 Max count for this model is 52, which is cascade backlog rather than 52 independently slow calls, and should not be read against the M5's single stall the way the archive counts were.
 
-**One M5 row was an artifact, and re-running it is what established that.** `llama3.2:latest` first recorded 89 minutes and 40 stalls, with unaided cold-start collapsing 15 to 5 and all 28 unaided stalls falling in calls 0-27. Re-run on an idle machine it takes 15 minutes with 2 stalls and reproduces the M1 Max exactly — seeded 15/15, unaided 15/12. Its median barely moved, 1559 ms to 1650 ms, so the model's speed was never what changed. The cause is not identified: co-residency is ruled out, since Ollama logged one resident runner on all 22 loads of the sweep, and a 1.20x throttling factor is far too small to account for the gap. The second run is the one published. This is the second time the "re-run on an idle machine" rule has caught a bad row, after `granite4.1:3b` in August, and it is the reason the rule is stated as a requirement rather than as advice.
+**One M5 row was an artifact, and re-running it is what established that.** `llama3.2:latest` first recorded 89 minutes and 40 stalls, with unaided cold-start collapsing 15 to 5 and all 28 unaided stalls falling in calls 0-27. Re-run on an idle machine it takes 15 minutes with 2 stalls and reproduces the M1 Max archive exactly — seeded 15/15, unaided 15/12. Its median barely moved, 1559 ms to 1650 ms, so the model's speed was never what changed. The cause is not identified: co-residency is ruled out, since Ollama logged one resident runner on all 22 loads of the sweep, and a 1.20x throttling factor is far too small to account for the gap. The second run is the one published. This is the second time the "re-run on an idle machine" rule has caught a bad row, after `granite4.1:3b` in August, and it is the reason the rule is stated as a requirement rather than as advice.
 
-**Weight does not predict speed on either host.** On the M1 Max, `qwen3-coder:30b` at 17.3 GB is the fastest real card producer measured — 1.6 s/call, ahead of `qwen2.5-coder:7b` at a quarter its size — while `gpt-oss:20b` at 12.8 GB is the slowest at 7.3 s. `llama3-chatqa:8b` tops the table only because it answers in short prose; a model that never builds a card is quick for the wrong reason.
+**Weight does not predict speed on either host.** On the M1 Max, `qwen3-coder:30b` at 17.3 GB is the fastest real card producer measured — 1.5 s/call, ahead of `qwen2.5-coder:7b` at a quarter its size — while `gpt-oss:20b` at 12.8 GB is the slowest at 7.2 s. `llama3-chatqa:8b` tops the table only because it answers in short prose; a model that never builds a card is quick for the wrong reason.
 
-**Stalls, not token rate, decide how long a sweep takes.** On the M1 Max, `granite4.1:3b` is the second-smallest model here and takes 34 minutes against `qwen3-coder:30b`'s 10 at eight times the weight, because 13 of its calls sit in timeouts rather than generating. Budget a sweep by stall risk, not by gigabytes — and note that **all 13 are in the unaided condition**: seeded it stalls twice in 100 calls, unaided eleven times. Without the seed it stops producing cards and generates at length instead.
+**Stalls, not token rate, decide how long a sweep takes.** On the 0.33.2 M1 Max column, `granite4.1:3b` is the second-smallest model here and its sweep runs over two hours against `qwen3-coder:30b`'s ten minutes at eight times the weight, because 52 of its calls read as stalled. That count is a queueing cascade, not 52 independently slow calls — see [the cascade section below](#stalls-are-a-queueing-cascade-not-a-runtime-difference). Budget a sweep by stall risk regardless of mechanism: one runaway generation can cost hours, and gigabytes tell you nothing about which model will produce one.
+
+#### Stalls are a queueing cascade, not a runtime difference
+
+**Stall counts are not comparable across runtimes.** `OLLAMA_NUM_PARALLEL=1` gives this host a single generation slot. When a call times out at the probe's 120 s ceiling, the probe abandons the connection, but the generation keeps running on the server; every later call queues behind it and is scored as its own stall. One runaway generation is recorded as N stalls, and N tracks how long the runaway ran, not how many calls were actually slow.
+
+**Proven directly on `llama3.2:latest`.** The 0.33.2 sweep recorded **31 stalls** for this model. A long-timeout re-run of the same probe found exactly **two** genuinely slow calls — 64.4 and 62.1 minutes, both on the `facts` case, both ending in invalid JSON — and its unaided probe, which the sweep recorded as **19** stalls, had **zero** under the long timeout.
+
+| Model             | Condition | 0.32.14 | 0.33.2 |
+| ----------------- | --------- | ------- | ------ |
+| `llama3.2:latest` | cold      | 0/50    | 0/50   |
+| `llama3.2:latest` | warm      | 2/50    | 12/50  |
+| `granite4.1:3b`   | cold      | 0/50    | 0/50   |
+| `granite4.1:3b`   | warm      | 2/50    | 14/50  |
+
+| Model             | archive 0.32.14      | 0.33.2 in-sweep (published) | 0.33.2 idle re-run   |
+| ----------------- | -------------------- | --------------------------- | -------------------- |
+| `llama3.2:latest` | 12.3 min / 2 stalls  | 70.6 min / 31 stalls        | 70.6 min / 31 stalls |
+| `granite4.1:3b`   | 33.9 min / 13 stalls | 123.5 min / 52 stalls       | 79.9 min / 36 stalls |
+
+**Shape coverage is unchanged once the cascade is removed.** `llama3.2:latest` under a long timeout returns to the archive's seeded 15/15 and unaided 15/12 exactly; the sweep's 15/12 and 9/12 were queued calls scored as failures, not new failures. Stall onset is positional within the warm sequence — `facts` onward for `llama3.2:latest`, `table` onward for `granite4.1:3b` — after which every remaining case in that probe queues behind it. Under 0.32.14, exactly one case stalled per model.
+
+The mechanism behind the onset itself is not established. Suggestive only: `OLLAMA_CONTEXT_LENGTH=32768` is set on this host, `granite4.1:3b` ran at `n_ctx_slot=16384`, and Ollama logged `num_ctx=32768 n_ctx_train=8192` for another model.
+
+**Calls known to hang, by model — a standing reference.** Recorded so a future stall is checked against a known trigger before being read as a new failure mode, rather than re-derived from scratch each time:
+
+| Model                                               | Probe    | Trigger case       | Reproduces across runtimes              | Measured duration  |
+| --------------------------------------------------- | -------- | ------------------ | --------------------------------------- | ------------------ |
+| `granite4.1:3b`                                     | seeded   | `table` (warm)     | yes                                     | —                  |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | seeded   | `table` (cold)     | yes                                     | —                  |
+| `llama3.2:latest`                                   | seeded   | `facts` (warm)     | yes                                     | 64.4 min, 62.1 min |
+| `nemotron-3-nano:4b`                                | everyday | `chart`            | yes                                     | —                  |
+| `gpt-oss:20b`                                       | unaided  | `columnset` (cold) | observed on 0.32.14 only                | —                  |
+| `granite4.1:3b`                                     | unaided  | `date` (cold)      | no — cascade inheritance, not a trigger | —                  |
+| `llama3.2:latest`                                   | unaided  | `date` (cold)      | no — cascade inheritance, not a trigger | —                  |
+
+The first four rows reproduce the same case across both runtimes and are the confirmed hang points as of this sweep: `table` (`granite4.1:3b`, the unsloth Nemotron-3-Nano-30B build), `facts` (`llama3.2:latest`), and `chart` (`nemotron-3-nano:4b`). `date`/`time`/`toggle`/`text` appearing first in an unaided probe are the probe's opening cases inheriting the previous probe's backlog, not hard prompts — `llama3.2:latest`'s unaided probe has zero genuinely slow calls under a long timeout. `llama3.2:latest` + `facts` is the only trigger measured directly, at **64.4 and 62.1 minutes**, both ending in invalid JSON.
+
+**The runaway and the invalid-JSON failure look like the same failure at two severities.** The model does not terminate the structure, and either emits truncated JSON quickly or generates for an hour before doing so:
+
+| Model                        | Cases (count of calls)                       |
+| ---------------------------- | -------------------------------------------- |
+| `qwen3.5:9b`                 | table×10, rating_show×8, carousel×8, badge×4 |
+| `nemotron-3-nano:30b`        | table×11, carousel×4, pie×2, bar×2, nested×2 |
+| `nemotron-3-nano:4b`         | facts×10, codeblock×5, time×4, table×4       |
+| `granite4.1:3b`              | carousel×8, table×6, facts×4, columnset×4    |
+| `nemotron-3.5-lightning:30b` | carousel×8, columnset×4, table×4             |
+| `hf.co/…Nemotron-3-Nano-30B` | table×8, carousel×4, bar×2, choice5×2        |
+| `qwen3.6:27b-coding-nvfp4`   | columnset×8, carousel×7                      |
+| `qwen3-coder:30b`            | time×6, number×4, rating_ask×3               |
+| `llama3.2:latest`            | codeblock×4, table×4, date×2, text×2         |
+| `llama3-groq-tool-use:8b`    | table×3, codeblock×2, date×2, toggle×2       |
+| `qwen2.5-coder:7b`           | carousel×2, mixed×1                          |
+| `granite4.1:8b`              | pie×2                                        |
+| `gpt-oss:20b`                | text×2, gauge×1, bigtable×1                  |
+| `qwen3.8:27b-nvfp4`          | codeblock×1                                  |
+
+`table` and `carousel` dominate, and every runaway trigger is a nested container shape.
+
+**The 120 s ceiling was not the problem; the cascade was.** A generation that runs for 60 minutes has already failed for a chat server whose usability bar is about one second, so raising the ceiling to capture a runaway only converts a fast failure into a slow one and buys a number nobody can act on. The fix is not a longer timeout: it is to evict the runner after a call times out (`ollama stop <model>`, or a follow-up request with `keep_alive: 0`) so the generation actually stops — `request.abort()` alone frees only the client socket, which is why one runaway is recorded as many stalls. 120 s is already 2x the stated unusable threshold; the ceiling should stay anchored to usability, and lowering it (60 s would record the same failures for less wall clock) is worth considering, never raising it to accommodate a model. Recording a runaway's true duration, as done above, is a diagnostic exercise done once, off to the side — not a change to the published methodology, which needs to stay identical across runtimes to remain comparable.
 
 #### A note on the per-call timeout
 
@@ -609,7 +672,7 @@ Cross-model, generalizable results live in [Key findings](#key-findings); these 
 
 The compiled-in default and the smallest launch-set model. Scores **18/25 with
 history** — see [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped)
-for where that ranks and [the performance table](#performance-by-host)
+for where that ranks and [the performance table](#performance-by-host-and-runtime)
 for its weight and latency. Every prompt experiment in this file is gated on it,
 so it has more tuning history than any other model here.
 
@@ -786,7 +849,7 @@ The forward-looking items from the sections above, collected so they are not re-
 - **Conditional seeding.** The seed is applied to every request once `--seed-card-file` is named, but its value spans +10 to −2 by model. If a strong-unaided model ever becomes the server default, a per-model seed policy is the mechanism to consider (see [the card-seed section](#the-card-seed-and-what-it-costs)).
 - **The `gpt-oss:20b` swap is worth revisiting.** The strongest unaided model in the file — the only 25/25 under any condition — is no longer in `launch.json`. The swap is defensible, not settled (see [its per-model notes](#gpt-oss20b)).
 - **A thinking-on arm of the tool-channel comparison.** Every probe sends `think: false` unconditionally, so thinking is untested rather than ruled out as a variable in the tool-channel result (see [the failure decomposition](#why-it-did-not-pay--the-failure-decomposition)).
-- **Re-measure the M1 Max on Ollama 0.33.1.** The M1 Max and M5 performance columns were recorded on different runtime versions, so a per-row ratio compares two configurations rather than two machines (see [Performance, by host](#performance-by-host)).
+- **Re-measure the two cascade-affected models with the runner evicted after a timeout.** `granite4.1:3b` and `llama3.2:latest` are the only models whose 0.33.2 shape scores are queue-cascade backlog rather than a clean measurement; moving [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped) off the 0.32.14 archive is blocked on this (see [the cascade section](#stalls-are-a-queueing-cascade-not-a-runtime-difference)).
 
 ## How results are produced
 
@@ -850,7 +913,7 @@ Nothing about the model changed. The measurement was wrong, in a way that looked
 
 Every figure here was collected with **one model resident at a time** — load a model, run all of its probes, record, then switch. Interleaving models or running probes concurrently distorts both pass rates and latencies, so a number collected that way is not comparable to anything in this file. The procedure and the reasoning behind it are in [`tool/model_probes/README.md`](tool/model_probes/README.md#run-one-model-at-a-time).
 
-Measured on two M-series Macs against a local Ollama, August 2026 — see [Performance, by host](#performance-by-host) for which figures came from which. Latency figures include model load on a first call; re-run before trusting one.
+Measured on two M-series Macs against a local Ollama, August-September 2026 — see [Performance, by host and runtime](#performance-by-host-and-runtime) for which figures came from which. Latency figures include model load on a first call; re-run before trusting one.
 
 ## Glossary
 
