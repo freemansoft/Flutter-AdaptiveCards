@@ -14,7 +14,7 @@ a Dart chat server hands a question to a local Ollama model and asks for the
 answer as Adaptive Card JSON, which a Flutter app renders. A directory of probes
 measures which models manage it, and the results live in a lab notebook in that
 repository. This article is about the harness rather than the models: every
-lesson below was learned from a measurement that went wrong. The co-residency
+lesson below was learned from a measurement that went wrong. The stall-signature
 incident above is the sharpest of them; the rest are smaller and different in
 kind — a bad assertion, a probe that can't tell silence from refusal, a table
 worth deriving twice.
@@ -51,14 +51,26 @@ sequenceDiagram
 Probes send `keep_alive: 30m`, so a model that has finished its probes stays
 resident for half an hour unless something evicts it. The first version of the
 2026-08-20 sweep omitted the `ollama stop`. Two models sat in memory together
-and Ollama thrashed between them — which is where the 52 stalls, the 12/25, and
-the `n/a` came from. Re-run with the unload in place, on an idle machine,
-`granite4.1:3b` scores **17/25 and 3/3**, matching its earlier published
-figures, and the whole sweep takes **7 minutes instead of 124**.
+and Ollama thrashed between them — the working explanation at the time for the
+52 stalls, the 12/25, and the `n/a`. Re-run with the unload in place, on an
+idle machine, `granite4.1:3b` scores **17/25 and 3/3**, matching its earlier
+published figures, and the whole sweep takes **7 minutes instead of 124**.
 
-This is not a hedged inference. The bad numbers came from one run with the
-unload missing, the good numbers from the same probes against the same model
-with it restored, and the second set matches figures recorded before either run.
+That the unload step fixed it is not a hedged inference — the bad numbers came
+from one run with the unload missing, the good numbers from the same probes
+against the same model with it restored, and the second set matches figures
+recorded before either run. Which failure the missing unload actually let
+through is less certain than it looked at the time. A later sweep, run
+2026-09-01 with co-residency ruled out by the server log, reproduced the exact
+same **52 stalls** on this model from a queue cascade: one abandoned
+generation kept running past its timeout, and every later call queued behind
+it and was scored a stall it never reached the model to earn (the mechanism is
+[below](#one-runaway-generation-is-recorded-as-many-stalls)).
+A cascade produces the identical signature a co-resident competitor would. The
+August run's logs did not survive to check which one applied, so its cause is
+not recoverable, and the exact repeat of the count — 52 both times, from two
+sweeps eleven days apart — is itself unexplained. Both accounts stay on the
+record; neither is the settled winner.
 
 So the rule the notebook states is a correctness requirement rather than a
 performance tip: **one model resident at a time** — load a model, run all of its
@@ -99,6 +111,90 @@ The scope is worth stating plainly, because a caveat that sounds general is
 easily read as broader than it is. Nine of fifteen models recorded zero stalls,
 and no other model recorded more than two. The ceiling caveat applies to one row
 of one column.
+
+## One runaway generation is recorded as many stalls
+
+A later Ollama upgrade raised two models' stall counts sharply — one from 2 to
+31, the other from 13 to 52 — on the same machine, the same weights, the same
+probes. Read as a runtime regression, that looked like a second, larger
+version of the ceiling story above. It was not. `OLLAMA_NUM_PARALLEL=1` gives
+this host a single generation slot. When a call times out at the probe's
+ceiling, the probe abandons the connection, but the generation keeps running
+on the server — `request.abort()` frees only the client socket. Every later
+call queues behind it and is scored as its own stall. A recorded stall count
+tracks how long the runaway ran divided by the timeout, not how many calls
+were actually slow: one hour-long runaway under a 120 s ceiling is enough on
+its own to cost roughly thirty recorded stalls once the backlog starts
+draining.
+
+## Proving a cascade rather than assuming one
+
+A queue cascade leaves fingerprints a genuinely slow model does not. Its
+stalls arrive as one contiguous block within a probe rather than scattered
+across it, and the server log shows a queue draining rather than dozens of
+separate hangs: 27 requests completed within 37 seconds, their start times
+exactly 120 s apart, and their durations descending in two-minute steps — the
+shape of calls that had been waiting in line, each released the moment the one
+ahead of it finally timed out or returned. A long-timeout re-run confirmed it
+directly: raising the ceiling to 7200 s on the affected probe resolved **31**
+recorded stalls into **2** genuinely slow calls, at 64.4 and 62.1 minutes,
+both on the same case and both ending in invalid JSON. Twenty-nine of the
+thirty-one were queue, not model.
+
+## The same fix produced an artifact for one model and a regression for another
+
+The fix is to cancel the runaway before continuing: evict the runner
+(`keep_alive: 0`) as soon as a call times out, rather than only abandoning the
+client connection. Re-running the two affected models with eviction in place —
+before and after, everything else held constant — is what separates them.
+
+`llama3.2:latest` recovers exactly. Before eviction: 12 stalls, 26.2 minutes,
+seeded coverage 15/12. After: 2 stalls, 6.5 minutes, seeded coverage
+**15/15** — full recovery — and its unaided probe drops from 19 stalls to
+**0**. Its 31 originally recorded stalls were 2 real ones and 29 queue.
+
+`granite4.1:3b` does not move. Before eviction: 14 stalls, 30.1 minutes,
+seeded coverage 17/12. After: 14 stalls, 30.0 minutes, seeded coverage
+17/12 — identical wall clock, identical coverage. These are not cascade: they
+are 14 independent 120 s timeouts, all in the with-history condition,
+beginning at the `table` case and continuing through every case after it.
+Eviction is a no-op here because there is no leftover generation to cancel —
+each of these calls is its own genuine timeout, not queued behind someone
+else's.
+
+One measurement, applied identically to two models, returned opposite
+verdicts: an artifact for one, and a real, unresolved failure mode for the
+other. That is the reason they cannot be described together as "the stalling
+models" — the fix that clears one leaves the other exactly where it was.
+
+## Sweep position moved a number more than the effect it was meant to explain
+
+A separate investigation, into an apparent hardware anomaly, ran the same kind
+of control used above — hot against cold, one model, one host, one runtime —
+and it belongs here for what it says about single-row comparisons generally.
+Measured cold, at position 0 after 29 minutes idle, `qwen3.5:9b` medians
+**4924 ms**; measured hot, seven seconds after an eight-hour sweep, it medians
+**7563 ms** — a **1.54x** spread from sweep position alone. That control was
+built to explain a smaller cross-machine effect and measured a larger one
+instead: the same discipline that resolved the stall counts above — isolate
+one variable, measure it directly, do not read a mechanism off a net number —
+turned out to apply just as well to a plain latency ratio between two
+machines. A single row in a serial sweep can be reporting position, not the
+thing being compared.
+
+## The timeout ceiling was never the problem
+
+The 120 s ceiling looked like the thing to fix once stall counts spiked. It
+was not. A generation that runs for over an hour has already failed for every
+purpose a chat server serves — the usability bar here is a reply under a
+minute — so raising the ceiling to capture a runaway only converts a fast
+failure into a slow one and buys a number nobody can act on. 120 s is already
+twice that unusable threshold; lowering it, not raising it, is the change
+worth weighing, since it would record the same failures for less wall clock
+spent waiting for them. Never raise it to accommodate a model. What needed
+fixing was not the ceiling but what happened after it: evict the runner the
+moment a call times out, so the abandoned generation actually stops instead of
+continuing to block every call queued behind it.
 
 ## Two failures blamed on the model belonged to the harness
 
@@ -211,16 +307,27 @@ as the two are recorded separately enough to tell apart later.
 
 ## What transfers
 
-Seven rules, each of them the residue of a wrong measurement rather than a
+Ten rules, each of them the residue of a wrong measurement rather than a
 principle arrived at in advance. Keep one model resident at a time. Re-run a
-suspicious row on an idle machine before publishing it. Do not trust an
-assertion just because it is the one that shipped — a criterion can be the
+suspicious row on an idle machine before publishing it. When a fix is meant to
+resolve a suspected cause, run it on every candidate row, not only the one you
+expect it to clear — the same eviction that recovers one model exactly can
+leave another untouched, and only running both tells you which you have.
+Separate a queued call from a slow one before trusting a stall count: look for
+a contiguous block and a queue-drain signature in the log before reading a
+figure as N independently slow calls. Do not raise a timeout ceiling to
+capture a failure that has already missed the usability bar it exists to
+enforce. Control sweep position before reading a single row's ratio as the
+effect under test — a same-host, same-runtime hot/cold check found a bias
+larger than the cross-machine difference it was meant to explain. Do not trust
+an assertion just because it is the one that shipped — a criterion can be the
 thing under test, not only the model. Establish that a message reaches the
 model before reading a null result about it, and do not let a delivery probe
 contradict the instructions it is delivered alongside. Judge with the parser
-you ship. Derive published tables from the recorded runs instead of
-transcribing them. And record what you threw away and why, so a discarded number
-is not quoted back at you later by someone who found it in git history.
+you ship, and derive published tables from the recorded runs instead of
+transcribing them. And record what you threw away and why, so a discarded
+number is not quoted back at you later by someone who found it in git
+history.
 
 This is the last article in the series. The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),

@@ -16,13 +16,13 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                   | File                                         | Status                  |
-| --- | ------------------------------------------------------------------------- | -------------------------------------------- | ----------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                     | `2026-08-29-article-1-origin-story-*`        | Drafted, image needed   |
-| 2   | Fourteen levers for reliable card JSON from a local model                 | `2026-08-30-article-2-tuning-process-*`      | Drafted, image needed   |
-| 3   | The same benchmark on a 64 GB M1 Max and a 16 GB M5                       | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, chart needed   |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models | `2026-08-30-article-4-tool-channel-*`        | Drafted, diagram needed |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model | `2026-08-30-article-5-measurement-hygiene-*` | Drafted                 |
+| #   | Article                                                                   | File                                         | Status                                    |
+| --- | ------------------------------------------------------------------------- | -------------------------------------------- | ----------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                     | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-02, image needed |
+| 2   | Fourteen levers for reliable card JSON from a local model                 | `2026-08-30-article-2-tuning-process-*`      | Drafted, image needed                     |
+| 3   | The same benchmark on a 64 GB M1 Max and a 16 GB M5                       | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-02, chart needed |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models | `2026-08-30-article-4-tool-channel-*`        | Drafted, diagram needed                   |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-02               |
 
 All five articles are drafted. Article 5 carries a mermaid diagram of the sweep
 loop rather than an image placeholder, so it needs no visual work.
@@ -67,9 +67,11 @@ wrong-shape / infra) that explains the losses, or the architecture and
 phase-1-canary findings built on top of it.
 
 **Article 3 — the two hosts.** The 16 GB fit question outright, including the
-detail article 1 defers to it. The M5 ÷ M1 Max ratio band and why it does not
-track weight. The `llama3.2:latest` artifact row. The runtime-version confound
-that makes a per-row ratio a comparison of two configurations rather than two
+detail article 1 defers to it. The M5 ÷ M1 Max ratio band, read at matched
+Ollama versions, and why it does not track weight. The `llama3.2:latest`
+artifact row. The 1.54x sweep-position bias that bounds how precisely any
+single row's ratio can be read — the confound that replaces the earlier,
+retracted claim that a per-row ratio compared two runtimes rather than two
 machines. Thermal throttling as plausible and unproven.
 
 _Defers:_ bad assertions and undelivered `system` messages to article 5.
@@ -87,18 +89,27 @@ _Defers:_ the canary's four-way split to article 1, recapping it in one sentence
 as setup. Its figures are the only unseeded shape figures in the series, which
 it states rather than assumes.
 
-**Article 5 — measurement hygiene.** The full `granite4.1:3b` co-residency
-account that articles 1 and 3 only name. Why a stall is the most misread
-measurement in the set, and what the per-call timeout changes. Suspect the
-harness before the model — a fence-stripping bug and a bad assertion, both
-blamed on models first. A null result means nothing until delivery is
-established, and a delivery probe must not contradict the system prompt. Judge
-with the parser you ship; derive published tables rather than transcribe them.
-When to discard numbers and what survives discarding them.
+**Article 5 — measurement hygiene.** The `granite4.1:3b` stall-signature
+account that articles 1 and 3 only name — co-residency and a queue cascade
+both produce the identical 52-stall signature, and which one caused the
+original incident is not recoverable. **The queue-cascade material outright**:
+how one abandoned generation is recorded as many stalls, how that was proven
+from the server log rather than assumed, and how the same runner-eviction fix
+separated an artifact (`llama3.2:latest`, fully recovered) from a real,
+unresolved regression (`granite4.1:3b`, unchanged) — two models that cannot be
+described together as "the stalling models". Why a stall is the most misread
+measurement in the set, and what the per-call timeout changes, including why
+raising the ceiling was never the fix. Suspect the harness before the model —
+a fence-stripping bug and a bad assertion, both blamed on models first. A null
+result means nothing until delivery is established, and a delivery probe must
+not contradict the system prompt. Judge with the parser you ship; derive
+published tables rather than transcribe them. When to discard numbers and what
+survives discarding them.
 
 _Defers:_ the `llama3.2:latest` M5 artifact row and the throttling analysis to
-article 3, referencing them in one clause as a second instance of the
-re-run-on-an-idle-machine rule.
+article 3; it recaps article 3's sweep-position control in one paragraph, as a
+second instance of the same discipline that resolves the stall counts —
+isolate the confound, measure it, do not read a mechanism off a net number.
 
 ## Conventions
 

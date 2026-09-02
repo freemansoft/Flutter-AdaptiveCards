@@ -159,7 +159,10 @@ the next one loads. Probes send `keep_alive: 30m`, so the finished model stayed
 resident while the next loaded, two models sat in memory together, and Ollama
 thrashed between them. `granite4.1:3b` recorded **52 stalled calls** and scored
 12/25 with history where an idle machine gives **17/25**. With the unload in
-place the sweep took **7 minutes instead of 124**.
+place the sweep took **7 minutes instead of 124**. That attribution is not the
+whole story — a later sweep reproduced the same 52-stall signature from a
+different cause with co-residency ruled out, and the measurement-hygiene
+article carries the full account.
 
 Nothing about the model changed between those two runs. The wrong measurement
 looked exactly like a slow model, because from the probe's side a reply that
