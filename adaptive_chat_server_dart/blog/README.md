@@ -115,10 +115,20 @@ isolate the confound, measure it, do not read a mechanism off a net number.
 
 ### Figures
 
-- **Every figure traces to `ModelBehavior.md`.** The drafts were written against
-  commit `ba02fd98`. Re-check against the file at head before publishing, and
-  when drafting a new article, verify each figure in the notebook directly —
-  do not trust an intermediate document that quotes it.
+- **Every figure traces to `ModelBehavior.md`.** The drafts were originally
+  written against commit `ba02fd98`. Articles 1, 3, 4, and 5 are re-pinned to
+  `fd1e4732`, the commit that corrected the `gpt-oss:20b` seed-direction
+  reversal and folded in the Ollama 0.33.2 sweep; their figures were checked
+  against it first. **Article 2 stays pinned to `ba02fd98`**: it quotes
+  `gpt-oss:20b`'s pre-sweep figures (25/25 unaided, 23/25 seeded, "the only
+  25/25 in the notebook") and the pre-sweep claim that `qwen3.8:27b-nvfp4`
+  holds the notebook's highest as-shipped score — both now read the opposite
+  way at `fd1e4732`, where `gpt-oss:20b` is 25/25 seeded and 22/25 unaided.
+  Re-pinning article 2 without rewriting its prose would point a reader at
+  numbers that contradict what the article says. Re-check against the file at
+  head before publishing, and when drafting a new article, verify each figure
+  in the notebook directly — do not trust an intermediate document that
+  quotes it.
 - **Transcribe verbatim.** Do not round, paraphrase, or recompute a score.
 - **Every score carries its test set and its condition.** An `n/m` is
   uninterpretable without both. Everyday and stress figures are cold-start;
@@ -168,11 +178,12 @@ article leaves the repository. This applies to inline artifact names too:
 bare filenames.
 
 **Two link targets, and the distinction is deliberate.** References to
-`ModelBehavior.md` are pinned to the commit the figures were read at
-(`/blob/ba02fd98/…`), including the one in the closing paragraph, so a quoted
-figure still resolves after the notebook changes. Links to code and assets
-track `/blob/main/` — a reader following them wants the current file, not an
-archived one.
+`ModelBehavior.md` are pinned to the commit the figures were read at,
+including the one in the closing paragraph, so a quoted figure still resolves
+after the notebook changes — `/blob/fd1e4732/…` for articles 1, 3, 4, and 5,
+`/blob/ba02fd98/…` for article 2 (see the Figures section above for why it
+was not moved). Links to code and assets track `/blob/main/` — a reader
+following them wants the current file, not an archived one.
 
 ### Presentation
 

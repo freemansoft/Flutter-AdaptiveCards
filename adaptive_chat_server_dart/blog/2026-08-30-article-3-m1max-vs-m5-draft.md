@@ -13,10 +13,10 @@ The reason for the second host is narrow. A server default that only runs on a
 reasonably be recommended, not what can be measured.
 
 Every figure below is transcribed from
-[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/ba02fd98/adaptive_chat_server_dart/ModelBehavior.md),
+[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md),
 a lab notebook in the
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-repository, read at commit `ba02fd98`.
+repository, read at commit `fd1e4732`.
 Shape figures are `--samples 2`, which is why a one-point difference between two
 models is noise rather than a ranking.
 
@@ -244,4 +244,4 @@ never reach the model — belong to the next article in this series.
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook these figures are read from is
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/ba02fd98/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/ba02fd98/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/fd1e4732/adaptive_chat_server_dart/ModelBehavior.md).
