@@ -100,6 +100,10 @@
   MacBook Air on Ollama 0.33.1, and the performance table now carries both hosts
   in one table rather than asserting one. Seven of the eight cost 1.0-1.5x the
   Apple M1 Max / 64 GB figures; `qwen3.5:9b` runs faster on the smaller host.
+  **Superseded 2026-09-02: that last clause does not survive.** The two hosts
+  were measured at different positions in their sweeps, and re-running one model
+  hot against cold on a fixed host and runtime measured a **1.54x** position
+  bias — larger than the 0.8x it was offered to explain. Read as a null result.
   Shape coverage reproduced the M1 Max on six of eight exactly, which is what
   says the difference is the box and not the measurement.
 - Added: **the fanless M5 throttles 1.20x over a four-hour sweep**, measured by
@@ -344,7 +348,13 @@
   and 52 stalled calls, which read as a small model failing under a per-call
   timeout. A leaked Ollama runner process was competing for the GPU throughout —
   `ollama stop` had returned while the model was still evicting, and the runner
-  never reaped. Re-run on an idle machine it scores **17/25 and 3/3**, matching
+  never reaped. **Qualified 2026-09-02:** a second mechanism produces the same
+  signature, and that run's logs are gone, so this attribution is no longer the
+  only candidate. A single runaway generation holds Ollama's one slot while
+  later calls queue behind it and time out without reaching the model, turning
+  one stall into dozens. `granite4.1:3b` recorded **52 stalls again** on
+  2026-09-01 with `loaded runners count=1` on every load — co-residency
+  excluded. Which mechanism produced the August figure is not recoverable. Re-run on an idle machine it scores **17/25 and 3/3**, matching
   its earlier unbounded figures exactly. Two of the three "findings" reported
   about that model were the busy machine, not the model.
 - Docs: what survives is narrower. Seeded, the ceiling
@@ -420,7 +430,11 @@
   180 s, well clear of the ~49 s longest legitimate generation on record) and
   a stall is scored a failure labeled `timeout (Ns)` — its own label, so it is
   never mistaken for a wrong shape or invalid JSON. Found while smoke-testing
-  the `--json` path, not by inspection.
+  the `--json` path, not by inspection. **Incomplete, corrected 2026-09-02:**
+  bounding the call did not stop the generation. Ollama kept running the
+  abandoned request and serves one at a time, so later calls queued behind it
+  and recorded stalls they never reached the model to earn. The probe now also
+  evicts the runner on timeout.
 - Changed: **every probe takes `--json` and `--timeout`**, added to the shared
   `parseProbeArgs` rather than per script, so recording a run is one flag
   everywhere. `cascade_ab` records `exercised` separately from `cases`, since
