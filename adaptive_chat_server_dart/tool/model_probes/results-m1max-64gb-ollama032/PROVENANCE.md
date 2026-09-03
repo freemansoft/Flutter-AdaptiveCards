@@ -13,7 +13,7 @@ inside the 2026-08-20/21 measurement window — the two earlier restarts of
 that window have already been rotated out. `server-5.log` covers
 2026-08-21T13:34:28 through 2026-08-22T21:56:20 and reports:
 
-```
+```text
 time=2026-08-21T13:34:28.331-04:00 level=INFO source=routes.go:1990 msg="Listening on [::]:11434 (version 0.32.14)"
 ```
 
@@ -26,7 +26,7 @@ disk, since no other server log covers 2026-08-20 or the first half of
 
 The same restart shows that server ran on the GPU:
 
-```
+```text
 time=2026-08-21T13:34:28.727-04:00 level=INFO source=types.go:32 msg="inference compute" id=0 filter_id=0 library=Metal compute=0.0 name=MTL0 description="Apple M1 Max" libdirs="" driver=0.0 pci_id="" type=iGPU total="51.8 GiB" available="51.8 GiB"
 ```
 
