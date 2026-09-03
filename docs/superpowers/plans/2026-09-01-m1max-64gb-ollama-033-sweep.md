@@ -65,7 +65,7 @@ stronger one because it does not depend on timing at all:
 1. **Latency.** The M5 is memory-bandwidth-poorer than the M1 Max (~150 GB/s against ~400 GB/s), so on hardware alone the M5 should be slower. It is faster, by 1.22x. If the runtime is responsible, this host on 0.33.x should come in **below 6903 ms**.
 2. **Behavior.** In the **unaided** probe, exactly four calls differ between the two archives — `choice2` and `choice5`, both samples, cold condition:
 
-   ```
+   ```txt
    0.32.14 (M1 Max):  no-input: got {TextBlock} want {Input.ChoiceSet}
    0.33.1  (M5):      Input.ChoiceSet, TextBlock
    ```
