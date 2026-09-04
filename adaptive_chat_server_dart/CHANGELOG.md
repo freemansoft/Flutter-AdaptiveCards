@@ -2,6 +2,54 @@
 
 ## [Unreleased]
 
+- Blog: **article 5 trimmed under the length cap, and the target recorded.**
+  A three-pass trim cut restatement and hedging recap, taking the draft from
+  4,010 to ~3,150 raw words — 2,981 words of prose, under the 3,000 cap but
+  still above the 1,674-2,114 the other four articles occupy, so it sits at
+  the cap as the capstone rather than inside the band. `blog/README.md` now
+  states the convention the deleted outlines carried: about 2,000 prose
+  words per article, hard cap 3,000, measured excluding fenced blocks,
+  table rows, and URLs.
+- Blog: **article 5 gains the truncation lesson and the prompt-cache
+  figures.** New section "A silently truncated prompt read as a broken
+  cache" with the corrected measurements and the retry-cost tie-in to the
+  timeout sections; the intro's lesson list and the closing rules (now
+  eleven) are updated to match.
+- Added: **`cachedPromptTokens` in `/status` interaction stats.** Ollama
+  0.33.3 reports `prompt_eval_cached_count` — prompt tokens served from the
+  runner's prefix cache; `stats.dart` now records it, defaulting to 0 on
+  older servers that omit the field.
+- Docs: **prompt-cache reuse and retry cost measured on the M5 under
+  Ollama 0.33.3** (`llama3.2:latest`, ~2,100-token system prompt): a
+  conversation turn re-evaluates only its new tokens (~94 ms), a fresh
+  conversation reuses a shared system prompt to within ~8 tokens, the
+  cache survives an interleaved unrelated request, and a retry after an
+  aborted call costs a warm repeat (29 ms) rather than a cold prefill
+  (2,226 ms). Plus a measurement lesson: a prompt over `num_ctx` is
+  silently truncated to half the window, which zeroes cache reuse and
+  holds `prompt_eval_count` constant — the tell that invalidated the
+  first probe run.
+- Docs: **plan for the M1 Max follow-up work**
+  (`docs/superpowers/plans/2026-09-04-m1max-schema-ab-and-prefill-cache.md`).
+  Eight tasks: teach `shape_ab.dart` to send Ollama's `format` constraint
+  (it cannot today), run the schema A/B on `qwen3.6:27b-coding-nvfp4`
+  under 0.33.2 before upgrading, re-run the canary on 0.33.3, reproduce
+  the prompt-cache figures on a second host and a large model, confirm
+  the truncation warning against a live server, then propagate to the
+  blog and retire the superseded 0.32.x references. Records the trap
+  that `shape_ab` derives `variant` from seeding alone, so a constrained
+  run would file as `seeded` and give the published shape table a second
+  candidate row.
+- Fixed: **the context-fill warning could not fire on the truncation it
+  names.** `_logContextFill` derived its tiers from `prompt_eval_count`,
+  which reports what survived truncation and so can never exceed `num_ctx`:
+  an overflowing prompt came back at about half the window and logged a calm
+  50% info line while every reply was being clipped. It now compares an
+  estimate of what was sent against `num_ctx` and warns when they diverge.
+- Added: **`tool/model_probes/prefill_cache_probe.dart`**, the standalone
+  diagnostic behind the prompt-cache figures — not one of the seven sweep
+  probes and not run by `sweep.sh`. The published figures are now the
+  output of a committed script rather than a one-off.
 - Docs: **the `format` canary is per-runtime, and `ModelBehavior.md` now says
   so.** The 2026-09-01 sweep's `json_format_probe` verdicts are folded in:
   both `nvfp4` builds flipped from `ignored-harmlessly` (0.32.14) to

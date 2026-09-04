@@ -397,15 +397,38 @@ class OllamaResponder implements Responder {
         : history.sublist(history.length - keep);
   }
 
-  void _logContextFill(Map<String, dynamic> data) {
+  /// Logs how full the context is, and warns when the prompt overflowed it.
+  ///
+  /// [sentChars] is the character length of every message actually sent, and
+  /// it is what makes overflow detectable at all: `prompt_eval_count` reports
+  /// what survived truncation, never what was sent, so it cannot exceed
+  /// `num_ctx` and the percentage tiers below cannot see an overflow. Measured
+  /// on Ollama 0.33.3, a prompt of roughly 15k tokens against a `num_ctx` of
+  /// 8192 comes back reporting 4,098 — half the window — which reads as a
+  /// half-full context while every reply is being clipped.
+  void _logContextFill(Map<String, dynamic> data, int sentChars) {
     final promptTokens = data['prompt_eval_count'];
     if (promptTokens is! int || _numCtx <= 0) return;
+    // Deliberately rough — roughly four characters per token, which varies by
+    // model and tokenizer. Used only to catch a prompt far larger than the
+    // window, and always reported as an estimate, never as a token count.
+    final estimatedSent = sentChars ~/ 4;
+    if (estimatedSent > _numCtx && promptTokens < _numCtx) {
+      _log.warning(
+        'Ollama prompt truncated: sent ~$estimatedSent estimated tokens '
+        'against num_ctx $_numCtx, and Ollama evaluated $promptTokens — it '
+        'drops tokens above num_ctx silently, so prompt_eval_count reports '
+        'what survived rather than what was sent. Lower --history-turns or '
+        'raise --num-ctx.',
+      );
+      return;
+    }
     final pct = promptTokens / _numCtx;
     if (pct >= 0.76) {
       _log.warning(
         'Ollama context near limit: prompt=$promptTokens/$_numCtx '
-        '(${(pct * 100).toStringAsFixed(0)}%) — Ollama silently drops '
-        'oldest tokens above num_ctx; lower --history-turns or raise '
+        '(${(pct * 100).toStringAsFixed(0)}%) — above num_ctx Ollama drops '
+        'oldest tokens silently; lower --history-turns or raise '
         '--num-ctx.',
       );
     } else if (pct >= 0.50) {
@@ -436,6 +459,10 @@ class OllamaResponder implements Responder {
       messages.add({'role': role, 'content': content});
     }
     messages.add({'role': 'user', 'content': text});
+    final sentChars = messages.fold<int>(
+      0,
+      (sum, m) => sum + (m['content'] ?? '').length,
+    );
 
     final endpoint = '$_ollamaUrl/api/chat';
     final options = <String, dynamic>{
@@ -531,7 +558,7 @@ class OllamaResponder implements Responder {
         ok: false,
       );
     }
-    _logContextFill(data);
+    _logContextFill(data, sentChars);
     final stats = fromOllamaResponse(data);
 
     var replyText = content;

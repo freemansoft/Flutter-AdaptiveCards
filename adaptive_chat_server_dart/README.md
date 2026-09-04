@@ -385,6 +385,7 @@ routes stay compact. Example payload:
       "lastInteraction": {
         "stats": {
           "promptTokens": 120,
+          "cachedPromptTokens": 0,
           "replyTokens": 45,
           "totalTokens": 165,
           "totalMs": 900,

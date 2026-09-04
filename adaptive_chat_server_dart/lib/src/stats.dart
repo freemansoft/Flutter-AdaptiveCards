@@ -21,10 +21,19 @@ class InteractionStats {
     required this.loadMs,
     required this.promptEvalMs,
     required this.evalMs,
+    this.cachedPromptTokens = 0,
   });
 
   /// Ollama `prompt_eval_count` — tokens sent.
   final int promptTokens;
+
+  /// Ollama `prompt_eval_cached_count` — prompt tokens served from the
+  /// prefix cache rather than re-evaluated.
+  ///
+  /// Reported by Ollama 0.33.3 and later; earlier servers omit the field,
+  /// which reads as 0 here. Supplementary like the durations: its absence
+  /// never discards a record.
+  final int cachedPromptTokens;
 
   /// Ollama `eval_count` — tokens generated.
   final int replyTokens;
@@ -58,9 +67,11 @@ InteractionStats? fromOllamaResponse(Map<String, dynamic> data) {
   final promptTokens = data['prompt_eval_count'];
   final replyTokens = data['eval_count'];
   if (promptTokens is! int || replyTokens is! int) return null;
+  final cached = data['prompt_eval_cached_count'];
   return InteractionStats(
     promptTokens: promptTokens,
     replyTokens: replyTokens,
+    cachedPromptTokens: cached is int ? cached : 0,
     totalMs: _ms(data, 'total_duration'),
     loadMs: _ms(data, 'load_duration'),
     promptEvalMs: _ms(data, 'prompt_eval_duration'),
@@ -82,6 +93,7 @@ Map<String, dynamic> statsToJson(InteractionStats stats) {
   }
   return {
     'promptTokens': stats.promptTokens,
+    'cachedPromptTokens': stats.cachedPromptTokens,
     'replyTokens': stats.replyTokens,
     'totalTokens': stats.promptTokens + stats.replyTokens,
     'totalMs': stats.totalMs,

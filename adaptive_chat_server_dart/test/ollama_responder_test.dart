@@ -722,6 +722,54 @@ void main() {
       },
     );
 
+    test(
+      'a prompt larger than num_ctx warns that Ollama truncated it',
+      () async {
+        // The truncation signature measured on Ollama 0.33.3: a prompt well
+        // over num_ctx comes back reporting about half the window, so the
+        // percentage tiers below read it as a half-full context.
+        final client = MockClient(
+          (request) async =>
+              okResponse('ok', extra: {'prompt_eval_count': 502}),
+        );
+        final responder = OllamaResponder(
+          ollamaUrl: 'http://127.0.0.1:11434',
+          defaultSystemPromptPath: promptPath,
+          seedCardFile: seedPath,
+          cardSchemaPath: schemaPath,
+          client: client,
+          numCtx: 1000,
+        );
+        final sub = Logger.root.onRecord.listen(records.add);
+        await responder.reply('x' * 20000, const []);
+        await sub.cancel();
+        final match = records.where(
+          (r) => r.message.contains('prompt truncated'),
+        );
+        expect(match, isNotEmpty);
+        expect(match.first.level, Level.WARNING);
+      },
+    );
+
+    test('a prompt that fits does not warn about truncation', () async {
+      final client = MockClient(
+        (request) async => okResponse('ok', extra: {'prompt_eval_count': 760}),
+      );
+      final responder = OllamaResponder(
+        ollamaUrl: 'http://127.0.0.1:11434',
+        defaultSystemPromptPath: promptPath,
+        seedCardFile: seedPath,
+        cardSchemaPath: schemaPath,
+        client: client,
+        numCtx: 1000,
+      );
+      final logs = await replyCapturingLogs(responder);
+      expect(
+        logs.any((r) => r.message.contains('prompt truncated')),
+        isFalse,
+      );
+    });
+
     test('fill above 76% logs a warning-level "context near limit"', () async {
       final client = MockClient(
         (request) async => okResponse('ok', extra: {'prompt_eval_count': 800}),

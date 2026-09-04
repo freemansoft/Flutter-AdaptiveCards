@@ -188,6 +188,13 @@ archived one.
 
 ### Presentation
 
+- **Target length: about 2,000 words of prose per article, hard cap 3,000.**
+  Prose excludes fenced code/diagram blocks, table rows, and link URLs —
+  measure with `wc -w` after stripping those, not on the raw file, which runs
+  5–10% higher. An article that outgrows the cap gets trimmed or split, with
+  the ownership map updated if split. (The per-article outlines that once
+  carried section word budgets were deleted after drafting; this is the one
+  number from them worth keeping.)
 - Prefer a table to a prose list anywhere a section compares more than two
   things.
 - A wide source table needs fitting to blog width — either split it into
