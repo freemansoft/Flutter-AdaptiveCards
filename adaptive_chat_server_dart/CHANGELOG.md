@@ -3,23 +3,27 @@
 ## [Unreleased]
 
 - Measured: **`prefill_cache_probe.dart` on a second host and a second
-  model.** On the Apple M1 Max / 64 GB, `llama3.2:latest` reproduces every
-  reading from the published Apple M5 run: cold prefill in the seconds
-  against a warm repeat in tens of milliseconds, a growing conversation
-  paying for its new tokens only, the cache surviving an interleaved
-  request, and a retry after an abort costing a warm repeat. Run against
-  `qwen3.8:27b-nvfp4` (~18 GB, too large for the M5's 16 GB), three of
-  those five readings hold, but "same system prompt, different question"
-  and "interleaved unrelated request" do not: both came back with
-  `cached=4` of ~3,177 tokens and a prefill matching the cold prefill,
-  though the original sequence's cache slot survived both misses
-  unevicted. `ModelBehavior.md`'s prompt-cache section records the full
-  second-host table and narrows the "one model, one host, one runtime"
-  caveat accordingly — reuse on an identical repeat, a growing
-  conversation, and a retry after an abort is no longer host- or
-  model-specific; reuse across a fresh question sharing only the system
-  prompt is not established as general behavior, since it held for
-  `llama3.2` and did not for `qwen3.8:27b-nvfp4`.
+  model, with the large model's suspicious rows confirmed by a repeat
+  run.** On the Apple M1 Max / 64 GB, `llama3.2:latest` reproduces every
+  reading from the published Apple M5 run. Run against `qwen3.8:27b-nvfp4`
+  (~18 GB, too large for the M5's 16 GB) and then repeated in full on an
+  idle machine: identical-repeat and growing-conversation reuse hold in
+  both runs; "same system prompt, different question" and "interleaved
+  unrelated request" come back as full cold prefills in both runs
+  (`cached=4` of ~3,177 tokens, ~40.4-40.6 s), confirming that miss as
+  measured rather than a one-off, while the original sequence's cache
+  slot survives both misses unevicted in both runs; retry-after-abort
+  matches the M5 figure for `llama3.2` (30 ms vs 29 ms) but is unstable
+  for the large model — 148 ms with 3472/3477 cached on the first run,
+  18154 ms with 2063/3477 cached on the repeat. `ModelBehavior.md`'s
+  prompt-cache section records both runs and narrows the "one model, one
+  host, one runtime" caveat accordingly: identical-repeat and
+  growing-conversation reuse is not host- or model-specific; reuse across
+  a fresh question sharing only the system prompt is not general
+  behavior, since it held for `llama3.2` and missed for
+  `qwen3.8:27b-nvfp4` in two independent runs; retry-after-abort cost is
+  not a fixed runtime property either, varying by roughly 100x between
+  runs on the large model.
 - Measured: **`qwen3.6:27b-coding-nvfp4`'s schema-constrained shape A/B under
   Ollama 0.33.3.** `format: schema` repairs `columnset` (0/6 → 6/6, both
   conditions) but not `carousel`: cold stays 0/7 across three same-session
