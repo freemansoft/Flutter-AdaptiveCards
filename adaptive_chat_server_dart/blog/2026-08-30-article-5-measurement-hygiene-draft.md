@@ -62,9 +62,9 @@ later sweep, run 2026-09-01 with co-residency ruled out by the server log,
 recorded the exact same **52 stalls** on this model, in a pattern consistent
 with a queue cascade — one abandoned generation running past its timeout
 while every later call queues behind it (mechanism
-[below](#one-runaway-generation-is-recorded-as-many-stalls)) — which produces
-an identical signature. The exact repeat, 52 both times eleven days apart, is
-itself unexplained; both accounts stay on the record.
+[below](#one-runaway-generation-is-recorded-as-many-stalls)) — an identical
+signature. The exact repeat, 52 both times eleven days apart, is itself
+unexplained; both accounts stay on the record.
 
 So the rule is a correctness requirement, not a performance tip: **one model
 resident at a time** — load, run its probes, record, unload, wait, switch.
@@ -114,7 +114,7 @@ did not cancel it is unestablished — an isolated reproduction cancels
 correctly), and every later call queues behind it and is scored as its own
 stall. A recorded stall count tracks how long the runaway ran divided by the
 timeout, not how many calls were slow: one hour-long runaway under a 120 s
-ceiling costs roughly thirty stalls alone.
+ceiling costs roughly thirty recorded stalls alone.
 
 ## Twenty-nine of thirty-one recorded stalls were queue, not model
 
@@ -237,7 +237,7 @@ cache: its system prompt tokenized to roughly 15k against an 8,192-token
 or warning, so every turn was a different slice of the oversized prompt and
 nothing matched. The tell: `prompt_eval_count` sitting at exactly **4,098 on
 every turn** of a growing conversation — a prompt that grows cannot keep a
-constant token count. The server's own overflow detector now catches this at
+constant token count. The server's own overflow detector now warns on this at
 request time, confirmed against a live server.
 
 Sized to fit, the same probe shows the cache is a large performance effect —
@@ -259,9 +259,9 @@ saying _why_ a prefill was cheap — turning a plausible "broken cache" reading
 into a measurable configuration error.
 
 The pattern reproduces on a second host with the same model: on an Apple M1
-Max / 64 GB under the same Ollama 0.33.3, `llama3.2:latest` matched the M5
-readings figure for figure — identical-repeat prefill 2079 ms → 12 ms, a
-fresh question against the same system prompt 87 ms, an interleaved unrelated
+Max / 64 GB under the same Ollama 0.33.3, `llama3.2:latest` reproduced the M5
+pattern on every reading — identical-repeat prefill 2079 ms → 12 ms, a fresh
+question against the same system prompt 87 ms, an interleaved unrelated
 request 39 ms, retry-after-abort 30 ms against the M5's 29 ms.
 
 It does not reproduce on a second model. `qwen3.8:27b-nvfp4` (~18 GB, too
@@ -277,8 +277,8 @@ while `llama3.2`'s retry cost was unaffected. Reusing a shared system prompt
 across a fresh question is what a chat server does on most turns; for one
 model that reuse is free, for the other it is not.
 
-The full figures, including cross-conversation reuse and survival across
-interleaved requests, are in
+The full figures, including cross-conversation reuse and the
+interleaved-request rows, are in
 [the prompt-cache section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#prompt-cache-reuse-and-retry-cost-measured-with-prompt_eval_cached_count)
 of the notebook.
 
@@ -343,8 +343,8 @@ readily as the model it judges; establish delivery before reading a null
 result, with a probe that does not contradict the prompt beside it; check
 for silent truncation before reading any token-level number; judge with the
 parser you ship and derive published tables from the recorded runs; and
-record what you threw away and why, so a discarded number is not quoted back
-at you from git history.
+record what you threw away and why, so a discarded number is not quoted
+back from git history.
 
 This is the last article in the series. The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),

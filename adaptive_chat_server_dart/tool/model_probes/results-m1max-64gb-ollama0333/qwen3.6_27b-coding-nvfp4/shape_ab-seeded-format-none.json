@@ -1,0 +1,261 @@
+{
+  "probe": "shape_ab",
+  "model": "qwen3.6:27b-coding-nvfp4",
+  "variant": "seeded",
+  "measuredAt": "2026-09-04",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.3",
+  "samples": 3,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 5,
+    "coldStart": 3,
+    "withHistory": 3
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "cold",
+      "ms": 1540
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "cold",
+      "ms": 943
+    },
+    {
+      "case": "date",
+      "sample": 2,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "cold",
+      "ms": 914
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 5452
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 5943
+    },
+    {
+      "case": "choice1",
+      "sample": 2,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 6181
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 675)\n...uction) and define approval gates for production releases.\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 13672
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 675)\n...uction) and define approval gates for production releases.\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 13292
+    },
+    {
+      "case": "carousel",
+      "sample": 2,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 675)\n...uction) and define approval gates for production releases.\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 13368
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 863)\n...ffic systems\\n- **License:** PostgreSQL License (BSD-like)\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 16952
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 863)\n...ffic systems\\n- **License:** PostgreSQL License (BSD-like)\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 17202
+    },
+    {
+      "case": "columnset",
+      "sample": 2,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 863)\n...ffic systems\\n- **License:** PostgreSQL License (BSD-like)\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 17468
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "cold",
+      "ms": 5237
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "cold",
+      "ms": 5113
+    },
+    {
+      "case": "prose",
+      "sample": 2,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "cold",
+      "ms": 5143
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "warm",
+      "ms": 1268
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "warm",
+      "ms": 1306
+    },
+    {
+      "case": "date",
+      "sample": 2,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "warm",
+      "ms": 1326
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 6898
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 6754
+    },
+    {
+      "case": "choice1",
+      "sample": 2,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 6643
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 801)\n...cker image to a registry or deploying to a cloud provider.\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "warm",
+      "ms": 16965
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 801)\n...cker image to a registry or deploying to a cloud provider.\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "warm",
+      "ms": 16533
+    },
+    {
+      "case": "carousel",
+      "sample": 2,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 801)\n...cker image to a registry or deploying to a cloud provider.\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "warm",
+      "ms": 16544
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 938)\n...s:** Full SQL, rich data types (JSON, arrays), extensions.\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "warm",
+      "ms": 20282
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 938)\n...s:** Full SQL, rich data types (JSON, arrays), extensions.\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "warm",
+      "ms": 20792
+    },
+    {
+      "case": "columnset",
+      "sample": 2,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 938)\n...s:** Full SQL, rich data types (JSON, arrays), extensions.\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "warm",
+      "ms": 20297
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "warm",
+      "ms": 3777
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "warm",
+      "ms": 3548
+    },
+    {
+      "case": "prose",
+      "sample": 2,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "warm",
+      "ms": 3523
+    }
+  ]
+}
