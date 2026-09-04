@@ -189,7 +189,11 @@ So the contrast is not artifact against regression. One model reproduced the
 archive after the harness change; the other did not, and its run still shows
 the cascade. Nothing about `granite4.1:3b` under 0.33.2 is established — its
 14 seeded and 32 unaided stalls, and the coverage figures they produce, are
-recorded as cascade-damaged rather than as a model measurement. The open
+recorded as cascade-damaged rather than as a model measurement. What is
+established comes from the other machine: the M5's clean run under Ollama
+0.33.1 records seeded 17/25 both cold and with-history and cascade 3/3 —
+matching the model's clean 0.32.14 figures — so no 0.33.x regression is
+indicated; the damage is to the measurement, not to the model. The open
 question it leaves is whether a runaway generation can be cancelled at all,
 and how.
 

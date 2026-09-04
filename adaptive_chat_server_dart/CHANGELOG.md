@@ -15,6 +15,12 @@
   cold and with-history and cascade 3/3 — matching the clean 0.32.14
   M1 Max figures — so the cascade-damaged M1 Max rows stand as a harness
   artifact, with no 0.33.x regression indicated.
+- Blog: **the drafts now match `ModelBehavior.md` on the two updated
+  findings.** Article 2's decoding-levers row marks `format` as per-model
+  and per-runtime, citing the `nvfp4` flip between 0.32.14 and 0.33.2;
+  article 5's granite4.1:3b conclusion cites the clean M5 0.33.1 run
+  (seeded 17/25 both conditions, cascade 3/3) as the established figure
+  beside the cascade-damaged M1 Max rows.
 - Data: **removed the 0.32.14 results archive**
   (`tool/model_probes/results-m1max-64gb-ollama032/`). Every published table
   now derives from a 0.33.x directory, so the archive's role was historical;

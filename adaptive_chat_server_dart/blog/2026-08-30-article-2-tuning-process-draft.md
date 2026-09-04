@@ -114,11 +114,11 @@ delivery was confirmed on one of four models checked.
 
 ## Decoding settings are cheap, and two of the three ship
 
-| What was changed                                         | Verdict               | Evidence                                                                                    |
-| -------------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------- |
-| `temperature: 0` — greedy decoding instead of sampling   | Helped, promoted      | Cleared card failure modes that defeated models outright at their own default temperature.  |
-| `think: false` — suppress the chain-of-thought preamble  | Helped, promoted      | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off. |
-| `format: json` / `format: schema` — constrained decoding | Per-model, unreliable | Honored by some models, silently ignored by others, and destructive on `gpt-oss:20b`.       |
+| What was changed                                         | Verdict                               | Evidence                                                                                                                                                                                                                                    |
+| -------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `temperature: 0` — greedy decoding instead of sampling   | Helped, promoted                      | Cleared card failure modes that defeated models outright at their own default temperature.                                                                                                                                                  |
+| `think: false` — suppress the chain-of-thought preamble  | Helped, promoted                      | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off.                                                                                                                                                 |
+| `format: json` / `format: schema` — constrained decoding | Per-model and per-runtime, unreliable | Honored by some models, silently ignored by others, and destructive on `gpt-oss:20b`. Both `nvfp4` builds flipped from ignoring to honoring between Ollama 0.32.14 and 0.33.2, so the verdict is worth re-checking after a runtime upgrade. |
 
 Among model and setting choices, sending `temperature: 0` and `think: false` is
 the largest jump measured — larger than changing model. The prompt-file swap
