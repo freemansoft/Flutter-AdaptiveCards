@@ -19,6 +19,16 @@
 "seeded"`, the string `sync_shape_table.dart` selects a canonical table
   row by (see `task-2-report.md` in the plan directory for its full
   per-case data).
+- Documented: **`ModelBehavior.md`'s format-canary section and the
+  `qwen3.6:27b-coding-nvfp4` per-model notes now record the schema A/B
+  result above**, replacing the "has not been measured" clauses both left
+  open when the `format` canary flipped to `honored`. Also records a second
+  finding from the same runs: schema-constrained `carousel` timeouts twice
+  left the Ollama runner wedged in `ollama ps`'s `Stopping...` state for up
+  to an hour, surviving an acknowledged `keep_alive: 0` unload and clearing
+  only when the runner process was killed — added to the existing
+  runaway-cancellation question in [Open questions and future
+  work](ModelBehavior.md#open-questions-and-future-work).
 - Measured: **re-ran the `format` canary for both `nvfp4` builds under
   Ollama 0.33.3.** `qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both
   still read `honored`, matching the 0.33.2 verdicts recorded 2026-09-01.
