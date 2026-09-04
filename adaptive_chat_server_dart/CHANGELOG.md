@@ -96,11 +96,7 @@
   in `shape_ab-seeded-format-schema.json`, and the two runs that disproved
   its `carousel`-warm pass alongside it as `-confirm.json` and
   `-recheck.json`, so the contradiction is visible from the directory
-  listing rather than only from a report. The unconstrained control arm is
-  not archived — a 5-case unconstrained run would record `variant:
-"seeded"`, the string `sync_shape_table.dart` selects a canonical table
-  row by (see `task-2-report.md` in the plan directory for its full
-  per-case data).
+  listing rather than only from a report.
 - Documented: **`ModelBehavior.md`'s format-canary section and the
   `qwen3.6:27b-coding-nvfp4` per-model notes now record the schema A/B
   result above**, replacing the "has not been measured" clauses both left
