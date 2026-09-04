@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Blog: **article 5 trimmed to the series band and the target length
+  recorded.** A three-pass trim cut restatement and hedging recap — no
+  figure or finding dropped — taking the draft from 4,010 to ~3,150 raw
+  words (2,979 words of prose, under the cap). `blog/README.md` now states
+  the convention the deleted outlines carried: about 2,000 prose words per
+  article, hard cap 3,000, measured excluding fenced blocks, table rows,
+  and URLs.
 - Blog: **article 5 gains the truncation lesson and the prompt-cache
   figures.** New section "A silently truncated prompt read as a broken
   cache" with the corrected measurements and the retry-cost tie-in to the
