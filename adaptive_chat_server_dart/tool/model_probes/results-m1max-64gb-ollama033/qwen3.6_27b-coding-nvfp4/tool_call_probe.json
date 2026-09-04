@@ -1,0 +1,68 @@
+{
+  "probe": "tool_call_probe",
+  "model": "qwen3.6:27b-coding-nvfp4",
+  "measuredAt": "2026-09-01",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.2",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_tool_prompt.txt": "9cc0dfd035bd"
+  },
+  "summary": {
+    "verdict": "supported",
+    "calledTrivialTool": true,
+    "calledCardTool": true,
+    "cardArgumentsRender": true,
+    "calledOnNegativeControl": false,
+    "calls": 6,
+    "passed": 6,
+    "cards": 0,
+    "prose": 0
+  },
+  "notes": "Unseeded by design: the seed card is a prose-channel artifact. cards/prose read 0: this probe labels by tool channel, not card shape.",
+  "calls": [
+    {
+      "case": "trivial-tool",
+      "sample": 0,
+      "pass": true,
+      "label": "called",
+      "setting": "tools=trivial"
+    },
+    {
+      "case": "trivial-tool",
+      "sample": 1,
+      "pass": true,
+      "label": "called",
+      "setting": "tools=trivial"
+    },
+    {
+      "case": "card-request",
+      "sample": 0,
+      "pass": true,
+      "label": "tool body renders",
+      "setting": "tools=card"
+    },
+    {
+      "case": "card-request",
+      "sample": 1,
+      "pass": true,
+      "label": "tool body renders",
+      "setting": "tools=card"
+    },
+    {
+      "case": "prose-control",
+      "sample": 0,
+      "pass": true,
+      "label": "answered in prose",
+      "setting": "tools=card"
+    },
+    {
+      "case": "prose-control",
+      "sample": 1,
+      "pass": true,
+      "label": "answered in prose",
+      "setting": "tools=card"
+    }
+  ]
+}

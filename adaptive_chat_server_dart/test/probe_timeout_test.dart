@@ -11,11 +11,19 @@ void main() {
     late HttpClient client;
 
     setUp(() async {
-      // Accepts the request and then never answers — the shape of a model
+      // Accepts a chat request and then never answers — the shape of a model
       // that has run away generating. `granite4.1:3b` was observed doing
       // exactly this for 16 minutes on one `table` case.
+      //
+      // `/api/generate` answers promptly, because the real server does (~8 ms
+      // per unload in the recorded logs): a timed-out call issues an unload,
+      // and a fake that stalled that too would model an Ollama that cannot
+      // answer one — and would charge every timeout test the eviction bound.
       server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0)
-        ..listen((_) {});
+        ..listen((req) async {
+          if (req.uri.path != '/api/generate') return; // stall the chat call
+          await req.response.close();
+        });
       client = HttpClient();
     });
 
@@ -60,6 +68,10 @@ void main() {
               0,
             )
             ..listen((req) async {
+              if (req.uri.path == '/api/generate') {
+                await req.response.close(); // the eviction; not a chat attempt
+                return;
+              }
               seen++;
               if (seen <= 3) return; // stall: never respond
               req.response
@@ -91,6 +103,43 @@ void main() {
         after.label,
         isNot(startsWith('timeout')),
         reason: 'the pool was never refilled — abort() did not run',
+      );
+    });
+
+    test('issues an unload after a timeout', () async {
+      // The bound alone leaves the generation running. Ollama serves one
+      // request at a time, so an abandoned call that keeps generating makes
+      // every later call queue and time out without reaching the model --
+      // recorded as stalls the model never earned. `llama3.2:latest` scored
+      // 31 where two were real. This asserts only that the unload request
+      // follows the timed-out chat call; whether the unload cancels the
+      // generation is not shown (see `evictModel`), so nothing here claims
+      // the next call is unqueued.
+      final paths = <String>[];
+      final watcher = await HttpServer.bind(InternetAddress.loopbackIPv4, 0)
+        ..listen((req) async {
+          paths.add(req.uri.path);
+          if (req.uri.path != '/api/generate') return; // stall the chat call
+          await req.response.close();
+        });
+      addTearDown(() => watcher.close(force: true));
+      final probeClient = HttpClient();
+      addTearDown(() => probeClient.close(force: true));
+
+      final outcome = await probeOnce(
+        client: probeClient,
+        url: 'http://127.0.0.1:${watcher.port}',
+        model: 'stalls:1b',
+        systemPrompt: 'sys',
+        userPrompt: 'hi',
+        timeout: const Duration(milliseconds: 300),
+      );
+
+      expect(outcome.label, startsWith('timeout'));
+      expect(
+        paths,
+        containsAllInOrder(<String>['/api/chat', '/api/generate']),
+        reason: 'the timed-out call must be followed by an unload',
       );
     });
 

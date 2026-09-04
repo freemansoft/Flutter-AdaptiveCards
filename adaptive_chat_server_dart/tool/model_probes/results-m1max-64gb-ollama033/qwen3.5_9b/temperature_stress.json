@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "qwen3.5:9b",
+  "measuredAt": "2026-09-01",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.2",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 7,
+    "cards": 7,
+    "prose": 0
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 12229
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 40596
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[6]",
+      "setting": "greedy(t=0)",
+      "ms": 10117
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 8378
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 13464
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 250)\n...ect with a 'name' key.\",\"wrap\":true},{\"type\":\"CodeBlock\",\"codeSnippet\":\"...\n                                       ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 16391
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 3017)\n...,{\"type\":\"TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"Christmas\"}]}]}]}\n                                                                              ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 36497
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[6]",
+      "setting": "recommended(t=0.6)",
+      "ms": 13147
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 7911
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 1332)\n...tive and growing\",\"wrap\":true}]}]}],[{\"type\":\"TextBlock\",\"text\":\"Which o...\n                                       ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 18915
+    }
+  ]
+}

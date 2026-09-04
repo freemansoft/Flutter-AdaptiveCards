@@ -16,13 +16,13 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                   | File                                         | Status                  |
-| --- | ------------------------------------------------------------------------- | -------------------------------------------- | ----------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                     | `2026-08-29-article-1-origin-story-*`        | Drafted, image needed   |
-| 2   | Fourteen levers for reliable card JSON from a local model                 | `2026-08-30-article-2-tuning-process-*`      | Drafted, image needed   |
-| 3   | The same benchmark on a 64 GB M1 Max and a 16 GB M5                       | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, chart needed   |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models | `2026-08-30-article-4-tool-channel-*`        | Drafted, diagram needed |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model | `2026-08-30-article-5-measurement-hygiene-*` | Drafted                 |
+| #   | Article                                                                   | File                                         | Status                                    |
+| --- | ------------------------------------------------------------------------- | -------------------------------------------- | ----------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                     | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-02, image needed |
+| 2   | Fourteen levers for reliable card JSON from a local model                 | `2026-08-30-article-2-tuning-process-*`      | Drafted, image needed                     |
+| 3   | The same benchmark on a 64 GB M1 Max and a 16 GB M5                       | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-02, chart needed |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models | `2026-08-30-article-4-tool-channel-*`        | Drafted, diagram needed                   |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-02               |
 
 All five articles are drafted. Article 5 carries a mermaid diagram of the sweep
 loop rather than an image placeholder, so it needs no visual work.
@@ -67,9 +67,11 @@ wrong-shape / infra) that explains the losses, or the architecture and
 phase-1-canary findings built on top of it.
 
 **Article 3 — the two hosts.** The 16 GB fit question outright, including the
-detail article 1 defers to it. The M5 ÷ M1 Max ratio band and why it does not
-track weight. The `llama3.2:latest` artifact row. The runtime-version confound
-that makes a per-row ratio a comparison of two configurations rather than two
+detail article 1 defers to it. The M5 ÷ M1 Max ratio band, read at matched
+Ollama versions, and why it does not track weight. The `llama3.2:latest`
+artifact row. The 1.54x sweep-position bias that bounds how precisely any
+single row's ratio can be read — the confound that replaces the earlier,
+retracted claim that a per-row ratio compared two runtimes rather than two
 machines. Thermal throttling as plausible and unproven.
 
 _Defers:_ bad assertions and undelivered `system` messages to article 5.
@@ -87,27 +89,45 @@ _Defers:_ the canary's four-way split to article 1, recapping it in one sentence
 as setup. Its figures are the only unseeded shape figures in the series, which
 it states rather than assumes.
 
-**Article 5 — measurement hygiene.** The full `granite4.1:3b` co-residency
-account that articles 1 and 3 only name. Why a stall is the most misread
-measurement in the set, and what the per-call timeout changes. Suspect the
-harness before the model — a fence-stripping bug and a bad assertion, both
-blamed on models first. A null result means nothing until delivery is
-established, and a delivery probe must not contradict the system prompt. Judge
-with the parser you ship; derive published tables rather than transcribe them.
-When to discard numbers and what survives discarding them.
+**Article 5 — measurement hygiene.** The `granite4.1:3b` stall-signature
+account in full — article 1 names it in one sentence and defers here; article 3
+carries the 2026-09-01 reproduction and the two-mechanism summary in one
+paragraph and defers the account here — co-residency and a queue cascade both
+produce the identical 52-stall signature, and which one caused the original
+incident is not recoverable. **The queue-cascade material outright**:
+how one abandoned generation is recorded as many stalls, how that was proven
+from the server log rather than assumed, and how the same harness change — an
+unload on timeout, with runs labelled before and after runner eviction —
+reproduced the archive for one model (`llama3.2:latest`) and not the other
+(`granite4.1:3b`, whose run still shows the cascade), with the unload itself
+not shown to cancel a generation and the difference unexplained. Why a stall
+is the most misread measurement in the set, and what the per-call timeout
+changes, including why raising the ceiling was never the answer. Suspect the
+harness before the model —
+a fence-stripping bug and a bad assertion, both blamed on models first. A null
+result means nothing until delivery is established, and a delivery probe must
+not contradict the system prompt. Judge with the parser you ship; derive
+published tables rather than transcribe them. When to discard numbers and what
+survives discarding them.
 
 _Defers:_ the `llama3.2:latest` M5 artifact row and the throttling analysis to
-article 3, referencing them in one clause as a second instance of the
-re-run-on-an-idle-machine rule.
+article 3; it recaps article 3's sweep-position control in one paragraph, as a
+second instance of the same discipline that resolves the stall counts —
+isolate the confound, measure it, do not read a mechanism off a net number.
 
 ## Conventions
 
 ### Figures
 
-- **Every figure traces to `ModelBehavior.md`.** The drafts were written against
-  commit `ba02fd98`. Re-check against the file at head before publishing, and
-  when drafting a new article, verify each figure in the notebook directly —
-  do not trust an intermediate document that quotes it.
+- **Every figure traces to `ModelBehavior.md`.** All five articles link
+  commit `757bf7c`, the commit holding the final `ModelBehavior.md` this
+  collection cites. It folds in the `gpt-oss:20b` seed-direction correction
+  (25/25 seeded, 22/25 unaided, +3) and the Ollama 0.33.2 sweep, and, as of
+  2026-09-02, the retraction of the `granite4.1:3b` regression and
+  eviction-as-fix claims. Re-check against the file at head
+  before publishing, and when drafting a new article, verify each figure in
+  the notebook directly — do not trust an intermediate document that quotes
+  it.
 - **Transcribe verbatim.** Do not round, paraphrase, or recompute a score.
 - **Every score carries its test set and its condition.** An `n/m` is
   uninterpretable without both. Everyday and stress figures are cold-start;
@@ -157,11 +177,11 @@ article leaves the repository. This applies to inline artifact names too:
 bare filenames.
 
 **Two link targets, and the distinction is deliberate.** References to
-`ModelBehavior.md` are pinned to the commit the figures were read at
-(`/blob/ba02fd98/…`), including the one in the closing paragraph, so a quoted
-figure still resolves after the notebook changes. Links to code and assets
-track `/blob/main/` — a reader following them wants the current file, not an
-archived one.
+`ModelBehavior.md` are pinned to the commit the figures were read at,
+including the one in the closing paragraph, so a quoted figure still resolves
+after the notebook changes — `/blob/757bf7c/…` for all five articles. Links
+to code and assets track `/blob/main/` — a reader following them wants the
+current file, not an archived one.
 
 ### Presentation
 
@@ -184,7 +204,7 @@ order, a word budget per section, the figures each section quotes, and explicit
 once the drafts existed and were verified — maintaining a second description of
 an article that already exists is drift waiting to happen.
 
-The structure is worth reusing for articles 4 and 5:
+The structure is worth reusing for any further article:
 
 - A section list with a word budget each, summing to the target length.
 - The figures each section quotes, with the arithmetic behind any denominator

@@ -25,7 +25,7 @@ one prose turn ahead of an options question was enough to turn a working
 
 Fourteen levers were pulled against those failures and each one recorded with
 its verdict and its evidence, in
-[the tuning ledger](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/ba02fd98/adaptive_chat_server_dart/ModelBehavior.md#the-tuning-ledger--everything-tried-and-whether-it-helped)
+[the tuning ledger](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#the-tuning-ledger--everything-tried-and-whether-it-helped)
 of that notebook. Summarized by kind:
 
 | Kind             | Levers | Outcome                                                                            |
@@ -71,14 +71,14 @@ trimmed history from
 [`assets/seed_card.json`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/assets/seed_card.json),
 so a card is the established format before any prose accumulates.
 
-| Model                | Seeded | Unaided   | Seed gain |
-| -------------------- | ------ | --------- | --------- |
-| `nemotron-3-nano:4b` | 17/25  | 7/25      | **+10**   |
-| `qwen3-coder:30b`    | 23/25  | 14/25     | +9        |
-| `granite4.1:8b`      | 21/25  | 15/25     | +6        |
-| `qwen2.5-coder:7b`   | 18/25  | 18/25     | 0         |
-| `qwen3.8:27b-nvfp4`  | 24/25  | 24/25     | 0         |
-| `gpt-oss:20b`        | 23/25  | **25/25** | −2        |
+| Model                | Seeded    | Unaided | Seed gain |
+| -------------------- | --------- | ------- | --------- |
+| `nemotron-3-nano:4b` | 17/25     | 7/25    | **+10**   |
+| `qwen3-coder:30b`    | 23/25     | 14/25   | +9        |
+| `granite4.1:8b`      | 21/25     | 15/25   | +6        |
+| `qwen2.5-coder:7b`   | 18/25     | 18/25   | 0         |
+| `qwen3.8:27b-nvfp4`  | 24/25     | 24/25   | 0         |
+| `gpt-oss:20b`        | **25/25** | 22/25   | +3        |
 
 _25 shape cases from
 [`tool/model_probes/shape_ab.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/shape_ab.dart),
@@ -87,12 +87,15 @@ without the seed._
 
 Read the last three rows against the noise floor: at `--samples 2` a one-shape
 difference is noise, and a re-measurement moved ten of twelve steady models by
-±1 with nothing about them changing. `gpt-oss:20b` is not the only model the
-seed costs two shapes — `llama3-chatqa:8b` also loses two — and its unaided
-**25/25 is the only 25/25 in the notebook under any condition**, produced after
-two prose turns, the hardest condition measured. A lever worth +10 to one model
-and −2 to another is one a configuration should have to ask for, so the seed
-ships opt-in.
+±1 with nothing about them changing. The −2 in the range belongs to
+`llama3-chatqa:8b`, a model that scores 4/25 or worse under every condition.
+`gpt-oss:20b` is the sharper example of a model-dependent lever: under Ollama
+0.32.14 the seed cost it two shapes (23/25 seeded against 25/25 unaided), and
+under 0.33.2, on the same machine and the same weights, it gains three (25/25
+seeded against 22/25 unaided); no mechanism for the reversal is established.
+Its seeded **25/25 is the only 25/25 in the notebook under any condition**. A
+lever worth +10 to one model and −2 to another is one a configuration should
+have to ask for, so the seed ships opt-in.
 
 Four costs come with it. It is few-shot priming paid on every request rather
 than one-time setup, and it counts toward context fill each time. `table` newly
@@ -227,8 +230,8 @@ the detector does.
 substitution, under both the cold-start and with-history conditions, across
 unrelated model families. A failure that uniform is a prompt problem, not a
 model one, and nothing tried so far fixes it; even
-`qwen3.8:27b-nvfp4`, the highest as-shipped score in the notebook at 24/25 with
-history, fails it on every sample under every condition.
+`qwen3.8:27b-nvfp4`, at 24/25 with history the second-highest as-shipped score
+in the notebook, fails it on every sample under every condition.
 
 For scale, the next most-missed cases are `carousel` (8 of 15 models), `text`
 (7), then `time` and `table` (6). Failure concentrates in nested shapes, and it
@@ -260,10 +263,10 @@ Put the durable fix in the code that parses the reply, because that is the only
 layer that held at both temperatures measured. And record the negative results
 so they are not retried — the ledger exists so the failures stay failed.
 
-The tool channel's full failure decomposition is the next article in this
+The tool channel's full failure decomposition is the fourth article in this
 series.
 
 The repo is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above came from is
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/ba02fd98/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/ba02fd98/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).

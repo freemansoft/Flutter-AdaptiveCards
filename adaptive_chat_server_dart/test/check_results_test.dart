@@ -416,6 +416,54 @@ void main() {
       );
     });
 
+    test('a second directory for the same host does not double the table', () {
+      // The M1 Max has been measured under two Ollama versions, so two
+      // directories legitimately record the same `machine`. Selecting the
+      // shape-table runs by host would key two runs by one model and report a
+      // mismatch that is not one.
+      final archive = shapeRun(
+        model: 'm:1',
+        machine: 'Host A',
+        variant: 'seeded',
+        cold: 2,
+        warm: 2,
+      );
+      final rerun = shapeRun(
+        model: 'm:1',
+        machine: 'Host A',
+        variant: 'seeded',
+        cold: 1,
+        warm: 1,
+      );
+
+      final scoped = check(
+        results: [archive, rerun],
+        tableResults: [archive],
+        launched: const [],
+        currentAssets: const {'card_system_prompt.txt': 'abc123def456'},
+        markdown: table,
+        tableHost: 'Host A',
+      );
+      expect(
+        scoped.where((f) => f.fatal),
+        isEmpty,
+        reason: 'the table agrees with the run the table is derived from',
+      );
+
+      final unscoped = check(
+        results: [archive, rerun],
+        launched: const [],
+        currentAssets: const {'card_system_prompt.txt': 'abc123def456'},
+        markdown: table,
+        tableHost: 'Host A',
+      );
+      expect(
+        unscoped.where((f) => f.fatal),
+        isNotEmpty,
+        reason: 'without scoping, the second run is compared to the same row',
+      );
+    });
+
     test('one results directory must hold one host', () {
       // The per-host layout is the invariant that keeps the table check
       // meaningful. A sweep aimed at the wrong directory breaks it silently.
@@ -449,11 +497,16 @@ void main() {
     });
 
     test('the checker passes against the real tree', () {
+      // `tableResults` mirrors main(): the shape table is derived from one
+      // directory, not one host. Without it this falls back to the host
+      // filter, and the two Apple M1 Max directories -- 0.32.14 and 0.33.x --
+      // key two runs by the same model, reporting a mismatch that is not one.
       final findings = check(
         results: [
           for (final d in resultsDirs('tool/model_probes'))
             ...readAllResults(d),
         ],
+        tableResults: readAllResults('tool/model_probes/$shapeTableDir'),
         launched: launchedModels('../.vscode/launch.json'),
         currentAssets: currentAssetDigests('assets'),
         markdown: File('ModelBehavior.md').readAsStringSync(),

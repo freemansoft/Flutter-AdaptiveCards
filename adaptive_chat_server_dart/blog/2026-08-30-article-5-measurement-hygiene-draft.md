@@ -4,9 +4,9 @@
 
 `granite4.1:3b` came back from a sweep on 2026-08-20 with **52 stalled calls**,
 a seeded score of **12/25** on the shape set with conversation history, and
-`n/a` on the cascade probe. Read as a model result, that is a 2.0 GB model failing badly.
-It was not a model result. Nothing about the model had changed, and nothing
-about it needed fixing.
+`n/a` on the drift (cascade) probe. Read as a model result, that is a 2.0 GB
+model failing badly. It was not a model result. Nothing about the model had
+changed, and nothing about it needed fixing — on that 2026-08-20 run.
 
 The frame, briefly. In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
@@ -14,10 +14,13 @@ a Dart chat server hands a question to a local Ollama model and asks for the
 answer as Adaptive Card JSON, which a Flutter app renders. A directory of probes
 measures which models manage it, and the results live in a lab notebook in that
 repository. This article is about the harness rather than the models: every
-lesson below was learned from a measurement that went wrong. The co-residency
-incident above is the sharpest of them; the rest are smaller and different in
-kind — a bad assertion, a probe that can't tell silence from refusal, a table
-worth deriving twice.
+lesson below was learned from a measurement that went wrong. The stall-signature
+incident above is the sharpest of them; the rest are different in kind — a
+queue cascade that records one runaway generation as dozens of stalls, a
+harness change that reproduced the archive for one model and not the other, a
+timeout ceiling that was never the problem, a sweep position that moved a
+number more than the effect it was meant to explain, a bad assertion, a probe
+that can't tell silence from refusal, a table worth deriving twice.
 
 ## One model resident at a time is a correctness requirement
 
@@ -51,20 +54,35 @@ sequenceDiagram
 Probes send `keep_alive: 30m`, so a model that has finished its probes stays
 resident for half an hour unless something evicts it. The first version of the
 2026-08-20 sweep omitted the `ollama stop`. Two models sat in memory together
-and Ollama thrashed between them — which is where the 52 stalls, the 12/25, and
-the `n/a` came from. Re-run with the unload in place, on an idle machine,
-`granite4.1:3b` scores **17/25 and 3/3**, matching its earlier published
-figures, and the whole sweep takes **7 minutes instead of 124**.
+and Ollama thrashed between them — the working explanation at the time for the
+52 stalls, the 12/25, and the `n/a`. Re-run with the unload in place, on an
+idle machine, `granite4.1:3b` scores **17/25 and 3/3**, matching its earlier
+published figures, and the whole sweep takes **7 minutes instead of 124**.
 
-This is not a hedged inference. The bad numbers came from one run with the
-unload missing, the good numbers from the same probes against the same model
-with it restored, and the second set matches figures recorded before either run.
+That the unload step was the cause is an inference the re-run does not
+establish — the bad numbers came from one run with the unload missing, the
+good numbers from the same probes against the same model with it restored,
+and the second set matches figures recorded before either run. Which failure the missing unload actually let
+through is less certain than it looked at the time. The `ollama stop` between
+models is itself a runner eviction — whether it cancels a generation already
+running is not shown (below) — so the unload step does not by itself
+distinguish a co-resident from a backlog. A later sweep, run 2026-09-01 with
+co-residency ruled out by the server log, recorded the exact same **52
+stalls** on this model, in a pattern consistent with a queue cascade: one
+abandoned generation keeps running past its timeout, and every later call
+queues behind it and is scored a stall it never reached the model to earn (the
+mechanism is [below](#one-runaway-generation-is-recorded-as-many-stalls)).
+A cascade produces the identical signature a co-resident competitor would. The
+August run's logs did not survive to check which one applied, so its cause is
+not recoverable, and the exact repeat of the count — 52 both times, from two
+sweeps eleven days apart — is itself unexplained. Both accounts stay on the
+record; neither is the settled winner.
 
 So the rule the notebook states is a correctness requirement rather than a
 performance tip: **one model resident at a time** — load a model, run all of its
 probes, record, unload, wait, switch. A number collected any other way is not
 comparable to anything. The full account is in
-[the sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/ba02fd98/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
+[the sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
 of the notebook, and the procedure in
 [`tool/model_probes/README.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/README.md).
 
@@ -85,8 +103,8 @@ existed, a runaway generation could hang an entire multi-model sweep:
 `granite4.1:3b` was observed generating for **16 minutes** on one `table` case
 without returning.
 
-**The bound changes what one figure means, and only for `granite4.1:3b`
-unaided.** Seeded — with the synthetic card-shaped exchange the server prepends
+**Under Ollama 0.32.14, the bound changes what one figure means, and only for
+`granite4.1:3b` unaided.** Seeded — with the synthetic card-shaped exchange the server prepends
 to the history — it scores 17/25 either way. Unaided it falls from **13/25**
 unbounded to **9/25** under the 120 s ceiling. The reason is visible in the
 stall counts: seeded it stalls twice in 100 calls, unaided eleven times. Without
@@ -96,9 +114,113 @@ the model under that condition, not a harness artifact — the stalls reproduce 
 an idle machine with nothing else resident.
 
 The scope is worth stating plainly, because a caveat that sounds general is
-easily read as broader than it is. Nine of fifteen models recorded zero stalls,
-and no other model recorded more than two. The ceiling caveat applies to one row
-of one column.
+easily read as broader than it is. On that runtime, nine of fifteen models
+recorded zero stalls, and no other model recorded more than two; the ceiling
+caveat applies to one row of one column. The stall counts under the next
+runtime are a different story, and the rest of this article is about them.
+
+## One runaway generation is recorded as many stalls
+
+A later Ollama upgrade, from 0.32.14 to 0.33.2, raised two models' recorded
+stall counts — one from 2 to 31, the other from 13 to 52 — on the same
+machine, the same weights, the same probes. Read as a runtime regression, that
+looked like a second, larger version of the ceiling story above. For one of
+the two it was not; for the other the question is still open, and the sections
+below say why. `OLLAMA_NUM_PARALLEL=1` gives this host a single generation
+slot. When a call times out at the probe's ceiling, the probe abandons the
+connection, but the generation was observed to keep running on the server;
+why the disconnect did not cancel it is not established, since an isolated
+reproduction of the same call cancels correctly. Every later call queues
+behind it and is scored as its own stall. A recorded stall count
+tracks how long the runaway ran divided by the timeout, not how many calls
+were actually slow: one hour-long runaway under a 120 s ceiling is enough on
+its own to cost roughly thirty recorded stalls once the backlog starts
+draining.
+
+## Twenty-nine of thirty-one recorded stalls were queue, not model
+
+A queue cascade leaves fingerprints a slow model does not. Its
+stalls arrive as one contiguous block within a probe rather than scattered
+across it, and the server log shows a queue draining rather than dozens of
+separate hangs: 27 requests completed within 37 seconds, their start times
+exactly 120 s apart, and their durations descending in two-minute steps — the
+shape of calls that had been waiting in line, each released the moment the one
+ahead of it finally timed out or returned. A long-timeout re-run confirmed it
+directly for `llama3.2:latest`: raising the ceiling to 7200 s on the affected
+probe resolved **31** recorded stalls into **2** slow calls, at 64.4 and 62.1
+minutes, both on the same case and both ending in invalid JSON. Twenty-nine of
+the thirty-one were queue, not model.
+
+## The same harness change reproduced the archive for one model and not the other
+
+The harness change is to send an unload (`keep_alive: 0`) the moment a call
+times out, rather than only abandoning the client connection. Runs are
+labelled **before runner eviction** and **after runner eviction**; Ollama
+0.33.2, the weights, the prompt and seed digests, and the machine are held
+constant across the two.
+
+`llama3.2:latest` reproduces the archive exactly. Before runner eviction: 12
+stalls, 26.2 minutes, seeded coverage 15/12. After runner eviction: 2 stalls,
+6.5 minutes, seeded coverage **15/15** — and its unaided probe drops from 19
+stalls to **0**. Its 31 originally recorded stalls were 2 real ones and 29
+queue.
+
+`granite4.1:3b` does not move. Before runner eviction: 14 stalls, 30.1
+minutes, seeded coverage 17/12. After runner eviction: 14 stalls, 30.0
+minutes, seeded coverage 17/12. An unchanged count was first read as proof
+that the stalls were the model's own. It is not: the after-eviction unaided
+run stalls on calls 0-20 — the probe's opening cases, all cold — and again on
+89-99, and the first call to return after the block took 86 seconds, a queued
+call draining rather than a reload. That is the contiguous-block signature
+above, still present after the harness change. "Unchanged by eviction" is
+equally explained by the eviction not taking effect.
+
+The server log supports that reading. The unload is not shown to cancel a
+running generation at all: in a direct test, `keep_alive: 0` sent 3 s into an
+18 s generation let it run to 20.9 s, and `ollama stop` to 16.3 s; during the
+granite run the server answered 53 unloads in about 8 ms each while one
+generation ran for 70 minutes with a queue draining behind it. During the
+`llama3.2:latest` run its two stalled calls terminated server-side at exactly
+2m0s, each in the same second as an unload, and nothing ran away afterward —
+whether the unload caused that is not established, and why it coincided for
+one model and not the other is unexplained.
+
+So the contrast is not artifact against regression. One model reproduced the
+archive after the harness change; the other did not, and its run still shows
+the cascade. Nothing about `granite4.1:3b` under 0.33.2 is established — its
+14 seeded and 32 unaided stalls, and the coverage figures they produce, are
+recorded as cascade-damaged rather than as a model measurement. The open
+question it leaves is whether a runaway generation can be cancelled at all,
+and how.
+
+## The timeout ceiling was never the problem
+
+The 120 s ceiling looked like the thing to fix once stall counts spiked. It
+was not. A generation that runs for over an hour has already failed for every
+purpose a chat server serves — the usability bar here is a reply under a
+minute — so raising the ceiling to capture a runaway only converts a fast
+failure into a slow one and yields a figure with no use. 120 s is already
+twice that unusable threshold; lowering it, not raising it, is the change
+worth weighing, since it would record the same failures for less wall clock
+spent waiting for them. Raising it to accommodate a model is the change this
+notebook argues against. What needed attention was not the ceiling but what
+happened after it — the abandoned generation kept running — and the harness
+change made for that, the unload on timeout, is not yet shown to stop it.
+
+## Sweep position moved a number more than the effect it was meant to explain
+
+A separate investigation, into an apparent cross-host anomaly — the subject of
+the two-host article in this series — ran the same kind of control used above:
+hot against cold, one model, one host, one runtime. It belongs here for what
+it says about single-row comparisons generally. Measured cold, at position 0
+after 29 minutes idle, `qwen3.5:9b` medians **4924 ms**; measured hot, seven
+seconds after an eight-hour sweep, it medians **7563 ms** — a **1.54x** spread
+from sweep position alone. That control was built to explain a smaller
+cross-machine effect and measured a larger one instead: the same discipline
+that resolved the `llama3.2:latest` stall count above — isolate one variable,
+measure it directly, do not read a mechanism off a net number — turned out to
+apply just as well to a plain latency ratio between two machines. A single row
+in a serial sweep can be reporting position, not the thing being compared.
 
 ## Two failures blamed on the model belonged to the harness
 
@@ -211,18 +333,30 @@ as the two are recorded separately enough to tell apart later.
 
 ## What transfers
 
-Seven rules, each of them the residue of a wrong measurement rather than a
+Ten rules, each of them the residue of a wrong measurement rather than a
 principle arrived at in advance. Keep one model resident at a time. Re-run a
-suspicious row on an idle machine before publishing it. Do not trust an
-assertion just because it is the one that shipped — a criterion can be the
+suspicious row on an idle machine before publishing it. When a harness change
+is meant to resolve a suspected cause, run it on every candidate row, not only
+the one you expect it to clear, and then check in the server log that the
+change took effect — an unchanged count after it can mean the cause is real or
+that the change did nothing, and the count alone does not say which.
+Separate a queued call from a slow one before trusting a stall count: look for
+a contiguous block and a queue-drain signature in the log before reading a
+figure as N independently slow calls. Do not raise a timeout ceiling to
+capture a failure that has already missed the usability bar it exists to
+enforce. Control sweep position before reading a single row's ratio as the
+effect under test — a same-host, same-runtime hot/cold check found a bias
+larger than the cross-machine difference it was meant to explain. Do not trust
+an assertion just because it is the one that shipped — a criterion can be the
 thing under test, not only the model. Establish that a message reaches the
 model before reading a null result about it, and do not let a delivery probe
 contradict the instructions it is delivered alongside. Judge with the parser
-you ship. Derive published tables from the recorded runs instead of
-transcribing them. And record what you threw away and why, so a discarded number
-is not quoted back at you later by someone who found it in git history.
+you ship, and derive published tables from the recorded runs instead of
+transcribing them. And record what you threw away and why, so a discarded
+number is not quoted back at you later by someone who found it in git
+history.
 
 This is the last article in the series. The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above is read from is at
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/ba02fd98/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/ba02fd98/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).

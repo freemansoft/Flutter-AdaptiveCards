@@ -2,6 +2,87 @@
 
 ## [Unreleased]
 
+- Docs: **the M1 Max Ollama 0.33.2 sweep is a null result on latency.** All
+  fifteen models were re-measured on the same machine with identical weights
+  under 0.33.2 against the 0.32.14 archive; 13 of 15 per-model median ratios
+  land in 0.86-1.05x. No latency difference between the two Ollama versions
+  was demonstrated.
+- Docs: **the sweep's premise did not survive its own control.** It was run
+  to test whether `qwen3.5:9b` running faster on the M5 than the M1 Max (an
+  earlier 0.8x reading) was a runtime effect. A same-host, same-runtime
+  control on `qwen3.5:9b` — hot against cold, position 0 against warm — found
+  a **1.54x position bias**, larger than the 0.8x gap it was offered to
+  explain. Read at matched runtime instead, every model is slower on the M5,
+  1.15x to 2.32x; see the same-runtime host comparison in
+  [`ModelBehavior.md`](ModelBehavior.md).
+- Changed: **`probe_support.dart` now sends an unload (`keep_alive: 0`) after
+  a probe call times out**, and results are labelled before and after runner
+  eviction. What was measured: `llama3.2:latest` re-run after runner eviction
+  reproduces the 0.32.14 archive exactly (seeded 12 stalls/15-12 -> 2
+  stalls/15-15; unaided 19 stalls/9-12 -> 0 stalls/15-12), so its 31 recorded
+  stalls were 2 real and 29 queued. `granite4.1:3b` re-run the same way does
+  not move (14 seeded stalls before and after), and its unaided stalls still
+  sit in contiguous blocks at calls 0-20 and 89-99. The unload is not shown
+  to cancel a running generation: sent 3 s into an 18 s generation in a
+  direct test it completed at 20.9 s (`ollama stop`: 16.3 s), and 53 unloads
+  answered in ~8 ms each did not stop a 70-minute generation during the
+  granite run. Why `request.abort()` alone was insufficient is NOT
+  established — an isolated reproduction of the runaway call cancels
+  correctly, and the sweep's did not. `evictModel` closes its client on every
+  path and writes one stderr line naming the model when the unload fails.
+- Changed: **the shape-coverage table in `ModelBehavior.md` now derives from
+  the Ollama 0.33.2 runs instead of the 0.32.14 archive.** Eleven of fifteen
+  models have identical coverage across the two runtimes, which is what makes
+  the move safe. Four moved: `gpt-oss:20b`, `granite4.1:3b`,
+  `qwen3.6:27b-coding-nvfp4`, and `qwen3.8:27b-nvfp4` — see their per-model
+  notes for the figures. `granite4.1:3b`'s row is labelled cascade-damaged
+  in the notebook and is not a model measurement (next bullet but one).
+- Docs: **`gpt-oss:20b`'s seed direction reversed between runtimes.** Under
+  0.32.14 it scored 25/25 unaided and 23/25 seeded — the only 25/25 in the
+  file, with the seed costing it 2 shapes. Under 0.33.2 it scores 25/25
+  seeded and 22/25 unaided — still the only 25/25, now reached with the seed
+  rather than without it, a +3 gain rather than −2. Same machine, same
+  weights; no mechanism for the reversal is established. Four
+  `ModelBehavior.md` claims built on the old direction ("the only 25/25 in
+  this file", "the strongest unaided model", "the sole 25/25 under any
+  condition") are corrected accordingly.
+- Known issue: **`granite4.1:3b`'s 0.33.2 figures differ from 0.32.14, cause
+  not established; recorded as OPEN.** It records 14 seeded and 32 unaided
+  timeouts under 0.33.2 against 2 and 11 under 0.32.14, and seeded coverage
+  reads 17/12 against 17/17. Re-running it after runner eviction changed none
+  of that, but the re-run's unaided stalls sit at calls 0-20 (the probe's cold
+  opening cases) and 89-99, 21 cold and 11 warm, with the first non-stalled
+  call taking 86 s — the queue-cascade signature — and the unload is not
+  shown to cancel a generation, so "unchanged by eviction" does not separate
+  a model property from a cascade. No regression is established; its 0.33.2
+  shape and stall figures are recorded as cascade-damaged, not as a model
+  measurement. The open question is whether a runaway generation can be
+  cancelled at all, and how.
+- Changed: **every per-host results directory now names its Ollama version.**
+  `results-m1max-64gb/` became `results-m1max-64gb-ollama032/` and
+  `results-m5-16gb/` became `results-m5-16gb-ollama033/`, beside the
+  `results-m1max-64gb-ollama033/` added by the 0.33.x sweep. A bare
+  `results-m1max-64gb/` sitting next to an `-ollama033` sibling read as "the
+  other one", and its runtime was recoverable only from a rotating server log.
+  `shapeTableDir` and `sync_shape_table.dart` follow the rename.
+- Added: **`results-m1max-64gb-ollama032/PROVENANCE.md` recovers the
+  archive's runtime as Ollama 0.32.14** from the one surviving server-log
+  line (`Listening on [::]:11434 (version 0.32.14)`, 2026-08-21T13:34:28).
+  That line covers 2026-08-21T13:34 onward; the archive spans 2026-08-20 and
+  2026-08-21, and the two earlier server restarts in that window are not
+  corroborated by anything on disk. The 113 archived result files are not
+  backfilled — each records what the probe stamped.
+- Changed: **`check_results.dart` scopes the shape-table check to one
+  directory.** `check()` takes a `tableResults` parameter and `main()` passes
+  the runs under `shapeTableDir` (`results-m1max-64gb-ollama033`), so a
+  second directory for the same host no longer keys two runs by one model;
+  the host filter remains the fallback for single-directory data.
+- Fixed: **`check_results_test.dart`'s real-tree check compared the shape table
+  against two runtimes at once.** It called `check()` without `tableResults`, so
+  it fell back to the host filter and keyed two runs by the same model once a
+  second Apple M1 Max directory held real data. It now mirrors `main()` and
+  scopes to `shapeTableDir`.
+
 - Added: **`blog/` directory — a series plan and drafts of the first three
   articles** derived from `ModelBehavior.md`. `blog/README.md` is the plan:
   it assigns each article a topic it owns outright and records what it defers
@@ -87,6 +168,10 @@
   MacBook Air on Ollama 0.33.1, and the performance table now carries both hosts
   in one table rather than asserting one. Seven of the eight cost 1.0-1.5x the
   Apple M1 Max / 64 GB figures; `qwen3.5:9b` runs faster on the smaller host.
+  **Superseded 2026-09-02: that last clause does not survive.** The two hosts
+  were measured at different positions in their sweeps, and re-running one model
+  hot against cold on a fixed host and runtime measured a **1.54x** position
+  bias — larger than the 0.8x it was offered to explain. Read as a null result.
   Shape coverage reproduced the M1 Max on six of eight exactly, which is what
   says the difference is the box and not the measurement.
 - Added: **the fanless M5 throttles 1.20x over a four-hour sweep**, measured by
@@ -331,7 +416,13 @@
   and 52 stalled calls, which read as a small model failing under a per-call
   timeout. A leaked Ollama runner process was competing for the GPU throughout —
   `ollama stop` had returned while the model was still evicting, and the runner
-  never reaped. Re-run on an idle machine it scores **17/25 and 3/3**, matching
+  never reaped. **Qualified 2026-09-02:** a second mechanism produces the same
+  signature, and that run's logs are gone, so this attribution is no longer the
+  only candidate. A single runaway generation holds Ollama's one slot while
+  later calls queue behind it and time out without reaching the model, turning
+  one stall into dozens. `granite4.1:3b` recorded **52 stalls again** on
+  2026-09-01 with `loaded runners count=1` on every load — co-residency
+  excluded. Which mechanism produced the August figure is not recoverable. Re-run on an idle machine it scores **17/25 and 3/3**, matching
   its earlier unbounded figures exactly. Two of the three "findings" reported
   about that model were the busy machine, not the model.
 - Docs: what survives is narrower. Seeded, the ceiling
@@ -407,7 +498,11 @@
   180 s, well clear of the ~49 s longest legitimate generation on record) and
   a stall is scored a failure labeled `timeout (Ns)` — its own label, so it is
   never mistaken for a wrong shape or invalid JSON. Found while smoke-testing
-  the `--json` path, not by inspection.
+  the `--json` path, not by inspection. **Incomplete, corrected 2026-09-02:**
+  bounding the call did not stop the generation. Ollama kept running the
+  abandoned request and serves one at a time, so later calls queued behind it
+  and recorded stalls they never reached the model to earn. The probe now also
+  evicts the runner on timeout.
 - Changed: **every probe takes `--json` and `--timeout`**, added to the shared
   `parseProbeArgs` rather than per script, so recording a run is one flag
   everywhere. `cascade_ab` records `exercised` separately from `cases`, since

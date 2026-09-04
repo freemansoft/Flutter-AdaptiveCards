@@ -64,9 +64,19 @@ const conditionalProbes = {'shape_ab-channel-tool': 'supported'};
 /// and report a mismatch that is not one.
 const shapeTableHost = 'Apple M1 Max / 64 GB';
 
+/// The directory the shape table is derived from.
+///
+/// Scoped by directory rather than by [shapeTableHost] because one host can be
+/// recorded more than once: `results-m1max-64gb-ollama032/` holds the 2026-08-20/21 runs
+/// on Ollama 0.32.14 and `results-m1max-64gb-ollama033/` the same machine on
+/// 0.33.x. Both stamp the same `machine`, so a host filter would key two runs
+/// by one model and report a mismatch that is not one. The table is one
+/// measurement, and this names which.
+const shapeTableDir = 'results-m1max-64gb-ollama033';
+
 /// Every per-host results directory under [probesDir].
 ///
-/// Results are stored per host -- `results-m1max-64gb/`, `results-m5-16gb/` --
+/// Results are stored per host -- `results-m1max-64gb-ollama032/`, `results-m5-16gb-ollama033/` --
 /// because latency is a property of the box as much as the model. Discovered
 /// rather than listed so adding a host is a directory, not an edit here.
 List<String> resultsDirs(String probesDir) {
@@ -234,6 +244,7 @@ List<Finding> check({
   required Map<String, String> currentAssets,
   required String markdown,
   String tableHost = shapeTableHost,
+  List<ProbeRun>? tableResults,
 }) {
   final findings = <Finding>[];
 
@@ -246,9 +257,11 @@ List<Finding> check({
   // runs predate the stamp, and silently dropping them from the table check
   // would turn a missing field into missing coverage -- the failure mode this
   // checker exists to prevent.
-  final canonical = results
-      .where((r) => r.machine == null || r.machine == tableHost)
-      .toList();
+  final canonical =
+      tableResults ??
+      results
+          .where((r) => r.machine == null || r.machine == tableHost)
+          .toList();
 
   // 1. Each run must agree with its own calls. A probe whose printed summary
   //    disagrees with the calls it made is the one error a human reading the
@@ -426,6 +439,7 @@ Future<void> main(List<String> argv) async {
     ...checkVersionStampConsistency(probesDir),
     ...check(
       results: results,
+      tableResults: readAllResults(p.join(probesDir, shapeTableDir)),
       launched: launched,
       currentAssets: currentAssets,
       markdown: markdown,

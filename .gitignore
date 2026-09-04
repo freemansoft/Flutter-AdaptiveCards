@@ -130,3 +130,9 @@ widgetbook/widgetbook_screenshot.png
 # Worktrees created for isolated subagent runs. Each is a full checkout, so
 # without this a handful of background agents bury `git status`.
 .claude/worktrees/
+
+# Mirror of .claude/ created by other agent harnesses. CLAUDE.md names Claude
+# Code as the only supported agent, so this is local scratch, not project config.
+# No trailing slash: this is a symlink here, and `.agents/` matches only a real
+# directory, so the slash form silently failed to ignore it.
+.agents
