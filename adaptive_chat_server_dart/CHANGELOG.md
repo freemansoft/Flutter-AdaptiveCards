@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Measured: **re-ran the `format` canary for both `nvfp4` builds under
+  Ollama 0.33.3.** `qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both
+  still read `honored`, matching the 0.33.2 verdicts recorded 2026-09-01.
+  Results are in the new `results-m1max-64gb-ollama0333/` directory;
+  `ModelBehavior.md`'s format-canary section records the re-run and notes
+  that 0.33.3's "Honor GGUF model defined default parameters" change may
+  affect sampled-temperature figures elsewhere in the file even though it
+  does not affect this canary.
 - Renamed: **the two `ollama033` results archives to name their patch
   version.** `results-m1max-64gb-ollama033/` held Ollama 0.33.2 and
   `results-m5-16gb-ollama033/` held 0.33.1 — recorded in the M5 directory's
