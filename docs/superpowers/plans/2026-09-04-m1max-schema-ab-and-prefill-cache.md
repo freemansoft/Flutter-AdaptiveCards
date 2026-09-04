@@ -702,6 +702,169 @@ Invoke `superpowers:verification-before-completion` and paste exit codes and pas
 
 ---
 
+### Task 9: Measure whether 0.33.3 honoring GGUF default parameters moves sampled output
+
+**Files:**
+
+- Create: `adaptive_chat_server_dart/tool/model_probes/gguf_defaults_probe.dart`
+- Create: `adaptive_chat_server_dart/test/gguf_defaults_probe_test.dart`
+- Create: `adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama0333/qwen3.5_9b/gguf_defaults_probe.json`
+- Modify: `adaptive_chat_server_dart/ModelBehavior.md` (the sampled-temperature caveat Task 4 added)
+- Modify: `adaptive_chat_server_dart/CHANGELOG.md` (`## [Unreleased]`)
+
+**Why this task exists.** Task 4 records a caveat rather than a measurement: Ollama 0.33.3 adds "Honor GGUF
+model defined default parameters", the probes pin `temperature`, `think` and `num_ctx` but not
+`top_p`/`top_k`/`repeat_penalty`/`presence_penalty`, so figures sampled at `t=0.2`/`0.6` **may** not be
+comparable across the upgrade. That is a suspected comparability break published as a limitation. It is
+cheap to convert into a yes/no, and the answer changes how every sampled figure in the notebook should be
+read. `t=0` greedy figures are shielded either way, because greedy decoding takes the argmax and the
+candidate-set parameters cannot change it — so this probe must run at a sampled temperature or it measures
+nothing.
+
+**Model choice, already verified.** `qwen3.5:9b` (6.6 GB) is the right subject and the only strong one
+installed. Its Modelfile sets `top_k 20`, `top_p 0.95`, `presence_penalty 1.5` and `temperature 1` — the
+first three all differ from Ollama's historical defaults (`top_k 40`, `top_p 0.9`, `presence_penalty 0`),
+so if 0.33.3 now honors them the effective sampling distribution moved. Checked on 2026-09-04 with
+`ollama show --modelfile`: `llama3.2:latest`, `granite4.1:3b`, `granite4.1:8b` and `qwen2.5-coder:7b`
+declare no sampling parameters at all and would produce a vacuous, identical-by-construction result.
+`nemotron-3-nano:4b` declares only `top_p 1`, a weaker signal. `qwen3.5:9b` also already has baseline rows
+in both archives, and its `temperature 1` is neutralised because the probes pin `temperature` explicitly.
+
+**Design.** Two arms against the same model, same prompt, same fixed `seed`, differing only in whether the
+candidate-set parameters are sent:
+
+- **Arm `unpinned`** — send what the probes send today: `temperature`, `think`, `num_ctx`, `seed`. Under
+  0.33.3 the unsent parameters should take the Modelfile's values.
+- **Arm `pinned-historical`** — the same, plus `top_k 40`, `top_p 0.9`, `presence_penalty 0` sent
+  explicitly: the effective sampling a pre-0.33.3 server would have applied.
+
+A fixed `seed` removes sampling noise, so a difference between the arms is attributable to the parameters
+rather than to chance. Identical replies across arms mean the Modelfile values are not being applied on
+this path and the caveat can be narrowed; differing replies mean the comparability break is real and
+dated to the upgrade.
+
+- [ ] **Step 1: Write the probe's failing test first**
+
+Create `test/gguf_defaults_probe_test.dart`. Test the arm-construction logic against a fake loopback
+server the way `probe_format_test.dart` and `probe_timeout_test.dart` already do — assert on the request
+bodies that reach the wire, not on model output:
+
+- the `unpinned` arm's `options` carries `temperature`, `num_ctx` and `seed` and does **not** carry
+  `top_k`, `top_p` or `presence_penalty`
+- the `pinned-historical` arm's `options` carries all of those, with `top_k` 40, `top_p` 0.9,
+  `presence_penalty` 0
+- both arms send the identical `seed` and identical messages
+
+```bash
+fvm dart test test/gguf_defaults_probe_test.dart
+```
+
+Expected: FAIL — the probe does not exist.
+
+- [ ] **Step 2: Write `gguf_defaults_probe.dart` and make the test pass**
+
+Reuse `probe_support.dart` (`probeOnce`, `parseProbeArgs`, `probeAssetsDir`) rather than re-deriving any
+of it. Take `--model` (default `qwen3.5:9b`), `--samples` (default 3), `--temperature` (default 0.6),
+`--seed` (default a fixed constant), `--json` and `--url`, matching the other probes' flags. Record for
+each arm: the reply hash, character count, and `ms`. Follow the repo's serialization convention —
+hand-written `toJson()`, no code-gen — and give the file a `///` header explaining **why** the probe
+exists and how to read a result, as the sibling probes do.
+
+Going through `probeOnce` also inherits the timeout behaviour deliberately, and the probe must not
+bypass it: a timed-out call issues `evictModel()` (`probe_support.dart:295`), a `keep_alive: 0` unload
+to `/api/generate`, so a hung or runaway generation cannot cascade into the calls after it. Two
+consequences for this probe. Do not add a competing timeout or unload path. And note that an eviction
+forces the next call to pay a cold load, so **`ms` either side of a timeout is not comparable** — the
+reply-hash comparison is the load-bearing measurement here and is unaffected, because the seed and the
+parameters determine the output regardless of whether the runner was reloaded first.
+
+```bash
+fvm dart test test/gguf_defaults_probe_test.dart
+fvm dart analyze
+```
+
+Expected: PASS, no analyzer issues.
+
+- [ ] **Step 3: Confirm the machine is idle and the model's parameters are still what this assumes**
+
+```bash
+ollama ps
+curl -s http://127.0.0.1:11434/api/version
+ollama show --modelfile qwen3.5:9b | grep -i '^PARAMETER'
+```
+
+Expected: nothing resident; `{"version":"0.33.3"}`; `top_k 20`, `top_p 0.95`, `presence_penalty 1.5`
+present. **If the parameters are absent, stop** — the premise is gone and the probe cannot produce a
+result. Record that instead.
+
+- [ ] **Step 4: Run both arms at a sampled temperature**
+
+```bash
+fvm dart run tool/model_probes/gguf_defaults_probe.dart \
+  --model qwen3.5:9b --temperature 0.6 --samples 3 \
+  --json tool/model_probes/results-m1max-64gb-ollama0333/qwen3.5_9b/gguf_defaults_probe.json
+ollama stop qwen3.5:9b
+ollama ps
+```
+
+Expected: nothing resident afterwards.
+
+- [ ] **Step 5: Run the greedy control**
+
+```bash
+fvm dart run tool/model_probes/gguf_defaults_probe.dart \
+  --model qwen3.5:9b --temperature 0 --samples 2 \
+  --json /dev/null
+ollama stop qwen3.5:9b
+```
+
+At `t=0` the two arms **should** agree, because greedy decoding takes the argmax regardless of the
+candidate-set parameters. If they disagree here, something other than sampling differs between the arms
+and the `t=0.6` result cannot be attributed to the parameters — investigate before recording anything.
+This control is what makes the main result interpretable.
+
+- [ ] **Step 6: Read the result and record it**
+
+Compare reply hashes per sample between arms. Report: how many of the `t=0.6` samples differ between
+arms, how many of the `t=0` control samples differ (expected 0), and the model, runtime and date.
+
+Then rewrite the caveat Task 4 added to `ModelBehavior.md`. Locate it by grepping its wording, not by
+line number. Replace the hedged "may not be comparable" with what was measured, in the file's register.
+A null result is written as plainly as a positive one. **Hedge the mechanism, not the count**: how many
+replies differed is measured; _why_ Ollama applied or ignored the Modelfile values is not, unless it was
+confirmed from server logs.
+
+Keep the claim scoped to what one model shows. One GGUF model on one host is evidence about that path,
+not a property of every GGUF build — say so.
+
+- [ ] **Step 7: Add a `CHANGELOG.md` bullet under `## [Unreleased]`**
+
+Inside the existing list, no blank line between bullets.
+
+- [ ] **Step 8: Verify the gates**
+
+```bash
+fvm dart analyze
+fvm dart test
+fvm dart format --output=none --set-exit-if-changed lib/ test/ tool/
+fvm dart run tool/model_probes/check_results.dart
+cd .. && npm run format:md:chat && npm run check:md:chat
+```
+
+Do **not** add this probe to `expectedProbes` in `check_results.dart` — it is a one-off on a single
+model, and adding it would report every other model as incomplete.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add tool/model_probes/gguf_defaults_probe.dart test/gguf_defaults_probe_test.dart \
+        tool/model_probes/results-m1max-64gb-ollama0333/qwen3.5_9b/gguf_defaults_probe.json \
+        ModelBehavior.md CHANGELOG.md
+git commit -m "measure(chat-server): whether 0.33.3 honoring GGUF defaults moves sampled output"
+```
+
+---
+
 ## Deliberately out of scope
 
 - **Promoting `--json-format schema` into `launch.json`.** Measuring is this plan; shipping is a separate decision with a known cost (it forbids the prompt's Markdown escape hatch).
