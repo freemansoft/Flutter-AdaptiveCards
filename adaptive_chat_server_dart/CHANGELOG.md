@@ -2,6 +2,24 @@
 
 ## [Unreleased]
 
+- Measured: **`prefill_cache_probe.dart` on a second host and a second
+  model.** On the Apple M1 Max / 64 GB, `llama3.2:latest` reproduces every
+  reading from the published Apple M5 run: cold prefill in the seconds
+  against a warm repeat in tens of milliseconds, a growing conversation
+  paying for its new tokens only, the cache surviving an interleaved
+  request, and a retry after an abort costing a warm repeat. Run against
+  `qwen3.8:27b-nvfp4` (~18 GB, too large for the M5's 16 GB), three of
+  those five readings hold, but "same system prompt, different question"
+  and "interleaved unrelated request" do not: both came back with
+  `cached=4` of ~3,177 tokens and a prefill matching the cold prefill,
+  though the original sequence's cache slot survived both misses
+  unevicted. `ModelBehavior.md`'s prompt-cache section records the full
+  second-host table and narrows the "one model, one host, one runtime"
+  caveat accordingly — reuse on an identical repeat, a growing
+  conversation, and a retry after an abort is no longer host- or
+  model-specific; reuse across a fresh question sharing only the system
+  prompt is not established as general behavior, since it held for
+  `llama3.2` and did not for `qwen3.8:27b-nvfp4`.
 - Measured: **`qwen3.6:27b-coding-nvfp4`'s schema-constrained shape A/B under
   Ollama 0.33.3.** `format: schema` repairs `columnset` (0/6 → 6/6, both
   conditions) but not `carousel`: cold stays 0/7 across three same-session

@@ -894,13 +894,39 @@ Ollama 0.33.3 reports `prompt_eval_cached_count` on every reply — how many pro
 | identical request after an interleaved different prompt | 2143          | 2136        | 55 ms           |
 | retry after aborting mid-prefill (400 ms in, 5 s wait)  | 2444          | 2443        | 29 ms           |
 
-Four readings and a caveat:
+Four readings:
 
 - **A conversation turn pays prefill for its new tokens only.** With the full history replayed each request, turns 2–3 re-evaluated ~15 tokens each; history size does not set the per-turn prefill cost.
 - **A fresh conversation reusing the same system prompt re-evaluates only the divergent tail** — ~8 tokens here. The per-conversation cost of a large card system prompt is paid once per resident model, not once per conversation.
 - **The cache survives interleaving.** An unrelated request between two identical ones did not evict the first sequence (2136 of 2143 still cached, 55 ms), and the unrelated request itself reused the 28-token instruction prefix the two prompts shared. How many sequences the runner retains, and its eviction policy under memory pressure, were not probed.
 - **A retry after an aborted call costs a warm repeat, not a cold prefill** — 29 ms against the ~2,000 ms a cold prefill of the same prompt costs. Whether that is 0.33.0's prefill restore points retaining partial work or the abandoned request completing server-side during the 5 s wait is not established; the two are indistinguishable here and the retry price is the same either way. This bounds the cost of the timeout-and-retry pattern the probes use.
-- Caveat: one model, one host, one runtime, single-turn-scale replies. The figures are the behavior of Ollama 0.33.3's cache on this box, not a property of any model.
+
+### Three of five readings reproduce on a second host and model; two do not
+
+The same probe, run on an Apple M1 Max / 64 GB under the same Ollama 0.33.3, `t=0`, `num_ctx` 8192, against `llama3.2:latest` first — holding the model fixed against the M5 run — then against `qwen3.8:27b-nvfp4` (~18 GB, too large for the M5's 16 GB), measured 2026-09-04, one model resident at a time:
+
+| Pattern                                                 | `llama3.2:latest` prompt / cached | prefill         | `qwen3.8:27b-nvfp4` prompt / cached | prefill           |
+| ------------------------------------------------------- | --------------------------------- | --------------- | ----------------------------------- | ----------------- |
+| identical request repeated                              | 2143 / 2142                       | 2079 ms → 12 ms | 3176 / 3171                         | 37779 ms → 133 ms |
+| same system prompt, different question                  | 2144 / 2136                       | 87 ms           | 3177 / 4                            | 40426 ms          |
+| growing conversation, turns 2–3                         | 2166 / 2150, 2188 / 2173          | 54 ms, 53 ms    | 3207 / 3172, 3237 / 3202            | 812 ms, 804 ms    |
+| identical request after an interleaved different prompt | 2143 / 2136                       | 39 ms           | 3176 / 4                            | 40381 ms          |
+| retry after aborting mid-prefill (400 ms in, 5 s wait)  | 2444 / 2443                       | 30 ms           | 3477 / 3472                         | 148 ms            |
+
+Three readings hold on both the second host and the second model:
+
+- **Identical repeat.** Cold prefill in the seconds against a warm repeat in tens of milliseconds, on both models (`llama3.2`: 2079 ms → 12 ms; `qwen3.8:27b-nvfp4`: 37779 ms → 133 ms).
+- **A growing conversation pays for its new tokens only, on both models.** `qwen3.8:27b-nvfp4`'s per-turn prefill (812 ms, 804 ms) runs higher than `llama3.2`'s (54 ms, 53 ms) but stays an order of magnitude below its own cold prefill, consistent with the same behavior at a higher per-token cost.
+- **A retry after an abort costs a warm repeat, not a cold prefill, on both models** — `qwen3.8:27b-nvfp4`: 148 ms against a ~40 s cold prefill.
+
+Two readings do not:
+
+- **"Same system prompt, different question" and "interleaved unrelated request" reproduce the M5 pattern for `llama3.2` on this host, but not for `qwen3.8:27b-nvfp4`.** For `llama3.2`, both steps reused nearly the full system prompt (87 ms and 39 ms). For `qwen3.8:27b-nvfp4`, both came back with `cached=4` of ~3,177 tokens and a prefill matching the cold prefill (40426 ms and 40381 ms) rather than the 133 ms warm repeat measured one line above — despite a byte-identical system prompt, with only the trailing question, or an unrelated prompt entirely, differing.
+- **Neither miss evicted the original sequence's cache slot.** `qwen3.8:27b-nvfp4`'s repeat of the original "identical" request, run after both misses, still came back warm (3171 of 3176 cached, 215 ms).
+
+For `qwen3.8:27b-nvfp4`, a byte-identical repeat and a strictly-growing conversation reuse the cache; a fresh request sharing the system prompt without extending an already-cached sequence does not. Why is not established — the probe reports `prompt_eval_cached_count`, not the runner's cache-key logic — so a model- or quantization-specific matching rule, a context-length effect past ~3,000 tokens, and a slot-count limit are each consistent with the counts and none is confirmed.
+
+- Caveat: single-turn-scale replies, and the runner's retention limits and eviction policy under memory pressure, remain unprobed. Identical-repeat, growing-conversation, and retry-after-abort reuse reproduced across two hosts (M5, M1 Max) and two models (`llama3.2:latest`, `qwen3.8:27b-nvfp4`) under the same Ollama 0.33.3 — that part of the shape is not an artifact of one machine or a 2 GB model. Reusing a shared system prompt across different fresh questions is not established as general runtime behavior: it held for `llama3.2` on both hosts and produced a full cold prefill for `qwen3.8:27b-nvfp4` on the M1 Max, with the cause unconfirmed.
 
 ### Measurement lessons
 
