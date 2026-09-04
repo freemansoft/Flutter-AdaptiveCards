@@ -14,8 +14,12 @@
   runs — the miss most relevant to a chat server, since reusing a shared
   system prompt across different questions is what every turn does. Also
   adds the one-clause confirmation that the truncation detector now warns on
-  this against a live server. Article 5 stayed under its 3,000-word cap
-  (2,999 → 2,999 prose words) by trimming elsewhere in the same edit.
+  this against a live server. Article 5 stayed under its 3,000-word cap —
+  2,996 prose words in the version committed here — by trimming elsewhere in
+  the same edit. (Dropped the before/after delta this line carried in two
+  earlier drafts: it is a snapshot of a number that changes with every later
+  trim to a file this entry doesn't touch, and it was wrong twice for exactly
+  that reason. The final count, measured last, doesn't have that failure mode.)
   `ModelBehavior.md`'s latency section now notes the M1 Max has since moved
   to Ollama 0.33.3 without its latency/everyday/stress figures being
   re-taken; the file's other 28 references to 0.32.14 were reviewed against
