@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- Renamed: **the two `ollama033` results archives to name their patch
+  version.** `results-m1max-64gb-ollama033/` held Ollama 0.33.2 and
+  `results-m5-16gb-ollama033/` held 0.33.1 — recorded in the M5 directory's
+  own `MODELS.md` — so the shared name no longer identified which. Both are
+  now `results-m1max-64gb-ollama0332/` and `results-m5-16gb-ollama0331/`;
+  `shapeTableDir`, the probes `README.md`, `perf_table.py`, `sweep.sh`,
+  `ModelBehavior.md`, and `CLAUDE.md`'s sibling-naming example follow the
+  rename. `sync_shape_table.dart` and `check_results_test.dart` compose their
+  path from `shapeTableDir` and needed no edit. No measurement data changed.
 - Added: **`shape_ab.dart --json-format none|json|schema`**, forwarding
   Ollama's `format` constraint via the new `resolveProbeFormat()` in
   `probe_support.dart`. A constrained run records `variant` as

@@ -103,9 +103,15 @@ the runtime into the name, and for a while the tree held
 `results-m1max-64gb-ollama033/` beside a bare `results-m1max-64gb/` whose runtime
 was recoverable only from a log. The bare name silently meant "the other one".
 
-Both the old and the new name must state every dimension that now distinguishes
-them: `results-m1max-64gb-ollama032/`, `results-m1max-64gb-ollama033/`,
-`results-m5-16gb-ollama033/`.
+Both the old and the new name had to state every dimension that then
+distinguished them: `results-m1max-64gb-ollama032/`, `results-m1max-64gb-ollama033/`,
+`results-m5-16gb-ollama033/`. That held only until `ollama033` itself turned out
+not to be specific enough — it named 0.33.2 on the M1 Max and 0.33.1 on the M5,
+the M5's version recoverable only from that directory's own `MODELS.md`, the
+same "bare name silently meant the other one" failure one level down, on the
+patch digit rather than the host. Both were renamed again to state it, which is
+what the tree holds now: `results-m1max-64gb-ollama0332/`,
+`results-m5-16gb-ollama0331/`.
 
 Renaming is not free — grep first and fix in the same change:
 
