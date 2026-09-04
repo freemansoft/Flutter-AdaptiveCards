@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Verified: **the `num_ctx` overflow warning against a live server.**
+  `--num-ctx 2048` with the shipped card system prompt produced a
+  `prompt truncated` warning naming ~3681 estimated tokens against
+  `num_ctx` 2048 and 1026 tokens evaluated; `--num-ctx 8192` against the
+  same prompt logged no such warning. Previously proven only against a
+  mocked response.
 - Measured: **`prefill_cache_probe.dart` on a second host and a second
   model, with the large model's suspicious rows confirmed by a repeat
   run.** On the Apple M1 Max / 64 GB, `llama3.2:latest` reproduces every
