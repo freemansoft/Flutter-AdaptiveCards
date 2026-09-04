@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+- Measured: **whether Ollama 0.33.3's "honor GGUF model defined default
+  parameters" moves sampled output.** New `gguf_defaults_probe.dart` runs
+  `qwen3.5:9b` at a fixed seed with an `unpinned` arm (temperature and seed
+  only, what the shipped probes send) against a `pinned-historical` arm
+  (adds `top_k 40`, `top_p 0.9`, `presence_penalty 0` explicitly). At
+  `t=0.6`, `--samples 3`, all 3 samples differ between arms. A `t=0` greedy
+  control also disagreed; isolating the three parameters traced the
+  disagreement to `presence_penalty`, which adjusts logits before the
+  argmax and so is not shielded by greedy decoding the way `top_k`/`top_p`
+  are. `ModelBehavior.md`'s sampled-temperature caveat is rewritten from a
+  suspicion to this measurement, scoped to `qwen3.5:9b` on this host.
 - Blog: **carried today's M1 Max findings into articles 2 and 5, and
   retired the 0.32.x references the measurements supersede.** Article 2's
   `format` lever row now records the `qwen3.6:27b-coding-nvfp4` schema A/B
