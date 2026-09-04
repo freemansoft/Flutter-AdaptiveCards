@@ -25,7 +25,7 @@ one prose turn ahead of an options question was enough to turn a working
 
 Fourteen levers were pulled against those failures and each one recorded with
 its verdict and its evidence, in
-[the tuning ledger](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#the-tuning-ledger--everything-tried-and-whether-it-helped)
+[the tuning ledger](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-tuning-ledger--everything-tried-and-whether-it-helped)
 of that notebook. Summarized by kind:
 
 | Kind             | Levers | Outcome                                                                            |
@@ -269,4 +269,4 @@ series.
 The repo is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above came from is
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).

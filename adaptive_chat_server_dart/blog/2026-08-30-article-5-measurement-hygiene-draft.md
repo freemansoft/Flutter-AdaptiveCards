@@ -82,7 +82,7 @@ So the rule the notebook states is a correctness requirement rather than a
 performance tip: **one model resident at a time** — load a model, run all of its
 probes, record, unload, wait, switch. A number collected any other way is not
 comparable to anything. The full account is in
-[the sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
+[the sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
 of the notebook, and the procedure in
 [`tool/model_probes/README.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/README.md).
 
@@ -363,4 +363,4 @@ history.
 This is the last article in the series. The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above is read from is at
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).

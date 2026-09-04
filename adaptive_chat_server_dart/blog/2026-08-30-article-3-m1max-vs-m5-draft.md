@@ -16,10 +16,10 @@ it should be read closely: a same-host control puts a 1.54x position bias under
 every ratio, so the recommendation reduces to fit plus model choice.
 
 Every figure below is transcribed from
-[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md),
+[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 a lab notebook in the
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-repository, read at commit `757bf7c`.
+repository.
 Shape figures are `--samples 2`, which is why a one-point difference between two
 models is noise rather than a ranking.
 
@@ -259,4 +259,4 @@ never reach the model — belong to the next article in this series.
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook these figures are read from is
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).

@@ -15,6 +15,12 @@
   cold and with-history and cascade 3/3 — matching the clean 0.32.14
   M1 Max figures — so the cascade-damaged M1 Max rows stand as a harness
   artifact, with no 0.33.x regression indicated.
+- Blog: **drafts track the notebook at `/blob/main/` until publication.**
+  The `ModelBehavior.md` links pinned to commit `757bf7c` in all five
+  articles are re-pointed to `main`, and the two "read at commit" clauses
+  are dropped; `blog/README.md` now records the rule — drafts follow the
+  live notebook, and all five articles are pinned to one commit at
+  publication.
 - Blog: **the drafts now match `ModelBehavior.md` on the two updated
   findings.** Article 2's decoding-levers row marks `format` as per-model
   and per-runtime, citing the `nvfp4` flip between 0.32.14 and 0.33.2;
