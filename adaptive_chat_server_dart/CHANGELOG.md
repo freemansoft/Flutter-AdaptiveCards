@@ -2,6 +2,39 @@
 
 ## [Unreleased]
 
+- Docs: **the `format` canary is per-runtime, and `ModelBehavior.md` now says
+  so.** The 2026-09-01 sweep's `json_format_probe` verdicts are folded in:
+  both `nvfp4` builds flipped from `ignored-harmlessly` (0.32.14) to
+  `honored` (0.33.2), coinciding with the Ollama 0.33.1 release note
+  "mlxrunner: add structured output support", while `gpt-oss:20b`
+  (`ignored-destructively`) and the unsloth GGUF build
+  (`ignored-harmlessly`) did not move. Whether `--json-format schema` now
+  helps the shapes the `nvfp4` builds miss is recorded as unmeasured.
+- Docs: **granite4.1:3b's open 0.33.x figures now cite the clean M5 run.**
+  The M5 measurement (Ollama 0.33.1, 2026-08-28) reads seeded 17/25 both
+  cold and with-history and cascade 3/3 — matching the clean 0.32.14
+  M1 Max figures — so the cascade-damaged M1 Max rows stand as a harness
+  artifact, with no 0.33.x regression indicated.
+- Blog: **drafts track the notebook at `/blob/main/` until publication.**
+  The `ModelBehavior.md` links pinned to commit `757bf7c` in all five
+  articles are re-pointed to `main`, and the two "read at commit" clauses
+  are dropped; `blog/README.md` now records the rule — drafts follow the
+  live notebook, and all five articles are pinned to one commit at
+  publication.
+- Blog: **the drafts now match `ModelBehavior.md` on the two updated
+  findings.** Article 2's decoding-levers row marks `format` as per-model
+  and per-runtime, citing the `nvfp4` flip between 0.32.14 and 0.33.2;
+  article 5's granite4.1:3b conclusion cites the clean M5 0.33.1 run
+  (seeded 17/25 both conditions, cascade 3/3) as the established figure
+  beside the cascade-damaged M1 Max rows.
+- Data: **removed the 0.32.14 results archive**
+  (`tool/model_probes/results-m1max-64gb-ollama032/`). Every published table
+  now derives from a 0.33.x directory, so the archive's role was historical;
+  its raw runs and `PROVENANCE.md` remain in git history before 2026-09-03.
+  References in `ModelBehavior.md`, the probes `README.md`, `perf_table.py`,
+  and `check_results.dart` now point at the surviving directories. The 0.32.14
+  figures quoted in prose (seed reversal, cascade analysis, format canary)
+  are unchanged and keep their runtime qualifiers.
 - Docs: **the M1 Max Ollama 0.33.2 sweep is a null result on latency.** All
   fifteen models were re-measured on the same machine with identical weights
   under 0.33.2 against the 0.32.14 archive; 13 of 15 per-model median ratios

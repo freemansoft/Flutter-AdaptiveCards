@@ -25,7 +25,7 @@ one prose turn ahead of an options question was enough to turn a working
 
 Fourteen levers were pulled against those failures and each one recorded with
 its verdict and its evidence, in
-[the tuning ledger](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#the-tuning-ledger--everything-tried-and-whether-it-helped)
+[the tuning ledger](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-tuning-ledger--everything-tried-and-whether-it-helped)
 of that notebook. Summarized by kind:
 
 | Kind             | Levers | Outcome                                                                            |
@@ -114,11 +114,11 @@ delivery was confirmed on one of four models checked.
 
 ## Decoding settings are cheap, and two of the three ship
 
-| What was changed                                         | Verdict               | Evidence                                                                                    |
-| -------------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------- |
-| `temperature: 0` — greedy decoding instead of sampling   | Helped, promoted      | Cleared card failure modes that defeated models outright at their own default temperature.  |
-| `think: false` — suppress the chain-of-thought preamble  | Helped, promoted      | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off. |
-| `format: json` / `format: schema` — constrained decoding | Per-model, unreliable | Honored by some models, silently ignored by others, and destructive on `gpt-oss:20b`.       |
+| What was changed                                         | Verdict                               | Evidence                                                                                                                                                                                                                                    |
+| -------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `temperature: 0` — greedy decoding instead of sampling   | Helped, promoted                      | Cleared card failure modes that defeated models outright at their own default temperature.                                                                                                                                                  |
+| `think: false` — suppress the chain-of-thought preamble  | Helped, promoted                      | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off.                                                                                                                                                 |
+| `format: json` / `format: schema` — constrained decoding | Per-model and per-runtime, unreliable | Honored by some models, silently ignored by others, and destructive on `gpt-oss:20b`. Both `nvfp4` builds flipped from ignoring to honoring between Ollama 0.32.14 and 0.33.2, so the verdict is worth re-checking after a runtime upgrade. |
 
 Among model and setting choices, sending `temperature: 0` and `think: false` is
 the largest jump measured — larger than changing model. The prompt-file swap
@@ -269,4 +269,4 @@ series.
 The repo is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above came from is
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).

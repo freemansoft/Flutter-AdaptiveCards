@@ -15,8 +15,8 @@ channel, where the same card would instead arrive as the arguments of a
 channels and the per-bucket accounting for why the better-formed one lost.
 
 Every figure below is transcribed from
-[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md),
-a lab notebook in that repository, read at commit `757bf7c`.
+[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
+a lab notebook in that repository.
 
 ## Both arms are scored by identical code, against the unseeded prose run
 
@@ -58,7 +58,7 @@ zero malformed JSON is not the same as zero broken cards.
 
 Cold-start and with-history scores are out of 25 cases each, unseeded, `t=0`,
 `--samples 2`, from
-[the tool-channel section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#the-tool-channel-measured-against-prose)
+[the tool-channel section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-tool-channel-measured-against-prose)
 of the notebook.
 
 | Model                        | Tool cold | Prose cold |   Δ | Tool warm | Prose warm |   Δ | Verdict    |
@@ -103,7 +103,7 @@ Four buckets, by `label` prefix:
   is not attributable to the channel.
 
 Counts are per 100 calls per arm, from
-[the failure decomposition](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#why-it-did-not-pay--the-failure-decomposition).
+[the failure decomposition](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#why-it-did-not-pay--the-failure-decomposition).
 
 | Model                        | Verdict    | Prose mal / dec / shape / infra | Tool mal / dec / shape / infra | Tool decline rate |
 | ---------------------------- | ---------- | ------------------------------: | -----------------------------: | ----------------: |
@@ -166,7 +166,7 @@ count and the sparsity pattern are not what is doing the work here.
 The chat template is the better predictor. `nemotron-3-nano:30b` and the
 `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` build are the same base
 weights under different packaging, and
-[the tool-calling canary](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#not-a-card-test-the-tool-calling-canary)
+[the tool-calling canary](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#not-a-card-test-the-tool-calling-canary)
 rates one `supported` and the other `supportedButDeclines` — the packaging
 changed the verdict where the weights did not. Separately,
 `llama3-groq-tool-use:8b`, fine-tuned for tool use, does not reach for the card
@@ -221,4 +221,4 @@ eight models, three of them 18–25 GB, and it took hours of wall clock.
 The repo is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above came from is
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).

@@ -119,12 +119,12 @@ isolate the confound, measure it, do not read a mechanism off a net number.
 
 ### Figures
 
-- **Every figure traces to `ModelBehavior.md`.** All five articles link
-  commit `757bf7c`, the commit holding the final `ModelBehavior.md` this
-  collection cites. It folds in the `gpt-oss:20b` seed-direction correction
-  (25/25 seeded, 22/25 unaided, +3) and the Ollama 0.33.2 sweep, and, as of
-  2026-09-02, the retraction of the `granite4.1:3b` regression and
-  eviction-as-fix claims. Re-check against the file at head
+- **Every figure traces to `ModelBehavior.md`.** While the articles are
+  drafts, all five link the notebook at `/blob/main/`, and a change that
+  moves a notebook finding updates the affected drafts in the same change.
+  At publication, pin all five articles to the same commit — the one the
+  figures were last verified against — so a quoted figure still resolves
+  after the notebook moves on. Re-check against the file at head
   before publishing, and when drafting a new article, verify each figure in
   the notebook directly — do not trust an intermediate document that quotes
   it.
@@ -176,12 +176,15 @@ article leaves the repository. This applies to inline artifact names too:
 `assets/card_system_prompt.txt` and `lib/src/card_detect.dart` are links, not
 bare filenames.
 
-**Two link targets, and the distinction is deliberate.** References to
-`ModelBehavior.md` are pinned to the commit the figures were read at,
-including the one in the closing paragraph, so a quoted figure still resolves
-after the notebook changes — `/blob/757bf7c/…` for all five articles. Links
-to code and assets track `/blob/main/` — a reader following them wants the
-current file, not an archived one.
+**Two link targets, and the distinction is deliberate — but only after
+publication.** While the articles are drafts, references to
+`ModelBehavior.md` track `/blob/main/` so the drafts follow the notebook as
+it changes. At publication, re-point them — all five articles to the same
+commit, the one the figures were read at, including the link in the closing
+paragraph — so a quoted figure still resolves after the notebook moves on.
+Links to code and assets track `/blob/main/` in drafts and published
+articles alike — a reader following them wants the current file, not an
+archived one.
 
 ### Presentation
 

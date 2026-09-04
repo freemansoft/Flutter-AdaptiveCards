@@ -82,7 +82,7 @@ So the rule the notebook states is a correctness requirement rather than a
 performance tip: **one model resident at a time** — load a model, run all of its
 probes, record, unload, wait, switch. A number collected any other way is not
 comparable to anything. The full account is in
-[the sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
+[the sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
 of the notebook, and the procedure in
 [`tool/model_probes/README.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/README.md).
 
@@ -189,7 +189,11 @@ So the contrast is not artifact against regression. One model reproduced the
 archive after the harness change; the other did not, and its run still shows
 the cascade. Nothing about `granite4.1:3b` under 0.33.2 is established — its
 14 seeded and 32 unaided stalls, and the coverage figures they produce, are
-recorded as cascade-damaged rather than as a model measurement. The open
+recorded as cascade-damaged rather than as a model measurement. What is
+established comes from the other machine: the M5's clean run under Ollama
+0.33.1 records seeded 17/25 both cold and with-history and cascade 3/3 —
+matching the model's clean 0.32.14 figures — so no 0.33.x regression is
+indicated; the damage is to the measurement, not to the model. The open
 question it leaves is whether a runaway generation can be cancelled at all,
 and how.
 
@@ -359,4 +363,4 @@ history.
 This is the last article in the series. The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above is read from is at
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/757bf7c/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).
