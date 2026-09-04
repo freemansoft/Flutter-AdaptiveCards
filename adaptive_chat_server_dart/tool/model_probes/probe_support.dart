@@ -124,14 +124,42 @@ ProbeArgs parseProbeArgs(List<String> argv, {int defaultSamples = 3}) {
 
 /// Directory holding the bundled prompt assets.
 ///
-/// Resolved from the script location, not the working directory, so a probe
-/// runs the same from the package root or anywhere else. Exposed rather than
-/// inlined because a probe writing a result file has to digest these same
-/// assets — a recorded digest and the prompt actually sent must come from one
-/// path, or the staleness check is checking the wrong file.
-String probeAssetsDir() => p.normalize(
-  p.join(p.dirname(Platform.script.toFilePath()), '..', '..', 'assets'),
-);
+/// Tries the script location first — stable across working directories
+/// under `dart run`. Under `dart test`, [Platform.script] points at the
+/// test runner instead of the probe file, so that guess can land outside
+/// the repo entirely; when the resulting directory doesn't exist, this
+/// falls back to searching upward from the current directory for
+/// `adaptive_chat_server_dart/assets` (or, when already inside that
+/// package, plain `assets`), which holds regardless of where the search
+/// starts. Exposed rather than inlined because a probe writing a result
+/// file has to digest these same assets — a recorded digest and the prompt
+/// actually sent must come from one path, or the staleness check is
+/// checking the wrong file.
+String probeAssetsDir() {
+  final fromScript = p.normalize(
+    p.join(p.dirname(Platform.script.toFilePath()), '..', '..', 'assets'),
+  );
+  if (Directory(fromScript).existsSync()) {
+    return fromScript;
+  }
+  for (var dir = Directory.current; ; dir = dir.parent) {
+    final direct = p.join(dir.path, 'assets');
+    if (Directory(direct).existsSync()) {
+      return direct;
+    }
+    final nested = p.join(dir.path, 'adaptive_chat_server_dart', 'assets');
+    if (Directory(nested).existsSync()) {
+      return nested;
+    }
+    if (dir.parent.path == dir.path) {
+      throw FileSystemException(
+        'Could not locate the assets/ directory from the script location '
+        'or an ancestor of the current directory',
+        fromScript,
+      );
+    }
+  }
+}
 
 /// Reads the bundled card system prompt — the same file the server sends.
 String loadCardSystemPrompt() => File(
@@ -143,21 +171,29 @@ String loadCardSystemPrompt() => File(
 /// Returned as a path rather than parsed content so `--seed-card-file` can
 /// override it the same way the server's flag does, and so both sides go
 /// through `loadSeedCardMessages` rather than keeping separate copies.
-/// Resolved from the script location for the same reason as
+/// Resolved via [probeAssetsDir] for the same reason as
 /// [loadCardSystemPrompt].
-String defaultSeedCardPath() {
-  final scriptDir = p.dirname(Platform.script.toFilePath());
-  final assets = p.normalize(p.join(scriptDir, '..', '..', 'assets'));
-  return p.join(assets, 'seed_card.json');
-}
+String defaultSeedCardPath() => p.join(probeAssetsDir(), 'seed_card.json');
 
 /// Reads the bundled card schema, for probes exercising `format: <schema>`.
-Map<String, dynamic> loadCardSchema() {
-  final scriptDir = p.dirname(Platform.script.toFilePath());
-  final assets = p.normalize(p.join(scriptDir, '..', '..', 'assets'));
-  return jsonDecode(File(p.join(assets, 'card_schema.json')).readAsStringSync())
-      as Map<String, dynamic>;
-}
+Map<String, dynamic> loadCardSchema() =>
+    jsonDecode(
+          File(p.join(probeAssetsDir(), 'card_schema.json')).readAsStringSync(),
+        )
+        as Map<String, dynamic>;
+
+/// Maps a `--json-format` mode to what [probeOnce] should send as `format`.
+///
+/// Mirrors the server's own `--json-format` flag so a probe measures what the
+/// server would do rather than a probe-only convention: `none` sends no
+/// constraint at all, `json` asks only for valid JSON, and `schema` sends the
+/// bundled card schema. Whether a model honors any of it is per-model **and**
+/// per-runtime — check `json_format_probe.dart` before reading a result.
+Object? resolveProbeFormat(String mode) => switch (mode) {
+  'json' => 'json',
+  'schema' => loadCardSchema(),
+  _ => null,
+};
 
 /// One reply, judged exactly as the running server would judge it.
 class ProbeOutcome {

@@ -75,6 +75,7 @@ Future<Set<String>> runCondition({
   required HttpClient client,
   required String channel,
   required Map<String, dynamic> cardTool,
+  required Object? format,
   List<ProbeCall>? collect,
 }) async {
   stdout.writeln('\n########## $label ##########');
@@ -108,6 +109,7 @@ Future<Set<String>> runCondition({
                 if (withHistory) ...[shapeHistoryUser, shapeHistoryAssistant],
               ],
               reminder: reinforce ? reinforceReminder : null,
+              format: format,
               options: const {'temperature': 0.0},
               timeout: args.timeout,
             );
@@ -147,6 +149,7 @@ Future<void> runPrompt({
   required HttpClient client,
   required String channel,
   required Map<String, dynamic> cardTool,
+  required Object? format,
   List<ProbeCall>? collect,
 }) async {
   final flags = [
@@ -168,6 +171,7 @@ Future<void> runPrompt({
     client: client,
     channel: channel,
     cardTool: cardTool,
+    format: format,
     collect: collect,
   );
   final warm = await runCondition(
@@ -180,6 +184,7 @@ Future<void> runPrompt({
     args: args,
     channel: channel,
     cardTool: cardTool,
+    format: format,
     client: client,
     collect: collect,
   );
@@ -204,6 +209,16 @@ Future<void> main(List<String> argv) async {
     )
     ..addOption('candidate', help: 'A second system prompt to compare.')
     ..addOption('only', help: 'Comma-separated case ids to run.')
+    ..addOption(
+      'json-format',
+      defaultsTo: 'none',
+      allowed: ['none', 'json', 'schema'],
+      help:
+          'Constrained decoding for the prose channel, mirroring the '
+          "server's --json-format. Only meaningful for a model whose "
+          'json_format_probe verdict is honored on the runtime under test; '
+          'a model that ignores the constraint produces an identical arm.',
+    )
     ..addOption(
       'channel',
       defaultsTo: 'prose',
@@ -275,6 +290,7 @@ Future<void> main(List<String> argv) async {
   ], defaultSamples: 1);
 
   final channel = parsed['channel'] as String;
+  final jsonFormat = parsed['json-format'] as String;
   if (channel == 'tool' && (parsed['seed-card'] as bool)) {
     stderr.writeln(
       'shape_ab: --channel tool cannot be combined with the seed card. The '
@@ -286,10 +302,20 @@ Future<void> main(List<String> argv) async {
     exitCode = 2;
     return;
   }
+  if (channel == 'tool' && jsonFormat != 'none') {
+    stderr.writeln(
+      'shape_ab: --channel tool already carries the schema in the tool '
+      'definition, so --json-format on top of it measures neither '
+      'constraint cleanly. Drop one.',
+    );
+    exitCode = 2;
+    return;
+  }
 
   final cases = selectCases(parsed['only'] as String?);
   final client = HttpClient()..idleTimeout = const Duration(minutes: 10);
   final reinforce = parsed['reinforce'] as bool;
+  final probeFormat = resolveProbeFormat(jsonFormat);
   final cardTool = renderCardTool(loadCardSchema());
   // Flat alternating user/assistant contents, the shape `probeOnce` replays
   // history in. Populated unless --no-seed-card opted out of the seed.
@@ -328,6 +354,7 @@ Future<void> main(List<String> argv) async {
     client: client,
     channel: channel,
     cardTool: cardTool,
+    format: probeFormat,
     collect: collect,
   );
   final candidate = parsed['candidate'] as String?;
@@ -342,6 +369,7 @@ Future<void> main(List<String> argv) async {
       client: client,
       channel: channel,
       cardTool: cardTool,
+      format: probeFormat,
     );
   }
   final jsonPath = parsed['json'] as String?;
@@ -362,9 +390,17 @@ Future<void> main(List<String> argv) async {
     final run = ProbeRun(
       probe: 'shape_ab',
       model: args.model,
-      variant: channel == 'tool'
-          ? 'channel-tool'
-          : (seeded ? 'seeded' : 'unaided'),
+      variant: switch (channel) {
+        'tool' => 'channel-tool',
+        // The format mode is part of the identity of a run: an unconstrained
+        // arm and a schema-constrained one are different measurements, and
+        // sync_shape_table.dart selects the canonical row by an exact
+        // `variant == 'seeded'` match. A constrained run recorded as plain
+        // `seeded` would become a second candidate for that row.
+        _ =>
+          '${seeded ? 'seeded' : 'unaided'}'
+              '${jsonFormat == 'none' ? '' : '-format-$jsonFormat'}',
+      },
       measuredAt: DateTime.now().toIso8601String().split('T').first,
       machine: detectMachine(),
       ollama: detectOllamaVersion(),

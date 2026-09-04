@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+- Added: **`shape_ab.dart --json-format none|json|schema`**, forwarding
+  Ollama's `format` constraint via the new `resolveProbeFormat()` in
+  `probe_support.dart`. A constrained run records `variant` as
+  `seeded-format-json` / `seeded-format-schema` rather than plain `seeded`,
+  so `sync_shape_table.dart`'s exact-match selection cannot mistake it for
+  the canonical unconstrained row; `--channel tool` already carries the
+  schema in its tool definition, so combining it with `--json-format` is
+  rejected. `probeAssetsDir()` (and the schema/seed-card loaders built on
+  it) now falls back to searching upward from the current directory when
+  `Platform.script` resolves outside the repo — which `dart test` was
+  doing silently, since it points at the test runner rather than the
+  probe file.
 - Blog: **article 5 trimmed under the length cap, and the target recorded.**
   A three-pass trim cut restatement and hedging recap, taking the draft from
   4,010 to ~3,150 raw words — 2,981 words of prose, under the 3,000 cap but
