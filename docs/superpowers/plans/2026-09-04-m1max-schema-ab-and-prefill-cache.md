@@ -1,0 +1,710 @@
+# M1 Max: Schema A/B and Second-Host Prefill Cache Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** On the Apple M1 Max / 64 GB, answer the two questions the 16 GB M5 cannot — whether `--json-format schema` now repairs the shapes `qwen3.6:27b-coding-nvfp4` misses, and whether the prompt-cache figures hold on a second host — then carry whichever way each lands into the notebook and the blog, and retire the 0.32.x references the answers supersede.
+
+**Architecture:** Two experiments separated by an Ollama upgrade, in that order for a reason. The schema A/B must run **under 0.33.2**, the runtime whose canary verdicts are published: `ModelBehavior.md` records that both `nvfp4` builds flipped from ignoring `format` to honoring it under 0.33.2, and that the canary is a property of model **and** runtime. Measuring the A/B before the upgrade keeps it matched to a published verdict; measuring it after would require re-confirming the canary first. The prefill-cache work needs the opposite: `prompt_eval_cached_count` does not exist before **0.33.3**, so it cannot run until the host is upgraded. Upgrading first would strand the A/B; running the A/B first costs nothing. Tasks 7 and 8 close the loop: the blog is derived from the notebook and drifts silently when it moves, and a runtime reference that no longer carries a difference is noise once the difference has been measured.
+
+**Tech Stack:** zsh, Ollama 0.33.2 then 0.33.3 (server), Dart 3.12.0 via FVM, Prettier (Markdown format gate).
+
+**Spec:** No separate spec document. This plan's premises were read from the working tree and from `adaptive_chat_server_dart/ModelBehavior.md` on 2026-09-04; the "Facts established before writing this plan" section is the spec, and every claim in it was read from a file rather than recalled.
+
+## Global Constraints
+
+- **Branch strategy.** This plan is committed on `feat/cached-prompt-tokens-prefill-probe` so it travels to the other machine, but the work splits: **Tasks 1–3 (the schema A/B) belong on a new branch off `main`** — they are the follow-up recorded from PR #77 and are unrelated to cached prompt tokens. **Tasks 4–8 belong on this branch** (or its successor if it has merged), because they strengthen claims this branch publishes. Do not mix the two in one commit.
+- **Prefix every `flutter` and `dart` command with `fvm`.** Bare `dart` may not be the pinned SDK.
+- **One model resident at a time.** Never run two probes concurrently, and never start a probe while `ollama ps` lists a model. Load, run every probe for that model, unload, wait, switch. A number collected any other way is not comparable to anything.
+- **Re-run a suspicious row on an idle machine before recording it.** This rule has already caught two bad rows in this notebook.
+- **The server version is what `/api/version` reports**, never the `ollama --version` client line. They skewed on the M5 during this work: the client read 0.33.3 while the resident daemon still served 0.33.1, because `Ollama.app` had been upgraded on disk without the running daemon being replaced. Check `curl -s http://127.0.0.1:11434/api/version` and, after an upgrade, confirm the daemon actually restarted.
+- **Do not write into `results-m1max-64gb-ollama033/` or `results-m5-16gb-ollama033/`.** Both are finished archives that `check_results.dart` reads and CI polices. Anything measured under 0.33.3 on this host goes to a new sibling, `results-m1max-64gb-ollama0333/`, per the sibling-naming rule in `CLAUDE.md`.
+- **Documentation tone (CLAUDE.md).** Flat analytical register: no amplifying adverbs, replace superlatives with the figure, bold reserved for a section's load-bearing claim and for figures, hedge inferred mechanisms, end on the last factual sentence.
+- **Markdown format gate.** `adaptive_chat_server_dart/**` is covered by `npm run check:md:chat`, **not** by `npm run check:md`. Run the `:chat` one.
+- **Blog length cap.** `blog/README.md` sets ~2,000 prose words per article, hard cap 3,000. Article 5 currently sits at **2,999** — one word of headroom. Any addition to it must be paid for by a trim, or the cap raised deliberately.
+- **Never commit or push without explicit user confirmation** (CLAUDE.md git gate), except the standing exception for subagent-driven plan execution committing completed tasks to the feature branch.
+
+## Facts established before writing this plan
+
+Recorded here so no task has to re-derive them. Read from the tree on 2026-09-04.
+
+| Fact                                 | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `shape_ab.dart` `--json-format` flag | **Does not exist.** Its parser has `baseline`, `candidate`, `only`, `channel`, `reinforce`, `seed-card`, `seed-card-file`, `json`, `model`, `url`, `samples`, `timeout`, `help`. This is why Task 1 exists.                                                                                                                                                                                                                                               |
+| `probeOnce` format support           | Already present: `probe_support.dart:270` takes `Object? format` and sends `'format': ?format`. Only the CLI wiring is missing.                                                                                                                                                                                                                                                                                                                           |
+| Card schema loader                   | `loadCardSchema()` in `probe_support.dart:155`, returns `Map<String, dynamic>`.                                                                                                                                                                                                                                                                                                                                                                           |
+| Result-file naming                   | `shape_ab.dart:365` sets `variant` from the channel and seeding only: `channel == 'tool' ? 'channel-tool' : (seeded ? 'seeded' : 'unaided')`. A constrained run would therefore record as plain `seeded`.                                                                                                                                                                                                                                                 |
+| **The collision this creates**       | `sync_shape_table.dart:131` selects the canonical shape-table row with `r.probe == 'shape_ab' && r.variant == 'seeded'`, an exact match, and `results-m1max-64gb-ollama033/` is `shapeTableDir` — the directory the published table derives from. A schema run filed there as `seeded` becomes a **second** run matching that filter for the same model, and which one `pick()` returns is not defined. Task 1 extends the variant so this cannot happen. |
+| Unknown result files                 | Safe. `check_results.dart` reports only **missing** expected probes (`expectedProbes`, line 37); an extra file is not flagged. Do **not** add the A/B to `expectedProbes` — it is a one-off, not a per-model sweep probe.                                                                                                                                                                                                                                 |
+| M1 Max runtime as last measured      | **0.33.2** (the 2026-09-01 sweep).                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Canary verdicts under 0.33.2         | `qwen3.6:27b-coding-nvfp4` **honored**, `qwen3.8:27b-nvfp4` **honored**, `gpt-oss:20b` `ignored-destructively`, unsloth GGUF `ignored-harmlessly`.                                                                                                                                                                                                                                                                                                        |
+| The shapes under test                | `qwen3.6:27b-coding-nvfp4` permanently misses `carousel` and `columnset` as **invalid JSON** — the failure constrained decoding exists to prevent.                                                                                                                                                                                                                                                                                                        |
+| Model weights                        | `qwen3.6:27b-coding-nvfp4` 18.4 GB, `qwen3.8:27b-nvfp4` 16.9 GB. Neither fits a 16 GB host, which is why this is M1 Max work.                                                                                                                                                                                                                                                                                                                             |
+| `prompt_eval_cached_count`           | Ollama **0.33.3** and later only. Absent on 0.33.2.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| M5 cache figures to compare against  | identical repeat 2142/2143 cached, 2017 ms → 18 ms; new question 2136/2144, 60 ms; growing turns 2–3 ~94 ms; interleaved 2136/2143, 55 ms; retry after abort 2443/2444, 29 ms.                                                                                                                                                                                                                                                                            |
+| Duplicate-key risk                   | `ModelBehavior.md` records duplicate-key corruption "seen under schema-constrained decoding". `judgeShape` already runs `checkNoDuplicateJsonKeys`, so a schema arm that corrupts this way will be scored a failure rather than a pass.                                                                                                                                                                                                                   |
+
+---
+
+### Task 1: Teach the probes to send `format`
+
+**Files:**
+
+- Modify: `adaptive_chat_server_dart/tool/model_probes/probe_support.dart` (add `resolveProbeFormat`)
+- Modify: `adaptive_chat_server_dart/tool/model_probes/shape_ab.dart:206` (add the option), `:100-112` (pass it), `:266-274` (leave the forwarding list alone — `json-format` is consumed locally, not forwarded to `parseProbeArgs`)
+- Test: `adaptive_chat_server_dart/test/probe_format_test.dart` (create)
+
+**Interfaces:**
+
+- Consumes: `loadCardSchema()` from `probe_support.dart`.
+- Produces: `Object? resolveProbeFormat(String mode)` — `'json'` → the string `'json'`, `'schema'` → the schema map, anything else → `null`. Task 2 invokes the flag it enables.
+
+Run every command below from `adaptive_chat_server_dart/`.
+
+- [ ] **Step 1: Write the failing test**
+
+Create `test/probe_format_test.dart`:
+
+```dart
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:test/test.dart';
+
+// Relative: both files live outside lib/.
+import '../tool/model_probes/probe_support.dart';
+
+void main() {
+  group('resolveProbeFormat', () {
+    test('none yields no constraint', () {
+      expect(resolveProbeFormat('none'), isNull);
+    });
+
+    test('json yields the bare json constraint', () {
+      expect(resolveProbeFormat('json'), 'json');
+    });
+
+    test('schema yields the bundled card schema', () {
+      final format = resolveProbeFormat('schema');
+      expect(format, isA<Map<String, dynamic>>());
+      expect((format! as Map<String, dynamic>).containsKey('oneOf'), isTrue);
+    });
+  });
+
+  group('probeOnce format pass-through', () {
+    late HttpServer server;
+    late HttpClient client;
+    late List<Map<String, dynamic>> bodies;
+
+    setUp(() async {
+      bodies = [];
+      server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      unawaited(() async {
+        await for (final request in server) {
+          final raw = await utf8.decoder.bind(request).join();
+          bodies.add(jsonDecode(raw) as Map<String, dynamic>);
+          request.response
+            ..headers.contentType = ContentType.json
+            ..write(
+              jsonEncode({
+                'message': {'content': '[]'},
+                'prompt_eval_count': 1,
+                'eval_count': 1,
+              }),
+            );
+          await request.response.close();
+        }
+      }());
+      client = HttpClient();
+    });
+
+    tearDown(() async {
+      client.close(force: true);
+      await server.close(force: true);
+    });
+
+    test('a format reaches the wire when one is asked for', () async {
+      await probeOnce(
+        client: client,
+        url: 'http://127.0.0.1:${server.port}',
+        model: 'test-model',
+        systemPrompt: 'SYS',
+        userPrompt: 'NOW',
+        format: resolveProbeFormat('json'),
+      );
+      expect(bodies.single['format'], 'json');
+    });
+
+    test('no format key is sent when none is asked for', () async {
+      await probeOnce(
+        client: client,
+        url: 'http://127.0.0.1:${server.port}',
+        model: 'test-model',
+        systemPrompt: 'SYS',
+        userPrompt: 'NOW',
+        format: resolveProbeFormat('none'),
+      );
+      expect(bodies.single.containsKey('format'), isFalse);
+    });
+  });
+}
+```
+
+If `unawaited` is unresolved, add `import 'dart:async';` — `probe_timeout_test.dart` is the reference for this fake-server pattern.
+
+- [ ] **Step 2: Run the test to verify it fails**
+
+```bash
+fvm dart test test/probe_format_test.dart
+```
+
+Expected: FAIL — `resolveProbeFormat` is not defined.
+
+- [ ] **Step 3: Add `resolveProbeFormat`**
+
+In `probe_support.dart`, directly beneath `loadCardSchema()`:
+
+```dart
+/// Maps a `--json-format` mode to what [probeOnce] should send as `format`.
+///
+/// Mirrors the server's own `--json-format` flag so a probe measures what the
+/// server would do rather than a probe-only convention: `none` sends no
+/// constraint at all, `json` asks only for valid JSON, and `schema` sends the
+/// bundled card schema. Whether a model honors any of it is per-model **and**
+/// per-runtime — check `json_format_probe.dart` before reading a result.
+Object? resolveProbeFormat(String mode) => switch (mode) {
+  'json' => 'json',
+  'schema' => loadCardSchema(),
+  _ => null,
+};
+```
+
+- [ ] **Step 4: Run the test to verify it passes**
+
+```bash
+fvm dart test test/probe_format_test.dart
+```
+
+Expected: PASS, 5 tests.
+
+- [ ] **Step 5: Add the flag to `shape_ab.dart`**
+
+In the `ArgParser`, immediately after the `only` option (line 206):
+
+```dart
+    ..addOption(
+      'json-format',
+      defaultsTo: 'none',
+      allowed: ['none', 'json', 'schema'],
+      help:
+          'Constrained decoding for the prose channel, mirroring the '
+          "server's --json-format. Only meaningful for a model whose "
+          'json_format_probe verdict is honored on the runtime under test; '
+          'a model that ignores the constraint produces an identical arm.',
+    )
+```
+
+Then read it once, above the case loop, beside `final reinforce = ...`:
+
+```dart
+  final probeFormat = resolveProbeFormat(parsed['json-format'] as String);
+```
+
+and pass it in the **prose** branch of the `probeOnce` call (the `: await probeOnce(` arm), after `reminder:`:
+
+```dart
+              format: probeFormat,
+```
+
+Leave `probeOnceViaTool` alone: the tool channel carries the schema in the tool definition already, and combining the two measures neither.
+
+- [ ] **Step 6: Extend `variant` so a constrained run cannot impersonate the canonical one**
+
+This is the load-bearing half of the task. At `shape_ab.dart:365` the variant is currently:
+
+```dart
+      variant: channel == 'tool'
+          ? 'channel-tool'
+          : (seeded ? 'seeded' : 'unaided'),
+```
+
+Replace it with a form that carries the constraint, so `sync_shape_table.dart`'s exact `variant == 'seeded'` match keeps selecting only unconstrained runs:
+
+```dart
+      variant: switch (channel) {
+        'tool' => 'channel-tool',
+        // The format mode is part of the identity of a run: an unconstrained
+        // arm and a schema-constrained one are different measurements, and
+        // sync_shape_table.dart selects the canonical row by an exact
+        // `variant == 'seeded'` match. A constrained run recorded as plain
+        // `seeded` would become a second candidate for that row.
+        _ =>
+          '${seeded ? 'seeded' : 'unaided'}'
+              '${parsed['json-format'] == 'none' ? '' : '-format-${parsed['json-format']}'}',
+      },
+```
+
+Verify the unconstrained default is byte-identical to what the archive already holds — an unconstrained seeded run must still record `variant: "seeded"`, or every archived row stops matching:
+
+```bash
+fvm dart run tool/model_probes/check_results.dart
+```
+
+Expected: OK, with no new missing-probe findings.
+
+- [ ] **Step 7: Guard the combination that cannot mean anything**
+
+After the existing `channel == 'tool'` guard block, add:
+
+```dart
+  if (channel == 'tool' && parsed['json-format'] as String != 'none') {
+    stderr.writeln(
+      'shape_ab: --channel tool already carries the schema in the tool '
+      'definition, so --json-format on top of it measures neither '
+      'constraint cleanly. Drop one.',
+    );
+    exitCode = 2;
+    return;
+  }
+```
+
+- [ ] **Step 8: Verify the whole suite and the gates**
+
+```bash
+fvm dart test
+fvm dart analyze
+fvm dart format --output=none --set-exit-if-changed lib/ test/ tool/
+fvm dart run tool/model_probes/shape_ab.dart --help
+```
+
+Expected: all tests pass, no analyzer issues, format clean, and `--json-format` visible in the usage text.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add test/probe_format_test.dart tool/model_probes/probe_support.dart \
+        tool/model_probes/shape_ab.dart
+git commit -m "feat(chat-server): let shape_ab send Ollama's format constraint"
+```
+
+---
+
+### Task 2: Measure the schema A/B on `qwen3.6:27b-coding-nvfp4`, under 0.33.2
+
+**Files:**
+
+- Create: `adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama033/qwen3.6_27b-coding-nvfp4/shape_ab-seeded-format-schema.json`
+
+**Interfaces:**
+
+- Consumes: the `--json-format` flag from Task 1.
+- Produces: two comparable runs — the recorded baseline already in the archive, and the new schema arm — for Task 3 to write up.
+
+- [ ] **Step 1: Confirm the runtime is still 0.33.2 before measuring anything**
+
+```bash
+curl -s http://127.0.0.1:11434/api/version
+```
+
+Expected: `{"version":"0.33.2"}`. **If it reads 0.33.3, stop** — the host was upgraded ahead of this plan, and the published canary verdict no longer matches the runtime. Do Task 4's canary re-run first, then return here and label every figure 0.33.3.
+
+- [ ] **Step 2: Confirm the model is present and the machine is idle**
+
+```bash
+ollama ps
+curl -s http://127.0.0.1:11434/api/tags | grep -o 'qwen3.6:27b-coding-nvfp4'
+```
+
+Expected: `ollama ps` lists nothing resident; the tag is present. If another model is resident, `ollama stop <model>` and wait for the GPU to go idle.
+
+- [ ] **Step 3: Re-confirm this model still honors `format` on this runtime**
+
+```bash
+fvm dart run tool/model_probes/json_format_probe.dart \
+  --model qwen3.6:27b-coding-nvfp4 --samples 2
+```
+
+Expected: verdict `honored`. **If it reads `ignored-harmlessly`, stop and record that instead** — the A/B is meaningless against a model ignoring the constraint, and a verdict that moved is itself the finding.
+
+- [ ] **Step 4: Run the schema arm on the shapes under test plus controls**
+
+`carousel` and `columnset` are the failures; `prose`, `date`, and `choice1` are controls that must not regress. Both arms are seeded, matching how the server ships.
+
+```bash
+fvm dart run tool/model_probes/shape_ab.dart \
+  --model qwen3.6:27b-coding-nvfp4 \
+  --json-format schema \
+  --only carousel,columnset,prose,date,choice1 \
+  --samples 3 \
+  --json tool/model_probes/results-m1max-64gb-ollama033/qwen3.6_27b-coding-nvfp4/shape_ab-seeded-format-schema.json
+```
+
+With Task 1's variant change this records `variant: "seeded-format-schema"`, which `sync_shape_table.dart`'s exact `variant == 'seeded'` match ignores. **Confirm that before trusting the run:** `python3 -c "import json;print(json.load(open('<path>'))['variant'])"` must print `seeded-format-schema`. If it prints `seeded`, Task 1 Step 6 did not land — delete the file and fix it, or the published shape table gains a second candidate row for this model.
+
+- [ ] **Step 5: Run the matching unconstrained arm for a same-session baseline**
+
+The archived `shape_ab-seeded.json` covers all 25 cases from an earlier session. Re-running the same five cases now removes session-to-session drift from the comparison.
+
+```bash
+fvm dart run tool/model_probes/shape_ab.dart \
+  --model qwen3.6:27b-coding-nvfp4 \
+  --json-format none \
+  --only carousel,columnset,prose,date,choice1 \
+  --samples 3 \
+  --json /tmp/shape_ab-format-none.json
+```
+
+- [ ] **Step 6: Unload the model**
+
+```bash
+ollama stop qwen3.6:27b-coding-nvfp4
+ollama ps
+```
+
+Expected: nothing resident.
+
+- [ ] **Step 7: Read both runs and write down the four numbers that matter**
+
+For each arm record: `carousel` pass/fail, `columnset` pass/fail, whether any control regressed, and whether any reply failed on **duplicate keys** — the corruption `ModelBehavior.md` associates with schema-constrained decoding.
+
+```bash
+python3 -c "
+import json
+for name, path in [('none','/tmp/shape_ab-format-none.json'),
+                   ('schema','tool/model_probes/results-m1max-64gb-ollama033/qwen3.6_27b-coding-nvfp4/shape_ab-seeded-format-schema.json')]:
+    d = json.load(open(path))
+    print(name, d.get('summary'))
+    for c in d['calls']:
+        print(' ', c['caseId'], c.get('label'), c.get('ok'))
+"
+```
+
+- [ ] **Step 8: Commit the recorded run**
+
+```bash
+git add tool/model_probes/results-m1max-64gb-ollama033/qwen3.6_27b-coding-nvfp4/shape_ab-seeded-format-schema.json
+git commit -m "measure(chat-server): schema-constrained shape arm for qwen3.6 under 0.33.2"
+```
+
+---
+
+### Task 3: Record the A/B result, whichever way it went
+
+**Files:**
+
+- Modify: `adaptive_chat_server_dart/ModelBehavior.md:452` (the format-canary section's closing limit), `:755` (the `qwen3.6` per-model note)
+- Modify: `adaptive_chat_server_dart/CHANGELOG.md` (`## [Unreleased]`)
+
+- [ ] **Step 1: Replace the "has not been measured" clause at line 452**
+
+The sentence currently ends: "…whether `--json-format schema` improves the shapes the `nvfp4` builds actually miss (`qwen3.6:27b-coding-nvfp4`'s `Carousel`/`ColumnSet` invalid-JSON failures) has not been measured." Replace that clause with the measured outcome, in the file's register — the figure, the condition, and no adverbs. A null result is written as plainly as a positive one: "Measured at `--samples 3` on five cases, the schema arm changed no case" — plus the date and runtime — is a complete finding.
+
+- [ ] **Step 2: Replace the open-follow-up sentence in the `qwen3.6` per-model note at line 755**
+
+It currently reads "…Whether the now-enforced constraint helps its permanent `Carousel`/`ColumnSet` invalid-JSON failures has not been measured; that A/B is the open follow-up the flip creates." Replace with the result and its condition.
+
+- [ ] **Step 3: If the schema arm helped, do not promote it in the same change**
+
+Recording a measurement and changing what `launch.json` ships are separate decisions, and the constraint has a known cost: it forbids the prompt's legal Markdown escape hatch, so it changes reply semantics rather than only tightening JSON. Note that trade-off beside the result and leave the promotion to the user.
+
+- [ ] **Step 4: Add a `CHANGELOG.md` bullet under `## [Unreleased]`**
+
+Keep it in the existing list — no blank line between bullets, which renders the list loose.
+
+- [ ] **Step 5: Verify the gates**
+
+```bash
+cd .. && npm run format:md:chat && npm run check:md:chat && cd adaptive_chat_server_dart
+fvm dart run tool/model_probes/check_results.dart
+```
+
+Expected: prettier clean, and `check_results` OK.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add ModelBehavior.md CHANGELOG.md
+git commit -m "docs(chat-server): record the schema-constrained shape A/B for qwen3.6"
+```
+
+---
+
+### Task 4: Upgrade to 0.33.3 and re-establish what the upgrade invalidates
+
+**Files:**
+
+- Create: `adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama0333/` (new sibling directory)
+
+Everything from here belongs on the cached-prompt-tokens branch, not the A/B branch.
+
+- [ ] **Step 1: Upgrade Ollama and confirm the daemon actually restarted**
+
+```bash
+curl -s http://127.0.0.1:11434/api/version
+```
+
+Expected: `{"version":"0.33.3"}`. The client binary upgrading is not enough — on the M5 the resident daemon kept serving 0.33.1 after the app was updated on disk, and `ollama --version` printed a `Warning: client version is …` line. If the version has not moved, restart `Ollama.app` and re-check.
+
+- [ ] **Step 2: Re-run the format canary for the two `nvfp4` builds**
+
+The published `honored` verdicts were measured on 0.33.2, and the file's own rule is that the canary is per-runtime. One model at a time.
+
+```bash
+fvm dart run tool/model_probes/json_format_probe.dart \
+  --model qwen3.6:27b-coding-nvfp4 --samples 2 \
+  --json tool/model_probes/results-m1max-64gb-ollama0333/qwen3.6_27b-coding-nvfp4/json_format_probe.json
+ollama stop qwen3.6:27b-coding-nvfp4
+
+fvm dart run tool/model_probes/json_format_probe.dart \
+  --model qwen3.8:27b-nvfp4 --samples 2 \
+  --json tool/model_probes/results-m1max-64gb-ollama0333/qwen3.8_27b-nvfp4/json_format_probe.json
+ollama stop qwen3.8:27b-nvfp4
+```
+
+- [ ] **Step 3: Record whether the verdicts held**
+
+If both still read `honored`, say so in one sentence at `ModelBehavior.md:452` — a verdict that survives a runtime bump is worth recording precisely because the section's claim is that it might not. If either moved, that is a larger finding and supersedes the A/B's premise; say so plainly and note that Task 2's figures were measured under 0.33.2.
+
+- [ ] **Step 4: Note the sampled-temperature caveat without re-running the sweep**
+
+Ollama 0.33.3 adds "Honor GGUF model defined default parameters". The probes pin `temperature`, `think`, and `num_ctx` but **not** `top_p`/`top_k`/`repeat_penalty`, so figures sampled at `t=0.2`/`0.6` may not be comparable across the upgrade; `t=0` greedy figures are shielded. Add one sentence recording that, and do **not** re-run the full sweep — that is a separate decision with its own cost.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add tool/model_probes/results-m1max-64gb-ollama0333 ModelBehavior.md CHANGELOG.md
+git commit -m "measure(chat-server): re-run the format canary on the M1 Max under 0.33.3"
+```
+
+---
+
+### Task 5: Run the prefill cache probe on the second host
+
+**Files:**
+
+- Modify: `adaptive_chat_server_dart/ModelBehavior.md:897` (the "one model, one host, one runtime" caveat)
+
+- [ ] **Step 1: Run the committed probe against the same model the M5 used**
+
+Holding the model fixed is what makes this a host comparison rather than a new experiment.
+
+```bash
+fvm dart run tool/model_probes/prefill_cache_probe.dart --model llama3.2:latest
+```
+
+- [ ] **Step 2: Compare against the M5 run, and expect the shape rather than the digits**
+
+The M5 figures are in the table at `ModelBehavior.md:883`. What should reproduce is the **pattern** — a cold prefill in the seconds, a warm repeat in the tens of milliseconds, a growing conversation paying only for its new tokens, the cache surviving an interleaved request, and a retry after an abort costing a warm repeat. Absolute milliseconds will differ; the M1 Max is a different machine. Do not report a difference in absolute prefill time as a finding without a same-host control, which is the trap the `qwen3.5:9b` 1.54x position bias already sprang once.
+
+- [ ] **Step 3: Run it again on a large model, which the M5 could not hold**
+
+```bash
+fvm dart run tool/model_probes/prefill_cache_probe.dart --model qwen3.8:27b-nvfp4
+ollama stop qwen3.8:27b-nvfp4
+```
+
+This is the half of the caveat the M5 cannot retire: whether cache behavior is a property of the runtime or of a 2 GB model.
+
+- [ ] **Step 4: Rewrite the caveat to match what is now established**
+
+Line 897 currently reads "Caveat: one model, one host, one runtime, single-turn-scale replies." Narrow it to whatever survives — two hosts and two models, if both runs agree — and keep the parts that do not (single-turn-scale replies; retention limits and eviction policy under memory pressure still unprobed).
+
+- [ ] **Step 5: Verify and commit**
+
+```bash
+cd .. && npm run format:md:chat && npm run check:md:chat && cd adaptive_chat_server_dart
+fvm dart run tool/model_probes/check_results.dart
+git add ModelBehavior.md CHANGELOG.md
+git commit -m "measure(chat-server): prompt-cache figures reproduce on a second host"
+```
+
+---
+
+### Task 6: Confirm the truncation warning fires against a live server
+
+**Files:**
+
+- Modify: `adaptive_chat_server_dart/ModelBehavior.md` (Measurement lessons, the silent-truncation bullet)
+
+The `_logContextFill` fix is proven only against a mocked response. This is the one code change in the branch, and the failure it detects is the one that invalidated an entire probe run.
+
+- [ ] **Step 1: Start the server with a small window**
+
+```bash
+fvm dart run bin/server.dart --port 18434 \
+  --ollama-model llama3.2:latest \
+  --system-prompt-file assets/card_system_prompt.txt \
+  --num-ctx 2048
+```
+
+The shipped card system prompt is ~3,800 tokens, so a 2,048-token window guarantees the overflow this checks for.
+
+- [ ] **Step 2: Send one interaction and read the log**
+
+```bash
+CID=$(curl -s -X POST http://127.0.0.1:18434/conversations \
+  -H 'Content-Type: application/json' -d '{}' \
+  | python3 -c "import json,sys; print(json.load(sys.stdin)['conversationId'])")
+curl -s -X POST "http://127.0.0.1:18434/conversations/$CID/interactions" \
+  -H 'Content-Type: application/json' -H 'X-Interaction-Id: trunc1' \
+  -d '{"data":{"message":"Briefly, what is SDUI?"}}' > /dev/null
+```
+
+Expected in the server log: a **warning** containing `Ollama prompt truncated`, naming an estimate above 2,048 and an evaluated count below it. Before the fix this logged a calm `context filling … (50%)` info line.
+
+- [ ] **Step 3: Confirm the negative case**
+
+Restart with `--num-ctx 8192` and repeat. Expected: **no** `prompt truncated` warning.
+
+- [ ] **Step 4: Stop the server and unload**
+
+```bash
+curl -s http://127.0.0.1:11434/api/chat -d '{"model":"llama3.2:latest","keep_alive":0}' > /dev/null
+ollama ps
+```
+
+- [ ] **Step 5: Record the confirmation in one sentence**
+
+Add to the silent-truncation bullet in Measurement lessons that the detector now warns on it, confirmed against a live server at `num_ctx` 2048 with the shipped card prompt. Keep it to one clause — the bullet's subject is the trap, not the fix.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add ModelBehavior.md CHANGELOG.md
+git commit -m "docs(chat-server): confirm the truncation warning against a live server"
+```
+
+---
+
+### Task 7: Propagate to the blog, and retire the 0.32.x references this plan supersedes
+
+**Files:**
+
+- Modify: `adaptive_chat_server_dart/blog/2026-08-30-article-2-tuning-process-draft.md:121` (the decoding-levers row)
+- Modify: `adaptive_chat_server_dart/blog/2026-08-30-article-5-measurement-hygiene-draft.md` (the prompt-cache section, ~line 251)
+- Modify: `adaptive_chat_server_dart/ModelBehavior.md` (the 0.32.x pass)
+
+Two separate jobs that touch the same files, so they share a task: carrying this plan's measurements into the blog, and cleaning up runtime references the measurements make obsolete.
+
+#### Part A — the blog claims these measurements can change
+
+The blog is derived from the notebook and drifts silently when the notebook moves. Three specific claims are downstream of Tasks 2–6:
+
+- [ ] **Step 1: Article 2, the `format` lever row (line 121)**
+
+It currently reads `Per-model and per-runtime, unreliable` with evidence naming the `nvfp4` flip. If Task 2 found the schema arm repairs `carousel`/`columnset`, this row understates the lever and needs the new figure; if it found no change, the row needs the null stated, because "honored" without "and it helps" is exactly the misreading the row exists to prevent. Either way the row cannot stay as it is once the A/B is measured.
+
+- [ ] **Step 2: Article 5, the prompt-cache section**
+
+Its table is attributed `Apple M5 / 16 GB, Ollama 0.33.3, llama3.2:latest`. If Task 5 reproduced the pattern on the M1 Max and on a large model, that attribution becomes two hosts and two models, which is a stronger claim than the article currently makes. Update the attribution line, not the figures — the M5 numbers stay as the published run.
+
+- [ ] **Step 3: Article 5, the truncation lesson**
+
+If Task 6 confirmed the warning fires against a live server, the section's closing can say the detector now catches it. One clause, not a paragraph — the section's subject is the trap, not the fix.
+
+- [ ] **Step 4: Respect the length cap while doing it**
+
+Article 5 sits at **2,999 prose words against a 3,000 cap**. Every addition above must be paid for with a trim in the same edit, or the cap raised deliberately in `blog/README.md`. Measure with the command in Task 8 Step 2 before and after.
+
+#### Part B — retire the superseded 0.32.x references
+
+The rule: **a 0.32.x reference stays only when it carries a cross-runtime difference or the provenance of a figure that was never re-measured. Everything else goes.** Three categories, and the middle one is the trap.
+
+- [ ] **Step 5: Inventory what is actually there**
+
+```bash
+cd adaptive_chat_server_dart
+grep -n '0\.32\.14' ModelBehavior.md | wc -l   # 28 as of 2026-09-04
+grep -rn '0\.32\.14' blog/                     # 5 as of 2026-09-04
+```
+
+- [ ] **Step 6: Classify each hit before editing any of them**
+
+**Keep — the reference _is_ the finding.** The sentence states something that changed between runtimes, and deleting the old runtime destroys the claim. These are most of them:
+
+- The `format` canary flip (`:21`, `:41`, `:450`, `:452`, `:755`, `:782-783`) — "ignored under 0.32.14, honored under 0.33.2" is the whole result.
+- The `gpt-oss:20b` seed reversal (`:82`, `:375`, `:377`, `:379`, `:871`).
+- The latency null result (`:265`) — "13 of 15 medians within 0.86-1.05x of the same host's 0.32.14 figures" is a comparison; without the baseline it says nothing.
+- The stall and eviction comparisons (`:293`, `:302`, `:307`, `:309`).
+- `granite4.1:3b`'s clean-versus-clean reading (`:817`).
+
+**Keep — provenance of a figure never re-measured.** This is the trap: Task 4 upgrades the runtime but deliberately does **not** re-sweep, so several published figures remain 0.32.14 measurements. `ModelBehavior.md:237` says exactly that ("The everyday and stress figures elsewhere in this file remain the older **Ollama 0.32.14** measurement on the same M1 Max"). Deleting it would make figures from a two-versions-old runtime read as current. Keep it, and if Task 4 upgraded the host, extend it to say the runtime has since moved on without those figures being re-taken.
+
+**Remove or rewrite — incidental provenance for a superseded figure.** Where a 0.32.14 stamp only dates a figure that a 0.33.x run has since replaced, the stamp is noise. Candidates to read in full and decide individually: `:279`, `:323`, `:741`, `:815`. Do not batch-delete these — read the sentence, confirm a 0.33.x measurement actually supersedes it, and only then drop the stamp.
+
+- [ ] **Step 7: The blog needs almost none of this**
+
+Of the five blog hits, four are already cross-runtime claims and stay: article 2's seed reversal (`:93`) and lever row (`:121`), article 5's upgrade delta (`:108`) and granite comparison (`:168`). The fifth, article 5's `:92` ("Under Ollama 0.32.14, the bound changes what one figure means"), is the never-re-measured category — it qualifies a figure correctly and should stay qualified.
+
+- [ ] **Step 8: Never change a figure while changing wording**
+
+The CLAUDE.md tone rule and this branch's own history both say so: a trim on this article already dropped a figure that a presence-only check missed. Diff **counts**, not presence, with the script in Task 8 Step 3, and confirm every decrease was intended.
+
+- [ ] **Step 9: Verify and commit**
+
+```bash
+cd .. && npm run format:md:chat && npm run check:md:chat && cd adaptive_chat_server_dart
+git add ModelBehavior.md blog/ CHANGELOG.md
+git commit -m "docs(chat-server): carry the M1 Max findings into the blog, retire superseded 0.32.x stamps"
+```
+
+---
+
+### Task 8: Full verification
+
+- [ ] **Step 1: Run every gate from `adaptive_chat_server_dart/`**
+
+```bash
+fvm dart analyze
+fvm dart test
+fvm dart format --output=none --set-exit-if-changed lib/ test/ tool/
+fvm dart run tool/model_probes/check_results.dart
+cd .. && npm run check:md:chat
+```
+
+Expected: no analyzer issues; all tests pass; format clean; `check_results` OK; prettier clean.
+
+- [ ] **Step 2: Check the blog cap before touching article 5**
+
+```bash
+cd adaptive_chat_server_dart && python3 -c "
+import re
+t=open('blog/2026-08-30-article-5-measurement-hygiene-draft.md').read()
+t2=re.sub(r'\`\`\`.*?\`\`\`','',t,flags=re.S); t2=re.sub(r'^\|.*\$','',t2,flags=re.M)
+t2=re.sub(r'\(https?://[^)]*\)','',t2); t2=re.sub(r'https?://\S+','',t2)
+print('prose:',len(t2.split()),'(cap 3000)')"
+```
+
+It sits at 2,999. If any task added to that article, pay for it with a trim or raise the cap deliberately in `blog/README.md` — do not let it drift over silently.
+
+- [ ] **Step 3: Diff the numeric tokens of every changed document**
+
+The trim in this branch's history dropped a figure that a token-presence check missed, because the token still appeared elsewhere in the file. Compare **counts**, not just presence:
+
+```bash
+python3 - <<'EOF'
+import re, subprocess
+from collections import Counter
+path = 'adaptive_chat_server_dart/ModelBehavior.md'
+old = subprocess.run(['git','show',f'main:{path}'],capture_output=True,text=True).stdout
+new = open(path.split('/',1)[1]).read()
+tok = lambda s: Counter(re.findall(r'\d+(?:[./:x]\d+)*', s))
+co, cn = tok(old), tok(new)
+print('count decreased:', dict(co-cn))
+print('count increased:', dict(cn-co))
+EOF
+```
+
+Every decrease must be one you meant.
+
+- [ ] **Step 4: Report results with the command output, not a summary**
+
+Invoke `superpowers:verification-before-completion` and paste exit codes and pass/fail counts before claiming the plan is complete.
+
+---
+
+## Deliberately out of scope
+
+- **Promoting `--json-format schema` into `launch.json`.** Measuring is this plan; shipping is a separate decision with a known cost (it forbids the prompt's Markdown escape hatch).
+- **A full 0.33.3 re-sweep of all fifteen models.** Task 4 records the comparability caveat instead. A re-sweep is ~5 hours of wall clock and its own plan.
+- **The `granite4.1:3b` cascade-damaged rows** and the open question of whether a runaway generation can be cancelled at all (`ModelBehavior.md:311`, `:350`). Still open, still M1 Max work, not this plan.
+- **`gpt-oss:20b`.** Its canary is `ignored-destructively` on both runtimes measured; the constraint eliminates card production there rather than tightening it.

@@ -29,6 +29,17 @@
   silently truncated to half the window, which zeroes cache reuse and
   holds `prompt_eval_count` constant — the tell that invalidated the
   first probe run.
+- Docs: **plan for the M1 Max follow-up work**
+  (`docs/superpowers/plans/2026-09-04-m1max-schema-ab-and-prefill-cache.md`).
+  Eight tasks: teach `shape_ab.dart` to send Ollama's `format` constraint
+  (it cannot today), run the schema A/B on `qwen3.6:27b-coding-nvfp4`
+  under 0.33.2 before upgrading, re-run the canary on 0.33.3, reproduce
+  the prompt-cache figures on a second host and a large model, confirm
+  the truncation warning against a live server, then propagate to the
+  blog and retire the superseded 0.32.x references. Records the trap
+  that `shape_ab` derives `variant` from seeding alone, so a constrained
+  run would file as `seeded` and give the published shape table a second
+  candidate row.
 - Fixed: **the context-fill warning could not fire on the truncation it
   names.** `_logContextFill` derived its tiers from `prompt_eval_count`,
   which reports what survived truncation and so can never exceed `num_ctx`:
