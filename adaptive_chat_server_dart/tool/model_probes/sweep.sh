@@ -27,7 +27,7 @@
 set -u
 
 cd "$(dirname "$0")/../.." || exit 1
-# Required, not defaulted. Results are per host -- results-m1max-64gb-ollama032/,
+# Required, not defaulted. Results are per host -- results-m1max-64gb-ollama033/,
 # results-m5-16gb-ollama033/ -- because latency is a property of the box as much as the
 # model, and there is no directory that is right for every machine.
 #
