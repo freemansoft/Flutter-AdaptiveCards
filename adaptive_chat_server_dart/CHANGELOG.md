@@ -9,10 +9,15 @@
   unstable — 3/3 PASS in the recorded A/B but 0/4 across two later
   re-checks on an idle machine, so the apparent repair did not reproduce.
   `prose` regresses to 0/6 (every reply an unwanted card); `date` and
-  `choice1` are unaffected. Result recorded at
-  `results-m1max-64gb-ollama0333/qwen3.6_27b-coding-nvfp4/shape_ab-seeded-format-schema.json`;
-  the unconstrained control arm and the `carousel` re-checks are not
-  archived (see `task-2-report.md` in the plan directory for their full
+  `choice1` are unaffected. Recorded at
+  `results-m1max-64gb-ollama0333/qwen3.6_27b-coding-nvfp4/`: the A/B itself
+  in `shape_ab-seeded-format-schema.json`, and the two runs that disproved
+  its `carousel`-warm pass alongside it as `-confirm.json` and
+  `-recheck.json`, so the contradiction is visible from the directory
+  listing rather than only from a report. The unconstrained control arm is
+  not archived — a 5-case unconstrained run would record `variant:
+"seeded"`, the string `sync_shape_table.dart` selects a canonical table
+  row by (see `task-2-report.md` in the plan directory for its full
   per-case data).
 - Measured: **re-ran the `format` canary for both `nvfp4` builds under
   Ollama 0.33.3.** `qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both

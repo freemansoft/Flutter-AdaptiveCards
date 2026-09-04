@@ -1,0 +1,37 @@
+{
+  "probe": "shape_ab",
+  "model": "qwen3.6:27b-coding-nvfp4",
+  "variant": "seeded-format-schema",
+  "measuredAt": "2026-09-04",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.3",
+  "samples": 1,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 1,
+    "coldStart": 0,
+    "withHistory": 0
+  },
+  "calls": [
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: timeout (180s)",
+      "condition": "cold",
+      "ms": 180077
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: timeout (180s)",
+      "condition": "warm",
+      "ms": 180031
+    }
+  ]
+}
