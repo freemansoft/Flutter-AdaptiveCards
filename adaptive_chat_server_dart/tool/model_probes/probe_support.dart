@@ -122,33 +122,54 @@ ProbeArgs parseProbeArgs(List<String> argv, {int defaultSamples = 3}) {
   }
 }
 
+/// A file that exists in this package's `assets/` and nowhere it could be
+/// confused with — the sentinel [probeAssetsDir] checks for before
+/// accepting a candidate directory. `card_system_prompt.txt` is what every
+/// probe sends as the system prompt, so its absence means the candidate
+/// cannot be the right directory no matter what it's named.
+const _probeAssetsSentinel = 'card_system_prompt.txt';
+
 /// Directory holding the bundled prompt assets.
 ///
 /// Tries the script location first — stable across working directories
 /// under `dart run`. Under `dart test`, [Platform.script] points at the
 /// test runner instead of the probe file, so that guess can land outside
-/// the repo entirely; when the resulting directory doesn't exist, this
-/// falls back to searching upward from the current directory for
+/// the repo entirely; when the resulting directory doesn't hold
+/// [_probeAssetsSentinel], this falls back to searching upward from
+/// [startDir] (the current directory, unless a test overrides it) for
 /// `adaptive_chat_server_dart/assets` (or, when already inside that
 /// package, plain `assets`), which holds regardless of where the search
-/// starts. Exposed rather than inlined because a probe writing a result
-/// file has to digest these same assets — a recorded digest and the prompt
-/// actually sent must come from one path, or the staleness check is
-/// checking the wrong file.
-String probeAssetsDir() {
+/// starts. Each candidate — script-relative or walked-to — is checked for
+/// the sentinel before being accepted: a directory that merely happens to
+/// be *named* `assets` (a sibling package's own asset folder, say) is not
+/// enough, since a caller trusts whatever this returns to hold
+/// `card_system_prompt.txt`, `card_schema.json`, and `seed_card.json`.
+/// Exposed rather than inlined because a probe writing a result file has to
+/// digest these same assets — a recorded digest and the prompt actually
+/// sent must come from one path, or the staleness check is checking the
+/// wrong file.
+///
+/// [startDir] defaults to [Directory.current]; it exists so tests can probe
+/// the fallback walk without mutating the process-wide working directory,
+/// which `package:test` runs test files concurrently against and would
+/// make every other file's relative-path lookups racy.
+String probeAssetsDir({Directory? startDir}) {
+  bool holdsAssets(String dir) =>
+      File(p.join(dir, _probeAssetsSentinel)).existsSync();
+
   final fromScript = p.normalize(
     p.join(p.dirname(Platform.script.toFilePath()), '..', '..', 'assets'),
   );
-  if (Directory(fromScript).existsSync()) {
+  if (holdsAssets(fromScript)) {
     return fromScript;
   }
-  for (var dir = Directory.current; ; dir = dir.parent) {
+  for (var dir = startDir ?? Directory.current; ; dir = dir.parent) {
     final direct = p.join(dir.path, 'assets');
-    if (Directory(direct).existsSync()) {
+    if (holdsAssets(direct)) {
       return direct;
     }
     final nested = p.join(dir.path, 'adaptive_chat_server_dart', 'assets');
-    if (Directory(nested).existsSync()) {
+    if (holdsAssets(nested)) {
       return nested;
     }
     if (dir.parent.path == dir.path) {
