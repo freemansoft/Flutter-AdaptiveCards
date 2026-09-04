@@ -1,0 +1,87 @@
+{
+  "probe": "gguf_defaults_probe",
+  "model": "qwen3.5:9b",
+  "measuredAt": "2026-09-04",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.3",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "seed": 42,
+    "sampleDiffs": 2,
+    "topKTopPDiffsVsUnpinned": 0,
+    "presencePenaltyDiffsVsUnpinned": 2,
+    "verdict": "output-moved"
+  },
+  "notes": "Four arms at fixed seed 42: `unpinned` sends only temperature and seed (what the shipped probes send today); `pinned-historical` adds {top_k: 40, top_p: 0.9, presence_penalty: 0} explicitly -- the candidate-set defaults a pre-0.33.3 server applied regardless of a model's Modelfile. `topk-topp-only` and `presence-penalty-only` each send one half of that set, to isolate which one accounts for a divergence from `unpinned` -- the *DiffsVsUnpinned summary fields count how many of the samples differ from `unpinned` by reply hash, per arm, at this temperature. At t=0, top_k/top_p constrain only the sampling step greedy decoding skips, so `topk-topp-only` is expected to match `unpinned`; `presence_penalty` adjusts logits before the argmax, so `presence-penalty-only` is not shielded the same way. Whether Ollama is actually pulling presence_penalty from this model's Modelfile, as the 0.33.3 changelog entry implies, is not shown by this comparison and was not confirmed from server logs -- this measures the effect, not the mechanism.",
+  "calls": [
+    {
+      "case": "planets-table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1] hash=a793c78a",
+      "setting": "unpinned",
+      "ms": 23354
+    },
+    {
+      "case": "planets-table",
+      "sample": 1,
+      "pass": true,
+      "label": "card[1] hash=a793c78a",
+      "setting": "unpinned",
+      "ms": 11896
+    },
+    {
+      "case": "planets-table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1] hash=a793c78a",
+      "setting": "topk-topp-only",
+      "ms": 12949
+    },
+    {
+      "case": "planets-table",
+      "sample": 1,
+      "pass": true,
+      "label": "card[1] hash=a793c78a",
+      "setting": "topk-topp-only",
+      "ms": 13540
+    },
+    {
+      "case": "planets-table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 1170)\n...ype\":\"TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"14\",\"wrap\":true}]}]}]\n                                                                              ^\n hash=52e1a46d",
+      "setting": "presence-penalty-only",
+      "ms": 13571
+    },
+    {
+      "case": "planets-table",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 1170)\n...ype\":\"TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"14\",\"wrap\":true}]}]}]\n                                                                              ^\n hash=52e1a46d",
+      "setting": "presence-penalty-only",
+      "ms": 14500
+    },
+    {
+      "case": "planets-table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 1170)\n...ype\":\"TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"14\",\"wrap\":true}]}]}]\n                                                                              ^\n hash=52e1a46d",
+      "setting": "pinned-historical",
+      "ms": 17409
+    },
+    {
+      "case": "planets-table",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 1170)\n...ype\":\"TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"14\",\"wrap\":true}]}]}]\n                                                                              ^\n hash=52e1a46d",
+      "setting": "pinned-historical",
+      "ms": 40418
+    }
+  ]
+}
