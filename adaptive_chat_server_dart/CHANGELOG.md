@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+- Blog: **carried today's M1 Max findings into articles 2 and 5, and
+  retired the 0.32.x references the measurements supersede.** Article 2's
+  `format` lever row now records the `qwen3.6:27b-coding-nvfp4` schema A/B
+  (repairs `ColumnSet`, does not repair `Carousel`, drops the prose fallback
+  server-wide) rather than the flip-only verdict. Article 5's prompt-cache
+  section states the cross-host/cross-model result as measured, not as the
+  brief's draft "two hosts, two models" framing would have implied: the
+  pattern reproduces on the M1 Max for `llama3.2` figure for figure, and
+  holds on `qwen3.8:27b-nvfp4` for identical-repeat and growing-conversation
+  reuse but misses for a fresh question sharing the system prompt, in two
+  independent runs — the miss most relevant to a chat server, since reusing
+  a shared system prompt across different questions is what every turn
+  does. Also adds the one-clause confirmation that the truncation detector
+  now fires against a live server. Article 5 stayed under its 3,000-word
+  cap (2,999 → 2,997 prose words) by trimming elsewhere in the same edit.
+  `ModelBehavior.md`'s latency section now notes the M1 Max has since moved
+  to Ollama 0.33.3 without its latency/everyday/stress figures being
+  re-taken; the file's other 28 references to 0.32.14 were reviewed against
+  the "keep only if it carries a cross-runtime difference or provenance of
+  a never-re-measured figure" rule and left as-is — none is incidental
+  provenance for a figure superseded by this pass's measurements.
 - Verified: **the `num_ctx` overflow warning against a live server.**
   `--num-ctx 2048` with the shipped card system prompt produced a
   `prompt truncated` warning naming ~3681 estimated tokens against
