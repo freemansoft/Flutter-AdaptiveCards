@@ -44,6 +44,36 @@ void main() {
       expect(stats.evalMs, 0);
     });
 
+    test('prompt_eval_cached_count populates cachedPromptTokens', () {
+      final stats = fromOllamaResponse({
+        'prompt_eval_count': 66,
+        'eval_count': 8,
+        'prompt_eval_cached_count': 65,
+      });
+      expect(stats!.cachedPromptTokens, 65);
+    });
+
+    test(
+      'missing prompt_eval_cached_count defaults to 0, tokens preserved',
+      () {
+        final stats = fromOllamaResponse({
+          'prompt_eval_count': 10,
+          'eval_count': 5,
+        });
+        expect(stats!.cachedPromptTokens, 0);
+        expect(stats.promptTokens, 10);
+      },
+    );
+
+    test('non-int prompt_eval_cached_count defaults to 0', () {
+      final stats = fromOllamaResponse({
+        'prompt_eval_count': 10,
+        'eval_count': 5,
+        'prompt_eval_cached_count': 'not-a-number',
+      });
+      expect(stats!.cachedPromptTokens, 0);
+    });
+
     test('non-int duration field defaults to 0 rather than throwing', () {
       final stats = fromOllamaResponse({
         'prompt_eval_count': 10,
@@ -69,6 +99,19 @@ void main() {
       expect(json['tokensPerSecond'], 100.0);
       expect(json['promptTokens'], 100);
       expect(json['replyTokens'], 50);
+    });
+
+    test('includes cachedPromptTokens', () {
+      const stats = InteractionStats(
+        promptTokens: 66,
+        replyTokens: 8,
+        totalMs: 150,
+        loadMs: 5,
+        promptEvalMs: 19,
+        evalMs: 124,
+        cachedPromptTokens: 65,
+      );
+      expect(statsToJson(stats)['cachedPromptTokens'], 65);
     });
 
     test('evalMs == 0 yields tokensPerSecond 0.0, no division error', () {

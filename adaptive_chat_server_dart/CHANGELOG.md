@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+- Blog: **article 5 gains the truncation lesson and the prompt-cache
+  figures.** New section "A silently truncated prompt read as a broken
+  cache" with the corrected measurements and the retry-cost tie-in to the
+  timeout sections; the intro's lesson list and the closing rules (now
+  eleven) are updated to match.
+- Added: **`cachedPromptTokens` in `/status` interaction stats.** Ollama
+  0.33.3 reports `prompt_eval_cached_count` — prompt tokens served from the
+  runner's prefix cache; `stats.dart` now records it, defaulting to 0 on
+  older servers that omit the field.
+- Docs: **prompt-cache reuse and retry cost measured on the M5 under
+  Ollama 0.33.3** (`llama3.2:latest`, ~2,100-token system prompt): a
+  conversation turn re-evaluates only its new tokens (~94 ms), a fresh
+  conversation reuses a shared system prompt to within ~8 tokens, the
+  cache survives an interleaved unrelated request, and a retry after an
+  aborted call costs a warm repeat (29 ms) rather than a cold prefill
+  (2,226 ms). Plus a measurement lesson: a prompt over `num_ctx` is
+  silently truncated to half the window, which zeroes cache reuse and
+  holds `prompt_eval_count` constant — the tell that invalidated the
+  first probe run.
+
 - Docs: **the `format` canary is per-runtime, and `ModelBehavior.md` now says
   so.** The 2026-09-01 sweep's `json_format_probe` verdicts are folded in:
   both `nvfp4` builds flipped from `ignored-harmlessly` (0.32.14) to

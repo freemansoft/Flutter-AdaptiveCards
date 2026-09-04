@@ -876,6 +876,26 @@ The forward-looking items from the sections above, collected so they are not re-
 
 All of the above come from [`tool/model_probes/`](tool/model_probes/README.md), whose scripts judge replies with the server's **own** `tryParseCardBody` / `cardParseFailureReason` / `checkNoDuplicateJsonKeys`. A probe that applied its own idea of "looks like a card" could report a pass rate the running server disagrees with, which is worse than no measurement.
 
+### Prompt-cache reuse and retry cost, measured with `prompt_eval_cached_count`
+
+Ollama 0.33.3 reports `prompt_eval_cached_count` on every reply — how many prompt tokens were served from the runner's prefix cache rather than re-evaluated. The server records it as `cachedPromptTokens` in `/status`. Measured 2026-09-03 on the Apple M5 / 16 GB under Ollama 0.33.3, `llama3.2:latest`, one model resident, `t=0`, a ~2,100-token system prompt, `num_ctx` 8192:
+
+| Pattern                                                 | prompt tokens | cached      | prefill         |
+| ------------------------------------------------------- | ------------- | ----------- | --------------- |
+| identical request repeated                              | 2143          | 2142        | 2226 ms → 19 ms |
+| same system prompt, different question                  | 2144          | 2136        | 59 ms           |
+| growing conversation, turns 2–3                         | 2167 / 2190   | 2151 / 2175 | ~94 ms per turn |
+| identical request after an interleaved different prompt | 2143          | 2142        | 23 ms           |
+| retry after aborting mid-prefill (400 ms in, 5 s wait)  | 2143          | 2142        | 29 ms           |
+
+Four readings and a caveat:
+
+- **A conversation turn pays prefill for its new tokens only.** With the full history replayed each request, turns 2–3 re-evaluated ~15 tokens each; history size does not set the per-turn prefill cost.
+- **A fresh conversation reusing the same system prompt re-evaluates only the divergent tail** — ~8 tokens here. The per-conversation cost of a large card system prompt is paid once per resident model, not once per conversation.
+- **The cache survives interleaving.** An unrelated request between two identical ones did not evict the first sequence (2142 of 2143 still cached), and the unrelated request itself reused the 28-token instruction prefix the two prompts shared. How many sequences the runner retains, and its eviction policy under memory pressure, were not probed.
+- **A retry after an aborted call costs a warm repeat, not a cold prefill** — 29 ms against 2,226 ms. Whether that is 0.33.0's prefill restore points retaining partial work or the abandoned request completing server-side during the 5 s wait is not established; the two are indistinguishable here and the retry price is the same either way. This bounds the cost of the timeout-and-retry pattern the probes use.
+- Caveat: one model, one host, one runtime, single-turn-scale replies. The figures are the behavior of Ollama 0.33.3's cache on this box, not a property of any model.
+
 ### Measurement lessons
 
 Lessons about the harness rather than about any model, each learned from a measurement that went wrong here:
@@ -883,6 +903,7 @@ Lessons about the harness rather than about any model, each learned from a measu
 - **Suspect the harness before the model.** A reply blamed on the model contained zero real newlines and 11 correctly escaped ones — valid JSON, corrupted by this server's own fence-stripping heuristic. Dump the bytes before theorising about the model.
 - **A failed assertion is sometimes a bad assertion.** One model's "0/3" on tables was a valid, complete, renderable Table laid out as a 2×2 grid; the `rows >= 3` success criterion wrongly penalized a legitimate layout.
 - **A second `system` message is not universally delivered.** Ollama chat templates vary in whether a `system` message placed _after_ the conversation history reaches the model at all; some keep only the first. Checked 2026-08-18 on four screening models by injecting an additive reminder and reading the printed type list with and without it. **Delivered** on `gpt-oss:20b`. **Unconfirmed** on `qwen2.5-coder:7b` and `granite4.1:8b` — dropped-by-the-template and arrived-but-ignored are indistinguishable for them. Establish delivery before reading a null result from any candidate that relies on a second `system` message.
+- **A prompt longer than `num_ctx` is truncated silently, and cache figures measured through it are meaningless.** A probe whose system prompt tokenized to roughly 15k under an 8,192 window reported the same `prompt_eval_count` of 4,098 — half the window plus the template header — on every turn of a growing conversation, and near-zero `prompt_eval_cached_count` on calls that should have reused a long shared prefix. Nothing errors and nothing warns. A prompt count that stays constant while the history grows is the tell; re-size the prompt and re-run before reading any cache number.
 - **A delivery probe must not contradict the system prompt.** Asking a model to "disregard the question, reply with only the word BANANA" produced a null on all four models tested — uninformative, because "the model resisted a contradiction" and "the message never arrived" look identical. An additive, prompt-compatible probe (add one harmless, checkable element) removes that confound.
 
 ### The sweep, and why the unload step matters

@@ -20,7 +20,8 @@ queue cascade that records one runaway generation as dozens of stalls, a
 harness change that reproduced the archive for one model and not the other, a
 timeout ceiling that was never the problem, a sweep position that moved a
 number more than the effect it was meant to explain, a bad assertion, a probe
-that can't tell silence from refusal, a table worth deriving twice.
+that can't tell silence from refusal, a silently truncated prompt that read as
+a broken cache, a table worth deriving twice.
 
 ## One model resident at a time is a correctness requirement
 
@@ -281,6 +282,40 @@ to is competing with the instruction rather than testing the channel. An
 additive, prompt-compatible probe — add one harmless, checkable element to the
 list — removes that confound.
 
+## A silently truncated prompt read as a broken cache
+
+Ollama 0.33.3 added `prompt_eval_cached_count` — how many prompt tokens the
+runner served from its prefix cache rather than re-evaluated. The first probe
+built on it appeared to show the cache barely working: turn after turn reusing
+**4 of 4,098** prompt tokens. The fault was the probe's configuration, not the
+cache: its system prompt tokenized to roughly 15k against an 8,192-token
+`num_ctx`, and Ollama truncated it to half the window — silently, with no
+error and no warning — so every turn was a different slice of the oversized
+prompt and nothing matched. The tell was `prompt_eval_count` sitting at
+exactly **4,098 on every turn** of a growing conversation: a prompt that grows
+cannot keep a constant token count.
+
+Sized to fit, the same probe shows the cache is a large performance effect —
+Apple M5 / 16 GB, Ollama 0.33.3, `llama3.2:latest`, `t=0`:
+
+| Pattern                                 | cached / prompt | prefill          |
+| --------------------------------------- | --------------- | ---------------- |
+| identical request repeated              | 2,142 / 2,143   | 2,226 ms → 19 ms |
+| growing conversation, turns 2–3         | all but ~15     | ~94 ms per turn  |
+| retry after aborting a call mid-prefill | 2,142 / 2,143   | 29 ms            |
+
+A conversation turn pays prefill for its new tokens only, and a retry after an
+aborted call costs a warm repeat rather than a cold prefill — which prices the
+timeout-and-retry pattern the probes use (whether that is 0.33.0's prefill
+restore points or the abandoned request completing server-side is
+indistinguishable from the client; the price is the same either way). None of
+this was observable before 0.33.3 exposed the cached count: the truncation and
+the win it was hiding surface through the same new field. The full figures,
+including cross-conversation reuse of a shared system prompt and survival
+across interleaved requests, are in
+[the prompt-cache section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#prompt-cache-reuse-and-retry-cost-measured-with-prompt_eval_cached_count)
+of the notebook.
+
 ## Both the judge and the published table come out of code
 
 Delivery is one way a measurement can be silently wrong; the judge itself is
@@ -337,7 +372,7 @@ as the two are recorded separately enough to tell apart later.
 
 ## What transfers
 
-Ten rules, each of them the residue of a wrong measurement rather than a
+Eleven rules, each of them the residue of a wrong measurement rather than a
 principle arrived at in advance. Keep one model resident at a time. Re-run a
 suspicious row on an idle machine before publishing it. When a harness change
 is meant to resolve a suspected cause, run it on every candidate row, not only
@@ -354,9 +389,12 @@ larger than the cross-machine difference it was meant to explain. Do not trust
 an assertion just because it is the one that shipped — a criterion can be the
 thing under test, not only the model. Establish that a message reaches the
 model before reading a null result about it, and do not let a delivery probe
-contradict the instructions it is delivered alongside. Judge with the parser
-you ship, and derive published tables from the recorded runs instead of
-transcribing them. And record what you threw away and why, so a discarded
+contradict the instructions it is delivered alongside. Check for silent
+truncation before reading any token-level number — a prompt count that stays
+constant while the conversation grows means the context window clipped the
+prompt, and every cache figure downstream of the clipping is noise. Judge with
+the parser you ship, and derive published tables from the recorded runs
+instead of transcribing them. And record what you threw away and why, so a discarded
 number is not quoted back at you later by someone who found it in git
 history.
 
