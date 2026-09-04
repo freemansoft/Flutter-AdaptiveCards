@@ -253,19 +253,19 @@ Apple M5 / 16 GB, Ollama 0.33.3, `llama3.2:latest`, `t=0`:
 
 | Pattern                                 | cached / prompt | prefill          |
 | --------------------------------------- | --------------- | ---------------- |
-| identical request repeated              | 2,142 / 2,143   | 2,226 ms → 19 ms |
+| identical request repeated              | 2,142 / 2,143   | 2,017 ms → 18 ms |
 | growing conversation, turns 2–3         | all but ~15     | ~94 ms per turn  |
-| retry after aborting a call mid-prefill | 2,142 / 2,143   | 29 ms            |
+| retry after aborting a call mid-prefill | 2,443 / 2,444   | 29 ms            |
 
 A conversation turn pays prefill for its new tokens only, and a retry after an
 aborted call costs a warm repeat rather than a cold prefill — which prices the
 timeout-and-retry pattern the probes use (whether that is 0.33.0's prefill
 restore points or the abandoned request completing server-side is
-indistinguishable from the client; the price is the same either way). None of
-this was observable before 0.33.3 exposed the cached count: the truncation and
-the win it was hiding surface through the same new field. The full figures,
-including cross-conversation reuse of a shared system prompt and survival
-across interleaved requests, are in
+indistinguishable from the client; the price is the same either way). The
+prefill timings were always readable; what 0.33.3 added is the cached count
+saying _why_ a prefill was cheap — which turned a plausible "broken cache"
+reading into a measurable configuration error. The full figures, including
+cross-conversation reuse and survival across interleaved requests, are in
 [the prompt-cache section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#prompt-cache-reuse-and-retry-cost-measured-with-prompt_eval_cached_count)
 of the notebook.
 
@@ -281,8 +281,8 @@ end: every figure is derived from the recorded runs by
 rather than typed, so a re-run diffs against the table instead of somebody's
 typing. Deriving it caught **two figures that had already drifted**:
 `qwen3.8:27b-nvfp4` read 4.4 s against a recorded 4339 ms, and
-`llama3-chatqa:8b` printed **253 ms and 248 ms** — a 2% difference — as
-"0.3 s" and "0.2 s" beside a 1.0x ratio. Both were in a published table, and
+`llama3-chatqa:8b` read 0.3 s where **253 ms and 248 ms** — a 2% difference —
+should have printed as "0.3 s" and "0.2 s" beside a 1.0x ratio. Both were in a published table, and
 neither would have been found by re-reading it.
 
 ## Ten models' numbers were discarded, and three findings outlived them
@@ -324,7 +324,8 @@ arrived at in advance: keep one model resident at a time; re-run a suspicious
 row on an idle machine before publishing it; run a corrective harness change
 on every candidate row and confirm in the server log that it took effect;
 separate queued calls from slow ones before trusting a stall count; never
-raise a timeout ceiling past the usability bar it enforces; control sweep
+raise a timeout ceiling to capture a failure that has already missed the
+usability bar the ceiling exists to enforce; control sweep
 position before reading a single row's ratio as the effect under test;
 distrust a shipped assertion as readily as the model it judges; establish
 delivery before reading a null result, with a probe that does not contradict

@@ -2,13 +2,14 @@
 
 ## [Unreleased]
 
-- Blog: **article 5 trimmed to the series band and the target length
-  recorded.** A three-pass trim cut restatement and hedging recap — no
-  figure or finding dropped — taking the draft from 4,010 to ~3,150 raw
-  words (2,979 words of prose, under the cap). `blog/README.md` now states
-  the convention the deleted outlines carried: about 2,000 prose words per
-  article, hard cap 3,000, measured excluding fenced blocks, table rows,
-  and URLs.
+- Blog: **article 5 trimmed under the length cap, and the target recorded.**
+  A three-pass trim cut restatement and hedging recap, taking the draft from
+  4,010 to ~3,150 raw words — 2,981 words of prose, under the 3,000 cap but
+  still above the 1,674-2,114 the other four articles occupy, so it sits at
+  the cap as the capstone rather than inside the band. `blog/README.md` now
+  states the convention the deleted outlines carried: about 2,000 prose
+  words per article, hard cap 3,000, measured excluding fenced blocks,
+  table rows, and URLs.
 - Blog: **article 5 gains the truncation lesson and the prompt-cache
   figures.** New section "A silently truncated prompt read as a broken
   cache" with the corrected measurements and the retry-cost tie-in to the
@@ -28,7 +29,16 @@
   silently truncated to half the window, which zeroes cache reuse and
   holds `prompt_eval_count` constant — the tell that invalidated the
   first probe run.
-
+- Fixed: **the context-fill warning could not fire on the truncation it
+  names.** `_logContextFill` derived its tiers from `prompt_eval_count`,
+  which reports what survived truncation and so can never exceed `num_ctx`:
+  an overflowing prompt came back at about half the window and logged a calm
+  50% info line while every reply was being clipped. It now compares an
+  estimate of what was sent against `num_ctx` and warns when they diverge.
+- Added: **`tool/model_probes/prefill_cache_probe.dart`**, the standalone
+  diagnostic behind the prompt-cache figures — not one of the seven sweep
+  probes and not run by `sweep.sh`. The published figures are now the
+  output of a committed script rather than a one-off.
 - Docs: **the `format` canary is per-runtime, and `ModelBehavior.md` now says
   so.** The 2026-09-01 sweep's `json_format_probe` verdicts are folded in:
   both `nvfp4` builds flipped from `ignored-harmlessly` (0.32.14) to

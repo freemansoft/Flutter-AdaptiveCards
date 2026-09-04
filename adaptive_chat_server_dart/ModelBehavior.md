@@ -878,22 +878,22 @@ All of the above come from [`tool/model_probes/`](tool/model_probes/README.md), 
 
 ### Prompt-cache reuse and retry cost, measured with `prompt_eval_cached_count`
 
-Ollama 0.33.3 reports `prompt_eval_cached_count` on every reply — how many prompt tokens were served from the runner's prefix cache rather than re-evaluated. The server records it as `cachedPromptTokens` in `/status`. Measured 2026-09-03 on the Apple M5 / 16 GB under Ollama 0.33.3, `llama3.2:latest`, one model resident, `t=0`, a ~2,100-token system prompt, `num_ctx` 8192:
+Ollama 0.33.3 reports `prompt_eval_cached_count` on every reply — how many prompt tokens were served from the runner's prefix cache rather than re-evaluated. The server records it as `cachedPromptTokens` in `/status`. Produced by [`prefill_cache_probe.dart`](tool/model_probes/prefill_cache_probe.dart), a standalone diagnostic rather than one of the seven sweep probes: it scores no cards, `sweep.sh` does not run it, and it files no per-model results, so these figures are a spot measurement to be re-run rather than an archived row. Measured 2026-09-03 on the Apple M5 / 16 GB under Ollama 0.33.3, `llama3.2:latest`, one model resident, `t=0`, a ~2,100-token system prompt, `num_ctx` 8192:
 
 | Pattern                                                 | prompt tokens | cached      | prefill         |
 | ------------------------------------------------------- | ------------- | ----------- | --------------- |
-| identical request repeated                              | 2143          | 2142        | 2226 ms → 19 ms |
-| same system prompt, different question                  | 2144          | 2136        | 59 ms           |
-| growing conversation, turns 2–3                         | 2167 / 2190   | 2151 / 2175 | ~94 ms per turn |
-| identical request after an interleaved different prompt | 2143          | 2142        | 23 ms           |
-| retry after aborting mid-prefill (400 ms in, 5 s wait)  | 2143          | 2142        | 29 ms           |
+| identical request repeated                              | 2143          | 2142        | 2017 ms → 18 ms |
+| same system prompt, different question                  | 2144          | 2136        | 60 ms           |
+| growing conversation, turns 2–3                         | 2166 / 2188   | 2150 / 2173 | ~94 ms per turn |
+| identical request after an interleaved different prompt | 2143          | 2136        | 55 ms           |
+| retry after aborting mid-prefill (400 ms in, 5 s wait)  | 2444          | 2443        | 29 ms           |
 
 Four readings and a caveat:
 
 - **A conversation turn pays prefill for its new tokens only.** With the full history replayed each request, turns 2–3 re-evaluated ~15 tokens each; history size does not set the per-turn prefill cost.
 - **A fresh conversation reusing the same system prompt re-evaluates only the divergent tail** — ~8 tokens here. The per-conversation cost of a large card system prompt is paid once per resident model, not once per conversation.
-- **The cache survives interleaving.** An unrelated request between two identical ones did not evict the first sequence (2142 of 2143 still cached), and the unrelated request itself reused the 28-token instruction prefix the two prompts shared. How many sequences the runner retains, and its eviction policy under memory pressure, were not probed.
-- **A retry after an aborted call costs a warm repeat, not a cold prefill** — 29 ms against 2,226 ms. Whether that is 0.33.0's prefill restore points retaining partial work or the abandoned request completing server-side during the 5 s wait is not established; the two are indistinguishable here and the retry price is the same either way. This bounds the cost of the timeout-and-retry pattern the probes use.
+- **The cache survives interleaving.** An unrelated request between two identical ones did not evict the first sequence (2136 of 2143 still cached, 55 ms), and the unrelated request itself reused the 28-token instruction prefix the two prompts shared. How many sequences the runner retains, and its eviction policy under memory pressure, were not probed.
+- **A retry after an aborted call costs a warm repeat, not a cold prefill** — 29 ms against the ~2,000 ms a cold prefill of the same prompt costs. Whether that is 0.33.0's prefill restore points retaining partial work or the abandoned request completing server-side during the 5 s wait is not established; the two are indistinguishable here and the retry price is the same either way. This bounds the cost of the timeout-and-retry pattern the probes use.
 - Caveat: one model, one host, one runtime, single-turn-scale replies. The figures are the behavior of Ollama 0.33.3's cache on this box, not a property of any model.
 
 ### Measurement lessons
