@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+- Measured: **`qwen3.6:27b-coding-nvfp4`'s schema-constrained shape A/B under
+  Ollama 0.33.3.** `format: schema` repairs `columnset` (0/6 → 6/6, both
+  conditions) but not `carousel`: cold stays 0/7 across three same-session
+  runs (invalid-JSON failures become 180s timeouts instead), and warm is
+  unstable — 3/3 PASS in the recorded A/B but 0/4 across two later
+  re-checks on an idle machine, so the apparent repair did not reproduce.
+  `prose` regresses to 0/6 (every reply an unwanted card); `date` and
+  `choice1` are unaffected. Result recorded at
+  `results-m1max-64gb-ollama0333/qwen3.6_27b-coding-nvfp4/shape_ab-seeded-format-schema.json`;
+  the unconstrained control arm and the `carousel` re-checks are not
+  archived (see `task-2-report.md` in the plan directory for their full
+  per-case data).
 - Measured: **re-ran the `format` canary for both `nvfp4` builds under
   Ollama 0.33.3.** `qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both
   still read `honored`, matching the 0.33.2 verdicts recorded 2026-09-01.

@@ -1,0 +1,261 @@
+{
+  "probe": "shape_ab",
+  "model": "qwen3.6:27b-coding-nvfp4",
+  "variant": "seeded-format-schema",
+  "measuredAt": "2026-09-04",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.3",
+  "samples": 3,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 5,
+    "coldStart": 3,
+    "withHistory": 4
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "cold",
+      "ms": 47655
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "cold",
+      "ms": 1239
+    },
+    {
+      "case": "date",
+      "sample": 2,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "cold",
+      "ms": 1241
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 55645
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 6351
+    },
+    {
+      "case": "choice1",
+      "sample": 2,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 6399
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: timeout (180s)",
+      "condition": "cold",
+      "ms": 180039
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: timeout (180s)",
+      "condition": "cold",
+      "ms": 180026
+    },
+    {
+      "case": "carousel",
+      "sample": 2,
+      "pass": false,
+      "label": "broken: timeout (180s)",
+      "condition": "cold",
+      "ms": 180022
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "cold",
+      "ms": 64598
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "cold",
+      "ms": 17924
+    },
+    {
+      "case": "columnset",
+      "sample": 2,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "cold",
+      "ms": 17674
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": false,
+      "label": "unwanted-card: got {TextBlock} want prose",
+      "condition": "cold",
+      "ms": 49259
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": false,
+      "label": "unwanted-card: got {TextBlock} want prose",
+      "condition": "cold",
+      "ms": 5190
+    },
+    {
+      "case": "prose",
+      "sample": 2,
+      "pass": false,
+      "label": "unwanted-card: got {TextBlock} want prose",
+      "condition": "cold",
+      "ms": 4992
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "warm",
+      "ms": 2255
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "warm",
+      "ms": 1396
+    },
+    {
+      "case": "date",
+      "sample": 2,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "warm",
+      "ms": 1296
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 7363
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 6307
+    },
+    {
+      "case": "choice1",
+      "sample": 2,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 6305
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": true,
+      "label": "Carousel, CarouselPage, TextBlock",
+      "condition": "warm",
+      "ms": 25417
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": true,
+      "label": "Carousel, CarouselPage, TextBlock",
+      "condition": "warm",
+      "ms": 16843
+    },
+    {
+      "case": "carousel",
+      "sample": 2,
+      "pass": true,
+      "label": "Carousel, CarouselPage, TextBlock",
+      "condition": "warm",
+      "ms": 16487
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "warm",
+      "ms": 17482
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "warm",
+      "ms": 19860
+    },
+    {
+      "case": "columnset",
+      "sample": 2,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "warm",
+      "ms": 19427
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": false,
+      "label": "unwanted-card: got {TextBlock} want prose",
+      "condition": "warm",
+      "ms": 4519
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": false,
+      "label": "unwanted-card: got {TextBlock} want prose",
+      "condition": "warm",
+      "ms": 4334
+    },
+    {
+      "case": "prose",
+      "sample": 2,
+      "pass": false,
+      "label": "unwanted-card: got {TextBlock} want prose",
+      "condition": "warm",
+      "ms": 4349
+    }
+  ]
+}
