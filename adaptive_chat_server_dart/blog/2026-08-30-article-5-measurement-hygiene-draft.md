@@ -261,21 +261,22 @@ into a measurable configuration error.
 The pattern reproduces on a second host with the same model: on an Apple M1
 Max / 64 GB under the same Ollama 0.33.3, `llama3.2:latest` reproduced the M5
 pattern on every reading — identical-repeat prefill 2079 ms → 12 ms, a fresh
-question against the same system prompt 87 ms, an interleaved unrelated
-request 39 ms, retry-after-abort 30 ms against the M5's 29 ms.
+question against the same system prompt 87 ms, cache survival after
+interleaving 39 ms, retry-after-abort 30 ms against the M5's 29 ms.
 
-It does not reproduce on a second model. `qwen3.8:27b-nvfp4` (~18 GB, too
-large for the M5) agreed with `llama3.2` on three of five patterns —
-identical repeat, growing conversation, and, unstably, retry-after-abort —
-but missed on two, confirmed by a repeat run on an idle machine: a fresh
-question sharing the system prompt, and an interleaved unrelated request,
-both came back as a full cold prefill in both runs — `cached=4` of roughly
-3,177 tokens, ~40 s, indistinguishable from the model's first cold call.
-Retry-after-abort was itself unstable on it — 148 ms with most of the prompt
-cached on one run, 18,154 ms with under two-thirds cached on the repeat,
-while `llama3.2`'s retry cost was unaffected. Reusing a shared system prompt
-across a fresh question is what a chat server does on most turns; for one
-model that reuse is free, for the other it is not.
+It mostly reproduces on a second model. `qwen3.8:27b-nvfp4` (~18 GB, too
+large for the M5) agreed with `llama3.2` on four of five patterns — identical
+repeat, growing conversation, interleaved-cache survival, and
+retry-after-abort. Interleaving costs near a full cold prefill on both, a
+structural property of an unrelated prompt, not a per-model one. The one
+real miss: a fresh question sharing the system prompt came back as a full
+cold prefill on both an idle-machine run and its repeat —
+`cached=4` of roughly 3,177 tokens, ~40 s, indistinguishable from the model's
+first cold call. Retry-after-abort was unstable — 148 ms with most of
+the prompt cached on one run, 18,154 ms with under two-thirds cached on the
+repeat; `llama3.2`'s retry cost was unaffected. Reusing a shared system
+prompt across a fresh question is a normal chat-server turn; for one model
+that reuse is free, for the other it is not.
 
 The full figures, including cross-conversation reuse and the
 interleaved-request rows, are in

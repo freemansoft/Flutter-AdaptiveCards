@@ -7,26 +7,35 @@
   record for two of the two models measured on this host.** `pass` records
   only call completion, not cache behaviour; per-call prompt/cached/prefill
   figures land in `summary` as structured values, not only inside `label`'s
-  prose. Archived `llama3.2:latest` and `qwen3.8:27b-nvfp4` on
+  prose. The probe generates its own synthetic system prompt and reads no
+  asset file, so it now passes `assetNames: const []` -- recording digests
+  for `card_system_prompt.txt`/`seed_card.json` would have flagged these
+  archives as stale the next time either file changes, for a dependency
+  that never existed (`test/check_results_test.dart`'s non-empty-assets
+  guard is scoped around this one probe accordingly). Archived
+  `llama3.2:latest` and `qwen3.8:27b-nvfp4` on
   `results-m1max-64gb-ollama0333` (2026-09-05, machine idle before each
-  model): every reading agrees with the two 2026-09-04 runs already in
-  `ModelBehavior.md`, including a corrected one. The "identical request
+  model, re-measured once to pick up that fix -- normal run-to-run
+  variance, no reading changed). Two labelling corrections came out of
+  reconciling against the two prior 2026-09-04 runs: the "identical request
   after an interleaved different prompt" table row had carried the
   unrelated request's own miss figures under a label describing the repeat
-  that follows it -- a pre-existing labelling defect, not a new
-  measurement error. Splitting it into two rows shows both were stable all
-  along: the unrelated request misses on every run, and the repeat
-  afterward stays warm on every run, confirmed archived plus a same-day
-  unarchived rerun. (An earlier draft of this entry read the corrected row
-  as a behavioural flip between measurement sessions; it was not -- both
-  2026-09-04 readings for the repeat step were warm, matching the deleted
-  bullet that said so, and the apparent flip was the mislabeled table cell
-  compared against the correct one.) The retry-after-abort step read a
-  third and fourth (unarchived) warm reading near the two prior runs'
-  148 ms point, still with one 18154 ms outlier among the four; not
-  averaged, not reported as a rate. `check_results.dart` reads 181 runs, 2
-  more than before; `prefill_cache_probe` stays out of `expectedProbes`,
-  since `sweep.sh` does not run it. The M5 readings remain unarchived and
+  that follows it, a pre-existing defect predating this task; and,
+  comparing each model's unrelated-request reading against its own
+  same-run cold prefill (both land within 15% of it, on five separate
+  runs across both models), the unrelated request's near-total miss is not
+  a `qwen3.8`-specific finding -- any model pays close to a full cold
+  prefill for a genuinely different prompt sharing only a ~28-token
+  instruction prefix with the cached one. The one reading that is
+  genuinely `qwen3.8`-specific is the cross-question miss, reproduced on
+  four measurements. `blog/2026-08-30-article-5-measurement-hygiene-draft.md`
+  carried the same two conflations and is corrected to match, net zero
+  words after a trim (2,996 of the 3,000 cap, unchanged). The
+  retry-after-abort step remains unstable: three readings near 142-148 ms
+  and one 18154 ms outlier across four measurements; not averaged, not
+  reported as a rate. `check_results.dart` reads 181 runs, 2 more than
+  before; `prefill_cache_probe` stays out of `expectedProbes`, since
+  `sweep.sh` does not run it. The M5 readings remain unarchived and
   un-re-taken from this host.
 - Measured: **whether Ollama 0.33.3's "honor GGUF model defined default
   parameters" moves sampled output.** New `gguf_defaults_probe.dart` runs

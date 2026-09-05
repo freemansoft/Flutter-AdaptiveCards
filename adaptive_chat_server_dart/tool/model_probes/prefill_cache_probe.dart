@@ -10,13 +10,16 @@
 /// reason — a standalone diagnostic that ran for one model would otherwise
 /// be reported missing for every other launched model.
 ///
-/// Four phases, all against one resident model, strictly serial:
+/// Five phases, all against one resident model, strictly serial:
 ///   1. **identical repeat** — the cold prefill against the warm one.
-///   2. **growing conversation** — the server's real pattern, full history
+///   2. **same system prompt, different question** — a fresh question
+///      against the same cached system prompt, the server's steady-state
+///      pattern between unrelated conversations.
+///   3. **growing conversation** — the server's real pattern, full history
 ///      replayed each turn plus one new turn.
-///   3. **interleaved** — an unrelated prompt between two identical ones,
+///   4. **interleaved** — an unrelated prompt between two identical ones,
 ///      to see whether the cached sequence survives it.
-///   4. **retry after abort** — a call abandoned mid-prefill, then repeated,
+///   5. **retry after abort** — a call abandoned mid-prefill, then repeated,
 ///      which prices the timeout-and-retry pattern the sweep probes use.
 ///
 /// **Size the system prompt under `num_ctx`.** A prompt that overflows the
@@ -344,6 +347,14 @@ Future<void> main(List<String> argv) async {
       model: model,
       samples: args.samples,
       assetsDir: probeAssetsDir(),
+      // This probe never reads card_system_prompt.txt or seed_card.json --
+      // _systemPrompt() generates a synthetic glossary instead. Recording
+      // digests for assets the run never touched would make check_results
+      // flag these runs as stale the next time either file changes, for an
+      // asset dependency that never existed. tool_call_probe.dart and
+      // shape_ab.dart set the precedent for overriding assetNames instead
+      // of accepting the default.
+      assetNames: const [],
       temperature: 0,
       summary: phaseSummaries,
       calls: calls,
