@@ -9,20 +9,25 @@
   figures land in `summary` as structured values, not only inside `label`'s
   prose. Archived `llama3.2:latest` and `qwen3.8:27b-nvfp4` on
   `results-m1max-64gb-ollama0333` (2026-09-05, machine idle before each
-  model): `llama3.2`'s five readings and `qwen3.8:27b-nvfp4`'s
-  identical-repeat, growing-conversation, and same-system-prompt-miss
-  readings agree with the two 2026-09-04 runs already in `ModelBehavior.md`.
-  `qwen3.8:27b-nvfp4`'s "identical request after an interleaved different
-  prompt" step, previously read as a confirmed miss across two runs, read a
-  warm hit on this run and on a same-day unarchived repeat — no longer a
-  stable reading, and the notebook now says so instead of overstating it.
-  The retry-after-abort step read a third and fourth (unarchived) warm
-  reading near the two prior runs' 148 ms point, still with one 18154 ms
-  outlier among the four; not averaged, not reported as a rate.
-  `check_results.dart` reads 181 runs, 2 more than before;
-  `prefill_cache_probe` stays out of `expectedProbes`, since `sweep.sh`
-  does not run it. The M5 readings remain unarchived and un-re-taken from
-  this host.
+  model): every reading agrees with the two 2026-09-04 runs already in
+  `ModelBehavior.md`, including a corrected one. The "identical request
+  after an interleaved different prompt" table row had carried the
+  unrelated request's own miss figures under a label describing the repeat
+  that follows it -- a pre-existing labelling defect, not a new
+  measurement error. Splitting it into two rows shows both were stable all
+  along: the unrelated request misses on every run, and the repeat
+  afterward stays warm on every run, confirmed archived plus a same-day
+  unarchived rerun. (An earlier draft of this entry read the corrected row
+  as a behavioural flip between measurement sessions; it was not -- both
+  2026-09-04 readings for the repeat step were warm, matching the deleted
+  bullet that said so, and the apparent flip was the mislabeled table cell
+  compared against the correct one.) The retry-after-abort step read a
+  third and fourth (unarchived) warm reading near the two prior runs'
+  148 ms point, still with one 18154 ms outlier among the four; not
+  averaged, not reported as a rate. `check_results.dart` reads 181 runs, 2
+  more than before; `prefill_cache_probe` stays out of `expectedProbes`,
+  since `sweep.sh` does not run it. The M5 readings remain unarchived and
+  un-re-taken from this host.
 - Measured: **whether Ollama 0.33.3's "honor GGUF model defined default
   parameters" moves sampled output.** New `gguf_defaults_probe.dart` runs
   `qwen3.5:9b` at a fixed seed across four arms: `unpinned` (temperature
