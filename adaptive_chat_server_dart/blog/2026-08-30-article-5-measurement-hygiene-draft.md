@@ -265,11 +265,11 @@ question against the same system prompt 87 ms, cache survival after
 interleaving 39 ms, retry-after-abort 30 ms against the M5's 29 ms.
 
 It mostly reproduces on a second model. `qwen3.8:27b-nvfp4` (~18 GB, too
-large for the M5) agreed with `llama3.2` on four of five patterns — identical
-repeat, growing conversation, interleaved-cache survival, and
-retry-after-abort. Interleaving costs near a full cold prefill on both, a
-structural property of an unrelated prompt, not a per-model one. The one
-real miss: a fresh question sharing the system prompt came back as a full
+large for the M5) agreed with `llama3.2` on three of five patterns —
+identical repeat, growing conversation, and interleaved-cache survival —
+and, unstably, retry-after-abort. Interleaving costs near a full cold prefill on both, a
+structural property of an unrelated prompt, not model-specific. The real
+miss: a fresh question sharing the system prompt came back as a full
 cold prefill on both an idle-machine run and its repeat —
 `cached=4` of roughly 3,177 tokens, ~40 s, indistinguishable from the model's
 first cold call. Retry-after-abort was unstable — 148 ms with most of

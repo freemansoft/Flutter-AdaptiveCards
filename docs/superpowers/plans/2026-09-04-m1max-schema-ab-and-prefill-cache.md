@@ -12,7 +12,7 @@ _Written 2026-09-04: "The schema A/B must run under 0.33.2 … Upgrading first w
 
 **Spec:** No separate spec document. This plan's premises were read from the working tree and from `adaptive_chat_server_dart/ModelBehavior.md` on 2026-09-04; the "Facts established before writing this plan" section is the spec, and every claim in it was read from a file rather than recalled.
 
-_Executed 2026-09-04 on `feat/cached-prompt-tokens-prefill-probe`. Tasks 1–9 are complete and reviewed. Task 10 was added after this plan was written and is in progress. Between Tasks 1 and 4, at the user's direction, an additional unnumbered task renamed the two finished archives to carry their runtime: `results-m1max-64gb-ollama033/` to `results-m1max-64gb-ollama0332/`, `results-m5-16gb-ollama033/` to `results-m5-16gb-ollama0331/`._
+_Executed 2026-09-04 on `feat/cached-prompt-tokens-prefill-probe`. Tasks 1–9 are complete and reviewed. Task 10 was added after this plan was written and is complete. Between Tasks 1 and 4, at the user's direction, an additional unnumbered task renamed the two finished archives to carry their runtime: `results-m1max-64gb-ollama033/` to `results-m1max-64gb-ollama0332/`, `results-m5-16gb-ollama033/` to `results-m5-16gb-ollama0331/`._
 
 **Markers on checked steps below:**
 
@@ -555,7 +555,7 @@ This is the half of the caveat the M5 cannot retire: whether cache behavior is a
 
 Line 897 currently reads "Caveat: one model, one host, one runtime, single-turn-scale replies." Narrow it to whatever survives — two hosts and two models, if both runs agree — and keep the parts that do not (single-turn-scale replies; retention limits and eviction policy under memory pressure still unprobed).
 
-_Executed 2026-09-04, Steps 3–4: `qwen3.8:27b-nvfp4` agreed with the M5 pattern on three of five cases but returned full cold prefills (`cached=4` of roughly 3,177, roughly 40 s) for "same system prompt, different question" and for the interleaved request, and its retry-after-abort was unstable (148 ms at 3472 cached, then 18,154 ms at 2063 cached). A full repeat run on an idle machine, not in the plan, confirmed the two misses and destabilised the retry row. The caveat below was widened on this dimension while narrowing on the two-host claim._
+_Executed 2026-09-04, Steps 3–4: `qwen3.8:27b-nvfp4` agreed with the M5 pattern on three of five cases but returned full cold prefills (`cached=4` of roughly 3,177, roughly 40 s) for "same system prompt, different question" and for the interleaved request, and its retry-after-abort was unstable (148 ms at 3472 cached, then 18,154 ms at 2063 cached). A full repeat run on an idle machine, not in the plan, confirmed both readings as measured and destabilised the retry row. The interleaved-unrelated miss was later reframed as structurally expected on any model — the interleaved prompt shares only a short instruction prefix before diverging entirely — rather than a large-model-specific miss, leaving the cross-question miss as the one reading that is genuinely model-specific. The caveat below was widened on this dimension while narrowing on the two-host claim._
 
 - [x] **Step 5: Verify and commit**
 
@@ -937,7 +937,7 @@ git commit -m "measure(chat-server): whether 0.33.3 honoring GGUF defaults moves
 
 **What this task is not.** It is not a re-measurement that replaces the published figures, and it must not quietly overwrite them. The `qwen3.8:27b-nvfp4` retry-after-abort row is **known unstable** — 148 ms with 3472/3477 cached on one run, 18,154 ms with 2063/3477 on the next — so a fresh run is a third observation, not a correction. Treat it as one.
 
-- [ ] **Step 1: Write the failing test first**
+- [x] **Step 1: Write the failing test first**
 
 Create `test/prefill_cache_probe_test.dart`. Follow `probe_format_test.dart` and `gguf_defaults_probe_test.dart`: stand up a fake loopback `HttpServer`, drive the probe's result-building against it, and assert on structure rather than on model output. Assert that a run written with `--json`:
 
@@ -951,7 +951,7 @@ fvm dart test test/prefill_cache_probe_test.dart
 
 Expected: FAIL — no `--json` support exists.
 
-- [ ] **Step 2: Add `--json` using the existing result API**
+- [x] **Step 2: Add `--json` using the existing result API**
 
 `parseProbeArgs` already supplies `--json`; the probe currently ignores it. Write results with `writeProbeRun` from `probe_results.dart` (`:367`) — do not invent a second result format. Its parameters are `path`, `probe`, `model`, `samples`, `assetsDir`, `calls`, and optionally `variant`, `temperature`, `summary`, `notes`, `assetNames`. `machine`, `ollama` and `measuredAt` are filled in for you by `detectMachine()`/`detectOllamaVersion()`.
 
@@ -962,7 +962,7 @@ Two modelling decisions to make deliberately and record in the doc comment:
 
 Put the per-phase cache figures in `summary` as structured values (prompt tokens, cached tokens, prefill ms) so a later reader can compute against them without parsing prose.
 
-- [ ] **Step 3: Verify the test passes and the gates are clean**
+- [x] **Step 3: Verify the test passes and the gates are clean**
 
 ```bash
 fvm dart test
@@ -970,7 +970,7 @@ fvm dart analyze
 fvm dart format --output=none --set-exit-if-changed lib/ test/ tool/
 ```
 
-- [ ] **Step 4: Confirm the machine is idle, then archive both models**
+- [x] ⚠️ **DIVERGED** — **Step 4: Confirm the machine is idle, then archive both models**
 
 One model resident at a time. `llama3.2:latest` is ~2 GB, `qwen3.8:27b-nvfp4` ~18 GB.
 
@@ -991,7 +991,9 @@ ollama ps
 
 If `ollama ps` sticks at `Stopping...` and will not clear, stop and report it. That happened twice during the 2026-09-04 work, both times after schema-constrained `carousel` timeouts, and an acknowledged `keep_alive: 0` unload did not clear it.
 
-- [ ] **Step 5: Reconcile the new run against the published figures**
+_Executed 2026-09-05: the probe ran four times on `qwen3.8:27b-nvfp4`, not once — the archived run, a same-day unarchived corroboration run of its full five-phase probe (kept in `scratchpad`, not committed, taken to check a since-retracted "flip" reading before it was recorded), and both archives (`llama3.2:latest` and `qwen3.8:27b-nvfp4`) were later regenerated after a probe-recording defect was found and fixed — `prefill_cache_probe.dart` recorded digests for asset files (`card_system_prompt.txt`, `seed_card.json`) it never reads — so the records would come from the code that claims to produce them, with no cache-figure changes intended._
+
+- [x] 🔍 **UNEXPECTED RESULT** — **Step 5: Reconcile the new run against the published figures**
 
 This is the load-bearing step. Compare each phase against what `ModelBehavior.md` already publishes.
 
@@ -1000,7 +1002,9 @@ This is the load-bearing step. Compare each phase against what `ModelBehavior.md
 - The **retry-after-abort row is expected to vary**. A third observation is worth having precisely because two points showed roughly 100x spread without establishing a distribution. Report what it reads; do not average the three, and do not claim a frequency that three points cannot support.
 - The **M5 figures cannot be re-archived** from this host. Whatever else changes, the notebook must keep disclosing that the M5 readings remain a stdout-only spot measurement.
 
-- [ ] **Step 6: Update the notebook and the changelog**
+_Executed 2026-09-05: this step produced a wrong finding first, not the reconciliation as planned. Reconciling the new run against the interleaved-request row surfaced an apparent day-to-day behavioural "flip", which was traced to a pre-existing mislabeled table row — the unrelated request's own miss figures had been recorded under the label for the repeat that follows it — and retracted once the mislabeling was found, not reported as a finding. A second over-claim was then found and corrected: the interleaved-unrelated miss is structurally expected on any model sending a genuinely different prompt sharing only a short instruction prefix, not a large-model-specific finding, so the notebook's "two confirmed misses" became one — only the cross-question miss is genuinely model-specific._
+
+- [x] **Step 6: Update the notebook and the changelog**
 
 Amend the prompt-cache section to say which figures now have an archived run behind them and which do not. Locate the section by grepping `prompt_eval_cached_count` rather than by line number.
 
@@ -1008,7 +1012,7 @@ Register: flat analytical, no amplifying adverbs, figures rather than superlativ
 
 Add one `CHANGELOG.md` bullet under `## [Unreleased]`, inside the existing list, no blank line between bullets.
 
-- [ ] **Step 7: Verify**
+- [x] **Step 7: Verify**
 
 ```bash
 fvm dart test
@@ -1020,7 +1024,7 @@ cd .. && npm run format:md:chat && npm run check:md:chat
 
 `check_results.dart` will read two more runs than before. **Do not add `prefill_cache_probe` to `expectedProbes`** — it is a standalone diagnostic, `sweep.sh` does not run it, and adding it would report every model in every archive as missing it.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add tool/model_probes/prefill_cache_probe.dart test/prefill_cache_probe_test.dart \

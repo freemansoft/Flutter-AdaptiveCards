@@ -30,7 +30,7 @@
   genuinely `qwen3.8`-specific is the cross-question miss, reproduced on
   four measurements. `blog/2026-08-30-article-5-measurement-hygiene-draft.md`
   carried the same two conflations and is corrected to match, net zero
-  words after a trim (2,996 of the 3,000 cap, unchanged). The
+  words after a trim, held under the 3,000-word cap. The
   retry-after-abort step remains unstable: three readings near 142-148 ms
   and one 18154 ms outlier across four measurements; not averaged, not
   reported as a rate. `check_results.dart` reads 181 runs, 2 more than
