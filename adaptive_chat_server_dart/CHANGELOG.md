@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Measured: **the schema A/B's `prose` negative control still carried the
+  answer, inside the unwanted card.** Added `--json-format` (`none`/`json`/
+  `schema`) to `dump_reply.dart`, reusing `resolveProbeFormat` rather than a
+  second resolver, mirroring `shape_ab.dart`'s wiring and help text; a new
+  `test/dump_reply_format_test.dart` asserts against a fake loopback
+  `HttpServer` that `format` reaches the request body when asked for and is
+  absent otherwise. Used it to capture the `prose` case's reply
+  (`qwen3.6:27b-coding-nvfp4`, seeded, cold-start, `t=0`, one sample per
+  arm) under both `--json-format none` and `--json-format schema`, since
+  the recorded A/B run kept only a shape label and a hash. The schema
+  reply was a single-TextBlock card (`unwanted-card: got {TextBlock}`, the
+  shape the A/B recorded); its `text` held the full two-sentence answer,
+  comparable in content and length to the unconstrained prose reply, with
+  no Markdown formatting. On this one sample the measured cost of the
+  constraint is a shape change, not content loss.
 - Measured: **archived `prefill_cache_probe.dart` runs behind a new `--json`
   flag, replacing hand-transcribed prompt-cache figures with a checkable
   record for two of the two models measured on this host.** `pass` records
