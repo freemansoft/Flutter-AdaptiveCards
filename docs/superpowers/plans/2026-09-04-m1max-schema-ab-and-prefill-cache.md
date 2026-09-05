@@ -12,7 +12,7 @@ _Written 2026-09-04: "The schema A/B must run under 0.33.2 … Upgrading first w
 
 **Spec:** No separate spec document. This plan's premises were read from the working tree and from `adaptive_chat_server_dart/ModelBehavior.md` on 2026-09-04; the "Facts established before writing this plan" section is the spec, and every claim in it was read from a file rather than recalled.
 
-_Executed 2026-09-04 on `feat/cached-prompt-tokens-prefill-probe`. Tasks 1–9 are complete and reviewed. Task 10 was added after this plan was written and is in progress. Between Tasks 1 and 4, at the user's direction, an additional unnumbered task renamed the two finished archives to carry their runtime: `results-m1max-64gb/` to `results-m1max-64gb-ollama0332/`, `results-m5-16gb/` to `results-m5-16gb-ollama0331/`._
+_Executed 2026-09-04 on `feat/cached-prompt-tokens-prefill-probe`. Tasks 1–9 are complete and reviewed. Task 10 was added after this plan was written and is in progress. Between Tasks 1 and 4, at the user's direction, an additional unnumbered task renamed the two finished archives to carry their runtime: `results-m1max-64gb-ollama033/` to `results-m1max-64gb-ollama0332/`, `results-m5-16gb-ollama033/` to `results-m5-16gb-ollama0331/`._
 
 **Markers on checked steps below:**
 
