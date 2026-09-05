@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+- Measured: **archived `prefill_cache_probe.dart` runs behind a new `--json`
+  flag, replacing hand-transcribed prompt-cache figures with a checkable
+  record for two of the two models measured on this host.** `pass` records
+  only call completion, not cache behaviour; per-call prompt/cached/prefill
+  figures land in `summary` as structured values, not only inside `label`'s
+  prose. Archived `llama3.2:latest` and `qwen3.8:27b-nvfp4` on
+  `results-m1max-64gb-ollama0333` (2026-09-05, machine idle before each
+  model): `llama3.2`'s five readings and `qwen3.8:27b-nvfp4`'s
+  identical-repeat, growing-conversation, and same-system-prompt-miss
+  readings agree with the two 2026-09-04 runs already in `ModelBehavior.md`.
+  `qwen3.8:27b-nvfp4`'s "identical request after an interleaved different
+  prompt" step, previously read as a confirmed miss across two runs, read a
+  warm hit on this run and on a same-day unarchived repeat — no longer a
+  stable reading, and the notebook now says so instead of overstating it.
+  The retry-after-abort step read a third and fourth (unarchived) warm
+  reading near the two prior runs' 148 ms point, still with one 18154 ms
+  outlier among the four; not averaged, not reported as a rate.
+  `check_results.dart` reads 181 runs, 2 more than before;
+  `prefill_cache_probe` stays out of `expectedProbes`, since `sweep.sh`
+  does not run it. The M5 readings remain unarchived and un-re-taken from
+  this host.
 - Measured: **whether Ollama 0.33.3's "honor GGUF model defined default
   parameters" moves sampled output.** New `gguf_defaults_probe.dart` runs
   `qwen3.5:9b` at a fixed seed across four arms: `unpinned` (temperature
