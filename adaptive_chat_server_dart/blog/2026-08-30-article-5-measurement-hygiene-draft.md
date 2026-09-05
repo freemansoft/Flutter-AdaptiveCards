@@ -97,7 +97,9 @@ recorded zero stalls and no other more than two.
 
 The upgrade from Ollama 0.32.14 to 0.33.2 raised two models' recorded stall
 counts — one from 2 to 31, the other from 13 to 52 — on the same machine,
-weights, and probes. `OLLAMA_NUM_PARALLEL=1` gives this host one generation
+weights, and probes. Read as a runtime regression, that looked like a larger
+version of the ceiling story; for one model it was not, for the other it is
+still open. `OLLAMA_NUM_PARALLEL=1` gives this host one generation
 slot. When a call times out the probe abandons the connection, but the
 generation was observed to keep running server-side (why the disconnect did not
 cancel it is unestablished; an isolated reproduction cancels correctly), and
@@ -148,7 +150,7 @@ Nothing in the server log shows the unload cancelling a running generation.
 | Unload evidence, Ollama 0.33.2                   | What the log shows                                                           |
 | ------------------------------------------------ | ---------------------------------------------------------------------------- |
 | `keep_alive: 0` sent 3 s into an 18 s generation | ran to 20.9 s                                                                |
-| `ollama stop` against the same generation        | ran to 16.3 s                                                                |
+| the same test, `ollama stop` from the CLI        | ran to 16.3 s                                                                |
 | 53 unloads during the `granite4.1:3b` run        | answered in about 8 ms each; one generation ran 70 minutes, queue draining   |
 | 2 stalled calls during the `llama3.2:latest` run | terminated server-side at exactly 2m0s, each in the same second as an unload |
 
