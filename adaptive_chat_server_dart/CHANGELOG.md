@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+- Fixed: **`perf_table.py` summed every `*.json` in a results directory
+  except `shape_ab-channel-tool.json`, so a one-off diagnostic file left in
+  a model's directory was reported as sweep wall-clock and its timeouts as
+  stalls.** `results-m1max-64gb-ollama0333/qwen3.6_27b-coding-nvfp4/`
+  held six such calls at ~180,000 ms each, inflating that model's "Full
+  sweep" figure from 2 min to 46 min and its "Stalls" figure from 0 to 11.
+  `read_model` and `read_model_probes` now filter to an allowlist of the
+  seven standard probes plus the optional `shape_ab-channel-tool`, mirroring
+  `expectedProbes` in `check_results.dart`; a directory holding other files
+  reports them to stderr instead of silently summing them.
+  `results-m1max-64gb-ollama0332/` output (stdout and `--by-probe`) is
+  byte-identical before and after the fix.
 - Measured: **the schema A/B's `prose` negative control still carried the
   answer, inside the unwanted card.** Added `--json-format` (`none`/`json`/
   `schema`) to `dump_reply.dart`, reusing `resolveProbeFormat` rather than a
