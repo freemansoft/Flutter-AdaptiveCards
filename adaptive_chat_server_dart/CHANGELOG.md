@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Docs: **archived the raw stdout captures behind the 2026-09-04 prompt-cache
+  figures in `ModelBehavior.md` that predate `prefill_cache_probe.dart`'s
+  `--json` flag.** Added `tool/model_probes/raw-captures/`, named so that
+  `check_results.dart`'s `results-`-prefix scan skips it; a `README.md`
+  there maps each file to the published figures it backs. `ModelBehavior.md`
+  now links to the directory alongside the existing disclosure that these
+  readings are not archived `ProbeRun` runs.
 - Fixed: **`perf_table.py` summed every `*.json` in a results directory
   except `shape_ab-channel-tool.json`, so a one-off diagnostic file left in
   a model's directory was reported as sweep wall-clock and its timeouts as
