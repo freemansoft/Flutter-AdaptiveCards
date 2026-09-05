@@ -865,6 +865,116 @@ git commit -m "measure(chat-server): whether 0.33.3 honoring GGUF defaults moves
 
 ---
 
+### Task 10: Give `prefill_cache_probe.dart` a `--json` flag, and archive the runs it has been reporting to stdout
+
+**Files:**
+
+- Modify: `adaptive_chat_server_dart/tool/model_probes/prefill_cache_probe.dart`
+- Test: `adaptive_chat_server_dart/test/prefill_cache_probe_test.dart` (create)
+- Create: `adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama0333/llama3.2_latest/prefill_cache_probe.json`
+- Create: `adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama0333/qwen3.8_27b-nvfp4/prefill_cache_probe.json`
+- Modify: `adaptive_chat_server_dart/ModelBehavior.md` (the prompt-cache section)
+- Modify: `adaptive_chat_server_dart/CHANGELOG.md` (`## [Unreleased]`)
+
+**Why this task exists.** Every prompt-cache figure in the notebook — both hosts, both models, roughly twenty numbers — has no archived run behind it. `prefill_cache_probe.dart` prints to stdout and writes nothing, so the figures were transcribed from terminal output and `check_results.dart` cannot verify any of them. The notebook discloses this honestly, calling them "a spot measurement to be re-run rather than an archived row", so this is not a correctness defect. But it is inconsistent with how the rest of this tree treats published figures: a 5-case control arm was archived during the 2026-09-04 work on the explicit reasoning that a published figure with no archived provenance is worse than the naming hazard of archiving it. That reasoning applies with more force to twenty cache numbers than it did to the control arm.
+
+**What this task is not.** It is not a re-measurement that replaces the published figures, and it must not quietly overwrite them. The `qwen3.8:27b-nvfp4` retry-after-abort row is **known unstable** — 148 ms with 3472/3477 cached on one run, 18,154 ms with 2063/3477 on the next — so a fresh run is a third observation, not a correction. Treat it as one.
+
+- [ ] **Step 1: Write the failing test first**
+
+Create `test/prefill_cache_probe_test.dart`. Follow `probe_format_test.dart` and `gguf_defaults_probe_test.dart`: stand up a fake loopback `HttpServer`, drive the probe's result-building against it, and assert on structure rather than on model output. Assert that a run written with `--json`:
+
+- produces a `ProbeRun` whose `calls` carry one entry per request the probe issues, with the phase name in `caseId`
+- records `prompt`, `cached` and prefill milliseconds for each call somewhere machine-readable, not only inside a human label string
+- round-trips: reading the written file back yields the same figures the probe reported
+
+```bash
+fvm dart test test/prefill_cache_probe_test.dart
+```
+
+Expected: FAIL — no `--json` support exists.
+
+- [ ] **Step 2: Add `--json` using the existing result API**
+
+`parseProbeArgs` already supplies `--json`; the probe currently ignores it. Write results with `writeProbeRun` from `probe_results.dart` (`:367`) — do not invent a second result format. Its parameters are `path`, `probe`, `model`, `samples`, `assetsDir`, `calls`, and optionally `variant`, `temperature`, `summary`, `notes`, `assetNames`. `machine`, `ollama` and `measuredAt` are filled in for you by `detectMachine()`/`detectOllamaVersion()`.
+
+Two modelling decisions to make deliberately and record in the doc comment:
+
+- **`caseId`** carries the phase: `identical-repeat`, `new-question`, `growing-conversation`, `interleaved`, `retry-after-abort`. Note that `ProbeCall.caseId` serialises to the JSON key **`case`**, not `caseId` — a reader of the file sees `case`.
+- **`pass` means the call completed**, not that the cache behaved as hoped. This probe scores no cards and asserts no cache expectation; baking a pass/fail judgement about cache reuse into the record would freeze today's interpretation into the archive. Put the interpretation in `summary` and `notes` instead, where `gguf_defaults_probe.dart` already sets the precedent.
+
+Put the per-phase cache figures in `summary` as structured values (prompt tokens, cached tokens, prefill ms) so a later reader can compute against them without parsing prose.
+
+- [ ] **Step 3: Verify the test passes and the gates are clean**
+
+```bash
+fvm dart test
+fvm dart analyze
+fvm dart format --output=none --set-exit-if-changed lib/ test/ tool/
+```
+
+- [ ] **Step 4: Confirm the machine is idle, then archive both models**
+
+One model resident at a time. `llama3.2:latest` is ~2 GB, `qwen3.8:27b-nvfp4` ~18 GB.
+
+```bash
+ollama ps
+curl -s http://127.0.0.1:11434/api/version
+
+fvm dart run tool/model_probes/prefill_cache_probe.dart --model llama3.2:latest \
+  --json tool/model_probes/results-m1max-64gb-ollama0333/llama3.2_latest/prefill_cache_probe.json
+ollama stop llama3.2:latest
+ollama ps
+
+fvm dart run tool/model_probes/prefill_cache_probe.dart --model qwen3.8:27b-nvfp4 \
+  --json tool/model_probes/results-m1max-64gb-ollama0333/qwen3.8_27b-nvfp4/prefill_cache_probe.json
+ollama stop qwen3.8:27b-nvfp4
+ollama ps
+```
+
+If `ollama ps` sticks at `Stopping...` and will not clear, stop and report it. That happened twice during the 2026-09-04 work, both times after schema-constrained `carousel` timeouts, and an acknowledged `keep_alive: 0` unload did not clear it.
+
+- [ ] **Step 5: Reconcile the new run against the published figures**
+
+This is the load-bearing step. Compare each phase against what `ModelBehavior.md` already publishes.
+
+- Where the new run **agrees**, say so and cite the archived file as the backing run. The figures do not need to change.
+- Where it **disagrees**, do not overwrite. Add it as a further observation, following the presentation the notebook already uses for `qwen3.8:27b-nvfp4`, which shows two runs side by side.
+- The **retry-after-abort row is expected to vary**. A third observation is worth having precisely because two points showed roughly 100x spread without establishing a distribution. Report what it reads; do not average the three, and do not claim a frequency that three points cannot support.
+- The **M5 figures cannot be re-archived** from this host. Whatever else changes, the notebook must keep disclosing that the M5 readings remain a stdout-only spot measurement.
+
+- [ ] **Step 6: Update the notebook and the changelog**
+
+Amend the prompt-cache section to say which figures now have an archived run behind them and which do not. Locate the section by grepping `prompt_eval_cached_count` rather than by line number.
+
+Register: flat analytical, no amplifying adverbs, figures rather than superlatives, bold only for a section's load-bearing claim or a figure, hedge inferred mechanisms, end on the last factual sentence. **Never change an existing figure while changing wording** — and note that this task legitimately _may_ change figures if the re-run disagrees, so the numeric-token diff's job here is to confirm every decrease was intended, not that there are none.
+
+Add one `CHANGELOG.md` bullet under `## [Unreleased]`, inside the existing list, no blank line between bullets.
+
+- [ ] **Step 7: Verify**
+
+```bash
+fvm dart test
+fvm dart analyze
+fvm dart format --output=none --set-exit-if-changed lib/ test/ tool/
+fvm dart run tool/model_probes/check_results.dart
+cd .. && npm run format:md:chat && npm run check:md:chat
+```
+
+`check_results.dart` will read two more runs than before. **Do not add `prefill_cache_probe` to `expectedProbes`** — it is a standalone diagnostic, `sweep.sh` does not run it, and adding it would report every model in every archive as missing it.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add tool/model_probes/prefill_cache_probe.dart test/prefill_cache_probe_test.dart \
+        tool/model_probes/results-m1max-64gb-ollama0333/llama3.2_latest/prefill_cache_probe.json \
+        tool/model_probes/results-m1max-64gb-ollama0333/qwen3.8_27b-nvfp4/prefill_cache_probe.json \
+        ModelBehavior.md CHANGELOG.md
+git commit -m "feat(chat-server): archive prefill cache probe runs behind a --json flag"
+```
+
+---
+
 ## Deliberately out of scope
 
 - **Promoting `--json-format schema` into `launch.json`.** Measuring is this plan; shipping is a separate decision with a known cost (it forbids the prompt's Markdown escape hatch).
