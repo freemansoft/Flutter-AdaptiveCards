@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Docs: **trimmed blog article 5 from 2,997 to 2,279 prose words**, bringing it
+  under the series' 3,000-word cap and toward the ~2,000-word target in
+  `blog/README.md`. Six sections covering the `granite4.1:3b` stall
+  investigation merged into three, and five groups of readings moved from prose
+  into tables, which the word count excludes: the before/after runner-eviction
+  figures, the server-log unload evidence, the 0.32.14 ceiling scores, the
+  cross-host prompt-cache readings, and the eleven closing rules. Every
+  measurement is preserved — a token-level diff against the previous revision
+  shows one decrease, `120`, from six occurrences to five, where two
+  restatements of the 120 s ceiling gave way to a table column header.
 - Docs: **archived the raw stdout captures behind the 2026-09-04 prompt-cache
   figures in `ModelBehavior.md` that predate `prefill_cache_probe.dart`'s
   `--json` flag.** Added `tool/model_probes/raw-captures/`, named so that
