@@ -16,16 +16,17 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                   | File                                         | Status                                    |
-| --- | ------------------------------------------------------------------------- | -------------------------------------------- | ----------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                     | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-02, image needed |
-| 2   | Fourteen levers for reliable card JSON from a local model                 | `2026-08-30-article-2-tuning-process-*`      | Drafted, image needed                     |
-| 3   | The same benchmark on a 64 GB M1 Max and a 16 GB M5                       | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-02, chart needed |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models | `2026-08-30-article-4-tool-channel-*`        | Drafted, diagram needed                   |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-02               |
+| #   | Article                                                                   | File                                         | Status                                             |
+| --- | ------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                     | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-06, screenshot added       |
+| 2   | Fourteen levers for reliable card JSON from a local model                 | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-06, screenshots added     |
+| 3   | The same benchmark on a 64 GB M1 Max and a 16 GB M5                       | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-06, mermaid chart added   |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-06, mermaid diagram added |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-02                        |
 
-All five articles are drafted. Article 5 carries a mermaid diagram of the sweep
-loop rather than an image placeholder, so it needs no visual work.
+All five articles are drafted and have their visuals: articles 3 and 4 carry
+mermaid diagrams in place of image placeholders (article 5 already had one),
+and articles 1 and 2 have real screenshots from the demo client.
 
 **Audience:** developers running local models on Ollama who need structured
 output. Secondary: Flutter and server-driven-UI readers.

@@ -9,14 +9,10 @@ Adaptive Card JSON, which the client renders as a date picker, a labelled fact
 list, a table, or a chart — server-driven UI whose payload comes from a language
 model rather than from a backend developer.
 
-<!--
-SCREENSHOT (to be added): a rendered card from the demo client in
-`adaptive_chat_client/`, showing a model reply that came back as Adaptive Card
-JSON and rendered as a real control rather than as text. An options question
-answered with an `Input.ChoiceSet` is the best subject, because §3 turns on the
-difference between a clickable control and a tidy Markdown list. Caption should
-name the model and say the reply is unedited model output.
--->
+![An options question answered with a clickable Input.ChoiceSet — five deployment-target choices as radio buttons, not a list of text.](blog-1-input-choiceset.png)
+
+_`qwen2.5-coder:7b`, unedited model output rendered by the demo client in
+[`adaptive_chat_client/`](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_chat_client)._
 
 None of what follows was needed to make that work. Pick a model, point the
 server at it, and it answers in cards. The measurements below live in a lab

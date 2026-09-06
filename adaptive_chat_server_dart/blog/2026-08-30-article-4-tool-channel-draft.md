@@ -41,18 +41,33 @@ Every other shape figure in this series is seeded; none of the figures below is.
 A model counts as a **win** only if the tool channel never made it worse on
 either condition.
 
-<!--
-DIAGRAM (to be produced): the two reply channels side by side, same question in,
-same rendered card out. Top path (prose channel): model → `message.content`
-carrying Adaptive Card JSON as text → `card_detect.dart` → renderer, with the
-detector drawn as a gate that can reject a malformed body and label it
-`broken`. Bottom path (tool channel): model → `tool_calls[0].function.arguments`
-carrying the card body as structured arguments → renderer, with no gate on the
-path at all. The asymmetry is the point: the prose path has a detector, the tool
-path has nothing equivalent, so a tool call naming an element type that does not
-exist passes straight through as well-formed arguments. Caption should say that
-zero malformed JSON is not the same as zero broken cards.
--->
+The two channels are not symmetric in what stands between the model and the
+renderer:
+
+```mermaid
+flowchart LR
+  Q["Card-shaped question"]
+
+  Q --> M1["Model replies in\nmessage.content\n(card JSON as text)"]
+  M1 --> DETECT{"card_detect.dart\ntryParseCardBody()"}
+  DETECT -- parses --> R["Renderer\n(Flutter client)"]
+  DETECT -- "invalid JSON, duplicate key,\ntruncated mid-generation" --> BROKEN["label: broken\ncaught, visible failure"]
+
+  Q --> M2["Model calls render_adaptive_card\nwith structured arguments"]
+  M2 --> ARGS["tool_calls[0].function.arguments\n(card body, already structured)"]
+  ARGS -. "no equivalent gate" .-> R
+  ARGS -. "element type that does not exist" .-> SILENT["renders as an\ninvisible blank\nuncaught, silent failure"]
+
+  style BROKEN fill:#f66,stroke:#900,color:#000
+  style SILENT fill:#f90,stroke:#960,color:#000
+```
+
+The prose path has a detector that can reject a malformed body and label it
+`broken`. The tool path has nothing equivalent — arguments that name an
+element type that does not exist are well-formed arguments, so they pass
+straight through. That asymmetry is why the malformed-JSON column below reads
+zero on every model while some of the same models score worse overall: zero
+malformed JSON is not the same as zero broken cards.
 
 ## Two wins, two unaffected, four losses
 
