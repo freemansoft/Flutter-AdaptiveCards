@@ -169,15 +169,13 @@ the same code question that used to come back as a card followed by an
 explanation, rendering as raw text, now comes back as one card with the
 explanation in a `TextBlock` next to the `CodeBlock`.
 
-<!--
-SCREENSHOT PAIR (to be added): before and after, side by side, both from
-`adaptive_chat_client/` on the same code question to `qwen2.5-coder:7b` at
-`t=0`. BEFORE: the reply with the explanation appended after the card, which
-renders as raw JSON text. AFTER: the same answer with the explanation in a
-`TextBlock` beside the `CodeBlock`, which renders as a card. The pair is what
-makes "redirect, don't forbid" concrete — the failure is visible rather than
-described.
--->
+| Before | After |
+| --- | --- |
+| ![Before the fix: the reply renders as raw JSON text, with the explanation trailing after the closing brace.](blog-2-before-screenshot.png) | ![After the fix: one rendered card, with the explanation as a TextBlock next to the CodeBlock.](blog-2-after-screenshot.png) |
+
+_`qwen2.5-coder:7b` at `t=0`, unedited model output, before and after the
+`500a1e8` prompt fix, rendered by the demo client in
+[`adaptive_chat_client/`](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_chat_client)._
 
 The second win re-keyed the escape hatch — the clause permitting a plain
 Markdown answer — from _confidence_ ("if you are unsure whether a card helps")

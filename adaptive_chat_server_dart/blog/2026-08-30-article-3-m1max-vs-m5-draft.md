@@ -82,24 +82,13 @@ for `qwen3.5:9b` before both hosts were on the 0.33 line. At matched runtime
 that row reads **1.15x**, but which of two M1 Max measurements sits in the
 table decides its direction; the caveats below say which one is there.
 
-<!--
-CHART (to be produced): horizontal bar chart, "M5 ÷ M1 Max median s/call,
-eight 16 GB-capable models, same runtime line". One bar per model, baseline at
-1.0x. Label each bar with its ratio value. Data pairs (model, ratio):
-  granite4.1:8b           1.15
-  qwen3.5:9b              1.15
-  qwen2.5-coder:7b        1.22
-  llama3.2:latest         1.23
-  nemotron-3-nano:4b      1.40
-  granite4.1:3b           1.43
-  llama3-groq-tool-use:8b 1.44
-  llama3-chatqa:8b        2.32
-Caption: every model is slower on the M5, 1.15x-2.32x, consistent with the
-memory-bandwidth gap between the two chips (~150 GB/s against ~400 GB/s). A
-separate, same-host control (below) measures a 1.54x swing from sweep position
-alone — larger than seven of these eight ratios — so read a single row's ratio
-as a direction, not a precise figure.
--->
+```mermaid
+xychart-beta horizontal
+    title "M5 ÷ M1 Max median s/call, eight 16 GB-capable models, same runtime line"
+    x-axis ["granite4.1:8b", "qwen3.5:9b", "qwen2.5-coder:7b", "llama3.2:latest", "nemotron-3-nano:4b", "granite4.1:3b", "llama3-groq-tool-use:8b", "llama3-chatqa:8b"]
+    y-axis "M5 ÷ M1 Max ratio" 1.0 --> 2.4
+    bar [1.15, 1.15, 1.22, 1.23, 1.40, 1.43, 1.44, 2.32]
+```
 
 **All eight rows read slower on the M5, 1.15x to 2.32x, seven of them inside
 1.0-1.5x.** That is roughly what the memory-bandwidth gap between the two
