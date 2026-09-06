@@ -1,0 +1,19 @@
+model=qwen3.8:27b-nvfp4 url=http://127.0.0.1:11434 num_ctx=8192
+warmup (loads the model)
+  warmup   : prompt=22 cached=0 prefill=437ms total=3840ms
+1. identical repeat
+  cold     : prompt=3176 cached=0 prefill=37445ms total=40214ms
+  identical: prompt=3176 cached=3171 prefill=158ms total=2587ms
+2. same system prompt, different question
+  new quest: prompt=3177 cached=4 prefill=40377ms total=45106ms
+3. growing conversation
+  turn 1   : prompt=3177 cached=3166 prefill=430ms total=2959ms
+  turn 2   : prompt=3207 cached=3172 prefill=802ms total=3814ms
+  turn 3   : prompt=3237 cached=3202 prefill=812ms total=4658ms
+4. interleaved unrelated prompt
+  other    : prompt=3176 cached=4 prefill=40604ms total=45119ms
+  back to A: prompt=3176 cached=3171 prefill=205ms total=2618ms
+5. retry after aborting mid-prefill
+  aborted  : no reply (HttpException)
+  retry    : prompt=3477 cached=2063 prefill=18154ms total=41187ms
+model unloaded

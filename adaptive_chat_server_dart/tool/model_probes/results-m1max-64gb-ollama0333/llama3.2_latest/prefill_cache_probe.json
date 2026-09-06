@@ -1,0 +1,170 @@
+{
+  "probe": "prefill_cache_probe",
+  "model": "llama3.2:latest",
+  "measuredAt": "2026-09-05",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.3",
+  "samples": 1,
+  "temperature": 0.0,
+  "assets": {},
+  "summary": {
+    "identical-repeat": [
+      {
+        "label": "cold",
+        "prompt": 2143,
+        "cached": 17,
+        "prefillMs": 1900,
+        "totalMs": 2003
+      },
+      {
+        "label": "identical",
+        "prompt": 2143,
+        "cached": 2142,
+        "prefillMs": 11,
+        "totalMs": 111
+      }
+    ],
+    "new-question": [
+      {
+        "label": "new-question",
+        "prompt": 2144,
+        "cached": 2136,
+        "prefillMs": 42,
+        "totalMs": 131
+      }
+    ],
+    "growing-conversation": [
+      {
+        "label": "turn-1",
+        "prompt": 2143,
+        "cached": 2136,
+        "prefillMs": 39,
+        "totalMs": 128
+      },
+      {
+        "label": "turn-2",
+        "prompt": 2166,
+        "cached": 2150,
+        "prefillMs": 54,
+        "totalMs": 142
+      },
+      {
+        "label": "turn-3",
+        "prompt": 2188,
+        "cached": 2173,
+        "prefillMs": 53,
+        "totalMs": 141
+      }
+    ],
+    "interleaved": [
+      {
+        "label": "other",
+        "prompt": 2444,
+        "cached": 28,
+        "prefillMs": 2170,
+        "totalMs": 2302
+      },
+      {
+        "label": "back-to-a",
+        "prompt": 2143,
+        "cached": 2136,
+        "prefillMs": 39,
+        "totalMs": 169
+      }
+    ],
+    "retry-after-abort": [
+      {
+        "label": "aborted"
+      },
+      {
+        "label": "retry",
+        "prompt": 2444,
+        "cached": 2443,
+        "prefillMs": 30,
+        "totalMs": 150
+      }
+    ]
+  },
+  "notes": "Standalone cache/prefill diagnostic, not one of the seven sweep probes -- sweep.sh does not run it and it is not in expectedProbes. pass records only whether a call completed; it is not a judgement about cache reuse -- this probe asserts no cache expectation. The 'aborted' call in retry-after-abort is recorded pass:false by design, since it is deliberately abandoned mid-prefill. summary carries prompt/cached/prefillMs/ totalMs per call, keyed by phase, so a reader can compute cache hit ratios and prefill cost without parsing label. See ModelBehavior.md, 'Prompt-cache reuse and retry cost', for how these figures were read on this host and model.",
+  "calls": [
+    {
+      "case": "identical-repeat",
+      "sample": 0,
+      "pass": true,
+      "label": "cold: prompt=2143 cached=17 prefill=1900ms total=2003ms",
+      "condition": "cold",
+      "ms": 2003
+    },
+    {
+      "case": "identical-repeat",
+      "sample": 1,
+      "pass": true,
+      "label": "identical: prompt=2143 cached=2142 prefill=11ms total=111ms",
+      "condition": "identical",
+      "ms": 111
+    },
+    {
+      "case": "new-question",
+      "sample": 0,
+      "pass": true,
+      "label": "new-question: prompt=2144 cached=2136 prefill=42ms total=131ms",
+      "condition": "new-question",
+      "ms": 131
+    },
+    {
+      "case": "growing-conversation",
+      "sample": 0,
+      "pass": true,
+      "label": "turn-1: prompt=2143 cached=2136 prefill=39ms total=128ms",
+      "condition": "turn-1",
+      "ms": 128
+    },
+    {
+      "case": "growing-conversation",
+      "sample": 1,
+      "pass": true,
+      "label": "turn-2: prompt=2166 cached=2150 prefill=54ms total=142ms",
+      "condition": "turn-2",
+      "ms": 142
+    },
+    {
+      "case": "growing-conversation",
+      "sample": 2,
+      "pass": true,
+      "label": "turn-3: prompt=2188 cached=2173 prefill=53ms total=141ms",
+      "condition": "turn-3",
+      "ms": 141
+    },
+    {
+      "case": "interleaved",
+      "sample": 0,
+      "pass": true,
+      "label": "other: prompt=2444 cached=28 prefill=2170ms total=2302ms",
+      "condition": "other",
+      "ms": 2302
+    },
+    {
+      "case": "interleaved",
+      "sample": 1,
+      "pass": true,
+      "label": "back-to-a: prompt=2143 cached=2136 prefill=39ms total=169ms",
+      "condition": "back-to-a",
+      "ms": 169
+    },
+    {
+      "case": "retry-after-abort",
+      "sample": 0,
+      "pass": false,
+      "label": "aborted: prompt=null cached=null prefill=nullms total=nullms",
+      "condition": "aborted"
+    },
+    {
+      "case": "retry-after-abort",
+      "sample": 1,
+      "pass": true,
+      "label": "retry: prompt=2444 cached=2443 prefill=30ms total=150ms",
+      "condition": "retry",
+      "ms": 150
+    }
+  ]
+}

@@ -52,6 +52,16 @@ Future<void> main(List<String> argv) async {
           'File whose contents become one prior turn. Repeatable; turns '
           'alternate user, assistant, user, ... in the order given.',
     )
+    ..addOption(
+      'json-format',
+      defaultsTo: 'none',
+      allowed: ['none', 'json', 'schema'],
+      help:
+          "Constrained decoding, mirroring the server's --json-format. Only "
+          'meaningful for a model whose json_format_probe verdict is '
+          'honored on the runtime under test; a model that ignores the '
+          'constraint produces an identical reply either way.',
+    )
     ..addFlag('help', abbr: 'h', negatable: false);
   final parsed = promptParser.parse(argv);
   if (parsed['help'] as bool) {
@@ -66,6 +76,7 @@ Future<void> main(List<String> argv) async {
   ], defaultSamples: 1);
   final userPrompt = parsed['prompt'] as String;
   final history = parsed['history'] as List<String>;
+  final format = resolveProbeFormat(parsed['json-format'] as String);
 
   final messages = <Map<String, String>>[
     {'role': 'system', 'content': loadCardSystemPrompt()},
@@ -88,6 +99,7 @@ Future<void> main(List<String> argv) async {
       'think': false,
       'keep_alive': '30m',
       'options': const {'num_ctx': 16384, 'temperature': 0.0},
+      'format': ?format,
     }),
   );
   final response = await request.close();
@@ -134,6 +146,7 @@ Future<void> main(List<String> argv) async {
     )
     ..writeln('contains ``` fence   : ${content.contains('```')}')
     ..writeln('history turns        : ${history.length}')
+    ..writeln('json-format          : ${parsed['json-format']}')
     ..writeln('verdict              : ${judgeReply(content, 0).label}');
   // force: a socket still stuck mid-generation must not keep the
   // process alive after its work is done and its result written.

@@ -21,11 +21,11 @@ rows, and two of them are easy to get wrong:
   Stalls         Calls that hit the per-call ceiling, same seven probes.
                  Reported beside the latency, never folded into it.
 
-    python3 tool/model_probes/perf_table.py tool/model_probes/results-m1max-64gb-ollama033
-    python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb-ollama033 \
-        --compare tool/model_probes/results-m1max-64gb-ollama033
-    python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb-ollama033 \
-        --compare tool/model_probes/results-m1max-64gb-ollama033 --by-probe
+    python3 tool/model_probes/perf_table.py tool/model_probes/results-m1max-64gb-ollama0332
+    python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb-ollama0331 \
+        --compare tool/model_probes/results-m1max-64gb-ollama0332
+    python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb-ollama0331 \
+        --compare tool/model_probes/results-m1max-64gb-ollama0332 --by-probe
 
 `--by-probe` splits the wall clock per probe instead of summing it. It exists
 because the summed columns can disagree in a way that looks like an error and is
@@ -45,8 +45,34 @@ import json
 import pathlib
 import sys
 
-CHANNEL_PROBE = "shape_ab-channel-tool.json"
 MEDIAN_PROBE = "shape_ab-seeded.json"
+
+# Recognized probe stems (file name without ".json"): the seven standard
+# probes plus "shape_ab-channel-tool", the optional eighth. Mirrors
+# `expectedProbes` in check_results.dart:37-45 (the eighth is that file's
+# `conditionalProbes`, gated on tool support). Keep the two lists in sync by
+# hand: Python cannot import the Dart constant.
+#
+# This decides which files are *known* -- sweep probes or the channel probe
+# -- versus a one-off diagnostic to skip and report (prefill_cache_probe,
+# gguf_defaults_probe, shape_ab-seeded-* variants, ...). It is an allowlist,
+# not a denylist, because a denylist would silently admit every future
+# one-off; only an allowlist stays correct as new diagnostics are added.
+# Recognizing the channel probe here does not mean it is summed -- see
+# CHANNEL_PROBE below, which both read functions still exclude, exactly as
+# before this filter existed.
+STANDARD_PROBES = {
+    "shape_ab-seeded",
+    "shape_ab-unaided",
+    "cascade_ab",
+    "temperature_stress",
+    "temperature_matrix",
+    "json_format_probe",
+    "tool_call_probe",
+    "shape_ab-channel-tool",
+}
+
+CHANNEL_PROBE = "shape_ab-channel-tool.json"
 
 
 def is_stall(call):
@@ -55,13 +81,36 @@ def is_stall(call):
     return "timeout (" in call["label"]
 
 
+def standard_probe_files(model_dir):
+    """Known probe files in `model_dir`, plus the one-off diagnostic files
+    skipped.
+
+    "Known" includes the channel probe -- callers that must not sum it (both
+    `read_model` and `read_model_probes`) filter it out separately, the same
+    exclusion this script always applied. Skips are reported by the caller,
+    not here, so each can label them with the model directory they came from.
+    """
+    kept, skipped = [], []
+    for path in sorted(model_dir.glob("*.json")):
+        (kept if path.stem in STANDARD_PROBES else skipped).append(path)
+    return kept, skipped
+
+
+def report_skipped(model_dir, skipped):
+    if skipped:
+        names = ", ".join(p.name for p in skipped)
+        print(f"{model_dir.name}: skipping non-sweep files: {names}", file=sys.stderr)
+
+
 def read_model(model_dir):
     total_ms = 0
     stalls = 0
     median_s = None
     model = None
     machines, dates, versions = set(), set(), set()
-    for path in sorted(model_dir.glob("*.json")):
+    paths, skipped = standard_probe_files(model_dir)
+    report_skipped(model_dir, skipped)
+    for path in paths:
         if path.name == CHANNEL_PROBE:
             continue
         run = json.loads(path.read_text())
@@ -111,7 +160,9 @@ def read_model_probes(model_dir):
     """Wall clock per probe, stalls excluded, keyed by probe file stem."""
     out = {}
     model = None
-    for path in sorted(model_dir.glob("*.json")):
+    paths, skipped = standard_probe_files(model_dir)
+    report_skipped(model_dir, skipped)
+    for path in paths:
         if path.name == CHANNEL_PROBE:
             continue
         run = json.loads(path.read_text())

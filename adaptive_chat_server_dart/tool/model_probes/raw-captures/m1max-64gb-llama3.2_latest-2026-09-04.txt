@@ -1,0 +1,19 @@
+model=llama3.2:latest url=http://127.0.0.1:11434 num_ctx=8192
+warmup (loads the model)
+  warmup   : prompt=32 cached=0 prefill=219ms total=2403ms
+1. identical repeat
+  cold     : prompt=2143 cached=17 prefill=2079ms total=2222ms
+  identical: prompt=2143 cached=2142 prefill=12ms total=113ms
+2. same system prompt, different question
+  new quest: prompt=2144 cached=2136 prefill=87ms total=178ms
+3. growing conversation
+  turn 1   : prompt=2143 cached=2136 prefill=39ms total=128ms
+  turn 2   : prompt=2166 cached=2150 prefill=54ms total=143ms
+  turn 3   : prompt=2188 cached=2173 prefill=53ms total=143ms
+4. interleaved unrelated prompt
+  other    : prompt=2444 cached=28 prefill=2170ms total=2309ms
+  back to A: prompt=2143 cached=2136 prefill=39ms total=172ms
+5. retry after aborting mid-prefill
+  aborted  : no reply (HttpException)
+  retry    : prompt=2444 cached=2443 prefill=30ms total=157ms
+model unloaded

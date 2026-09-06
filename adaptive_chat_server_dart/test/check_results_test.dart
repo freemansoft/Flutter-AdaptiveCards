@@ -484,13 +484,25 @@ void main() {
       // Guards the backfilled files themselves: a hand-written JSON that no
       // probe produced is exactly where a typo would hide. Both hosts, so
       // the M5 sweep is covered too.
+      //
+      // `assets` is checked non-empty as part of that guard, except for
+      // `prefill_cache_probe`: it generates a synthetic system prompt in
+      // code rather than reading card_system_prompt.txt or seed_card.json,
+      // so it correctly records no asset digests (assetNames: const [] in
+      // the probe) -- recording the default two anyway would tie its
+      // archived runs to files it never sent, and flag them as stale the
+      // next time either file changes for a dependency that never existed.
       for (final dir in resultsDirs('tool/model_probes')) {
         final runs = readAllResults(dir);
         expect(runs, isNotEmpty, reason: dir);
         for (final run in runs) {
           expect(run.model, isNotEmpty, reason: run.probe);
           expect(run.calls, isNotEmpty, reason: run.model);
-          expect(run.assets, isNotEmpty, reason: run.model);
+          if (run.probe == 'prefill_cache_probe') {
+            expect(run.assets, isEmpty, reason: run.model);
+          } else {
+            expect(run.assets, isNotEmpty, reason: run.model);
+          }
           expect(run.machine, isNotNull, reason: run.model);
         }
       }

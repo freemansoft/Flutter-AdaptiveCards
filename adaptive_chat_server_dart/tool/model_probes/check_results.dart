@@ -72,11 +72,11 @@ const shapeTableHost = 'Apple M1 Max / 64 GB';
 /// key two runs by one model and report a mismatch that is not one. The table
 /// is one measurement, and this names which. (The 0.32.14 archive was removed
 /// on 2026-09-03; git history before that date holds it.)
-const shapeTableDir = 'results-m1max-64gb-ollama033';
+const shapeTableDir = 'results-m1max-64gb-ollama0332';
 
 /// Every per-host results directory under [probesDir].
 ///
-/// Results are stored per host -- `results-m1max-64gb-ollama033/`, `results-m5-16gb-ollama033/` --
+/// Results are stored per host -- `results-m1max-64gb-ollama0332/`, `results-m5-16gb-ollama0331/` --
 /// because latency is a property of the box as much as the model. Discovered
 /// rather than listed so adding a host is a directory, not an edit here.
 List<String> resultsDirs(String probesDir) {

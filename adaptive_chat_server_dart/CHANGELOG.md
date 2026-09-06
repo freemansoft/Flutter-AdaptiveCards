@@ -2,6 +2,240 @@
 
 ## [Unreleased]
 
+- Fixed: `shape_ab.dart`'s default system-prompt path was a string relative to
+  the working directory, so running the probe from outside
+  `adaptive_chat_server_dart/` threw a `FileSystemException` before any call
+  was made. It now resolves through `probeAssetsDir()`, the same lookup the
+  file already used for its asset digests. Tightened
+  `check_results_test.dart`'s `prefill_cache_probe` exemption from a silent
+  skip to an explicit `isEmpty` assertion, so a future run that wrongly
+  regains asset digests is caught rather than passing unnoticed.
+- Measured (failed): **the `--json-format json` arm of `qwen3.6:27b-coding-nvfp4`'s
+  shape A/B did not complete.** `--only carousel,columnset,prose,date,choice1
+--samples 3`, seeded, under Ollama 0.33.3, wedged the runner after 6 calls;
+  every call after returned `timeout (180s)`, including `date` and `choice1`
+  warm, which score 6/6 in the `none` and `schema` archives — so nothing was
+  archived. A `keep_alive: 0` unload the server acknowledged (`done_reason:
+"unload"`) did not clear it; only killing the runner process did, at a
+  resident 10.6 GB of the 21-22 GB model, alive 1:02:32 at roughly 33% CPU,
+  `ollama serve` staying responsive throughout. This is the third wedge under
+  constrained decoding on this model, and the third occurrence in which an
+  acknowledged unload did not clear it. `ModelBehavior.md`'s tuning-levers
+  table and its runaway-generation open question are updated accordingly.
+- Docs: **trimmed blog article 5 from 2,997 to 2,279 prose words**, bringing it
+  under the series' 3,000-word cap and toward the ~2,000-word target in
+  `blog/README.md`. Six sections covering the `granite4.1:3b` stall
+  investigation merged into three, and six groups of readings moved from prose
+  into tables, which the word count excludes: the 2026-08-20 sweep re-run
+  figures, the before/after runner-eviction figures, the server-log unload
+  evidence, the 0.32.14 ceiling scores, the cross-host prompt-cache readings,
+  and the eleven closing rules. Every
+  measurement is preserved — a token-level diff against the previous revision
+  shows one decrease, `120`, from six occurrences to five, where two
+  restatements of the 120 s ceiling gave way to a table column header.
+- Docs: **archived the raw stdout captures behind the 2026-09-04 prompt-cache
+  figures in `ModelBehavior.md` that predate `prefill_cache_probe.dart`'s
+  `--json` flag.** Added `tool/model_probes/raw-captures/`, named so that
+  `check_results.dart`'s `results-`-prefix scan skips it; a `README.md`
+  there maps each file to the published figures it backs. `ModelBehavior.md`
+  now links to the directory alongside the existing disclosure that these
+  readings are not archived `ProbeRun` runs.
+- Fixed: **`perf_table.py` summed every `*.json` in a results directory
+  except `shape_ab-channel-tool.json`, so a one-off diagnostic file left in
+  a model's directory was reported as sweep wall-clock and its timeouts as
+  stalls.** `results-m1max-64gb-ollama0333/qwen3.6_27b-coding-nvfp4/`
+  held six such calls at ~180,000 ms each, inflating that model's "Full
+  sweep" figure from 2 min to 46 min and its "Stalls" figure from 0 to 11.
+  `read_model` and `read_model_probes` now filter to an allowlist of the
+  seven standard probes plus the optional `shape_ab-channel-tool`, mirroring
+  `expectedProbes` in `check_results.dart`; a directory holding other files
+  reports them to stderr instead of silently summing them.
+  `results-m1max-64gb-ollama0332/` output (stdout and `--by-probe`) is
+  byte-identical before and after the fix.
+- Measured: **the schema A/B's `prose` negative control still carried the
+  answer, inside the unwanted card.** Added `--json-format` (`none`/`json`/
+  `schema`) to `dump_reply.dart`, reusing `resolveProbeFormat` rather than a
+  second resolver, mirroring `shape_ab.dart`'s wiring and help text; a new
+  `test/dump_reply_format_test.dart` asserts against a fake loopback
+  `HttpServer` that `format` reaches the request body when asked for and is
+  absent otherwise. Used it to capture the `prose` case's reply
+  (`qwen3.6:27b-coding-nvfp4`, seeded, cold-start, `t=0`, one sample per
+  arm) under both `--json-format none` and `--json-format schema`, since
+  the recorded A/B run kept only a shape label and a hash. The schema
+  reply was a single-TextBlock card (`unwanted-card: got {TextBlock}`, the
+  shape the A/B recorded); its `text` held the full two-sentence answer,
+  comparable in content and length to the unconstrained prose reply, with
+  no Markdown formatting. On this one sample the measured cost of the
+  constraint is a shape change, not content loss.
+- Measured: **archived `prefill_cache_probe.dart` runs behind a new `--json`
+  flag, replacing hand-transcribed prompt-cache figures with a checkable
+  record for two of the two models measured on this host.** `pass` records
+  only call completion, not cache behaviour; per-call prompt/cached/prefill
+  figures land in `summary` as structured values, not only inside `label`'s
+  prose. The probe generates its own synthetic system prompt and reads no
+  asset file, so it now passes `assetNames: const []` -- recording digests
+  for `card_system_prompt.txt`/`seed_card.json` would have flagged these
+  archives as stale the next time either file changes, for a dependency
+  that never existed (`test/check_results_test.dart`'s non-empty-assets
+  guard is scoped around this one probe accordingly). Archived
+  `llama3.2:latest` and `qwen3.8:27b-nvfp4` on
+  `results-m1max-64gb-ollama0333` (2026-09-05, machine idle before each
+  model, re-measured once to pick up that fix -- normal run-to-run
+  variance, no reading changed). Two labelling corrections came out of
+  reconciling against the two prior 2026-09-04 runs: the "identical request
+  after an interleaved different prompt" table row had carried the
+  unrelated request's own miss figures under a label describing the repeat
+  that follows it, a pre-existing defect predating this task; and,
+  comparing each model's unrelated-request reading against its own
+  same-run cold prefill (both land within 15% of it, on five separate
+  runs across both models), the unrelated request's near-total miss is not
+  a `qwen3.8`-specific finding -- any model pays close to a full cold
+  prefill for a genuinely different prompt sharing only a ~28-token
+  instruction prefix with the cached one. The one reading that is
+  genuinely `qwen3.8`-specific is the cross-question miss, reproduced on
+  four measurements. `blog/2026-08-30-article-5-measurement-hygiene-draft.md`
+  carried the same two conflations and is corrected to match, net zero
+  words after a trim, held under the 3,000-word cap. The
+  retry-after-abort step remains unstable: three readings near 142-148 ms
+  and one 18154 ms outlier across four measurements; not averaged, not
+  reported as a rate. `check_results.dart` reads 181 runs, 2 more than
+  before; `prefill_cache_probe` stays out of `expectedProbes`, since
+  `sweep.sh` does not run it. The M5 readings remain unarchived and
+  un-re-taken from this host.
+- Measured: **whether Ollama 0.33.3's "honor GGUF model defined default
+  parameters" moves sampled output.** New `gguf_defaults_probe.dart` runs
+  `qwen3.5:9b` at a fixed seed across four arms: `unpinned` (temperature
+  and seed only, what the shipped probes send), `pinned-historical` (adds
+  `top_k 40`, `top_p 0.9`, `presence_penalty 0` explicitly), and
+  `topk-topp-only`/`presence-penalty-only`, which each send one half of
+  that set to isolate which one accounts for a divergence. At `t=0.6`,
+  `--samples 3`, all 3 samples differ between `unpinned` and
+  `pinned-historical`. A `t=0` greedy control also disagreed, reproducibly:
+  `topk-topp-only` matches `unpinned` in 2/2 samples, `presence-penalty-only`
+  matches `pinned-historical` in 2/2, tracing the divergence to
+  `presence_penalty`, which adjusts logits before the argmax and so is not
+  shielded by greedy decoding the way `top_k`/`top_p` are. On that `t=0`
+  case, honoring the Modelfile default moved the card from broken to
+  valid, not the reverse — a direction that does not repeat in the `t=0.6`
+  run, where both arms fail differently. `ModelBehavior.md`'s
+  sampled-temperature caveat is rewritten from a suspicion to this
+  measurement, scoped to `qwen3.5:9b`, this prompt, this host.
+- Blog: **carried today's M1 Max findings into articles 2 and 5, and
+  retired the 0.32.x references the measurements supersede.** Article 2's
+  `format` lever row now records the `qwen3.6:27b-coding-nvfp4` schema A/B
+  (repairs `ColumnSet`, does not repair `Carousel`, drops the prose fallback
+  server-wide) rather than the flip-only verdict. Article 5's prompt-cache
+  section states the cross-host/cross-model result as measured: the pattern
+  reproduces on the M1 Max for `llama3.2` on every reading, and holds on
+  `qwen3.8:27b-nvfp4` for identical-repeat and growing-conversation reuse but
+  misses for a fresh question sharing the system prompt, in two independent
+  runs — the miss most relevant to a chat server, since reusing a shared
+  system prompt across different questions is what every turn does. Also
+  adds the one-clause confirmation that the truncation detector now warns on
+  this against a live server. Article 5 stayed under its 3,000-word cap —
+  2,996 prose words in the version committed here — by trimming elsewhere in
+  the same edit. (Dropped the before/after delta this line carried in two
+  earlier drafts: it is a snapshot of a number that changes with every later
+  trim to a file this entry doesn't touch, and it was wrong twice for exactly
+  that reason. The final count, measured last, doesn't have that failure mode.)
+  `ModelBehavior.md`'s latency section now notes the M1 Max has since moved
+  to Ollama 0.33.3 without its latency/everyday/stress figures being
+  re-taken; the file's other 28 references to 0.32.14 were reviewed against
+  the "keep only if it carries a cross-runtime difference or provenance of
+  a never-re-measured figure" rule and left as-is — none is incidental
+  provenance for a figure superseded by this pass's measurements.
+- Archived: **the `qwen3.6:27b-coding-nvfp4` unconstrained shape A/B control
+  arm**, previously kept out of the results tree because it records
+  `variant: "seeded"`, the same string `sync_shape_table.dart` selects
+  canonical shape-table rows by. `sync_shape_table.dart` and
+  `check_results.dart`'s shape-table/coverage checks both read only from
+  `shapeTableDir` (`results-m1max-64gb-ollama0332/`) and never scan
+  `results-m1max-64gb-ollama0333/`, so the collision that ruling guarded
+  against cannot occur; the ruling is reversed. Filed as
+  `results-m1max-64gb-ollama0333/qwen3.6_27b-coding-nvfp4/shape_ab-seeded-format-none.json`
+  — the `-format-none` suffix states the arm in the filename even though the
+  recorded `variant` is `seeded`. Article 2's `ColumnSet` 0/6 baseline is now
+  backed by an archived run rather than only cited from a report.
+- Verified: **the `num_ctx` overflow warning against a live server.**
+  `--num-ctx 2048` with the shipped card system prompt produced a
+  `prompt truncated` warning naming ~3681 estimated tokens against
+  `num_ctx` 2048 and 1026 tokens evaluated; `--num-ctx 8192` against the
+  same prompt logged no such warning. Previously proven only against a
+  mocked response.
+- Measured: **`prefill_cache_probe.dart` on a second host and a second
+  model, with the large model's suspicious rows confirmed by a repeat
+  run.** On the Apple M1 Max / 64 GB, `llama3.2:latest` reproduces every
+  reading from the published Apple M5 run. Run against `qwen3.8:27b-nvfp4`
+  (~18 GB, too large for the M5's 16 GB) and then repeated in full on an
+  idle machine: identical-repeat and growing-conversation reuse hold in
+  both runs; "same system prompt, different question" and "interleaved
+  unrelated request" come back as full cold prefills in both runs
+  (`cached=4` of ~3,177 tokens, ~40.4-40.6 s), confirming that miss as
+  measured rather than a one-off, while the original sequence's cache
+  slot survives both misses unevicted in both runs; retry-after-abort
+  matches the M5 figure for `llama3.2` (30 ms vs 29 ms) but is unstable
+  for the large model — 148 ms with 3472/3477 cached on the first run,
+  18154 ms with 2063/3477 cached on the repeat. `ModelBehavior.md`'s
+  prompt-cache section records both runs and narrows the "one model, one
+  host, one runtime" caveat accordingly: identical-repeat and
+  growing-conversation reuse is not host- or model-specific; reuse across
+  a fresh question sharing only the system prompt is not general
+  behavior, since it held for `llama3.2` and missed for
+  `qwen3.8:27b-nvfp4` in two independent runs; retry-after-abort cost is
+  not a fixed runtime property either, varying by roughly 100x between
+  runs on the large model.
+- Measured: **`qwen3.6:27b-coding-nvfp4`'s schema-constrained shape A/B under
+  Ollama 0.33.3.** `format: schema` repairs `columnset` (0/6 → 6/6, both
+  conditions) but not `carousel`: cold stays 0/7 across three same-session
+  runs (invalid-JSON failures become 180s timeouts instead), and warm is
+  unstable — 3/3 PASS in the recorded A/B but 0/4 across two later
+  re-checks on an idle machine, so the apparent repair did not reproduce.
+  `prose` regresses to 0/6 (every reply an unwanted card); `date` and
+  `choice1` are unaffected. Recorded at
+  `results-m1max-64gb-ollama0333/qwen3.6_27b-coding-nvfp4/`: the A/B itself
+  in `shape_ab-seeded-format-schema.json`, and the two runs that disproved
+  its `carousel`-warm pass alongside it as `-confirm.json` and
+  `-recheck.json`, so the contradiction is visible from the directory
+  listing rather than only from a report.
+- Documented: **`ModelBehavior.md`'s format-canary section and the
+  `qwen3.6:27b-coding-nvfp4` per-model notes now record the schema A/B
+  result above**, replacing the "has not been measured" clauses both left
+  open when the `format` canary flipped to `honored`. Also records a second
+  finding from the same runs: schema-constrained `carousel` timeouts twice
+  left the Ollama runner wedged in `ollama ps`'s `Stopping...` state for up
+  to an hour, surviving an acknowledged `keep_alive: 0` unload and clearing
+  only when the runner process was killed — added to the existing
+  runaway-cancellation question in [Open questions and future
+  work](ModelBehavior.md#open-questions-and-future-work).
+- Measured: **re-ran the `format` canary for both `nvfp4` builds under
+  Ollama 0.33.3.** `qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both
+  still read `honored`, matching the 0.33.2 verdicts recorded 2026-09-01.
+  Results are in the new `results-m1max-64gb-ollama0333/` directory;
+  `ModelBehavior.md`'s format-canary section records the re-run and notes
+  that 0.33.3's "Honor GGUF model defined default parameters" change may
+  affect sampled-temperature figures elsewhere in the file even though it
+  does not affect this canary.
+- Renamed: **the two `ollama033` results archives to name their patch
+  version.** `results-m1max-64gb-ollama033/` held Ollama 0.33.2 and
+  `results-m5-16gb-ollama033/` held 0.33.1 — recorded in the M5 directory's
+  own `MODELS.md` — so the shared name no longer identified which. Both are
+  now `results-m1max-64gb-ollama0332/` and `results-m5-16gb-ollama0331/`;
+  `shapeTableDir`, the probes `README.md`, `perf_table.py`, `sweep.sh`,
+  `ModelBehavior.md`, and `CLAUDE.md`'s sibling-naming example follow the
+  rename. `sync_shape_table.dart` and `check_results_test.dart` compose their
+  path from `shapeTableDir` and needed no edit. No measurement data changed.
+- Added: **`shape_ab.dart --json-format none|json|schema`**, forwarding
+  Ollama's `format` constraint via the new `resolveProbeFormat()` in
+  `probe_support.dart`. A constrained run records `variant` as
+  `seeded-format-json` / `seeded-format-schema` rather than plain `seeded`,
+  so `sync_shape_table.dart`'s exact-match selection cannot mistake it for
+  the canonical unconstrained row; `--channel tool` already carries the
+  schema in its tool definition, so combining it with `--json-format` is
+  rejected. `probeAssetsDir()` (and the schema/seed-card loaders built on
+  it) now falls back to searching upward from the current directory when
+  `Platform.script` resolves outside the repo — which `dart test` was
+  doing silently, since it points at the test runner rather than the
+  probe file.
 - Blog: **article 5 trimmed under the length cap, and the target recorded.**
   A three-pass trim cut restatement and hedging recap, taking the draft from
   4,010 to ~3,150 raw words — 2,981 words of prose, under the 3,000 cap but

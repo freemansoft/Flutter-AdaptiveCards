@@ -197,6 +197,22 @@ archived one.
   number from them worth keeping.)
 - Prefer a table to a prose list anywhere a section compares more than two
   things.
+- **Keep every table, including one the notebook also carries.** A table is
+  easier to read than the equivalent prose, so duplication between an article
+  and [`ModelBehavior.md`](../ModelBehavior.md) is accepted rather than avoided.
+  Do not sort tables into "main" and "supporting" and cut the second kind — that
+  line is not reliably drawable, and drawing it is how a useful table gets
+  dropped. The primary table for a claim belongs in the article, beside the
+  paragraph it supports: a paragraph of supporting statements reads better with
+  its table next to it than with a link to one. What defers to the notebook is
+  hard prose detail — per-run readings, provenance caveats, mechanism discussion
+  — not the tables that carry the finding.
+- **Converting prose into a table costs nothing against the cap**, because the
+  word count excludes table rows. A passage that enumerates readings — rules
+  paired with the measurement behind each, per-run figures, a list of conditions
+  — reads better as a table and buys headroom at the same time. It is the
+  cheapest way to make room in an article sitting at the cap without dropping
+  content.
 - A wide source table needs fitting to blog width — either split it into
   per-category mini-tables placed with the prose that discusses them, or shorten
   the widest column and move its content into prose. Do not trim an Evidence
