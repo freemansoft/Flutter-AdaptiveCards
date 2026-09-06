@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+- Measured (failed): **the `--json-format json` arm of `qwen3.6:27b-coding-nvfp4`'s
+  shape A/B did not complete.** `--only carousel,columnset,prose,date,choice1
+--samples 3`, seeded, under Ollama 0.33.3, wedged the runner after 6 calls;
+  every call after returned `timeout (180s)`, including `date` and `choice1`
+  warm, which score 6/6 in the `none` and `schema` archives — so nothing was
+  archived. A `keep_alive: 0` unload the server acknowledged (`done_reason:
+"unload"`) did not clear it; only killing the runner process did, at a
+  resident 10.6 GB of the 21-22 GB model, alive 1:02:32 at roughly 33% CPU,
+  `ollama serve` staying responsive throughout. This is the third wedge under
+  constrained decoding on this model, and the third occurrence in which an
+  acknowledged unload did not clear it. `ModelBehavior.md`'s tuning-levers
+  table and its runaway-generation open question are updated accordingly.
 - Docs: **trimmed blog article 5 from 2,997 to 2,279 prose words**, bringing it
   under the series' 3,000-word cap and toward the ~2,000-word target in
   `blog/README.md`. Six sections covering the `granite4.1:3b` stall
