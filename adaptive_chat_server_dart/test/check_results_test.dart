@@ -498,7 +498,9 @@ void main() {
         for (final run in runs) {
           expect(run.model, isNotEmpty, reason: run.probe);
           expect(run.calls, isNotEmpty, reason: run.model);
-          if (run.probe != 'prefill_cache_probe') {
+          if (run.probe == 'prefill_cache_probe') {
+            expect(run.assets, isEmpty, reason: run.model);
+          } else {
             expect(run.assets, isNotEmpty, reason: run.model);
           }
           expect(run.machine, isNotNull, reason: run.model);

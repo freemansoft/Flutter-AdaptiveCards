@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Fixed: `shape_ab.dart`'s default system-prompt path was a string relative to
+  the working directory, so running the probe from outside
+  `adaptive_chat_server_dart/` threw a `FileSystemException` before any call
+  was made. It now resolves through `probeAssetsDir()`, the same lookup the
+  file already used for its asset digests. Tightened
+  `check_results_test.dart`'s `prefill_cache_probe` exemption from a silent
+  skip to an explicit `isEmpty` assertion, so a future run that wrongly
+  regains asset digests is caught rather than passing unnoticed.
 - Measured (failed): **the `--json-format json` arm of `qwen3.6:27b-coding-nvfp4`'s
   shape A/B did not complete.** `--only carousel,columnset,prose,date,choice1
 --samples 3`, seeded, under Ollama 0.33.3, wedged the runner after 6 calls;

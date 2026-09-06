@@ -28,6 +28,7 @@ library;
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:path/path.dart' as p;
 // Relative: these live outside lib/, beside this file.
 import 'probe_results.dart';
 import 'probe_support.dart';
@@ -336,10 +337,14 @@ Future<void> main(List<String> argv) async {
   }
   // The prose-channel prompt tells the model the entire reply must be raw
   // JSON, which is false when a tool is offered instead — pairing them would
-  // measure a contradiction, not the tool channel.
-  final defaultPrompt = channel == 'tool'
-      ? 'assets/card_tool_prompt.txt'
-      : 'assets/card_system_prompt.txt';
+  // measure a contradiction, not the tool channel. Resolved via
+  // probeAssetsDir() rather than a path relative to the working directory,
+  // so this default works regardless of where the probe is run from — the
+  // same resolution the digest block below already uses.
+  final defaultPrompt = p.join(
+    probeAssetsDir(),
+    channel == 'tool' ? 'card_tool_prompt.txt' : 'card_system_prompt.txt',
+  );
   final baselinePath = parsed.wasParsed('baseline')
       ? parsed['baseline'] as String
       : defaultPrompt;
