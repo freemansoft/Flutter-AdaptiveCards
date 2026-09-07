@@ -1,5 +1,13 @@
 # The measurement was wrong, in a way that looked exactly like a slow model
 
+In
+[`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
+a Dart chat server hands a question to a local Ollama model and asks for the
+answer as Adaptive Card JSON, which a Flutter app renders. A directory of
+probes measures which models manage it; the results live in a lab notebook
+there. This article is about the harness, not the models: every lesson below
+came from a measurement that went wrong.
+
 ## Fifty-two stalled calls, and nothing about the model had changed
 
 `granite4.1:3b` came back from a sweep on 2026-08-20 with **52 stalled calls**,
@@ -8,14 +16,6 @@ a seeded score of **12/25** on the shape set with conversation history, and
 card the model just sent without dropping its contents. Read as a model result, that is a 2.0 GB
 model failing badly. It was not: nothing about the model had changed, or
 needed fixing, on that 2026-08-20 run.
-
-The frame, briefly. In
-[`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a Dart chat server hands a question to a local Ollama model and asks for the
-answer as Adaptive Card JSON, which a Flutter app renders. A directory of
-probes measures which models manage it; the results live in a lab notebook
-there. This article is about the harness, not the models: every lesson below
-came from a measurement that went wrong.
 
 ## One model resident at a time, because a stall does not name its cause
 
@@ -306,8 +306,8 @@ series counts, and the cheapest fix is to say so beside the scores.
 Once a whole batch of measurements is already wrong, the question is what to
 keep: discard the numbers, not what they taught. Two dated sweeps — six small
 models on 2026-08-14, four large ones on 2026-08-16 — ran the everyday and
-stress sets at `--samples 1`,
-before the shape probe existed. Their per-model numbers, superseded by the
+stress sets at `--samples 1`, one call per case, before the shape probe
+existed. Their per-model numbers, superseded by the
 2026-08-20 re-measurement, **disagree with it on eight of the ten models**,
 occasionally by five everyday cases; nothing about the models changed.
 Marked do-not-quote in the notebook, they are kept only in git history and

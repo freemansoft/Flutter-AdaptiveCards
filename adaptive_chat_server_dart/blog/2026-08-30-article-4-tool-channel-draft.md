@@ -6,7 +6,7 @@ channel**. No unexpected-character errors, no arrays missing their `[ ]`, no
 cards truncated mid-generation, no duplicate keys. On four of those same eight
 models the tool channel still scored worse than prose did, and nothing shipped.
 
-The frame, briefly. In
+In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 a Dart chat server hands a question to a local Ollama model and asks for the
 answer as Adaptive Card JSON in the message body. Ollama also offers a tool
@@ -28,7 +28,8 @@ against the eight models that a separate capability probe,
 [`tool_call_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_call_probe.dart),
 had rated `supported` out of the roster of fifteen; the first article in this
 series describes the four-way split that produced those eight. Conditions:
-`--samples 2`, unseeded, `t=0`, cold-start and with-history.
+`--samples 2`, unseeded, `t=0`, cold-start and with-history. A case counts as
+passed only if both of its two runs passed, in both arms.
 
 **Each tool run is compared against that model's recorded `unaided` run — the
 unseeded prose arm — never the seeded one.** The tool arm cannot be seeded: the

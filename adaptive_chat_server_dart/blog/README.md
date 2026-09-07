@@ -16,13 +16,13 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                   | File                                         | Status                                             |
-| --- | ------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                     | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-06, screenshot added      |
-| 2   | Fourteen levers for reliable card JSON from a local model                 | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-06, screenshots added     |
-| 3   | The same benchmark on a 64 GB M1 Max and a 16 GB M5                       | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-06, mermaid chart added   |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-06, mermaid diagram added |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-02                        |
+| #   | Article                                                                      | File                                         | Status                                             |
+| --- | ---------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                        | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-06, screenshot added      |
+| 2   | Fourteen levers for reliable card JSON from a local model                    | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-06, screenshots added     |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5 | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-07, mermaid chart added   |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models    | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-06, mermaid diagram added |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model    | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-02                        |
 
 All five articles are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
@@ -71,9 +71,13 @@ phase-1-canary findings built on top of it.
 detail article 1 defers to it. The M5 ÷ M1 Max ratio band, read at matched
 Ollama versions, and why it does not track weight. The `llama3.2:latest`
 artifact row. The 1.54x sweep-position bias that bounds how precisely any
-single row's ratio can be read — the confound that replaces the earlier,
-retracted claim that a per-row ratio compared two runtimes rather than two
-machines. Thermal throttling as plausible and unproven.
+single row's ratio can be read. Thermal throttling as plausible and unproven.
+
+Both hosts run the same Ollama line, so the article compares machines and never
+runtimes: a figure from a pre-0.33 runtime does not appear in it. The
+cross-runtime material — stall counts not being comparable across versions, the
+ceiling's effect on one 0.32.14 figure — belongs to article 5, which owns it as
+a methodological finding rather than as a host comparison.
 
 _Defers:_ bad assertions and undelivered `system` messages to article 5.
 
@@ -92,8 +96,7 @@ it states rather than assumes.
 
 **Article 5 — measurement hygiene.** The `granite4.1:3b` stall-signature
 account in full — article 1 names it in one sentence and defers here; article 3
-carries the 2026-09-01 reproduction and the two-mechanism summary in one
-paragraph and defers the account here — co-residency and a queue cascade both
+names the incident in one clause and defers the account here — co-residency and a queue cascade both
 produce the identical 52-stall signature, and which one caused the original
 incident is not recoverable. **The queue-cascade material outright**:
 how one abandoned generation is recorded as many stalls, how that was proven
@@ -138,8 +141,11 @@ isolate the confound, measure it, do not read a mechanism off a net number.
 - **Shape figures are seeded unless stated otherwise**, and the seed is worth
   +10 to −2 by model, so a seeded score named without its configuration is
   half a fact.
-- **The noise floor is ±1.** Shape figures are `--samples 2`; everyday and
-  stress are `--samples 1`. A one-point difference between two models is noise
+- **The noise floor is ±1.** Shape figures are `--samples 2` — every case run
+  twice, scored a pass only if both runs passed, so one borderline call takes
+  the whole case — while everyday and stress run each case once, at
+  `--samples 1`. Gloss that rule at an article's first use of the flag; the
+  bare number does not say what a second run does to a score. A one-point difference between two models is noise
   rather than a ranking — a re-measurement moved ten of twelve steady models by
   ±1 with nothing about them changing.
 - **Name the probe that produced the figure**, not only the set and the
@@ -210,6 +216,9 @@ Three habits to cut on sight, all of which survived into first drafts:
   worth answering here", "The pairing rule carries weight, so it is worth
   stating". Answer the doubt or state the rule; do not announce that you are
   about to.
+- **Announcing the setup instead of giving it.** "The frame, briefly" — never
+  write _the frame_ in an article. Open the paragraph with the setup itself:
+  what the project is, what the model is asked for, what renders the reply.
 - **An ordinal implying an enumeration the text never made.** "a fourth set",
   "splits the roster a fourth way" — the reader stops to count and finds no
   list. Name the thing instead.
@@ -267,6 +276,16 @@ archived one.
   number from them worth keeping.)
 - Prefer a table to a prose list anywhere a section compares more than two
   things.
+- **A table section runs intro, table, then commentary.** The intro is one or
+  two sentences saying what the table holds and what to look for in it; a
+  section that opens on a table makes the reader infer that. After the table,
+  the rows that carry a finding get a paragraph each — two sentences or more,
+  because a single sentence restates the row rather than explaining it. Not
+  every row earns one: a fifteen-row roster is discussed by group, and rows that
+  only supply the denominator need no commentary at all. What the paragraphs
+  must not do is leave a row that the reader will stop on — an outlier, a
+  reversed sign, a figure that contradicts a neighbouring row — standing without
+  an account.
 - **Keep every table, including one the notebook also carries.** A table is
   easier to read than the equivalent prose, so duplication between an article
   and [`ModelBehavior.md`](../ModelBehavior.md) is accepted rather than avoided.
@@ -291,6 +310,12 @@ archived one.
   the section beneath them changes.** "None of this was needed to ship the
   demo" outlived the paragraphs that made that claim by one revision, and a
   heading promising three test sets sat over forty lines about something else.
+- **At least one intro paragraph sits between the `#` title and the first `##`
+  heading**, and it is the background: what the project is, what the model is
+  asked for, what renders the reply, and what this article asks. A reader who
+  arrived from a search result needs all four before the first heading makes a
+  claim. Filing that paragraph under the first `##` puts general background
+  beneath a specific heading and leaves the title standing alone above nothing.
 - **Quote one real question per test set.** A denominator describes a set's
   size; a prompt describes its difficulty, and the gap between "What size shirt
   should I order?" and a nine-field expense form is the argument the prose was

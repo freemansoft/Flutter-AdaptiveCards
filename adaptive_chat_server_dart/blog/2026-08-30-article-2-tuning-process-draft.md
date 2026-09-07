@@ -23,13 +23,11 @@ the `CodeBlock`. Redirect a behavior rather than forbidding it.
 
 The tuning is aimed at four failure modes.
 
-- Raw JSON shown to the user
-  as text.
+- Raw JSON shown to the user as text.
 - A card truncated mid-generation.
-- Prose appended after an otherwise
-  valid card.
-- A conversation that drifts back to Markdown and stays there. Ex:
-  one prose exchange ahead of an options question was enough to turn a working
+- Prose appended after an otherwise valid card.
+- A conversation that drifts back to Markdown and stays there. One prose
+  exchange ahead of an options question was enough to turn a working
   `Input.ChoiceSet` into 867 characters of Markdown on `qwen2.5-coder:7b` at
   `t=0`.
 
@@ -107,15 +105,14 @@ _25 shape cases from
 `t=0`, `--samples 2`, with-history condition; "unaided" is the same measurement
 without the seed._
 
-Read the last three rows against the noise floor: at `--samples 2` a one-shape
-difference is noise, and a re-measurement moved ten of twelve steady models by
+Read the last three rows against the noise floor: at `--samples 2` — each case
+run twice and scored a pass only if both runs passed — a one-shape difference
+is noise, and a re-measurement moved ten of twelve steady models by
 ±1 with nothing about them changing. The −2 in the range belongs to
 `llama3-chatqa:8b`, a model that scores 4/25 or worse under every condition.
-`gpt-oss:20b` is the sharper example of a model-dependent lever: under Ollama
-0.32.14 the seed cost it two shapes (23/25 seeded against 25/25 unaided), and
-under 0.33.2, on the same machine and the same weights, it gains three (25/25
-seeded against 22/25 unaided); no mechanism for the reversal is established.
-Its seeded **25/25 is the only 25/25 in the notebook under any condition**. A
+`gpt-oss:20b` sits at the other end of the same table: the seed gains it three
+shapes, 25/25 seeded against 22/25 unaided, and that seeded **25/25 is the only
+25/25 in the notebook under any condition**. A
 lever worth +10 to one model and −2 to another is one a configuration should
 have to ask for, so the seed ships opt-in.
 

@@ -2,6 +2,33 @@
 
 ## [Unreleased]
 
+- Docs: **the M5 throttling measurements are labelled as predating runner
+  eviction**, in `ModelBehavior.md`'s performance section. `granite4.1:8b`
+  recorded zero stalls so no unload would have fired on its own calls, but the
+  eight-model sweep that heated the machine carried 7 stalled calls across three
+  other models, and under the current harness each timeout unloads the runner
+  and idles the GPU — the sustained load behind the 1.20x figure is a property
+  of the pre-eviction harness. Re-taking the control belongs in a 0333 directory
+  as a new measurement, since the host has moved to 0.33.3 and
+  `results-m5-16gb-ollama0331/` is a closed archive. No figure changed.
+
+- Docs: **rated memory bandwidth recorded for the measured hosts**, in
+  `ModelBehavior.md`'s performance section. Single-stream generation is
+  memory-bandwidth-bound, and the two hosts differ by tier rather than by
+  generation — the M5 is the newer part with the faster cores, the M1 Max has
+  the wider bus (153 GB/s against 400 GB/s), which is the direction the recorded
+  medians go. Vendor specifications transcribed for context, labelled as such:
+  no bandwidth or clock figure was read from either machine.
+
+- Docs: **`--samples` now states how the runs combine**, in both the
+  `ProbeArgs.samples` doc comment and the flag's `--help` text. The count said
+  "Runs per prompt per setting" and left the aggregation implicit: `shape_ab`
+  and `cascade_ab` count a case as passed only if every run passed, so raising
+  `--samples` can only lower a score and a 1-of-2 case is indistinguishable in
+  a table from an 0-of-2 one (`ProbeRun.splitCases` names those). The
+  temperature probes do not combine runs, which is why the sweep runs them at
+  `--samples 1`. No flag, key, or recorded figure changed.
+
 - Added: **`Input.Rating` to `assets/card_tool_prompt.txt`**, matching the
   prose prompt. The tool-channel palette had the same omission — six `Input.*`
   types and a read-only `Rating` — so the tool arm could not produce the

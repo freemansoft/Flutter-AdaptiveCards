@@ -51,8 +51,17 @@ class ProbeArgs {
   /// Base URL of the Ollama server.
   final String url;
 
-  /// Runs per cell. More samples cost time linearly; 3 is usually enough to
+  /// Runs per case. More samples cost time linearly; 3 is usually enough to
   /// see a deterministic failure repeat.
+  ///
+  /// How the runs combine is the part worth knowing before quoting a score.
+  /// The pass/fail probes (`shape_ab.dart` and `cascade_ab.dart`) count a
+  /// case as passed only if **every** run passed, so raising this can only
+  /// lower a score, and a case that passes once and fails once reads in a table
+  /// exactly like one that failed twice — `ProbeRun.splitCases` names those
+  /// so a coin flip is not quoted as a measurement. The temperature probes
+  /// score each run on its own and do not combine them, which is why the
+  /// sweep runs them at 1.
   final int samples;
 
   /// Per-call ceiling before a reply is scored a timeout.
@@ -82,7 +91,9 @@ ProbeArgs parseProbeArgs(List<String> argv, {int defaultSamples = 3}) {
     ..addOption(
       'samples',
       defaultsTo: '$defaultSamples',
-      help: 'Runs per prompt per setting.',
+      help:
+          'Runs per case. In the pass/fail probes a case passes only if every '
+          'run passes, so more samples can only lower a score.',
     )
     ..addOption(
       'json',
