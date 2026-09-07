@@ -2,7 +2,7 @@
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a Dart chat server hands a question to a local Ollama model and asks for the
+a demonstration Dart chat server hands a question to a local Ollama model and asks for the
 answer as Adaptive Card JSON — a strict, closed-vocabulary schema — which a
 Flutter client renders as interactive UI rather than as text. A directory of
 probes measures which of fifteen local models manage that, how well, and how
