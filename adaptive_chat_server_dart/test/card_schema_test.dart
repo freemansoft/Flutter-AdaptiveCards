@@ -3,6 +3,27 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 
+// Not an ordinary behavioral unit test: nothing here calls library code. It
+// cross-checks four independent sources of truth against each other by
+// scraping them as text/JSON —
+//   - assets/card_schema.json: the `type` enum `--json-format schema` uses to
+//     grammar-constrain a model's reply,
+//   - assets/card_system_prompt.txt: the palette the prompt tells the model
+//     it may use (in prose and in its worked examples),
+//   - packages/flutter_adaptive_cards_fs/lib/src/registry.dart and
+//     .../flutter_adaptive_charts_fs/lib/src/card_chart_registry.dart: the
+//     switch statements that decide what the renderer can actually draw, and
+//   - README.md: the documented palette list.
+// These four are edited independently and by hand, so they drift silently:
+// a type added to a registry switch but never added to the schema enum makes
+// `--json-format schema` grammar-forbid exactly what the renderer supports;
+// a type removed from a registry switch but left in the schema enum lets the
+// grammar advertise a type the renderer can no longer draw; a type added to
+// the prompt's examples but missing from the schema enum makes the grammar
+// reject the very shape the prompt just told the model to produce. None of
+// that is a runtime bug this suite would catch by exercising code — it is a
+// four-way consistency check between committed files, run here because nothing
+// else in the build enforces it.
 /// Every `Chart.*` type named anywhere in the card system prompt, read from
 /// the prompt itself so this test tracks the prompt rather than a hardcoded
 /// copy.
@@ -124,12 +145,18 @@ void main() {
       expect(_chartRegistryElementTypes(), containsAll(_deliberatelyExcluded));
     });
 
+    // Equality, not just containment: a schema that allows a type the
+    // registry cannot render is exactly as broken as one that forbids a
+    // type the registry can draw — either way the two sources have drifted.
     test('the Element enum is exactly the renderable top-level set', () {
       expect(_schemaElementTypes(), _renderableTopLevelTypes());
     });
   });
 
   group('card prompt and card schema agree on chart types', () {
+    // Freezes the palette the prompt currently teaches models about, so a
+    // Chart.* mention added to the prompt is caught here directly rather
+    // than only surfacing indirectly through the containsAll check below.
     test('the prompt advertises the six flat-data chart types', () {
       expect(_chartTypesInPrompt(), {
         'Chart.Pie',
@@ -199,6 +226,9 @@ void main() {
       );
     }
 
+    // The failure this guards: the prompt tells the model to use a type the
+    // JSON-schema grammar then forbids, so `--json-format schema` rejects
+    // exactly the shape the prompt just told the model to produce.
     test('every type the prompt advertises is allowed by the schema enum', () {
       final defs = schema[r'$defs'] as Map<String, dynamic>;
       final element = defs['Element'] as Map<String, dynamic>;
@@ -216,6 +246,9 @@ void main() {
       );
     });
 
+    // The README palette is prose, not something the compiler enforces —
+    // without this check it goes stale the moment a type is added to the
+    // prompt without a matching edit to the doc.
     test(
       'every type the prompt advertises is listed in the README palette',
       () {
@@ -235,6 +268,10 @@ void main() {
   });
 
   group('ChildElement covers every legal nested position', () {
+    // ChildElement's enum must be derived from the top-level set, not
+    // maintained as its own independent list — this pins the derivation, so
+    // an edit that pastes a fresh list into the schema instead of extending
+    // Element's is caught even when the two happen to agree on size.
     test('it is the top-level set plus child-only and structural types', () {
       expect(
         _schemaChildElementTypes(),
@@ -244,6 +281,9 @@ void main() {
       );
     });
 
+    // A superset that happened to be equal in size would mean every
+    // child-only type quietly vanished; the length check catches that in a
+    // way containsAll alone would not.
     test('it is a strict superset of Element', () {
       expect(_schemaChildElementTypes(), containsAll(_schemaElementTypes()));
       expect(

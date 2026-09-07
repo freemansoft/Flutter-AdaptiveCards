@@ -5,6 +5,20 @@ import 'package:test/test.dart';
 // Relative: both files live outside lib/.
 import '../tool/model_probes/probe_results.dart';
 
+// probe_results.dart's own doc comment explains the stakes: every figure in
+// ModelBehavior.md used to be hand-transcribed from a probe's console
+// output, which made a typo invisible and a re-run undiffable. This suite is
+// mostly the schema/data-model genre check_results_test.dart names
+// explicitly -- the 'round trip' group is a JSON (de)serialization check
+// against committed result-file shapes (including that an old file recorded
+// before a field existed must still parse), and 'model slug' checks a pure
+// string mapping used to name result directories. It is not, however,
+// entirely that genre: 'cards versus prose', 'split cases', and 'latency'
+// exercise real derived-figure logic (medianMs's first-call-is-a-cold-load
+// rule, splitCases' per-condition grouping) that a probe's own summary
+// depends on, and 'ollama version detection' / 'machine detection' run the
+// actual host-detection functions against this machine, which is closer to
+// a smoke test than either genre above.
 ProbeCall call(
   String id, {
   bool pass = true,
@@ -31,6 +45,10 @@ ProbeRun runWith(List<ProbeCall> calls) => ProbeRun(
 
 void main() {
   group('model slug', () {
+    // `:` and `/` are both legal in an Ollama tag and both illegal (or
+    // meaningful) in a path; this pins the exact replacement scheme rather
+    // than letting it drift into something the archive on disk was not
+    // written with.
     test('strips the characters a path cannot carry', () {
       expect(modelSlug('qwen3.8:27b-nvfp4'), 'qwen3.8_27b-nvfp4');
       expect(
@@ -39,6 +57,10 @@ void main() {
       );
     });
 
+    // modelSlug's doc comment admits the mapping is "deliberately
+    // lossy-looking" -- this is what backs that claim against every tag
+    // actually probed, since two tags colliding on one directory would
+    // silently merge their results.
     test('is injective across the tags in use', () {
       const tags = [
         'gpt-oss:20b',
@@ -76,6 +98,10 @@ void main() {
       expect(run.cardsAndProse, (3, 2));
     });
 
+    // `prose-ok` is a second, shape-probe-specific spelling of "clean prose"
+    // alongside plain `prose`; isProse must recognise both, or a whole
+    // probe's cards-vs-prose split would silently misclassify one label as
+    // neither.
     test('counts the shape probe prose-ok label as prose', () {
       expect(runWith([call('prose', label: 'prose-ok')]).cardsAndProse, (0, 1));
     });
@@ -168,6 +194,11 @@ void main() {
       expect(run.totalMs, 288000);
     });
 
+    // A single call with no `ms` leaves both getters with nothing to
+    // report -- medianMs because skip(1) drops the only call as the
+    // presumed cold load, totalMs because there is no timed call at all --
+    // and both must read as null rather than 0, which would look like a
+    // real, suspiciously instantaneous measurement.
     test('is null when no call recorded a time', () {
       expect(runWith([call('a')]).medianMs, isNull);
       expect(runWith([call('a')]).totalMs, isNull);
@@ -175,6 +206,11 @@ void main() {
   });
 
   group('round trip', () {
+    // Every optional field populated at once, including the ones that only
+    // appeared after the format's first version (variant, machine, ollama,
+    // temperature, summary, notes) -- a field silently dropped by toJson or
+    // fromJson would otherwise only be noticed by diffing a real result
+    // file after the fact.
     test('survives JSON without losing a field', () {
       final run = ProbeRun(
         probe: 'shape_ab',
@@ -223,6 +259,10 @@ void main() {
   });
 
   group('ollama version detection', () {
+    // Runs the real detectOllamaVersion() against whatever `ollama` is on
+    // this machine's PATH rather than a fake -- CI has no Ollama installed,
+    // so the only thing assertable here is the shape of a version when one
+    // is found, not that one is always found.
     test('reads a version, or reports that it could not', () {
       final v = detectOllamaVersion();
       if (v != null) {
@@ -232,6 +272,12 @@ void main() {
   });
 
   group('machine detection', () {
+    // Runs the real detectMachine() against whatever host the test happens
+    // to execute on. The macOS-specific assertions exist because every
+    // recorded measurement in this directory has been taken on a Mac; on
+    // any other OS this only checks the non-empty fallback, per
+    // detectMachine's doc comment ("wrong-but-honest beats a confident
+    // guess").
     test('names this host rather than returning a placeholder', () {
       final m = detectMachine();
       expect(m, isNotEmpty);

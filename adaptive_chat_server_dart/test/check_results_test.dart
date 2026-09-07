@@ -7,6 +7,27 @@ import 'package:test/test.dart';
 import '../tool/model_probes/check_results.dart';
 import '../tool/model_probes/probe_results.dart';
 
+// check_results.dart exists because CI cannot run Ollama, so nothing under
+// tool/model_probes/ can be a CI gate directly — the numbers in
+// ModelBehavior.md are hand-copied out of a probe's console output, and a
+// typo, a stale prompt digest, or a launched model that was never probed all
+// go unnoticed. This file is two different kinds of test:
+//
+// - 'launch.json parsing', 'shape table parsing', 'drift', 'partial runs',
+//   'staleness', 'coverage', and 'host awareness' are ordinary unit tests of
+//   check_results.dart's pure functions (launchedModels, shapeTableRows,
+//   check, checkOneHostPerDirectory) against constructed ProbeRun fixtures
+//   and inline markdown. They exercise the checker's logic in isolation.
+// - 'the committed results' is not that: it runs the checker's real functions
+//   (resultsDirs, readAllResults, check, checkOneHostPerDirectory,
+//   checkVersionStampConsistency) directly against the JSON files actually
+//   committed under tool/model_probes/results-*/, the real ModelBehavior.md,
+//   and the real .vscode/launch.json. It is a drift/consistency check over
+//   committed data files and generated artifacts, not a unit test of
+//   application behavior — a failure here means the tree's own records
+//   disagree with each other or with what got published, not that a function
+//   returned the wrong value for a given input.
+
 /// A shape run where [cold] and [warm] cases pass out of 25.
 ProbeRun shapeRun({
   required String model,
@@ -73,17 +94,30 @@ void main() {
     });
 
     test('returns empty rather than throwing when the file is absent', () {
+      // launch.json is a real workspace file, not a fixture the checker
+      // controls — a wrong relative path or a checkout that moved it must
+      // degrade to "nothing launched" rather than crash check_results.dart's
+      // main() before it can report anything else.
       expect(launchedModels('/nonexistent/launch.json'), isEmpty);
     });
   });
 
   group('shape table parsing', () {
     test('reads bolded and plain cells alike', () {
+      // ModelBehavior.md bolds whichever figure is the notable one for that
+      // row (a perfect score, or a surprising delta) — which column that is
+      // varies row to row. The parser has to strip that markup rather than
+      // only accept plain digits, or a bolded cell would silently read as a
+      // missing row instead of a real figure.
       final rows = shapeTableRows(tableWith(cold: 24, warm: 23, preSeed: 22));
       expect(rows['m:1'], (24, 23, 22, 25));
     });
 
     test('skips a row whose figures are not plain scores', () {
+      // A row can carry a placeholder ('—', 'n/a') instead of an 'n/25'
+      // figure. Silently coercing that to a number would fabricate a score;
+      // skipping the row is what keeps the table check from ever comparing
+      // against a value nobody measured.
       final rows = shapeTableRows(
         '| `m:1` | 1.0 GB | — | n/a | 22/25 | 3/3 | none |',
       );
@@ -215,6 +249,10 @@ void main() {
     );
 
     test('is fatal for a model launch.json launches', () {
+      // The prompt has been edited repeatedly since these numbers were
+      // recorded; a launched model is the set this project says is worth
+      // keeping working, so a stale digest for one must block the build
+      // rather than quietly aging in place.
       final findings = check(
         results: [stale('m:1')],
         launched: const ['m:1'],
@@ -240,6 +278,9 @@ void main() {
     });
 
     test('says nothing when the digests still match', () {
+      // The negative case for the staleness check above: an unedited prompt
+      // must produce silence, or every clean run would print a false note
+      // and the real ones would stop standing out.
       final findings = check(
         results: [
           shapeRun(model: 'm:1', variant: 'seeded', cold: 24, warm: 23),
@@ -277,6 +318,11 @@ void main() {
     });
 
     test('does not block the build', () {
+      // A launched model with zero recorded runs is the extreme case of a
+      // coverage gap. It must still only report, not fail — the matrix is
+      // filled in over time, and a brand-new launch.json entry would
+      // otherwise permanently redden CI until someone got around to probing
+      // it.
       final findings = check(
         results: const [],
         launched: const ['m:1'],
@@ -395,6 +441,10 @@ void main() {
     });
 
     test('a second host is still checked for stale assets', () {
+      // Staleness (check 2) is not scoped to tableHost the way the shape
+      // table comparison is — a non-canonical host's runs still measured
+      // against a real prompt file, so they must still be flagged when that
+      // file changes.
       final findings = check(
         results: [
           shapeRun(
@@ -530,6 +580,11 @@ void main() {
     });
 
     test('each committed results directory holds exactly one host', () {
+      // Runs the real invariant check (not the synthetic maps in the 'host
+      // awareness' group above) against every results-*/ directory actually
+      // committed, so a sweep script pointed at the wrong SWEEP_RESULTS
+      // directory is caught here rather than discovered by comparing
+      // latencies by hand.
       final findings = checkOneHostPerDirectory(
         hostsByDirectory('tool/model_probes'),
       );

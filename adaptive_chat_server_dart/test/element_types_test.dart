@@ -4,6 +4,16 @@ import 'dart:io';
 import 'package:adaptive_chat_server_dart/src/element_types.dart';
 import 'package:test/test.dart';
 
+// Unit tests for element_types.dart: the schema-driven vocabulary loader
+// (loadKnownElementTypes) and the walker that flags a reply's `type` values
+// straying outside it (unknownElementTypes). What this guards: an invented or
+// misspelled element `type` is still valid JSON, so it passes card detection
+// and then silently renders as an empty blank — the one failure mode no
+// probe can score, because every probe judges a reply by whether it parses.
+// Ordinary behavioral tests, but note the boundary: every schema here is a
+// synthetic file written to a temp dir for the duration of one test, so
+// these exercise the parsing/fallback logic in isolation — nothing here
+// reads or validates the real bundled assets/card_schema.json.
 void main() {
   late Directory tempDir;
   late String schemaPath;
@@ -33,6 +43,9 @@ void main() {
   tearDown(() => tempDir.deleteSync(recursive: true));
 
   group('loadKnownElementTypes', () {
+    // Happy path: the walker below trusts this result is the *complete*
+    // vocabulary, so a loader that silently dropped or truncated entries
+    // would turn every one of them into a false "unknown type" warning.
     test('reads the ChildElement enum', () {
       expect(loadKnownElementTypes(schemaPath), {
         'TextBlock',
@@ -43,10 +56,15 @@ void main() {
       });
     });
 
+    // A schema path is process config that can simply be wrong (typo, moved
+    // asset); this must degrade the check, not crash server startup.
     test('returns an empty set when the file is missing', () {
       expect(loadKnownElementTypes('${tempDir.path}/nope.json'), isEmpty);
     });
 
+    // Same degrade-gracefully contract as a missing file, but reached
+    // through the decode path instead — a hand-edited or truncated schema on
+    // disk is still readable as bytes, just not as JSON.
     test('returns an empty set when the JSON is malformed', () {
       File(schemaPath).writeAsStringSync('{not json');
       expect(loadKnownElementTypes(schemaPath), isEmpty);
@@ -63,6 +81,9 @@ void main() {
     });
   });
 
+  // unknownElementTypes never touches a schema file itself — every case
+  // below hand-builds its `known` set, so this group is really testing the
+  // walk/tolerate logic on its own, independent of loadKnownElementTypes.
   group('unknownElementTypes', () {
     final known = {'TextBlock', 'Badge', 'ColumnSet', 'Column', 'Carousel'};
 
@@ -82,6 +103,10 @@ void main() {
       expect(unknownElementTypes(body, known), {'Textblock'});
     });
 
+    // Nesting is where this bites in practice: a bad type buried inside a
+    // ColumnSet/Column renders as an invisible gap in the layout, not an
+    // obviously broken card, so the walker has to recurse rather than only
+    // scan the top-level body array.
     test('a misspelled type nested inside a container is flagged', () {
       final body = [
         {
@@ -99,6 +124,9 @@ void main() {
       expect(unknownElementTypes(body, known), {'Input.RadioButtons'});
     });
 
+    // Guards against an early-return walker: the operator-facing warning
+    // joins every hit into one message, so silently reporting only the
+    // first would hide how much of a reply is actually broken.
     test('every unknown type is reported, not just the first', () {
       final body = [
         {'type': 'Textblock', 'text': 'hi'},
@@ -115,6 +143,9 @@ void main() {
       expect(unknownElementTypes(body, const <String>{}), isEmpty);
     });
 
+    // False-positive guard: the walker keys off the `type` property
+    // specifically, not any string value that happens to spell a type name
+    // (e.g. inside author-written text).
     test('non-type string values are not mistaken for types', () {
       final body = [
         {'type': 'TextBlock', 'text': 'Textblock is misspelled', 'wrap': true},

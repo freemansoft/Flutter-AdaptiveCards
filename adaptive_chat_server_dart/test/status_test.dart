@@ -4,6 +4,16 @@ import 'package:adaptive_chat_server_dart/src/status.dart';
 import 'package:adaptive_chat_server_dart/src/store.dart';
 import 'package:test/test.dart';
 
+// Unit tests for buildStatus (the GET /status payload assembler) and
+// conversationRef, the hash it substitutes for the raw conversationId. Two
+// things would go wrong silently without this file: a responder whose
+// describe() throws (a buggy or future custom Responder — describe() is
+// arbitrary host code) turning the unauthenticated, wide-open-CORS /status
+// endpoint into a 500; and conversationRef losing its non-reversible
+// property, which would let any page an operator visits recover a live
+// conversationId — the actual bearer credential for reading a transcript —
+// from a status poll.
+
 class _StubResponder implements Responder {
   _StubResponder(this._describeImpl);
   final Map<String, dynamic> Function() _describeImpl;
@@ -28,6 +38,9 @@ void main() {
     expect(result['responder'], {'kind': 'echo'});
   });
 
+  // A Responder's describe() is arbitrary code (host-supplied in principle);
+  // this pins the fallback that keeps a throwing implementation from
+  // turning an unauthenticated GET into a 500 instead of a degraded row.
   test(
     'a responder whose describe() throws degrades to unknown',
     () {
@@ -39,6 +52,9 @@ void main() {
     },
   );
 
+  // order is empty right after store.create(), before any interaction is
+  // added — lastInteraction must read null here rather than index into an
+  // empty list.
   test('conversation with no interactions reports lastInteraction: null', () {
     final store = ConversationStore()..create();
     final result = buildStatus(store, EchoResponder());
@@ -48,6 +64,9 @@ void main() {
     expect(row['lastInteraction'], isNull);
   });
 
+  // stats is null on any interaction the echo responder handled, or any
+  // failed Ollama turn (see InteractionStats' doc comment); totals must
+  // skip those without either under-counting or crashing on the null.
   test('totals sum only interactions with non-null stats', () {
     final store = ConversationStore();
     final conv = store.create();
@@ -86,6 +105,10 @@ void main() {
     expect((row['lastInteraction'] as Map)['stats'], isNull);
   });
 
+  // Pins the properties conversationRef's security purpose depends on (see
+  // status.dart's doc comment): deterministic across repeated calls so a
+  // client can correlate it across polls, distinct per input, and not just
+  // a truncated echo of the raw id it stands in for.
   test('conversationRef is a stable 12-char, non-reversible label', () {
     final refA = conversationRef('c_abc123');
     final refB = conversationRef('c_abc123');
@@ -96,6 +119,10 @@ void main() {
     expect(refA, isNot(contains('c_abc123')));
   });
 
+  // ConversationStore backs this with a plain Map; this pins that the
+  // reliance on Map's (LinkedHashMap) insertion-order iteration for a
+  // stable operator-facing listing is deliberate, not an accident that a
+  // future refactor to a different Map type could silently break.
   test('conversations appear in creation order', () {
     final store = ConversationStore();
     final a = store.create();

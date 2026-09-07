@@ -4,6 +4,20 @@ import 'package:test/test.dart';
 import '../tool/model_probes/probe_results.dart';
 import '../tool/model_probes/sync_shape_table.dart';
 
+// sync_shape_table.dart replaces the hand-copied step in filling in
+// ModelBehavior.md's shape-coverage table — seventy-five figures that used
+// to be typed out of a terminal, with no check on the copying (see that
+// file's doc comment; check_results_test.dart is what catches a copy that
+// went wrong). This file is NOT that kind of data checker: every case below
+// builds its own synthetic ProbeRun/markdown fixtures and asserts against
+// the pure derivation/formatting functions (erodedFor, cascadeCell,
+// derivedRows, seedCell, renderTable, carriedFromMarkdown, replaceTable) —
+// it never reads a real results-*/ JSON file or the real ModelBehavior.md.
+// It is a genuine behavioral unit test suite, guarding that a table rewrite
+// can never turn a real measurement into an em dash or a stale figure, and
+// that the derived columns (cascade, eroded, seed) stay honest about what a
+// partial or missing run actually proves.
+
 ProbeRun shapeRun({
   required String model,
   required String variant,
@@ -38,6 +52,10 @@ ProbeRun shapeRun({
 
 void main() {
   group('erosion', () {
+    // The regression this column exists to name: a shape a model gets right
+    // cold and abandons once prose has accumulated in history ("warm-start
+    // prose drift" in ModelBehavior.md). erodedFor must say which case was
+    // lost, not just how many.
     test('names cases that pass cold and fail warm', () {
       final run = shapeRun(
         model: 'm:1',
@@ -48,6 +66,9 @@ void main() {
       expect(erodedFor(run, 3), '`table` (1)');
     });
 
+    // A model with identical cold and warm sets must not register as having
+    // eroded anything, even though the column exists to spot exactly this
+    // kind of pass/fail flip.
     test('is none when nothing is lost', () {
       final run = shapeRun(
         model: 'm:1',
@@ -84,6 +105,9 @@ void main() {
       ],
     );
 
+    // cascadeCell's ordinary path: a complete run reports passed/exercised,
+    // not the raw case count — the fallback and n/a tests below cover why
+    // that denominator can differ from `cases`.
     test('reports passed over exercised', () {
       expect(
         cascade(const {'exercised': 3, 'passed': 3}).let(cascadeCell),
@@ -96,6 +120,9 @@ void main() {
       expect(cascade(const {'cases': 3, 'passed': 3}).let(cascadeCell), '3/3');
     });
 
+    // A turn-1 miss never reaches the cascade at all; scoring it 0/N here
+    // would count the same shape failure twice — once in coverage, once in
+    // cascade.
     test('is n/a when turn 1 never produced a card', () {
       expect(
         cascade(const {
@@ -107,6 +134,8 @@ void main() {
       );
     });
 
+    // Distinguishes "never measured" from "measured and failed"; collapsing
+    // the two would make an un-run model look like it scored zero.
     test('is an em dash when no run exists at all', () {
       expect(cascadeCell(null), '—');
     });
@@ -119,6 +148,10 @@ void main() {
 | `m:1` | 4.4 GB | 21/25 | 19/25 | 18/25 | helps (+1) | 3/3 | `carousel`, `table` (2) |
 ''';
 
+    // Weights, and cascade/eroded until a fresh run lands, are never
+    // derivable from a probe run at all; carriedFromMarkdown is how a
+    // rewrite keeps them instead of losing them to the columns this tool can
+    // actually compute.
     test('preserves what no probe can supply', () {
       final carried = carriedFromMarkdown(table);
       expect(carried['m:1']!.weights, '4.4 GB');
@@ -204,6 +237,9 @@ void main() {
       seedGain: gain,
     );
 
+    // The verdict text is what a host reads to decide --seed-card-file; the
+    // raw number stays beside it so the bucket boundaries stay checkable
+    // rather than trusted blindly.
     test('buckets the gain into a verdict, keeping the number', () {
       expect(seedCell(row(10)), '**needs it** (+10)');
       expect(seedCell(row(5)), '**needs it** (+5)');
@@ -219,6 +255,9 @@ void main() {
       expect(seedCell(row(0, preSeed: -1)), '—');
     });
 
+    // Guards against the seed column drifting from the warm/pre-seed columns
+    // it is computed from — an independently recorded seedGain could
+    // disagree with its own inputs; a derived one structurally cannot.
     test('is derived, so it cannot disagree with the columns beside it', () {
       final rows = derivedRows(
         [
@@ -244,6 +283,8 @@ void main() {
   });
 
   group('rendering', () {
+    // The table's own header calls with-history the figure to read first;
+    // the sort order must match what the file tells a reader to look at.
     test('sorts by with-history, the figure the file says to read first', () {
       const rows = [
         ShapeRow(
@@ -270,6 +311,9 @@ void main() {
       expect(lines[3], contains('low:1'));
     });
 
+    // Bolding is the table's only visual signal for "this model leads here";
+    // it must track a re-sort rather than becoming a stale mark on whichever
+    // model used to lead.
     test('bolds the leader in each numeric column', () {
       const rows = [
         ShapeRow(
@@ -299,6 +343,9 @@ void main() {
       expect(out, isNot(contains('**20/25**')));
     });
 
+    // A model that never got an unaided run must not display as having
+    // scored zero pre-seed shapes — that reads as a measured failure rather
+    // than an absent measurement.
     test('renders a missing pre-seed run as an em dash, not a zero', () {
       const rows = [
         ShapeRow(

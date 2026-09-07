@@ -5,6 +5,17 @@ import 'package:adaptive_chat_server_dart/src/card_detect.dart';
 import 'package:adaptive_chat_server_dart/src/seed_card.dart';
 import 'package:test/test.dart';
 
+// Two different kinds of test share this file. "the shipped seed card" below
+// is a data-consistency check, not a behavioral test: it pins
+// assets/seed_card.json's bytes against the exact exchange every recorded
+// shape-coverage figure in ModelBehavior.md was measured with (see the
+// comment on the literals below for what to do if it fails — this is a check
+// meant to be tripped by a re-tune, not a bug to work around). The
+// "loadSeedCardMessages" group is the genuine unit test in this file: it
+// exercises the loader's degrade-instead-of-crash contract (see
+// lib/src/seed_card.dart) so a malformed or missing seed file falls back to
+// sending no seed rather than taking the server down.
+
 /// The exact bytes of the seed exchange that `ModelBehavior.md`'s numbers were
 /// measured against.
 ///
@@ -42,6 +53,10 @@ void main() {
       );
     });
 
+    // Role order isn't incidental — loadSeedCardMessages enforces strict
+    // alternation starting from user, so a shipped asset that violated its
+    // own loader's contract would silently ship as "no seed" instead of the
+    // seed everyone measured.
     test('is a user turn then an assistant turn, in that order', () {
       final messages = loadSeedCardMessages(shippedPath);
       expect(messages.map((m) => m.role).toList(), ['user', 'assistant']);
@@ -67,6 +82,8 @@ void main() {
     });
     tearDown(() => tempDir.deleteSync(recursive: true));
 
+    // The happy path every degrade-to-empty case below is contrasted
+    // against.
     test('reads a well-formed file', () {
       File(path).writeAsStringSync(
         jsonEncode([
@@ -80,20 +97,31 @@ void main() {
       ]);
     });
 
+    // A missing file must not crash request handling — see
+    // loadSeedCardMessages' doc comment: the server still answers, just
+    // without the seed's drift protection, and /status reports the loss
+    // instead of hiding it.
     test('degrades to no seed when the file is missing', () {
       expect(loadSeedCardMessages('${tempDir.path}/nope.json'), isEmpty);
     });
 
+    // A hand-edited asset that breaks JSON syntax must fail this loader
+    // quietly, not the server that reads it.
     test('degrades to no seed on invalid JSON', () {
       File(path).writeAsStringSync('{not json');
       expect(loadSeedCardMessages(path), isEmpty);
     });
 
+    // Guards a shape mistake (e.g. a single object instead of a list of
+    // turns) that would otherwise need its own crash path to reject.
     test('degrades to no seed when the top level is not an array', () {
       File(path).writeAsStringSync(jsonEncode({'role': 'user'}));
       expect(loadSeedCardMessages(path), isEmpty);
     });
 
+    // A turn missing either field is unusable as chat history;
+    // loadSeedCardMessages must reject the whole file rather than silently
+    // replaying a hole in it.
     test('degrades to no seed when a turn is missing content', () {
       File(path).writeAsStringSync(
         jsonEncode([
@@ -116,6 +144,9 @@ void main() {
       expect(loadSeedCardMessages(path), isEmpty);
     });
 
+    // The format supports more than the single exchange actually shipped;
+    // nothing about the alternation check should special-case exactly two
+    // turns.
     test('accepts more than one exchange', () {
       File(path).writeAsStringSync(
         jsonEncode([

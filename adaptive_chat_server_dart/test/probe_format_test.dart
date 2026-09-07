@@ -7,6 +7,16 @@ import 'package:test/test.dart';
 // Relative: both files live outside lib/.
 import '../tool/model_probes/probe_support.dart';
 
+// json_format_probe.dart exists to answer "does this model honor Ollama's
+// `format` constraint?" — an answer only trustworthy if the probe sends
+// exactly what the shipped server would send for the same `--json-format`
+// flag. 'resolveProbeFormat' is an ordinary unit test of the mode-to-value
+// mapping; 'probeOnce format pass-through' goes further and spins up a fake
+// HTTP server to inspect the literal JSON body, because resolving the right
+// value and actually attaching it to the request are two different places to
+// get this wrong — it is a behavioral test of the probe script's own
+// correctness, not of application code under lib/.
+
 void main() {
   group('resolveProbeFormat', () {
     test('none yields no constraint', () {
@@ -18,6 +28,10 @@ void main() {
     });
 
     test('schema yields the bundled card schema', () {
+      // Checks it's the real, shipped assets/card_schema.json (its 'oneOf'
+      // shape) rather than a hand-copied stand-in — a probe measuring
+      // `--json-format schema` against a schema the server doesn't actually
+      // use would be measuring the wrong thing.
       final format = resolveProbeFormat('schema');
       expect(format, isA<Map<String, dynamic>>());
       expect((format! as Map<String, dynamic>).containsKey('oneOf'), isTrue);
@@ -57,6 +71,9 @@ void main() {
     });
 
     test('a format reaches the wire when one is asked for', () async {
+      // resolveProbeFormat is unit-tested above in isolation; this is the
+      // check that probeOnce actually attaches its result to the request
+      // rather than computing it and dropping it on the floor.
       await probeOnce(
         client: client,
         url: 'http://127.0.0.1:${server.port}',
@@ -69,6 +86,9 @@ void main() {
     });
 
     test('no format key is sent when none is asked for', () async {
+      // A present-but-null 'format' is not the same wire request as an
+      // absent key — mirroring the server's own unconstrained mode means
+      // omitting the key entirely, not sending a null value for it.
       await probeOnce(
         client: client,
         url: 'http://127.0.0.1:${server.port}',
