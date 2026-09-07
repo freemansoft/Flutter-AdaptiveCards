@@ -7,6 +7,19 @@ import 'package:http/testing.dart';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 
+// OllamaResponder is the production backend (used whenever the server is
+// started with --ollama-url, i.e. whenever it isn't running --echo), and it
+// is the single place a real Ollama process's failure modes get turned into
+// something safe to show a user and safe to store as conversation history.
+// This suite pins that contract end to end: transport/timeout/HTTP/parse
+// failures all degrade to a diagnostic Reply with ok:false instead of
+// throwing or being replayed to the model as something it once said; the
+// exact message wiring sent to Ollama (system prompt, N2 seed pair, trimmed
+// history, current turn, in that order); and the response-side
+// classification (card vs. prose vs. duplicate-key vs. unrecognized-element)
+// that decides what the user actually sees. A conventional unit test —
+// MockClient stands in for the HTTP call, nothing here talks to a live
+// Ollama.
 void main() {
   late Directory tempDir;
   late String promptPath;
@@ -70,6 +83,9 @@ void main() {
     );
   }
 
+  // The class doc promises OllamaResponder never raises to the caller — a
+  // dropped connection must become a Reply the request handler can send back,
+  // not an exception that takes down the whole request.
   test(
     'transport failure returns an unreachable diagnostic, no stats',
     () async {
@@ -104,6 +120,11 @@ void main() {
     },
   );
 
+  // ok is what app.dart reads before replaying a reply into stored
+  // conversation history (Reply.ok's contract: a diagnostic must never be
+  // replayed as something the model said). Each failure path below sets it
+  // independently, since they are separate branches in reply(), not one
+  // shared early return.
   test('a timeout is not treated as a successful turn', () async {
     final client = MockClient((request) async {
       await Future<void>.delayed(const Duration(milliseconds: 200));
@@ -116,6 +137,8 @@ void main() {
     expect(reply.ok, isFalse);
   });
 
+  // Same ok contract as above, exercised via a raised exception rather than
+  // an HTTP status — a distinct branch in reply()'s try/catch.
   test('a transport failure is not treated as a successful turn', () async {
     final client = MockClient(
       (request) async => throw const SocketException('refused'),
@@ -124,6 +147,8 @@ void main() {
     expect(reply.ok, isFalse);
   });
 
+  // Same ok contract, via a >=400 status — the branch that also captures the
+  // response body for the operator-facing diagnostic below.
   test('an HTTP error is not treated as a successful turn', () async {
     final client = MockClient(
       (request) async => http.Response('model not found', 404),
@@ -132,18 +157,28 @@ void main() {
     expect(reply.ok, isFalse);
   });
 
+  // A 200 status doesn't guarantee a usable body — this is the one failure
+  // mode that survives the status-code check, caught by the jsonDecode/cast
+  // try/catch rather than the HTTP-error branch above.
   test('an unparseable 2xx body is not treated as a successful turn', () async {
     final client = MockClient((request) async => http.Response('{}', 200));
     final reply = await makeResponder(client: client).reply('hi', const []);
     expect(reply.ok, isFalse);
   });
 
+  // The baseline the five failure-path tests above are contrasting against —
+  // confirms ok defaults true rather than the tests above only ever proving
+  // "not false" against an assumed default.
   test('a normal reply is treated as a successful turn', () async {
     final client = MockClient((request) async => okResponse('hello'));
     final reply = await makeResponder(client: client).reply('hi', const []);
     expect(reply.ok, isTrue);
   });
 
+  // defaultKeepAlive exists specifically to avoid Ollama's 5-minute default
+  // eviction (measured: a cold reload costs ~20x a warm one) — this pins
+  // that every request actually carries the setting on the wire, not just
+  // that the constant is defined.
   test('every request sends keep_alive so the model stays resident', () async {
     late Map<String, dynamic> payload;
     final client = MockClient((request) async {
@@ -154,6 +189,10 @@ void main() {
     expect(payload['keep_alive'], defaultKeepAlive);
   });
 
+  // Covers both sides of an override at once: the wire payload must reflect
+  // the configured value, and describe() (GET /status) must report the same
+  // value rather than the constructor default — the two are set from
+  // different fields and could drift independently.
   test('keep_alive is configurable and reported by describe()', () async {
     late Map<String, dynamic> payload;
     final client = MockClient((request) async {
@@ -173,6 +212,9 @@ void main() {
     expect(responder.describe()['keepAlive'], '2h');
   });
 
+  // A 404 usually means the model isn't pulled (see the _log.severe message
+  // in reply()) — this pins that the status code actually reaches the
+  // operator-facing text instead of a generic "something went wrong".
   test('HTTP 404 returns an error diagnostic naming the status', () async {
     final client = MockClient(
       (request) async => http.Response('model not found', 404),
@@ -181,6 +223,10 @@ void main() {
     expect(reply.text, contains('Ollama error HTTP 404'));
   });
 
+  // Ollama can answer 200 with a body that doesn't have the shape this code
+  // assumes (an API change, or a runner returning an error object instead of
+  // a message) — distinct from the unparseable-JSON case above, since this
+  // body is valid JSON that just lacks the expected keys.
   test(
     '2xx with missing message.content returns an unexpected-response '
     'diagnostic',
@@ -193,6 +239,9 @@ void main() {
     },
   );
 
+  // The default classification path: ordinary prose must never accidentally
+  // get parsed as a card body just because it happens to run through
+  // tryParseCardBody unconditionally at the end of reply().
   test('success with plain text captures stats and sets no card', () async {
     final client = MockClient((request) async => okResponse('Hello there'));
     final reply = await makeResponder(client: client).reply('hi', const []);
@@ -202,6 +251,10 @@ void main() {
     expect(reply.stats!.promptTokens, 10);
   });
 
+  // Exercises the unconstrained path: with jsonFormat left at the 'none'
+  // default, card detection still runs via the unconditional
+  // tryParseCardBody(content) fallback rather than the json_format-gated
+  // branch covered by the json/schema-mode tests further down.
   test('success with a full card fragment sets cardBody', () async {
     final cardJson = jsonEncode({
       'type': 'AdaptiveCard',
@@ -217,6 +270,10 @@ void main() {
     expect(reply.text, cardJson);
   });
 
+  // _trimHistory bounds the outbound prompt regardless of how long the
+  // server's own conversation store has grown — without it, a long-running
+  // chat would keep expanding every request's payload (and context fill)
+  // even though only the tail is ever configured to be replayed.
   test('history is trimmed to the last historyTurns exchanges', () async {
     late Map<String, dynamic> capturedPayload;
     final client = MockClient((request) async {
@@ -239,6 +296,10 @@ void main() {
     expect((messages[3] as Map<String, dynamic>)['content'], 'turn2');
   });
 
+  // seedCardFile and historyTurns are independent switches — this guards
+  // against an implementation that gates the seed pair on historyTurns
+  // (e.g. by building both from the same trimmed list), which would silently
+  // drop the seed under a "no history replay" configuration.
   test('historyTurns <= 0 sends no prior history, but the N2 seed still '
       'goes out', () async {
     late Map<String, dynamic> capturedPayload;
@@ -290,6 +351,10 @@ void main() {
     },
   );
 
+  // _loadSystemPrompt treats an IOException as "send no system message",
+  // never as a reason to fail the whole reply — a system-prompt file being
+  // temporarily unreadable (a deploy mid-write, a bad path) must not take
+  // the chat down.
   test(
     'missing system prompt file sends no system message and logs a warning',
     () async {
@@ -311,6 +376,11 @@ void main() {
     },
   );
 
+  // _loadCardSchema returning null (bad JSON, or missing the expected
+  // 'oneOf'/'$defs' keys) downgrades _jsonFormat in the constructor — this
+  // pins that describe() surfaces both the effective mode and what was
+  // requested, so an operator can't believe schema-constrained decoding is
+  // active when the schema silently failed to load.
   test(
     'json_format=schema with an unusable schema file downgrades to none',
     () {
@@ -328,6 +398,9 @@ void main() {
     },
   );
 
+  // describe() is served verbatim as GET /status — this pins that it strips
+  // the directory (p.basename) rather than leaking a local filesystem path
+  // to whoever calls the status endpoint.
   test(
     'describe() reports a bare filename for systemPromptFile, not a path',
     () {
@@ -338,6 +411,10 @@ void main() {
     },
   );
 
+  // The key's absence is itself the signal an operator reads as "nothing was
+  // downgraded" — pairs with the downgrade test above, and guards against an
+  // implementation that always includes jsonFormatRequested (which would
+  // erase that signal by making every configuration look downgraded).
   test('describe() omits jsonFormatRequested when no downgrade occurred', () {
     final responder = makeResponder(
       client: MockClient((r) async => http.Response('', 200)),
@@ -363,6 +440,10 @@ void main() {
     },
   );
 
+  // A model asked for JSON can legitimately answer with a JSON-encoded
+  // string rather than a card object — the `if (parsed is String)` branch in
+  // reply() exists to unwrap that to plain prose instead of misreading it as
+  // a broken/empty card.
   test('json_format=json unwraps a plain JSON string reply to prose', () async {
     final client = MockClient(
       (request) async => okResponse(jsonEncode('Here is your answer.')),
@@ -373,6 +454,9 @@ void main() {
     expect(reply.cardBody, isNull);
   });
 
+  // Complements the string-unwrap test above: same json_format=json branch,
+  // but the parsed value is an object, so this exercises the cardBody path
+  // rather than the prose-unwrap path.
   test('json_format=json with a card-shaped value sets cardBody', () async {
     final inner = jsonEncode({
       'type': 'AdaptiveCard',
@@ -389,6 +473,10 @@ void main() {
   // --- Parity additions (cross-checked against the removed Python
   // prototype's test_ollama_responder.py during the port) ---
 
+  // temperature/think and the `format` key are set by separate branches in
+  // reply()'s payload construction — this triplet (none/json/schema) exists
+  // because a bug isolated to one jsonFormat branch's options wouldn't show
+  // up testing only one mode.
   test('none mode sends no format field but does send temperature 0 and '
       'think false', () async {
     late Map<String, dynamic> capturedPayload;
@@ -436,6 +524,9 @@ void main() {
     expect(capturedPayload['think'], false);
   });
 
+  // Guards against a regression where the temperature constructor arg is
+  // accepted but silently ignored in favor of the module-level
+  // defaultCardTemperature constant (0.0) used in the payload.
   test('sends the configured temperature, not a hardcoded zero', () async {
     late Map<String, dynamic> capturedPayload;
     final client = MockClient((request) async {
@@ -448,6 +539,10 @@ void main() {
     expect(options['temperature'], 0.6);
   });
 
+  // Backs the `--ollama-temperature model` escape hatch documented on
+  // defaultCardTemperature: this is what proves the key is actually omitted
+  // from the wire payload, rather than sent as a literal null or 0, which
+  // Ollama would not treat the same as "use the Modelfile default".
   test(
     'a null temperature omits the key so Ollama uses the model default',
     () async {
@@ -465,6 +560,8 @@ void main() {
     },
   );
 
+  // Status-endpoint parity with what's actually sent on the wire — pairs
+  // with the "reports 'model'" test below for the null case.
   test('describe reports the configured temperature for GET /status', () async {
     final client = MockClient((request) async => okResponse('ok'));
     expect(
@@ -473,12 +570,19 @@ void main() {
     );
   });
 
+  // The describe() counterpart to the "omits the key" wire test above —
+  // "model" is the operator-facing word for "no temperature sent", so
+  // GET /status doesn't just show a bare null.
   test('describe reports "model" when no temperature is sent', () async {
     final client = MockClient((request) async => okResponse('ok'));
     final responder = makeResponder(client: client, temperature: null);
     expect(responder.describe()['temperature'], 'model');
   });
 
+  // Guards against an aliasing bug: app.dart passes its own persisted
+  // history list into reply(), and if _trimHistory or anything downstream
+  // mutated it in place, that would corrupt the server's stored conversation
+  // rather than only what gets sent to Ollama.
   test('reply does not mutate the caller-supplied history list', () async {
     final client = MockClient((request) async => okResponse('ok'));
     final responder = makeResponder(client: client, historyTurns: 1);
@@ -493,6 +597,10 @@ void main() {
     expect(history, original);
   });
 
+  // The constructor stores _systemPromptPath, not the file's contents (see
+  // the class doc) — an implementation that cached the contents once would
+  // pass a test that only calls reply() a single time, so this specifically
+  // edits the file between two calls on the same responder instance.
   test('system prompt file is re-read on every request (live edit takes '
       'effect without restart)', () async {
     final captured = <Map<String, dynamic>>[];
@@ -568,6 +676,9 @@ void main() {
       return records;
     }
 
+    // The warning message names both the fact and the requested mode
+    // ('json') — an operator debugging a model needs to know which flag is
+    // the one not being honored, not just that something's wrong.
     test('json mode warns when the reply is not JSON at all', () async {
       final client = MockClient(
         (request) async => okResponse('Hello. How are you doing today?'),
@@ -592,6 +703,10 @@ void main() {
       );
     });
 
+    // The important negative case: with jsonFormat left at the default
+    // 'none', there's no constraint to violate, so this warning must not
+    // fire on ordinary prose — it would otherwise spam every request in the
+    // default (unconstrained) production configuration.
     test('none mode never warns, since no constraint was requested', () async {
       final client = MockClient((request) async => okResponse('plain prose'));
       final responder = makeResponder(client: client);
@@ -602,6 +717,10 @@ void main() {
       );
     });
 
+    // The warning is keyed on the model getting it wrong, not on the mode
+    // being requested — without this test a bug that fires the warning
+    // whenever jsonFormat != 'none' (regardless of the reply) would still
+    // pass every other case in this group.
     test('a valid JSON reply in json mode does not warn', () async {
       final client = MockClient(
         (request) async => okResponse('{"text":"Hello!"}'),
@@ -615,6 +734,12 @@ void main() {
     });
   });
 
+  // _logContextFill exists because prompt_eval_count reports what survived
+  // truncation, never what was actually sent — so the percentage tiers below
+  // can look like a half-full context while the prompt is in fact
+  // overflowing num_ctx and being silently clipped by Ollama. This group
+  // pins the tier boundaries (50%/76%) and the separate truncation-specific
+  // warning that only sentChars vs. num_ctx can detect.
   group('context-fill logging tiers', () {
     late List<LogRecord> records;
 
@@ -652,6 +777,9 @@ void main() {
       );
     });
 
+    // Boundary case: _logContextFill checks `pct >= 0.50`, so this pins the
+    // threshold is inclusive rather than off-by-one against the "below 50%"
+    // test above.
     test('fill at exactly 50% logs an info-level "context filling"', () async {
       final client = MockClient(
         (request) async => okResponse('ok', extra: {'prompt_eval_count': 500}),
@@ -698,6 +826,8 @@ void main() {
       },
     );
 
+    // Boundary case for the other threshold (`pct >= 0.76`) — pins that 76%
+    // is scored "near limit" (warning), not still "filling" (info).
     test(
       'fill at exactly 76% logs a warning-level "context near limit"',
       () async {
@@ -751,6 +881,10 @@ void main() {
       },
     );
 
+    // Negative case for the truncation-specific warning (distinct from the
+    // percentage tiers): a large-but-not-overflowing prompt must not trip
+    // the "prompt truncated" message just because it also reports a high
+    // fill percentage.
     test('a prompt that fits does not warn about truncation', () async {
       final client = MockClient(
         (request) async => okResponse('ok', extra: {'prompt_eval_count': 760}),
@@ -786,6 +920,10 @@ void main() {
       expect(logs.any((r) => r.message.contains('context near limit')), isTrue);
     });
 
+    // _logContextFill's `data['prompt_eval_count'] is! int` guard — Ollama's
+    // response shape isn't guaranteed to include this field on every
+    // version/build, and its absence must be a silent no-op, not a crash or
+    // a false "0% full" reading.
     test('fill logging is skipped when prompt_eval_count is absent', () async {
       final client = MockClient(
         (request) async => http.Response(
@@ -812,6 +950,11 @@ void main() {
     });
   });
 
+  // seedCardFile is the sole on/off switch for the N2 seed pair — there's no
+  // separate boolean, by design (see the constructor's _seedCardPath
+  // comment), so these two tests are what confirms "name a file" and "don't"
+  // are the only two states, with no way to end up seeded-but-silent or
+  // configured-off-but-still-sending.
   group('seed only when a seed-card-file is named', () {
     test('omits the seed pair when no file is named', () async {
       late Map<String, dynamic> captured;
@@ -870,6 +1013,11 @@ void main() {
     });
   });
 
+  // The vocabulary here is entirely reference-data driven (writeVocabulary
+  // swaps the temp schema's ChildElement enum) rather than the real bundled
+  // card_schema.json, so these confirm the unrecognized-type detection logic
+  // itself, independent of what element types the shipped schema currently
+  // lists.
   group('unrecognized element types', () {
     /// Replaces the temp schema with one whose ChildElement enum is [types].
     void writeVocabulary(List<String> types) {
@@ -911,6 +1059,10 @@ void main() {
       expect(match.first.message, contains('Textblock'));
     });
 
+    // Pins the deliberate "warn, don't reject" design choice from reply()'s
+    // own comment: suppressing an entire card over one bad nested element
+    // may be worse than rendering a blank for just that element. A
+    // regression here would start silently dropping otherwise-good cards.
     test('the card is still returned, not downgraded to text', () async {
       writeVocabulary(['TextBlock', 'Badge']);
       final client = MockClient(

@@ -5,6 +5,16 @@ import 'package:test/test.dart';
 // Relative: both files live outside lib/.
 import '../tool/model_probes/probe_support.dart';
 
+// probeAssetsDir() is the only thing standing between a probe and silently
+// reading the wrong assets/ directory — every recorded digest and every
+// prompt actually sent to a model comes from whatever path it returns, and
+// this repo has more than one directory literally named `assets/`
+// (widgetbook/ has its own). This is an ordinary unit test of that one
+// function's fallback-walk logic, exercised against temp directories rather
+// than the real tree so it can assert both the accept and the reject path
+// without touching the process-wide working directory (see the comment on
+// `startDir` below for why that matters under `package:test`).
+
 void main() {
   group('probeAssetsDir', () {
     late Directory tempRoot;

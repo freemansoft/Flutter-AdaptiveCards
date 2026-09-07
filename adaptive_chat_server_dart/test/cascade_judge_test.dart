@@ -3,6 +3,14 @@ import 'package:test/test.dart';
 // Relative: the probe lives outside lib/.
 import '../tool/model_probes/cascade_ab.dart';
 
+// judgeCascade is the only check that catches a model reformatting a choice
+// list correctly (single-select -> multi-select) while silently dropping
+// items off it — see cascade_ab.dart's doc comment: shape-only scoring
+// would call that a pass. These tests pin the three-part pass condition and
+// the failure-attribution (t1 vs t2, which choices got dropped) a probe run
+// reports, driving judgeCascade/readChoiceSet directly against string
+// replies rather than a live model.
+
 /// A single-select choice set offering [titles].
 String singleSelect(List<String> titles) => _set(titles, multi: false);
 
@@ -19,6 +27,8 @@ String _set(List<String> titles, {required bool multi}) {
 
 void main() {
   group('judgeCascade', () {
+    // The mechanism cascade_ab exists to prove works at all: the same list
+    // widened to multi-select, nothing added or dropped.
     test('passes when turn 2 widens the same list', () {
       final result = judgeCascade(
         singleSelect(['California', 'Texas', 'Florida']),
@@ -41,6 +51,9 @@ void main() {
       expect(result.detail, contains('new york'));
     });
 
+    // A model can keep every choice and still ignore the actual request if
+    // it never flips isMultiSelect; this condition must catch that on its
+    // own, independent of whether anything was dropped.
     test('fails when turn 2 stays single-select', () {
       final result = judgeCascade(
         singleSelect(['Debug', 'Info']),
@@ -61,6 +74,8 @@ void main() {
       expect(result.detail, contains('+1 new'));
     });
 
+    // Case is not part of a choice's identity to a user; comparing
+    // case-sensitively would score a harmless re-casing as real data loss.
     test('treats a re-cased title as kept, not dropped', () {
       final result = judgeCascade(
         singleSelect(['New York']),
@@ -69,6 +84,9 @@ void main() {
       expect(result.pass, isTrue);
     });
 
+    // Attributing the failure to the right turn matters for probe output:
+    // "t1" vs "t2" is the difference between a model that can't produce a
+    // choice set at all and one that only breaks on the follow-up edit.
     test('reports which turn broke when turn 1 is not a card', () {
       final result = judgeCascade(
         'Here are your options: California, Texas.',
@@ -78,6 +96,8 @@ void main() {
       expect(result.detail, startsWith('t1 '));
     });
 
+    // Same attribution, the other side: turn 1 was fine, so the report must
+    // not blame it.
     test('reports turn 2 when only turn 2 is unusable', () {
       final result = judgeCascade(
         singleSelect(['Dev', 'Prod']),
@@ -89,6 +109,9 @@ void main() {
       expect(result.detail, contains('no-choiceset'));
     });
 
+    // An empty choice list technically has nothing to drop, so the
+    // drop-count check alone would call it a pass; this catches the
+    // degenerate case separately.
     test('a choice set with no choices is a failure, not an empty pass', () {
       final result = judgeCascade(
         '[{"type":"Input.ChoiceSet","id":"x","choices":[]}]',
@@ -100,6 +123,9 @@ void main() {
   });
 
   group('readChoiceSet', () {
+    // The spec's default matters here because turn 1 legitimately omits the
+    // key; reading a missing key as true would falsely accuse turn 1 of
+    // never asking for a single answer.
     test('reads an omitted isMultiSelect as false, per the spec', () {
       final reading = readChoiceSet(
         '[{"type":"Input.ChoiceSet","id":"x",'

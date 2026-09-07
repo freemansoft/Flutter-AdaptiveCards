@@ -5,6 +5,15 @@ import 'package:test/test.dart';
 // Relative: both files live outside lib/.
 import '../tool/model_probes/probe_support.dart';
 
+// Regression suite for probeOnce's timeout handling, written after two
+// distinct production failures on real sweeps: granite4.1:3b ran away
+// generating for 16 minutes on one case, and a leaked HttpClient connection
+// pool (Future.timeout does not cancel the underlying request) once left a
+// sweep sitting idle for 3.5 hours after only 1.9s of CPU. Each test below
+// guards one piece of the fix -- bounding the call, releasing its
+// connection, and evicting the model so a runaway generation does not queue
+// out every later call -- and is a genuine behavioral test of probeOnce
+// against a fake Ollama server, not a data-model check.
 void main() {
   group('probeOnce timeout', () {
     late HttpServer server;
@@ -143,6 +152,9 @@ void main() {
       );
     });
 
+    // The other tests in this group check what a timeout produces; this one
+    // checks that it actually arrives quickly -- the property that makes a
+    // multi-model sweep finite instead of hanging on the first stalled call.
     test('returns rather than waiting for the full generation', () async {
       final sw = Stopwatch()..start();
       await probeOnce(

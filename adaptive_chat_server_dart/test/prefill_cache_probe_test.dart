@@ -10,6 +10,17 @@ import 'package:test/test.dart';
 import '../tool/model_probes/prefill_cache_probe.dart' as probe;
 import '../tool/model_probes/probe_results.dart';
 
+// prefill_cache_probe.dart's own doc comment records two decisions this
+// suite exists to hold in place: `pass` means the call completed, not that
+// the cache behaved well (so a deliberately aborted call must read as
+// pass: false without that being treated as the probe failing), and the
+// per-call cache figures (prompt/cached/prefillMs/totalMs) must land in
+// `summary` as structured values a later reader can compute against, not
+// only inside `label`'s prose. This is a genuine behavioral test -- it runs
+// probe.main() end to end against a fake Ollama HTTP server that scripts one
+// deliberate stall, then checks both the written file's shape and the
+// figures inside it -- not a schema/round-trip check of ProbeRun in
+// isolation (see probe_results_test.dart for that).
 void main() {
   group('prefill_cache_probe --json', () {
     late HttpServer server;
@@ -73,6 +84,11 @@ void main() {
       tmpDir.deleteSync(recursive: true);
     });
 
+    // One long, sequential test rather than several: the five phases share
+    // one resident model and are meant to run strictly in order (per the
+    // probe's doc comment), so splitting them into independent test() cases
+    // would either serialize on shared server/tmpDir state anyway or lose
+    // the ordering the probe itself depends on.
     test(
       'writes one call per request across the five phases, structured '
       'figures in summary, and round-trips',

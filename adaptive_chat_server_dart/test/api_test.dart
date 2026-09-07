@@ -7,6 +7,18 @@ import 'package:adaptive_chat_server_dart/src/store.dart';
 import 'package:shelf/shelf.dart';
 import 'package:test/test.dart';
 
+// End-to-end tests for the shelf Handler built by buildHandler in app.dart —
+// the actual HTTP contract (status codes, headers, envelope shape) for
+// conversation creation, interaction posting/replay, and status, exercised
+// against fake Responders rather than a real Ollama. What breaks silently
+// without this file: the auto-vivify/notice-card path that covers a
+// conversation the in-memory store lost (e.g. a restart) firing on the wrong
+// requests or the wrong number of times; the X-Interaction-Id retry
+// idempotency, including the case where a retry arrives while the first call
+// is still in flight; and the X-Chat-Notice header policy, which must track
+// the notice card exactly (including on a replayed retry) rather than drift
+// from it.
+
 class _CountingResponder implements Responder {
   _CountingResponder(this.onCall);
   final void Function() onCall;
@@ -90,6 +102,9 @@ void main() {
     return json['conversationId'] as String;
   }
 
+  // The link is handed back so a client never has to construct or
+  // hardcode the interactions path itself — this pins that it actually
+  // matches the id in the same response, not just that both fields exist.
   test('POST /conversations returns a conversationId and a matching '
       'postNext link', () async {
     final response = await handler(
@@ -119,6 +134,10 @@ void main() {
     expect(response.statusCode, 400);
   });
 
+  // Covers the case a restart causes: the client still holds a
+  // conversationId the in-memory store no longer knows about. A bare 404
+  // here would strand the client with no way to recover the thread, so the
+  // server re-creates it under the same id and says so via the notice card.
   test(
     'POST interaction against an unknown conversation auto-vivifies it '
     'under the same id and prepends a notice card',
@@ -151,6 +170,9 @@ void main() {
     },
   );
 
+  // The notice marks the moment the conversation was recovered, not every
+  // turn that follows — this catches a header/card that leaks onto later,
+  // unrelated interactions in the same (re-created) conversation.
   test(
     'a second interaction on an auto-vivified conversation carries no '
     'notice card or X-Chat-Notice header',
@@ -182,6 +204,10 @@ void main() {
     },
   );
 
+  // The stored-envelope replay path (see the `existing` branch in app.dart)
+  // returns the same messages a retry would have gotten the first time, so
+  // it must derive the same header from them too — a header computed only
+  // on the fresh-request path would vanish on replay.
   test(
     'a repeated X-Interaction-Id on an auto-vivified conversation still '
     'carries the notice card and its header on replay',
@@ -204,6 +230,9 @@ void main() {
     },
   );
 
+  // Negative control for the header: a conversation the store still knows
+  // about must never carry the recovery signal, however similar its shape
+  // is to the auto-vivified cases above.
   test(
     'an ordinary interaction (known conversation) carries no '
     'X-Chat-Notice header',
@@ -260,6 +289,8 @@ void main() {
     },
   );
 
+  // A read-only replay must never have the side effect of creating a
+  // conversation — only a POST, which carries a message to answer, does.
   test(
     'GET replay against a still-unknown conversation returns 404 — '
     'auto-vivify only happens on POST',
@@ -385,6 +416,9 @@ void main() {
     expect(response.statusCode, 404);
   });
 
+  // A client that retries after a slow-but-successful response must not
+  // pay for (or double-count) a second model call — the stored envelope
+  // from the first call is the answer to every later retry.
   test('a repeated X-Interaction-Id replays the stored envelope without '
       're-running the responder', () async {
     var callCount = 0;
@@ -472,6 +506,9 @@ void main() {
     expect(spy.histories[1], isEmpty);
   });
 
+  // The positive counterpart to the dropped-failure case above: a real
+  // answer must keep showing up in history on every later turn, so the
+  // drop logic is confirmed to be failure-specific, not a general trim.
   test('a successful reply is still replayed to the responder as '
       'history', () async {
     final spy = _HistorySpyResponder((text) => const Reply(text: 'sure'));
@@ -509,6 +546,9 @@ void main() {
     expect(json['conversationCount'], 0);
   });
 
+  // Wide-open CORS is deliberate here (see _corsHeaders in app.dart), not an
+  // oversight — this pins that the browser-facing preflight actually gets
+  // the permissive headers rather than shelf_router's bare 200.
   test('an OPTIONS preflight request gets wide-open CORS headers', () async {
     final response = await handler(
       Request('OPTIONS', Uri.parse('http://localhost/conversations')),
@@ -516,6 +556,9 @@ void main() {
     expect(response.headers['access-control-allow-origin'], '*');
   });
 
+  // The _cors() middleware wraps every route, not just OPTIONS — this
+  // confirms an ordinary POST response gets the headers too, since only
+  // testing the preflight above would miss a middleware ordering mistake.
   test('a normal response also carries CORS headers', () async {
     final response = await handler(
       Request('POST', Uri.parse('http://localhost/conversations')),

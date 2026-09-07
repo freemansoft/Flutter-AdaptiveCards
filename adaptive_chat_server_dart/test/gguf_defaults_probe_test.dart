@@ -8,8 +8,24 @@ import 'package:test/test.dart';
 import '../tool/model_probes/gguf_defaults_probe.dart';
 import '../tool/model_probes/probe_support.dart';
 
+// Ordinary behavioral unit test — of the probe script's option-building
+// logic, not of measured model output. gguf_defaults_probe.dart exists to
+// answer whether Ollama 0.33.3's "honor GGUF model defined default
+// parameters" quietly changes decode-parameter defaults the shipped probes
+// never send explicitly (see the probe's own doc comment for the full
+// design). The whole probe is only trustworthy if each of its four arms
+// (`unpinned`, `pinned-historical`, `topk-topp-only`,
+// `presence-penalty-only`) actually sends the exact options-map it claims
+// to — get that wrong and the probe's hash-comparison verdict is comparing
+// arms that don't differ the way the design says they do, or worse,
+// comparing a request to itself. These tests pin the four `options` maps
+// (and, via `probeOnce`, the literal request bodies) rather than exercising
+// anything an Ollama server does.
 void main() {
   group('armOptions', () {
+    // This is what the shipped probes send today — pinning it here is what
+    // makes "no candidate-set knobs" the actual baseline the other arms are
+    // judged against, not an assumption this suite never checks.
     test(
       'unpinned carries temperature and seed, not the candidate-set knobs',
       () {
@@ -26,6 +42,9 @@ void main() {
       },
     );
 
+    // Confirms the arm adds historicalDefaults rather than replacing
+    // temperature/seed with them — getting this backwards would make the
+    // arm measure a different experiment than the one the design describes.
     test(
       'pinned-historical adds the pre-0.33.3 defaults on top of the same '
       'temperature and seed',
@@ -86,6 +105,10 @@ void main() {
   });
 
   group('optionsForArm dispatch', () {
+    // Guards against the two lists drifting apart: an arm added to
+    // ggufProbeArmNames but not to the switch in optionsForArm would
+    // otherwise only surface as a runtime ArgumentError when someone
+    // actually ran that arm.
     test('every name in ggufProbeArmNames is a known arm', () {
       for (final arm in ggufProbeArmNames) {
         expect(
@@ -96,6 +119,8 @@ void main() {
       }
     });
 
+    // A typoed --arm value must fail loudly; falling through to an empty
+    // options map would silently send an unintended, unlabeled request.
     test('an unknown arm name throws rather than silently sending nothing', () {
       expect(
         () => optionsForArm('bogus', temperature: 0.6, seed: 7),
@@ -104,6 +129,10 @@ void main() {
     });
   });
 
+  // Mirrors the armOptions/isolationArmOptions tests above, but through a
+  // fake /api/chat server rather than in-memory maps — this is what confirms
+  // the built options map actually reaches the request body probeOnce sends,
+  // not just what the builder function returns.
   group('probeOnce request bodies for each arm', () {
     late HttpServer server;
     late HttpClient client;
@@ -203,6 +232,10 @@ void main() {
       },
     );
 
+    // Only the options map may vary across arms. If the prompt/messages
+    // differed too — a stray edit landing in one arm but not another — the
+    // per-sample hash comparison in the probe's own main() would no longer
+    // be isolating the parameter at all.
     test('every arm sends the identical seed and identical messages', () async {
       for (final arm in ggufProbeArmNames) {
         await sendArm(arm);

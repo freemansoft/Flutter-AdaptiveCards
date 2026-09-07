@@ -6,6 +6,17 @@ import 'package:test/test.dart';
 // Relative: shape_cases lives outside lib/, so there is no package: URI.
 import '../tool/model_probes/shape_cases.dart';
 
+// shape_cases.dart's `shapeCases` list is the coverage table shape_ab.dart
+// measures against, and its correctness cannot be checked by running it —
+// a wrong `accepted` set or a stale case just quietly measures the wrong
+// thing and reports a plausible-looking pass rate. Most of this file is
+// therefore not a unit test of application behavior but a consistency
+// checker cross-referencing the case table against two other committed
+// artifacts it must never drift from: `assets/card_schema.json` (what the
+// server will actually render) and `assets/card_system_prompt.txt` (what the
+// model is told it may produce). The last group checks the case table
+// against another probe's hardcoded prompts instead, for the same reason.
+
 /// The element types `--json-format schema` will actually accept, read from
 /// the shipped schema so this test tracks the schema rather than a copy.
 Set<String> schemaElementTypes() {
@@ -71,6 +82,10 @@ Set<String> promptElementTypes() {
 void main() {
   group('the shape case table', () {
     test('has 25 cases', () {
+      // Pins the count check_results_test.dart and ModelBehavior.md's shape
+      // table both hardcode as the denominator ('n/25'). Adding or removing
+      // a case without updating this changes what every published score
+      // means without changing how it is read.
       expect(shapeCases, hasLength(25));
     });
 
@@ -91,6 +106,10 @@ void main() {
     });
 
     test('case ids are unique', () {
+      // caseId is how a result row is tied back to a case and how `--only`
+      // selects one — a duplicate would make two different prompts share one
+      // slot in the per-case score, silently dropping coverage rather than
+      // failing loudly.
       final ids = shapeCases.map((c) => c.id).toList();
       expect(ids.toSet(), hasLength(ids.length));
     });
@@ -116,6 +135,11 @@ void main() {
     });
 
     test('exactly one case is the prose negative control', () {
+      // An empty `accepted` set means "a card here is the failure" — the one
+      // case checking the model doesn't reach for a card when plain text
+      // would do. A second one would silently double-weight that check
+      // against the 24 cases proving the opposite; zero would mean nothing
+      // in the table catches card-happy over-generation at all.
       final controls = shapeCases.where((c) => c.accepted.isEmpty).toList();
       expect(controls, hasLength(1));
       expect(controls.single.id, 'prose');
