@@ -333,7 +333,7 @@ Three findings survived them.
 
 A failure mode outlasts the number that first exposed it.
 
-## What transfers
+## Lessons that generalize
 
 Eleven rules, each the residue of a wrong measurement rather than a principle
 arrived at in advance.

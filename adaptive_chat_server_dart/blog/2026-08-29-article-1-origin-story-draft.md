@@ -221,7 +221,7 @@ takes too long is a reply that takes too long, whatever the reason. Every figure
 in this article was collected with **one model resident at a time** — load a
 model, run all of its probes, record the result, unload, move on.
 
-## What transfers
+## Lessons that generalize
 
 Four things generalize past this demo. Test the shape your workload actually
 needs rather than a chat benchmark, because a model can sweep one and fail the

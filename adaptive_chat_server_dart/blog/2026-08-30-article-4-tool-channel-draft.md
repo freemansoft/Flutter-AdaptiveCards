@@ -187,7 +187,11 @@ card at all.
 active) is a loss. Same architecture class, opposite results, so the parameter
 count and the sparsity pattern are not what is doing the work here.
 
-The chat template is the better predictor. `nemotron-3-nano:30b` and the
+The chat template is the better predictor. The chat template is part of a
+model's packaging rather than its weights: the per-build text template that
+formats the conversation into the prompt the weights actually see, including
+how tool definitions are injected and how a tool call is written back out.
+`nemotron-3-nano:30b` and the
 `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` build are the same base
 weights under different packaging, and
 [the tool-calling capability probe](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#not-a-card-test-the-tool-calling-canary)
@@ -202,9 +206,6 @@ thinking-off.** A thinking-on arm is the one variant of this measurement not yet
 covered, and the notebook lists it as open work rather than as a result.
 
 ## A one-request gate over-predicted willingness, and the channel hides what it does not remove
-
-Two things the capability probe could not see, both visible only once the
-channel ran across 25 cases.
 
 **The capability probe over-predicted willingness.** It rated all eight of these
 models `supported` on a single card request. Across 25 cases, four of them
@@ -223,7 +224,7 @@ tool arm produced eight calls labelled `no-input: got {Input, TextBlock}`, where
 scores against an expected element set. A user would see nothing.
 **Zero malformed JSON is not the same as zero broken cards.**
 
-## Nothing shipped except the measurement
+## No tool-channel support was left in the server, because the measured value was low
 
 There is no `--reply-channel` flag and the server still asks for card JSON in
 the message body. Half the models that can use the channel get materially worse

@@ -325,7 +325,7 @@ is not zero broken cards. `nemotron-3-nano:4b`'s tool arm produced eight calls
 with well-formed arguments naming an element type that does not exist, which
 renders as an invisible blank. A later article carries the full decomposition.
 
-## What transfers
+## Lessons that generalize
 
 Change what the model sees before the question rather than what the
 instructions say — the two context levers here account for the largest effect
