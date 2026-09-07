@@ -4,8 +4,8 @@
 
 Two Apple machines ran the same probes and the same prompts, against
 byte-identical prompt and seed digests: a 64 GB M1 Max MacBook Pro 14-inch
-(`MacBookPro18,4`), where the shape, drift (cascade), everyday, and stress
-figures behind the first two articles in this series were measured, and a
+(`MacBookPro18,4`), where the shape, cascade, everyday, and stress figures
+behind the first two articles in this series were measured, and a
 fanless 16 GB M5 MacBook Air (`Mac17,3`).
 
 The reason for the second host is narrow. A server default that only runs on a
@@ -25,23 +25,23 @@ models is noise rather than a ranking.
 
 ## Seven models fit a 16 GB host outright, and one fits marginally
 
-| Model                                             | Weights | 16 GB |
-| ------------------------------------------------- | ------- | ----- |
-| gpt-oss:20b                                       | 12.8 GB | ❌    |
-| granite4.1:3b                                     | 2.0 GB  | ✅    |
-| granite4.1:8b                                     | 5.0 GB  | ✅    |
-| hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest | 22.9 GB | ❌    |
-| llama3-chatqa:8b                                  | 4.3 GB  | ✅    |
-| llama3-groq-tool-use:8b                           | 4.3 GB  | ✅    |
-| llama3.2:latest                                   | 1.9 GB  | ✅    |
-| nemotron-3-nano:4b                                | 2.6 GB  | ✅    |
-| nemotron-3-nano:30b                               | 22.6 GB | ❌    |
-| nemotron-3.5-lightning:30b                        | 23.7 GB | ❌    |
-| qwen2.5-coder:7b                                  | 4.4 GB  | ✅    |
-| qwen3-coder:30b                                   | 17.3 GB | ❌    |
-| qwen3.5:9b                                        | 6.1 GB  | ⚠️    |
-| qwen3.6:27b-coding-nvfp4                          | 18.4 GB | ❌    |
-| qwen3.8:27b-nvfp4                                 | 16.9 GB | ❌    |
+| Model                                               | Weights | 16 GB |
+| --------------------------------------------------- | ------- | ----- |
+| `gpt-oss:20b`                                       | 12.8 GB | ❌    |
+| `granite4.1:3b`                                     | 2.0 GB  | ✅    |
+| `granite4.1:8b`                                     | 5.0 GB  | ✅    |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | 22.9 GB | ❌    |
+| `llama3-chatqa:8b`                                  | 4.3 GB  | ✅    |
+| `llama3-groq-tool-use:8b`                           | 4.3 GB  | ✅    |
+| `llama3.2:latest`                                   | 1.9 GB  | ✅    |
+| `nemotron-3-nano:4b`                                | 2.6 GB  | ✅    |
+| `nemotron-3-nano:30b`                               | 22.6 GB | ❌    |
+| `nemotron-3.5-lightning:30b`                        | 23.7 GB | ❌    |
+| `qwen2.5-coder:7b`                                  | 4.4 GB  | ✅    |
+| `qwen3-coder:30b`                                   | 17.3 GB | ❌    |
+| `qwen3.5:9b`                                        | 6.1 GB  | ⚠️    |
+| `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | ❌    |
+| `qwen3.8:27b-nvfp4`                                 | 16.9 GB | ❌    |
 
 **Seven models fit outright, one fits marginally — `qwen3.5:9b` at 6.1 GB — and
 seven do not.** The marginal row matters later, so it is worth keeping separate
@@ -63,16 +63,16 @@ recommendation has to name the configuration, not just the model.
 
 ## All eight rows read slower on the M5, 1.15x to 2.32x, most inside the position bias
 
-| Model                     | Weights | M1 Max s/call | M5 s/call | M5 ÷ M1 Max | M1 Max sweep | M5 sweep | M1 Max stalls | M5 stalls |
-| ------------------------- | ------- | ------------- | --------- | ----------- | ------------ | -------- | ------------- | --------- |
-| `granite4.1:8b`           | 5.0 GB  | 2.85 s        | 3.27 s    | 1.15x       | 15 min       | 17 min   | 0             | 0         |
-| `qwen3.5:9b`              | 6.1 GB  | 4.92 s        | 5.65 s    | 1.15x       | 24 min       | 29 min   | 0             | 0         |
-| `qwen2.5-coder:7b`        | 4.4 GB  | 2.38 s        | 2.90 s    | 1.22x       | 19 min       | 22 min   | 0             | 0         |
-| `llama3.2:latest`         | 1.9 GB  | 1.34 s        | 1.65 s    | 1.23x       | 13 min       | 15 min   | 2             | 2         |
-| `nemotron-3-nano:4b`      | 2.6 GB  | 2.54 s        | 3.54 s    | 1.40x       | 16 min       | 30 min   | 1             | 4         |
-| `granite4.1:3b`           | 2.0 GB  | 0.98 s        | 1.40 s    | 1.43x       | 32 min       | 13 min   | 14            | 1         |
-| `llama3-groq-tool-use:8b` | 4.3 GB  | 1.85 s        | 2.67 s    | 1.44x       | 9 min        | 13 min   | 0             | 0         |
-| `llama3-chatqa:8b`        | 4.3 GB  | 0.11 s        | 0.25 s    | 2.32x       | 3 min        | 5 min    | 0             | 0         |
+| Model                     | Size   | M1 Max s/call | M5 s/call | M5 ÷ M1 Max | M1 Max sweep | M5 sweep | M1 Max stalls | M5 stalls |
+| ------------------------- | ------ | ------------- | --------- | ----------- | ------------ | -------- | ------------- | --------- |
+| `granite4.1:8b`           | 5.0 GB | 2.85 s        | 3.27 s    | 1.15x       | 15 min       | 17 min   | 0             | 0         |
+| `qwen3.5:9b`              | 6.1 GB | 4.92 s        | 5.65 s    | 1.15x       | 24 min       | 29 min   | 0             | 0         |
+| `qwen2.5-coder:7b`        | 4.4 GB | 2.38 s        | 2.90 s    | 1.22x       | 19 min       | 22 min   | 0             | 0         |
+| `llama3.2:latest`         | 1.9 GB | 1.34 s        | 1.65 s    | 1.23x       | 13 min       | 15 min   | 2             | 2         |
+| `nemotron-3-nano:4b`      | 2.6 GB | 2.54 s        | 3.54 s    | 1.40x       | 16 min       | 30 min   | 1             | 4         |
+| `granite4.1:3b`           | 2.0 GB | 0.98 s        | 1.40 s    | 1.43x       | 32 min       | 13 min   | 14            | 1         |
+| `llama3-groq-tool-use:8b` | 4.3 GB | 1.85 s        | 2.67 s    | 1.44x       | 9 min        | 13 min   | 0             | 0         |
+| `llama3-chatqa:8b`        | 4.3 GB | 0.11 s        | 0.25 s    | 2.32x       | 3 min        | 5 min    | 0             | 0         |
 
 Both hosts are read at the same runtime line here — M1 Max on Ollama 0.33.2,
 M5 on 0.33.1, a patch-level difference — so a per-row ratio is close to a
@@ -107,7 +107,7 @@ figures for `granite4.1:3b` and `llama3.2:latest` were measured **after runner
 eviction** — a harness change the measurement-hygiene article in this series
 describes — and the other six **before runner eviction**. Eviction is a no-op
 unless a call times out, and those six recorded zero stalls on both hosts, so
-the comparison holds for them — stated rather than assumed. `granite4.1:3b`'s
+the comparison holds for them — checked, not assumed. `granite4.1:3b`'s
 M1 Max sweep and stall cells, 32 minutes and 14, are cascade-damaged and are
 not model figures: that run's stall positions still carry the queue-cascade
 signature the measurement-hygiene article describes, so read only the median
@@ -117,7 +117,7 @@ other seven M1 Max figures are in-sweep; measured hot on the same host it
 medians 7563 ms, which would put its row below 1.0x, so its direction sits
 inside the 1.54x position bias measured below and is not a finding either way.
 
-Weight does not predict speed on either host: the fastest real card producer
+Model size does not predict speed on either host: the fastest real card producer
 measured is `qwen3-coder:30b` at **1.5 s/call** on the M1 Max, ahead of
 `qwen2.5-coder:7b` at a quarter its size, and it is off this table because it
 needs 17.3 GB. (`llama3-chatqa:8b` tops the raw table only because it answers
@@ -126,9 +126,10 @@ in short prose — quick for the wrong reason.)
 ## One row was an artifact: 89 minutes became 15
 
 `llama3.2:latest` first recorded **89 minutes and 40 stalls** on the M5, with
-unaided cold-start collapsing 15 to 5 and all 28 unaided stalls falling in
-calls 0-27. Re-run on an idle machine it takes **15 minutes with 2 stalls** and
-reproduces the M1 Max exactly — **seeded 15/15, unaided 15/12**. Its median
+its unaided cold-start score falling from **15/25 to 5/25** and all 28 unaided
+stalls landing in calls 0-27. Re-run on an idle machine it takes **15 minutes
+with 2 stalls** and reproduces the M1 Max exactly — seeded **15/25 under both
+conditions**, unaided **15/25 cold and 12/25 with history**. Its median
 barely moved, from **1559 ms to 1650 ms**, so the model's speed was never what
 changed. The second run is the one published, and it is the one in the table
 above.
@@ -141,8 +142,8 @@ signature the measurement-hygiene article describes, and that run was taken
 before runner eviction; the M5 server log was not checked for the queue-drain
 pattern, so the match is consistent with a cascade rather than proof of one.
 
-The rule that follows is stated as a requirement, not as advice: re-run a
-suspicious row on an idle machine before publishing it. This is the second time
+The rule that follows: re-run a suspicious row on an idle machine before
+publishing it. This is the second time
 that rule has caught a bad row. The first was `granite4.1:3b`'s initial
 2026-08-20 M1 Max sweep, which recorded **52 stalls** and **12/25** seeded
 where an idle machine gives **17/25** — attributed at the time to a leaked
@@ -155,7 +156,7 @@ check which mechanism applied, so the cause of that specific incident is not
 recoverable — the measurement-hygiene article in this series carries the full
 account. Either way, a busy or backlogged machine and a slow model are
 indistinguishable from the probe's side, which is what makes the idle re-run
-rule necessary rather than tidy.
+rule necessary.
 
 ## Every row still carries a 1.54x position bias
 
@@ -241,9 +242,6 @@ figure that cannot name its machine and its runtime is not comparable to
 anything. Derive published tables from the recorded runs rather than
 transcribing them — the measurement-hygiene article records what that caught.
 And report a bias you cannot correct for instead of correcting for it.
-
-The remaining harness lessons — bad assertions, and `system` messages that
-never reach the model — belong to the next article in this series.
 
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),

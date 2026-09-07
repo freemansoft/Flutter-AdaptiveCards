@@ -175,7 +175,7 @@ const shapeCases = <ShapeCase>[
   ShapeCase(
     id: 'rating_ask',
     prompt: 'Ask me to rate my support experience from 1 to 5.',
-    accepted: {'Input.ChoiceSet', 'Input.Number'},
+    accepted: {'Input.ChoiceSet', 'Input.Number', 'Input.Rating'},
     requiresInput: true,
   ),
 

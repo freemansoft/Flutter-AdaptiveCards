@@ -98,6 +98,10 @@ Inputs — collect a value from the user (always give each an "id"):
   - Drop-down list (compact, single-select) — "style":"compact":
     {"type":"Input.ChoiceSet","id":"tz","style":"compact","choices":[{"title":"UTC","value":"+0000"},{"title":"CET","value":"+0100"}]}
 - Input.Text, Input.Number, Input.Time — free-form entry, each with an "id".
+- Input.Rating — a star rating the user sets. Use this, not Rating, whenever
+  you are asking the user to rate something. "id" is required; "max" (default
+  5), "allowHalfSteps", "size" and "color" are optional:
+  {"type":"Input.Rating","id":"score","max":5}
 
 Display — show information, no user entry:
 - TextBlock — text; set "wrap":true. Its "text" supports GitHub-flavored Markdown
@@ -121,6 +125,7 @@ Display — show information, no user entry:
   a TextBlock in the same array, never after the closing bracket:
   {"type":"ColumnSet","columns":[{"type":"Column","width":1,"items":[{"type":"TextBlock","text":"**SQLite**\nEmbedded, zero setup","wrap":true}]},{"type":"Column","width":1,"items":[{"type":"TextBlock","text":"**Postgres**\nServer, full SQL","wrap":true}]}]}
 - Rating — a read-only star rating (not an input; the user cannot change it).
+  To ask the user for a rating, use Input.Rating above.
   "value" and "max" are numbers:
   {"type":"Rating","value":4,"max":5}
 - Icon — a small named icon. "size" ("Standard" or a size token), "color"

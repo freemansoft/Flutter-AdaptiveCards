@@ -114,10 +114,14 @@ class ProbeRun {
     this.temperature,
     this.summary = const {},
     this.notes,
+    this.sourceDir,
   });
 
   /// Rebuilds a run from its JSON form.
-  factory ProbeRun.fromJson(Map<String, dynamic> json) => ProbeRun(
+  factory ProbeRun.fromJson(
+    Map<String, dynamic> json, {
+    String? sourceDir,
+  }) => ProbeRun(
     probe: json['probe'] as String,
     model: json['model'] as String,
     measuredAt: json['measuredAt'] as String,
@@ -135,11 +139,18 @@ class ProbeRun {
       (json['summary'] as Map?) ?? const <String, dynamic>{},
     ),
     notes: json['notes'] as String?,
+    sourceDir: sourceDir,
   );
 
   /// Reads a run from a JSON file.
-  factory ProbeRun.read(File file) => ProbeRun.fromJson(
+  ///
+  /// [sourceDir] is the results directory the file was found under, kept so a
+  /// check can ask which archive a run belongs to. It is not part of the JSON
+  /// — the file does not name its own directory, and a copy moved between
+  /// archives should read as the directory it now sits in.
+  factory ProbeRun.read(File file, {String? sourceDir}) => ProbeRun.fromJson(
     jsonDecode(file.readAsStringSync()) as Map<String, dynamic>,
+    sourceDir: sourceDir,
   );
 
   /// Which script produced this (`shape_ab`, `cascade_ab`, …).
@@ -205,6 +216,14 @@ class ProbeRun {
 
   /// Anything about the run a number cannot carry.
   final String? notes;
+
+  /// Results directory this run was read from, or null when built in memory.
+  ///
+  /// Set by [readAllResults] rather than stored in the file. A check that
+  /// treats one archive differently from another — a superseded host or
+  /// runtime, say — needs to know which archive a run came from, and nothing
+  /// in the JSON records that.
+  final String? sourceDir;
 
   /// Passes and total.
   (int, int) get score => (calls.where((c) => c.pass).length, calls.length);
@@ -477,5 +496,5 @@ List<ProbeRun> readAllResults(String resultsDir) {
           .where((f) => f.path.endsWith('.json'))
           .toList()
         ..sort((a, b) => a.path.compareTo(b.path));
-  return [for (final f in files) ProbeRun.read(f)];
+  return [for (final f in files) ProbeRun.read(f, sourceDir: resultsDir)];
 }

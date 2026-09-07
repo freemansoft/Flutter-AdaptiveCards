@@ -2,6 +2,43 @@
 
 ## [Unreleased]
 
+- Added: **`Input.Rating` to `assets/card_tool_prompt.txt`**, matching the
+  prose prompt. The tool-channel palette had the same omission — six `Input.*`
+  types and a read-only `Rating` — so the tool arm could not produce the
+  correct element for `rating_ask` either. Not measured on the tool channel
+  yet.
+- Added: **`check_results.dart` honors a `HISTORICAL.md` marker in a results
+  directory**, downgrading that directory's stale-digest findings from fatal to
+  notes. "Re-run the probe" assumes the host and the Ollama version the
+  directory names are still reachable; once a host upgrades, the old directory
+  can never be refreshed in place, so its staleness is permanent rather than
+  outstanding work. `ProbeRun` gained a non-serialized `sourceDir`, set by
+  `readAllResults`, so a check can tell which archive a run came from.
+  `results-m5-16gb-ollama0331/` (host now on 0.33.3) and
+  `results-m1max-64gb-ollama0332/` (superseded by the 0333 directory) are
+  marked; `results-m1max-64gb-ollama0333/` is not, because it is still
+  re-runnable. That leaves 1 fatal finding, down from 37:
+  `qwen3.8:27b-nvfp4 json_format_probe`, which needs an M1 Max re-run.
+- Measured (fixed): **`rating_ask`, the most-failed shape case in
+  `ModelBehavior.md`, was failing on an element the prompt never offered.**
+  `assets/card_system_prompt.txt` documented the read-only `Rating` and six
+  `Input.*` types but not `Input.Rating`, which the renderer implements and
+  `assets/card_schema.json` already allowed; `shape_cases.dart` omitted it from
+  `rating_ask`'s accepted set as well, so the correct element would have scored
+  a failure. Adding it to the palette, the README palette list, and the accepted
+  set takes the case from 0/4 to 4/4 on `qwen2.5-coder:7b` and from 2/4 to 4/4
+  on `granite4.1:8b` (M5, Ollama 0.33.3, `--samples 2`, seeded, old prompt as
+  `--baseline`); `rating_show` stays 2/2 `Rating` on both. Thirteen models are
+  unmeasured against the new palette. The prompt edit moves its digest
+  `4bfa327067f8` → `8cbfde243266`, so `check_results.dart` reports 37 fatal
+  findings — every archived launch-set run that recorded the old digest — until
+  those runs are re-measured on their own hosts.
+- Docs: corrected two stale seed-card comments. `seed_card.dart` said the
+  seed was unconditional with no flag to send requests without one, and
+  `ollama_responder.dart` attributed skipping it to `--no-seed-card`. The
+  server has been opt-in via `--seed-card-file` since it gained that option,
+  and `--no-seed-card` is a probe flag (`shape_ab.dart`, `cascade_ab.dart`),
+  which seed by default. No behavior change.
 - Fixed: `shape_ab.dart`'s default system-prompt path was a string relative to
   the working directory, so running the probe from outside
   `adaptive_chat_server_dart/` threw a `FileSystemException` before any call

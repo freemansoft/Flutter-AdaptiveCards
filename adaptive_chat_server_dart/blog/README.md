@@ -18,7 +18,7 @@ When the notebook and a draft disagree, the notebook wins.
 
 | #   | Article                                                                   | File                                         | Status                                             |
 | --- | ------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                     | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-06, screenshot added       |
+| 1   | An SDUI demo that turned into a local-model benchmark                     | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-06, screenshot added      |
 | 2   | Fourteen levers for reliable card JSON from a local model                 | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-06, screenshots added     |
 | 3   | The same benchmark on a 64 GB M1 Max and a 16 GB M5                       | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-06, mermaid chart added   |
 | 4   | The tool channel drove malformed JSON to zero and lost on half the models | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-06, mermaid diagram added |
@@ -41,11 +41,11 @@ deferrals below are the reason the series does not repeat itself.
 
 **Article 1 — the benchmark.** The four constraints a card reply imposes at
 once. The three test classes and how each denominator is built. The
-`llama3-chatqa:8b` case — sweeping both cold-start sets while producing one
-correct shape in twenty-five — and the generalization that renderable prose is
-not always a pass. The fifteen-model shape-coverage spread. The tool-calling
-canary's four-way split (supported / declines / over-calls / unsupported).
-Judging with the parser the server ships.
+`llama3-chatqa:8b` case — clearing the two usability sets almost entirely in
+prose while producing one correct shape in twenty-five — and the generalization
+that renderable prose is not always a pass. The fifteen-model shape-coverage
+spread. The tool-calling canary's four-way split (supported / declines /
+over-calls / unsupported). Judging with the detector the server runs.
 
 _Defers:_ the seed's per-model value and everything tuning to article 2;
 hardware fit and latency to article 3; the full tool-channel decomposition to
@@ -142,6 +142,20 @@ isolate the confound, measure it, do not read a mechanism off a net number.
   stress are `--samples 1`. A one-point difference between two models is noise
   rather than a ranking — a re-measurement moved ten of twelve steady models by
   ±1 with nothing about them changing.
+- **Name the probe that produced the figure**, not only the set and the
+  condition. `shape_ab.dart`, `temperature_matrix.dart`, `tool_call_probe.dart`
+  and the rest ask different questions, and a reader who cannot tell which one
+  ran cannot tell what the number claims. The same applies to a sweep: "one
+  shape sweep", not "one sweep".
+- **When more than one component can reject a reply, say which one judged.**
+  The server's `card_detect` decides card-vs-prose, a server-only vocabulary
+  check warns on unknown element types, and the Flutter client does the real
+  Adaptive Cards parse. Calling any of them "the parser" claims validation that
+  only the client performs.
+- **State what the scores cannot see, beside the scores.** An invented element
+  type clears the detector and reaches the user as an invisible blank; no set
+  scores it. A blind spot named once in the article is worth more than a
+  qualifier attached to every figure.
 - **Do not quote the superseded 2026-08-14 and 2026-08-16 sweeps** as current
   results. The notebook marks them do-not-quote: they disagree with the
   2026-08-20 re-measurement on eight of ten models. A failure _mode_ first seen
@@ -150,6 +164,31 @@ isolate the confound, measure it, do not read a mechanism off a net number.
   as article 5 does with the 6/7-then-2/5 pair behind "the easy set does not
   discriminate" — but only when labelled as superseded at the point of use, and
   never as a model's score.
+
+### Terms and units
+
+Most of the rewriting these drafts needed was a term doing two jobs at once, not
+a wrong figure.
+
+- **Define a term before scoring against it.** An article that opens on
+  `21/21` against `1/25` has to have said what each set asks first, or the
+  reader reconciles two numbers they cannot yet interpret.
+- **A condition and a test set must not share a name.** Cold start and with
+  history are _conditions_ the shape probe runs under; everyday, stress and
+  shape are _sets_. "Both cold-start sets" collapses the two and is
+  unrecoverable for a reader.
+- **One unit per quantity, series-wide.** A prose _exchange_ is a question and
+  its answer; a _turn_ is one message. Pick one and use it everywhere — the
+  same history was described as "one prose turn" in one paragraph and "two
+  prose turns" in another.
+- **Do not write a non-fraction as `n/m`.** Every score in the series is
+  `n` of `m` cases, so a cold/with-history pair written `15/12` reads as a
+  score. Write `15/25 cold and 12/25 with history`.
+- **Name the metric the score measures.** Shape coverage is whether the reply
+  used the element type the question called for. It is not accuracy, quality,
+  or correctness, and a model can be entirely correct and score 4/25.
+- **Gloss a probe or case identifier the first time it appears.** `rating_ask`
+  and `cascade` mean nothing to a reader who has not opened the repo.
 
 ### Register
 
@@ -161,6 +200,36 @@ for figures, hedge inferred mechanisms, and end on the last factual sentence.
 Counts are measured; the explanation for them usually is not. Report negative
 results as plainly as wins — articles 2 and 4 are substantially negative results
 and they must not read as apologies.
+
+Three habits to cut on sight, all of which survived into first drafts:
+
+- **Rebutting an objection no reader raised.** "not a framing choice", "stated
+  as a requirement, not as advice", "three parts, not two". Assert the thing;
+  the contrast is imaginary.
+- **Narrating the article's own rhetoric.** "The obvious doubt that raises is
+  worth answering here", "The pairing rule carries weight, so it is worth
+  stating". Answer the doubt or state the rule; do not announce that you are
+  about to.
+- **An ordinal implying an enumeration the text never made.** "a fourth set",
+  "splits the roster a fourth way" — the reader stops to count and finds no
+  list. Name the thing instead.
+
+### Cross-article references
+
+The ownership map above decides _what_ defers. How a deferral is written is a
+separate matter, and the drafts got it wrong the same way repeatedly.
+
+- **A deferral is a sentence with a verb, not an equation.** "which seven, and
+  what the smaller machine costs, is the two-host article" equates a question
+  with a document. Write "A later article names those seven and measures what
+  the smaller machine costs."
+- **Verify a claim about a sibling article against that article.** A draft
+  called `prompt_ab.dart` "the tuning article's instrument"; article 2 uses it
+  once, and its evidence is mostly `shape_ab.dart`. A pointer is a factual
+  claim.
+- **Do not close a section or an article with a bare deferral paragraph.**
+  Listing what the next article covers duplicates this file and ends the piece
+  on someone else's material. End on the last factual sentence.
 
 ### Attribution
 
@@ -218,7 +287,17 @@ archived one.
   per-category mini-tables placed with the prose that discusses them, or shorten
   the widest column and move its content into prose. Do not trim an Evidence
   column; that is where the figures live.
-- Section headings state a finding, not a verdict.
+- Section headings state a finding, not a verdict — **and get re-derived when
+  the section beneath them changes.** "None of this was needed to ship the
+  demo" outlived the paragraphs that made that claim by one revision, and a
+  heading promising three test sets sat over forty lines about something else.
+- **Quote one real question per test set.** A denominator describes a set's
+  size; a prompt describes its difficulty, and the gap between "What size shirt
+  should I order?" and a nine-field expense form is the argument the prose was
+  making anyway.
+- **When cutting a sentence, check whether it was the paragraph's only hedge.**
+  Removing a caveat can silently promote an inferred mechanism to an
+  established one.
 - Image and chart placeholders are HTML comments describing what the visual
   should show, including any data it needs. Article 3's chart placeholder
   carries its eight data pairs and its required caption.

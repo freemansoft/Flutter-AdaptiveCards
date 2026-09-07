@@ -447,8 +447,9 @@ class OllamaResponder implements Responder {
       messages.add({'role': 'system', 'content': systemPrompt});
     }
     // Measured as candidate N2 — see seed_card.dart for what it is and what
-    // it costs. Skipped entirely under --no-seed-card, which is not the
-    // shipped default: the figures in ModelBehavior.md are seeded ones.
+    // it costs. Sent only when --seed-card-file names one; the server sends
+    // no seed by default. The figures in ModelBehavior.md were measured with
+    // assets/seed_card.json.
     final seedPath = _seedCardPath;
     if (seedPath != null) {
       for (final message in loadSeedCardMessages(seedPath)) {
