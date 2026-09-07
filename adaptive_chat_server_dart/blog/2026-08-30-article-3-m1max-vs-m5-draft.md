@@ -11,15 +11,15 @@ quarter the size of the one they were built on.
 
 ## Two machines, one probe set
 
-Two Apple machines ran the same probes and the same prompts, against
-byte-identical prompt and seed digests: a 64 GB M1 Max MacBook Pro 14-inch
+Two Apple machines ran the same probes and the same prompts, with the prompt
+and seed files confirmed byte-identical by checksum: a 64 GB M1 Max MacBook Pro 14-inch
 (`MacBookPro18,4`), the host the probe suite was built on, and a fanless 16 GB
 M5 MacBook Air (`Mac17,3`).
 
 A server default that only runs on a 64 GB box is not much of a default, so the
 16 GB column answers what can reasonably be recommended, not what can be
-measured. The rest of the article is latency, under one caveat that shapes all
-of it: the same model on the same machine medians **1.54x** slower measured at
+measured. Fit comes first below; the rest of the article is latency, under one
+caveat that shapes all of it: the same model on the same machine medians **1.54x** slower measured at
 the end of a long sweep than at the start. That is larger than most of the
 M5-versus-M1-Max gaps below, so those gaps give a direction rather than a
 per-model figure, and the 16 GB recommendation rests on which models fit and
@@ -36,15 +36,15 @@ is noise rather than a ranking — one borderline case flips the whole case.
 
 Seven terms carry the figures in this article.
 
-| Term                                      | What it means here                                                                                                                                                                                                                                                                                                                                                                                                          |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Shape score**, `n/25` (`shape_ab.dart`) | 25 prompt test cases — one user question each, paired with the Adaptive Card element types that would acceptably answer it — scored on one thing: did the reply use one of them? "What are my options for deployment targets" passes only on an `Input.ChoiceSet`. Each case is run twice and passes only if both runs did. This is shape coverage, not accuracy — a model can be entirely correct in prose and score 1/25. |
-| **Cold start** and **with history**       | The shape probe's two conditions: the question asked first, or asked with ordinary exchanges already in the conversation. The two differ, and a score under one is never quoted against the other. Figures below are with-history unless the text says otherwise.                                                                                                                                                           |
-| **Seeded** and **unaided**                | Seeded is the configuration the server ships — a synthetic two-turn card exchange prepended to the context. Unaided is the same probe without it. The seed is worth +10 shapes to −2 depending on the model, so a score named without its configuration is half a fact.                                                                                                                                                     |
-| **Median s/call**                         | Median over the 25-case shape sweep, excluding the first call after a model load — roughly 6-7x a warm one — and excluding stalled calls, which measure the timeout rather than the model.                                                                                                                                                                                                                                  |
-| **Full sweep**                            | Wall clock for the seven standard probes against one model, stalls included. That is time someone waited.                                                                                                                                                                                                                                                                                                                   |
-| **Stall**                                 | A call that exceeds the probe's 120 s per-call ceiling and is scored a failure. A stall does not name its cause: a slow model and a busy machine are indistinguishable from the probe's side.                                                                                                                                                                                                                               |
-| **Position bias**                         | Models are measured one after another for hours, so a model measured first, on an idle machine, is not measured under the same conditions as one measured seven hours in. The latency cost of _when in that run_ a model was measured is what this article calls position bias. A control on one machine puts it at 1.54x — larger than most of the host-to-host differences reported here.                                 |
+| Term                                      | What it means here                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Shape score**, `n/25` (`shape_ab.dart`) | 25 prompt test cases — one user question each, paired with the Adaptive Card element types (the schema's UI component types, such as `Input.ChoiceSet` or `Table`) that would acceptably answer it — scored on one thing: did the reply use one of them? "What are my options for deployment targets" passes only on an `Input.ChoiceSet`. Each case is run twice and passes only if both runs did. This is shape coverage, not accuracy — a model can be entirely correct in prose and score 1/25. |
+| **Cold start** and **with history**       | The shape probe's two conditions: the question asked first, or asked with ordinary exchanges already in the conversation. The two differ, and a score under one is never quoted against the other. Figures below are with-history unless the text says otherwise.                                                                                                                                                                                                                                   |
+| **Seeded** and **unaided**                | Seeded is the configuration the server ships — a synthetic two-turn card exchange prepended to the context. Unaided is the same probe without it. The seed is worth +10 shapes to −2 depending on the model, so a score named without its configuration is half a fact.                                                                                                                                                                                                                             |
+| **Median s/call**                         | Median over the 25-case shape sweep, excluding the first call after a model load — roughly 6-7x a warm one — and excluding stalled calls, which measure the timeout rather than the model.                                                                                                                                                                                                                                                                                                          |
+| **Full sweep**                            | Wall clock for the seven standard probes against one model, stalls included. That is time someone waited.                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Stall**                                 | A call that exceeds the probe's 120 s per-call ceiling and is scored a failure. A stall does not name its cause: a slow model and a busy machine are indistinguishable from the probe's side.                                                                                                                                                                                                                                                                                                       |
+| **Position bias**                         | Models are measured one after another for hours, so a model measured first, on an idle machine, is not measured under the same conditions as one measured seven hours in. The latency cost of _when in that run_ a model was measured is what this article calls position bias. A control on one machine puts it at 1.54x — larger than most of the host-to-host differences reported here.                                                                                                         |
 
 ## Seven models fit a 16 GB host outright, and one fits marginally
 
@@ -143,8 +143,8 @@ call than the model's own compute.
 `nemotron-3-nano:4b` is the row where the sweep column moves further than the
 median does: 16 minutes to 30, against 1.40x on the median. Its stall count
 moves the same way, 1 to 4, and a stalled call is wall clock the median excludes
-by construction. The notebook records `chart` — an everyday-probe case asking
-for a chart element — as a hang trigger for this model that reproduces on both
+by construction. The notebook records `chart` — a case in the everyday set of
+ordinary one-shot requests, asking for a chart element — as a hang trigger for this model that reproduces on both
 runtimes, so the extra M5 minutes are consistent with more calls reaching the
 120 s ceiling rather than with slower generation throughout.
 
@@ -192,12 +192,9 @@ M1 Max exactly, and medians **1650 ms** against the first run's **1559 ms** —
 the model's speed was never what changed. That run is the one published and the
 one in the table above. The rule it enforces: re-run a suspicious row on an idle
 machine before publishing, because a busy machine and a slow model are
-indistinguishable from the probe's side. This is the second row it has caught,
-after `granite4.1:3b`'s 2026-08-20 sweep — **52 stalls** and **12/25** seeded
-where an idle machine gives **17/25**, an incident the measurement-hygiene
-article in this series accounts for. That is a separate run on the earlier
-Ollama, not the 52 in the table above: two different causes landed on the same
-count, which is itself one of that article's findings.
+indistinguishable from the probe's side. It is not the first row the rule has
+caught; the measurement-hygiene article in this series accounts for the
+earlier one.
 
 ### The same model runs 1.54x slower late in a sweep than at the start
 

@@ -18,11 +18,11 @@ When the notebook and a draft disagree, the notebook wins.
 
 | #   | Article                                                                      | File                                         | Status                                             |
 | --- | ---------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                        | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-06, screenshot added      |
-| 2   | Fourteen levers for reliable card JSON from a local model                    | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-06, screenshots added     |
+| 1   | An SDUI demo that turned into a local-model benchmark                        | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-07, screenshot added      |
+| 2   | We tried 14 levers to get reliable card JSON from a local model              | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-07, screenshots added     |
 | 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5 | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-07, mermaid chart added   |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models    | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-06, mermaid diagram added |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model    | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-02                        |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models    | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-07, mermaid diagram added |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model    | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-07                        |
 
 All five articles are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
@@ -58,7 +58,9 @@ Kind predicts the outcome better than the specific change does. **The card seed
 outright** — mechanism, the per-model range from +10 to −2, and all four costs.
 Decoding settings, including the `format` canary's three behaviors. Prompt
 wording: two wins, three nulls, one revert. The detector as the only durable
-fix. `rating_ask` as the largest open prompt lever.
+fix. The `rating_ask` palette omission — its cause, the `Input.Rating` fix and
+its uneven repair, and the seven models not yet re-measured against the new
+palette.
 
 _Defers:_ the tool channel's failure decomposition to article 4. Article 2
 already states the win/loss table (2 wins, 2 unaffected, 4 losses) and one
@@ -183,6 +185,11 @@ a wrong figure.
   history are _conditions_ the shape probe runs under; everyday, stress and
   shape are _sets_. "Both cold-start sets" collapses the two and is
   unrecoverable for a reader.
+- **One name per condition, series-wide.** _Cold start_ and _with history_ are
+  the shape probe's condition names; do not introduce _warm_ (or any other
+  synonym) for the with-history condition — a table header may abbreviate to
+  `w/ history`. "Warm" keeps its other senses — a warm call after a model
+  load, a warm cache — which is exactly why the condition cannot also own it.
 - **One unit per quantity, series-wide.** A prose _exchange_ is a question and
   its answer; a _turn_ is one message. Pick one and use it everywhere — the
   same history was described as "one prose turn" in one paragraph and "two

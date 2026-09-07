@@ -233,7 +233,7 @@ How to read the rest of it:
 - **Cold start does not predict with-history, in either direction.** `hf.co/unsloth/…` and `nemotron-3.5-lightning:30b` each gain a shape warm, while `granite4.1:8b`, `qwen2.5-coder:7b`, and `nemotron-3-nano:4b` each lose two. Five models score the same under both. Judge on the with-history column.
 - **`llama3-chatqa:8b` is the case this probe exists for.** It sweeps the everyday and stress sets — 21/21 and 10/10 on 2026-08-20 — and produces a correct shape on 1 of 25 cases. Since the stress set began splitting cards from prose, it no longer takes a 100-call shape run to see why: its 10/10 stress score is **0 cards and 10 prose**, and its everyday sweep is 2 cards to 19 prose. The cheap probe now catches what only the expensive one could.
 - **Failure is concentrated in nested shapes.** `carousel` (8 of 15 models) and `table` (6) account for most of what models never produce under either condition, almost always as invalid JSON rather than a wrong choice of element. No model measured is free of permanent misses: even `qwen3.8:27b-nvfp4` at 24/25 fails `rating_ask` under both conditions.
-- **`rating_ask` is the most-failed case in the file.** **Eleven of the fifteen** answer "ask me to rate this" with a read-only `Rating` display instead of an `Input.*` — the same show-versus-collect substitution, under both conditions, across unrelated model families. A failure that uniform is a prompt problem, and the 2026-09-07 A/B below identifies the mechanism: the palette in `assets/card_system_prompt.txt` documented only the read-only `Rating`, never `Input.Rating`, so the element that answers the case was not on offer. Adding it repairs the case on both models re-measured — see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette). The eleven-of-fifteen figure is the pre-fix measurement and stands until the sweep is re-run. The next most-missed cases are `carousel` (8/15), `text` (7/15), then `time` and `table` (6/15).
+- **`rating_ask` is the most-failed case in the file.** **Eleven of the fifteen** answer "ask me to rate this" with a read-only `Rating` display instead of an `Input.*` — the same show-versus-collect substitution, under both conditions, across unrelated model families. A failure that uniform points at the prompt, and the 2026-09-07 A/B below identifies the mechanism: the palette in `assets/card_system_prompt.txt` documented only the read-only `Rating`, never `Input.Rating`, so the element that answers the case was not on offer. Adding it repairs three of the eight models re-measured outright and a fourth on cold start only; three do not move, and one passed under the old palette — see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette). The eleven-of-fifteen figure is the pre-fix measurement and stands until the sweep is re-run. The next most-missed cases are `carousel` (8/15), `text` (7/15), then `time` and `table` (6/15).
 - **`gauge` and `progress` never cross-contaminate**, on any model, despite sharing the "72%" wording.
 
 #### `Input.Rating` was missing from the palette
@@ -250,26 +250,49 @@ correct element would have been scored a failure.
 
 Measured 2026-09-07 on the M5 host under Ollama 0.33.3, `--samples 2`, seeded,
 `--only rating_ask`, old prompt as `--baseline` against the new one as
-`--candidate`. The run was not archived: there is no
-`results-m5-16gb-ollama0333/` directory, and this table is a spot measurement
-transcribed from terminal output rather than an archived row — the same
-standing as the M5 readings in [the prompt-cache
+`--candidate` — in two batches the same day: `qwen2.5-coder:7b` and
+`granite4.1:8b` first, then the remaining six models the
+[roster](#candidate-models) marks 16 GB-capable. Neither batch was archived:
+there is no `results-m5-16gb-ollama0333/` directory; the first batch is
+transcribed from terminal output and the second from per-model `--json` files
+written outside the repository — the same standing as the M5 readings in [the
+prompt-cache
 section](#prompt-cache-reuse-and-retry-cost-measured-with-prompt_eval_cached_count).
-Archiving it is a re-run on that host, listed under
+Archiving them is a re-run on that host, listed under
 [Open questions and future work](#open-questions-and-future-work):
 
-| Model              | Baseline cold  | Baseline warm        | Candidate cold         | Candidate warm         |
-| ------------------ | -------------- | -------------------- | ---------------------- | ---------------------- |
-| `qwen2.5-coder:7b` | 0/2 — `Rating` | 0/2 — `Rating`       | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
-| `granite4.1:8b`    | 0/2 — `Rating` | 2/2 — `Input.Number` | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| Model                     | Baseline cold        | Baseline warm        | Candidate cold         | Candidate warm         |
+| ------------------------- | -------------------- | -------------------- | ---------------------- | ---------------------- |
+| `qwen2.5-coder:7b`        | 0/2 — `Rating`       | 0/2 — `Rating`       | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| `granite4.1:8b`           | 0/2 — `Rating`       | 2/2 — `Input.Number` | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| `nemotron-3-nano:4b`      | 0/2 — `Rating`       | 0/2 — `Rating`       | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| `qwen3.5:9b`              | 2/2 — `Input.Rating` | 2/2 — `Input.Rating` | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| `llama3.2:latest`         | 0/2 — `Rating`       | 0/2 — `Rating`       | **2/2 `Input.Rating`** | 0/2 — `Rating`         |
+| `granite4.1:3b`           | 0/2 — `Rating`       | 0/2 — `Rating`       | 0/2 — `Rating`         | 0/2 — `Rating`         |
+| `llama3-groq-tool-use:8b` | 0/2 — `Rating`       | 0/2 — prose          | 0/2 — `Rating`         | 0/2 — `Rating`         |
+| `llama3-chatqa:8b`        | 0/2 — prose          | 0/2 — prose          | 0/2 — prose            | 0/2 — prose            |
 
-`rating_show` was run alongside on both models under the new prompt and stayed
-2/2 `Rating` cold and warm, so the added entry did not pull the read-only case
-toward an input.
+`rating_show` was run alongside on the first two models under the new prompt
+and stayed 2/2 `Rating` cold and warm, so the added entry did not pull the
+read-only case toward an input. It was not run in the second batch.
 
-Three limits on what this establishes. Two models were measured, not fifteen —
-the other thirteen carry the pre-fix figure, and the two largest do not fit a
-16 GB host. `granite4.1:8b`'s warm baseline passed here via `Input.Number`,
+**The second batch splits the repair.** `nemotron-3-nano:4b` repairs outright.
+`llama3.2:latest` repairs cold-start only — both with-history samples still
+answer with the read-only `Rating`, so the probe reports the case as eroded by
+history. `granite4.1:3b` and `llama3-groq-tool-use:8b` do not move: both keep
+producing `Rating` with `Input.Rating` documented. `llama3-chatqa:8b` answers
+in prose under either prompt, consistent with its scores everywhere else in
+this file. And `qwen3.5:9b` passes every sample under the **old** prompt: it
+produced `Input.Rating` without the palette documenting it, which
+`card_schema.json` always allowed. Of the eight models measured, the fix
+repairs three outright and a fourth on cold start only, leaves three unmoved,
+and one never had the failure — the omission was a barrier for some models and
+not the whole account.
+
+Three limits on what this establishes. Eight models were measured, not fifteen
+— the seven others are exactly the models the roster marks too large for a
+16 GB host, so completing the table is an M1 Max run; until then they carry
+the pre-fix figure. `granite4.1:8b`'s warm baseline passed here via `Input.Number`,
 where [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped)
 records the case failing under both conditions; that table was measured on the
 M1 Max under 0.32.14, so the disagreement is unresolved rather than a
@@ -873,10 +896,11 @@ Verified on 2026-09-01 by comparing `/api/tags` digests on a host holding both.
 **`rating_ask` failed on every sample under every condition**, with the
 `Rating`-instead-of-`Input.*` substitution that
 [eleven of the fifteen models make](#shape-coverage--all-fifteen-models-as-shipped)
-— a prompt problem, not a model one. The cause was found on 2026-09-07 and is
-[fixed on two other models](#inputrating-was-missing-from-the-palette); this
-model has not been re-measured, because it does not fit the 16 GB host the A/B
-ran on.
+— a substitution eleven of the fifteen models make. The cause — a palette
+omission — was found on 2026-09-07, and its fix
+[repairs some of the re-measured models but not all](#inputrating-was-missing-from-the-palette);
+this model has not been re-measured, because it does not fit the 16 GB host
+the A/B ran on.
 
 **No nested-shape ceiling**, which is what distinguishes it from its closest
 comparators: `Carousel` and `ColumnSet` pass on every sample, where
@@ -972,7 +996,7 @@ The forward-looking items from the sections above, collected so they are not re-
   archived row; archiving it is the same M5 re-run named above, into the same
   directory.
 
-- **`rating_ask` is repaired on two models and unmeasured on thirteen.** The palette never offered `Input.Rating`; adding it takes the case from 0/4 to 4/4 on `qwen2.5-coder:7b` and from 2/4 to 4/4 on `granite4.1:8b` (see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette)). The other thirteen models, including the two that do not fit a 16 GB host, are still on the pre-fix figure in [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped).
+- **`rating_ask` is repaired on four of eight re-measured models — one of them cold-start only — and unmeasured on seven.** The palette never offered `Input.Rating`; adding it takes the case from 0/4 to 4/4 on `qwen2.5-coder:7b` and `nemotron-3-nano:4b`, from 2/4 to 4/4 on `granite4.1:8b`, and from 0/4 to 2/4 (cold start only) on `llama3.2:latest`, while `granite4.1:3b`, `llama3-groq-tool-use:8b`, and `llama3-chatqa:8b` do not move and `qwen3.5:9b` passes under either prompt (see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette)). The seven models that do not fit a 16 GB host are still on the pre-fix figure in [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped).
 - **The seed has never been measured above `t=0`.** Every shape run is greedy, and neither standing regression gate covers seeded sampling — `temperature_stress.dart` and `prompt_ab.dart` send a single turn and no seed history (see [the card-seed costs](#the-card-seed-and-what-it-costs)).
 - **Conditional seeding.** The seed is applied to every request once `--seed-card-file` is named, but its value spans +10 to −2 by model. If a strong-unaided model ever becomes the server default, a per-model seed policy is the mechanism to consider (see [the card-seed section](#the-card-seed-and-what-it-costs)).
 - **The `gpt-oss:20b` swap is worth revisiting, though the reason changed.** Under 0.32.14 it was the strongest unaided model in the file and the only 25/25 under any condition; under 0.33.2 it is still the only 25/25, now under the seeded condition rather than the unaided one, and no longer the top unaided scorer (`qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both score higher unaided). It is still not in `launch.json`. The swap is defensible, not settled, on either runtime's figures (see [its per-model notes](#gpt-oss20b)).
