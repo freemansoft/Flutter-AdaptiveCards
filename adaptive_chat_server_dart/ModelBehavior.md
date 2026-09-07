@@ -923,31 +923,21 @@ end of input`, scaling with reply length — it dominates the 12-month
 
 The forward-looking items from the sections above, collected so they are not re-derived from scattered asides:
 
-- **One probe re-run is owed on the M1 Max, and CI stays red until it lands.**
-  The `Input.Rating` palette edit moved `card_system_prompt.txt` from
-  `4bfa327067f8` to `8cbfde243266`, ageing every archived run that recorded the
-  old digest. The two superseded archives are closed with a `HISTORICAL.md`
-  marker, but `results-m1max-64gb-ollama0333/` is the live archive for that
-  host and stays checkable, so its one stale run is a real to-do:
-  `qwen3.8:27b-nvfp4 json_format_probe`, measured 2026-09-04 on Apple M1 Max /
-  64 GB under Ollama 0.33.3. On that machine, with Ollama 0.33.3 and the model
-  pulled, from `adaptive_chat_server_dart/`:
-
-  ```sh
-  fvm dart run tool/model_probes/json_format_probe.dart \
-    --model qwen3.8:27b-nvfp4 --samples 2 \
-    --json tool/model_probes/results-m1max-64gb-ollama0333/qwen3.8_27b-nvfp4/json_format_probe.json
-
-  fvm dart run tool/model_probes/check_results.dart   # expect 0 fatal findings
-  ```
-
-  Re-read the `format` verdict from the new run before trusting
-  [the format canary](#not-a-card-test-the-format-canary): the probe overwrites
-  the file, so a verdict that moved changes what that section reports. Nothing
-  else in the launch set is owed — `granite4.1:8b` and `qwen2.5-coder:7b` are
-  re-runnable on the M5 into a new `results-m5-16gb-ollama0333/` directory
-  whenever someone wants current figures, but their old archive is closed and
-  not blocking.
+- **The M1 Max re-run owed by the `Input.Rating` palette edit landed 2026-09-07;
+  `check_results.dart` reports 0 fatal findings.** The edit moved
+  `card_system_prompt.txt` from `4bfa327067f8` to `8cbfde243266`, ageing every
+  archived run that recorded the old digest. The two superseded archives stay
+  closed with a `HISTORICAL.md` marker; `results-m1max-64gb-ollama0333/` is the
+  live archive for that host, so its one stale run —
+  `qwen3.8:27b-nvfp4 json_format_probe` — was re-measured on Apple M1 Max /
+  64 GB under Ollama 0.33.3, `--samples 2`. The `format` verdict held
+  **honored**, matching
+  [the format canary](#not-a-card-test-the-format-canary), and all six
+  card-request calls still pass, so nothing in that section needed a rewrite.
+  Nothing else in the launch set is owed — `granite4.1:8b` and
+  `qwen2.5-coder:7b` are re-runnable on the M5 into a new
+  `results-m5-16gb-ollama0333/` directory whenever someone wants current
+  figures, but their old archive is closed and not blocking.
 
 - **`rating_ask` is repaired on two models and unmeasured on thirteen.** The palette never offered `Input.Rating`; adding it takes the case from 0/4 to 4/4 on `qwen2.5-coder:7b` and from 2/4 to 4/4 on `granite4.1:8b` (see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette)). The other thirteen models, including the two that do not fit a 16 GB host, are still on the pre-fix figure in [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped).
 - **The seed has never been measured above `t=0`.** Every shape run is greedy, and neither standing regression gate covers seeded sampling — `temperature_stress.dart` and `prompt_ab.dart` send a single turn and no seed history (see [the card-seed costs](#the-card-seed-and-what-it-costs)).
