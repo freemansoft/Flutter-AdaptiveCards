@@ -104,6 +104,7 @@ second one.
 | `expired_conversation.dart`               | `loadExpiredConversationBodyItems(path)` — reads the bundled notice body, falling back to a built-in message if the asset is missing/invalid.                                                                                                             |
 | `responder.dart`                          | `Reply(text, cardBody, stats)`, the `Responder` interface (`Future<Reply> reply(text, history)`, `describe()`), and `EchoResponder`.                                                                                                                      |
 | `card_detect.dart`                        | `tryParseCardBody(raw) -> List<Map>?` — strict text-vs-card detection (see **Card replies** below).                                                                                                                                                       |
+| `element_types.dart`                      | `loadKnownElementTypes(path)` / `unknownElementTypes(body, known)` — reads the renderable vocabulary from the card schema and walks a reply for types outside it, so an invented type is logged rather than reaching the user as a silent blank.          |
 | `stats.dart`                              | `InteractionStats` — one Ollama turn's token counts and timing breakdown; `fromOllamaResponse`, `statsToJson`.                                                                                                                                            |
 | `status.dart`                             | `buildStatus(store, responder)` — assembles the `GET /status` payload.                                                                                                                                                                                    |
 | `ollama_responder.dart`                   | `OllamaResponder` — system prompt, history trim, `POST /api/chat`, card-vs-text detection, duplicate-JSON-key guard, diagnostic error strings.                                                                                                            |
@@ -111,6 +112,7 @@ second one.
 | `assets/default_system_prompt.txt`        | Bundled **Markdown** system prompt — opt in via `--system-prompt-file assets/default_system_prompt.txt`.                                                                                                                                                  |
 | `assets/card_system_prompt.txt`           | Bundled **card** system prompt — select via `--system-prompt-file assets/card_system_prompt.txt`.                                                                                                                                                         |
 | `assets/card_schema.json`                 | Bundled schema for `--json-format schema`.                                                                                                                                                                                                                |
+| `assets/card_tool_prompt.txt`             | Bundled **tool-channel** palette, used by the probes (`tool_call_probe.dart`, `shape_ab.dart --channel tool`) rather than by the server, which has no tool-channel mode.                                                                                  |
 | `assets/expired_conversation_notice.json` | Bundled notice card body for an auto-vivified (expired) conversation.                                                                                                                                                                                     |
 | `assets/seed_card.json`                   | Bundled seed exchange, sent only when `--seed-card-file` names it. Pinned by `test/seed_card_test.dart` to the content the recorded numbers were measured with.                                                                                           |
 | `cli.dart`                                | `buildArgParser()` / `resolveLogLevel()` — the flag set, defaults, and allowed values. In `lib/` so the CLI surface is reachable from tests.                                                                                                              |
@@ -232,8 +234,10 @@ one against an unseeded server is quoting the wrong configuration.
 Whether the seed helps is model-dependent, which is why it is a per-run
 decision rather than a constant: **+9** shapes to `qwen3-coder:30b`
 and **+6** to `granite4.1:8b`, exactly **zero** to `qwen2.5-coder:7b` and
-`qwen3.8:27b-nvfp4`, and **−2** to `gpt-oss:20b`, the only model that answers
-all 25 shape cases and does so without it. `.vscode/launch.json` carries a
+`qwen3.8:27b-nvfp4`, and **+3** to `gpt-oss:20b` under Ollama 0.33.2 — the only
+model that answers all 25 shape cases, which it does with the seed. That last
+figure read **−2** under 0.32.14, on the same machine and the same weights, so
+the sign can turn on the runtime alone. `.vscode/launch.json` carries a
 `qwen3-coder:30b` target with the seed omitted beside its seeded twin so the
 difference is two clicks.
 
@@ -426,33 +430,38 @@ sequenceDiagram
     C->>R: POST /conversations/{cid}/interactions<br/>X-Interaction-Id + body.data.message
     alt missing X-Interaction-Id
         R-->>C: 400 header required
-    else missing conversation
+    else header present
         R->>S: get(cid)
-        S-->>R: null
-        R-->>C: 404 unknown conversation
-    else already-seen id (idempotent replay)
-        R->>S: getInteraction(cid, iid)
-        S-->>R: stored Interaction
-        R->>K: envelope(cid, iid, stored.messages)
-        R-->>C: 200 envelope (responder NOT re-run)
-    else new interaction
-        R->>R: read body.data.message (else 400)
-        R->>S: walk conversation.order
-        S-->>R: prior (user, assistant) pairs = full history
-        R->>O: reply(message, history)
-        O->>O: load system prompt + seed card (per request) + trim history
-        O->>L: POST /api/chat<br/>{system + seed pair + history + turn, num_ctx, temperature (--ollama-temperature), think:false}
-        L-->>O: message.content (or failure -> diagnostic text)
-        O-->>R: Reply(text, cardBody)
-        alt cardBody is not null
-            R->>K: assistantCardBubble(cardBody)
-        else plain text reply
-            R->>K: assistantBubble(text)
+        opt conversation gone (server was restarted)
+            S-->>R: null
+            R->>S: create(conversationId: cid)<br/>auto-vivify, default user/assistant labels
+            R->>K: noticeCard(...) — "this conversation no longer exists"
+            Note over R,K: The notice is prepended to this one envelope;<br/>any envelope opening with it answers<br/>X-Chat-Notice: conversation-recovered
         end
-        R->>K: userBubble(message)
-        R->>S: addInteraction(text, messages, replyText)
-        R->>K: envelope(cid, iid, messages)
-        R-->>C: 200 envelope (user + assistant bubbles)
+        alt already-seen id (idempotent replay)
+            R->>S: getInteraction(cid, iid)
+            S-->>R: stored Interaction
+            R->>K: envelope(cid, iid, stored.messages)
+            R-->>C: 200 envelope (responder NOT re-run)
+        else new interaction
+            R->>R: read body.data.message (else 400)
+            R->>S: walk conversation.order
+            S-->>R: prior (user, assistant) pairs = full history
+            R->>O: reply(message, history)
+            O->>O: load system prompt + seed card (per request) + trim history
+            O->>L: POST /api/chat<br/>{system + seed pair + history + turn, num_ctx, temperature (--ollama-temperature), think:false}
+            L-->>O: message.content (or failure -> diagnostic text)
+            O-->>R: Reply(text, cardBody)
+            alt cardBody is not null
+                R->>K: assistantCardBubble(cardBody)
+            else plain text reply
+                R->>K: assistantBubble(text)
+            end
+            R->>K: userBubble(message)
+            R->>S: addInteraction(text, messages, replyText)
+            R->>K: envelope(cid, iid, messages)
+            R-->>C: 200 envelope (notice, if any, then user + assistant bubbles)
+        end
     end
 ```
 
@@ -556,18 +565,30 @@ idempotency, validation), responder selection, card detection, token-stats
 capture and the status payload, and the Ollama responder (mocked HTTP — no
 live Ollama).
 
+About half the suite covers the probe harness in
+[`tool/model_probes/`](tool/model_probes/README.md) rather than the server —
+result parsing and scoring, the shape and cascade judges, the tool channel, the
+recorded-results checker and the shape-table sync. The probes themselves never
+run in CI, so their harness is tested here instead.
+
 ## Known gaps
 
 Found while validating this server against a live Ollama. None is a blocker
 for the demo; they are recorded so they are not rediscovered from scratch.
 
-**Card detection is over-permissive.** `tryParseCardBody` accepts _any_ JSON
-object carrying a non-empty `type` string as a single card element, so a
-model reply like `{"type":"greeting","text":"hi"}` renders as an unknown
-element instead of falling back to readable text. The fix is small; the open
-question is what to validate `type` against — the full Adaptive Cards element
-set (precise, but drifts from the library) or the palette the card system
-prompt actually advertises (narrower, but couples detection to prompt text).
+**Card detection is over-permissive; an unknown type is warned about, not
+rejected.** `tryParseCardBody` accepts _any_ JSON object carrying a non-empty
+`type` string as a single card element, so a model reply like
+`{"type":"greeting","text":"hi"}` still parses as a card and reaches the client
+as an invisible blank rather than falling back to readable text. What the
+vocabulary is measured against is settled: `element_types.dart` reads the
+`$defs/ChildElement` enum out of [`assets/card_schema.json`](assets/card_schema.json),
+so the check tracks what the client actually renders instead of drifting from
+it, and `OllamaResponder` logs a `WARNING` naming every unrecognized type in a
+reply. The card is rendered anyway — suppressing a whole card over one bad
+nested element may be worse than showing it with a gap — so the open question
+is no longer what to validate against but whether to promote the warning to a
+rejection, and the fire rate observed in that log is the evidence for it.
 
 **Conversation state grows without bound.** `ConversationStore` never evicts:
 neither conversations nor the interactions inside them, and `GET /status`
@@ -581,10 +602,14 @@ card JSON, so it is replayed verbatim as history. Bounded by
 `--history-turns` (steady state measured around 5.4k of a 16384 window), so
 this is a prompt-evaluation cost rather than a correctness problem.
 
-**Unverified:** `prompt_eval_count` may under-report context fill when Ollama
-caches a prompt prefix across turns, which would let the 50% / 76% log tiers
-stay quiet while the window fills. A 3-turn run did _not_ show this. Confirm
-over a long conversation before acting on it.
+**Context-fill logging counts re-evaluated tokens, not resident ones.** Ollama
+0.33.3 reports `prompt_eval_cached_count` — prompt tokens served from the
+runner's prefix cache rather than re-evaluated — and the server records it as
+`cachedPromptTokens` in `GET /status`. The 50% / 76% tiers still measure
+`prompt_eval_count` alone, so on a warm conversation they describe evaluation
+cost rather than how full the window is. Which of the two a fill warning should
+read is the open question; `ModelBehavior.md` ("Prompt-cache reuse and retry
+cost") has the measurements, across two hosts and two models.
 
 ### Requested enhancements
 

@@ -238,6 +238,40 @@ Map<String, (int, int, int, int)> shapeTableRows(String markdown) {
 String runLabel(ProbeRun run) =>
     '${run.probe}${run.variant == null ? '' : '-${run.variant}'}';
 
+/// [runLabel]s for [runs], disambiguated by filename only where they collide.
+///
+/// `probe` and `variant` do not identify a file. One directory can hold several
+/// runs agreeing on both — `shape_ab-seeded-format-schema.json` beside its
+/// `-confirm` and `-recheck` re-runs — and a finding that names only the shared
+/// label tells a reader which measurement is stale without telling them which
+/// file to open, on exactly the runs that were taken separately because they
+/// might disagree.
+///
+/// Appending the basename unconditionally would widen every clean line for the
+/// rare collision, so it is added only to the labels that need it. Keyed by
+/// identity, since two runs can be equal in every field this compares.
+///
+/// Collision is judged on what a finding actually prints — model, label, and
+/// results directory — so the same label under two archives is left alone: the
+/// directory already tells those apart.
+Map<ProbeRun, String> disambiguatedLabels(Iterable<ProbeRun> runs) {
+  final byLabel = <String, List<ProbeRun>>{};
+  for (final run in runs) {
+    final key = '${run.model}|${run.sourceDir}|${runLabel(run)}';
+    byLabel.putIfAbsent(key, () => []).add(run);
+  }
+  final labels = Map<ProbeRun, String>.identity();
+  for (final entry in byLabel.entries) {
+    final ambiguous = entry.value.length > 1;
+    for (final run in entry.value) {
+      final label = runLabel(run);
+      final file = run.fileName;
+      labels[run] = ambiguous && file != null ? '$label [$file]' : label;
+    }
+  }
+  return labels;
+}
+
 /// How many distinct cases a run actually exercised.
 ///
 /// A `--only` run is a legitimate thing to record — re-checking one shape
@@ -315,9 +349,11 @@ List<Finding> check({
   //    says is worth keeping working; reported for the rest, because
   //    re-running fourteen models on every prompt edit is not a gate anyone
   //    would keep.
+  final digestLabels = disambiguatedLabels(results);
   for (final run in results) {
     final dir = run.sourceDir == null ? null : p.basename(run.sourceDir!);
     final closed = dir != null && historical.contains(dir);
+    final label = digestLabels[run] ?? runLabel(run);
     for (final entry in run.assets.entries) {
       final now = currentAssets[entry.key];
       if (now != null && now != entry.value) {
@@ -326,10 +362,10 @@ List<Finding> check({
           Finding(
             fatal: launchedModel && !closed,
             message: closed
-                ? '${run.model} ${runLabel(run)} ($dir): '
+                ? '${run.model} $label ($dir): '
                       'measured against ${entry.key} ${entry.value}, tree has '
                       '$now — historical, that archive is closed to re-runs'
-                : '${run.model} ${runLabel(run)}: '
+                : '${run.model} $label: '
                       'measured against ${entry.key} ${entry.value}, tree has '
                       '$now — re-run the probe, or mark the archive historical '
                       'with a $historicalMarker file',

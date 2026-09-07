@@ -86,7 +86,7 @@ Read on the shipped configuration, all fifteen candidates rank by with-history s
 - **`gpt-oss:20b` — dropped 2026-08-20, replaced by `qwen3.8:27b-nvfp4`.** Under 0.32.14 it scored 23/25 warm (seeded) against `qwen3.8`'s 24/25 and was the strongest unaided model in the file. Under 0.33.2 it scores **25/25 warm (seeded)** — the highest in the file — while its unaided score falls to 22/25, no longer the top (`qwen3.8:27b-nvfp4` 24/25, `qwen3.6:27b-coding-nvfp4` 23/25 unaided). The swap is defensible on either runtime's figures — full detail, including the destructive `format` breakage and the runtime reversal: [its per-model notes](#gpt-oss20b).
 - **`qwen3.8:27b-nvfp4` — added 2026-08-20**, replacing `gpt-oss:20b` on the strength of the **highest as-shipped score in the file, 24/25 warm**, and a seed gain of zero — it neither needs the seed nor is hurt by it. Cost: 16.9 GB, the one axis `gpt-oss:20b` still wins (4.1 GB lighter). Full detail: [its per-model notes](#qwen3827b-nvfp4).
 - **`granite4.1:8b` — kept.** 21/25 with history, the best 16 GB-capable model, in 5.0 GB. Full detail: [its per-model notes](#granite418b).
-- **`qwen3-coder:30b` — added 2026-08-21 as the second large model, on demo qualities rather than raw coverage.** At **1.6 s/call it is the fastest model measured**, ahead of models a quarter its weight; it **honors `format`**, which neither `nvfp4` build did under 0.32.14 (both do under 0.33.2 — see [the format canary](#not-a-card-test-the-format-canary)); and it is the only model that answers **both** cold-start sets entirely in cards — 20/21 everyday and 10/10 stress, never falling back to Markdown. For a demo someone clicks through by hand, those matter more than a single shape point. Its seed gain is **+9** (23/25 seeded, 14/25 unaided) — it had been rejected on that gain alone before the 2026-08-20 sweep added the speed and `format` findings.
+- **`qwen3-coder:30b` — added 2026-08-21 as the second large model, on demo qualities rather than raw coverage.** At **1.5 s/call it is the fastest model measured**, ahead of models a quarter its weight; it **honors `format`**, which neither `nvfp4` build did under 0.32.14 (both do under 0.33.2 — see [the format canary](#not-a-card-test-the-format-canary)); and it is the only model that answers **both** cold-start sets entirely in cards — 20/21 everyday and 10/10 stress, never falling back to Markdown. For a demo someone clicks through by hand, those matter more than a single shape point. Its seed gain is **+9** (23/25 seeded, 14/25 unaided) — it had been rejected on that gain alone before the 2026-08-20 sweep added the speed and `format` findings.
 - **`qwen2.5-coder:7b` — kept.** Not the strongest (18/25 warm, tenth), but it is the compiled-in default, the model every promotion decision in this file is gated on, and the smallest at 4.4 GB. It is the only model in the file scoring **10/10 stress and 21/21 everyday with every stress pass an actual card**. Full detail: [its per-model notes](#qwen25-coder7b).
 - **`qwen3.5:9b` — dropped, though the 2026-08-20 re-measurement narrows the gap.** It scores **19/25 with history against `qwen2.5-coder:7b`'s 18/25** — no longer the exact tie the original decision rested on. Against it: 6.1 GB versus 4.4 GB, **6.9 s/call versus 2.3 s**, and a thinking mode that has to be disabled to be usable at all. One shape does not outweigh three times the latency, so the decision stands, on cost now rather than on a tie. Full detail: [its per-model notes](#qwen359b).
 
@@ -233,7 +233,7 @@ How to read the rest of it:
 - **Cold start does not predict with-history, in either direction.** `hf.co/unsloth/…` and `nemotron-3.5-lightning:30b` each gain a shape warm, while `granite4.1:8b`, `qwen2.5-coder:7b`, and `nemotron-3-nano:4b` each lose two. Five models score the same under both. Judge on the with-history column.
 - **`llama3-chatqa:8b` is the case this probe exists for.** It sweeps the everyday and stress sets — 21/21 and 10/10 on 2026-08-20 — and produces a correct shape on 1 of 25 cases. Since the stress set began splitting cards from prose, it no longer takes a 100-call shape run to see why: its 10/10 stress score is **0 cards and 10 prose**, and its everyday sweep is 2 cards to 19 prose. The cheap probe now catches what only the expensive one could.
 - **Failure is concentrated in nested shapes.** `carousel` (8 of 15 models) and `table` (6) account for most of what models never produce under either condition, almost always as invalid JSON rather than a wrong choice of element. No model measured is free of permanent misses: even `qwen3.8:27b-nvfp4` at 24/25 fails `rating_ask` under both conditions.
-- **`rating_ask` is the most-failed case in the file.** **Eleven of the fifteen** answer "ask me to rate this" with a read-only `Rating` display instead of an `Input.*` — the same show-versus-collect substitution, under both conditions, across unrelated model families. A failure that uniform is a prompt problem, and the 2026-09-07 A/B below identifies the mechanism: the palette in `assets/card_system_prompt.txt` documented only the read-only `Rating`, never `Input.Rating`, so the element that answers the case was not on offer. Adding it repairs the case on both models re-measured — see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette). The eleven-of-fifteen figure is the pre-fix measurement and stands until the sweep is re-run. The next most-missed cases are `carousel` (8/15), `text` (7/15), then `time` and `table` (6/15).
+- **`rating_ask` is the most-failed case in the file.** **Eleven of the fifteen** answer "ask me to rate this" with a read-only `Rating` display instead of an `Input.*` — the same show-versus-collect substitution, under both conditions, across unrelated model families. A failure that uniform points at the prompt, and the 2026-09-07 A/B below identifies the mechanism: the palette in `assets/card_system_prompt.txt` documented only the read-only `Rating`, never `Input.Rating`, so the element that answers the case was not on offer. Adding it repairs three of the eight models re-measured outright and a fourth on cold start only; three do not move, and one passed under the old palette — see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette). The eleven-of-fifteen figure is the pre-fix measurement and stands until the sweep is re-run. The next most-missed cases are `carousel` (8/15), `text` (7/15), then `time` and `table` (6/15).
 - **`gauge` and `progress` never cross-contaminate**, on any model, despite sharing the "72%" wording.
 
 #### `Input.Rating` was missing from the palette
@@ -250,32 +250,79 @@ correct element would have been scored a failure.
 
 Measured 2026-09-07 on the M5 host under Ollama 0.33.3, `--samples 2`, seeded,
 `--only rating_ask`, old prompt as `--baseline` against the new one as
-`--candidate`:
+`--candidate` — in two batches the same day: `qwen2.5-coder:7b` and
+`granite4.1:8b` first, then the remaining six models the
+[roster](#candidate-models) marks 16 GB-capable. Neither batch was archived:
+there is no `results-m5-16gb-ollama0333/` directory; the first batch is
+transcribed from terminal output and the second from per-model `--json` files
+written outside the repository — the same standing as the M5 readings in [the
+prompt-cache
+section](#prompt-cache-reuse-and-retry-cost-measured-with-prompt_eval_cached_count).
+Archiving them is a re-run on that host, listed under
+[Open questions and future work](#open-questions-and-future-work):
 
-| Model              | Baseline cold  | Baseline warm        | Candidate cold         | Candidate warm         |
-| ------------------ | -------------- | -------------------- | ---------------------- | ---------------------- |
-| `qwen2.5-coder:7b` | 0/2 — `Rating` | 0/2 — `Rating`       | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
-| `granite4.1:8b`    | 0/2 — `Rating` | 2/2 — `Input.Number` | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| Model                     | Baseline cold        | Baseline warm        | Candidate cold         | Candidate warm         |
+| ------------------------- | -------------------- | -------------------- | ---------------------- | ---------------------- |
+| `qwen2.5-coder:7b`        | 0/2 — `Rating`       | 0/2 — `Rating`       | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| `granite4.1:8b`           | 0/2 — `Rating`       | 2/2 — `Input.Number` | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| `nemotron-3-nano:4b`      | 0/2 — `Rating`       | 0/2 — `Rating`       | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| `qwen3.5:9b`              | 2/2 — `Input.Rating` | 2/2 — `Input.Rating` | **2/2 `Input.Rating`** | **2/2 `Input.Rating`** |
+| `llama3.2:latest`         | 0/2 — `Rating`       | 0/2 — `Rating`       | **2/2 `Input.Rating`** | 0/2 — `Rating`         |
+| `granite4.1:3b`           | 0/2 — `Rating`       | 0/2 — `Rating`       | 0/2 — `Rating`         | 0/2 — `Rating`         |
+| `llama3-groq-tool-use:8b` | 0/2 — `Rating`       | 0/2 — prose          | 0/2 — `Rating`         | 0/2 — `Rating`         |
+| `llama3-chatqa:8b`        | 0/2 — prose          | 0/2 — prose          | 0/2 — prose            | 0/2 — prose            |
 
-`rating_show` was run alongside on both models under the new prompt and stayed
-2/2 `Rating` cold and warm, so the added entry did not pull the read-only case
-toward an input.
+`rating_show` was run alongside on the first two models under the new prompt
+and stayed 2/2 `Rating` cold and warm, so the added entry did not pull the
+read-only case toward an input. It was not run in the second batch.
 
-Three limits on what this establishes. Two models were measured, not fifteen —
-the other thirteen carry the pre-fix figure, and the two largest do not fit a
-16 GB host. `granite4.1:8b`'s warm baseline passed here via `Input.Number`,
+**The second batch splits the repair.** `nemotron-3-nano:4b` repairs outright.
+`llama3.2:latest` repairs cold-start only — both with-history samples still
+answer with the read-only `Rating`, so the probe reports the case as eroded by
+history. `granite4.1:3b` and `llama3-groq-tool-use:8b` do not move: both keep
+producing `Rating` with `Input.Rating` documented. `llama3-chatqa:8b` answers
+in prose under either prompt, consistent with its scores everywhere else in
+this file. And `qwen3.5:9b` passes every sample under the **old** prompt: it
+produced `Input.Rating` without the palette documenting it, which
+`card_schema.json` always allowed. Of the eight models measured, the fix
+repairs three outright and a fourth on cold start only, leaves three unmoved,
+and one never had the failure — the omission was a barrier for some models and
+not the whole account.
+
+Three limits on what this establishes. Eight models were measured, not fifteen
+— the seven others are exactly the models the roster marks too large for a
+16 GB host, so completing the table is an M1 Max run; until then they carry
+the pre-fix figure. `granite4.1:8b`'s warm baseline passed here via `Input.Number`,
 where [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped)
 records the case failing under both conditions; that table was measured on the
 M1 Max under 0.32.14, so the disagreement is unresolved rather than a
 contradiction. And the prompt edit changes the digest every archived run
 recorded. `check_results.dart` reported that as 37 fatal findings; closing the
 two superseded archives (see
-[Open questions and future work](#open-questions-and-future-work)) leaves one, on the archive that is
-still re-runnable.
+[Open questions and future work](#open-questions-and-future-work)) left one, on
+the archive that is still re-runnable, and re-measuring it on 2026-09-07 cleared
+that too — the checker now reports **zero fatal findings**. Seven non-fatal
+digest notes remain, all in `results-m1max-64gb-ollama0333/` and all on
+`qwen3.5:9b` and `qwen3.6:27b-coding-nvfp4`: the fatal/non-fatal split keys on
+whether a model is in `launch.json`, not on whether its archive is closed, so
+neither was ever a gate. They are re-runnable on the M1 Max whenever current
+figures for those two are wanted.
 
 #### Performance, by host and runtime
 
 Latency is a property of the model, the box, **and** the runtime, so each recorded run stamps the host and the Ollama version into its result file; a figure that cannot name its machine does not belong here. Two configurations are recorded here: **Apple M1 Max / 64 GB** on **Ollama 0.33.2**, a MacBook Pro 14-inch (`MacBookPro18,4`), and **Apple M5 / 16 GB** on **Ollama 0.33.1**, a fanless MacBook Air (`Mac17,3`). The M1 Max columns cover all fifteen models; the M5 columns cover the eight the [roster](#candidate-models) marks 16 GB-capable, and read `—` for the rest. The everyday and stress figures elsewhere in this file remain the older **Ollama 0.32.14** measurement on the same M1 Max; [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped), including its cascade column, derives from the same 0.33.2 directory as the M1 Max columns below. The M1 Max host has since moved on to **Ollama 0.33.3** for the format-canary re-run and the prompt-cache probe below; neither the latency figures in this section nor the everyday/stress/shape figures have been re-taken on it.
+
+**Memory bandwidth separates the two hosts more than core speed does.** Single-stream generation reads the model's weights out of memory for every token, so it is bound by memory bandwidth rather than by arithmetic throughput. The M5 is the newer part with the faster cores; the M1 Max has the wider memory bus, and the recorded medians go the M1 Max's way. Apple's published figures for the tiers relevant here:
+
+| Apple Silicon | Rated memory bandwidth |
+| ------------- | ---------------------- |
+| M1            | 68 GB/s                |
+| M1 Pro        | 200 GB/s               |
+| M1 Max        | **400 GB/s**           |
+| M1 Ultra      | 800 GB/s               |
+| M5            | **153 GB/s**           |
+
+The two bolded rows are the hosts measured here. These are vendor specifications transcribed for context, not measurements taken by any probe in this directory — no bandwidth or clock figure was read from either machine — so they are consistent with the direction of the M5-versus-M1-Max medians rather than established as its cause. A tier, not a generation, is what the comparison turns on: a later base-tier part can carry less bandwidth than an older Max-tier one, which is the case here.
 
 **Median s/call** is over the fixed 25-case shape sweep, so the case mix cancels and models are comparable. It excludes the first call after a model load, which costs roughly **6-7x** a warm one, and it excludes stalled calls, which measure the ceiling rather than the model. "Warm" there is the **call**, not the machine — a distinct axis. Both columns come from serial sweeps in which each model was measured at a different point, so machine state varies down a column rather than being constant; see the position note below the table. **Full sweep** is the seven standard probes for that model, stalls included — that is wall clock someone waited. The tool-channel run is excluded from it, because only tool-capable models have one and a column that means different things on different rows is not a column.
 
@@ -314,6 +361,8 @@ Every figure is derived from the recorded runs by [`perf_table.py`](tool/model_p
 **Every M5 row is the run taken at that model's position in one serial sweep, and those positions are not equivalent.** The sweep ran 10:27 to 14:32 — `granite4.1:8b` started at 0:00 on a machine idle for hours, `qwen2.5-coder:7b` at 0:17, and `granite4.1:3b` at 3:52 on a machine that had been generating for nearly four hours — so later rows carry more of whatever sustained load costs, and no row is a "cold" figure except the first. How much that is remains unestablished, and two models disagree: re-running `granite4.1:8b` 13 seconds after the sweep ended made it **1.20x** slower than its own position-0 run, matched call for call with byte-identical labels, while `qwen2.5-coder:7b` — its published figure taken 17 minutes in — measured **1.03x** after 31 minutes idle, slightly _slower_ cold. Two models moving in opposite directions is not a machine property.
 
 **The reproducibility floor is the reason to be careful with all of it.** `granite4.1:8b` was measured a third time after 7h37m idle and came back **1.12x** its first run — two nominally cold measurements, twelve hours apart, differing by 12% with a tight per-call spread (p25 1.07, p75 1.15), so systematic rather than noisy. An effect of 1.20x sitting on a floor of 1.12x is not cleanly separable from it. Thermal throttling remains plausible on a fanless `Mac17,3` and is unproven: no die temperature or clock frequency was read, and Ollama server uptime, ambient temperature, and accumulated OS state all differed between those runs and none was excluded.
+
+**All three measurements predate runner eviction, which the heat they were measured against depends on.** The M5 sweep ran 2026-08-28; the unload-on-timeout change came after the 2026-09-01 M1 Max sweep (see [the cascade section](#stalls-are-a-queueing-cascade-not-a-runtime-difference)). `granite4.1:8b` recorded zero stalls, so no unload would have fired on its own calls and its three medians are unaffected directly — but the eight-model sweep that heated the machine carried stalled calls on `llama3.2:latest` (2), `nemotron-3-nano:4b` (4) and `granite4.1:3b` (1), and under the current harness each timeout unloads the runner and leaves the GPU idle. The sustained load behind the 1.20x figure is therefore a property of the pre-eviction harness. Re-taking the control is possible but is not a correction to this column: the host now runs 0.33.3 and [`results-m5-16gb-ollama0331/`](tool/model_probes/results-m5-16gb-ollama0331) is a closed archive, so a re-run belongs in a 0333 directory as a new measurement. The decisive instrument is a die temperature or clock reading during a sweep rather than a fourth median — two models measured for this already disagree about the sign.
 
 Read the M5 column, then, as one sweep's figures with a position-dependent bias of roughly the same size as its reproducibility floor. Comparing two M5 rows that sat far apart in the sweep carries that bias; comparing an M5 row with its M1 Max neighbour carries it too. No correction factor is applied to any row: a measured bias would be reportable, and this one is not yet measured well enough to correct for.
 
@@ -847,10 +896,11 @@ Verified on 2026-09-01 by comparing `/api/tags` digests on a host holding both.
 **`rating_ask` failed on every sample under every condition**, with the
 `Rating`-instead-of-`Input.*` substitution that
 [eleven of the fifteen models make](#shape-coverage--all-fifteen-models-as-shipped)
-— a prompt problem, not a model one. The cause was found on 2026-09-07 and is
-[fixed on two other models](#inputrating-was-missing-from-the-palette); this
-model has not been re-measured, because it does not fit the 16 GB host the A/B
-ran on.
+— a substitution eleven of the fifteen models make. The cause — a palette
+omission — was found on 2026-09-07, and its fix
+[repairs some of the re-measured models but not all](#inputrating-was-missing-from-the-palette);
+this model has not been re-measured, because it does not fit the 16 GB host
+the A/B ran on.
 
 **No nested-shape ceiling**, which is what distinguishes it from its closest
 comparators: `Carousel` and `ColumnSet` pass on every sample, where
@@ -937,9 +987,16 @@ The forward-looking items from the sections above, collected so they are not re-
   Nothing else in the launch set is owed — `granite4.1:8b` and
   `qwen2.5-coder:7b` are re-runnable on the M5 into a new
   `results-m5-16gb-ollama0333/` directory whenever someone wants current
-  figures, but their old archive is closed and not blocking.
+  figures, but their old archive is closed and not blocking. Two items are
+  still open, neither of them a gate. Seven non-fatal digest notes remain in
+  `results-m1max-64gb-ollama0333/`, on `qwen3.5:9b` and
+  `qwen3.6:27b-coding-nvfp4` — outside the launch set, so never fatal —
+  re-runnable on the M1 Max. And the [`Input.Rating`
+  A/B](#inputrating-was-missing-from-the-palette) is a spot measurement with no
+  archived row; archiving it is the same M5 re-run named above, into the same
+  directory.
 
-- **`rating_ask` is repaired on two models and unmeasured on thirteen.** The palette never offered `Input.Rating`; adding it takes the case from 0/4 to 4/4 on `qwen2.5-coder:7b` and from 2/4 to 4/4 on `granite4.1:8b` (see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette)). The other thirteen models, including the two that do not fit a 16 GB host, are still on the pre-fix figure in [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped).
+- **`rating_ask` is repaired on four of eight re-measured models — one of them cold-start only — and unmeasured on seven.** The palette never offered `Input.Rating`; adding it takes the case from 0/4 to 4/4 on `qwen2.5-coder:7b` and `nemotron-3-nano:4b`, from 2/4 to 4/4 on `granite4.1:8b`, and from 0/4 to 2/4 (cold start only) on `llama3.2:latest`, while `granite4.1:3b`, `llama3-groq-tool-use:8b`, and `llama3-chatqa:8b` do not move and `qwen3.5:9b` passes under either prompt (see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette)). The seven models that do not fit a 16 GB host are still on the pre-fix figure in [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped).
 - **The seed has never been measured above `t=0`.** Every shape run is greedy, and neither standing regression gate covers seeded sampling — `temperature_stress.dart` and `prompt_ab.dart` send a single turn and no seed history (see [the card-seed costs](#the-card-seed-and-what-it-costs)).
 - **Conditional seeding.** The seed is applied to every request once `--seed-card-file` is named, but its value spans +10 to −2 by model. If a strong-unaided model ever becomes the server default, a per-model seed policy is the mechanism to consider (see [the card-seed section](#the-card-seed-and-what-it-costs)).
 - **The `gpt-oss:20b` swap is worth revisiting, though the reason changed.** Under 0.32.14 it was the strongest unaided model in the file and the only 25/25 under any condition; under 0.33.2 it is still the only 25/25, now under the seeded condition rather than the unaided one, and no longer the top unaided scorer (`qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both score higher unaided). It is still not in `launch.json`. The swap is defensible, not settled, on either runtime's figures (see [its per-model notes](#gpt-oss20b)).

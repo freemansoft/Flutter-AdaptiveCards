@@ -331,6 +331,71 @@ void main() {
       expect(findings.where((f) => f.fatal), isNotEmpty);
     });
 
+    test('names the file when two runs in a directory share a label', () {
+      // `probe` and `variant` do not identify a file: the schema A/B sits
+      // beside its -confirm and -recheck re-runs under the same label, and
+      // those are the runs a reader most needs told apart, since they were
+      // taken separately and disagree with each other.
+      ProbeRun archived(String fileName) => ProbeRun(
+        probe: 'shape_ab',
+        model: 'm:1',
+        variant: 'seeded',
+        measuredAt: '2026-08-20',
+        samples: 2,
+        assets: const {'card_system_prompt.txt': 'ffffffffffff'},
+        summary: const {'cases': 25, 'coldStart': 24, 'withHistory': 23},
+        calls: stale('m:1').calls,
+        sourceDir: 'tool/model_probes/results-live-host-ollama0333',
+        fileName: fileName,
+      );
+      final findings = check(
+        results: [
+          archived('shape_ab-seeded.json'),
+          archived('shape_ab-seeded-recheck.json'),
+        ],
+        launched: const [],
+        currentAssets: currentAssets,
+        markdown: tableWith(cold: 24, warm: 23, preSeed: 22),
+      );
+      final messages = findings.map((f) => f.message).toList();
+      expect(messages, hasLength(2));
+      expect(
+        messages.any((m) => m.contains('[shape_ab-seeded.json]')),
+        isTrue,
+      );
+      expect(
+        messages.any((m) => m.contains('[shape_ab-seeded-recheck.json]')),
+        isTrue,
+      );
+    });
+
+    test('leaves an unambiguous label alone', () {
+      // The basename is added only where it resolves a collision. Appending
+      // it to every line would widen the common case for the rare one.
+      final findings = check(
+        results: [
+          ProbeRun(
+            probe: 'shape_ab',
+            model: 'm:1',
+            variant: 'seeded',
+            measuredAt: '2026-08-20',
+            samples: 2,
+            assets: const {'card_system_prompt.txt': 'ffffffffffff'},
+            summary: const {'cases': 25, 'coldStart': 24, 'withHistory': 23},
+            calls: stale('m:1').calls,
+            sourceDir: 'tool/model_probes/results-live-host-ollama0333',
+            fileName: 'shape_ab-seeded.json',
+          ),
+        ],
+        launched: const [],
+        currentAssets: currentAssets,
+        markdown: tableWith(cold: 24, warm: 23, preSeed: 22),
+      );
+      expect(findings, hasLength(1));
+      expect(findings.single.message, contains('m:1 shape_ab-seeded:'));
+      expect(findings.single.message, isNot(contains('[')));
+    });
+
     test('says nothing when the digests still match', () {
       // The negative case for the staleness check above: an unedited prompt
       // must produce silence, or every clean run would print a false note

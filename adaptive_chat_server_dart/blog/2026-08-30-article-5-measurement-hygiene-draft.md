@@ -1,5 +1,13 @@
 # The measurement was wrong, in a way that looked exactly like a slow model
 
+In
+[`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
+a Dart chat server hands a question to a local Ollama model and asks for the
+answer as Adaptive Card JSON, which a Flutter app renders. A directory of
+probes measures which models manage it; the results live in a lab notebook
+there. This article is about the harness, not the models: every lesson below
+came from a measurement that went wrong.
+
 ## Fifty-two stalled calls, and nothing about the model had changed
 
 `granite4.1:3b` came back from a sweep on 2026-08-20 with **52 stalled calls**,
@@ -8,14 +16,6 @@ a seeded score of **12/25** on the shape set with conversation history, and
 card the model just sent without dropping its contents. Read as a model result, that is a 2.0 GB
 model failing badly. It was not: nothing about the model had changed, or
 needed fixing, on that 2026-08-20 run.
-
-The frame, briefly. In
-[`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a Dart chat server hands a question to a local Ollama model and asks for the
-answer as Adaptive Card JSON, which a Flutter app renders. A directory of
-probes measures which models manage it; the results live in a lab notebook
-there. This article is about the harness, not the models: every lesson below
-came from a measurement that went wrong.
 
 ## One model resident at a time, because a stall does not name its cause
 
@@ -124,22 +124,23 @@ slow one. 120 s is already twice that bar, and lowering it would record the
 same failures for less wall clock. What needed attention was what happened
 after the ceiling: the abandoned generation kept running.
 
-## The same harness change reproduced the archive for one model and not the other
+## The same harness change reproduced the published figures for one model and not the other
 
 The harness change: send an unload (`keep_alive: 0`) the moment a call times
 out, rather than only abandoning the client connection. Runs are labelled
 **before runner eviction** and **after runner eviction**, with Ollama 0.33.2,
 the weights, the prompt and seed digests, and the machine held constant.
 
-| Before → after runner eviction  | `llama3.2:latest` | `granite4.1:3b` |
-| ------------------------------- | ----------------- | --------------- |
-| seeded stalls                   | 12 → 2            | 14 → 14         |
-| seeded wall clock               | 26.2 → 6.5 min    | 30.1 → 30.0 min |
-| seeded shape score, cold / warm | 15/12 → 15/15     | 17/12 → 17/12   |
-| unaided stalls                  | 19 → 0            | 32, after only  |
+| Before → after runner eviction   | `llama3.2:latest` | `granite4.1:3b` |
+| -------------------------------- | ----------------- | --------------- |
+| seeded stalls                    | 12 → 2            | 14 → 14         |
+| seeded wall clock                | 26.2 → 6.5 min    | 30.1 → 30.0 min |
+| seeded shape score, cold start   | 15/25 → 15/25     | 17/25 → 17/25   |
+| seeded shape score, with history | 12/25 → 15/25     | 12/25 → 12/25   |
+| unaided stalls                   | 19 → 0            | 32, after only  |
 
-`llama3.2:latest` reproduces the archive exactly; `granite4.1:3b` does not
-move. The unchanged count was first read as proof the stalls were the model's
+`llama3.2:latest` reproduces its published figures exactly; `granite4.1:3b`
+does not move. The unchanged count was first read as proof the stalls were the model's
 own; it is not. Its after-eviction unaided run stalls on calls 0-20 — the
 probe's opening cases, all cold — and again on 89-99, the first call after the
 block taking 86 seconds, a queued call draining rather than a reload. The
@@ -202,8 +203,8 @@ and the obvious reading — repetition does not help — is not available, becau
 Ollama chat templates vary in whether a second `system` message reaches the
 model at all.
 
-A delivery check on 2026-08-18, injecting an additive reminder into four
-screening models, came back **delivered** on `gpt-oss:20b` and **unconfirmed**
+A delivery check on 2026-08-18, injecting an additive reminder into the four
+models used to screen prompt edits (the screening models), came back **delivered** on `gpt-oss:20b` and **unconfirmed**
 on `qwen2.5-coder:7b` and `granite4.1:8b`; dropped-by-the-template and
 arrived-but-ignored are indistinguishable from outside, so the lever is
 recorded as **no effect / unmeasurable** rather than as a clean negative. The
@@ -227,8 +228,9 @@ every turn** of a growing conversation — a prompt that grows cannot keep a
 constant token count. The server's own overflow detector now warns on this at
 request time, confirmed against a live server.
 
-Sized to fit, the same probe shows the cache is a large performance effect —
-Apple M5 / 16 GB, Ollama 0.33.3, `llama3.2:latest`, `t=0`:
+Sized to fit, the same probe shows the cache is a large performance effect on
+prefill — the prompt-processing pass before the first output token. Apple M5 /
+16 GB, Ollama 0.33.3, `llama3.2:latest`, `t=0`:
 
 | Pattern                                 | cached / prompt | prefill          |
 | --------------------------------------- | --------------- | ---------------- |
@@ -237,10 +239,10 @@ Apple M5 / 16 GB, Ollama 0.33.3, `llama3.2:latest`, `t=0`:
 | retry after aborting a call mid-prefill | 2,443 / 2,444   | 29 ms            |
 
 A conversation turn pays prefill for its new tokens only, and a retry after an
-aborted call costs a warm repeat rather than a cold prefill — pricing the
-timeout-and-retry pattern the probes use, whether that reflects 0.33.0's
-prefill restore points or the abandoned request completing server-side
-(indistinguishable from the client; the price is the same either way). The
+aborted call costs a warm repeat rather than a cold prefill — whether that
+reflects Ollama 0.33.0 resuming a partially evaluated prompt (its prefill
+restore points) or the abandoned request completing server-side is
+indistinguishable from the client, and the price is the same either way. The
 prefill timings were always readable; what 0.33.3 added is the cached count
 saying _why_ a prefill was cheap — turning a plausible "broken cache" reading
 into a measurable configuration error.
@@ -260,9 +262,8 @@ large for the M5:
 `llama3.2:latest` reproduced the M5 pattern on every reading.
 `qwen3.8:27b-nvfp4` agreed on three of five patterns and, unstably, on
 retry-after-abort — most of the prompt cached on one run, under two-thirds on
-the repeat, where `llama3.2`'s retry cost was unaffected. Interleaving costs
-near a full cold prefill on both, a structural property of an unrelated prompt
-rather than a model-specific one. The miss is the fresh question: on an
+the repeat, where `llama3.2`'s retry cost was unaffected. The miss is the fresh
+question: on an
 idle-machine run and its repeat it came back as a full cold prefill,
 indistinguishable from the model's first cold call. Reusing a shared system
 prompt across a fresh question is a normal chat-server turn; for one model that
@@ -291,7 +292,8 @@ have been found by re-reading the table.
 Sharing the judge shares its blind spot. `tryParseCardBody` knows two things
 about Adaptive Cards: the literal `AdaptiveCard`, which it unwraps to a body,
 and the requirement that a lone object carry a non-empty `type` string. It
-validates no vocabulary and no element's own required fields, so
+validates no element vocabulary — the closed set of Adaptive Card component
+types a card may use — and no element's own required fields, so
 `{"type": "Bogus.Element"}` and an `Input.ChoiceSet` carrying no `choices` both
 score as cards. A vocabulary check does exist — `unknownElementTypes` reads the
 legal type enum out of the shipped `card_schema.json` and walks the body at any
@@ -306,8 +308,8 @@ series counts, and the cheapest fix is to say so beside the scores.
 Once a whole batch of measurements is already wrong, the question is what to
 keep: discard the numbers, not what they taught. Two dated sweeps — six small
 models on 2026-08-14, four large ones on 2026-08-16 — ran the everyday and
-stress sets at `--samples 1`,
-before the shape probe existed. Their per-model numbers, superseded by the
+stress sets at `--samples 1`, one call per case, before the shape probe
+existed. Their per-model numbers, superseded by the
 2026-08-20 re-measurement, **disagree with it on eight of the ten models**,
 occasionally by five everyday cases; nothing about the models changed.
 Marked do-not-quote in the notebook, they are kept only in git history and
@@ -331,7 +333,7 @@ Three findings survived them.
 
 A failure mode outlasts the number that first exposed it.
 
-## What transfers
+## Lessons that generalize
 
 Eleven rules, each the residue of a wrong measurement rather than a principle
 arrived at in advance.

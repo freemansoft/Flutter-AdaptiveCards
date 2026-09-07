@@ -2,6 +2,105 @@
 
 ## [Unreleased]
 
+- Fixed: **`check_results.dart` names the file when two runs share a label.**
+  `runLabel` is built from `probe` and `variant`, which do not identify a file
+  — `results-m1max-64gb-ollama0333/` holds `shape_ab-seeded-format-schema.json`
+  beside its `-confirm` and `-recheck` re-runs, and all three printed as one
+  identical line, on exactly the runs that were taken separately because they
+  disagree. `ProbeRun` gains a `fileName` field set by `ProbeRun.read`, the same
+  way `sourceDir` already is, and a new `disambiguatedLabels` appends the
+  basename only where a model, directory and label collide. Finding counts are
+  unchanged: 7 open digest notes before and after.
+
+- Docs: **six stale claims corrected in `README.md` and `ModelBehavior.md`**,
+  each describing a state the tree had already moved past.
+
+  - The `POST …/interactions` sequence diagram branched to `404 unknown
+conversation`; the route auto-vivifies and prepends the notice card, as the
+    README's own **Expired conversations** section says. The 404 now appears
+    only where it is reachable, on the replay route.
+  - The seed's `gpt-oss:20b` figure was the Ollama 0.32.14 reading (−2, 25/25
+    unaided). Under 0.33.2 it is +3, with the 25/25 earned seeded. Corrected in
+    `README.md`; the `--seed-card-file` help text in `lib/src/cli.dart` now
+    carries the runtime-independent +10 to −2 range instead, since `--help`
+    cannot qualify a figure by runtime.
+  - `qwen3-coder:30b` was "1.6 s/call" in the roster and 1.5 s in its own
+    latency table. `perf_table.py` derives 1.5 s from the recorded run.
+  - The `Input.Rating` section said one finding remained after closing the
+    superseded archives; that one was re-measured on 2026-09-07, so the checker
+    reports zero fatal. Seven non-fatal notes remain, on two models outside the
+    launch set, and are now named.
+  - The "Unverified" context-fill gap has been measured: the server reads
+    `prompt_eval_cached_count` and `ModelBehavior.md` carries a two-host
+    prefill-cache section. Narrowed to the question still open — which of the
+    two counts a fill warning should read.
+  - The card-detection gap posed an open question `element_types.dart` already
+    answered by reading `$defs/ChildElement` from the schema and warning.
+    Rewritten around the decision that is actually open: whether to promote the
+    warning to a rejection.
+
+- Docs: **three omissions closed.** `lib/src/element_types.dart` and
+  `assets/card_tool_prompt.txt` were missing from the components table; the
+  Test section described about half the suite, omitting the probe-harness tests
+  that are roughly the other half. The 2026-09-07 M5 `Input.Rating` A/B is now
+  labelled an unarchived spot measurement, matching how the M5 prefill-cache
+  readings are already labelled, and archiving it is recorded under open
+  questions alongside the seven M1 Max re-runs.
+
+- Docs: **article 3 marks the second "52 stalls" as a separate incident**, in
+  `blog/2026-08-30-article-3-m1max-vs-m5-draft.md`. The table's M1 Max cell is
+  the cascade-damaged 0.33.2 run; the later mention is the 2026-08-20
+  co-residency incident on 0.32.14. Two causes landing on the same count is one
+  of article 5's findings, so article 3 names the coincidence and defers.
+
+  No figure moved in any of the above except `1.6 → 1.5 s/call`, which
+  corrects the roster to the value `perf_table.py` derives from the recorded
+  run.
+
+- Docs: **article 4's opening establishes both channels before the finding**,
+  in `blog/2026-08-30-article-4-tool-channel-draft.md`. The lead asserted that
+  moving the card "into the arguments of a function call" drove malformed JSON
+  to zero without saying what either channel is. The repository paragraph now
+  leads and names the message-body path concretely — card JSON as text in
+  `message.content`, parsed back by the server — a second paragraph gives the
+  tool channel the same treatment, and the finding lands third. No figure
+  changed.
+
+- Docs: **`blog/README.md` records that the articles are standalone and how
+  each must open**, as a new `### Openings` convention. A reader arrives from a
+  search result rather than from article 1, so no article may depend on another
+  having been read, and each opens with a framing paragraph — what the project
+  does, what the model is asked for, what renders the reply — before any figure
+  or verdict. Articles 1, 2, 3 and 5 already complied; article 4 was the
+  exception the rule was written from.
+
+- Docs: **the M5 throttling measurements are labelled as predating runner
+  eviction**, in `ModelBehavior.md`'s performance section. `granite4.1:8b`
+  recorded zero stalls so no unload would have fired on its own calls, but the
+  eight-model sweep that heated the machine carried 7 stalled calls across three
+  other models, and under the current harness each timeout unloads the runner
+  and idles the GPU — the sustained load behind the 1.20x figure is a property
+  of the pre-eviction harness. Re-taking the control belongs in a 0333 directory
+  as a new measurement, since the host has moved to 0.33.3 and
+  `results-m5-16gb-ollama0331/` is a closed archive. No figure changed.
+
+- Docs: **rated memory bandwidth recorded for the measured hosts**, in
+  `ModelBehavior.md`'s performance section. Single-stream generation is
+  memory-bandwidth-bound, and the two hosts differ by tier rather than by
+  generation — the M5 is the newer part with the faster cores, the M1 Max has
+  the wider bus (153 GB/s against 400 GB/s), which is the direction the recorded
+  medians go. Vendor specifications transcribed for context, labelled as such:
+  no bandwidth or clock figure was read from either machine.
+
+- Docs: **`--samples` now states how the runs combine**, in both the
+  `ProbeArgs.samples` doc comment and the flag's `--help` text. The count said
+  "Runs per prompt per setting" and left the aggregation implicit: `shape_ab`
+  and `cascade_ab` count a case as passed only if every run passed, so raising
+  `--samples` can only lower a score and a 1-of-2 case is indistinguishable in
+  a table from an 0-of-2 one (`ProbeRun.splitCases` names those). The
+  temperature probes do not combine runs, which is why the sweep runs them at
+  `--samples 1`. No flag, key, or recorded figure changed.
+
 - Added: **`Input.Rating` to `assets/card_tool_prompt.txt`**, matching the
   prose prompt. The tool-channel palette had the same omission — six `Input.*`
   types and a read-only `Rating` — so the tool arm could not produce the

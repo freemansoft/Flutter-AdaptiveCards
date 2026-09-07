@@ -110,8 +110,11 @@ ArgParser buildArgParser() {
           '--system-prompt-file names one. Pass assets/seed_card.json for the '
           'seed every figure in ModelBehavior.md was measured with. Whether '
           'the seed helps is strongly model-dependent — worth +9 shapes to '
-          'qwen3-coder:30b and +6 to granite4.1:8b, nothing at all to '
-          'qwen2.5-coder:7b and qwen3.8:27b-nvfp4, and -2 to gpt-oss:20b.',
+          'qwen3-coder:30b and +6 to granite4.1:8b and nothing at all to '
+          'qwen2.5-coder:7b or qwen3.8:27b-nvfp4; across the fifteen models '
+          'measured it ranges from +10 to -2. A model can also change sign '
+          'when the Ollama runtime does, so see ModelBehavior.md rather than '
+          'assuming a figure carries over.',
     )
     ..addOption(
       'num-ctx',
