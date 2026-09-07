@@ -239,6 +239,60 @@ void main() {
       expect(findings.where((f) => !f.fatal), isNotEmpty);
     });
 
+    test('is a note, not a fatal, when the archive is closed', () {
+      // A directory names a host and an Ollama version. Once that host moves
+      // on, its probes cannot be re-run in place at all, so the stale digest
+      // is a permanent property of the archive rather than work someone has
+      // not done yet.
+      final run = ProbeRun(
+        probe: 'shape_ab',
+        model: 'm:1',
+        variant: 'seeded',
+        measuredAt: '2026-08-20',
+        samples: 2,
+        assets: const {'card_system_prompt.txt': 'ffffffffffff'},
+        summary: const {'cases': 25, 'coldStart': 24, 'withHistory': 23},
+        calls: stale('m:1').calls,
+        sourceDir: 'tool/model_probes/results-old-host-ollama0331',
+      );
+      final findings = check(
+        results: [run],
+        launched: const ['m:1'],
+        currentAssets: currentAssets,
+        markdown: tableWith(cold: 24, warm: 23, preSeed: 22),
+        historical: const {'results-old-host-ollama0331'},
+      );
+      expect(findings.where((f) => f.fatal), isEmpty);
+      expect(
+        findings.map((f) => f.message).join(),
+        contains('historical, that archive is closed to re-runs'),
+      );
+    });
+
+    test('a closed archive does not excuse an open one', () {
+      // The marker is per directory on purpose: marking one archive must not
+      // quietly cover a run that someone can still re-measure today.
+      final open = ProbeRun(
+        probe: 'shape_ab',
+        model: 'm:1',
+        variant: 'seeded',
+        measuredAt: '2026-08-20',
+        samples: 2,
+        assets: const {'card_system_prompt.txt': 'ffffffffffff'},
+        summary: const {'cases': 25, 'coldStart': 24, 'withHistory': 23},
+        calls: stale('m:1').calls,
+        sourceDir: 'tool/model_probes/results-live-host-ollama0333',
+      );
+      final findings = check(
+        results: [open],
+        launched: const ['m:1'],
+        currentAssets: currentAssets,
+        markdown: tableWith(cold: 24, warm: 23, preSeed: 22),
+        historical: const {'results-old-host-ollama0331'},
+      );
+      expect(findings.where((f) => f.fatal), isNotEmpty);
+    });
+
     test('says nothing when the digests still match', () {
       final findings = check(
         results: [
@@ -522,6 +576,7 @@ void main() {
         launched: launchedModels('../.vscode/launch.json'),
         currentAssets: currentAssetDigests('assets'),
         markdown: File('ModelBehavior.md').readAsStringSync(),
+        historical: historicalDirs('tool/model_probes'),
       );
       expect(
         findings.where((f) => f.fatal).map((f) => f.message).toList(),

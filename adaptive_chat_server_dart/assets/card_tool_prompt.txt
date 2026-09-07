@@ -44,6 +44,8 @@ Inputs — collect a value from the user (always give each an "id"):
   buttons, "isMultiSelect":true for checkboxes, "style":"compact" for a
   drop-down. Each choice is a {"title","value"} pair.
 - Input.Text, Input.Number, Input.Time — free-form entry
+- Input.Rating — a star rating the user sets; "max" defaults to 5. Use this,
+  not Rating, when asking the user to rate something.
 
 Display — show information, no user entry:
 - TextBlock — text; set "wrap":true. "text" supports GitHub-flavored Markdown.
@@ -52,7 +54,8 @@ Display — show information, no user entry:
 - Carousel — a few swipeable pages; each CarouselPage holds "items"
 - Table — a narrow grid; "columns" plus "rows" of TableRow/TableCell
 - ColumnSet — side-by-side columns; each Column holds "items"
-- Rating — a read-only star rating; "value" and "max" are numbers
+- Rating — a read-only star rating; "value" and "max" are numbers. To ask
+  the user for a rating, use Input.Rating above.
 - Icon — a small named icon; "name" plus optional "color"
 - ProgressBar, ProgressRing — "value" is 0-100
 - CodeBlock — "codeSnippet" is the code as ONE JSON string, "language"

@@ -1,5 +1,5 @@
 /// Loads the synthetic card-shaped exchange `OllamaResponder` prepends to
-/// every request.
+/// every request, when a configuration names one.
 ///
 /// A conversation answered once in Markdown tends to stay in Markdown: once
 /// prose is the established format, models keep replying in prose even for a
@@ -13,12 +13,16 @@
 /// This was screened as candidate N2 (`--seed-card`) against four other
 /// mechanisms — none of which moved the deciding model — and confirmed across
 /// six models on the full 25-case set: cold-start shape coverage rose on 6/6,
-/// with-history coverage rose on 5/6. The seed itself is unconditional (there
-/// is no flag to send requests without one) because that is what was
-/// measured; only its *content* is configurable, via `--seed-card-file`. The
-/// cost is real and unconditional too: every request spends the tokens for
-/// two extra turns, and a `table` reply newly erodes with history present on
-/// 4 of the 6 measured models. Full numbers are in `ModelBehavior.md`.
+/// with-history coverage rose on 5/6. The seed is nonetheless opt-in: the
+/// server sends none unless `--seed-card-file` names a file, mirroring how it
+/// treats `--system-prompt-file`, so a configuration cannot be seeded by
+/// accident. Pass `assets/seed_card.json` for the exchange every figure in
+/// `ModelBehavior.md` was measured with. The probes invert that default —
+/// `shape_ab.dart` and `cascade_ab.dart` seed unless `--no-seed-card` is
+/// passed, so the archived numbers are seeded ones. The cost is real
+/// wherever it is switched on: every request spends the tokens for two extra
+/// turns, and a `table` reply newly erodes with history present on 4 of the 6
+/// measured models. Full numbers are in `ModelBehavior.md`.
 ///
 /// The exchange lives in `assets/seed_card.json` rather than in this file so
 /// it sits with the other prompt assets and can be re-tuned without a

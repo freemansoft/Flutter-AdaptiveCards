@@ -13,7 +13,9 @@
 ///    `assets/card_system_prompt.txt` — but not with *which version*, and that
 ///    prompt has been edited repeatedly. Each edit silently turns every
 ///    recorded number into a historical one. Checked against the digests each
-///    run stored.
+///    run stored. A results directory whose host has since moved to a newer
+///    Ollama cannot be re-run in place; a [historicalMarker] file in it says
+///    so, and its stale runs report as notes instead of failing.
 /// 3. **Gaps.** `gpt-oss:20b` sat in `launch.json` as a top-three model with
 ///    its `format` support never measured, and nobody knew until someone
 ///    asked a question that happened to need it. Checked by listing the
@@ -87,6 +89,27 @@ List<String> resultsDirs(String probesDir) {
       if (p.basename(e.path).startsWith('results-')) e.path,
   ]..sort();
 }
+
+/// Name of the marker file that closes a results directory.
+const historicalMarker = 'HISTORICAL.md';
+
+/// Results directories closed to re-measurement, by basename.
+///
+/// A directory names a host *and* an Ollama version, so once that host moves
+/// to a newer runtime nothing can re-run its probes in place — the re-run
+/// belongs in a directory naming the new version, and the old files keep the
+/// digests they were measured with forever. Dropping a [historicalMarker]
+/// into such a directory says so out loud: its staleness is expected and
+/// reported as a note rather than failing CI. The marker's prose is for
+/// humans; only its presence is read here.
+///
+/// Deliberately not a blanket amnesty. A directory whose runtime is still
+/// installed somewhere is re-runnable, so leaving it unmarked keeps the gate
+/// doing the job it exists for.
+Set<String> historicalDirs(String probesDir) => {
+  for (final d in resultsDirs(probesDir))
+    if (File(p.join(d, historicalMarker)).existsSync()) p.basename(d),
+};
 
 /// The distinct hosts recorded in each per-host results directory.
 Map<String, Set<String>> hostsByDirectory(String probesDir) => {
@@ -245,6 +268,7 @@ List<Finding> check({
   required String markdown,
   String tableHost = shapeTableHost,
   List<ProbeRun>? tableResults,
+  Set<String> historical = const {},
 }) {
   final findings = <Finding>[];
 
@@ -292,17 +316,23 @@ List<Finding> check({
   //    re-running fourteen models on every prompt edit is not a gate anyone
   //    would keep.
   for (final run in results) {
+    final dir = run.sourceDir == null ? null : p.basename(run.sourceDir!);
+    final closed = dir != null && historical.contains(dir);
     for (final entry in run.assets.entries) {
       final now = currentAssets[entry.key];
       if (now != null && now != entry.value) {
         final launchedModel = launched.contains(run.model);
         findings.add(
           Finding(
-            fatal: launchedModel,
-            message:
-                '${run.model} ${runLabel(run)}: '
-                'measured against ${entry.key} ${entry.value}, tree has $now — '
-                're-run the probe, or accept the result as historical',
+            fatal: launchedModel && !closed,
+            message: closed
+                ? '${run.model} ${runLabel(run)} ($dir): '
+                      'measured against ${entry.key} ${entry.value}, tree has '
+                      '$now — historical, that archive is closed to re-runs'
+                : '${run.model} ${runLabel(run)}: '
+                      'measured against ${entry.key} ${entry.value}, tree has '
+                      '$now — re-run the probe, or mark the archive historical '
+                      'with a $historicalMarker file',
           ),
         );
       }
@@ -443,6 +473,7 @@ Future<void> main(List<String> argv) async {
       launched: launched,
       currentAssets: currentAssets,
       markdown: markdown,
+      historical: historicalDirs(probesDir),
     ),
   ];
 

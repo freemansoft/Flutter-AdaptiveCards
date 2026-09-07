@@ -123,7 +123,8 @@ probe left behind:
 - **Staleness** — a result measured against a prompt asset that has since
   changed. Fatal for a model `launch.json` launches, a note for the rest:
   re-running fourteen models on every prompt edit is not a gate anyone would
-  keep.
+  keep. A directory holding a `HISTORICAL.md` file is exempt from the fatal
+  half — see below.
 - **Gaps** — a launched model with a probe never run against it. Not
   hypothetical: `gpt-oss:20b` held a `launch.json` slot with its `format`
   support unmeasured until someone happened to ask a question that needed it.
@@ -135,6 +136,21 @@ fvm dart run tool/model_probes/check_results.dart
 Results are a _record_, not a fixture — `check_results.dart` never re-runs a
 model, so a committed file is only ever as true as the day it was measured. The
 digests are what stop that from being a silent problem.
+
+### Closing an archive
+
+"Re-run the probe" only works while the host **and** the Ollama version the
+directory names are still reachable. Once a host upgrades, its old directory
+can never be refreshed in place: a re-measurement belongs in a directory naming
+the new runtime, and the old files keep their digests forever.
+
+Drop a `HISTORICAL.md` into such a directory. `check_results.dart` reads its
+presence, not its text, and downgrades that directory's stale-digest findings
+from fatal to notes — they stay visible, they stop blocking CI. Write in it
+which host and runtime the runs name, and what edit superseded them.
+
+Mark only a directory nobody can re-run. A live archive left unmarked is the
+gate doing its job; marking it turns a to-do into a silence.
 
 ## Run one model at a time
 
