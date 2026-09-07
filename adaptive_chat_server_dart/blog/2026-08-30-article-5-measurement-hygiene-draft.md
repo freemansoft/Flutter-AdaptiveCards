@@ -2,7 +2,7 @@
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a Dart chat server hands a question to a local Ollama model and asks for the
+a demonstration Dart chat server hands a question to a local Ollama model and asks for the
 answer as Adaptive Card JSON, which a Flutter app renders. A directory of
 probes measures which models manage it; the results live in a lab notebook
 there. This article is about the harness, not the models: every lesson below

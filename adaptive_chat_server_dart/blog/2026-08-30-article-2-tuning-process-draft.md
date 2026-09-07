@@ -2,7 +2,7 @@
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a Dart chat server hands a question to a local Ollama model, asks for the answer
+a demonstration Dart chat server hands a question to a local Ollama model, asks for the answer
 as Adaptive Card JSON, and a Flutter client app renders the reply. Everything
 below is an attempt to make that card generation more reliable and more
 faithful to what was asked. The figures are transcribed from
