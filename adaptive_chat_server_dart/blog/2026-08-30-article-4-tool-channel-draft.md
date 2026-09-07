@@ -11,8 +11,8 @@ The frame, briefly. In
 a Dart chat server hands a question to a local Ollama model and asks for the
 answer as Adaptive Card JSON in the message body. Ollama also offers a tool
 channel, where the same card would instead arrive as the arguments of a
-`render_adaptive_card` function. This article is the comparison of the two
-channels and the per-bucket accounting for why the better-formed one lost.
+`render_adaptive_card` function. This article compares the two channels and
+accounts, bucket by bucket, for why the better-formed one lost.
 
 Every figure below is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -23,14 +23,13 @@ a lab notebook in that repository.
 [`tool/model_probes/shape_ab.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/shape_ab.dart)
 `--channel tool` runs the same 25 shape cases through a `render_adaptive_card`
 function and converts its arguments into the reply string a prose answer would
-have carried, so both arms are judged by the same code. Run 2026-08-21 on the 8
-models a separate capability probe,
+have carried, so both arms are judged by the same code. It ran on 2026-08-21
+against the eight models that a separate capability probe,
 [`tool_call_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_call_probe.dart),
-rated `supported` out of fifteen — the four-way split that produced those eight
-is the first article's material. Conditions: `--samples 2`, unseeded, `t=0`,
-cold-start and with-history.
+had rated `supported` out of the roster of fifteen; the first article in this
+series describes the four-way split that produced those eight. Conditions:
+`--samples 2`, unseeded, `t=0`, cold-start and with-history.
 
-The pairing rule carries weight, so it is worth stating rather than assuming.
 **Each tool run is compared against that model's recorded `unaided` run — the
 unseeded prose arm — never the seeded one.** The tool arm cannot be seeded: the
 card seed is a synthetic assistant turn holding raw card JSON, which is not what
@@ -95,9 +94,9 @@ distinguishable from each other or from zero. Only `qwen3-coder:30b`'s +6 and
 `qwen3.5:9b`'s +4 are gains worth relying on, and only the four losses are large
 enough to act on.
 
-That leaves a table with an apparent contradiction in it. The channel removed a
-whole failure family from every row, and half the rows got worse anyway. The
-decomposition is where that resolves.
+The table reads as a contradiction: the channel removed a whole failure family
+from every row, and half the rows got worse anyway. The decomposition below
+resolves it.
 
 ## Every failed call, bucketed by the label the judge already wrote
 
@@ -192,11 +191,6 @@ sends `think: false` unconditionally, so all sixteen runs above are
 thinking-off.** A thinking-on arm is the one variant of this measurement not yet
 covered, and the notebook lists it as open work rather than as a result.
 
-Chat template and thinking mode are both properties of how a model was asked,
-not of the eight-model comparison table itself. The two things below are a
-different kind of gap: not a variable the comparison didn't control for, but a
-question the comparison's own design could not see the answer to.
-
 ## A one-request gate over-predicted willingness, and the channel hides what it does not remove
 
 Two things the availability probe could not see, both visible only once the
@@ -219,7 +213,7 @@ tool arm produced eight calls labelled `no-input: got {Input, TextBlock}`, where
 scores against an expected element set. A user would see nothing.
 **Zero malformed JSON is not the same as zero broken cards.**
 
-## Nothing shipped, and the measurement is what does
+## Nothing shipped except the measurement
 
 There is no `--reply-channel` flag and the server still asks for card JSON in
 the message body. Half the models that can use the channel get materially worse

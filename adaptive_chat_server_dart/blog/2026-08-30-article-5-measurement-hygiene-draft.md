@@ -4,7 +4,8 @@
 
 `granite4.1:3b` came back from a sweep on 2026-08-20 with **52 stalled calls**,
 a seeded score of **12/25** on the shape set with conversation history, and
-`n/a` on the drift (cascade) probe. Read as a model result, that is a 2.0 GB
+`n/a` on the cascade probe, which asks whether a follow-up turn can edit the
+card the model just sent without dropping its contents. Read as a model result, that is a 2.0 GB
 model failing badly. It was not: nothing about the model had changed, or
 needed fixing, on that 2026-08-20 run.
 
@@ -54,7 +55,7 @@ them — the working explanation at the time for the first column below.
 | ------------------------------- | --------------------------- | -------------------------------- |
 | stalled calls                   | 52                          | —                                |
 | shape set, seeded, with history | 12/25                       | **17/25**                        |
-| drift (cascade) probe           | `n/a`                       | **3/3**                          |
+| cascade probe                   | `n/a`                       | **3/3**                          |
 | wall clock, whole sweep         | 124 min                     | **7 min**                        |
 
 The re-run reproduces the model's earlier published figures.
@@ -130,12 +131,12 @@ out, rather than only abandoning the client connection. Runs are labelled
 **before runner eviction** and **after runner eviction**, with Ollama 0.33.2,
 the weights, the prompt and seed digests, and the machine held constant.
 
-| Before → after runner eviction | `llama3.2:latest` | `granite4.1:3b` |
-| ------------------------------ | ----------------- | --------------- |
-| seeded stalls                  | 12 → 2            | 14 → 14         |
-| seeded wall clock              | 26.2 → 6.5 min    | 30.1 → 30.0 min |
-| seeded shape score             | 15/12 → 15/15     | 17/12 → 17/12   |
-| unaided stalls                 | 19 → 0            | 32 after        |
+| Before → after runner eviction  | `llama3.2:latest` | `granite4.1:3b` |
+| ------------------------------- | ----------------- | --------------- |
+| seeded stalls                   | 12 → 2            | 14 → 14         |
+| seeded wall clock               | 26.2 → 6.5 min    | 30.1 → 30.0 min |
+| seeded shape score, cold / warm | 15/12 → 15/15     | 17/12 → 17/12   |
+| unaided stalls                  | 19 → 0            | 32, after only  |
 
 `llama3.2:latest` reproduces the archive exactly; `granite4.1:3b` does not
 move. The unchanged count was first read as proof the stalls were the model's
@@ -156,7 +157,8 @@ Nothing in the server log shows the unload cancelling a running generation.
 
 Whether that last coincidence is cause is unexplained.
 
-So this is not artifact against regression. Nothing about `granite4.1:3b` under
+So the pair does not settle artifact against regression. Nothing about
+`granite4.1:3b` under
 0.33.2 is established, and its 14 seeded / 32 unaided stalls and the coverage
 figures they produce are recorded as cascade-damaged rather than as a model
 measurement. What is established comes from the other machine: the M5's clean
@@ -286,6 +288,19 @@ figures that had already drifted**:
 should have printed as "0.3 s" and "0.2 s" beside a 1.0x ratio. Neither would
 have been found by re-reading the table.
 
+Sharing the judge shares its blind spot. `tryParseCardBody` knows two things
+about Adaptive Cards: the literal `AdaptiveCard`, which it unwraps to a body,
+and the requirement that a lone object carry a non-empty `type` string. It
+validates no vocabulary and no element's own required fields, so
+`{"type": "Bogus.Element"}` and an `Input.ChoiceSet` carrying no `choices` both
+score as cards. A vocabulary check does exist — `unknownElementTypes` reads the
+legal type enum out of the shipped `card_schema.json` and walks the body at any
+depth — but it sits in the server's request path, only warns rather than
+rejecting, and the probes never call it. An invented element type therefore
+passes every set that does not name the element it expects, and reaches the user
+as an invisible blank. It is the one user-visible failure no score in this
+series counts, and the cheapest fix is to say so beside the scores.
+
 ## Ten models' numbers were discarded, and three findings outlived them
 
 Once a whole batch of measurements is already wrong, the question is what to
@@ -332,7 +347,7 @@ arrived at in advance.
 | Distrust a shipped assertion as readily as the model it judges                                                | `rows >= 3` scoring a valid 2×2 Table a failure               |
 | Establish delivery before reading a null result, with a probe that does not contradict the prompt             | delivery unconfirmed on two screening models                  |
 | Check for silent truncation before reading any token-level number                                             | `prompt_eval_count` pinned at 4,098 every turn                |
-| Judge with the parser you ship, and derive published tables from the recorded runs                            | two published figures had already drifted                     |
+| Judge with the detector you ship, and derive published tables from the recorded runs                          | two published figures had already drifted                     |
 | Record what you threw away and why, so a discarded number is not quoted back from git history                 | ten models' numbers, marked do-not-quote                      |
 
 This is the last article in the series. The repository is
