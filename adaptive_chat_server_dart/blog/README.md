@@ -196,6 +196,30 @@ a wrong figure.
 - **Gloss a probe or case identifier the first time it appears.** `rating_ask`
   and `cascade` mean nothing to a reader who has not opened the repo.
 
+### Openings
+
+**Every article is standalone.** A reader arrives from a search result or a
+single link, not from article 1, and the five are read in no fixed order.
+Nothing may depend on another article having been read: each one names the
+project, what the model is asked for, and what renders the reply, and expands a
+term the first time that article uses it. The ownership map above governs which
+article carries a topic in full — it does not license leaving a reader without
+the setup needed to read the article they opened.
+
+**Open with a framing paragraph, then the finding.** The first paragraph says
+what the thing is — what the project does, what the model is asked for, what
+happens to the answer — before any figure or verdict appears. A lead that opens
+on the finding asks the reader to weigh a claim about a system nobody has
+described to them yet. Article 4 opened on "moving the card out of the message
+body and into the arguments of a function call drove malformed JSON to zero",
+which names a mechanism, two channels, and a failure family to a reader who has
+not yet been told that the server asks a model for card JSON at all.
+
+The framing paragraph carries the setup itself rather than announcing it — see
+**Register** on "the frame, briefly" — and two or three sentences is enough.
+Framing first is an ordering rule, not a reason to open slowly: the finding
+follows immediately, in the paragraph after the setup lands.
+
 ### Register
 
 The repo's documentation-tone rules, as in

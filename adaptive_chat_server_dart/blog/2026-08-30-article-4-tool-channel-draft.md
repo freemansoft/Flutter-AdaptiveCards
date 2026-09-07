@@ -1,18 +1,24 @@
 # The tool channel drove malformed JSON to zero and lost on half the models
 
-Moving the card out of the message body and into the arguments of a function
-call drove malformed JSON to **zero on all eight models that could use the
-channel**. No unexpected-character errors, no arrays missing their `[ ]`, no
-cards truncated mid-generation, no duplicate keys. On four of those same eight
-models the tool channel still scored worse than prose did, and nothing shipped.
-
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 a Dart chat server hands a question to a local Ollama model and asks for the
-answer as Adaptive Card JSON in the message body. Ollama also offers a tool
-channel, where the same card would instead arrive as the arguments of a
-`render_adaptive_card` function. This article compares the two channels and
-accounts, bucket by bucket, for why the better-formed one lost.
+answer as Adaptive Card JSON, which a Flutter client renders as interactive UI
+rather than as text. That card comes back in the model's message body: JSON text
+inside `message.content`, which the server parses to recover the card.
+
+Ollama offers a second route. Declare a `render_adaptive_card` function and the
+model answers by calling it, so the card arrives as that call's arguments — a
+structure the runtime has already parsed, with no JSON text left for the server
+to recover. Same model, same question, same card; what changes is the slot it
+travels in.
+
+Moving the card into that slot drove malformed JSON to **zero on all eight
+models that could use the channel**. No unexpected-character errors, no arrays
+missing their `[ ]`, no cards truncated mid-generation, no duplicate keys. On
+four of those same eight models the tool channel still scored worse than prose
+did, and nothing shipped. This article compares the two channels and accounts,
+bucket by bucket, for why the better-formed one lost.
 
 Every figure below is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),

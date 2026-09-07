@@ -195,7 +195,9 @@ machine before publishing, because a busy machine and a slow model are
 indistinguishable from the probe's side. This is the second row it has caught,
 after `granite4.1:3b`'s 2026-08-20 sweep — **52 stalls** and **12/25** seeded
 where an idle machine gives **17/25**, an incident the measurement-hygiene
-article in this series accounts for.
+article in this series accounts for. That is a separate run on the earlier
+Ollama, not the 52 in the table above: two different causes landed on the same
+count, which is itself one of that article's findings.
 
 ### The same model runs 1.54x slower late in a sweep than at the start
 

@@ -86,7 +86,7 @@ Read on the shipped configuration, all fifteen candidates rank by with-history s
 - **`gpt-oss:20b` — dropped 2026-08-20, replaced by `qwen3.8:27b-nvfp4`.** Under 0.32.14 it scored 23/25 warm (seeded) against `qwen3.8`'s 24/25 and was the strongest unaided model in the file. Under 0.33.2 it scores **25/25 warm (seeded)** — the highest in the file — while its unaided score falls to 22/25, no longer the top (`qwen3.8:27b-nvfp4` 24/25, `qwen3.6:27b-coding-nvfp4` 23/25 unaided). The swap is defensible on either runtime's figures — full detail, including the destructive `format` breakage and the runtime reversal: [its per-model notes](#gpt-oss20b).
 - **`qwen3.8:27b-nvfp4` — added 2026-08-20**, replacing `gpt-oss:20b` on the strength of the **highest as-shipped score in the file, 24/25 warm**, and a seed gain of zero — it neither needs the seed nor is hurt by it. Cost: 16.9 GB, the one axis `gpt-oss:20b` still wins (4.1 GB lighter). Full detail: [its per-model notes](#qwen3827b-nvfp4).
 - **`granite4.1:8b` — kept.** 21/25 with history, the best 16 GB-capable model, in 5.0 GB. Full detail: [its per-model notes](#granite418b).
-- **`qwen3-coder:30b` — added 2026-08-21 as the second large model, on demo qualities rather than raw coverage.** At **1.6 s/call it is the fastest model measured**, ahead of models a quarter its weight; it **honors `format`**, which neither `nvfp4` build did under 0.32.14 (both do under 0.33.2 — see [the format canary](#not-a-card-test-the-format-canary)); and it is the only model that answers **both** cold-start sets entirely in cards — 20/21 everyday and 10/10 stress, never falling back to Markdown. For a demo someone clicks through by hand, those matter more than a single shape point. Its seed gain is **+9** (23/25 seeded, 14/25 unaided) — it had been rejected on that gain alone before the 2026-08-20 sweep added the speed and `format` findings.
+- **`qwen3-coder:30b` — added 2026-08-21 as the second large model, on demo qualities rather than raw coverage.** At **1.5 s/call it is the fastest model measured**, ahead of models a quarter its weight; it **honors `format`**, which neither `nvfp4` build did under 0.32.14 (both do under 0.33.2 — see [the format canary](#not-a-card-test-the-format-canary)); and it is the only model that answers **both** cold-start sets entirely in cards — 20/21 everyday and 10/10 stress, never falling back to Markdown. For a demo someone clicks through by hand, those matter more than a single shape point. Its seed gain is **+9** (23/25 seeded, 14/25 unaided) — it had been rejected on that gain alone before the 2026-08-20 sweep added the speed and `format` findings.
 - **`qwen2.5-coder:7b` — kept.** Not the strongest (18/25 warm, tenth), but it is the compiled-in default, the model every promotion decision in this file is gated on, and the smallest at 4.4 GB. It is the only model in the file scoring **10/10 stress and 21/21 everyday with every stress pass an actual card**. Full detail: [its per-model notes](#qwen25-coder7b).
 - **`qwen3.5:9b` — dropped, though the 2026-08-20 re-measurement narrows the gap.** It scores **19/25 with history against `qwen2.5-coder:7b`'s 18/25** — no longer the exact tie the original decision rested on. Against it: 6.1 GB versus 4.4 GB, **6.9 s/call versus 2.3 s**, and a thinking mode that has to be disabled to be usable at all. One shape does not outweigh three times the latency, so the decision stands, on cost now rather than on a tie. Full detail: [its per-model notes](#qwen359b).
 
@@ -250,7 +250,13 @@ correct element would have been scored a failure.
 
 Measured 2026-09-07 on the M5 host under Ollama 0.33.3, `--samples 2`, seeded,
 `--only rating_ask`, old prompt as `--baseline` against the new one as
-`--candidate`:
+`--candidate`. The run was not archived: there is no
+`results-m5-16gb-ollama0333/` directory, and this table is a spot measurement
+transcribed from terminal output rather than an archived row — the same
+standing as the M5 readings in [the prompt-cache
+section](#prompt-cache-reuse-and-retry-cost-measured-with-prompt_eval_cached_count).
+Archiving it is a re-run on that host, listed under
+[Open questions and future work](#open-questions-and-future-work):
 
 | Model              | Baseline cold  | Baseline warm        | Candidate cold         | Candidate warm         |
 | ------------------ | -------------- | -------------------- | ---------------------- | ---------------------- |
@@ -270,8 +276,14 @@ M1 Max under 0.32.14, so the disagreement is unresolved rather than a
 contradiction. And the prompt edit changes the digest every archived run
 recorded. `check_results.dart` reported that as 37 fatal findings; closing the
 two superseded archives (see
-[Open questions and future work](#open-questions-and-future-work)) leaves one, on the archive that is
-still re-runnable.
+[Open questions and future work](#open-questions-and-future-work)) left one, on
+the archive that is still re-runnable, and re-measuring it on 2026-09-07 cleared
+that too — the checker now reports **zero fatal findings**. Seven non-fatal
+digest notes remain, all in `results-m1max-64gb-ollama0333/` and all on
+`qwen3.5:9b` and `qwen3.6:27b-coding-nvfp4`: the fatal/non-fatal split keys on
+whether a model is in `launch.json`, not on whether its archive is closed, so
+neither was ever a gate. They are re-runnable on the M1 Max whenever current
+figures for those two are wanted.
 
 #### Performance, by host and runtime
 
@@ -951,7 +963,14 @@ The forward-looking items from the sections above, collected so they are not re-
   Nothing else in the launch set is owed — `granite4.1:8b` and
   `qwen2.5-coder:7b` are re-runnable on the M5 into a new
   `results-m5-16gb-ollama0333/` directory whenever someone wants current
-  figures, but their old archive is closed and not blocking.
+  figures, but their old archive is closed and not blocking. Two items are
+  still open, neither of them a gate. Seven non-fatal digest notes remain in
+  `results-m1max-64gb-ollama0333/`, on `qwen3.5:9b` and
+  `qwen3.6:27b-coding-nvfp4` — outside the launch set, so never fatal —
+  re-runnable on the M1 Max. And the [`Input.Rating`
+  A/B](#inputrating-was-missing-from-the-palette) is a spot measurement with no
+  archived row; archiving it is the same M5 re-run named above, into the same
+  directory.
 
 - **`rating_ask` is repaired on two models and unmeasured on thirteen.** The palette never offered `Input.Rating`; adding it takes the case from 0/4 to 4/4 on `qwen2.5-coder:7b` and from 2/4 to 4/4 on `granite4.1:8b` (see [the `Input.Rating` A/B](#inputrating-was-missing-from-the-palette)). The other thirteen models, including the two that do not fit a 16 GB host, are still on the pre-fix figure in [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped).
 - **The seed has never been measured above `t=0`.** Every shape run is greedy, and neither standing regression gate covers seeded sampling — `temperature_stress.dart` and `prompt_ab.dart` send a single turn and no seed history (see [the card-seed costs](#the-card-seed-and-what-it-costs)).

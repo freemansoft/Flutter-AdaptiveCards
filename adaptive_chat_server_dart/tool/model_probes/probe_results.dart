@@ -115,12 +115,14 @@ class ProbeRun {
     this.summary = const {},
     this.notes,
     this.sourceDir,
+    this.fileName,
   });
 
   /// Rebuilds a run from its JSON form.
   factory ProbeRun.fromJson(
     Map<String, dynamic> json, {
     String? sourceDir,
+    String? fileName,
   }) => ProbeRun(
     probe: json['probe'] as String,
     model: json['model'] as String,
@@ -140,6 +142,7 @@ class ProbeRun {
     ),
     notes: json['notes'] as String?,
     sourceDir: sourceDir,
+    fileName: fileName,
   );
 
   /// Reads a run from a JSON file.
@@ -147,10 +150,12 @@ class ProbeRun {
   /// [sourceDir] is the results directory the file was found under, kept so a
   /// check can ask which archive a run belongs to. It is not part of the JSON
   /// — the file does not name its own directory, and a copy moved between
-  /// archives should read as the directory it now sits in.
+  /// archives should read as the directory it now sits in. [fileName] is kept
+  /// for the same reason and read off the same path.
   factory ProbeRun.read(File file, {String? sourceDir}) => ProbeRun.fromJson(
     jsonDecode(file.readAsStringSync()) as Map<String, dynamic>,
     sourceDir: sourceDir,
+    fileName: p.basename(file.path),
   );
 
   /// Which script produced this (`shape_ab`, `cascade_ab`, …).
@@ -224,6 +229,16 @@ class ProbeRun {
   /// runtime, say — needs to know which archive a run came from, and nothing
   /// in the JSON records that.
   final String? sourceDir;
+
+  /// Basename of the file this run was read from, or null when built in memory.
+  ///
+  /// Set by [ProbeRun.read] rather than stored in the file, the same way
+  /// [sourceDir] is. `probe` and `variant` do not identify a file: one
+  /// directory can hold several runs that agree on both — `shape_ab-seeded-
+  /// format-schema.json` beside its `-confirm` and `-recheck` re-runs — and
+  /// those are exactly the runs a reader needs told apart, since they were
+  /// taken separately and can disagree.
+  final String? fileName;
 
   /// Passes and total.
   (int, int) get score => (calls.where((c) => c.pass).length, calls.length);
