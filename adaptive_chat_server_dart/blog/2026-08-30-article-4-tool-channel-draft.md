@@ -3,8 +3,8 @@
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 a demonstration Dart chat server hands a question to a local Ollama model and asks for the
-answer as Adaptive Card JSON — a tree of typed UI components, called elements:
-`TextBlock`, `Table`, `Input.ChoiceSet` — which a Flutter client renders as
+answer as Adaptive Card JSON, a tree of typed UI components called elements
+(`TextBlock`, `Table`, `Input.ChoiceSet`), which a Flutter client renders as
 interactive UI rather than as text. That card comes back in the model's message body: JSON text
 inside `message.content`, which the server parses to recover the card.
 
@@ -17,7 +17,7 @@ a lab notebook in that repository.
 Ollama offers a second route, a tool channel to talk with tools.
 The question was whether that could help with this.
 Declare a `render_adaptive_card` function and the
-model answers by calling it, so the card arrives as that call's arguments — a
+model answers by calling it, so the card arrives as that call's arguments, a
 structure the runtime has already parsed, with no JSON text left for the server
 to recover. Same model, same question, same card; what changes is the slot it
 travels in.
@@ -34,19 +34,19 @@ bucket by bucket, for why the better-formed one lost.
 [`tool/model_probes/shape_ab.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/shape_ab.dart)
 `--channel tool` runs the same 25 shape cases through a `render_adaptive_card`
 function and converts its arguments into the reply string a prose answer would
-have carried, so both arms of the A/B — prose and tool — are judged by the same
+have carried, so both arms of the A/B, prose and tool, are judged by the same
 code. It ran on 2026-08-21
 against the eight models that a separate capability probe,
 [`tool_call_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_call_probe.dart),
 had rated `supported` out of the roster of fifteen; the first article in this
 series describes the four-way split that produced those eight. Conditions:
-`--samples 2`, `t=0`, cold-start and with-history, and unseeded — without the
-card seed, a synthetic two-turn card exchange the server normally prepends to
-the context so a card is the conversation's established format. A case counts as
+`--samples 2`, `t=0`, cold-start and with-history, and unseeded, meaning without
+the card seed, a synthetic two-turn card exchange the server normally prepends
+to the context so a card is the conversation's established format. A case counts as
 passed only if both of its two runs passed, in both arms.
 
-**Each tool run is compared against that model's recorded `unaided` run — the
-unseeded prose arm — never the seeded one.** The tool arm cannot be seeded: the
+**Each tool run is compared against that model's recorded `unaided` run, the
+unseeded prose arm, never the seeded one.** The tool arm cannot be seeded: the
 seed's assistant turn holds raw card JSON, which is not what a tool-channel
 history looks like. Scoring the tool arm against a seeded prose
 baseline would hand prose an advantage the tool arm structurally cannot have.
@@ -77,7 +77,7 @@ flowchart LR
 ```
 
 The prose path has a detector that can reject a malformed body and label it
-`broken`. The tool path has nothing equivalent — arguments that name an
+`broken`. The tool path has nothing equivalent, because arguments that name an
 element type that does not exist are well-formed arguments, so they pass
 straight through. That asymmetry is why the malformed-JSON column below reads
 zero on every model while some of the same models score worse overall: zero
@@ -102,9 +102,9 @@ of the notebook.
 | `nemotron-3-nano:4b`         |         4 |          9 |  −5 |               5 |                7 |  −2 | loss       |
 
 The two `unaffected` rows are the same result on either side of an arbitrary
-line. **±1 is inside the notebook's own noise floor** — the 2026-08-20
+line. **±1 is inside the notebook's own noise floor.** The 2026-08-20
 re-measurement moved ten of twelve steady models by ±1 with nothing about them
-changing — so a row that reads `+1` and a row that reads `−1` are not
+changing, so a row that reads `+1` and a row that reads `−1` are not
 distinguishable from each other or from zero. Only `qwen3-coder:30b`'s +6 and
 `qwen3.5:9b`'s +4 are gains worth relying on, and only the four losses are large
 enough to act on.
@@ -117,18 +117,18 @@ resolves it.
 
 The decomposition costs no model calls. It is a re-scoring of the same results
 JSON, bucketing every failed call by the `label` the judge wrote at the time.
-Each arm is **100 calls** — 25 cases × 2 samples × cold-start and with-history —
-of which 96 ask for a card and 4 are the negative control, the case that wants a
-plain prose answer. The headline `n/25` counts a case as passing only when every
+Each arm is **100 calls**, being 25 cases × 2 samples × cold-start and
+with-history, of which 96 ask for a card and 4 are the negative control, the
+case that wants a plain prose answer. The headline `n/25` counts a case as passing only when every
 sample of it passed, so these per-call buckets are a finer view of the same runs
 rather than a second metric.
 
 Four buckets, by `label` prefix:
 
-- `malformed` — `broken: invalid JSON`, `broken: duplicate-key`.
-- `declined` — `label == prose` on a case that wanted a card.
-- `wrong-shape` — `wrong-shape:`, `no-input:`, `unwanted-card:`.
-- `infra` — `broken: HTTP 500`, `broken: timeout`. Listed separately because it
+- `malformed`: `broken: invalid JSON`, `broken: duplicate-key`.
+- `declined`: `label == prose` on a case that wanted a card.
+- `wrong-shape`: `wrong-shape:`, `no-input:`, `unwanted-card:`.
+- `infra`: `broken: HTTP 500`, `broken: timeout`. Listed separately because it
   is not attributable to the channel.
 
 Counts are per 100 calls per arm, from
@@ -158,16 +158,16 @@ decision point ahead of every card. The four qwen models decline on 0–4% of ca
 cases. The four losses decline on 11%, 21%, 31%, and 50%.
 
 The second is **weaker element choice**. Filling a schema argument appears to
-favour the cheapest legal filler — that is an inference from the labels rather
-than a measured mechanism. `nemotron-3-nano:30b` gains 12 wrong-shape failures,
+favour the cheapest legal filler, though that is an inference from the labels
+rather than a measured mechanism. `nemotron-3-nano:30b` gains 12 wrong-shape failures,
 labelled `{TextBlock} want {Chart.Line}`, `{TextBlock} want {CodeBlock}`, and
 `{} want {FactSet, Table}`. `nemotron-3-nano:4b` gains 22.
 
 **The outcome is a subtraction, not a model category: malformed failures
 recovered, minus declines and shape regressions gained.**
 That subtraction accounts for all eight rows. The two wins are the rows where
-the recovered column is large and the paid column is small — `qwen3-coder:30b`
-recovers 21 calls and pays 3 — and the three nemotron losses are the reverse,
+the recovered column is large and the paid column is small, as `qwen3-coder:30b`
+recovers 21 calls and pays 3, and the three nemotron losses are the reverse,
 recovering 8, 10, and 6 while paying 22, 28, and 18. Neither side is a
 property of size or family.
 
@@ -175,7 +175,7 @@ Where the subtraction earns its keep is the two rows the ±1 noise floor leaves
 unexplained on the headline numbers. `qwen3.6:27b-coding-nvfp4` recovers 6 and
 pays 4, a net inside the noise floor, which is why it reads as unaffected.
 `qwen3.8:27b-nvfp4` had no malformed failures in prose at all, so it has
-nothing to recover and only costs to pay — its "unaffected" is a small loss
+nothing to recover and only costs to pay, so its "unaffected" is a small loss
 the noise floor absorbs. `gpt-oss:20b` had one malformed failure, with the
 same result.
 
@@ -199,7 +199,7 @@ how tool definitions are injected and how a tool call is written back out.
 `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` build are the same base
 weights under different packaging, and
 [the tool-calling capability probe](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#not-a-card-test-the-tool-calling-canary)
-rates one `supported` and the other `supportedButDeclines` — the packaging
+rates one `supported` and the other `supportedButDeclines`, so the packaging
 changed the verdict where the weights did not. Separately,
 `llama3-groq-tool-use:8b`, fine-tuned for tool use, does not reach for the card
 tool at all.
@@ -235,9 +235,9 @@ the message body. Half the models that can use the channel get materially worse
 on it, so it could not be a default, and two beneficiaries out of fifteen roster
 models did not justify a second code path through the reply loop.
 
-What ships is the measurement —
+What ships is the measurement,
 [`tool/model_probes/tool_channel.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_channel.dart)
-and `shape_ab.dart --channel tool` — so the finding is re-checkable when the
+and `shape_ab.dart --channel tool`, so the finding is re-checkable when the
 roster or a model's tool support changes. It is worth re-checking on that
 trigger and not otherwise: the run is roughly 800 serial model calls across
 eight models, three of them 18–25 GB, and it took hours of wall clock.
