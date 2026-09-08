@@ -35,6 +35,8 @@ rewrote the closing headings of articles 1, 2 and 5 to state a finding.
 **Audience:** developers running local models on Ollama who need structured
 output. Secondary: Flutter and server-driven-UI readers.
 
+**Publication target:** <https://joe.blog.freemansoft.com>.
+
 **File naming:** `YYYY-MM-DD-article-N-slug-draft.md`.
 
 **Publishing to Blogger:**

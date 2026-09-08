@@ -9,7 +9,7 @@ faithful to what was asked. The figures are transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 a lab notebook in that repository.
 
-## Telling the model where the explanation goes beat forbidding it
+## Giving the explanation a place in the card worked; banning prose did not
 
 `qwen2.5-coder:7b` answered a request to explain a snippet of code with a
 valid Adaptive Card, then appended the explanation after it. A reply is either
@@ -22,17 +22,18 @@ Markdown.
 What worked was telling it _where_ the explanation goes: a `TextBlock` beside
 the `CodeBlock`. Redirect a behavior rather than forbidding it.
 
-The tuning is aimed at four failure modes.
+The tuning remediated four failure modes.
 
 - Raw JSON shown to the user as text.
 - A card truncated mid-generation.
 - Prose appended after an otherwise valid card.
-- A conversation that drifts back to Markdown and stays there. One prose
-  exchange ahead of an options question was enough to turn a working
-  `Input.ChoiceSet` into 867 characters of Markdown on `qwen2.5-coder:7b` at
-  `t=0`.
+- A conversation that drifts back to Markdown and stays there.
+  - One prose
+    exchange ahead of an options question was enough to turn a working
+    `Input.ChoiceSet` into 867 characters of Markdown on `qwen2.5-coder:7b` at
+    `t=0`.
 
-## Context and decoding levers shipped at twice the rate of system prompt text edits
+## We tried fourteen levers, starting with the system prompt
 
 Fourteen levers were pulled against those failures and each one recorded with
 its outcome and its evidence, in
@@ -52,16 +53,26 @@ the content of any individual edit:
 
 Read down the Outcome column. Of the six levers that change _what the model
 sees before the question_ or _how it decodes_, four ship today, one of those
-four opt-in, and the single largest effect in the notebook is among them. Of the
+four opt-in, and the largest effect in the notebook is among them. Of the
 six that change _the system prompt text_, two ship, one was reverted for a
 regression, and three had no measurable effect.
 
-Two hedges on that comparison. Fourteen levers across five kinds is a pattern
-in one ledger, not a rate to extrapolate; and one of the three context rows is
-itself a null that may be a delivery artifact rather than a result. What the
-comparison is good for is ordering what to try next: reach for the context and
-decoding levers before rewriting the prompt. None of the three kinds makes a
-malformed card safe, which is what the server-code row is for.
+That ratio is easy to over-read: the levers were tried at different times, each
+against whatever configuration was already in place, not run head-to-head. The
+prompt-text rows are edits to a prompt that already worked, a harder place to
+move a score from than an empty one, and the largest context-row effect, 0/8 to
+8/8, is really the prompt's own palette and rules, counted on the context line.
+The levers are not shown to be independent either: one that measured as no
+effect alone might pay once paired with another, as `think: false` and
+`temperature: 0` do below.
+
+Two things travel with any reading of fourteen levers across five kinds: it is
+a pattern in one ledger, not a rate to extrapolate, and one of the three
+context rows is a null that may simply be undelivered. What the ledger is good
+for is ordering: write the card prompt first, because nothing else in the
+table substitutes for it; when edits to it stop moving a score, reach for
+context and decoding; and none of the three kinds makes a malformed card safe,
+which is what the server-code row is for.
 
 ## The prompt file and the synthetic card history had the biggest effects
 
@@ -119,12 +130,14 @@ shapes, 25/25 seeded against 22/25 unaided, and that seeded **25/25 is the only
 lever worth +10 to one model and −2 to another is one a configuration should
 have to ask for, so the seed ships opt-in.
 
-Four costs come with it. It is few-shot priming paid on every request rather
-than one-time setup, and it counts toward context fill each time. `table` newly
-erodes with history on four of the six models it was A/B'd on. It over-cards
-the negative control, the case that wants prose, on five of fifteen models
-cold-start, confirmed causal by re-running that single case both ways on
-`granite4.1:3b`. And it has **never been measured above `t=0`**; neither
+Four costs come with the seed. It is few-shot priming, showing the model a
+worked example instead of just telling it the rule, paid on every request
+rather than one-time setup, and it counts toward context fill each time. The
+`table` case newly erodes with history on four of the six models the seed was
+A/B'd on. The seed over-cards the negative control, the case that wants prose,
+on five of fifteen models cold-start, confirmed causal by re-running that
+single case both ways on `granite4.1:3b`. And it has **never been measured
+above `t=0`**; neither
 standing regression gate covers seeded sampling, because both send a single
 turn and no seed history.
 
@@ -136,25 +149,27 @@ system-prompt-text edits below and did not help. The null is weaker than it
 looks: Ollama chat templates vary in whether a second `system` message reaches
 the model at all, and delivery was confirmed on one of four models checked.
 
-## Decoding settings are cheap, 2/3 had enough value to be retained
+## Decoding settings are cheap. 2/3 were good enough to be retained
 
 All three decoding levers are fields on the `POST /api/chat` request the server sends
 Ollama: `options.temperature`, `think`, and `format`. Each is therefore a
 configuration change that costs no prompt tokens and no code. That is what
 makes them worth trying before any prompt edit.
 
-| What was changed                                        | Outcome                                                             | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| ------------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `temperature: 0`, greedy decoding instead of sampling   | Helped, promoted                                                    | Cleared card failure modes that defeated models outright at their own default temperature.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `think: false`, suppress the chain-of-thought preamble  | Helped, promoted                                                    | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `format: json` / `format: schema`, constrained decoding | Per-model and per-runtime, unreliable, and mixed where it does fire | Honored by some models, silently ignored by others, and destructive on `gpt-oss:20b`. Both `-nvfp4` models flipped from ignoring to honoring between Ollama 0.32.14 and 0.33.2, so the verdict is worth re-checking after a runtime upgrade. Where it is honored, the effect is not uniform: an A/B on `qwen3.6:27b-coding-nvfp4` under 0.33.3 repaired `ColumnSet` (0/6 unconstrained → 6/6) but did not repair `Carousel` (0/7 cold, 3/7 with history, all three with-history passes from a single run that four later attempts did not reproduce). The `ColumnSet` defect is specific to this model, since 11 of the 15 models in the archived results pass `ColumnSet` unconstrained. The flag is per-server, not per-request, and constraining it removed the prompt's prose fallback everywhere, taking the negative control from 6/6 prose-ok to 0/6 unwanted-card. Neither adopting nor rejecting the lever is supported by this A/B alone. |
+| What was changed                                        | Outcome                                                             | Evidence                                                                                    |
+| ------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `temperature: 0`, greedy decoding instead of sampling   | Helped, promoted                                                    | Cleared card failure modes that models failed at their own default temperature.             |
+| `think: false`, suppress the chain-of-thought preamble  | Helped, promoted                                                    | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off. |
+| `format: json` / `format: schema`, constrained decoding | Per-model and per-runtime, unreliable, and mixed where it does fire | Honored by some models, silently ignored by others, and destructive on `gpt-oss:20b`. [1]   |
+
+[1] Both `-nvfp4` models flipped from ignoring to honoring between Ollama 0.32.14 and 0.33.2, so the verdict is worth re-checking after a runtime upgrade. Where it is honored, the effect is not uniform: an A/B on `qwen3.6:27b-coding-nvfp4` under 0.33.3 repaired `ColumnSet` (0/6 unconstrained → 6/6) but did not repair `Carousel` (0/7 cold, 3/7 with history, all three with-history passes from a single run that four later attempts did not reproduce). The `ColumnSet` defect is specific to this model, since 11 of the 15 models in the archived results pass `ColumnSet` unconstrained. The flag is per-server, not per-request, and constraining it removed the prompt's prose fallback everywhere, taking the negative control from 6/6 prose-ok to 0/6 unwanted-card. Neither adopting nor rejecting the lever is supported by this A/B alone.
 
 Among model and setting choices, sending `temperature: 0` and `think: false` is
 the largest jump measured, larger than changing model. The prompt-file swap
 above is still the largest effect overall. `qwen3.5:9b` is the clearest case:
 with thinking on it takes **77 s** and answers a checkbox request with a
 `CodeBlock` of raw HTML using invented keys (`codeLanguage`/`content` instead of
-`codeSnippet`); with `think: false` **and** `temperature: 0` together it
+`codeSnippet`); with `think: false` and `temperature: 0` together it
 produces a clean `Input.ChoiceSet` in ~10 s. The gain belongs to the pair, not
 to `think: false` alone.
 
@@ -206,7 +221,7 @@ rate rather than subtracting the counts; the notebook does not say why the
 case count changed between the two measurements. The `t=0.6` figure is worth carrying, because a fix
 that holds at `t=0` does not always hold hotter, and this one did. Concretely,
 the same code question that used to come back as a card followed by an
-explanation, rendering as raw text, now comes back as one card with the
+explanation, rendered as raw text, now comes back as one card with the
 explanation in a `TextBlock` next to the `CodeBlock`.
 
 | Before                                                                                                                                      | After                                                                                                                        |
@@ -217,7 +232,7 @@ _`qwen2.5-coder:7b` at `t=0`, unedited model output, before and after the
 [`500a1e8` prompt fix](https://github.com/freemansoft/Flutter-AdaptiveCards/commit/500a1e828b130b3412e295f7b0223fc72cf8955b), rendered by the demo client in
 [`adaptive_chat_client/`](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_chat_client)._
 
-The second win re-keyed the escape hatch, the clause permitting a plain
+The second promoted edit re-keyed the escape hatch, the clause permitting a plain
 Markdown answer, from _confidence_ ("if you are unsure whether a card helps")
 to _capability_ ("if no element type fits"). It was clean on both
 regression checks, the stress set and the code A/B set.
@@ -229,10 +244,10 @@ The fourth change in that screening batch was the second-`system`-message one
 covered above. Separately, an edit teaching the model that a two-part request
 is one message regressed the code A/B set **8/8 → 7/8**, deterministic on
 repeat (baseline 3/3 pass, candidate 0/3), and was reverted under a
-promote-only-if-better rule. That set is the eight code-flavoured questions
+promote-only-if-better rule. That set is the eight code-flavored questions
 `prompt_ab.dart` replays against two prompt files. The notebook marks all of
 these **do not retry**, and recording a negative result so it is not
-rediscovered is the ledger's most transferable convention.
+rediscovered is the convention worth copying.
 
 The working rule that fell out: measure every prompt edit on a set it was not
 written for. The two-part-request edit tied on the set it targeted and was
@@ -305,7 +320,7 @@ For scale, the next most-missed cases are `carousel` (8 of 15 models), `text`
 (7), then `time` and `table` (6). Failure concentrates in nested shapes, and it
 usually arrives as invalid JSON rather than as a wrong choice of element.
 
-## The tool channel removed malformed JSON and still lost
+## The tool channel removed malformed JSON and cost more elsewhere
 
 The tool channel is Ollama's
 [function-calling API](https://github.com/ollama/ollama/blob/main/docs/api.md):
@@ -326,17 +341,18 @@ is not zero broken cards. `nemotron-3-nano:4b`'s tool arm produced eight calls
 with well-formed arguments naming an element type that does not exist, which
 renders as an invisible blank. A later article carries the full decomposition.
 
-## Change what the model sees, not what the instructions say
+## Write the prompt first, then change what the model sees around it
 
 The two context levers here account for the largest effect
 measured and for a ten-shape swing on one model, while four of six system
-prompt text edits did not ship. When a prompt-text change is needed, redirect
-the behavior instead of forbidding it. Regression-test every prompt edit
+prompt text edits did not ship. Read that as an order rather than a ranking:
+the card prompt was built first, and the levers that paid afterward were tried
+against a prompt that already worked. When a prompt-text change is needed,
+redirect the behavior instead of forbidding it. Regression-test every prompt edit
 against a set it was not written for; the one reverted edit tied on its own
 set and was caught elsewhere. Put the durable fix in the code that parses the
 reply, because that is the only layer that held at both temperatures measured.
-And record the negative results so they are not retried. The ledger exists so
-the failures stay failed.
+And record the negative results so they are not retried.
 
 The repo is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
