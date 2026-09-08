@@ -49,11 +49,11 @@ sequenceDiagram
 Probes send `keep_alive: 30m`, so a finished model stays resident half an hour
 unless evicted. The first version of the 2026-08-20 sweep omitted the
 `ollama stop`; two models sat in memory together and Ollama thrashed between
-them — the working explanation at the time for the first column below.
+them. That was the working explanation at the time for the first column below.
 
 | 2026-08-20, `granite4.1:3b`     | first run, no `ollama stop` | re-run with unload, idle machine |
 | ------------------------------- | --------------------------- | -------------------------------- |
-| stalled calls                   | 52                          | —                                |
+| stalled calls                   | 52                          | `n/a`                            |
 | shape set, seeded, with history | 12/25                       | **17/25**                        |
 | cascade probe                   | `n/a`                       | **3/3**                          |
 | wall clock, whole sweep         | 124 min                     | **7 min**                        |
@@ -75,19 +75,19 @@ A stalling call carries no information about its own cause; the reply just
 takes longer. So check `ollama ps` for anything resident that should not be,
 and re-run on an idle machine, before concluding that a model stalls. Probes
 bound each call with `--timeout` (default 180 s; the 2026-08-20 sweep used
-120 s for the shape and cascade sets) and score an over-run reply a failure —
-before that bound existed, `granite4.1:3b` was observed generating for
+120 s for the shape and cascade sets) and score an over-run reply a failure.
+Before that bound existed, `granite4.1:3b` was observed generating for
 **16 minutes** on one `table` case, hanging the sweep behind it.
 
 Under Ollama 0.32.14 the bound changes what one figure means, and only for
-`granite4.1:3b` unaided; seeded — with the synthetic card-shaped exchange the
-server prepends to history — it costs nothing.
+`granite4.1:3b` unaided. Seeded, with the synthetic card-shaped exchange the
+server prepends to history, it costs nothing.
 
 | `granite4.1:3b`, Ollama 0.32.14, shape set | unbounded | 120 s ceiling |
 | ------------------------------------------ | --------- | ------------- |
 | seeded                                     | 17/25     | 17/25         |
 | unaided                                    | 13/25     | 9/25          |
-| stalls in 100 calls, seeded / unaided      | —         | 2 / 11        |
+| stalls in 100 calls, seeded / unaided      | `n/a`     | 2 / 11        |
 
 Unaided, the model answers at length in prose until it hits the ceiling, and
 those stalls reproduce on an idle, otherwise empty machine, so that row is the
@@ -97,7 +97,7 @@ recorded zero stalls and no other more than two.
 ## Twenty-nine of thirty-one recorded stalls were queue, not model
 
 The upgrade from Ollama 0.32.14 to 0.33.2 raised two models' recorded stall
-counts — one from 2 to 31, the other from 13 to 52 — on the same machine,
+counts, one from 2 to 31 and the other from 13 to 52, on the same machine,
 weights, and probes. Read as a runtime regression, that looked like a larger
 version of the ceiling story; for one model it was not, for the other it is
 still open. `OLLAMA_NUM_PARALLEL=1` gives this host one generation
@@ -110,7 +110,7 @@ calls were slow: one hour-long runaway under a 120 s ceiling costs roughly
 thirty recorded stalls.
 
 A cascade leaves fingerprints a slow model does not: stalls in one contiguous
-block rather than scattered, and a server log showing a queue draining — 27
+block rather than scattered, and a server log showing a queue draining: 27
 requests completed within 37 seconds, start times exactly 120 s apart,
 durations descending in two-minute steps. A long-timeout re-run confirmed it
 for `llama3.2:latest`: raising the ceiling to 7200 s resolved **31** recorded
@@ -118,8 +118,8 @@ stalls into **2** slow calls, at 64.4 and 62.1 minutes, both on the same case
 and both ending in invalid JSON.
 
 The ceiling was never the thing to fix. A generation running over an hour has
-already failed for every purpose a chat server serves — the usability bar is a
-reply under a minute — so raising the ceiling converts a fast failure into a
+already failed for every purpose a chat server serves, since the usability bar
+is a reply under a minute, so raising the ceiling converts a fast failure into a
 slow one. 120 s is already twice that bar, and lowering it would record the
 same failures for less wall clock. What needed attention was what happened
 after the ceiling: the abandoned generation kept running.
@@ -141,8 +141,8 @@ the weights, the prompt and seed digests, and the machine held constant.
 
 `llama3.2:latest` reproduces its published figures exactly; `granite4.1:3b`
 does not move. The unchanged count was first read as proof the stalls were the model's
-own; it is not. Its after-eviction unaided run stalls on calls 0-20 — the
-probe's opening cases, all cold — and again on 89-99, the first call after the
+own; it is not. Its after-eviction unaided run stalls on calls 0-20, the
+probe's opening cases, all cold, and again on 89-99, the first call after the
 block taking 86 seconds, a queued call draining rather than a reload. The
 contiguous-block signature is still there, and "unchanged by eviction" is
 equally explained by the eviction not taking effect.
@@ -165,7 +165,7 @@ figures they produce are recorded as cascade-damaged rather than as a model
 measurement. What is established comes from the other machine: the M5's clean
 run under Ollama 0.33.1 records seeded 17/25 both cold and with-history and
 cascade 3/3, matching the model's clean 0.32.14 figures, so no 0.33.x
-regression is indicated. Two things stay open — whether a runaway generation
+regression is indicated. Two things stay open: whether a runaway generation
 can be cancelled at all, and whether the unload on timeout does anything.
 
 ## Sweep position moved a number more than the effect it was meant to explain
@@ -173,7 +173,7 @@ can be cancelled at all, and whether the unload on timeout does anything.
 A hot-against-cold control run for a separate cross-host investigation held
 one model, one host, one runtime fixed: cold, at position 0 after 29 minutes
 idle, `qwen3.5:9b` medians **4924 ms**; hot, seven seconds after an
-eight-hour sweep, **7563 ms** — a **1.54x** spread from sweep position
+eight-hour sweep, **7563 ms**, a **1.54x** spread from sweep position
 alone, larger than the cross-machine effect the control was meant to
 explain. A single row in a serial sweep can report position, not the thing
 compared.
@@ -183,14 +183,14 @@ compared.
 A stall is a harness mistake in timing; these two are harness mistakes in
 judging. The first: a reply that looked like broken JSON from the model.
 Dumping the bytes showed zero real newlines and **11 correctly escaped**
-ones — valid JSON, corrupted after arrival by the server's own
+ones: valid JSON, corrupted after arrival by the server's own
 fence-stripping heuristic in
 [`card_detect.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/lib/src/card_detect.dart).
 Dump the bytes before theorising about what produced them.
 
 The second is the sharper one, because the harness was working exactly as
 written. One model scored **0/3** on tables. The replies were valid, complete,
-renderable Tables — one of them laid out as a 2×2 grid, which the probe's
+renderable Tables, one of them laid out as a 2×2 grid, which the probe's
 `rows >= 3` success criterion penalized as a failure. The assertion was wrong,
 not the model.
 
@@ -199,7 +199,7 @@ not the model.
 The quieter mistake is a lever that measured as doing nothing when its
 instructions may never have arrived. Repeating them in a second `system`
 message placed _after_ the conversation history produced nothing measurable,
-and the obvious reading — repetition does not help — is not available, because
+and the obvious reading, that repetition does not help, is not available because
 Ollama chat templates vary in whether a second `system` message reaches the
 model at all.
 
@@ -216,20 +216,20 @@ identical**.
 
 ## A silently truncated prompt read as a broken cache
 
-Ollama 0.33.3 added `prompt_eval_cached_count` — how many prompt tokens the
-runner served from its prefix cache rather than re-evaluated. The first probe
+Ollama 0.33.3 added `prompt_eval_cached_count`, a count of how many prompt
+tokens the runner served from its prefix cache rather than re-evaluated. The first probe
 built on it appeared to show the cache barely working: turn after turn reusing
 **4 of 4,098** prompt tokens. The fault was the probe's configuration, not the
 cache: its system prompt tokenized to roughly 15k against an 8,192-token
 `num_ctx`, and Ollama truncated it to half the window silently, with no error
 or warning, so every turn was a different slice of the oversized prompt and
 nothing matched. The tell: `prompt_eval_count` sitting at exactly **4,098 on
-every turn** of a growing conversation — a prompt that grows cannot keep a
-constant token count. The server's own overflow detector now warns on this at
+every turn** of a growing conversation, because a prompt that grows cannot keep
+a constant token count. The server's own overflow detector now warns on this at
 request time, confirmed against a live server.
 
 Sized to fit, the same probe shows the cache is a large performance effect on
-prefill — the prompt-processing pass before the first output token. Apple M5 /
+prefill, the prompt-processing pass before the first output token. Apple M5 /
 16 GB, Ollama 0.33.3, `llama3.2:latest`, `t=0`:
 
 | Pattern                                 | cached / prompt | prefill          |
@@ -239,15 +239,15 @@ prefill — the prompt-processing pass before the first output token. Apple M5 /
 | retry after aborting a call mid-prefill | 2,443 / 2,444   | 29 ms            |
 
 A conversation turn pays prefill for its new tokens only, and a retry after an
-aborted call costs a warm repeat rather than a cold prefill — whether that
+aborted call costs a warm repeat rather than a cold prefill. Whether that
 reflects Ollama 0.33.0 resuming a partially evaluated prompt (its prefill
 restore points) or the abandoned request completing server-side is
 indistinguishable from the client, and the price is the same either way. The
 prefill timings were always readable; what 0.33.3 added is the cached count
-saying _why_ a prefill was cheap — turning a plausible "broken cache" reading
+saying _why_ a prefill was cheap, turning a plausible "broken cache" reading
 into a measurable configuration error.
 
-The pattern reproduces on a second host, and mostly on a second model — Apple
+The pattern reproduces on a second host, and mostly on a second model: Apple
 M1 Max / 64 GB, the same Ollama 0.33.3, with `qwen3.8:27b-nvfp4` at ~18 GB too
 large for the M5:
 
@@ -261,8 +261,8 @@ large for the M5:
 
 `llama3.2:latest` reproduced the M5 pattern on every reading.
 `qwen3.8:27b-nvfp4` agreed on three of five patterns and, unstably, on
-retry-after-abort — most of the prompt cached on one run, under two-thirds on
-the repeat, where `llama3.2`'s retry cost was unaffected. The miss is the fresh
+retry-after-abort, with most of the prompt cached on one run and under
+two-thirds on the repeat, where `llama3.2`'s retry cost was unaffected. The miss is the fresh
 question: on an
 idle-machine run and its repeat it came back as a full cold prefill,
 indistinguishable from the model's first cold call. Reusing a shared system
@@ -277,27 +277,27 @@ of the notebook.
 ## Both the judge and the published table come out of code
 
 The probes judge replies with the server's **own** `tryParseCardBody`,
-`cardParseFailureReason`, and `checkNoDuplicateJsonKeys` — a probe with its
-own idea of "looks like a card" could report a pass rate the running server
+`cardParseFailureReason`, and `checkNoDuplicateJsonKeys`, because a probe with
+its own idea of "looks like a card" could report a pass rate the running server
 disagrees with. The performance table gets the same treatment: every figure
 derives from the recorded runs via
 [`perf_table.py`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/perf_table.py),
 not typing, so a re-run diffs against the table. Deriving it caught **two
 figures that had already drifted**:
 `qwen3.8:27b-nvfp4` read 4.4 s against a recorded 4339 ms, and
-`llama3-chatqa:8b` read 0.3 s where **253 ms and 248 ms** — a 2% difference —
+`llama3-chatqa:8b` read 0.3 s where **253 ms and 248 ms**, a 2% difference,
 should have printed as "0.3 s" and "0.2 s" beside a 1.0x ratio. Neither would
 have been found by re-reading the table.
 
 Sharing the judge shares its blind spot. `tryParseCardBody` knows two things
 about Adaptive Cards: the literal `AdaptiveCard`, which it unwraps to a body,
 and the requirement that a lone object carry a non-empty `type` string. It
-validates no element vocabulary — the closed set of Adaptive Card component
-types a card may use — and no element's own required fields, so
+validates no element vocabulary, the closed set of Adaptive Card component
+types a card may use, and no element's own required fields, so
 `{"type": "Bogus.Element"}` and an `Input.ChoiceSet` carrying no `choices` both
-score as cards. A vocabulary check does exist — `unknownElementTypes` reads the
+score as cards. A vocabulary check does exist: `unknownElementTypes` reads the
 legal type enum out of the shipped `card_schema.json` and walks the body at any
-depth — but it sits in the server's request path, only warns rather than
+depth. But it sits in the server's request path, only warns rather than
 rejecting, and the probes never call it. An invented element type therefore
 passes every set that does not name the element it expects, and reaches the user
 as an invisible blank. It is the one user-visible failure no score in this
@@ -306,8 +306,8 @@ series counts, and the cheapest fix is to say so beside the scores.
 ## Ten models' numbers were discarded, and three findings outlived them
 
 Once a whole batch of measurements is already wrong, the question is what to
-keep: discard the numbers, not what they taught. Two dated sweeps — six small
-models on 2026-08-14, four large ones on 2026-08-16 — ran the everyday and
+keep: discard the numbers, not what they taught. Two dated sweeps, six small
+models on 2026-08-14 and four large ones on 2026-08-16, ran the everyday and
 stress sets at `--samples 1`, one call per case, before the shape probe
 existed. Their per-model numbers, superseded by the
 2026-08-20 re-measurement, **disagree with it on eight of the ten models**,
@@ -317,11 +317,11 @@ the result files, where a provenance question can still reach them.
 
 Three findings survived them.
 
-- **The easy set does not discriminate.** In those superseded runs — cited for
-  the methodological point, not as current scores — `nemotron-3-nano:4b` and
-  `llama3-groq-tool-use:8b` scored 6/7 on the everyday set, then fell to 2/5
-  and 1/5 on the cases that break models — why the stress and shape sets
-  exist.
+- **The easy set does not discriminate.** In those superseded runs, cited for
+  the methodological point rather than as current scores, `nemotron-3-nano:4b`
+  and `llama3-groq-tool-use:8b` scored 6/7 on the everyday set, then fell to
+  2/5 and 1/5 on the cases that break models. That is why the stress and shape
+  sets exist.
 - **Every failure was malformed JSON, not a wrong element choice**, in three
   families the detector has to survive: truncation, scaling with reply
   length; an extra closing bracket before the next sibling (`}] ,{`); and a
@@ -333,9 +333,9 @@ Three findings survived them.
 
 A failure mode outlasts the number that first exposed it.
 
-## Lessons that generalize
+## Eleven rules, each the residue of a wrong measurement
 
-Eleven rules, each the residue of a wrong measurement rather than a principle
+Every one is what a bad measurement left behind, rather than a principle
 arrived at in advance.
 
 | Rule                                                                                                          | The measurement behind it                                     |
