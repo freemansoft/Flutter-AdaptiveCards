@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+- Added: **`tool/blog/to_blogger.dart` converts a `blog/` draft to HTML for
+  Google Blogger.** Blogger renders a newline in post HTML as a `<br>`, so the
+  drafts' 78-column source wrapping arrived as ragged columns; the converter
+  emits one unwrapped line per top-level block while preserving newlines inside
+  `<pre>`. It emits no `style` attributes, drops the `<h1>` because Blogger
+  supplies its own title field, rewrites GitHub alert `div`s as blockquotes so
+  they still read as set apart without GitHub's stylesheet, and replaces each
+  image `src` with an `{{IMAGE_URL:<path>}}` token to substitute after upload.
+  Output goes to stdout so a generated page never lands in the tree. Adds
+  `markdown` as a dev dependency.
+
 - Fixed: **`check_results.dart` names the file when two runs share a label.**
   `runLabel` is built from `probe` and `variant`, which do not identify a file
   — `results-m1max-64gb-ollama0333/` holds `shape_ab-seeded-format-schema.json`

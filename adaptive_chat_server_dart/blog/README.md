@@ -37,6 +37,22 @@ output. Secondary: Flutter and server-driven-UI readers.
 
 **File naming:** `YYYY-MM-DD-article-N-slug-draft.md`.
 
+**Publishing to Blogger:**
+[`tool/blog/to_blogger.dart`](../tool/blog/to_blogger.dart)
+converts a draft to semantic HTML with no styling of its own, unwrapping the
+78-column source wrapping that Blogger would otherwise render as `<br>`.
+
+```sh
+fvm dart run tool/blog/to_blogger.dart blog/<draft>.md | pbcopy
+```
+
+It writes to stdout, so a generated page never lands in the tree; these are
+transient and are not checked in. The `<h1>` is dropped because Blogger has its
+own title field, and each image `src` becomes an `{{IMAGE_URL:<path>}}` token to
+substitute after uploading the image through the Blogger editor. Paste into the
+HTML view and publish from the HTML view: the Compose view re-serializes the
+document, which is the usual way a pasted table gets flattened.
+
 ## What each article owns
 
 An article owns a topic outright: it carries the mechanism, the figures, and the
