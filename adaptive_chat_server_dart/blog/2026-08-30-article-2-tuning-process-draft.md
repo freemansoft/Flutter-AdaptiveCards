@@ -12,15 +12,15 @@ a lab notebook in that repository.
 ## Giving the explanation a place in the card worked; banning prose did not
 
 `qwen2.5-coder:7b` answered a request to explain a snippet of code with a
-valid Adaptive Card, then appended the explanation after it. A reply is either
-a card or it is prose, with nothing in between: the client renders a card only
-when the entire reply is one, so appending the explanation demoted the whole
-thing to text and the user saw raw JSON. The obvious repair was to tell the
-model harder not to write anything after the card. That did not work. It scored
-the same and stopped producing cards at all, answering every code question in
-Markdown.
-What worked was telling it _where_ the explanation goes: a `TextBlock` beside
-the `CodeBlock`. Redirect a behavior rather than forbidding it.
+valid Adaptive Card, then appended the explanation after it. A reply is
+either a card or prose, with nothing in between: the client renders a card
+only when the entire reply is one, so appending the explanation demoted the
+whole thing to text and the user saw raw JSON. The obvious repair was to
+tell the model harder not to write anything after the card. That did not
+work. It scored the same and stopped producing cards at all, answering
+every code question in Markdown. What worked was telling it where the
+explanation goes: a `TextBlock` beside the `CodeBlock`. Redirect a
+behavior rather than forbidding it.
 
 The tuning remediated four failure modes.
 
