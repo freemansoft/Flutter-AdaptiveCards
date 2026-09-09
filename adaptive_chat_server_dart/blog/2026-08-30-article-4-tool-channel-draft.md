@@ -12,10 +12,9 @@ Every figure below is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 a lab notebook in that repository.
 
-## Ollama Chat vs Tool Path for Responses
+## The tool channel moves the card out of the message body
 
-Ollama offers a second route, a tool channel to talk with tools.
-The question was whether that could help with this.
+Ollama offers a second route, the tool channel.
 Declare a `render_adaptive_card` function and the
 model answers by calling it, so the card arrives as that call's arguments, a
 structure the runtime has already parsed, with no JSON text left for the server
@@ -158,9 +157,9 @@ decision point ahead of every card. The four qwen models decline on 0–4% of ca
 cases. The four losses decline on 11%, 21%, 31%, and 50%.
 
 The second is **weaker element choice**. Filling a schema argument appears to
-favour the cheapest legal filler, though that is an inference from the labels
+favor the cheapest legal filler, though that is an inference from the labels
 rather than a measured mechanism. `nemotron-3-nano:30b` gains 12 wrong-shape failures,
-labelled `{TextBlock} want {Chart.Line}`, `{TextBlock} want {CodeBlock}`, and
+labeled `{TextBlock} want {Chart.Line}`, `{TextBlock} want {CodeBlock}`, and
 `{} want {FactSet, Table}`. `nemotron-3-nano:4b` gains 22.
 
 **The outcome is a subtraction, not a model category: malformed failures
@@ -175,9 +174,10 @@ Where the subtraction earns its keep is the two rows the ±1 noise floor leaves
 unexplained on the headline numbers. `qwen3.6:27b-coding-nvfp4` recovers 6 and
 pays 4, a net inside the noise floor, which is why it reads as unaffected.
 `qwen3.8:27b-nvfp4` had no malformed failures in prose at all, so it has
-nothing to recover and only costs to pay, so its "unaffected" is a small loss
-the noise floor absorbs. `gpt-oss:20b` had one malformed failure, with the
-same result.
+nothing to recover and only costs to pay, and its "unaffected" is a small loss
+the noise floor absorbs. `gpt-oss:20b` is the same shape with one malformed
+failure to recover, and pays enough that the noise floor does not absorb it:
+that row reads as a loss.
 
 As a rule for the
 next roster: **the tool channel helps a model that selects the right card but
@@ -223,7 +223,7 @@ prose card is caught by
 [`lib/src/card_detect.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/lib/src/card_detect.dart)
 and surfaces as `broken`. A tool call carrying an invented element type is
 well-formed arguments that render as an invisible blank: `nemotron-3-nano:4b`'s
-tool arm produced eight calls labelled `no-input: got {Input, TextBlock}`, where
+tool arm produced eight calls labeled `no-input: got {Input, TextBlock}`, where
 `Input` is not an element type. The shape probe catches those only because it
 scores against an expected element set. A user would see nothing.
 **Zero malformed JSON is not the same as zero broken cards.**

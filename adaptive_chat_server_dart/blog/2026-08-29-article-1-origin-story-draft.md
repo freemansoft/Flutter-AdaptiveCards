@@ -15,10 +15,9 @@ tier, instead relying on the model for JSON card creation.
 
 ## The model's reply is the UI, not text about it
 
-Adaptive card generation turned out to be an
-interesting test problem for local models. The results carry beyond this
-demo to any workload that asks a local model for constrained, schema-shaped
-JSON. The demo became an instrumented test bed. The measurement sweeps execute
+Adaptive card generation works as a test problem for local models, and the
+results carry beyond this demo to any workload that asks a local model for
+constrained, schema-shaped JSON. The demo became an instrumented test bed. The measurement sweeps execute
 probes that run against each model in turn. The sweeps were built to score the models, and what
 they turned up kept changing the chat server.
 
@@ -38,7 +37,7 @@ Producing an Adaptive Card imposes four response requirements in each reply:
 - Format stability across a multi-turn conversation, retaining the use of cards.
 
 Each of the four has pass/fail gates. The JSON parses, or it does not.
-The element type is either in the Adaptive Cards palette, or it isn't.
+The element type is either in the Adaptive Cards palette, or it is not.
 The shape either answers
 the question, a pick-from-a-set question wants a control the user can click,
 or it does not. The format either survives the conversation's prior turns or
@@ -50,7 +49,7 @@ measuring.
 Two of the three test sets, `everyday` and `stress`, ask only whether a reply
 comes back usable. The card system prompt permits a plain Markdown answer when
 no element type fits the question, so those sets pass a reply that renders as a
-card **or** as clean prose; only a broken card fails. A model that answers
+card or as clean prose; only a broken card fails. A model that answers
 everything in tidy Markdown clears them without ever building a card.
 `llama3-chatqa:8b` does close to that, at **21/21** on the everyday set with 2
 cards to 19 prose, **10/10** on the stress set with 0 cards and 10 prose.
@@ -66,7 +65,7 @@ generalizable result: renderable prose is not always a pass. An options question
 answered as a Markdown list renders perfectly and still cannot be clicked, which
 no JSON-validity check catches.
 
-## Server validates reply. Client fully parses it
+## The server decides card-vs-prose; only the client catches a bad element type
 
 The probes send fixed question sets to a model over Ollama's `/api/chat`. Three
 different things then inspect the reply, in three different places, and keeping
@@ -142,7 +141,7 @@ One question from each, to make the escalation concrete:
 
 **A one-point difference between two models is noise, not a ranking.** A
 re-measurement moved ten of twelve otherwise-steady models by ±1 with nothing
-about them changing. Shape figures are `--samples 2` where every case run twice and
+about them changing. Shape figures are `--samples 2` where every case is run twice and
 scored a pass only if both runs passed, so one borderline call takes the whole
 case, while everyday and stress run each case once, at `--samples 1`.
 
@@ -153,13 +152,12 @@ answers with an `Input.ChoiceSet` when it is the first thing asked. Put
 the same question comes back as 867 characters of Markdown; with two exchanges, 903. No card either time.
 
 Losing the recipe for creating cards does not require a long conversation.
-LLM replies appear to follow the format the conversation is already in.
-JSON is unlikely to ever be generated once another format is emitted.
-Once the exchange is running in Markdown, the model keeps writing Markdown.
-This is a per-question effect rather than a latch. The same model still
-produces the right element on 18 of 25 shape cases with that history in
-place. It means a cold-start score describes a condition most users are
-not in. That is why every score below carries its condition.
+Model replies appear to follow the format the conversation is already in, so a
+question that would have produced a card can come back as prose once prose is
+what precedes it. That is a per-question effect rather than a latch: the same
+model with that same history still produces the right element on 18 of 25
+shape cases. A cold-start score therefore describes a condition most users are
+not in, which is why every score below carries its condition.
 
 The table has three rows because those are the three sets that score a _model_.
 The probe directory holds others that ask different questions: `prompt_ab.dart`
@@ -169,7 +167,7 @@ that regressed, and `tool_call_probe.dart`, used further down, asks whether a
 model will return a card through Ollama's tool channel instead of as message
 text.
 
-## Models vary widely in shape coverage when asked for strict-shaped output
+## Shape coverage runs from 25/25 to 1/25 across fifteen models
 
 Before any score: these are all measured on the configuration the server ships,
 `t=0` (temperature zero), `think: false` (no chain-of-thought preamble), and
@@ -214,7 +212,7 @@ already parsed, separate from the message text. That field is the tool
 channel. Nothing is
 left in the text for the server to fish out.
 
-Not every model can do this, and ones that cannot do not tell you they can't. The LLM just
+Not every model can do this, and ones that cannot do not say so. The model
 answers with ordinary text. A model that _can_ call functions may also never
 pick this one. `tool_call_probe.dart` sorts the fifteen models four ways, and
 nothing in the scores above predicts where a model lands.
@@ -268,5 +266,5 @@ measurement hygiene.
 
 The project is at
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
-and the that every figure above is drawn from is at
+and the lab notebook every figure above is drawn from is at
 [https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).

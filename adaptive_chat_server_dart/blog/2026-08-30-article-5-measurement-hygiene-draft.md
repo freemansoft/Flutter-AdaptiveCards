@@ -127,7 +127,7 @@ after the ceiling: the abandoned generation kept running.
 ## The same harness change reproduced the published figures for one model and not the other
 
 The harness change: send an unload (`keep_alive: 0`) the moment a call times
-out, rather than only abandoning the client connection. Runs are labelled
+out, rather than only abandoning the client connection. Runs are labeled
 **before runner eviction** and **after runner eviction**, with Ollama 0.33.2,
 the weights, the prompt and seed digests, and the machine held constant.
 
@@ -147,7 +147,7 @@ block taking 86 seconds, a queued call draining rather than a reload. The
 contiguous-block signature is still there, and "unchanged by eviction" is
 equally explained by the eviction not taking effect.
 
-Nothing in the server log shows the unload cancelling a running generation.
+Nothing in the server log shows the unload canceling a running generation.
 
 | Unload evidence, Ollama 0.33.2                   | What the log shows                                                           |
 | ------------------------------------------------ | ---------------------------------------------------------------------------- |
@@ -166,7 +166,7 @@ measurement. What is established comes from the other machine: the M5's clean
 run under Ollama 0.33.1 records seeded 17/25 both cold and with-history and
 cascade 3/3, matching the model's clean 0.32.14 figures, so no 0.33.x
 regression is indicated. Two things stay open: whether a runaway generation
-can be cancelled at all, and whether the unload on timeout does anything.
+can be canceled at all, and whether the unload on timeout does anything.
 
 ## Sweep position moved a number more than the effect it was meant to explain
 
@@ -186,7 +186,7 @@ Dumping the bytes showed zero real newlines and **11 correctly escaped**
 ones: valid JSON, corrupted after arrival by the server's own
 fence-stripping heuristic in
 [`card_detect.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/lib/src/card_detect.dart).
-Dump the bytes before theorising about what produced them.
+Dump the bytes before theorizing about what produced them.
 
 The second is the sharper one, because the harness was working exactly as
 written. One model scored **0/3** on tables. The replies were valid, complete,
