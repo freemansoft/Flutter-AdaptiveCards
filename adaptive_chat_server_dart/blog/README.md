@@ -188,6 +188,16 @@ the confound, measure it, do not read a mechanism off a net number.
   type clears the detector and reaches the user as an invisible blank; no set
   scores it. A blind spot named once in the article is worth more than a
   qualifier attached to every figure.
+- **A vendor-published spec may support an inference the notebook does not
+  measure, but only with the notebook's own hedge attached.** The notebook's
+  bandwidth table and its GPU-core-count paragraph, both in
+  [Performance, by host and runtime](../ModelBehavior.md#performance-by-host-and-runtime),
+  are the pattern: cite the vendor page inline, name the exact SKU and
+  workload a multiplier was measured for (an M5 Max figure is not a base M5
+  figure; prompt processing is not decode), and call the result "consistent
+  with" a direction rather than "established as" a cause. A draft that adds a
+  new vendor figure backfills it into the notebook in the same change, next to
+  the existing spec table, so the next article can cite it the same way.
 - **Do not quote the superseded 2026-08-14 and 2026-08-16 sweeps** as current
   results. The notebook marks them do-not-quote: they disagree with the
   2026-08-20 re-measurement on eight of ten models. A failure _mode_ first seen
