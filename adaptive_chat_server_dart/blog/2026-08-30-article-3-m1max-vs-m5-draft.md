@@ -9,21 +9,28 @@ probes measures which of fifteen local models manage that, how well, and how
 fast. This article asks what changes when those probes run on a machine a
 quarter the size of the one they were built on.
 
-## Two machines, one probe set
+## Two machines, one set of test probes
 
 Two Apple machines ran the same probes and the same prompts, with the prompt
 and seed files confirmed byte-identical by checksum: a 64 GB M1 Max MacBook Pro 14-inch
 (`MacBookPro18,4`), the host the probe suite was built on, and a fanless 16 GB
 M5 MacBook Air (`Mac17,3`).
 
-A server default that only runs on a 64 GB box is not much of a default, so the
-16 GB column answers what can reasonably be recommended, not what can be
-measured. Fit comes first below; the rest of the article is latency, under one
-caveat that shapes all of it: the same model on the same machine medians **1.54x** slower measured at
-the end of a long sweep than at the start. That is larger than most of the
-M5-versus-M1-Max gaps below, so those gaps give a direction rather than a
-per-model figure, and the 16 GB recommendation rests on which models fit and
-which of those scores well.
+A system that only runs on a 64 GB box restricts how many people can run their
+own tests. The 16 GB column answers what can reasonably be recommended on a
+MacBook Air or a 16 GB dedicated GPU. The Mac is the tighter of the two,
+because it shares one memory pool between macOS and the model rather than
+reserving the full 16 GB for weights.
+
+Both hosts ran models back to back for hours, so each median below carries
+whatever position in that run its model drew. The one clean control sits on the
+M1 Max: a model measured cold and again right after an eight-hour sweep is
+**1.54x** slower the second time, everything else held still, and **that
+single-machine spread is wider than seven of the eight M5-versus-M1-Max ratios
+below**. The effect is not that host's own. The sweeps were identical on both
+machines, and the M1 Max is the one with fans, so heat does not explain it.
+Read the ratios as a direction, not a per-model figure; the 16 GB
+recommendation rests on fit and shape score.
 
 Every figure below is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -34,25 +41,14 @@ Shape figures are `--samples 2`: every case is run twice and counts as passed
 only if both runs passed. That is why a one-point difference between two models
 is noise rather than a ranking: one borderline case flips the whole case.
 
-Seven terms carry the figures in this article.
-
-| Term                                      | What it means here                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Shape score**, `n/25` (`shape_ab.dart`) | 25 prompt test cases, one user question each, paired with the Adaptive Card element types (the schema's UI component types, such as `Input.ChoiceSet` or `Table`) that would acceptably answer it. Each is scored on one thing: did the reply use one of them? "What are my options for deployment targets" passes only on an `Input.ChoiceSet`. Each case is run twice and passes only if both runs did. This is shape coverage, not accuracy: a model can be entirely correct in prose and score 1/25. |
-| **Cold start** and **with history**       | The shape probe's two conditions: the question asked first, or asked with ordinary exchanges already in the conversation. The two differ, and a score under one is never quoted against the other. Figures below are with-history unless the text says otherwise.                                                                                                                                                                                                                                        |
-| **Seeded** and **unaided**                | Seeded is the configuration the server ships, a synthetic two-turn card exchange prepended to the context. Unaided is the same probe without it. The seed is worth +10 shapes to −2 depending on the model, so a score named without its configuration is half a fact.                                                                                                                                                                                                                                   |
-| **Median s/call**                         | Median over the 25-case shape sweep, excluding the first call after a model load (roughly 6-7x a warm one) and excluding stalled calls, which measure the timeout rather than the model.                                                                                                                                                                                                                                                                                                                 |
-| **Full sweep**                            | Wall clock for the seven standard probes against one model, stalls included. That is time someone waited.                                                                                                                                                                                                                                                                                                                                                                                                |
-| **Stall**                                 | A call that exceeds the probe's 120 s per-call ceiling and is scored a failure. A stall does not name its cause: a slow model and a busy machine are indistinguishable from the probe's side.                                                                                                                                                                                                                                                                                                            |
-| **Position bias**                         | Models are measured one after another for hours, so a model measured first, on an idle machine, is not measured under the same conditions as one measured seven hours in. The latency cost of _when in that run_ a model was measured is what this article calls position bias. A control on one machine puts it at 1.54x, larger than most of the host-to-host differences reported here.                                                                                                               |
-
 ## Seven models fit a 16 GB host outright, and one fits marginally
 
-Fit decides which models can be the server's default on the small machine,
-before any score is consulted. Both hosts are Apple Silicon Macs with unified
+Both hosts are Apple Silicon Macs with unified
 memory, so there is no separate VRAM budget: the number on the box is one pool
-shared by macOS, everything else running, and the model's weights. The column
+shared by macOS, the LLM model and everything else running on the machine. The table
 below reads all fifteen against a 16 GB host: ✅ fits, ⚠️ marginal, ❌ does not.
+What decides a row is the Weights column, the size of the model's parameter
+file, not the `b` in its name.
 
 | Model                                               | Weights | 16 GB |
 | --------------------------------------------------- | ------- | ----- |
@@ -72,31 +68,49 @@ below reads all fifteen against a 16 GB host: ✅ fits, ⚠️ marginal, ❌ doe
 | `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | ❌    |
 | `qwen3.8:27b-nvfp4`                                 | 16.9 GB | ❌    |
 
-**Seven models fit outright, one fits marginally at 6.1 GB (`qwen3.5:9b`), and
-seven do not.** The marginal row matters later, so it is worth keeping separate
-from the seven.
+**Seven of the fifteen do not fit at all**, and the marginal row is
+`qwen3.5:9b` at 6.1 GB.
 
-Weights are not the memory budget. `gpt-oss:20b` is **12.8 GB** against a 16 GB
+Model size, meaning the weights, is not the memory budget. `gpt-oss:20b` is **12.8 GB** against a 16 GB
 machine and is still a ❌, because those weights share the pool with macOS and
 the runtime, so the usable ceiling sits below the number on the box. ❌ means "do
 not recommend this as the default on a 16 GB host", not "untested": every ❌ row
 was measured, on the 64 GB machine.
 
-The ❌ class matters because it is the bill for the smaller machine. The
-highest-scoring model measured is `gpt-oss:20b` at **25/25**, and a 16 GB host
-cannot run it; the best it can run is `granite4.1:8b` at **21/25 in 5.0 GB**.
-Four test cases is what the constraint costs. The notebook's
+The best pick for a 16 GB host is `granite4.1:8b`: 21 of 25 shape cases, in
+5.0 GB. A shape score counts only whether the reply used an element type that
+would answer the question, so this measures coverage, not accuracy.
+
+`gpt-oss:20b` scores 25 of 25 on the 64 GB machine. It is the only model in the notebook to do so
+under any condition, and at 12.8 GB it is still a ❌ for 16 GB. Executing on the
+smaller machine costs four test cases out of twenty-five. The notebook's
 [roster](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#candidate-models),
 where the ✅/⚠️/❌ marks above come from, calls `gpt-oss:20b` "the exception the
 16 GB column exists to flag".
 
-That 21/25 is a _seeded_, with-history figure: unaided, `granite4.1:8b` scores
+That 21/25 score is a _seeded_, with-history figure: unaided, `granite4.1:8b` scores
 **15/25**, a **+6** seed gain, while `qwen2.5-coder:7b` scores **18/25** either
 way. A 16 GB recommendation has to name the configuration, not just the model.
 
+## Terms used in this article
+
+These terms carry the figures from here on. The first describes a model, the
+next three qualify a score, and the last three describe a run.
+
+| Term                                      | What it means here                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Weights** and the `b` in a model tag    | The weights are the parameter file Ollama loads into memory, and the GB figure in the fit table is that file's size. The `b` in a tag such as `granite4.1:8b` counts parameters in billions, which is a different quantity: quantization decides how many bytes each parameter costs, so the three models tagged `:30b` here range from 17.3 GB to 23.7 GB. Fit is decided by the GB figure, never by the parameter count.                                                                               |
+| **Shape score**, `n/25` (`shape_ab.dart`) | 25 prompt test cases, one user question each, paired with the Adaptive Card element types (the schema's UI component types, such as `Input.ChoiceSet` or `Table`) that would acceptably answer it. Each is scored on one thing: did the reply use one of them? "What are my options for deployment targets" passes only on an `Input.ChoiceSet`. Each case is run twice and passes only if both runs did. This is shape coverage, not accuracy: a model can be entirely correct in prose and score 1/25. |
+| **Cold start** and **with history**       | The shape probe's two conditions: the question asked first, or asked with ordinary exchanges already in the conversation. The two differ, and a score under one is never quoted against the other. Figures below are with-history unless the text says otherwise.                                                                                                                                                                                                                                        |
+| **Seeded** and **unaided**                | Seeded is the configuration the server ships, a synthetic two-turn card exchange prepended to the context. Unaided is the same probe without it. The seed is worth +10 shapes to −2 depending on the model, so a score named without its configuration is half a fact.                                                                                                                                                                                                                                   |
+| **Median s/call**                         | Median over the 25-case shape sweep, excluding the first call after a model load (roughly 6-7x a warm one) and excluding stalled calls, which measure the timeout rather than the model.                                                                                                                                                                                                                                                                                                                 |
+| **Full sweep**                            | Wall clock for the seven standard probes against one model, stalls included. That is time someone waited.                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Stall**                                 | A call that exceeds the probe's 120 s per-call ceiling and is scored a failure. A stall does not name its cause: a slow model and a busy machine are indistinguishable from the probe's side.                                                                                                                                                                                                                                                                                                            |
+
 ## All eight rows read slower on the M5, 1.15x to 2.32x
 
-The eight models that clear the 16 GB gate were then measured on both hosts.
+The eight models that fit or nearly fit were then measured on both hosts, in
+[the notebook's per-host performance section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime).
 Median s/call is the like-for-like column, the same 25 shape cases on each
 machine with the load call and any stalled call excluded, while the sweep and
 stall columns describe the run rather than the model, and part company with the
@@ -115,9 +129,10 @@ median wherever a call hit the 120 s ceiling. Rows are ordered by ratio.
 
 Both hosts run the same Ollama line, M1 Max on 0.33.2 and M5 on 0.33.1, a
 patch-level difference, so each row compares two machines rather than two
-runtimes. `qwen3.5:9b` is the row to read carefully even so: two M1 Max
-measurements of it exist, and which one sits in the table decides that row's
-direction at **1.15x**. The caveats below say which one is there and why.
+runtimes. `qwen3.5:9b` is the row to read carefully even so. Its M1 Max figure
+is a standalone cold control rather than an in-sweep measurement like the other
+seven, and the same model measured hot on that host medians **7563 ms**, which
+would put the row below 1.0x instead of at 1.15x.
 
 ```mermaid
 xychart-beta horizontal
@@ -127,18 +142,22 @@ xychart-beta horizontal
     bar [1.15, 1.15, 1.22, 1.23, 1.40, 1.43, 1.44, 2.32]
 ```
 
-**All eight rows read slower on the M5, 1.15x to 2.32x, seven of them inside
-1.0-1.5x.** The M5 is the newer chip with the faster cores, so the direction is
-worth accounting for: token generation is dominated by streaming the model's
-weights out of memory rather than by arithmetic, which makes single-stream
-inference memory-bandwidth-bound, and a Max-tier part still carries the wider
-memory bus: about **150 GB/s** on the M5 against about **400 GB/s** on the
-M1 Max.
+**Every row is slower on the M5, and seven of the eight ratios fall inside
+1.0-1.5x.** Compute is not the likely explanation:
+[the notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
+puts this 8-core M5 at roughly parity with or ahead of the 32-core M1 Max on
+AI compute, scaling Apple's own core counts and published multipliers rather
+than from anything measured here. What the M5 does not have is the memory bus:
+**153 GB/s** against **400 GB/s**. Single-stream token generation is dominated
+by streaming the model's weights out of memory rather than by arithmetic, so it
+is bandwidth-bound, and bandwidth is the ratio consistent with these medians.
 
-The widest ratio is the least meaningful one. `llama3-chatqa:8b` at **2.32x**
+The widest ratio in the table is the least meaningful one. `llama3-chatqa:8b` at **2.32x**
 is 0.11 s against 0.25 s: 140 ms of absolute difference on the fastest model
 in this table, where load and scheduling overhead are a larger share of the
-call than the model's own compute.
+call than the model's own compute. It heads the table for the wrong reason as
+well, answering in short prose rather than building a card, which is what its
+**1/25** shape score looks like from the latency side.
 
 `nemotron-3-nano:4b` is the row where the sweep column moves further than the
 median does: 16 minutes to 30, against 1.40x on the median. Its stall count
@@ -147,6 +166,11 @@ by construction. The notebook records `chart`, a case in the everyday set of
 ordinary one-shot requests that asks for a chart element, as a hang trigger for
 this model that reproduces on both runtimes, so the extra M5 minutes are consistent with more calls reaching the
 120 s ceiling rather than with slower generation throughout.
+
+Model size does not predict speed on either host. The fastest real card
+producer measured is `qwen3-coder:30b` at **1.5 s/call** on the M1 Max, ahead
+of `qwen2.5-coder:7b` at a quarter its size, and it is off this table because
+it needs 17.3 GB. The slowest is `gpt-oss:20b` at **7.2 s**, in 12.8 GB.
 
 Three caveats travel with the table rather than any one row.
 
@@ -164,23 +188,15 @@ Three caveats travel with the table rather than any one row.
    how many calls were slow. The measurement-hygiene article in this series owns
    that account. Read only the median from that row: 0.98 s against 1.40 s,
    faster on the M1 Max.
-3. The `qwen3.5:9b` M1 Max figure is the standalone cold position-0 control,
-   while the other seven M1 Max figures are in-sweep; measured hot on the same
-   host it medians 7563 ms, which would put its row below 1.0x, so its direction
-   sits inside the 1.54x position bias measured below and is not a finding
-   either way.
-
-Model size does not predict speed on either host: the fastest real card producer
-measured is `qwen3-coder:30b` at **1.5 s/call** on the M1 Max, ahead of
-`qwen2.5-coder:7b` at a quarter its size, and it is off this table because it
-needs 17.3 GB. (`llama3-chatqa:8b` tops the raw table only because it answers
-in short prose, quick for the wrong reason.)
+3. `qwen3.5:9b`'s **1.15x** is not a finding either way. Its cold and hot M1 Max
+   figures fall on opposite sides of 1.0x, a spread that sits inside the 1.54x
+   sweep-position effect measured below.
 
 ### One row was an artifact: 89 minutes became 15
 
 `llama3.2:latest` first recorded **89 minutes and 40 stalls** on the M5, its
-unaided cold-start score falling from **15/25 to 5/25**, with all 28 unaided
-stalls in one contiguous block at the probe's opening. The cause was never
+unaided cold-start score falling from **15/25 to 5/25**. Of those 40, **28**
+were in the unaided arm, falling in one contiguous block at the probe's opening. The cause was never
 identified. Co-residency is ruled out, since Ollama logged one resident runner
 on all 22 loads of the sweep, and a 1.20x throttling factor is too small to
 cover the gap; the stall block matches a queue cascade, but that run predates runner
@@ -198,39 +214,31 @@ earlier one.
 
 ### The same model runs 1.54x slower late in a sweep than at the start
 
-The probes run models back to back for hours, and every row above is one
-measurement taken at whatever point in that run the model came up. The first
-model is measured on a cold, idle machine; the last is measured seven hours
-into a working session. That difference has a size, and it was measured
-directly on one host with everything else held still: `qwen3.5:9b` measured
-first, after 29 minutes idle, medians **4924 ms**, and the same model on the
-same machine and the same Ollama, measured seven seconds after an eight-hour
-sweep, medians **7563 ms**.
+The control is one model, one host, one runtime, measured twice. `qwen3.5:9b`
+at position 0, after 29 minutes idle, medians **4924 ms**. The same model on
+the same machine and the same Ollama, seven seconds after an eight-hour sweep,
+medians **7563 ms**.
 
-**1.54x, from nothing but when the measurement was taken.** That is the number
-this article calls the position bias, and it is larger than seven of the eight
-host ratios above, so a single row's ratio cannot be separated from where that
-model happened to fall in its own sweep, absent a hot/cold control on that
-specific row. Behavior did not move with it: 0 of 100 calls differed cold
-versus hot, so this is latency only, not coverage.
+**1.54x, from nothing but when the measurement was taken.** That is what this
+article calls position bias. Behavior did not move with it: 0 of 100 calls
+differed cold versus hot, so this is latency only, not coverage.
 
 `llama3-chatqa:8b`'s 2.32x sits outside that band, but on absolute latencies
 small enough (0.11 s versus 0.25 s) that overhead, not position, is the likelier
-explanation. Only `qwen3.5:9b` has a position control today; read the direction
-of the M5-versus-M1-Max comparison, not a per-model figure, until more rows do.
+explanation. `qwen3.5:9b` is the only row carrying a position control today.
 
-The M5 column carries one more version of the same problem. Its eight rows come
+The M5 column has the same problem in a different form. Its eight rows come
 from a single sweep that ran 10:27 to 14:32, so later rows carry more of
-whatever sustained load costs. How much is unestablished, because the two models
-re-measured for it disagree about the sign.
+whatever sustained load costs. How much is unestablished.
 
-### Thermal throttling stays plausible and unproven
+### Nothing measured on the M5 shows thermal throttling
 
 A fanless chassis is the obvious candidate for a sustained-load penalty, so
 `granite4.1:8b` was measured twice more against its own in-sweep run: once
 thirteen seconds after an eight-model sweep, and once after the machine had sat
 idle overnight. On a thermal reading the hot re-run is slow and the idle one
-returns to baseline.
+returns to baseline. All three are in
+[the same notebook section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime).
 
 | `granite4.1:8b` measurement       | Relative to its position-0 run  |
 | --------------------------------- | ------------------------------- |
@@ -238,59 +246,33 @@ returns to baseline.
 | Re-run 13 seconds after the sweep | **1.20x**                       |
 | Re-run after 7h37m idle           | **1.12x** (p25 1.07 / p75 1.15) |
 
-The 1.20x figure is unreplicated. `qwen2.5-coder:7b`, whose published figure was
-taken 17 minutes into the same sweep, measured **1.03x** after 31 minutes idle,
-slightly slower cold, in the opposite direction. Two models moving in opposite
-directions is not a machine property.
+The hot re-run does read **1.20x**. The idle one is what breaks the reading:
+7h37m should have returned the model to baseline, and it came back **1.12x**
+slower anyway, with a tight interquartile spread rather than a handful of slow
+calls pulling an average. Two nominally cold measurements twelve hours apart
+differing that far is a reproducibility floor, and it absorbs most of the 1.20x.
+`qwen2.5-coder:7b` then moved the other way, **1.03x** slower after 31 minutes
+idle, and two models moving in opposite directions is not a machine property.
 
-The third row is what a thermal reading does not account for: 7h37m of idle
-should have returned the model to baseline, and it came back **1.12x** slower
-with a tight interquartile spread rather than a handful of slow calls pulling
-an average. Two nominally cold measurements of
-`granite4.1:8b`, twelve hours apart, differ by **12%**, with a tight per-call
-spread, so systematic rather than noisy. An effect of 1.20x sitting on a floor
-of 1.12x is not cleanly separable from it.
+The **1.54x** spread on the M1 Max just above, a machine with fans, is wider
+than either figure here, so a swing this size does not need a fanless chassis to
+explain it. Throttling is not ruled out, only unmeasured: **no die temperature
+or clock frequency was read**. No correction is applied to any row, and the M5
+column is best read as one sweep's figures carrying a position-dependent bias
+about the size of its reproducibility floor.
 
-A companion figure sharpens this rather than resolving it. The **1.54x**
-hot/cold spread measured on the M1 Max just above, a machine with fans, is
-larger than either the 1.20x or the 1.12x measured here on the
-fanless M5. A swing at least that size shows up without a fanless chassis,
-which argues for a position effect that does not depend on thermal throttling.
-It does not rule throttling out on the M5; it means a swing this size does not
-require a thermal explanation to make sense.
+## Among the eight models that fit, coverage runs 21/25 to 1/25
 
-Thermal throttling on a fanless `Mac17,3` remains plausible and unproven, and
-stating that means naming what was not measured: **no die temperature or clock
-frequency was read**, and Ollama server uptime, ambient temperature, and
-accumulated OS state all differed between those runs, none of them excluded.
+**Seven of the fifteen models do not fit a 16 GB host at all**, and the weights
+are not the whole budget: macOS and the runtime share the same memory pool, so
+a 12.8 GB model is out.
 
-The harness is uncontrolled as well. All three measurements predate runner
-eviction. `granite4.1:8b` stalled zero times, so no unload would have fired on
-its own calls, but the eight-model sweep that heated the machine did contain
-stalled calls on other models, and under the current harness each of those
-would unload the runner and leave the GPU idle, so the heat this **1.20x** was
-measured against belongs to the pre-eviction harness. That host has since moved
-to a later Ollama, so re-taking the control is a new measurement rather than a
-correction to this column.
-
-No correction factor is applied to any row. A measured bias would be reportable;
-this one is not yet measured well enough to correct for. Read the M5 column as
-one sweep's figures carrying a position-dependent bias of roughly the same size
-as its reproducibility floor.
-
-## Fitting is the entry requirement, not the answer
-
-What should a 16 GB Mac run, then? Two parts to the answer:
-
-Size first: **seven of fifteen models do not fit a 16 GB host at
-all**, and weights are not the budget, since a 12.8 GB model is out.
-
-Then the part that matters more: **among the eight that do fit, the choice still
-decides the outcome.** The top two are `granite4.1:8b` (5.0 GB, 21/25) and
-`qwen3.5:9b` (6.1 GB, 19/25); the bottom two are `llama3.2:latest` (1.9 GB,
-15/25) and `llama3-chatqa:8b` (4.3 GB, **1/25**), all seeded, with-history
-figures. Every one of those four runs on the small machine, and they are not
-interchangeable.
+Fit only decides the shortlist. Among the eight that clear it, `granite4.1:8b`
+(5.0 GB) scores 21/25 and `qwen3.5:9b` (6.1 GB) 19/25, while `llama3.2:latest`
+(1.9 GB) scores 15/25 and `llama3-chatqa:8b` (4.3 GB) **1/25**, all seeded,
+with-history figures. All four run on the small machine, so the recommendation
+is **`granite4.1:8b`** rather than whatever fits. With 64 GB, `gpt-oss:20b` is
+four cases better at 25/25.
 
 Three measurement rules came out of running the same probes twice on different
 hardware. Stamp the host and the runtime version into every result file; a
