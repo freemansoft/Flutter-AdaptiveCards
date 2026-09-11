@@ -27,6 +27,17 @@
   drop the entire filler message rather than trimming it, independent of
   `num_ctx` size or load freshness — see `ModelBehavior.md`.
 
+- Added: **`tool/model_probes/context_fill_sweep.sh` runs
+  `context_fill_probe.dart` across the eight 16GB-capable models at a fixed
+  `--fill-tokens` target**, mirroring `sweep.sh`'s conventions (required
+  `CONTEXT_FILL_RESULTS`, resumable by skipping an existing JSON,
+  `wait_for_idle` between models). Self-caffeinates by re-exec'ing itself
+  under `caffeinate -i`, since a laptop sleeping mid-run is what produced a
+  corrupted M5 attempt at this measurement — a pending timeout scheduled
+  before sleep reports the sleep duration as elapsed time on wake. Exists so
+  the same measurement can be taken on the M1 Max (64GB) without hand-typed
+  commands risking a mismatched flag between hosts.
+
 - Added: **`tool/blog/to_blogger.dart` converts a `blog/` draft to HTML for
   Google Blogger.** Blogger renders a newline in post HTML as a `<br>`, so the
   drafts' 78-column source wrapping arrived as ragged columns; the converter
