@@ -2,6 +2,53 @@
 
 ## [Unreleased]
 
+- Added: **the M1 Max (64GB) context-fill run, which rules out host memory as
+  the cause of the dropped filler.** `context_fill_sweep.sh` over the same eight
+  models at `--fill-tokens 28000` under the same Ollama 0.33.3, archived in
+  `tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fill28000/`
+  (2026-09-11, 32m09s, every model `rc=0`). This is the question the sweep
+  script was written to answer, and the answer is no: the M5 16GB result
+  reproduces on a host with four times the RAM. The same five of eight models
+  discard the filler whole, the same three keep it, and the pass counts agree on
+  six of the eight rows, differing by one case on `llama3.2:latest` (8 to 9) and
+  `qwen3.5:9b` (17 to 18) at `--samples 1`. The two hosts' `prompt_eval_count`
+  figures match to the token, which confirms nothing on its own, since that
+  counter reads tokenized input and the filler, system prompt and 25 cases are
+  byte-identical across the runs.
+
+- Added: **a context-fill section in `ModelBehavior.md`**, which
+  `context_fill_sweep.sh` already pointed at and which did not exist; until now
+  the M5 finding lived only in this changelog. It carries the eight-model
+  cross-host table (trained window, prompt tokens evaluated, filler kept or
+  dropped, both hosts' pass counts) and reads the drop as whole-message rather
+  than truncation: the five report 3819 to 4374 tokens against roughly 29.5k
+  sent, silently, with the reply looking like a normal answer to a question
+  asked with no history. New in the write-up is the trained-window check via
+  `ollama show`, which explains two of the five drops and not the other three:
+  `llama3-chatqa:8b` and `llama3-groq-tool-use:8b` are 8192-token models that
+  could not have held the filler, while `qwen3.5:9b` and `nemotron-3-nano:4b`
+  (262144) and `qwen2.5-coder:7b` (32768) all had room. Adds a key-findings
+  bullet, since silent whole-message history loss generalizes past this
+  workload, and an open-questions bullet for the unexplained three. Limits are
+  recorded in place: `summary.numCtx` is the value the probe requested and says
+  nothing about what the runner allocated, both runs are `--samples 1`, and the
+  pass column is not like-for-like with the shape-coverage table. Settling the
+  clamping question needs the probe to capture `/api/ps` per model, which is a
+  probe change rather than another sweep.
+
+- Fixed: **the probe usage examples named an Ollama version no test bed machine
+  runs.** Both hosts are on 0.33.3. `sweep.sh` and `context_fill_sweep.sh`
+  require their results variable rather than defaulting it, which makes the
+  example the thing a reader copies, so an example naming a stale version files
+  a 0.33.3 run under a 0.33.2 name: the exact failure the required-variable
+  design exists to prevent. `context_fill_probe.dart`'s `--json` example was
+  worse than stale, pointing at an `m5-16gb-ollama0331-fill28000/` that never
+  existed, since the M5 context-fill data was recorded under 0.33.3. Comments
+  only. Left pointing at 0.33.2 and 0.33.1: `perf_table.py`'s read examples,
+  `check_results.dart`'s `shapeTableDir`, and the `sweep.sh` prose listing the
+  per-host trees, all of which name archives that do hold those runtimes'
+  data.
+
 - Added: **`tool/model_probes/context_fill_probe.dart` runs the shape sweep
   against a filled context**, to test whether a model still functions once
   its window is mostly used, on a machine tight enough that the answer might
