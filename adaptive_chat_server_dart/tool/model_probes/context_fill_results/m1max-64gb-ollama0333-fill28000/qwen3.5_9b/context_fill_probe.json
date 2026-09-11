@@ -15,185 +15,188 @@
     "fillTokensTarget": 28000,
     "systemPromptTokensEstimate": 3755,
     "numCtx": 35851,
+    "runnerContextLength": 35851,
+    "runnerContextClamped": false,
+    "runnerSizeVram": 6992837999,
     "promptEvalCountMin": 3965,
     "promptEvalCountMax": 3980
   },
-  "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count.",
+  "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count. runnerContextLength is what /api/ps reported the runner allocated, against numCtx as requested.",
   "calls": [
     {
       "case": "date",
       "sample": 0,
       "pass": true,
       "label": "Input.Date, TextBlock tokens=3970",
-      "ms": 16901
+      "ms": 16313
     },
     {
       "case": "time",
       "sample": 0,
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 81)\n... like your standup?\",\"wrap\":true},{\"type\":\"Input.Time\",\"id\":\"standupTime\"}]\n                                    ^\n tokens=3969",
-      "ms": 8156
+      "ms": 8043
     },
     {
       "case": "toggle",
       "sample": 0,
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 88)\n...ap\":true},{\"type\":\"Input.Toggle\",\"id\":\"notify\",\"title\":\"Email me updates\"}]\n            ^\n tokens=3967",
-      "ms": 8282
+      "ms": 8199
     },
     {
       "case": "text",
       "sample": 0,
       "pass": false,
       "label": "no-input: got {TextBlock} want {Input.Text} tokens=3970",
-      "ms": 7700
+      "ms": 7625
     },
     {
       "case": "number",
       "sample": 0,
       "pass": true,
       "label": "Input.Number tokens=3969",
-      "ms": 8069
+      "ms": 8042
     },
     {
       "case": "choice1",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock tokens=3966",
-      "ms": 9574
+      "ms": 9469
     },
     {
       "case": "choice2",
       "sample": 0,
       "pass": false,
       "label": "no-input: got {TextBlock} want {Input.ChoiceSet} tokens=3966",
-      "ms": 9457
+      "ms": 9493
     },
     {
       "case": "choice3",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock tokens=3966",
-      "ms": 9410
+      "ms": 9216
     },
     {
       "case": "choice4",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock tokens=3966",
-      "ms": 11876
+      "ms": 11830
     },
     {
       "case": "choice5",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock tokens=3965",
-      "ms": 12768
+      "ms": 12653
     },
     {
       "case": "choice6",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock tokens=3967",
-      "ms": 11034
+      "ms": 10943
     },
     {
       "case": "pie",
       "sample": 0,
       "pass": true,
       "label": "Chart.Pie tokens=3976",
-      "ms": 9560
+      "ms": 9548
     },
     {
       "case": "bar",
       "sample": 0,
       "pass": true,
       "label": "Chart.VerticalBar tokens=3971",
-      "ms": 9724
+      "ms": 9638
     },
     {
       "case": "line",
       "sample": 0,
       "pass": true,
       "label": "Chart.Line tokens=3970",
-      "ms": 10032
+      "ms": 9984
     },
     {
       "case": "gauge",
       "sample": 0,
       "pass": true,
       "label": "Chart.Gauge tokens=3977",
-      "ms": 9365
+      "ms": 9270
     },
     {
       "case": "rating_show",
       "sample": 0,
       "pass": false,
       "label": "wrong-shape: got {TextBlock} want {Rating} tokens=3978",
-      "ms": 8231
+      "ms": 8117
     },
     {
       "case": "rating_ask",
       "sample": 0,
       "pass": true,
       "label": "Input.Rating, TextBlock tokens=3973",
-      "ms": 8139
+      "ms": 8113
     },
     {
       "case": "carousel",
       "sample": 0,
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected character (at character 307)\n...igger the first run.\",\"wrap\":true}]}},{\"type\":\"CarouselPage\",\"items\":[{\"...\n                                       ^\n tokens=3977",
-      "ms": 15239
+      "ms": 15088
     },
     {
       "case": "table",
       "sample": 0,
       "pass": false,
       "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 1178)\n...TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"14 moons\",\"wrap\":true}]}]}]\n                                                                              ^\n tokens=3971",
-      "ms": 19549
+      "ms": 19299
     },
     {
       "case": "facts",
       "sample": 0,
       "pass": true,
       "label": "FactSet tokens=3973",
-      "ms": 12143
+      "ms": 12064
     },
     {
       "case": "columnset",
       "sample": 0,
       "pass": true,
       "label": "Badge, ColumnSet, TextBlock tokens=3968",
-      "ms": 10324
+      "ms": 10238
     },
     {
       "case": "codeblock",
       "sample": 0,
       "pass": true,
       "label": "CodeBlock, TextBlock tokens=3980",
-      "ms": 14765
+      "ms": 14686
     },
     {
       "case": "progress",
       "sample": 0,
       "pass": true,
       "label": "ProgressBar tokens=3970",
-      "ms": 7436
+      "ms": 7376
     },
     {
       "case": "badge",
       "sample": 0,
       "pass": true,
       "label": "Badge tokens=3970",
-      "ms": 7517
+      "ms": 7391
     },
     {
       "case": "prose",
       "sample": 0,
       "pass": true,
       "label": "prose-ok tokens=3969",
-      "ms": 9515
+      "ms": 8766
     }
   ]
 }

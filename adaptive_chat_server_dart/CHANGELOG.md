@@ -2,6 +2,29 @@
 
 ## [Unreleased]
 
+- Added: **the M1 Max allocation reading, which excludes clamping as the
+  mechanism behind the dropped filler.** The sweep was re-run 2026-09-11 with
+  `/api/ps` capture in place, into the same
+  `context_fill_results/m1max-64gb-ollama0333-fill28000/` directory (23m48s,
+  every model `rc=0`). All eight pass counts and all eight
+  `prompt_eval_count` figures reproduced the 2026-09-10 run exactly, so the
+  archive gains a field rather than a second set of numbers to reconcile; the
+  per-call `ms` timings and `measuredAt` are the only other changes. Across
+  all eight models the runner allocated `min(requested, trained window)`:
+  every clamp lands exactly on that model's `n_ctx_train` (8192 for
+  `llama3-chatqa:8b` and `llama3-groq-tool-use:8b`, 32768 for
+  `qwen2.5-coder:7b`) and the other five got the full 35851 requested.
+  `nemotron-3-nano:4b` and `qwen3.5:9b` settle the question: allocated every
+  token they asked for, with room for the roughly 29.5k prompt, and they
+  discarded the filler anyway. Neither host memory nor a clamped window
+  accounts for that. `qwen2.5-coder:7b` stays unresolved, since 29.5k is what
+  other models' tokenizers made of the filler and its own tokenization of
+  that text is unmeasured. `ModelBehavior.md` gains the allocation table and
+  drops the superseded speculation about safety margins and runner clamps;
+  the open question is narrowed from "what allocated what" to what drops an
+  oversized history message when the runner had room for it. The reading is
+  M1 Max only: the M5 archive predates the field and cannot be backfilled.
+
 - Added: **`context_fill_probe.dart` records what the runner allocated, not
   only what it requested.** `summary.numCtx` is the value the probe asks for,
   which is silent about clamping: a run whose filler was ingested and a run

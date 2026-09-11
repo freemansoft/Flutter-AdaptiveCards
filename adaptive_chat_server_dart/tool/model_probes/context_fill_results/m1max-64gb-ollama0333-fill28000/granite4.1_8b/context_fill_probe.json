@@ -15,38 +15,41 @@
     "fillTokensTarget": 28000,
     "systemPromptTokensEstimate": 3755,
     "numCtx": 35851,
+    "runnerContextLength": 35851,
+    "runnerContextClamped": false,
+    "runnerSizeVram": 11787892162,
     "promptEvalCountMin": 29536,
     "promptEvalCountMax": 29551
   },
-  "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count.",
+  "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count. runnerContextLength is what /api/ps reported the runner allocated, against numCtx as requested.",
   "calls": [
     {
       "case": "date",
       "sample": 0,
       "pass": false,
       "label": "broken: timeout (180s)",
-      "ms": 180028
+      "ms": 180024
     },
     {
       "case": "time",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29540",
-      "ms": 18638
+      "ms": 15423
     },
     {
       "case": "toggle",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29538",
-      "ms": 792
+      "ms": 793
     },
     {
       "case": "text",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29541",
-      "ms": 2008
+      "ms": 1993
     },
     {
       "case": "number",
@@ -60,140 +63,140 @@
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock tokens=29537",
-      "ms": 4417
+      "ms": 4299
     },
     {
       "case": "choice2",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29537",
-      "ms": 19185
+      "ms": 19116
     },
     {
       "case": "choice3",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock tokens=29537",
-      "ms": 4493
+      "ms": 4621
     },
     {
       "case": "choice4",
       "sample": 0,
       "pass": true,
       "label": "Input.ChoiceSet, TextBlock tokens=29537",
-      "ms": 5566
+      "ms": 5727
     },
     {
       "case": "choice5",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29536",
-      "ms": 41150
+      "ms": 40499
     },
     {
       "case": "choice6",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29538",
-      "ms": 5289
+      "ms": 5272
     },
     {
       "case": "pie",
       "sample": 0,
       "pass": false,
       "label": "broken: prose-with-card (user sees raw JSON) tokens=29547",
-      "ms": 15495
+      "ms": 15441
     },
     {
       "case": "bar",
       "sample": 0,
       "pass": true,
       "label": "Chart.VerticalBar tokens=29542",
-      "ms": 4777
+      "ms": 4752
     },
     {
       "case": "line",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29541",
-      "ms": 5946
+      "ms": 5929
     },
     {
       "case": "gauge",
       "sample": 0,
       "pass": false,
       "label": "wrong-shape: got {ProgressBar} want {Chart.Gauge} tokens=29545",
-      "ms": 1256
+      "ms": 1243
     },
     {
       "case": "rating_show",
       "sample": 0,
       "pass": true,
       "label": "Rating tokens=29548",
-      "ms": 1226
+      "ms": 1239
     },
     {
       "case": "rating_ask",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29544",
-      "ms": 2484
+      "ms": 2486
     },
     {
       "case": "carousel",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29548",
-      "ms": 37329
+      "ms": 37250
     },
     {
       "case": "table",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29542",
-      "ms": 8709
+      "ms": 8677
     },
     {
       "case": "facts",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29543",
-      "ms": 28595
+      "ms": 28499
     },
     {
       "case": "columnset",
       "sample": 0,
       "pass": true,
       "label": "Column, ColumnSet, TextBlock tokens=29539",
-      "ms": 69084
+      "ms": 69118
     },
     {
       "case": "codeblock",
       "sample": 0,
       "pass": false,
       "label": "prose tokens=29551",
-      "ms": 19603
+      "ms": 19561
     },
     {
       "case": "progress",
       "sample": 0,
       "pass": false,
       "label": "wrong-shape: got {Rating} want {ProgressBar, ProgressRing} tokens=29540",
-      "ms": 1186
+      "ms": 1193
     },
     {
       "case": "badge",
       "sample": 0,
       "pass": true,
       "label": "Badge tokens=29541",
-      "ms": 1419
+      "ms": 1430
     },
     {
       "case": "prose",
       "sample": 0,
       "pass": true,
       "label": "prose-ok tokens=29540",
-      "ms": 3441
+      "ms": 3421
     }
   ]
 }
