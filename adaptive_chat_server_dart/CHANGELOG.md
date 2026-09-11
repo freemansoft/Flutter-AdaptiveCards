@@ -3,19 +3,19 @@
 ## [Unreleased]
 
 - Docs: **the context-fill allocation rule is measured on a 16 GB host, not
-  only inferred from the 64 GB one.** `nemotron-3-nano:4b`, `qwen3.5:9b` and
-  `qwen2.5-coder:7b` were re-measured on the Apple M5 / 16 GB under both the
-  fixed filler and the fit control, adding six allocation readings for
-  twenty-six in total with no counterexample to
-  `min(requested, trained window)`. Each matches its M1 Max counterpart
-  exactly, including a 16 GB machine allocating the full 65536 window it
-  asked for, which retires the earlier suspicion that the one observed clamp
-  was a memory ceiling — it lands on `qwen2.5-coder:7b`'s own 32768 trained
-  window and reads the same with four times the RAM. The fit control
-  reproduces to the token and to the case on both hosts; median latency is
-  the only column that moves, and it moves in both directions, so it is
-  reported rather than attributed. Adds
-  `context_fill_results/m5-16gb-ollama0333-fitcontrol/`.
+  only inferred from the 64 GB one.** All eight models a 16 GB host can hold
+  were re-measured on the Apple M5 under the fixed filler, and three of them
+  under the fit control as well, taking the rule to thirty-one readings
+  across two hosts with no counterexample to
+  `min(requested, trained window)`. Every allocation matches its M1 Max
+  counterpart exactly, the three clamps included, each landing on its own
+  trained window; and a 16 GB machine allocated the full 65536 window it
+  requested, which retires the earlier suspicion that a clamp was a memory
+  ceiling. Every re-run reproduced its earlier pass and token count exactly,
+  so no existing figure moved. The fit control reproduces to the token and
+  to the case on both hosts; median latency is the only column that moves,
+  and it moves in both directions, so it is reported rather than attributed.
+  Adds `context_fill_results/m5-16gb-ollama0333-fitcontrol/`.
 
 - Added: **`tool/model_probes/context_fill_fit_control.sh` makes the fit
   control reproducible.** The run that disproved the dropped-history reading
