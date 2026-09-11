@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+- Added: **`tool/model_probes/context_fill_fit_control.sh` makes the fit
+  control reproducible.** The run that disproved the dropped-history reading
+  was a hand-written script outside the repo, so only its results were
+  archived and no other host could repeat it. This is that procedure,
+  following the conventions of `sweep.sh` and `context_fill_sweep.sh`:
+  required `FIT_CONTROL_RESULTS`, resumable by skipping an existing JSON,
+  `wait_for_idle` between models, and a `caffeinate -i` re-exec. It differs
+  from `context_fill_sweep.sh` in carrying **per-model** `--num-ctx` and
+  `--fill-tokens` in a `PARAMS` table rather than one fill target for
+  everything, because that is the whole point of the control, and a model
+  with no entry is skipped with a message instead of run under a guessed
+  ceiling. `qwen2.5-coder:7b` is the entry that explains the shape: its
+  trained window is 32768 and Ollama allocates
+  `min(requested, trained window)`, so a larger `--num-ctx` does nothing for
+  it and it takes a 12000-token filler instead of 28000. Pass model names to
+  run a subset, which is how a 16 GB host runs the three models it can hold.
+
 - Fixed: **the "models discard history they had room for" reading was an
   artifact of this probe, and is retracted.** `buildFillerText` sizes the
   filler in characters at `fillerCharsPerToken = 4.0`. Measured against the
