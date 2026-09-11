@@ -129,7 +129,9 @@ median wherever a call hit the 120 s ceiling. Rows are ordered by ratio.
 
 Both hosts run the same Ollama line, M1 Max on 0.33.2 and M5 on 0.33.1, a
 patch-level difference, so each row compares two machines rather than two
-runtimes. `qwen3.5:9b` is the row to read carefully even so. Its M1 Max figure
+runtimes. Neither is current: **Ollama 0.33.3** is the release to install for
+a fresh setup, not either version measured here. `qwen3.5:9b` is the row to
+read carefully even so. Its M1 Max figure
 is a standalone cold control rather than an in-sweep measurement like the other
 seven, and the same model measured hot on that host medians **7563 ms**, which
 would put the row below 1.0x instead of at 1.15x.

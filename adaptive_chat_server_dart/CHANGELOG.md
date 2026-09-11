@@ -2,6 +2,31 @@
 
 ## [Unreleased]
 
+- Added: **`tool/model_probes/context_fill_probe.dart` runs the shape sweep
+  against a filled context**, to test whether a model still functions once
+  its window is mostly used, on a machine tight enough that the answer might
+  be no. It runs the same 25 cases `shape_ab.dart` runs, but prepends a large
+  deterministic filler block as history instead of the two-turn seed
+  `shape_ab.dart` uses for its "with history" condition. `--fill-tokens`
+  names the target; the filler is sized against it by a documented
+  chars-per-token heuristic rather than a live calibration call, and every
+  recorded call carries Ollama's own `prompt_eval_count` so the achieved
+  count is measured, not assumed. A standalone diagnostic, not one of the
+  seven sweep probes — not added to `expectedProbes`, and its results belong
+  under a new `tool/model_probes/context_fill_results/` tree (directories
+  named `host-ram-ollamaVERSION-fillN`, `N` being the fill target) rather
+  than a `results-*` directory, so `check_results.dart`'s sweep never picks
+  it up. `ProbeOutcome` gains a `promptEvalCount` field, populated from the
+  same response body `probeOnce` already parses. `num_ctx` budgets the card
+  system prompt's own estimated token cost (`estimateTokenCount`), not just
+  the fill target — an initial version left the actual request short of its
+  own window before the filler mattered — and the probe force-evicts any
+  resident runner before its first call, since a later request's `num_ctx`
+  is not reliably re-applied to an already-loaded model. Neither change
+  moved the headline finding: five of eight 16GB-capable models silently
+  drop the entire filler message rather than trimming it, independent of
+  `num_ctx` size or load freshness — see `ModelBehavior.md`.
+
 - Added: **`tool/blog/to_blogger.dart` converts a `blog/` draft to HTML for
   Google Blogger.** Blogger renders a newline in post HTML as a `<br>`, so the
   drafts' 78-column source wrapping arrived as ragged columns; the converter

@@ -237,6 +237,7 @@ class ProbeOutcome {
     required this.ms,
     required this.hash,
     required this.reply,
+    this.promptEvalCount,
   });
 
   /// Whether the reply was usable — a renderable card, or clean prose.
@@ -264,6 +265,12 @@ class ProbeOutcome {
   /// The raw reply text, so a caller can score for a specific element rather
   /// than only for "is it broken?".
   final String reply;
+
+  /// Ollama's `prompt_eval_count` for the request that produced this reply,
+  /// when the caller supplied one. Null on every path that does not measure
+  /// it -- a timeout, an HTTP error, or a caller (most probes) that never
+  /// asked.
+  final int? promptEvalCount;
 }
 
 /// Builds the `/api/chat` message list, mirroring `OllamaResponder`.
@@ -464,7 +471,7 @@ Future<ProbeOutcome> probeOnce({
       reply: body,
     );
   }
-  return judgeReply(content, ms);
+  return judgeReply(content, ms, promptEvalCount: _promptEvalCountOrNull(body));
 }
 
 /// Pulls `message.content` out of an `/api/chat` body, or null if it is absent
@@ -485,8 +492,28 @@ String? _contentOrNull(String body) {
   }
 }
 
+/// Pulls `prompt_eval_count` out of an `/api/chat` body, or null if it is
+/// absent or not an int.
+///
+/// Ollama's own count of the tokens it evaluated for the request -- the
+/// figure `context_fill_probe.dart` calibrates its filler text against,
+/// since a chars-per-token estimate cannot know a given model's tokenizer.
+int? _promptEvalCountOrNull(String body) {
+  try {
+    final data = jsonDecode(body);
+    if (data is! Map<String, dynamic>) return null;
+    final count = data['prompt_eval_count'];
+    return count is int ? count : null;
+  } on FormatException {
+    return null;
+  }
+}
+
 /// Applies the server's card-detection rules to [content].
-ProbeOutcome judgeReply(String content, int ms) {
+///
+/// [promptEvalCount] passes through to the returned [ProbeOutcome] verbatim
+/// -- it is Ollama's own count, not derived from [content].
+ProbeOutcome judgeReply(String content, int ms, {int? promptEvalCount}) {
   final hash = md5.convert(utf8.encode(content)).toString().substring(0, 8);
   ProbeOutcome outcome({required bool ok, required String label}) =>
       ProbeOutcome(
@@ -496,6 +523,7 @@ ProbeOutcome judgeReply(String content, int ms) {
         ms: ms,
         hash: hash,
         reply: content,
+        promptEvalCount: promptEvalCount,
       );
 
   try {
