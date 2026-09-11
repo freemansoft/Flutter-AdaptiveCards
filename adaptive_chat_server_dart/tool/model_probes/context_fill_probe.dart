@@ -45,7 +45,7 @@
 /// ```sh
 /// fvm dart run tool/model_probes/context_fill_probe.dart \
 ///   --model qwen3.5:9b --fill-tokens 28000 \
-///   --json tool/model_probes/context_fill_results/m5-16gb-ollama0331-fill28000/qwen3.5_9b/context_fill_probe.json
+///   --json tool/model_probes/context_fill_results/m5-16gb-ollama0333-fill28000/qwen3.5_9b/context_fill_probe.json
 /// ```
 library;
 

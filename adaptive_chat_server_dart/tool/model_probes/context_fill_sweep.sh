@@ -16,7 +16,7 @@
 # an idle machine.
 #
 #   cd adaptive_chat_server_dart
-#   export CONTEXT_FILL_RESULTS=tool/model_probes/context_fill_results/m1max-64gb-ollama0332-fill28000
+#   export CONTEXT_FILL_RESULTS=tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fill28000
 #   tool/model_probes/context_fill_sweep.sh                 # every model
 #   tool/model_probes/context_fill_sweep.sh granite4.1:8b    # just one
 #
@@ -40,7 +40,7 @@ cd "$(dirname "$0")/../.." || exit 1
 
 if [[ -z ${CONTEXT_FILL_RESULTS:-} ]]; then
   echo "context_fill_sweep.sh: set CONTEXT_FILL_RESULTS to this host's results directory, e.g."
-  echo "  CONTEXT_FILL_RESULTS=tool/model_probes/context_fill_results/m1max-64gb-ollama0332-fill28000 $0 $*"
+  echo "  CONTEXT_FILL_RESULTS=tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fill28000 $0 $*"
   exit 2
 fi
 RES=$CONTEXT_FILL_RESULTS
