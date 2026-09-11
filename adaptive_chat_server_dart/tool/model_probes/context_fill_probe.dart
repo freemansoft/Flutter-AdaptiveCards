@@ -42,6 +42,20 @@
 /// eviction first, which of several models in a sequential sweep "got" the
 /// requested context depended on incidental load order, not on the model.
 ///
+/// **The runner's own allocated context is recorded, not just the
+/// requested one.** `num_ctx` in a run's summary is what the probe asked
+/// for, which is silent about clamping: a model that ingested the filler
+/// and a model that discarded it archive the identical number. After the
+/// first case has loaded the runner, [readRunnerStatus] reads `/api/ps`
+/// once and the summary gains `runnerContextLength`, `runnerContextClamped`
+/// and `runnerSizeVram`. One read rather than per call, because the runner
+/// does not resize mid-run. Best effort: an `/api/ps` that fails or omits
+/// the field records nothing rather than costing the sweep its result, so
+/// those keys are absent from a run that could not take the reading, the
+/// way `promptEvalCountMin` already is. This exists to separate the two
+/// explanations left open by the cross-host runs, where three models with
+/// windows long enough to hold the filler discarded it anyway.
+///
 /// ```sh
 /// fvm dart run tool/model_probes/context_fill_probe.dart \
 ///   --model qwen3.5:9b --fill-tokens 28000 \
@@ -187,6 +201,10 @@ Future<void> main(List<String> argv) async {
   final calls = <ProbeCall>[];
   final promptEvalCounts = <int>[];
   var passCount = 0;
+  // Read once, after the first case has loaded the runner: /api/ps lists
+  // nothing before then, and the runner's context does not change mid-run,
+  // so polling per call would add 25 round trips for one number.
+  RunnerStatus? runnerStatus;
 
   for (final c in shapeCases) {
     for (var sample = 0; sample < args.samples; sample++) {
@@ -200,6 +218,7 @@ Future<void> main(List<String> argv) async {
         options: {'temperature': 0.0, 'num_ctx': numCtx},
         timeout: args.timeout,
       );
+      runnerStatus ??= await readRunnerStatus(args.url, args.model);
       final result = judgeShape(c, outcome);
       if (result.pass) passCount++;
       final count = outcome.promptEvalCount;
@@ -224,7 +243,15 @@ Future<void> main(List<String> argv) async {
   }
   client.close(force: true);
 
-  stdout.writeln('== shapes $passCount/${calls.length} ==');
+  final allocated = runnerStatus?.contextLength;
+  stdout
+    ..writeln('== shapes $passCount/${calls.length} ==')
+    ..writeln(
+      allocated == null
+          ? '== runner context: not reported by /api/ps =='
+          : '== runner context: $allocated allocated against $numCtx '
+                'requested${allocated < numCtx ? " (CLAMPED)" : ""} ==',
+    );
 
   if (args.json != null) {
     writeProbeRun(
@@ -235,13 +262,21 @@ Future<void> main(List<String> argv) async {
       assetsDir: probeAssetsDir(),
       notes:
           'Filler sized via fillerCharsPerToken=$fillerCharsPerToken; see '
-          "each call's tokens=… for the actual prompt_eval_count.",
+          "each call's tokens=… for the actual prompt_eval_count. "
+          'runnerContextLength is what /api/ps reported the runner '
+          'allocated, against numCtx as requested.',
       summary: {
         'pass': passCount,
         'total': calls.length,
         'fillTokensTarget': fillTokens,
         'systemPromptTokensEstimate': systemPromptTokens,
         'numCtx': numCtx,
+        if (allocated != null) ...{
+          'runnerContextLength': allocated,
+          'runnerContextClamped': allocated < numCtx,
+        },
+        if (runnerStatus?.sizeVram != null)
+          'runnerSizeVram': runnerStatus!.sizeVram,
         if (promptEvalCounts.isNotEmpty) ...{
           'promptEvalCountMin': promptEvalCounts.reduce(
             (a, b) => a < b ? a : b,

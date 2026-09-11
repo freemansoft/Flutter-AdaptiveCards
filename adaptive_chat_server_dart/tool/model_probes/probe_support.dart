@@ -327,6 +327,85 @@ Future<void> evictModel(String url, String model) async {
   }
 }
 
+/// What Ollama's `/api/ps` reports about one resident model.
+///
+/// Exists because a probe can only record the `num_ctx` it *asked* for, and
+/// a request's `num_ctx` is not always what the runner allocates. Without
+/// this, a run whose history was silently dropped and a run whose history
+/// was ingested archive the identical context figure, so the archive cannot
+/// distinguish a clamped runner from a model that discarded a message it
+/// had room for. See ModelBehavior.md's context-fill section.
+class RunnerStatus {
+  const RunnerStatus({this.contextLength, this.sizeVram});
+
+  /// Context the runner actually allocated, or null if this Ollama does not
+  /// report it. Null rather than zero on purpose: a zero would read as a
+  /// measured clamp to nothing.
+  final int? contextLength;
+
+  /// Resident VRAM in bytes, or null if absent.
+  final int? sizeVram;
+}
+
+/// Picks [model]'s entry out of an `/api/ps` [body].
+///
+/// Returns null when the body is unparseable, carries no model list, or
+/// holds only other models -- every one of which is a "no reading taken"
+/// rather than an error, since this is a diagnostic recorded beside a
+/// measurement and must never cost the measurement its result. A bare tag
+/// matches the `:latest` the server reports it under.
+RunnerStatus? parseRunnerStatus(String body, String model) {
+  final Object? decoded;
+  try {
+    decoded = jsonDecode(body);
+  } on FormatException {
+    return null;
+  }
+  if (decoded is! Map<String, dynamic>) return null;
+  final models = decoded['models'];
+  if (models is! List) return null;
+  final wanted = model.contains(':') ? model : '$model:latest';
+  for (final entry in models) {
+    if (entry is! Map<String, dynamic>) continue;
+    final names = {entry['name'], entry['model']};
+    if (!names.contains(model) && !names.contains(wanted)) continue;
+    final contextLength = entry['context_length'];
+    final sizeVram = entry['size_vram'];
+    return RunnerStatus(
+      contextLength: contextLength is int ? contextLength : null,
+      sizeVram: sizeVram is int ? sizeVram : null,
+    );
+  }
+  return null;
+}
+
+/// Asks Ollama what it allocated for [model], or null if it cannot say.
+///
+/// Best effort for the same reason [evictModel] is: this runs beside a
+/// sweep that costs half an hour, and a diagnostic that throws would trade
+/// the whole run for a field. A failure writes one stderr line and reads as
+/// no measurement. Call it only once a model is resident -- `/api/ps` lists
+/// nothing before the first request loads the runner.
+Future<RunnerStatus?> readRunnerStatus(String url, String model) async {
+  final client = HttpClient();
+  try {
+    final req = await client
+        .getUrl(Uri.parse('$url/api/ps'))
+        .timeout(const Duration(seconds: 10));
+    final resp = await req.close().timeout(const Duration(seconds: 10));
+    final body = await resp
+        .transform(utf8.decoder)
+        .join()
+        .timeout(const Duration(seconds: 10));
+    return parseRunnerStatus(body, model);
+  } on Object catch (e) {
+    stderr.writeln('readRunnerStatus: /api/ps for $model failed: $e');
+    return null;
+  } finally {
+    client.close();
+  }
+}
+
 /// Sends one `/api/chat` request and judges the reply.
 ///
 /// [options] is merged into Ollama's `options` map, so a probe varies only

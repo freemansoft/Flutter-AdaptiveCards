@@ -2,6 +2,36 @@
 
 ## [Unreleased]
 
+- Added: **`context_fill_probe.dart` records what the runner allocated, not
+  only what it requested.** `summary.numCtx` is the value the probe asks for,
+  which is silent about clamping: a run whose filler was ingested and a run
+  whose filler vanished archive the identical number, so the existing
+  archives cannot say whether a clamped runner or a dropped message produced
+  the result. `probe_support.dart` gains `RunnerStatus`, a pure
+  `parseRunnerStatus` and a best-effort `readRunnerStatus`, and the probe
+  calls it once after the first case has loaded the runner. `/api/ps` lists
+  nothing before then and the runner does not resize mid-run, so one read
+  rather than 25. The summary gains `runnerContextLength`,
+  `runnerContextClamped` and `runnerSizeVram`, and stdout prints the
+  allocated-against-requested line with a `CLAMPED` marker. Best effort for
+  the reason `evictModel` is: an `/api/ps` that fails, omits the field, or
+  lists only other models records nothing rather than costing a half-hour
+  sweep its result, so the keys are absent from a run that could not take
+  the reading, the way `promptEvalCountMin` already is. Verified end to end
+  against a live runner (`llama3.2:latest`, `--fill-tokens 2000`: 9851
+  allocated against 9851 requested, not clamped). The field cannot be
+  backfilled, so the two archived context-fill runs still carry only
+  `numCtx`, and answering the clamping question means re-running both hosts.
+
+- Changed: **the `ModelBehavior.md` context-fill table gives each host its own
+  token and pass column.** The `prompt_eval_count` figures were collapsed into
+  one column because both hosts agree to the token, which left "no variation
+  by memory size" asserted in the prose under the table rather than visible in
+  it. `Filler` stays a single column, since the kept-or-dropped verdict is
+  identical on both hosts and that identity is the finding. Two sentences that
+  said the probe does not capture `/api/ps` are corrected, since it now does;
+  what is still owed is a re-run, not a probe change. No figure changed.
+
 - Added: **the M1 Max (64GB) context-fill run, which rules out host memory as
   the cause of the dropped filler.** `context_fill_sweep.sh` over the same eight
   models at `--fill-tokens 28000` under the same Ollama 0.33.3, archived in
