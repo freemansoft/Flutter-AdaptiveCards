@@ -2,6 +2,41 @@
 
 ## [Unreleased]
 
+- Fixed: **the "models discard history they had room for" reading was an
+  artifact of this probe, and is retracted.** `buildFillerText` sizes the
+  filler in characters at `fillerCharsPerToken = 4.0`. Measured against the
+  same 127,020 characters that constant holds at 4.29 to 4.30 chars/token on
+  `llama3.2:latest`, `granite4.1:8b` and `gpt-oss:20b`, and fails elsewhere:
+  2.99 on `qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4`, 2.74 on
+  `nemotron-3-nano:4b`. A 28000-token target becomes 42426 to 46287 real
+  tokens there, overflowing the 35851-token window the probe sized from the
+  estimate, so Ollama dropped the history message whole and the archive
+  recorded a model discarding history it appeared to have room for. The new
+  `context_fill_results/m1max-64gb-ollama0333-fitcontrol/` is the control:
+  the same six models, each given a filler that fits the window it is
+  actually allocated, and all six ingest it. `ModelBehavior.md` retracts the
+  policy finding, its open-questions entry is closed, and
+  `context_fill_probe.dart`'s doc comment loses the argument that the
+  estimate need not be exact because every call carries `prompt_eval_count`.
+  That count reports the overflow after the run is already spoiled, since
+  `num_ctx` is sized before the first call. What survives is narrower and
+  real: Ollama removes an oversized history message rather than trimming it,
+  silently, and allocates `min(requested, trained window)` with no
+  counterexample in twenty runs.
+
+- Added: **the first measurement of what a genuinely filled context costs.**
+  Every earlier figure for these six models was taken with the history
+  discarded, which measures the unfilled task. With roughly 42.5k tokens
+  actually in the window, `qwen3-coder:30b` does not move (18/25) and
+  `qwen3.5:9b` gains a case (18 to 19/25), both within `--samples 1` noise.
+  The Nemotron models lose about a third of their shapes:
+  `nemotron-3.5-lightning:30b` 20 to 13/25, `nemotron-3-nano:30b` 17 to
+  12/25, `nemotron-3-nano:4b` 8 to 6/25. Capacity under a full window is not
+  predicted by score on an empty one. `qwen2.5-coder:7b` could not be tested
+  by raising the ceiling, since its trained window is 32768 and allocation is
+  `min(requested, trained window)`; it got a 12000-token filler instead and
+  scores 21/25 against 22/25. One fill size, one host, `--samples 1`.
+
 - Added: **the M1 Max allocation reading, which excludes clamping as the
   mechanism behind the dropped filler.** The sweep was re-run 2026-09-11 with
   `/api/ps` capture in place, into the same

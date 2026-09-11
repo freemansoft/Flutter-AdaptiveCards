@@ -18,13 +18,26 @@
 /// and the filler are different numbers, and the directory name states the
 /// one that was actually sent.
 ///
-/// **The filler is sized by a fixed heuristic, not a live calibration
-/// call.** [fillerCharsPerToken] is a documented estimate for English text;
-/// it is not a claim about any specific model's tokenizer, and it does not
-/// need to be exact, because every recorded call carries Ollama's own
-/// `prompt_eval_count` — the number that actually matters — rather than
-/// trusting the estimate. `--fill-tokens` names the target; the achieved
-/// count travels with each call.
+/// **The filler is sized by a fixed heuristic, and that heuristic is not
+/// safe.** [fillerCharsPerToken] sizes the filler in characters. An earlier
+/// version of this comment argued the estimate need not be exact because
+/// every call carries Ollama's own `prompt_eval_count`; that reasoning is
+/// wrong, and measurement disproved it. The count tells you afterward that
+/// a run overflowed its window, by which point the run is spoiled: `num_ctx`
+/// was sized from the estimate before the first call. Measured against the
+/// same 127,020 characters, the 4.0 constant holds at 4.29 to 4.30
+/// chars/token on `llama3.2:latest`, `granite4.1:8b` and `gpt-oss:20b`, and
+/// fails elsewhere — 2.99 on both `qwen3.8:27b-nvfp4` and
+/// `qwen3.6:27b-coding-nvfp4`, 2.74 on `nemotron-3-nano:4b`. A 28000-token
+/// target becomes 42542 or 46287 real tokens there, overflowing the 35851
+/// window sized for it, and Ollama drops the history message whole. Six
+/// models were recorded that way and read as discarding history they had
+/// room for; the fit control in
+/// `context_fill_results/m1max-64gb-ollama0333-fitcontrol/` shows all six
+/// keep it once it fits. **Until this is calibrated per model, pass
+/// `--num-ctx` well above the default for any model outside the llama,
+/// granite and gpt-oss families, and check `runnerContextLength` against
+/// the recorded token count before reading a run as capacity.**
 ///
 /// **`num_ctx` budgets the system prompt, not just the filler.** An earlier
 /// version sized `num_ctx` off `--fill-tokens` alone; the card system

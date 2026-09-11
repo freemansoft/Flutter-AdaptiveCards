@@ -1,0 +1,202 @@
+{
+  "probe": "context_fill_probe",
+  "model": "nemotron-3-nano:4b",
+  "measuredAt": "2026-09-11",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.3",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "pass": 6,
+    "total": 25,
+    "fillTokensTarget": 28000,
+    "systemPromptTokensEstimate": 3755,
+    "numCtx": 65536,
+    "runnerContextLength": 65536,
+    "runnerContextClamped": false,
+    "runnerSizeVram": 4402362448,
+    "promptEvalCountMin": 46287,
+    "promptEvalCountMax": 46303
+  },
+  "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count. runnerContextLength is what /api/ps reported the runner allocated, against numCtx as requested.",
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46292",
+      "ms": 112921
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46291",
+      "ms": 6611
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46289",
+      "ms": 6628
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46292",
+      "ms": 6521
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46291",
+      "ms": 7139
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46288",
+      "ms": 6917
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46288",
+      "ms": 6385
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46288",
+      "ms": 6605
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46288",
+      "ms": 6987
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46287",
+      "ms": 7518
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46289",
+      "ms": 6972
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 222)\n...le\",\"value\":15},{\"title\":\"OnePlus\",\"value\":8},{\"title\":\"Xiaomi\",\"value\":2}]\n                                                                              ^\n tokens=46298",
+      "ms": 8533
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.HorizontalBar tokens=46294",
+      "ms": 7728
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Line, TextBlock tokens=46293",
+      "ms": 9120
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {Chart.ProgressRing} want {Chart.Gauge} tokens=46299",
+      "ms": 6867
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {TextBlock} want {Rating} tokens=46302",
+      "ms": 7229
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Rating tokens=46295",
+      "ms": 6607
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46299",
+      "ms": 10029
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46294",
+      "ms": 8350
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 100)\n...:[{\"title\":\"iPhone 15 Pro\",\"value\":\"Apple's latest flagship smartphone\"}]]}\n                                                                            ^\n tokens=46296",
+      "ms": 7011
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock tokens=46290",
+      "ms": 8295
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=46303",
+      "ms": 7909
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {TextBlock} want {ProgressBar, ProgressRing} tokens=46292",
+      "ms": 6867
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge tokens=46292",
+      "ms": 6760
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok tokens=46291",
+      "ms": 7126
+    }
+  ]
+}

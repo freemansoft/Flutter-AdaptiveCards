@@ -1,0 +1,202 @@
+{
+  "probe": "context_fill_probe",
+  "model": "nemotron-3-nano:30b",
+  "measuredAt": "2026-09-11",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.3",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "pass": 12,
+    "total": 25,
+    "fillTokensTarget": 28000,
+    "systemPromptTokensEstimate": 3755,
+    "numCtx": 65536,
+    "runnerContextLength": 65536,
+    "runnerContextClamped": false,
+    "runnerSizeVram": 25072060333,
+    "promptEvalCountMin": 42602,
+    "promptEvalCountMax": 42617
+  },
+  "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count. runnerContextLength is what /api/ps reported the runner allocated, against numCtx as requested.",
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date, TextBlock tokens=42607",
+      "ms": 99778
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.Time} tokens=42606",
+      "ms": 5977
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.ChoiceSet, Input.Toggle} tokens=42604",
+      "ms": 5771
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.Text} tokens=42607",
+      "ms": 5877
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.Number, Input.Text} tokens=42606",
+      "ms": 5884
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=42603",
+      "ms": 7148
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.ChoiceSet} tokens=42603",
+      "ms": 6436
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=42603",
+      "ms": 7066
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=42603",
+      "ms": 8801
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 850)\n...nd performance. Choose based on your specific requirements.\",\"wrap\":true}]}\n                                                                             ^\n tokens=42602",
+      "ms": 10475
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=42604",
+      "ms": 7229
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Pie tokens=42613",
+      "ms": 7475
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 197)\n...x\":\"Tue\",\"y\":19},{\"x\":\"Wed\",\"y\":7},{\"x\":\"Thu\",\"y\":15},{\"x\":\"Fri\",\"y\":21\"}]}\n                                                                          ^\n tokens=42608",
+      "ms": 7446
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {Chart.VerticalBar, TextBlock} want {Chart.Line} tokens=42608",
+      "ms": 8450
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {ProgressBar} want {Chart.Gauge} tokens=42614",
+      "ms": 5830
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": true,
+      "label": "Rating tokens=42616",
+      "ms": 5728
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.ChoiceSet, Input.Number, Input.Rating} tokens=42610",
+      "ms": 5873
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {TextBlock} want {Carousel} tokens=42613",
+      "ms": 6159
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 340)\n...TableCell\",\"items\":[{\"type\":\"TextBlock\",\"text\":\"Moons\",\"wrap\":true}]}]}]}]}\n                                                                             ^\n tokens=42609",
+      "ms": 7982
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "FactSet tokens=42611",
+      "ms": 10758
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock tokens=42605",
+      "ms": 7406
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {TextBlock} want {CodeBlock} tokens=42617",
+      "ms": 8452
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": true,
+      "label": "ProgressBar tokens=42607",
+      "ms": 5772
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge tokens=42607",
+      "ms": 5767
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok tokens=42606",
+      "ms": 6207
+    }
+  ]
+}

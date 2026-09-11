@@ -1,0 +1,202 @@
+{
+  "probe": "context_fill_probe",
+  "model": "qwen3-coder:30b",
+  "measuredAt": "2026-09-11",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.33.3",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "pass": 18,
+    "total": 25,
+    "fillTokensTarget": 28000,
+    "systemPromptTokensEstimate": 3755,
+    "numCtx": 65536,
+    "runnerContextLength": 65536,
+    "runnerContextClamped": false,
+    "runnerSizeVram": 25411736042,
+    "promptEvalCountMin": 42426,
+    "promptEvalCountMax": 42441
+  },
+  "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count. runnerContextLength is what /api/ps reported the runner allocated, against numCtx as requested.",
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: timeout (180s)",
+      "ms": 180030
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.Time} tokens=42430",
+      "ms": 113102
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Toggle tokens=42428",
+      "ms": 1299
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.Text} tokens=42431",
+      "ms": 2929
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Number tokens=42430",
+      "ms": 1720
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=42427",
+      "ms": 3874
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet tokens=42427",
+      "ms": 4534
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=42427",
+      "ms": 4069
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet tokens=42427",
+      "ms": 3890
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 2, character 1)\n{\"type\":\"Input.ChoiceSet\",\"id\":\"useCase\",\"style\":\"expanded\",\"isMultiSelect\"...\n^\n tokens=42426",
+      "ms": 5416
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet tokens=42428",
+      "ms": 2852
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Pie tokens=42437",
+      "ms": 4829
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.VerticalBar tokens=42432",
+      "ms": 4622
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Line tokens=42431",
+      "ms": 5853
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {ProgressBar} want {Chart.Gauge} tokens=42438",
+      "ms": 1225
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": true,
+      "label": "Rating tokens=42439",
+      "ms": 1264
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Rating tokens=42434",
+      "ms": 2283
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {TextBlock} want {Carousel} tokens=42438",
+      "ms": 10748
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "Table, TableCell, TableRow, TextBlock tokens=42432",
+      "ms": 39499
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "FactSet, TextBlock tokens=42434",
+      "ms": 14981
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock tokens=42429",
+      "ms": 4491
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "CodeBlock, TextBlock tokens=42441",
+      "ms": 12019
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": true,
+      "label": "ProgressRing tokens=42431",
+      "ms": 1422
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge tokens=42431",
+      "ms": 1235
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": false,
+      "label": "unwanted-card: got {TextBlock} want prose tokens=42430",
+      "ms": 4043
+    }
+  ]
+}
