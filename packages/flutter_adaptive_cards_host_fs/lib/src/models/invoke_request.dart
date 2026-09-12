@@ -7,7 +7,7 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_kind.dart';
 class AdaptiveCardInvokeRequest {
   /// Low-level invoke envelope; prefer `fromSubmit`, `fromExecute`, and other
   /// factories built from card callback payloads.
-  const AdaptiveCardInvokeRequest({
+  const new({
     required this.kind,
     this.actionId,
     this.verb,
@@ -21,7 +21,7 @@ class AdaptiveCardInvokeRequest {
 
   /// Maps Submit callback data for backend POST
   /// via `AdaptiveCardBackendHandlers`.
-  factory AdaptiveCardInvokeRequest.fromSubmit(SubmitActionInvoke invoke) {
+  factory fromSubmit(SubmitActionInvoke invoke) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.submit,
       actionId: invoke.actionId,
@@ -30,7 +30,7 @@ class AdaptiveCardInvokeRequest {
   }
 
   /// Maps Execute/Refresh callback data for backend POST.
-  factory AdaptiveCardInvokeRequest.fromExecute(ExecuteActionInvoke invoke) {
+  factory fromExecute(ExecuteActionInvoke invoke) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.execute,
       actionId: invoke.actionId,
@@ -43,7 +43,7 @@ class AdaptiveCardInvokeRequest {
   /// present on the input).
   ///
   /// [data] is populated from [DataQuery.parameters] when present.
-  factory AdaptiveCardInvokeRequest.fromInputChange(InputChangeInvoke invoke) {
+  factory fromInputChange(InputChangeInvoke invoke) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.inputChange,
       inputId: invoke.inputId,
@@ -54,7 +54,7 @@ class AdaptiveCardInvokeRequest {
   }
 
   /// Open-url payload when forwarding [OpenUrlActionInvoke] to a backend.
-  factory AdaptiveCardInvokeRequest.fromOpenUrl(OpenUrlActionInvoke invoke) {
+  factory fromOpenUrl(OpenUrlActionInvoke invoke) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.openUrl,
       actionId: invoke.actionId,
@@ -63,9 +63,7 @@ class AdaptiveCardInvokeRequest {
   }
 
   /// Teams [OpenUrlDialogActionInvoke] payload when forwarding to a backend.
-  factory AdaptiveCardInvokeRequest.fromOpenUrlDialog(
-    OpenUrlDialogActionInvoke invoke,
-  ) {
+  factory fromOpenUrlDialog(OpenUrlDialogActionInvoke invoke) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.openUrlDialog,
       actionId: invoke.actionId,
@@ -77,10 +75,7 @@ class AdaptiveCardInvokeRequest {
   ///
   /// [state] is the magic code / verification state the app captured from the
   /// OAuth redirect.
-  factory AdaptiveCardInvokeRequest.fromSignin(
-    SigninActionInvoke invoke, {
-    required String state,
-  }) {
+  factory fromSignin(SigninActionInvoke invoke, {required String state}) {
     return AdaptiveCardInvokeRequest(
       kind: AdaptiveCardInvokeKind.signin,
       connectionName: invoke.connectionName,

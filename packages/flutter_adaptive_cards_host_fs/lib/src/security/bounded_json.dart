@@ -7,7 +7,7 @@ import 'dart:convert';
 /// gracefully instead of OOMing.
 class AdaptiveJsonTooLargeException implements Exception {
   /// Records the [maxBytes] cap that the body exceeded.
-  const AdaptiveJsonTooLargeException(this.maxBytes);
+  const new(this.maxBytes);
 
   /// The byte cap that was exceeded.
   final int maxBytes;

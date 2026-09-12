@@ -63,43 +63,40 @@ void main() {
     expect(c.pending, isFalse);
   });
 
-  test(
-    'startConversation sends the configured userLabel, assistantLabel, and '
-    'language',
-    () async {
-      Map<String, dynamic>? captured;
-      final mock = MockClient((req) async {
-        if (req.url.path == '/conversations') {
-          captured = jsonDecode(req.body) as Map<String, dynamic>;
-          return http.Response(
-            jsonEncode({
-              'conversationId': 'c_1',
-              'links': {'postNext': '/conversations/c_1/interactions'},
-            }),
-            200,
-          );
-        }
-        return http.Response('not found', 404);
-      });
-      final c = ConversationController(
-        client: ChatBackendClient(
-          baseUrl: Uri.parse('http://localhost:8000'),
-          client: mock,
-        ),
-        userLabel: 'Me',
-        assistantLabel: 'Bot',
-        language: 'es',
-      );
+  test('startConversation sends the configured userLabel, assistantLabel, and '
+      'language', () async {
+    Map<String, dynamic>? captured;
+    final mock = MockClient((req) async {
+      if (req.url.path == '/conversations') {
+        captured = jsonDecode(req.body) as Map<String, dynamic>;
+        return http.Response(
+          jsonEncode({
+            'conversationId': 'c_1',
+            'links': {'postNext': '/conversations/c_1/interactions'},
+          }),
+          200,
+        );
+      }
+      return http.Response('not found', 404);
+    });
+    final c = ConversationController(
+      client: ChatBackendClient(
+        baseUrl: Uri.parse('http://localhost:8000'),
+        client: mock,
+      ),
+      userLabel: 'Me',
+      assistantLabel: 'Bot',
+      language: 'es',
+    );
 
-      await c.startConversation();
+    await c.startConversation();
 
-      expect(captured, {
-        'userLabel': 'Me',
-        'assistantLabel': 'Bot',
-        'language': 'es',
-      });
-    },
-  );
+    expect(captured, {
+      'userLabel': 'Me',
+      'assistantLabel': 'Bot',
+      'language': 'es',
+    });
+  });
 
   test('send does nothing before startConversation', () async {
     final c = ConversationController(client: _clientReturning([]));
@@ -107,25 +104,22 @@ void main() {
     expect(c.messages, isEmpty);
   });
 
-  test(
-    'a failed startConversation records startError without throwing and '
-    'leaves ready false',
-    () async {
-      final mock = MockClient((req) async {
-        return http.Response('server error', 500);
-      });
-      final c = ConversationController(
-        client: ChatBackendClient(
-          baseUrl: Uri.parse('http://localhost:8000'),
-          client: mock,
-        ),
-      );
+  test('a failed startConversation records startError without throwing and '
+      'leaves ready false', () async {
+    final mock = MockClient((req) async {
+      return http.Response('server error', 500);
+    });
+    final c = ConversationController(
+      client: ChatBackendClient(
+        baseUrl: Uri.parse('http://localhost:8000'),
+        client: mock,
+      ),
+    );
 
-      await c.startConversation();
+    await c.startConversation();
 
-      expect(c.ready, isFalse);
-      expect(c.startError, isNotNull);
-      expect(c.starting, isFalse);
-    },
-  );
+    expect(c.ready, isFalse);
+    expect(c.startError, isNotNull);
+    expect(c.starting, isFalse);
+  });
 }

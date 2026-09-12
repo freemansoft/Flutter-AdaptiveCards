@@ -25,7 +25,7 @@ import 'package:video_player/video_player.dart';
 class AdaptiveMedia extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a media player from [adaptiveMap] JSON.
-  AdaptiveMedia({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

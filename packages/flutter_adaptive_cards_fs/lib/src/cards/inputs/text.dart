@@ -14,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveTextInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a text input from [adaptiveMap] JSON.
-  AdaptiveTextInput({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

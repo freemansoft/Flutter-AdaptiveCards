@@ -19,6 +19,9 @@ You can manually update flutter versions by running:
 - Run `fvm install <new-flutter-version>` (e.g., `fvm install 3.41.2`) in the root of the repository if the new target version of flutter is not already installed.
 - Run `fvm use <new-flutter-version>` (e.g., `fvm use 3.41.2`) in the root of the repository.
 - Verify that `.fvm/fvm_config.json` has been updated with the new version.
+- `fvm use` (FVM 4.x) also rewrites `.vscode/settings.json` (`dart.flutterSdkPath`, keep it) and injects `analyzer: exclude:` blocks for `build/**` and platform directories into every `analysis_options.yaml` it finds. Those excludes are not part of the upgrade; revert them with `git checkout -- $(git diff --name-only -- '*/analysis_options.yaml')` before reviewing the diff.
+- If the new `very_good_analysis` release enables lints that ship with quick-fixes, run `fvm dart fix --apply` at the workspace root and again in `adaptive_chat_server_dart/`, then re-run `fvm flutter analyze`. The `unnecessary_unawaited` fix has mangled multi-line `unawaited(...)` calls (it drops the wrapper but leaves the trailing `),`), so expect to repair those by hand.
+- Goldens are engine-sensitive. Run `fvm flutter test --tags=golden` in `packages/flutter_adaptive_cards_fs` and `packages/flutter_adaptive_charts_fs`; confirm a failure reproduces on the unmodified sources (stash everything except `.fvmrc` and `.fvm/fvm_config.json`) before regenerating with `--update-goldens --name "<test names>"`. Only the current platform's `gold_files/<os>/` set can be regenerated locally; the other platform's set is checked in CI.
 
 ## 2. Update CI/CD Workflows
 

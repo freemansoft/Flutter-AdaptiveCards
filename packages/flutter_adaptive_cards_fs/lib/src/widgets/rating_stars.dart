@@ -33,7 +33,7 @@ double resolveRatingIconSize(String size) {
 /// Shared star row for display Rating elements and interactive Input.Rating.
 class RatingStars extends StatelessWidget {
   /// Creates a row of [max] stars for [value].
-  const RatingStars({
+  const new({
     required this.value,
     required this.max,
     required this.starColor,

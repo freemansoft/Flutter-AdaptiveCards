@@ -4,7 +4,7 @@
 /// See [TextRun](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/text-run).
 class TextRunModel {
   /// Creates a text run with display [text] and optional inline styling.
-  const TextRunModel({
+  const new({
     required this.text,
     this.color,
     this.fontType,
@@ -19,7 +19,7 @@ class TextRunModel {
   });
 
   /// Parses a `TextRun` object from card JSON.
-  factory TextRunModel.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return TextRunModel(
       text: json['text']?.toString() ?? '',
       color: json['color']?.toString(),

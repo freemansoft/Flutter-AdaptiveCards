@@ -6,10 +6,10 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 /// of the official Adaptive Cards HostConfig schema.
 class TextInputConfig {
   /// Creates `Input.Text` settings from explicit values.
-  TextInputConfig({required this.revealPasswordEnabled});
+  new({required this.revealPasswordEnabled});
 
   /// Parses `inputs.text` from HostConfig JSON.
-  factory TextInputConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return TextInputConfig(
       revealPasswordEnabled:
           json['revealPasswordEnabled'] as bool? ??

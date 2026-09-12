@@ -13,7 +13,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 class AdaptiveActionToggleVisibility extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `Action.ToggleVisibility` widget from [adaptiveMap].
-  AdaptiveActionToggleVisibility({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

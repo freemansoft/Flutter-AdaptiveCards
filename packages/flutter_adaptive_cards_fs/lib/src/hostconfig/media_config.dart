@@ -1,14 +1,14 @@
 /// HostConfig `media` section controlling Media element defaults.
 class MediaConfig {
   /// Creates media element settings from explicit values.
-  MediaConfig({
+  new({
     required this.defaultPoster,
     required this.playButton,
     required this.allowInlinePlayback,
   });
 
   /// Parses `media` from HostConfig JSON.
-  factory MediaConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return MediaConfig(
       defaultPoster: json['defaultPoster']?.toString() ?? '',
       playButton: json['playButton']?.toString() ?? '',

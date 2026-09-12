@@ -359,10 +359,7 @@ void main() {
       );
       final messages = findings.map((f) => f.message).toList();
       expect(messages, hasLength(2));
-      expect(
-        messages.any((m) => m.contains('[shape_ab-seeded.json]')),
-        isTrue,
-      );
+      expect(messages.any((m) => m.contains('[shape_ab-seeded.json]')), isTrue);
       expect(
         messages.any((m) => m.contains('[shape_ab-seeded-recheck.json]')),
         isTrue,

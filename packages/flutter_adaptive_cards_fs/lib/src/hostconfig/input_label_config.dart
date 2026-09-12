@@ -2,7 +2,7 @@
 /// `inputs.label.optionalInputs`).
 class InputLabelConfig {
   /// Creates input label typography settings from explicit values.
-  InputLabelConfig({
+  new({
     required this.color,
     required this.isSubtle,
     required this.size,
@@ -11,7 +11,7 @@ class InputLabelConfig {
   });
 
   /// Parses an input label object from HostConfig JSON.
-  factory InputLabelConfig.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     InputLabelConfig? defaults,
   }) {

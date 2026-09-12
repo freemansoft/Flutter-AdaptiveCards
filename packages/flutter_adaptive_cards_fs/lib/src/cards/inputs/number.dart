@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveNumberInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a number input from [adaptiveMap] JSON.
-  AdaptiveNumberInput({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

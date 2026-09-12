@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
@@ -7,7 +8,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// for ProgressBar and ProgressRing elements.
 class ProgressSizesConfig {
   /// Creates progress size tokens from explicit pixel values.
-  ProgressSizesConfig({
+  new({
     required this.tiny,
     required this.small,
     required this.medium,
@@ -17,7 +18,7 @@ class ProgressSizesConfig {
   });
 
   /// Parses `progressSizes` from HostConfig JSON.
-  factory ProgressSizesConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return ProgressSizesConfig(
       tiny: json['tiny'] as int? ?? 10,
       small: json['small'] as int? ?? 20,
@@ -81,7 +82,7 @@ class ProgressSizesConfig {
 /// indicator fill colors.
 class ProgressColorsConfig {
   /// Creates progress color mappings from explicit values.
-  ProgressColorsConfig({
+  new({
     required this.good,
     required this.warning,
     required this.attention,
@@ -90,7 +91,7 @@ class ProgressColorsConfig {
   });
 
   /// Parses `progressColors` from HostConfig JSON.
-  factory ProgressColorsConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return ProgressColorsConfig(
       good: parseHostConfigColor(json['good']),
       warning: parseHostConfigColor(json['warning']),

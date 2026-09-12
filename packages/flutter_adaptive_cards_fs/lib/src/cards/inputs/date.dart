@@ -15,7 +15,7 @@ import 'package:intl/intl.dart';
 class AdaptiveDateInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a date input from [adaptiveMap] JSON.
-  AdaptiveDateInput({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

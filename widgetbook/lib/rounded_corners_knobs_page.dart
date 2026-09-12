@@ -19,7 +19,7 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 ///   HostConfig rather than being hardcoded per element.
 class RoundedCornersKnobsPage extends StatefulWidget {
   /// Creates the rounded-corners knobs demo page.
-  const RoundedCornersKnobsPage({super.key});
+  const new({super.key});
 
   @override
   State<RoundedCornersKnobsPage> createState() =>
@@ -46,7 +46,8 @@ class _RoundedCornersKnobsPageState extends State<RoundedCornersKnobsPage> {
       'body': <Object?>[
         {
           'type': 'TextBlock',
-          'text': 'roundedCorners across Container, ColumnSet, Column, '
+          'text':
+              'roundedCorners across Container, ColumnSet, Column, '
               'Table, and Image',
           'weight': 'Bolder',
           'size': 'Medium',

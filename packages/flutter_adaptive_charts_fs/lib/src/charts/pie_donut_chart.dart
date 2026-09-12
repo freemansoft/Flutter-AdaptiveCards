@@ -20,7 +20,7 @@ class AdaptivePieChart extends ConsumerStatefulWidget
   /// Creates a pie or donut chart element from [adaptiveMap].
   ///
   /// Set [isDonut] to `true` for donut charts.
-  AdaptivePieChart({
+  new({
     required this.adaptiveMap,
     this.isDonut = false,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {

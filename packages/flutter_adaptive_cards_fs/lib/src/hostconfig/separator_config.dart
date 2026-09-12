@@ -2,13 +2,13 @@
 /// appearance.
 class SeparatorConfig {
   /// Creates separator line settings from explicit values.
-  SeparatorConfig({
+  new({
     required this.lineThickness,
     required this.lineColor,
   });
 
   /// Parses `separator` from HostConfig JSON.
-  factory SeparatorConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return SeparatorConfig(
       lineThickness: json['lineThickness'] as int? ?? 1,
       lineColor: json['lineColor']?.toString() ?? '#B2000000',

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AdaptiveCardsWidgetbookHome extends StatelessWidget {
-  const AdaptiveCardsWidgetbookHome({super.key});
+  const new({super.key});
 
   // The original page used WidgetbookTheme.of(context) to get the theme.
   @override
@@ -39,8 +39,7 @@ class AdaptiveCardsWidgetbookHome extends StatelessWidget {
                         ),
                         _Card(
                           title: '📝 Layout Designer',
-                          url:
-                              'https://adaptivecards.microsoft.com/designer.html',
+                          url: 'https://adaptivecards.microsoft.com/designer.html',
                           description: 'Experiment with in the designer.',
                         ),
                       ],
@@ -80,8 +79,7 @@ class AdaptiveCardsWidgetbookHome extends StatelessWidget {
                       children: [
                         _Card(
                           title: '✨ Flutter-AdaptiveCards',
-                          url:
-                              'https://github.com/freemansoft/Flutter-AdaptiveCards',
+                          url: 'https://github.com/freemansoft/Flutter-AdaptiveCards',
                           description: 'This project and examples on GitHub',
                         ),
                       ],
@@ -98,7 +96,7 @@ class AdaptiveCardsWidgetbookHome extends StatelessWidget {
 }
 
 class _Card extends StatelessWidget {
-  const _Card({
+  const new({
     required this.title,
     required this.description,
     required this.url,

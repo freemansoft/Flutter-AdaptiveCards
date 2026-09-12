@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveAccordion extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an accordion from [adaptiveMap] JSON.
-  AdaptiveAccordion({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

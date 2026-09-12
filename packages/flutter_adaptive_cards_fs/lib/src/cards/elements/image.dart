@@ -18,7 +18,7 @@ class AdaptiveImage extends ConsumerStatefulWidget
   ///
   /// [parentMode] controls flex behavior when nested in column/row layouts.
   /// [supportMarkdown] enables markdown-friendly alignment when true.
-  AdaptiveImage({
+  new({
     required this.adaptiveMap,
     this.parentMode = 'stretch',
     required this.supportMarkdown,

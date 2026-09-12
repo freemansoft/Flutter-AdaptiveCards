@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Material [IconData] pair for Fluent **Filled** and **Regular** styles.
 class FluentIconEntry {
   /// Creates a Fluent icon mapping entry.
-  const FluentIconEntry({
+  const new({
     required this.filled,
     this.regular,
   });

@@ -51,7 +51,7 @@ BarChartAlignment _toFlChartAlignment(BarChartAlignmentToken token) {
 class AdaptiveBarChart extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a bar chart element from [adaptiveMap] with the given [type].
-  AdaptiveBarChart({
+  new({
     required this.adaptiveMap,
     required this.type,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {

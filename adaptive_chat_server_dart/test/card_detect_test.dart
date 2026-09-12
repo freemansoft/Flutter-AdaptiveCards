@@ -232,19 +232,16 @@ void main() {
 
     // A malformed body inside a full-card wrapper must fail closed, not
     // throw a cast error past the caller.
-    test(
-      'a full AdaptiveCard whose body contains a non-object element '
-      'returns null instead of throwing',
-      () {
-        expect(
-          tryParseCardBody(
-            '{"type":"AdaptiveCard","body":'
-            '[{"type":"TextBlock"}, "not an object"]}',
-          ),
-          isNull,
-        );
-      },
-    );
+    test('a full AdaptiveCard whose body contains a non-object element '
+        'returns null instead of throwing', () {
+      expect(
+        tryParseCardBody(
+          '{"type":"AdaptiveCard","body":'
+          '[{"type":"TextBlock"}, "not an object"]}',
+        ),
+        isNull,
+      );
+    });
 
     // A bare number or string is valid JSON but never a card — guards
     // against a parsed-but-not-Map/List value falling through unchecked.

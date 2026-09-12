@@ -77,9 +77,7 @@ Responder buildResponder({
   int historyTurns = defaultHistoryTurns,
   String jsonFormat = defaultJsonFormat,
   String keepAlive = defaultKeepAlive,
-  Duration ollamaTimeout = const Duration(
-    seconds: defaultOllamaTimeoutSeconds,
-  ),
+  Duration ollamaTimeout = const Duration(seconds: defaultOllamaTimeoutSeconds),
   double? temperature = defaultCardTemperature,
 }) {
   if (ollamaUrl != null && ollamaUrl.isNotEmpty) {

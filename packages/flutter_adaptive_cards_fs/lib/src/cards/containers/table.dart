@@ -25,7 +25,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveTable extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a `Table` from [adaptiveMap].
-  AdaptiveTable({
+  new({
     required this.adaptiveMap,
     required this.supportMarkdown,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {

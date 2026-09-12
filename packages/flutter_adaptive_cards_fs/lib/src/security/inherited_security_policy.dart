@@ -14,7 +14,7 @@ import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart'
 /// no ancestor is present, so validation is never silently skipped.
 class InheritedAdaptiveCardSecurityPolicy extends InheritedWidget {
   /// Creates the inherited policy holder wrapping [child].
-  const InheritedAdaptiveCardSecurityPolicy({
+  const new({
     required this.uriPolicy,
     required this.fetchPolicy,
     required super.child,

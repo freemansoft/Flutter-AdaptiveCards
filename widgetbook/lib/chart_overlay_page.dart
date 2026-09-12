@@ -15,7 +15,7 @@ const _chartId = 'demoChart';
 final chartOverlayPageKey = GlobalKey<State<ChartOverlayPage>>();
 
 class ChartOverlayPage extends StatefulWidget {
-  const ChartOverlayPage({super.key});
+  const new({super.key});
 
   @override
   State<ChartOverlayPage> createState() => _ChartOverlayPageState();

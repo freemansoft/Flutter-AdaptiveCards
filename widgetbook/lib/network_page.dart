@@ -12,7 +12,7 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 /// Based on example/lib/network_page.dart but adapted for Widgetbook:
 /// - No Scaffold/AppBar (Widgetbook provides its own chrome)
 class NetworkPage extends StatelessWidget {
-  const NetworkPage({super.key, required this.url});
+  const new({super.key, required this.url});
   final String url;
 
   @override

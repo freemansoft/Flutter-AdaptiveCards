@@ -39,7 +39,7 @@ enum TokenType {
 /// A lexical token produced by the [Lexer].
 class Token {
   /// Creates a new token.
-  const Token(this.type, this.value);
+  const new(this.type, this.value);
 
   /// The type of the token.
   final TokenType type;
@@ -54,7 +54,7 @@ class Token {
 /// A simple lexical analyzer for Adaptive Expressions.
 class Lexer {
   /// Creates a lexer for the given [input].
-  Lexer(this.input);
+  new(this.input);
 
   /// The input string to lex.
   final String input;
@@ -201,7 +201,7 @@ class Lexer {
 /// A recursive-descent parser for Adaptive Expressions.
 class ExpressionParser {
   /// Creates a parser for the given [input].
-  ExpressionParser(String input) : _lexer = Lexer(input) {
+  new(String input) : _lexer = Lexer(input) {
     _advance(); // read first token
   }
 

@@ -16,7 +16,7 @@ class MyTestHttpOverrides extends HttpOverrides {
   ///
   /// [urlResponder] receives the request [Uri] and returns the raw bytes and
   /// content-type to use. Return `null` to fall back to the default image stub.
-  MyTestHttpOverrides({this.urlResponder});
+  new({this.urlResponder});
 
   /// Optional factory for custom per-URL responses. Return `null` to fall back
   /// to the default PNG/SVG stub.
@@ -29,7 +29,7 @@ class MyTestHttpOverrides extends HttpOverrides {
 }
 
 class _TestImageHttpClient extends Fake implements HttpClient {
-  _TestImageHttpClient({this.urlResponder});
+  new({this.urlResponder});
 
   final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
 
@@ -49,7 +49,7 @@ class _TestImageHttpClient extends Fake implements HttpClient {
 }
 
 class _TestImageHttpClientRequest extends Fake implements HttpClientRequest {
-  _TestImageHttpClientRequest(this.uri, {this.urlResponder});
+  new(this.uri, {this.urlResponder});
 
   @override
   final Uri uri;
@@ -86,7 +86,7 @@ class _TestImageHttpClientRequest extends Fake implements HttpClientRequest {
 }
 
 class _TestImageHttpClientResponse extends Fake implements HttpClientResponse {
-  _TestImageHttpClientResponse({required this.uri, this.urlResponder});
+  new({required this.uri, this.urlResponder});
 
   final Uri uri;
   final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
@@ -155,7 +155,7 @@ class _TestImageHttpClientResponse extends Fake implements HttpClientResponse {
 }
 
 class _TestImageHttpHeaders extends Fake implements HttpHeaders {
-  _TestImageHttpHeaders([this._headers = const {}]);
+  new([this._headers = const {}]);
 
   final Map<String, List<String>> _headers;
 

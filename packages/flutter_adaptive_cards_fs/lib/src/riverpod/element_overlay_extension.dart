@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 @immutable
 abstract class ElementOverlayExtension {
   /// Creates an overlay extension for `CardTypeRegistry.overlayExtensions`.
-  const ElementOverlayExtension();
+  const new();
 
   /// Stable extension id used as the key in extension payload maps.
   String get id;
@@ -42,7 +42,7 @@ abstract class ElementOverlayExtension {
 @immutable
 class CardOverlayExtensionRegistry {
   /// Creates a registry with optional [extensions].
-  const CardOverlayExtensionRegistry({this.extensions = const []});
+  const new({this.extensions = const []});
 
   /// Registered overlay extensions for optional element packages.
   final List<ElementOverlayExtension> extensions;

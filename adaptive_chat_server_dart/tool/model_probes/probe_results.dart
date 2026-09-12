@@ -26,7 +26,7 @@ import 'package:path/path.dart' as p;
 /// One `/api/chat` call and how the server's own judge scored it.
 class ProbeCall {
   /// Creates a call record.
-  const ProbeCall({
+  const new({
     required this.caseId,
     required this.sample,
     required this.pass,
@@ -37,7 +37,7 @@ class ProbeCall {
   });
 
   /// Rebuilds a call from its JSON form.
-  factory ProbeCall.fromJson(Map<String, dynamic> json) => ProbeCall(
+  factory fromJson(Map<String, dynamic> json) => ProbeCall(
     caseId: json['case'] as String,
     sample: json['sample'] as int,
     pass: json['pass'] as bool,
@@ -101,7 +101,7 @@ class ProbeCall {
 /// A complete probe run: what was measured, against what, and every call.
 class ProbeRun {
   /// Creates a run record.
-  const ProbeRun({
+  const new({
     required this.probe,
     required this.model,
     required this.measuredAt,
@@ -119,7 +119,7 @@ class ProbeRun {
   });
 
   /// Rebuilds a run from its JSON form.
-  factory ProbeRun.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     String? sourceDir,
     String? fileName,
@@ -152,7 +152,7 @@ class ProbeRun {
   /// — the file does not name its own directory, and a copy moved between
   /// archives should read as the directory it now sits in. [fileName] is kept
   /// for the same reason and read off the same path.
-  factory ProbeRun.read(File file, {String? sourceDir}) => ProbeRun.fromJson(
+  factory read(File file, {String? sourceDir}) => ProbeRun.fromJson(
     jsonDecode(file.readAsStringSync()) as Map<String, dynamic>,
     sourceDir: sourceDir,
     fileName: p.basename(file.path),
@@ -383,9 +383,8 @@ String detectMachine() {
 String? detectOllamaVersion() {
   try {
     final r = Process.runSync('ollama', ['--version']);
-    final m = RegExp(
-      r'(\d+\.\d+\.\d+)',
-    ).firstMatch((r.stdout as String).trim());
+    final m = RegExp(r'(\d+\.\d+\.\d+)')
+        .firstMatch((r.stdout as String).trim());
     return m?.group(1);
   } on ProcessException {
     return null;

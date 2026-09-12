@@ -10,14 +10,14 @@ import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 @immutable
 class Fact {
   /// One FactSet row; [title] is the label column, [value] the value column.
-  const Fact({
+  const new({
     required this.title,
     required this.value,
   });
 
   /// Parses a FactSet fact from card JSON; expands DATE/TIME templates in
   /// strings.
-  factory Fact.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return Fact(
       title: DateTimeUtils.formatText(json['title'] as String? ?? ''),
       value: DateTimeUtils.formatText(json['value'] as String? ?? ''),

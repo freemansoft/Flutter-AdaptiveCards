@@ -15,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveGaugeChart extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a gauge chart element from [adaptiveMap].
-  AdaptiveGaugeChart({required this.adaptiveMap})
+  new({required this.adaptiveMap})
     : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
@@ -164,7 +164,7 @@ class AdaptiveGaugeChartState extends ConsumerState<AdaptiveGaugeChart>
 
 /// Title, chart body, and optional segment legend (inline chrome wrapper).
 class _GaugeChrome extends StatelessWidget {
-  const _GaugeChrome({
+  const new({
     required this.title,
     required this.showLegend,
     required this.segments,

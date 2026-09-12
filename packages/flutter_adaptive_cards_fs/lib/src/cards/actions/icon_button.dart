@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class IconButtonAction extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an action button for [adaptiveMap] that calls [onTapped] on press.
-  IconButtonAction({
+  new({
     required this.adaptiveMap,
     required this.onTapped,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {

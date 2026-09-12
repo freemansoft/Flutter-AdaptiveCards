@@ -36,7 +36,7 @@ enum AdaptiveCardBrightnessMode {
 /// Light and dark HostConfig pair with a mutable [current] selection.
 class HostConfigs {
   /// Creates a light/dark HostConfig pair; [current] starts as [light].
-  HostConfigs({
+  new({
     this.light = const HostConfig(),
     this.dark = const HostConfig(),
   }) {
@@ -64,7 +64,7 @@ class HostConfigs {
 /// code when building a config programmatically.
 class HostConfig {
   /// Builds a HostConfig programmatically when you are not loading from JSON.
-  const HostConfig({
+  const new({
     this.imageBaseUrl,
     this.fontFamily,
     this.supportsInteractivity,
@@ -94,7 +94,7 @@ class HostConfig {
 
   /// Load HostConfig from card host JSON; optional [theme] supplies Material
   /// color fallbacks.
-  factory HostConfig.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     ThemeData? theme,
   }) {

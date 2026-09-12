@@ -3,7 +3,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 /// HostConfig `spacing` section mapping spacing tokens to pixel gaps.
 class SpacingsConfig {
   /// Creates spacing tokens from explicit pixel values.
-  SpacingsConfig({
+  new({
     required this.small,
     required this.defaultSpacing,
     required this.medium,
@@ -13,7 +13,7 @@ class SpacingsConfig {
   });
 
   /// Parses `spacing` from HostConfig JSON.
-  factory SpacingsConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return SpacingsConfig(
       small: json['small'] as int? ?? 3,
       defaultSpacing: json['default'] as int? ?? 8,

@@ -18,6 +18,7 @@ import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy
 import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 // Default action handlers with basic behavior
 // including forwarding to the InheritedAdaptiveCardHandlers
 
@@ -118,7 +119,7 @@ bool validateInputs(ProviderContainer container) {
 class DefaultSubmitAction extends GenericSubmitAction {
   /// Validates inputs, merges `data`, and forwards to
   /// [InheritedAdaptiveCardHandlers.onSubmit].
-  const DefaultSubmitAction();
+  const new();
 
   @override
   void tap({
@@ -164,7 +165,7 @@ class DefaultSubmitAction extends GenericSubmitAction {
 class DefaultExecuteAction extends GenericExecuteAction {
   /// Validates inputs, merges `data`, and forwards to
   /// [InheritedAdaptiveCardHandlers.onExecute].
-  const DefaultExecuteAction();
+  const new();
 
   @override
   void tap({
@@ -217,7 +218,7 @@ class DefaultExecuteAction extends GenericExecuteAction {
 /// `flutter_adaptive_cards_host_fs`) to do the GET/POST.
 class DefaultHttpAction extends GenericHttpAction {
   /// Creates the default `Action.Http` handler.
-  const DefaultHttpAction();
+  const new();
 
   @override
   void tap({
@@ -287,7 +288,7 @@ class DefaultHttpAction extends GenericHttpAction {
 /// https://www.iana.org/assignments/uri-schemes/uri-schemes.xhtml
 class DefaultOpenUrlAction extends GenericActionOpenUrl {
   /// Forwards to [InheritedAdaptiveCardHandlers.onOpenUrl] or launches the URL.
-  const DefaultOpenUrlAction();
+  const new();
 
   @override
   void tap({
@@ -341,7 +342,7 @@ class DefaultOpenUrlAction extends GenericActionOpenUrl {
 class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
   /// Forwards to [InheritedAdaptiveCardHandlers.onOpenUrlDialog] or shows the
   /// built-in dialog.
-  const DefaultOpenUrlDialogAction();
+  const new();
 
   @override
   void tap({
@@ -375,7 +376,7 @@ class DefaultOpenUrlDialogAction extends GenericActionOpenUrlDialog {
 /// Resets the form
 class DefaultResetInputsAction extends GenericActionResetInputs {
   /// Resets targeted inputs via [executeResetInputsAction].
-  const DefaultResetInputsAction();
+  const new();
 
   @override
   void tap({
@@ -391,7 +392,7 @@ class DefaultResetInputsAction extends GenericActionResetInputs {
 /// in a modal dialog, inheriting HostConfig from the parent card.
 class DefaultPopoverAction extends GenericPopoverAction {
   /// Creates a default popover action handler.
-  const DefaultPopoverAction();
+  const new();
 
   @override
   void tap({
@@ -428,7 +429,7 @@ class DefaultPopoverAction extends GenericPopoverAction {
 class DefaultToggleVisibilityAction extends GenericActionToggleVisibility {
   /// Toggles visibility for each `targetElements` entry via the document
   /// notifier.
-  const DefaultToggleVisibilityAction();
+  const new();
 
   @override
   void tap({

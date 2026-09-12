@@ -32,7 +32,7 @@ import 'probe_results.dart';
 /// One rendered row of the shape-coverage table.
 class ShapeRow {
   /// Creates a row.
-  const ShapeRow({
+  const new({
     required this.model,
     required this.weights,
     required this.cold,
@@ -223,7 +223,7 @@ String renderTable(List<ShapeRow> rows) {
 /// measurement somebody took into an em dash.
 class CarriedCells {
   /// Creates the carried set.
-  const CarriedCells({
+  const new({
     required this.weights,
     required this.cascade,
     required this.eroded,

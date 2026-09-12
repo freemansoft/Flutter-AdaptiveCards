@@ -72,10 +72,7 @@ void main() {
       // times out acquiring a connection.
       var seen = 0;
       final stallThenAnswer =
-          await HttpServer.bind(
-              InternetAddress.loopbackIPv4,
-              0,
-            )
+          await HttpServer.bind(InternetAddress.loopbackIPv4, 0)
             ..listen((req) async {
               if (req.uri.path == '/api/generate') {
                 await req.response.close(); // the eviction; not a chat attempt

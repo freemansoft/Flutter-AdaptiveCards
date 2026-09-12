@@ -15,7 +15,7 @@ typedef AdaptiveCardValidator = bool Function(Map<String, dynamic> card);
 class AdaptiveCardInvokeResponse {
   /// Parsed invoke result from a response adapter; hosts usually do not
   /// construct this directly.
-  const AdaptiveCardInvokeResponse(this.effects);
+  const new(this.effects);
 
   /// Effects to run in order via [applyTo]: patches, input errors, then full
   /// card replacement.
@@ -69,7 +69,7 @@ class AdaptiveCardInvokeResponse {
 /// Thrown when invoke response JSON cannot be parsed.
 class AdaptiveCardInvokeResponseParseException implements Exception {
   /// Malformed or unsupported invoke response JSON from the backend.
-  AdaptiveCardInvokeResponseParseException(this.message);
+  new(this.message);
 
   /// Safe to log or surface in `AdaptiveCardBackendHandlers.onError`.
   final String message;

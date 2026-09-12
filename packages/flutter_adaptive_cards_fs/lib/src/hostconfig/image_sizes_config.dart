@@ -4,14 +4,14 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 /// for Image elements.
 class ImageSizesConfig {
   /// Creates image size tokens from explicit pixel values.
-  ImageSizesConfig({
+  new({
     required this.small,
     required this.medium,
     required this.large,
   });
 
   /// Parses `imageSizes` from HostConfig JSON.
-  factory ImageSizesConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return ImageSizesConfig(
       small: json['small'] as int? ?? 80,
       medium: json['medium'] as int? ?? 120,

@@ -19,11 +19,7 @@ class AdaptiveExplorerApp extends StatelessWidget {
   /// This supports two optional parameters to simplify testing:
   /// * [initialTemplateJson] can be injected as an initial template JSON.
   /// * [initialDataJson] can be injected as an initial data JSON.
-  const AdaptiveExplorerApp({
-    super.key,
-    this.initialTemplateJson,
-    this.initialDataJson,
-  });
+  const new({super.key, this.initialTemplateJson, this.initialDataJson});
 
   /// Optional initial template JSON for testing.
   final Map<String, dynamic>? initialTemplateJson;
@@ -50,11 +46,7 @@ class AdaptiveExplorerApp extends StatelessWidget {
 /// The main page of the application.
 class HomePage extends StatefulWidget {
   /// Creates a new [HomePage].
-  const HomePage({
-    super.key,
-    this.initialTemplateJson,
-    this.initialDataJson,
-  });
+  const new({super.key, this.initialTemplateJson, this.initialDataJson});
 
   /// Optional initial template JSON so we don't have to open a file every time.
   final Map<String, dynamic>? initialTemplateJson;

@@ -30,48 +30,45 @@ void main() {
     expect(start.postNext, '/conversations/c_1/interactions');
   });
 
-  test(
-    'sendInteraction posts PlainJson body + interaction header, parses '
-    'envelope',
-    () async {
-      late http.Request captured;
-      final mock = MockClient((req) async {
-        captured = req;
-        return http.Response(
-          jsonEncode({
-            'conversationId': 'c_1',
-            'interactionId': 'i_0001',
-            'messages': [
-              {'type': 'AdaptiveCard', 'body': <dynamic>[]},
-            ],
-            'links': {
-              'self': '/conversations/c_1/interactions/i_0001',
-              'postNext': '/conversations/c_1/interactions',
-            },
-          }),
-          200,
-        );
-      });
-      final client = ChatBackendClient(
-        baseUrl: Uri.parse('http://localhost:8000'),
-        client: mock,
+  test('sendInteraction posts PlainJson body + interaction header, parses '
+      'envelope', () async {
+    late http.Request captured;
+    final mock = MockClient((req) async {
+      captured = req;
+      return http.Response(
+        jsonEncode({
+          'conversationId': 'c_1',
+          'interactionId': 'i_0001',
+          'messages': [
+            {'type': 'AdaptiveCard', 'body': <dynamic>[]},
+          ],
+          'links': {
+            'self': '/conversations/c_1/interactions/i_0001',
+            'postNext': '/conversations/c_1/interactions',
+          },
+        }),
+        200,
       );
+    });
+    final client = ChatBackendClient(
+      baseUrl: Uri.parse('http://localhost:8000'),
+      client: mock,
+    );
 
-      final env = await client.sendInteraction(
-        postNext: '/conversations/c_1/interactions',
-        interactionId: 'i_0001',
-        invoke: const SubmitActionInvoke(data: {'message': 'hello'}),
-      );
+    final env = await client.sendInteraction(
+      postNext: '/conversations/c_1/interactions',
+      interactionId: 'i_0001',
+      invoke: const SubmitActionInvoke(data: {'message': 'hello'}),
+    );
 
-      expect(captured.headers['X-Interaction-Id'], 'i_0001');
-      final body = jsonDecode(captured.body) as Map<String, dynamic>;
-      expect(body['kind'], 'submit');
-      expect((body['data'] as Map)['message'], 'hello');
-      expect(env.interactionId, 'i_0001');
-      expect(env.messages.single['type'], 'AdaptiveCard');
-      expect(env.postNext, '/conversations/c_1/interactions');
-    },
-  );
+    expect(captured.headers['X-Interaction-Id'], 'i_0001');
+    final body = jsonDecode(captured.body) as Map<String, dynamic>;
+    expect(body['kind'], 'submit');
+    expect((body['data'] as Map)['message'], 'hello');
+    expect(env.interactionId, 'i_0001');
+    expect(env.messages.single['type'], 'AdaptiveCard');
+    expect(env.postNext, '/conversations/c_1/interactions');
+  });
 
   test(
     'startConversation sends userLabel/assistantLabel/language when given',
