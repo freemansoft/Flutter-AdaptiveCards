@@ -16,15 +16,15 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                                | File                                         | Status                                             |
-| --- | -------------------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                                  | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added      |
-| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added     |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added   |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models              | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08                        |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `2026-09-12-article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual    |
-| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `2026-09-12-article-7-full-context-cost-*`   | Split from 6 on 2026-09-12, mermaid chart          |
+| #   | Article                                                                                | File                              | Status                                             |
+| --- | -------------------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added      |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added     |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added   |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models              | `article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08                        |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual    |
+| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Split from 6 on 2026-09-12, mermaid chart          |
 
 Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
@@ -53,7 +53,7 @@ output. Secondary: Flutter and server-driven-UI readers.
 
 **Publication target:** <https://joe.blog.freemansoft.com>.
 
-**File naming:** `YYYY-MM-DD-article-N-slug-draft.md`.
+**File naming:** `article-N-slug-draft.md`.
 
 **Publishing to Blogger:**
 [`tool/blog/to_blogger.dart`](../tool/blog/to_blogger.dart)
