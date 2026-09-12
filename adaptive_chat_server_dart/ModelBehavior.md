@@ -19,6 +19,7 @@ The generalizable results — the ones that should transfer to any workload aski
 - **Decoding settings dominate model choice.** The single largest quality jump measured on this workload came from sending `temperature: 0` and `think: false`, not from changing model. A model that looks incapable at temp 1 with thinking on can be clean at temp 0.
 - **Temperature 0 is not deterministic.** A ~3.5 K-character table produced two different outputs across three calls at `0`. Greedy decoding repeats short replies verbatim, but long generations still diverge. What `0` buys is a _stable failure mode_ — a card the model gets wrong at `0` is usually wrong the same way on retry, so a broken card never self-heals.
 - **`format` support is per-model _and per-runtime_, and silent when absent.** Some models ignore it with no error, and ignoring it is not one behavior but two — under Ollama 0.32.14 `qwen3.8:27b-nvfp4` returned the identical good card under `none`/`json`/`schema`, while `gpt-oss:20b` returns an empty body under `json` and prose under `schema`. `qwen2.5-coder:7b` honors it. The verdict can also change with an Ollama upgrade: both `nvfp4` builds flipped from ignoring to honoring between 0.32.14 and 0.33.2, while `gpt-oss:20b` did not move — so re-run the canary after a runtime upgrade before trusting the constraint either way. A model can be strong on every other axis and still be unusable under this one constraint.
+- **A history message that exceeds the allocated window is dropped whole, not trimmed, and nothing says so.** Ollama allocates `min(requested, trained window)`, confirmed on both a 16 GB and a 64 GB host with no counterexample; a message that does not fit inside that allocation is removed in full rather than cut down, and five of eight models measured under one such overflow evaluated only the system prompt and question, between 3819 and 4374 tokens. Sizing history in characters is what causes an overflow to go undetected: the same text tokenizes at 4.30 chars/token on llama, granite and gpt-oss builds and at 2.74 to 2.99 on Qwen and Nemotron ones, so a filler sized to fit one model's tokenizer overflows another's allocation by nearly half. Two `nvfp4` builds are an exception and evaluate thousands of tokens past their own allocation at no cost, so the allocation is enforced inconsistently rather than never. The reply reads as a normal answer to a question asked with no history, so the loss is invisible unless `prompt_eval_count` is checked. See [a filled context](#a-filled-context-an-oversized-history-message-is-dropped-whole-and-a-real-one-costs-some-models-a-third-of-their-shapes).
 - **Redirect a behavior rather than forbidding it.** Asked to explain code, `qwen2.5-coder:7b` emitted a card and then appended the explanation, which makes the whole reply raw text. Telling it harder not to append did not help: it scored the same and stopped producing cards, answering every code question as prose. Telling it where the explanation goes — a `TextBlock` beside the `CodeBlock` — fixed it.
 - **System prompt text moves the failure rate; only the detector makes a shape safe.** Each prompt fix exposes the next failure — once the model sent two elements it began dropping the `[ ]` around them. Prompt wording cut that to near zero at `t=0` but not at `t=0.6`, so `card_detect.dart` repairs the bracketless form as well.
 - **Tool-calling support is per-model and silent when absent, the same as `format` — and "can call a tool" is a separate capability from "uses it correctly for a card."** Measured 2026-08-21 across all fifteen models: 8 return a card through Ollama's tool channel cleanly (`supported`), 3 can call a tool but never reach for the card tool at all (`supportedButDeclines`, including `llama3-groq-tool-use:8b`, a model fine-tuned specifically for tool use), 2 call tools freely enough to leak the card tool onto a plain prose question (`overCalls`), and 2 — including `qwen2.5-coder:7b`, the server's own compiled-in default model — expose no tool-calling path at all under an identical prompt and schema. See [the tool-calling canary](#not-a-card-test-the-tool-calling-canary).
@@ -535,6 +536,130 @@ Two caveats on the numbers:
   and several others substitute Illinois, which is sixth. The probe scores the
   cascade, not the facts, and passes both.
 
+### A filled context: an oversized history message is dropped whole, and a real one costs some models a third of their shapes
+
+[`context_fill_probe.dart`](tool/model_probes/context_fill_probe.dart) runs the same 25 cases `shape_ab.dart` runs, but replaces the two prose history turns with a large deterministic filler block, to test whether a model still answers in cards once its window is mostly used. It is a standalone diagnostic: `check_results.dart` does not scan its output, and its archives live under [`context_fill_results/`](tool/model_probes/context_fill_results) rather than a `results-*` directory. Every figure below is `--samples 1`, measured under Ollama 0.33.3 on an Apple M1 Max (64 GB) and an Apple M5 (16 GB).
+
+#### Allocation is `min(requested, trained window)`, regardless of host memory
+
+Across thirty-one runs on both hosts the runner allocated exactly **`min(requested, trained window)`** with no counterexample: every clamp lands on that model's own trained window, none at an intermediate value, and no model got less than its window could hold.
+
+| Model                     | Trained window | Allocated (35851 requested) | Clamped |
+| ------------------------- | -------------- | --------------------------- | ------- |
+| `llama3.2:latest`         | 131072         | 35851                       | no      |
+| `granite4.1:8b`           | 131072         | 35851                       | no      |
+| `granite4.1:3b`           | 131072         | 35851                       | no      |
+| `nemotron-3-nano:4b`      | 262144         | 35851                       | no      |
+| `qwen3.5:9b`              | 262144         | 35851                       | no      |
+| `qwen2.5-coder:7b`        | 32768          | **32768**                   | yes     |
+| `llama3-groq-tool-use:8b` | 8192           | **8192**                    | yes     |
+| `llama3-chatqa:8b`        | 8192           | **8192**                    | yes     |
+
+Host memory plays no part, which is measured on both hosts rather than inferred from one: the 16 GB M5 and the 64 GB M1 Max return identical allocations for every model, including the three clamps above and six further models too large for the 16 GB host that requested 35851 against windows of 131072 or more and received exactly that. The fit control makes the same point directly: the 16 GB host was granted the full **65536**-token window it requested for `nemotron-3-nano:4b` and `qwen3.5:9b`, and 32768 for `qwen2.5-coder:7b`, identical to the 64 GB host.
+
+The practical form of the rule: `ollama ps` (or `/api/ps`) is the only way to find out what a request actually got, and the value can be smaller than what was asked for with nothing saying so.
+
+#### History that exceeds the allocation is dropped whole, not trimmed
+
+An early sweep asked for a filler sized at 28000 tokens (plus the card system prompt's own ~3755-token estimate, for a 35851-token request) and got very different outcomes across the eight models a 16 GB host can hold:
+
+| Model                     | Trained window | Prompt tokens evaluated | History |
+| ------------------------- | -------------- | ----------------------- | ------- |
+| `llama3.2:latest`         | 131072         | 29546                   | kept    |
+| `granite4.1:8b`           | 131072         | 29536                   | kept    |
+| `granite4.1:3b`           | 131072         | 29536                   | kept    |
+| `nemotron-3-nano:4b`      | 262144         | **4374**                | dropped |
+| `qwen3.5:9b`              | 262144         | **3965**                | dropped |
+| `qwen2.5-coder:7b`        | 32768          | **3850**                | dropped |
+| `llama3-groq-tool-use:8b` | 8192           | **3825**                | dropped |
+| `llama3-chatqa:8b`        | 8192           | **3819**                | dropped |
+
+A model that trimmed oversized history to fit would report a prompt count near its window. The five droppers instead report between 3819 and 4374 tokens: the system prompt and the question, and nothing else. The filler was removed in full, not cut down. Nothing errors and nothing warns; the reply reads as an ordinary answer to a question asked with no history, so the loss is invisible unless `prompt_eval_count` is checked.
+
+The two 8192-window models were always going to drop a 28000-token filler; no tokenizer makes that fit. The other three did not have that excuse on the numbers the probe itself was working from: 28000 tokens against windows of 32768 to 262144 looked like it should fit. It didn't, because the probe sized the filler in **characters**, at an assumed 4.0 characters per token, and that constant only holds for some tokenizers. Measured against the same 127,020-character filler:
+
+| Model                      | Tokens for the same text | Characters per token |
+| -------------------------- | ------------------------ | -------------------- |
+| `llama3.2:latest`          | 29546                    | 4.30                 |
+| `granite4.1:8b`            | 29536                    | 4.30                 |
+| `gpt-oss:20b`              | 29616                    | 4.29                 |
+| `qwen3.8:27b-nvfp4`        | 42542                    | 2.99                 |
+| `qwen3.6:27b-coding-nvfp4` | 42538                    | 2.99                 |
+| `nemotron-3-nano:4b`       | 46287                    | 2.74                 |
+
+Three unrelated model families tokenize the filler at 4.29-4.30 characters per token; two Qwen builds render the identical text 44% denser, and `nemotron-3-nano:4b` denser still. The filler text (`filler-term123 means concept456.`) is digit-heavy, and tokenizers split digit strings very differently. Sized against the 4.0 assumption, a filler meant to land at roughly 28000 tokens instead landed at 42,000 to 46,000 tokens for the three larger-window droppers, comfortably over the 35851-token allocation despite the trained window itself being nowhere near the limit. The probe was recording an artifact of its own sizing, not a policy of discarding history that would otherwise fit.
+
+A control confirmed this the direct way: [`m1max-64gb-ollama0333-fitcontrol-calibrated/`](tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fitcontrol-calibrated) sends a short calibration sample first, derives each model's own characters-per-token from `prompt_eval_count`, and sizes the filler to fit the window each model is actually allocated. **All eight models ingested it.** No model dropped a message it had room for; every drop above was a message that genuinely overflowed once sized correctly. The same calibrated control reproduced on the 16 GB M5 to the token and to the case for the three models it can hold.
+
+#### Two builds ignore the limit entirely
+
+`qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` never dropped the filler, calibrated or not. Under the same 35851-token allocation as every model above, they evaluated 42542 and 42538 tokens, roughly 6,700 tokens past what `/api/ps` reported allocating, and scored 17/25 and 21/25 rather than collapsing the way an overflow predicts for every other model measured.
+
+So `min(requested, trained window)` describes what the runner allocates, not what it enforces, and on these two builds the two come apart. No mechanism is established. Both are `nvfp4` builds, which this file already records as [flipping their `format` verdict](#not-a-card-test-the-format-canary) between Ollama versions, so a runtime-specific quirk is consistent with the reading without being confirmed from server logs.
+
+#### A window that genuinely fills costs three of eight models about a third of their shape coverage
+
+A separate question from allocation and dropping: what does a model that actually receives its full history do with it? Each of eight models was given a filler calibrated to its own tokenizer and sized to fill the window it is actually allocated, roughly 48,500 tokens for six of them. **Pass** is that run; **Empty window** is the same 25 cases with no history, read from the pre-calibration sweep for six of the eight rows.
+
+| Model                        | Prompt tokens (full) | Pass      | Empty window |
+| ---------------------------- | -------------------- | --------- | ------------ |
+| `qwen3-coder:30b`            | 48459                | 20/25     | 18/25        |
+| `qwen3.6:27b-coding-nvfp4`   | 48535                | 20/25     | 21/25\*      |
+| `qwen2.5-coder:7b`           | 24721                | 19/25     | 22/25        |
+| `qwen3.5:9b`                 | 48537                | 16/25     | 18/25        |
+| `qwen3.8:27b-nvfp4`          | 48539                | 16/25     | 17/25\*      |
+| `nemotron-3.5-lightning:30b` | 48600                | **13/25** | 20/25        |
+| `nemotron-3-nano:30b`        | 48611                | **12/25** | 17/25        |
+| `nemotron-3-nano:4b`         | 48559                | **6/25**  | 8/25         |
+
+\* These two builds never emptied their window (see above): their comparison column is an earlier ~42,500-token reading that was already full, not an empty one. Their movement here is full-against-differently-full, not full-against-empty, and should be read with that narrower scope.
+
+`qwen3-coder:30b`, `qwen2.5-coder:7b`, `qwen3.5:9b`, and the two `nvfp4` builds move by one to two cases in either direction: `--samples 1` noise. `nemotron-3.5-lightning:30b` and `nemotron-3-nano:30b` lose about a third of their coverage for nothing but a full window, 20 to 13 and 17 to 12. `qwen2.5-coder:7b` carries only 24721 tokens rather than ~48,500, because its 32768 trained window caps it and a bigger request changes nothing for it; its result is a smaller experiment, not a smaller model failing harder. `nemotron-3-nano:4b`'s 8 to 6 looks like a third loss but is excluded below.
+
+The two Nemotron drops reproduced independently: an earlier, uncalibrated run at 42,500 to 46,300 tokens returned the same 13, 12, and 6 for these three models that the calibrated run at ~48,500 tokens returns. Two runs at different prompt sizes landing on the same three counts is a stronger reading than either alone, and none of the Qwen movements reproduce that way. The three models a 16 GB host can hold were re-measured there too: prompt counts match the M1 Max to the token, and pass counts move by at most one case, so neither the drop nor its size is a property of host memory.
+
+#### The two big losses are different failures
+
+Sorting each run's 25 judge verdicts by category shows the cost is model-specific, not one mechanism. `prose` is a reply with no card in it; `no-input` is a valid card that shows something where the case asked it to collect something, almost always a `TextBlock` substituted for an `Input.*`; `wrong-shape` is a card using the wrong element; `broken` is a body that does not parse. Each cell reads empty context to full.
+
+| Model                        | Pass     | `prose`  | `no-input` | `wrong-shape` | `broken` |
+| ---------------------------- | -------- | -------- | ---------- | ------------- | -------- |
+| `qwen3-coder:30b`            | 18 to 20 | 0 to 0   | 2 to 2     | 2 to 1        | 2 to 1   |
+| `qwen3.6:27b-coding-nvfp4`   | 21 to 20 | 0 to 0   | 0 to 0     | 0 to 0        | 4 to 5   |
+| `qwen2.5-coder:7b`           | 22 to 19 | 0 to 3   | 2 to 1     | 1 to 2        | 0 to 0   |
+| `qwen3.5:9b`                 | 18 to 16 | 0 to 0   | 2 to 5     | 1 to 1        | 4 to 2   |
+| `qwen3.8:27b-nvfp4`          | 17 to 16 | 4 to 2   | 0 to 0     | 0 to 0        | 4 to 7   |
+| `nemotron-3.5-lightning:30b` | 20 to 13 | 1 to 10  | 1 to 0     | 0 to 0        | 3 to 2   |
+| `nemotron-3-nano:30b`        | 17 to 12 | 0 to 0   | 4 to 8     | 2 to 3        | 2 to 2   |
+| `nemotron-3-nano:4b`         | 8 to 6   | 14 to 14 | 0 to 0     | 2 to 3        | 1 to 2   |
+
+`nemotron-3.5-lightning:30b` **stops producing cards**: its `prose` count goes 1 to 10, and all eight cases it loses come back as plain text rather than card JSON.
+
+`nemotron-3-nano:30b` **keeps producing cards and picks worse elements**: its `no-input` count goes 4 to 8, uniformly a static `TextBlock` substituted for the interactive input the case asked for (`want {Input.Time}`, `want {Input.ChoiceSet}`, `want {Input.Toggle}`).
+
+`nemotron-3-nano:4b` is not a context casualty. Its `prose` count does not move, 14 to 14, because it was already answering most cases in prose on an empty window; its two lost cases are ordinary single-sample movement.
+
+`qwen2.5-coder:7b` reverts to prose on three cases while carrying 24721 tokens, roughly half what the others carry, the only sign here that the effect can start below a fully-occupied window.
+
+A mechanism consistent with both real losing patterns, and not measured here: both are failures to follow the **system prompt** specifically, the instruction to answer as a card in one case and the element palette in the other, while ordinary question-answering stays intact in both (a `prose` reply and a `TextBlock` card each answer what was asked). That is what degrading instruction adherence over a long context would look like. Nothing in these runs tests it directly; doing so would mean moving the instruction's position in the prompt, or sweeping the fill across sizes to see whether the loss scales with it.
+
+#### The cost does not scale with how full the window is
+
+The three models a 16 GB host can hold were re-run at a third fill level, each window held at its calibrated value and the fill roughly halved, so occupancy is the only variable. The near-empty column is a lower-occupancy reading from a different, uncalibrated archive rather than a matched control at the same window.
+
+| Model                | Near-empty   | Half fill     | Full fill     |
+| -------------------- | ------------ | ------------- | ------------- |
+| `nemotron-3-nano:4b` | 4374 → 8/25  | 25065 → 7/25  | 48559 → 6/25  |
+| `qwen3.5:9b`         | 3965 → 17/25 | 24813 → 14/25 | 48537 → 16/25 |
+| `qwen2.5-coder:7b`   | 3850 → 22/25 | 13966 → 21/25 | 24721 → 20/25 |
+| **Pooled**           | **47/75**    | **42/75**     | **42/75**     |
+
+Two models decline by one case per step, and `qwen3.5:9b` does not decline at all (17 to 14 to 16, a three-case spread wider than its endpoints differ, which is `--samples 1` noise). Pooled coverage drops five cases between near-empty and half fill and none at all between half and full, so the cost is neither proportional to occupancy nor a cliff at a particular fill level. Whether the five-case pooled drop is real needs `--samples 2` and more models, not a fourth fill level, and none of the three models here are the large Nemotron builds that carry the losses above.
+
+#### Limits
+
+Every run in this section is `--samples 1`, against the `--samples 2` most of this file carries, so a one-case difference is noise and only the Nemotron drops of five to seven cases, and the pooled five-case half-fill drop, are large enough to read. No pass column here is like-for-like with [the shape-coverage table](#shape-coverage--all-fifteen-models-as-shipped), which was measured on a different runtime with two prose turns as history rather than a filler block; read these figures within this section rather than against that one. Latency medians recorded during these runs did not reproduce across re-measurements of the same host and model and are not used anywhere in this section.
+
 ### Not a card test: the `format` canary
 
 `json_format_probe.dart` asks a different question — does this model honor Ollama's `format` constraint at all? Some ignore it silently, with no error, which makes `--json-format json|schema` inert. Check it before trusting the constraint; it is a capability probe, not a quality score.
@@ -1004,6 +1129,9 @@ The forward-looking items from the sections above, collected so they are not re-
 - **The `gpt-oss:20b` swap is worth revisiting, though the reason changed.** Under 0.32.14 it was the strongest unaided model in the file and the only 25/25 under any condition; under 0.33.2 it is still the only 25/25, now under the seeded condition rather than the unaided one, and no longer the top unaided scorer (`qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both score higher unaided). It is still not in `launch.json`. The swap is defensible, not settled, on either runtime's figures (see [its per-model notes](#gpt-oss20b)).
 - **A thinking-on arm of the tool-channel comparison.** Every probe sends `think: false` unconditionally, so thinking is untested rather than ruled out as a variable in the tool-channel result (see [the failure decomposition](#why-it-did-not-pay--the-failure-decomposition)).
 - **Can a runaway generation be cancelled at all, and how.** `keep_alive: 0` did not cancel one in a direct test (an 18 s generation completed at 20.9 s), nor did `ollama stop` (16.3 s), and 53 unloads did not stop a 70-minute generation during `granite4.1:3b`'s after-eviction run. Until a cancellation path is shown to work and the model is re-run behind it, `granite4.1:3b`'s 0.33.2 shape and stall figures stay recorded as cascade-damaged rather than as a model measurement (see [the cascade section](#stalls-are-a-queueing-cascade-not-a-runtime-difference)). The schema-constrained `Carousel` timeouts on `qwen3.6:27b-coding-nvfp4` (see [its per-model notes](#qwen3627b-coding-nvfp4)) add two more occurrences under 0.33.3: both times the client's 180 s timeout left the runner stuck in `ollama ps`'s `Stopping...` state, holding 16-22 GB at roughly 19% CPU for up to an hour, and an explicit `keep_alive: 0` unload that the server acknowledged (`done_reason: "unload"`) did not clear it — only killing the runner process did, with `ollama serve` itself staying up and responsive throughout. No token or character count was captured for the timed-out calls, so a still-generating server-side process is a hypothesis consistent with the evidence, not a confirmed mechanism; what is established is narrower — `evictModel()` prevented the timeouts from cascading into the next probe within this run (`ColumnSet` cold passed immediately after three `Carousel` timeouts) without terminating the generation or freeing the runner. A third instance, on 2026-09-05, wedged the same model under `--json-format json` — the third occurrence under constrained decoding on `qwen3.6:27b-coding-nvfp4`, and again an acknowledged `keep_alive: 0` unload (`done_reason: "unload"`) did not clear it; only killing the runner process did, at a resident 10.6 GB of the 21-22 GB model, alive 1:02:32 at roughly 33% CPU, with `ollama serve` staying responsive throughout. This run wedged sooner, after 6 calls, and produced no comparable pass/fail — every call after the wedge returned `timeout (180s)`, including two cases that score 6/6 in both prior arms, so nothing from it was archived.
+- **Closed 2026-09-11: nothing drops a history message that fits.** This entry asked what discarded an oversized message when the runner had room for it. The [fit control](#a-filled-context-an-oversized-history-message-is-dropped-whole-and-a-real-one-costs-some-models-a-third-of-their-shapes) shows the premise was false: all six models ingested the filler once it fit, and every drop was a message 42426 tokens or larger under a 35851-token window. The probe's fixed `fillerCharsPerToken = 4.0` manufactured the gap by sizing history in characters. Three things it left open have since closed. Per-model calibration shipped on 2026-09-12, so a run no longer sizes its filler from a constant that overflows on dense tokenizers. The M5 archive was re-measured the same week and all eight models carry `runnerContextLength`, putting `min(requested, trained window)` on a memory-constrained host as well. And the filled-context cost has a third fill level on three models, which shows it is neither proportional to occupancy nor a cliff.
+
+What stays open, dated from here. Every figure in that section is `--samples 1`, so the pooled five-case drop between a near-empty and a half-filled window is the weakest link in it and needs `--samples 2` before it is a result. The fill-level readings cover three models on one host, none of them the large Nemotron builds that carry the effect most strongly. And the medians there track machine state rather than host or prompt size — one model moved 3.8x against itself on one machine a day apart — so a latency reading under a filled window needs a controlled re-run before it can be quoted at all.
 
 ## How results are produced
 

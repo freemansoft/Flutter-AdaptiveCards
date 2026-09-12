@@ -2,6 +2,313 @@
 
 ## [Unreleased]
 
+- Added: **a calibrated M5 fit control and a second fill level, and the
+  medians in that section are withdrawn as uninterpretable.** The three
+  models a 16 GB host can hold were re-run 2026-09-12 under the M1 Max's
+  calibrated parameters, in
+  `context_fill_results/m5-16gb-ollama0333-fitcontrol-calibrated/`, so the
+  cross-host comparison cites two live archives rather than a superseded
+  commit. Prompt counts and allocations match exactly and the measured
+  chars-per-token match to every digit, calibration being a property of the
+  tokenizer rather than the host; one case separates the hosts across nine
+  content columns. A companion run at roughly half the fill with each window
+  held constant,
+  `context_fill_results/m5-16gb-ollama0333-fitcontrol-calibrated-halffill/`,
+  adds the third fill level the section wanted: pooled coverage runs 47/75
+  near-empty, 42/75 half, 42/75 full, so the cost is neither proportional to
+  occupancy nor a cliff, and no single model's steps clear the `--samples 1`
+  noise floor. The latency paragraph is rewritten rather than extended:
+  `nemotron-3-nano:4b` medians 13356 ms and 3506 ms on the same host a day
+  apart at a 5% larger prompt, so no host or fill-level claim rests on a
+  median. Renames the uncalibrated M5 archive to
+  `m5-16gb-ollama0333-fitcontrol-uncalibrated/` now that a calibrated
+  sibling exists, and closes three resolved items in the open questions.
+
+- Changed: **the fit control is re-measured under calibration, at a target
+  that states what it delivers.** All eight models re-run 2026-09-12 into
+  `context_fill_results/m1max-64gb-ollama0333-fitcontrol-calibrated/` (67m58s, every
+  model `rc=0`), replacing runs that asked for 28000 tokens while delivering
+  42426 to 46287. Calibration measured 2.81 to 3.08 chars/token across the
+  eight, against the 4.0 the fixed filler assumed. Targets are now 42000
+  tokens, except `qwen2.5-coder:7b`, which a 32768 trained window caps: it
+  takes 20000, up from 12000, and at 24721 tokens runs its allocated window
+  about three quarters full rather than a third. Prompt tokens land about 3%
+  above target once each model's own system prompt is subtracted, and the
+  residue has a cause rather than being noise: the filler is indexed, so its
+  digit strings lengthen as it grows and a 118,000-character filler
+  tokenizes denser than the 10,000-character calibration sample. The
+  direction is size-dependent, so an undershoot recorded earlier at a much
+  smaller fill does not generalise. Every run still fits its window.
+
+- Added: **the Nemotron filled-context result reproduced across a 14% larger
+  prompt.** The superseded uncalibrated control carried 42.5k to 46.3k
+  tokens and returned 13/25, 12/25 and 6/25 for `nemotron-3.5-lightning:30b`,
+  `nemotron-3-nano:30b` and `nemotron-3-nano:4b`; the calibrated run carries
+  48.5k and returns the same three counts. Two runs at different prompt
+  sizes landing identically is what makes a `--samples 1` reading usable.
+  The Qwen models move by one or two cases in both directions and none of
+  that reproduces, so it stays noise.
+
+- Added: **fit-control runs for the two `nvfp4` builds, which are an
+  exception rather than a spoiled measurement.** `qwen3.8:27b-nvfp4` and
+  `qwen3.6:27b-coding-nvfp4` never dropped the filler: under the fixed-filler
+  sweep they evaluated 42542 and 42538 tokens against the 35851 `/api/ps`
+  reported allocating, roughly 6,700 past it, and scored 17/25 and 21/25
+  rather than collapsing. Every other model measured loses the whole message
+  at that boundary, so `min(requested, trained window)` describes what the
+  runner allocates and not what it enforces. No mechanism established; both
+  are `nvfp4` builds, which this file already records as flipping their
+  `format` verdict between runtimes. This also retires the earlier caution
+  that their sweep scores were measured under overflow and could not be
+  compared.
+
+- Fixed: **four errors and an omission in the `ModelBehavior.md`
+  context-fill section.** It claimed a dropped message "would have fit the
+  requested window", which the fit control disproves: every dropped prompt
+  was 42426 tokens or larger against 35851 requested, so both it and the
+  truncation case exceeded the window and they differ in what is lost, not
+  in whether it fit. It compared the droppers' counts against "the roughly
+  29.5k actually sent", which is what other models' tokenizers made of that
+  text rather than theirs. A paragraph still framed the drop as an open
+  mechanism question after the section had answered it, and duplicated a
+  later paragraph that makes the same point with both hosts measured; it is
+  cut. And nothing said the defect is fixed: the section now records which
+  archives are calibrated and which predate it, and that a calibrated sweep
+  would not reproduce the fixed-filler ones.
+
+- Changed: **`context_fill_fit_control.sh` runs calibrated and carries the
+  two `nvfp4` builds.** An earlier revision pinned `--no-calibrate` to keep
+  reproducing the uncalibrated archive; with that archive re-measured, the
+  pin is gone and the `PARAMS` targets state the fill level actually wanted
+  rather than a number that happened to land there.
+
+- Fixed: **`context_fill_probe.dart` calibrates its filler per model
+  instead of assuming 4.0 chars/token.** The fixed constant is what
+  produced, and then forced the retraction of, a finding about models
+  discarding history they had room for: sized in characters, the filler
+  overflowed `num_ctx` on every tokenizer denser than the llama family's
+  ~4.30 chars/token. The probe now sends one short sample
+  (`calibrationSampleChars` at `calibrationNumCtx`) before sizing anything
+  and derives this model's own ratio from Ollama's `prompt_eval_count`.
+  `qwen2.5-coder:7b` measures 3.08 against the assumed 4.0. Runs record
+  `charsPerTokenUsed` and a `charsPerTokenMeasured` flag, so an archive says
+  whether its filler was measured or guessed, and `--no-calibrate` restores
+  the old behavior. `charsPerTokenFrom` returns null rather than a ratio for
+  an absent, zero or negative count, so a failed calibration falls back to
+  the constant instead of sizing a filler from `Infinity`; the failure line
+  now names the probe label that caused it rather than saying only that it
+  failed. Calibration costs one extra model load, which is why the sample is
+  small and its window fixed. The derived ratio runs slightly low, since the
+  count includes the calibration call's own system prompt and template
+  overhead, so the filler lands under target rather than over: a
+  `--fill-tokens 8000` run achieved roughly 7,000 tokens inside a 16979
+  window, unclamped. Undershooting is the safe direction, and only
+  overflowing `num_ctx` invalidates a run. Read the achieved figure from
+  each call's `tokens=`, never from `--fill-tokens`.
+
+- Docs: **the context-fill allocation rule is measured on a 16 GB host, not
+  only inferred from the 64 GB one.** All eight models a 16 GB host can hold
+  were re-measured on the Apple M5 under the fixed filler, and three of them
+  under the fit control as well, taking the rule to thirty-one readings
+  across two hosts with no counterexample to
+  `min(requested, trained window)`. Every allocation matches its M1 Max
+  counterpart exactly, the three clamps included, each landing on its own
+  trained window; and a 16 GB machine allocated the full 65536 window it
+  requested, which retires the earlier suspicion that a clamp was a memory
+  ceiling. Every re-run reproduced its earlier pass and token count exactly,
+  so no existing figure moved. The fit control reproduces to the token and
+  to the case on both hosts; median latency is the only column that moves,
+  and it moves in both directions, so it is reported rather than attributed.
+  Adds `context_fill_results/m5-16gb-ollama0333-fitcontrol-uncalibrated/`.
+
+- Added: **`tool/model_probes/context_fill_fit_control.sh` makes the fit
+  control reproducible.** The run that disproved the dropped-history reading
+  was a hand-written script outside the repo, so only its results were
+  archived and no other host could repeat it. This is that procedure,
+  following the conventions of `sweep.sh` and `context_fill_sweep.sh`:
+  required `FIT_CONTROL_RESULTS`, resumable by skipping an existing JSON,
+  `wait_for_idle` between models, and a `caffeinate -i` re-exec. It differs
+  from `context_fill_sweep.sh` in carrying **per-model** `--num-ctx` and
+  `--fill-tokens` in a `PARAMS` table rather than one fill target for
+  everything, because that is the whole point of the control, and a model
+  with no entry is skipped with a message instead of run under a guessed
+  ceiling. `qwen2.5-coder:7b` is the entry that explains the shape: its
+  trained window is 32768 and Ollama allocates
+  `min(requested, trained window)`, so a larger `--num-ctx` does nothing for
+  it and it takes a 12000-token filler instead of 28000. Pass model names to
+  run a subset, which is how a 16 GB host runs the three models it can hold.
+
+- Fixed: **the "models discard history they had room for" reading was an
+  artifact of this probe, and is retracted.** `buildFillerText` sizes the
+  filler in characters at `fillerCharsPerToken = 4.0`. Measured against the
+  same 127,020 characters that constant holds at 4.29 to 4.30 chars/token on
+  `llama3.2:latest`, `granite4.1:8b` and `gpt-oss:20b`, and fails elsewhere:
+  2.99 on `qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4`, 2.74 on
+  `nemotron-3-nano:4b`. A 28000-token target becomes 42426 to 46287 real
+  tokens there, overflowing the 35851-token window the probe sized from the
+  estimate, so Ollama dropped the history message whole and the archive
+  recorded a model discarding history it appeared to have room for. The new
+  `context_fill_results/m1max-64gb-ollama0333-fitcontrol-calibrated/` is the control:
+  the same six models, each given a filler that fits the window it is
+  actually allocated, and all six ingest it. `ModelBehavior.md` retracts the
+  policy finding, its open-questions entry is closed, and
+  `context_fill_probe.dart`'s doc comment loses the argument that the
+  estimate need not be exact because every call carries `prompt_eval_count`.
+  That count reports the overflow after the run is already spoiled, since
+  `num_ctx` is sized before the first call. What survives is narrower and
+  real: Ollama removes an oversized history message rather than trimming it,
+  silently, and allocates `min(requested, trained window)` with no
+  counterexample in twenty runs.
+
+- Added: **the first measurement of what a genuinely filled context costs.**
+  Every earlier figure for these six models was taken with the history
+  discarded, which measures the unfilled task. With roughly 42.5k tokens
+  actually in the window, `qwen3-coder:30b` does not move (18/25) and
+  `qwen3.5:9b` gains a case (18 to 19/25), both within `--samples 1` noise.
+  The Nemotron models lose about a third of their shapes:
+  `nemotron-3.5-lightning:30b` 20 to 13/25, `nemotron-3-nano:30b` 17 to
+  12/25, `nemotron-3-nano:4b` 8 to 6/25. Capacity under a full window is not
+  predicted by score on an empty one. `qwen2.5-coder:7b` could not be tested
+  by raising the ceiling, since its trained window is 32768 and allocation is
+  `min(requested, trained window)`; it got a 12000-token filler instead and
+  scores 21/25 against 22/25. One fill size, one host, `--samples 1`.
+
+- Added: **the M1 Max allocation reading, which excludes clamping as the
+  mechanism behind the dropped filler.** The sweep was re-run 2026-09-11 with
+  `/api/ps` capture in place, into the same
+  `context_fill_results/m1max-64gb-ollama0333-fill28000/` directory (23m48s,
+  every model `rc=0`). All eight pass counts and all eight
+  `prompt_eval_count` figures reproduced the 2026-09-10 run exactly, so the
+  archive gains a field rather than a second set of numbers to reconcile; the
+  per-call `ms` timings and `measuredAt` are the only other changes. Across
+  all eight models the runner allocated `min(requested, trained window)`:
+  every clamp lands exactly on that model's `n_ctx_train` (8192 for
+  `llama3-chatqa:8b` and `llama3-groq-tool-use:8b`, 32768 for
+  `qwen2.5-coder:7b`) and the other five got the full 35851 requested.
+  `nemotron-3-nano:4b` and `qwen3.5:9b` settle the question: allocated every
+  token they asked for, with room for the roughly 29.5k prompt, and they
+  discarded the filler anyway. Neither host memory nor a clamped window
+  accounts for that. `qwen2.5-coder:7b` stays unresolved, since 29.5k is what
+  other models' tokenizers made of the filler and its own tokenization of
+  that text is unmeasured. `ModelBehavior.md` gains the allocation table and
+  drops the superseded speculation about safety margins and runner clamps;
+  the open question is narrowed from "what allocated what" to what drops an
+  oversized history message when the runner had room for it. The reading is
+  M1 Max only: the M5 archive predates the field and cannot be backfilled.
+
+- Added: **`context_fill_probe.dart` records what the runner allocated, not
+  only what it requested.** `summary.numCtx` is the value the probe asks for,
+  which is silent about clamping: a run whose filler was ingested and a run
+  whose filler vanished archive the identical number, so the existing
+  archives cannot say whether a clamped runner or a dropped message produced
+  the result. `probe_support.dart` gains `RunnerStatus`, a pure
+  `parseRunnerStatus` and a best-effort `readRunnerStatus`, and the probe
+  calls it once after the first case has loaded the runner. `/api/ps` lists
+  nothing before then and the runner does not resize mid-run, so one read
+  rather than 25. The summary gains `runnerContextLength`,
+  `runnerContextClamped` and `runnerSizeVram`, and stdout prints the
+  allocated-against-requested line with a `CLAMPED` marker. Best effort for
+  the reason `evictModel` is: an `/api/ps` that fails, omits the field, or
+  lists only other models records nothing rather than costing a half-hour
+  sweep its result, so the keys are absent from a run that could not take
+  the reading, the way `promptEvalCountMin` already is. Verified end to end
+  against a live runner (`llama3.2:latest`, `--fill-tokens 2000`: 9851
+  allocated against 9851 requested, not clamped). The field cannot be
+  backfilled, so the two archived context-fill runs still carry only
+  `numCtx`, and answering the clamping question means re-running both hosts.
+
+- Changed: **the `ModelBehavior.md` context-fill table gives each host its own
+  token and pass column.** The `prompt_eval_count` figures were collapsed into
+  one column because both hosts agree to the token, which left "no variation
+  by memory size" asserted in the prose under the table rather than visible in
+  it. `Filler` stays a single column, since the kept-or-dropped verdict is
+  identical on both hosts and that identity is the finding. Two sentences that
+  said the probe does not capture `/api/ps` are corrected, since it now does;
+  what is still owed is a re-run, not a probe change. No figure changed.
+
+- Added: **the M1 Max (64GB) context-fill run, which rules out host memory as
+  the cause of the dropped filler.** `context_fill_sweep.sh` over the same eight
+  models at `--fill-tokens 28000` under the same Ollama 0.33.3, archived in
+  `tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fill28000/`
+  (2026-09-11, 32m09s, every model `rc=0`). This is the question the sweep
+  script was written to answer, and the answer is no: the M5 16GB result
+  reproduces on a host with four times the RAM. The same five of eight models
+  discard the filler whole, the same three keep it, and the pass counts agree on
+  six of the eight rows, differing by one case on `llama3.2:latest` (8 to 9) and
+  `qwen3.5:9b` (17 to 18) at `--samples 1`. The two hosts' `prompt_eval_count`
+  figures match to the token, which confirms nothing on its own, since that
+  counter reads tokenized input and the filler, system prompt and 25 cases are
+  byte-identical across the runs.
+
+- Added: **a context-fill section in `ModelBehavior.md`**, which
+  `context_fill_sweep.sh` already pointed at and which did not exist; until now
+  the M5 finding lived only in this changelog. It carries the eight-model
+  cross-host table (trained window, prompt tokens evaluated, filler kept or
+  dropped, both hosts' pass counts) and reads the drop as whole-message rather
+  than truncation: the five report 3819 to 4374 tokens against roughly 29.5k
+  sent, silently, with the reply looking like a normal answer to a question
+  asked with no history. New in the write-up is the trained-window check via
+  `ollama show`, which explains two of the five drops and not the other three:
+  `llama3-chatqa:8b` and `llama3-groq-tool-use:8b` are 8192-token models that
+  could not have held the filler, while `qwen3.5:9b` and `nemotron-3-nano:4b`
+  (262144) and `qwen2.5-coder:7b` (32768) all had room. Adds a key-findings
+  bullet, since silent whole-message history loss generalizes past this
+  workload, and an open-questions bullet for the unexplained three. Limits are
+  recorded in place: `summary.numCtx` is the value the probe requested and says
+  nothing about what the runner allocated, both runs are `--samples 1`, and the
+  pass column is not like-for-like with the shape-coverage table. Settling the
+  clamping question needs the probe to capture `/api/ps` per model, which is a
+  probe change rather than another sweep.
+
+- Fixed: **the probe usage examples named an Ollama version no test bed machine
+  runs.** Both hosts are on 0.33.3. `sweep.sh` and `context_fill_sweep.sh`
+  require their results variable rather than defaulting it, which makes the
+  example the thing a reader copies, so an example naming a stale version files
+  a 0.33.3 run under a 0.33.2 name: the exact failure the required-variable
+  design exists to prevent. `context_fill_probe.dart`'s `--json` example was
+  worse than stale, pointing at an `m5-16gb-ollama0331-fill28000/` that never
+  existed, since the M5 context-fill data was recorded under 0.33.3. Comments
+  only. Left pointing at 0.33.2 and 0.33.1: `perf_table.py`'s read examples,
+  `check_results.dart`'s `shapeTableDir`, and the `sweep.sh` prose listing the
+  per-host trees, all of which name archives that do hold those runtimes'
+  data.
+
+- Added: **`tool/model_probes/context_fill_probe.dart` runs the shape sweep
+  against a filled context**, to test whether a model still functions once
+  its window is mostly used, on a machine tight enough that the answer might
+  be no. It runs the same 25 cases `shape_ab.dart` runs, but prepends a large
+  deterministic filler block as history instead of the two-turn seed
+  `shape_ab.dart` uses for its "with history" condition. `--fill-tokens`
+  names the target; the filler is sized against it by a documented
+  chars-per-token heuristic rather than a live calibration call, and every
+  recorded call carries Ollama's own `prompt_eval_count` so the achieved
+  count is measured, not assumed. A standalone diagnostic, not one of the
+  seven sweep probes — not added to `expectedProbes`, and its results belong
+  under a new `tool/model_probes/context_fill_results/` tree (directories
+  named `host-ram-ollamaVERSION-fillN`, `N` being the fill target) rather
+  than a `results-*` directory, so `check_results.dart`'s sweep never picks
+  it up. `ProbeOutcome` gains a `promptEvalCount` field, populated from the
+  same response body `probeOnce` already parses. `num_ctx` budgets the card
+  system prompt's own estimated token cost (`estimateTokenCount`), not just
+  the fill target — an initial version left the actual request short of its
+  own window before the filler mattered — and the probe force-evicts any
+  resident runner before its first call, since a later request's `num_ctx`
+  is not reliably re-applied to an already-loaded model. Neither change
+  moved the headline finding: five of eight 16GB-capable models silently
+  drop the entire filler message rather than trimming it, independent of
+  `num_ctx` size or load freshness — see `ModelBehavior.md`.
+
+- Added: **`tool/model_probes/context_fill_sweep.sh` runs
+  `context_fill_probe.dart` across the eight 16GB-capable models at a fixed
+  `--fill-tokens` target**, mirroring `sweep.sh`'s conventions (required
+  `CONTEXT_FILL_RESULTS`, resumable by skipping an existing JSON,
+  `wait_for_idle` between models). Self-caffeinates by re-exec'ing itself
+  under `caffeinate -i`, since a laptop sleeping mid-run is what produced a
+  corrupted M5 attempt at this measurement — a pending timeout scheduled
+  before sleep reports the sleep duration as elapsed time on wake. Exists so
+  the same measurement can be taken on the M1 Max (64GB) without hand-typed
+  commands risking a mismatched flag between hosts.
+
 - Added: **`tool/blog/to_blogger.dart` converts a `blog/` draft to HTML for
   Google Blogger.** Blogger renders a newline in post HTML as a `<br>`, so the
   drafts' 78-column source wrapping arrived as ragged columns; the converter

@@ -16,28 +16,44 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                      | File                                         | Status                                             |
-| --- | ---------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                        | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added      |
-| 2   | We tried 14 levers to get reliable card JSON from a local model              | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added     |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5 | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added   |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models    | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model    | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08                        |
+| #   | Article                                                                                | File                              | Status                                                                       |
+| --- | -------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added                                |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added                               |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added, register pass 2026-09-12   |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models              | `article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added, register pass 2026-09-12 |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08, register pass 2026-09-12                        |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12    |
+| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12          |
 
-All five articles are drafted and have their visuals: articles 3 and 4 carry
+Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
-and articles 1 and 2 have real screenshots from the demo client.
+and articles 1 and 2 have real screenshots from the demo client. Article 7 took
+the mermaid chart of the cases each model gains or loses when its window is
+filled. Article 6 has no visual of its own after the split.
 
-The 2026-09-08 revision removed every em dash from all five (see **Register**),
-framed the chat demo as a demo rather than a production architecture, and
-rewrote the closing headings of articles 1, 2 and 5 to state a finding.
+The 2026-09-08 revision removed every em dash from articles 1 to 5 (see
+**Register**), framed the chat demo as a demo rather than a production
+architecture, and rewrote the closing headings of articles 1, 2 and 5 to state
+a finding.
+
+Articles 6 and 7 were added 2026-09-12, when the notebook gained a context-fill
+section. They are the first articles in the series whose subject postdates the
+original plan, and they took one caveat back into article 3: every latency
+figure in the series before them was measured against a nearly empty context,
+which article 3 now says in its own caveat list.
+
+They were drafted as one article and split the same day, on topic rather than on
+length: the draft was 1823 prose words, well inside the cap. The split separates
+a runtime finding from a model finding, which a reader may want separately.
+Article 6 is 1137 prose words and article 7 is 1106.
 
 **Audience:** developers running local models on Ollama who need structured
 output. Secondary: Flutter and server-driven-UI readers.
 
 **Publication target:** <https://joe.blog.freemansoft.com>.
 
-**File naming:** `YYYY-MM-DD-article-N-slug-draft.md`.
+**File naming:** `article-N-slug-draft.md`.
 
 **Publishing to Blogger:**
 [`tool/blog/to_blogger.dart`](../tool/blog/to_blogger.dart)
@@ -104,7 +120,16 @@ cross-runtime material, stall counts not being comparable across versions and
 the ceiling's effect on one 0.32.14 figure, belongs to article 5, which owns it as
 a methodological finding rather than as a host comparison.
 
+Every figure in it was measured against a nearly empty context, a probe call
+being a system prompt, one question and at most a two-turn seed. That is a
+property of the whole series before article 6 and it is stated in article 3's
+caveat list, because article 3 is the one carrying latency figures a reader
+might otherwise generalize to a long conversation.
+
 _Defers:_ bad assertions and undelivered `system` messages to article 5.
+What the runner allocates and what happens to history
+that does not fit, to article 6. What a full context costs a model's coverage,
+to article 7.
 
 **Article 4: the tool channel.** How the two arms are paired, including why the
 tool arm is scored against the unseeded prose run. The eight-model comparison.
@@ -143,6 +168,68 @@ _Defers:_ the `llama3.2:latest` M5 artifact row and the throttling analysis to
 article 3; it recaps article 3's sweep-position control in one paragraph, as a
 second instance of the same discipline that resolves the stall counts: isolate
 the confound, measure it, do not read a mechanism off a net number.
+
+**Article 6: the filled context.** Everything about running a model with its
+window actually full. The allocation rule, `min(requested, trained window)`,
+measured on both hosts with no counterexample in thirty-one runs, and the
+reading that retires host memory as a factor. **The silent whole-message drop
+outright**: history that exceeds the allocated window is removed rather than
+trimmed, nothing errors, and `prompt_eval_count` is the only signal. The
+per-tokenizer spread, 4.30 characters per token against 2.74 on the same text,
+and the probe defect it caused: a filler sized in characters overflowed the
+window sized for it, and three models were written up as discarding history
+they had room for when no such model existed. The two `nvfp4` builds that
+evaluate roughly 6,700 tokens past their reported allocation at no cost, which
+separates what the runner allocates from what it enforces.
+
+_Defers:_ the general form of "suspect the harness before the model" to
+article 5, naming its own instance in one clause rather than re-deriving the
+principle. Host-to-host latency and the 16 GB fit question to article 3; it
+quotes no ratio and no sweep timing, because its runs are `--samples 1` at one
+fill size and carry no position control.
+
+**Article 7: what a full window costs a model.** The filled-context measurement
+for eight models, four unaffected and three losing about a third of their shape
+coverage. **The failure decomposition outright**: the two largest losses are
+opposite failures, `nemotron-3.5-lightning:30b` abandoning card output for prose
+and `nemotron-3-nano:30b` emitting well-formed cards with a `TextBlock` where an
+`Input.*` was asked for, and the consequence that only the first is caught by
+checking that a reply parsed as a card. The reordering, in which a model ahead
+on an empty window falls behind on a full one. The `qwen2.5-coder:7b` partial
+reversion at roughly half the fill, which is the only sign in the set that the
+effect begins below a full window.
+
+_Defers:_ everything about the runtime to article 6, including what `num_ctx`
+does, what the runner allocates, and how history that does not fit is removed.
+It states in one paragraph that its fill sizes were verified as delivered and
+cites article 6 for why that needed verifying, rather than re-deriving the
+tokenizer defect.
+
+### Resolved: the M5 calibrated run
+
+Landed 2026-09-12. The three models a 16 GB host can hold were re-run under the
+M1 Max's calibrated parameters, and article 7 now carries the comparison: prompt
+counts identical to the digit, two of three scores unchanged, one case apart on
+the third. Article 7 keeps its M1 Max attribution for the eight-row table, since
+five of those rows are still single-host, and states the three-row cross-host
+confirmation beside the reproduction paragraph rather than adding a column that
+would be empty for five models.
+
+The same run added a second fill level with the window held constant, which
+answered a caveat article 7 had left open. Pooled coverage runs 47/75 near-empty,
+42/75 half and 42/75 full, so the filled-context cost is neither proportional to
+occupancy nor a cliff. Article 7's closing caveat was narrowed to what is still
+open: the two 30-billion-parameter Nemotron builds that carry the largest losses
+were not among the three models measured that way.
+
+What the same run withdrew is worth recording, because it is the kind of figure
+an article would otherwise have quoted. The latency medians from these runs do
+not reproduce: `nemotron-3-nano:4b` medians 13356 ms and 3506 ms on the same host
+a day apart at a 5% larger prompt, and the cross-host direction flips between
+those days. Pass and token columns reproduce across every one of those runs and
+the medians do not, so no article carries a latency claim from the fit control.
+Article 3 owns host-to-host latency and its figures are from the shape sweep,
+which is unaffected.
 
 ## Conventions
 
@@ -271,6 +358,36 @@ for figures, hedge inferred mechanisms, and end on the last factual sentence.
 Counts are measured; the explanation for them usually is not. Report negative
 results as plainly as wins. Articles 2 and 4 are substantially negative results
 and they must not read as apologies.
+
+**Write a technical blog post, not a research paper.** Active voice, sentences
+of about 12 to 20 words, and one idea per sentence. The published posts on the
+target blog are the register to match. A paper hides the actor behind a passive
+("eight models were measured", "the filler is sized in characters", "that group
+was written up as unexplained"); a post names it. Do not name it as a person.
+
+**No first-person singular.** No "I", "me", or "my" anywhere in an article,
+even though the blog's older, hand-written posts use them. An article drafted
+with an agent's help cannot say "I measured" without the reader wondering
+whether the author or the model is speaking, so the articles drop the question
+entirely. "We" and "our" are allowed, because they read as the project speaking;
+article 2's published title is "We tried 14 levers". Prefer the thing that acted
+over either pronoun: the probe sizes the filler, the sweep omitted the unload
+step, the server log shows the generation kept running, the notebook records
+the run as cascade-damaged. Where nobody in particular acted, "is still open" or
+"has no explanation yet" replaces "I cannot say". Imperatives are fine ("check
+`ollama ps`", "dump the bytes"), and "you" is fine where the reader is the one
+acting.
+
+Three paper habits to convert on sight, beside the em dash below:
+
+- **The agentless passive.** Rewrite with the probe, sweep, server, runtime, or
+  notebook as the subject.
+- **Announcing the article's question.** "This article asks what changes when
+  the window is full" becomes the question itself, or the finding.
+- **The defensive pair.** "checked rather than assumed", "measured rather than
+  inferred", "not a finding either way". Keep the hedge, drop the contrast:
+  say what was checked. A pair that carries real information, such as "a
+  correctness requirement, not a performance tip", may stay.
 
 **No em dashes as punctuation.** A dash setting off a clause reads to many
 readers as a machine-authored tell, so the published articles carry none.

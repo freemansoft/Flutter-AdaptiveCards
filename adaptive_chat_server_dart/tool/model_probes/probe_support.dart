@@ -237,6 +237,7 @@ class ProbeOutcome {
     required this.ms,
     required this.hash,
     required this.reply,
+    this.promptEvalCount,
   });
 
   /// Whether the reply was usable — a renderable card, or clean prose.
@@ -264,6 +265,12 @@ class ProbeOutcome {
   /// The raw reply text, so a caller can score for a specific element rather
   /// than only for "is it broken?".
   final String reply;
+
+  /// Ollama's `prompt_eval_count` for the request that produced this reply,
+  /// when the caller supplied one. Null on every path that does not measure
+  /// it -- a timeout, an HTTP error, or a caller (most probes) that never
+  /// asked.
+  final int? promptEvalCount;
 }
 
 /// Builds the `/api/chat` message list, mirroring `OllamaResponder`.
@@ -315,6 +322,85 @@ Future<void> evictModel(String url, String model) async {
     await resp.drain<void>().timeout(const Duration(seconds: 10));
   } on Object catch (e) {
     stderr.writeln('evictModel: unload of $model failed: $e');
+  } finally {
+    client.close();
+  }
+}
+
+/// What Ollama's `/api/ps` reports about one resident model.
+///
+/// Exists because a probe can only record the `num_ctx` it *asked* for, and
+/// a request's `num_ctx` is not always what the runner allocates. Without
+/// this, a run whose history was silently dropped and a run whose history
+/// was ingested archive the identical context figure, so the archive cannot
+/// distinguish a clamped runner from a model that discarded a message it
+/// had room for. See ModelBehavior.md's context-fill section.
+class RunnerStatus {
+  const RunnerStatus({this.contextLength, this.sizeVram});
+
+  /// Context the runner actually allocated, or null if this Ollama does not
+  /// report it. Null rather than zero on purpose: a zero would read as a
+  /// measured clamp to nothing.
+  final int? contextLength;
+
+  /// Resident VRAM in bytes, or null if absent.
+  final int? sizeVram;
+}
+
+/// Picks [model]'s entry out of an `/api/ps` [body].
+///
+/// Returns null when the body is unparseable, carries no model list, or
+/// holds only other models -- every one of which is a "no reading taken"
+/// rather than an error, since this is a diagnostic recorded beside a
+/// measurement and must never cost the measurement its result. A bare tag
+/// matches the `:latest` the server reports it under.
+RunnerStatus? parseRunnerStatus(String body, String model) {
+  final Object? decoded;
+  try {
+    decoded = jsonDecode(body);
+  } on FormatException {
+    return null;
+  }
+  if (decoded is! Map<String, dynamic>) return null;
+  final models = decoded['models'];
+  if (models is! List) return null;
+  final wanted = model.contains(':') ? model : '$model:latest';
+  for (final entry in models) {
+    if (entry is! Map<String, dynamic>) continue;
+    final names = {entry['name'], entry['model']};
+    if (!names.contains(model) && !names.contains(wanted)) continue;
+    final contextLength = entry['context_length'];
+    final sizeVram = entry['size_vram'];
+    return RunnerStatus(
+      contextLength: contextLength is int ? contextLength : null,
+      sizeVram: sizeVram is int ? sizeVram : null,
+    );
+  }
+  return null;
+}
+
+/// Asks Ollama what it allocated for [model], or null if it cannot say.
+///
+/// Best effort for the same reason [evictModel] is: this runs beside a
+/// sweep that costs half an hour, and a diagnostic that throws would trade
+/// the whole run for a field. A failure writes one stderr line and reads as
+/// no measurement. Call it only once a model is resident -- `/api/ps` lists
+/// nothing before the first request loads the runner.
+Future<RunnerStatus?> readRunnerStatus(String url, String model) async {
+  final client = HttpClient();
+  try {
+    final req = await client
+        .getUrl(Uri.parse('$url/api/ps'))
+        .timeout(const Duration(seconds: 10));
+    final resp = await req.close().timeout(const Duration(seconds: 10));
+    final body = await resp
+        .transform(utf8.decoder)
+        .join()
+        .timeout(const Duration(seconds: 10));
+    return parseRunnerStatus(body, model);
+  } on Object catch (e) {
+    stderr.writeln('readRunnerStatus: /api/ps for $model failed: $e');
+    return null;
   } finally {
     client.close();
   }
@@ -464,7 +550,7 @@ Future<ProbeOutcome> probeOnce({
       reply: body,
     );
   }
-  return judgeReply(content, ms);
+  return judgeReply(content, ms, promptEvalCount: _promptEvalCountOrNull(body));
 }
 
 /// Pulls `message.content` out of an `/api/chat` body, or null if it is absent
@@ -485,8 +571,28 @@ String? _contentOrNull(String body) {
   }
 }
 
+/// Pulls `prompt_eval_count` out of an `/api/chat` body, or null if it is
+/// absent or not an int.
+///
+/// Ollama's own count of the tokens it evaluated for the request -- the
+/// figure `context_fill_probe.dart` calibrates its filler text against,
+/// since a chars-per-token estimate cannot know a given model's tokenizer.
+int? _promptEvalCountOrNull(String body) {
+  try {
+    final data = jsonDecode(body);
+    if (data is! Map<String, dynamic>) return null;
+    final count = data['prompt_eval_count'];
+    return count is int ? count : null;
+  } on FormatException {
+    return null;
+  }
+}
+
 /// Applies the server's card-detection rules to [content].
-ProbeOutcome judgeReply(String content, int ms) {
+///
+/// [promptEvalCount] passes through to the returned [ProbeOutcome] verbatim
+/// -- it is Ollama's own count, not derived from [content].
+ProbeOutcome judgeReply(String content, int ms, {int? promptEvalCount}) {
   final hash = md5.convert(utf8.encode(content)).toString().substring(0, 8);
   ProbeOutcome outcome({required bool ok, required String label}) =>
       ProbeOutcome(
@@ -496,6 +602,7 @@ ProbeOutcome judgeReply(String content, int ms) {
         ms: ms,
         hash: hash,
         reply: content,
+        promptEvalCount: promptEvalCount,
       );
 
   try {
